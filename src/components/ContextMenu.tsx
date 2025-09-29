@@ -1,11 +1,13 @@
 import { Dialog } from '@headlessui/react'
-import type { RefObject } from 'react'
+import type { MouseEvent, RefObject } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import type { ActionIconProps } from '@src/components/ActionIcon'
 import { ActionIcon } from '@src/components/ActionIcon'
+import usePlatform from '@src/hooks/usePlatform'
+import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 
 export interface ContextMenuProps
   extends Omit<React.HTMLAttributes<HTMLUListElement>, 'children'> {
@@ -13,10 +15,10 @@ export interface ContextMenuProps
   menuTargetElement?: RefObject<HTMLElement>
   guard?: (e: globalThis.MouseEvent) => boolean
   event?: 'contextmenu' | 'mouseup'
+  callback?: (event: globalThis.MouseEvent) => void
 }
 
 const DefaultContextMenuItems = [
-  <ContextMenuItemRefresh />,
   <ContextMenuItemCopy />,
   // add more default context menu items here
 ]
@@ -27,6 +29,7 @@ export function ContextMenu({
   className,
   guard,
   event = 'contextmenu',
+  callback,
   ...props
 }: ContextMenuProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -41,13 +44,33 @@ export function ContextMenu({
   })
   const handleContextMenu = useCallback(
     (e: globalThis.MouseEvent) => {
+      if (callback) {
+        callback(e)
+      }
       if (guard && !guard(e)) return
       e.preventDefault()
+      // This stopPropagation is needed in case multiple nested items use a separate context menu each,
+      // which would cause the parent context menu to receive the event even if the child was clicked on.
+      // Eg. this happens in FileTree causing a bug where the parent folder is going into renaming mode when trying to rename a child.
+      e.stopPropagation()
       setPosition({ x: e.clientX, y: e.clientY })
       setOpen(true)
     },
-    [guard, setPosition, setOpen]
+    [guard, setPosition, setOpen, callback]
   )
+
+  const onDialogMouseUp = useCallback((e: MouseEvent) => {
+    // Prevent mouseup event to propagate to EngineStream's handleMouseUp which would update the selection depending
+    // on what's behind the ContextMenu at the position of the mouse.
+    // Bug without this:
+    // - Open ContextMenu
+    // - Click on an item in the ContextMenu and see how what's behind will get selected.
+    e.stopPropagation()
+  }, [])
+
+  const onCloseDialog = useCallback(() => {
+    setOpen(false)
+  }, [])
 
   const dialogPositionStyle = useMemo(() => {
     if (!dialogRef.current)
@@ -76,6 +99,7 @@ export function ContextMenu({
           ? windowSize.height - position.y
           : 'auto',
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [position, windowSize, dialogRef.current])
 
   // Listen for window resize to update context menu position
@@ -96,12 +120,14 @@ export function ContextMenu({
   useEffect(() => {
     menuTargetElement?.current?.addEventListener(event, handleContextMenu)
     return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       menuTargetElement?.current?.removeEventListener(event, handleContextMenu)
     }
-  }, [menuTargetElement?.current])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [menuTargetElement?.current, callback])
 
   return (
-    <Dialog open={open} onClose={() => setOpen(false)}>
+    <Dialog open={open} onClose={onCloseDialog} onMouseUp={onDialogMouseUp}>
       <div
         className="fixed inset-0 z-50 w-screen h-screen"
         onContextMenu={(e) => {
@@ -112,7 +138,7 @@ export function ContextMenu({
         <Dialog.Backdrop className="fixed z-10 inset-0" />
         <Dialog.Panel
           ref={dialogRef}
-          className={`w-48 fixed bg-chalkboard-10 dark:bg-chalkboard-90
+          className={`w-52 fixed bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-10 dark:border-chalkboard-90 rounded
           shadow-lg backdrop:fixed backdrop:inset-0 backdrop:bg-primary ${className}`}
           style={{
@@ -148,6 +174,7 @@ interface ContextMenuItemProps {
 
 export function ContextMenuItem(props: ContextMenuItemProps) {
   const { children, icon, onClick, hotkey, disabled } = props
+  const platform = usePlatform()
 
   return (
     <button
@@ -158,19 +185,10 @@ export function ContextMenuItem(props: ContextMenuItemProps) {
     >
       {icon && <ActionIcon icon={icon} bgClassName="!bg-transparent" />}
       <div className="flex-1">{children}</div>
-      {hotkey && <kbd className="hotkey">{hotkey}</kbd>}
+      {hotkey && (
+        <kbd className="hotkey">{hotkeyDisplay(hotkey, platform)}</kbd>
+      )}
     </button>
-  )
-}
-
-export function ContextMenuItemRefresh() {
-  return (
-    <ContextMenuItem
-      icon="arrowRotateRight"
-      onClick={() => globalThis?.window?.location.reload()}
-    >
-      Refresh
-    </ContextMenuItem>
   )
 }
 

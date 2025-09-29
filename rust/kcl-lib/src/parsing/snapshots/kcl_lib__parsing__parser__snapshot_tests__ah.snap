@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 0,
           "end": 5,
+          "moduleId": 0,
           "name": "myBox",
           "start": 0,
           "type": "Identifier"
@@ -19,31 +20,16 @@ expression: actual
         "init": {
           "body": [
             {
-              "arguments": [
-                {
-                  "abs_path": false,
-                  "commentStart": 22,
-                  "end": 24,
-                  "name": {
-                    "commentStart": 22,
-                    "end": 24,
-                    "name": "XY",
-                    "start": 22,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 22,
-                  "type": "Name",
-                  "type": "Name"
-                }
-              ],
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 8,
                 "end": 21,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 8,
                   "end": 21,
+                  "moduleId": 0,
                   "name": "startSketchOn",
                   "start": 8,
                   "type": "Identifier"
@@ -54,44 +40,71 @@ expression: actual
               },
               "commentStart": 8,
               "end": 25,
+              "moduleId": 0,
               "start": 8,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "abs_path": false,
+                "commentStart": 22,
+                "end": 24,
+                "moduleId": 0,
+                "name": {
+                  "commentStart": 22,
+                  "end": 24,
+                  "moduleId": 0,
+                  "name": "XY",
+                  "start": 22,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 22,
+                "type": "Name",
+                "type": "Name"
+              }
             },
             {
               "arguments": [
                 {
-                  "abs_path": false,
-                  "commentStart": 44,
-                  "end": 45,
-                  "name": {
-                    "commentStart": 44,
-                    "end": 45,
-                    "name": "p",
-                    "start": 44,
+                  "type": "LabeledArg",
+                  "label": {
+                    "commentStart": 42,
+                    "end": 44,
+                    "moduleId": 0,
+                    "name": "at",
+                    "start": 42,
                     "type": "Identifier"
                   },
-                  "path": [],
-                  "start": 44,
-                  "type": "Name",
-                  "type": "Name"
-                },
-                {
-                  "commentStart": 47,
-                  "end": 48,
-                  "start": 47,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
+                  "arg": {
+                    "abs_path": false,
+                    "commentStart": 47,
+                    "end": 48,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 47,
+                      "end": 48,
+                      "moduleId": 0,
+                      "name": "p",
+                      "start": 47,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 47,
+                    "type": "Name",
+                    "type": "Name"
+                  }
                 }
               ],
               "callee": {
                 "abs_path": false,
                 "commentStart": 29,
-                "end": 43,
+                "end": 41,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 29,
-                  "end": 43,
-                  "name": "startProfileAt",
+                  "end": 41,
+                  "moduleId": 0,
+                  "name": "startProfile",
                   "start": 29,
                   "type": "Identifier"
                 },
@@ -101,22 +114,27 @@ expression: actual
               },
               "commentStart": 29,
               "end": 49,
+              "moduleId": 0,
               "start": 29,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
             }
           ],
           "commentStart": 8,
           "end": 49,
+          "moduleId": 0,
           "start": 8,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclarator"
       },
       "end": 49,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -124,5 +142,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 49,
+  "moduleId": 0,
   "start": 0
 }

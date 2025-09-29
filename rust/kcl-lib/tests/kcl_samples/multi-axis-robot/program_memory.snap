@@ -3,20 +3,20 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing multi-axis-robot.kcl
 ---
 {
-  "j2RobotArm": {
+  "__mod_j2RobotArm": {
     "type": "Module",
-    "value": 7
+    "value": 4
   },
-  "j3RobotArm": {
-    "type": "Module",
-    "value": 8
-  },
-  "robotArmBase": {
+  "__mod_j3RobotArm": {
     "type": "Module",
     "value": 5
   },
-  "rotatingBase": {
+  "__mod_robotArmBase": {
     "type": "Module",
-    "value": 6
+    "value": 1
+  },
+  "__mod_rotatingBase": {
+    "type": "Module",
+    "value": 3
   }
 }

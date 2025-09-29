@@ -43,7 +43,7 @@ function discoverColorsInKCL(
   switch (typeName) {
     case 'Program':
     case 'VariableDeclaration':
-    case 'CallExpression':
+    case 'CallExpressionKw':
     case 'ObjectExpression':
     case 'ObjectProperty':
     case 'ArgumentList':
@@ -111,7 +111,7 @@ function discoverColorsInKCL(
 }
 
 export function parseColorLiteral(colorLiteral: string): ColorData | null {
-  const literal = colorLiteral.replace(/"/g, '')
+  const literal = colorLiteral.replace(/"/g, '').replace(/'/g, '')
   const match = hexRegex.exec(literal)
   if (!match) {
     return null

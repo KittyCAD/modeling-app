@@ -26,10 +26,14 @@ yarn-error.log*
 .idea
 .vscode
 .helix
+result
 
 # rust
 rust/target
+rust/kcl-api/bindings
+rust/kcl-error/bindings
 rust/kcl-lib/bindings
+rust/kcl-language-server/server
 public/kcl_wasm_lib_bg.wasm
 rust/lcov.info
 rust/kcl-wasm-lib/pkg
@@ -40,7 +44,7 @@ rust/kcl-language-server-release/Cargo.lock
 # kcl language server package
 rust/kcl-language-server/dist/
 
-e2e/playwright/playwright-secrets.env
+# playwright
 e2e/playwright/temp1.png
 e2e/playwright/temp2.png
 e2e/playwright/temp3.png
@@ -56,6 +60,8 @@ trace.zip
 /public/kcl-samples/.github
 /public/kcl-samples/screenshots/main.kcl
 /public/kcl-samples/step/main.kcl
+/public/kcl-samples/internal
+/rust/kcl-lib/tests/kcl_samples/internal
 /test-results/
 /playwright-report/
 /blob-report/
@@ -82,3 +88,5 @@ dist
 venv
 
 .vscode-test
+.biome/
+.million

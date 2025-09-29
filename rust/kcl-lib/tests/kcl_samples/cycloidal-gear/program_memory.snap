@@ -4,6 +4,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
 ---
 {
   "cycloidalGear": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   }
 }

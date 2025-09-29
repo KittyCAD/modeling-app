@@ -8,12 +8,8 @@ description: Variables in memory after executing parametric.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "bracket": {
@@ -85,9 +81,7 @@ description: Variables in memory after executing parametric.kcl
               5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -104,9 +98,7 @@ description: Variables in memory after executing parametric.kcl
               5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -120,12 +112,10 @@ description: Variables in memory after executing parametric.kcl
             "tag": null,
             "to": [
               8.0,
-              4.8148
+              4.81483598004549
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -134,17 +124,15 @@ description: Variables in memory after executing parametric.kcl
             },
             "from": [
               8.0,
-              4.8148
+              4.81483598004549
             ],
             "tag": null,
             "to": [
-              0.1852,
-              4.8148
+              0.18516401995451037,
+              4.81483598004549
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -152,18 +140,16 @@ description: Variables in memory after executing parametric.kcl
               "sourceRange": []
             },
             "from": [
-              0.1852,
-              4.8148
+              0.18516401995451037,
+              4.81483598004549
             ],
             "tag": null,
             "to": [
-              0.1852,
+              0.18516401995451037,
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -171,7 +157,7 @@ description: Variables in memory after executing parametric.kcl
               "sourceRange": []
             },
             "from": [
-              0.1852,
+              0.18516401995451037,
               0.0
             ],
             "tag": null,
@@ -180,38 +166,37 @@ description: Variables in memory after executing parametric.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -223,9 +208,7 @@ description: Variables in memory after executing parametric.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -234,16 +217,12 @@ description: Variables in memory after executing parametric.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 9.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "distance": {
@@ -251,12 +230,8 @@ description: Variables in memory after executing parametric.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "leg1": {
@@ -264,12 +239,8 @@ description: Variables in memory after executing parametric.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "leg2": {
@@ -277,12 +248,8 @@ description: Variables in memory after executing parametric.kcl
     "value": 8.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "p": {
@@ -290,12 +257,8 @@ description: Variables in memory after executing parametric.kcl
     "value": 150.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "sigmaAllow": {
@@ -303,19 +266,17 @@ description: Variables in memory after executing parametric.kcl
     "value": 35000.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "thickness": {
     "type": "Number",
-    "value": 0.1852,
+    "value": 0.1851640199545103,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "width": {
@@ -323,12 +284,8 @@ description: Variables in memory after executing parametric.kcl
     "value": 9.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

@@ -1,31 +1,49 @@
 import type { SelectionRange } from '@codemirror/state'
 import { EditorSelection } from '@codemirror/state'
-import type { Models } from '@kittycad/lib'
+import type { OkModelingCmdResponse, WebSocketRequest } from '@kittycad/lib'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { Object3D, Object3DEventMap } from 'three'
 import { Mesh } from 'three'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
+  EXTRA_SEGMENT_HANDLE,
+  SEGMENT_BLUE,
   SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
 import { AXIS_GROUP, X_AXIS } from '@src/clientSideScene/sceneUtils'
-import { getNodeFromPath, isSingleCursorInPipe } from '@src/lang/queryAst'
+import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
+import {
+  findAllChildrenAndOrderByPlaceInCode,
+  getEdgeCutMeta,
+  getNodeFromPath,
+  isSingleCursorInPipe,
+} from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
+import {
+  getCapCodeRef,
+  getCodeRefsByArtifactId,
+  getSweepFromSuspectedSweepSurface,
+  getWallCodeRef,
+} from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
-import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
+import {
+  isCursorInSketchCommandRange,
+  isTopLevelModule,
+  topLevelRange,
+} from '@src/lang/util'
 import type {
   ArtifactGraph,
-  CallExpression,
   CallExpressionKw,
   Expr,
+  PathToNode,
   Program,
   SourceRange,
 } from '@src/lang/wasm'
-import { defaultSourceRange } from '@src/lang/wasm'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import type { DefaultPlaneStr } from '@src/lib/planes'
@@ -35,16 +53,28 @@ import {
   kclManager,
   rustContext,
   sceneEntitiesManager,
+  sceneInfra,
 } from '@src/lib/singletons'
+import { engineStreamActor } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import {
+  getModuleId,
   getNormalisedCoordinates,
+  isArray,
   isNonNullable,
   isOverlap,
   uuidv4,
 } from '@src/lib/utils'
-import { engineStreamActor } from '@src/machines/appMachine'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
+import type {
+  DefaultPlane,
+  ExtrudeFacePlane,
+  OffsetPlane,
+} from '@src/machines/modelingSharedTypes'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import toast from 'react-hot-toast'
+import { getStringAfterLastSeparator } from '@src/lib/paths'
+import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -68,7 +98,7 @@ export type Selections = {
 export async function getEventForSelectWithPoint({
   data,
 }: Extract<
-  Models['OkModelingCmdResponse_type'],
+  OkModelingCmdResponse,
   { type: 'select_with_point' }
 >): Promise<ModelingMachineEvent | null> {
   if (!data?.entity_id) {
@@ -107,6 +137,18 @@ export async function getEventForSelectWithPoint({
   }
 
   let _artifact = kclManager.artifactGraph.get(data.entity_id)
+  if (!_artifact) {
+    // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
+    // we should still return an empty singleCodeCursor to plug into the selection logic
+    // (i.e. if the user is holding shift they can keep selecting)
+    // but we should also put up a toast
+    // toast.error('some edges or faces are not currently selectable')
+    showUnsupportedSelectionToast()
+    return {
+      type: 'Set selection',
+      data: { selectionType: 'singleCodeCursor' },
+    }
+  }
   const codeRefs = getCodeRefsByArtifactId(
     data.entity_id,
     kclManager.artifactGraph
@@ -200,7 +242,7 @@ export function handleSelectionBatch({
 }: {
   selections: Selections
 }): {
-  engineEvents: Models['WebSocketRequest_type'][]
+  engineEvents: WebSocketRequest[]
   codeMirrorSelection: EditorSelection
   updateSceneObjectColors: () => void
 } {
@@ -216,7 +258,7 @@ export function handleSelectionBatch({
             .range || defaultSourceRange(),
       })
   })
-  const engineEvents: Models['WebSocketRequest_type'][] =
+  const engineEvents: WebSocketRequest[] =
     resetAndSetEngineEntitySelectionCmds(selectionToEngine)
   selections.graphSelections.forEach(({ codeRef }) => {
     if (codeRef.range?.[1]) {
@@ -265,7 +307,7 @@ export function processCodeMirrorRanges({
   artifactGraph: ArtifactGraph
 }): null | {
   modelingEvent: ModelingMachineEvent
-  engineEvents: Models['WebSocketRequest_type'][]
+  engineEvents: WebSocketRequest[]
 } {
   const isChange =
     codeMirrorRanges.length !== selectionRanges?.graphSelections?.length ||
@@ -340,10 +382,10 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
     if (!SEGMENT_BODIES_PLUS_PROFILE_START.includes(segmentGroup?.name)) return
-    const nodeMeta = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
+    const nodeMeta = getNodeFromPath<Node<CallExpressionKw>>(
       updated,
       segmentGroup.userData.pathToNode,
-      ['CallExpression', 'CallExpressionKw']
+      ['CallExpressionKw']
     )
     if (err(nodeMeta)) return
     const node = nodeMeta.node
@@ -355,11 +397,15 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
     })
 
     const color = groupHasCursor
-      ? 0x0000ff
+      ? SEGMENT_BLUE
       : segmentGroup?.userData?.baseColor || 0xffffff
-    segmentGroup.traverse(
-      (child) => child instanceof Mesh && child.material.color.set(color)
-    )
+    segmentGroup.traverse((child) => {
+      child instanceof Mesh && child.material.color.set(color)
+    })
+    // This is only needed if we want the extra segment to be blue when selected, even if it's still hovered
+    updateExtraSegments(segmentGroup, 'selected', groupHasCursor)
+    updateExtraSegments(segmentGroup, 'hoveringLine', false)
+
     // TODO if we had access to the xstate context and therefore selections
     // we wouldn't need to set this here,
     // it would be better to treat xstate context as the source of truth instead of having
@@ -368,9 +414,24 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
   })
 }
 
+export function updateExtraSegments(
+  parent: Object3D | null,
+  className: string,
+  value: boolean
+) {
+  const extraSegmentGroup = parent?.getObjectByName(EXTRA_SEGMENT_HANDLE)
+  if (extraSegmentGroup) {
+    extraSegmentGroup.traverse((child) => {
+      if (child instanceof CSS2DObject) {
+        child.element.classList.toggle(className, value)
+      }
+    })
+  }
+}
+
 function resetAndSetEngineEntitySelectionCmds(
   selections: SelectionToEngine[]
-): Models['WebSocketRequest_type'][] {
+): WebSocketRequest[] {
   if (!engineCommandManager.engineConnection?.isReady()) {
     return []
   }
@@ -473,7 +534,7 @@ export function getSelectionTypeDisplayText(
     .map(
       // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
-        `${count} ${type.replace('wall', 'face').replace('solid2d', 'face')}${
+        `${count} ${type.replace('wall', 'face').replace('solid2d', 'profile')}${
           count > 1 ? 's' : ''
         }`
     )
@@ -499,8 +560,11 @@ export function canSubmitSelectionArg(
 }
 
 /**
- * Find the index of the last range where range[0] < targetStart
- * This is used as a starting point for linear search of overlapping ranges
+ * Find the index of the last range where range.start < targetStart. When there
+ * are ranges with equal start positions just before the targetStart, the first
+ * one is returned. The returned index can be used as a starting point for
+ * linear search of overlapping ranges.
+ *
  * @param index The sorted array of ranges to search through
  * @param targetStart The start position to compare against
  * @returns The index of the last range where range[0] < targetStart
@@ -509,6 +573,10 @@ export function findLastRangeStartingBefore(
   index: ArtifactIndex,
   targetStart: number
 ): number {
+  if (index.length === 0) {
+    return 0
+  }
+
   let left = 0
   let right = index.length - 1
   let lastValidIndex = 0
@@ -527,7 +595,21 @@ export function findLastRangeStartingBefore(
     }
   }
 
-  return lastValidIndex
+  // We may have passed the correct index. Consider what happens when there are
+  // duplicates. We found the last one, but earlier ones need to be checked too.
+  let resultIndex = lastValidIndex
+  let resultRange = index[resultIndex].range
+  for (let i = lastValidIndex - 1; i >= 0; i--) {
+    const range = index[i].range
+    if (range[0] === resultRange[0]) {
+      resultIndex = i
+      resultRange = range
+    } else {
+      break
+    }
+  }
+
+  return resultIndex
 }
 
 function findOverlappingArtifactsFromIndex(
@@ -659,7 +741,7 @@ export async function sendSelectEventToEngine(
     engineStreamState.videoRef.current,
     engineCommandManager.streamDimensions
   )
-  const res = await engineCommandManager.sendSceneCommand({
+  let res = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'select_with_point',
@@ -668,12 +750,19 @@ export async function sendSelectEventToEngine(
     },
     cmd_id: uuidv4(),
   })
-  if (
-    res?.success &&
-    res?.resp?.type === 'modeling' &&
-    res?.resp?.data?.modeling_response.type === 'select_with_point'
-  )
-    return res?.resp?.data?.modeling_response?.data
+  if (!res) {
+    console.warn('No response')
+    return undefined
+  }
+
+  if (isArray(res)) {
+    res = res[0]
+  }
+  const singleRes = res
+  if (isModelingResponse(singleRes)) {
+    const mr = singleRes.resp.data.modeling_response
+    if (mr.type === 'select_with_point') return mr.data
+  }
   return { entity_id: '' }
 }
 
@@ -735,5 +824,312 @@ export function updateSelections(
         ? newSelections
         : pathToNodeBasedSelections,
     otherSelections: prevSelectionRanges.otherSelections,
+  }
+}
+
+const semanticEntityNames: {
+  [key: string]: Array<Artifact['type'] | 'defaultPlane'>
+} = {
+  face: ['wall', 'cap'],
+  profile: ['solid2d'],
+  edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
+  point: [],
+  plane: ['defaultPlane'],
+}
+
+/** Convert selections to a human-readable format */
+export function getSemanticSelectionType(selectionType: Artifact['type'][]) {
+  const semanticSelectionType = new Set()
+  for (const type of selectionType) {
+    for (const [entity, entityTypes] of Object.entries(semanticEntityNames)) {
+      if (entityTypes.includes(type)) {
+        semanticSelectionType.add(entity)
+      }
+    }
+  }
+
+  return Array.from(semanticSelectionType)
+}
+
+export function getDefaultSketchPlaneData(
+  defaultPlaneId: string
+): Error | false | DefaultPlane {
+  const defaultPlanes = rustContext.defaultPlanes
+  if (!defaultPlanes) {
+    return new Error('No default planes defined in rustContext')
+  }
+
+  if (
+    ![
+      defaultPlanes.xy,
+      defaultPlanes.xz,
+      defaultPlanes.yz,
+      defaultPlanes.negXy,
+      defaultPlanes.negXz,
+      defaultPlanes.negYz,
+    ].includes(defaultPlaneId)
+  ) {
+    // Supplied defaultPlaneId is not a valid default plane id
+    return false
+  }
+
+  const camVector = sceneInfra.camControls.camera.position
+    .clone()
+    .sub(sceneInfra.camControls.target)
+
+  // TODO can we get this information from rust land when it creates the default planes?
+  // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
+  let zAxis: [number, number, number] = [0, 0, 1]
+  let yAxis: [number, number, number] = [0, 1, 0]
+
+  if (defaultPlanes?.xy === defaultPlaneId) {
+    zAxis = [0, 0, 1]
+    yAxis = [0, 1, 0]
+    if (camVector.z < 0) {
+      zAxis = [0, 0, -1]
+      defaultPlaneId = defaultPlanes?.negXy || ''
+    }
+  } else if (defaultPlanes?.yz === defaultPlaneId) {
+    zAxis = [1, 0, 0]
+    yAxis = [0, 0, 1]
+    if (camVector.x < 0) {
+      zAxis = [-1, 0, 0]
+      defaultPlaneId = defaultPlanes?.negYz || ''
+    }
+  } else if (defaultPlanes?.xz === defaultPlaneId) {
+    zAxis = [0, 1, 0]
+    yAxis = [0, 0, 1]
+    defaultPlaneId = defaultPlanes?.negXz || ''
+    if (camVector.y < 0) {
+      zAxis = [0, -1, 0]
+      defaultPlaneId = defaultPlanes?.xz || ''
+    }
+  }
+
+  const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
+    [defaultPlanes.xy]: 'XY',
+    [defaultPlanes.xz]: 'XZ',
+    [defaultPlanes.yz]: 'YZ',
+    [defaultPlanes.negXy]: '-XY',
+    [defaultPlanes.negXz]: '-XZ',
+    [defaultPlanes.negYz]: '-YZ',
+  }
+
+  return {
+    type: 'defaultPlane',
+    planeId: defaultPlaneId,
+    plane: defaultPlaneStrMap[defaultPlaneId],
+    zAxis,
+    yAxis,
+  }
+}
+export function selectDefaultSketchPlane(
+  defaultPlaneId: string
+): Error | boolean {
+  const result = getDefaultSketchPlaneData(defaultPlaneId)
+  if (err(result) || result === false) return result
+  sceneInfra.modelingSend({
+    type: 'Select sketch plane',
+    data: result,
+  })
+  return true
+}
+
+export async function getOffsetSketchPlaneData(
+  artifact: Artifact | undefined
+): Promise<Error | false | OffsetPlane> {
+  if (artifact?.type !== 'plane') {
+    return new Error(
+      `Invalid artifact type for offset sketch plane selection: ${artifact?.type}`
+    )
+  }
+  const planeId = artifact.id
+  try {
+    const planeInfo = await sceneEntitiesManager.getFaceDetails(planeId)
+
+    // Apply camera-based orientation logic similar to default planes
+    let zAxis: [number, number, number] = [
+      planeInfo.z_axis.x,
+      planeInfo.z_axis.y,
+      planeInfo.z_axis.z,
+    ]
+    let yAxis: [number, number, number] = [
+      planeInfo.y_axis.x,
+      planeInfo.y_axis.y,
+      planeInfo.y_axis.z,
+    ]
+
+    // Get camera vector to determine which side of the plane we're viewing from
+    const camVector = sceneInfra.camControls.camera.position
+      .clone()
+      .sub(sceneInfra.camControls.target)
+
+    // Determine the canonical (absolute) plane orientation
+    const absZAxis: [number, number, number] = [
+      Math.abs(zAxis[0]),
+      Math.abs(zAxis[1]),
+      Math.abs(zAxis[2]),
+    ]
+
+    // Find the dominant axis (like default planes do)
+    const maxComponent = Math.max(...absZAxis)
+    const dominantAxisIndex = absZAxis.indexOf(maxComponent)
+
+    // Check camera position against canonical orientation (like default planes)
+    const cameraComponents = [camVector.x, camVector.y, camVector.z]
+    let negated = cameraComponents[dominantAxisIndex] < 0
+    if (dominantAxisIndex === 1) {
+      // offset of the XZ is being weird, not sure if this is a camera bug
+      negated = !negated
+    }
+    return {
+      type: 'offsetPlane',
+      zAxis,
+      yAxis,
+      position: [
+        planeInfo.origin.x,
+        planeInfo.origin.y,
+        planeInfo.origin.z,
+      ].map((num) => num / sceneInfra.baseUnitMultiplier) as [
+        number,
+        number,
+        number,
+      ],
+      planeId,
+      pathToNode: artifact.codeRef.pathToNode,
+      negated,
+    }
+  } catch (err) {
+    console.error(err)
+    return new Error('Error getting face details')
+  }
+}
+
+export async function selectOffsetSketchPlane(
+  artifact: Artifact | undefined
+): Promise<Error | boolean> {
+  const result = await getOffsetSketchPlaneData(artifact)
+  if (err(result) || result === false) return result
+
+  try {
+    sceneInfra.modelingSend({
+      type: 'Select sketch plane',
+      data: result,
+    })
+  } catch (err) {
+    console.error(err)
+    return false
+  }
+  return true
+}
+
+export async function selectionBodyFace(
+  planeOrFaceId: ArtifactId
+): Promise<ExtrudeFacePlane | undefined> {
+  const defaultSketchPlaneSelected = selectDefaultSketchPlane(planeOrFaceId)
+  if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
+    return
+  }
+
+  const artifact = kclManager.artifactGraph.get(planeOrFaceId)
+  const offsetPlaneSelected = await selectOffsetSketchPlane(artifact)
+  if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
+    return
+  }
+
+  // Artifact is likely an sweep face
+  const faceId = planeOrFaceId
+  const extrusion = getSweepFromSuspectedSweepSurface(
+    faceId,
+    kclManager.artifactGraph
+  )
+  if (!err(extrusion)) {
+    if (!isTopLevelModule(extrusion.codeRef.range)) {
+      const moduleId = getModuleId(extrusion.codeRef.range)
+      const importDetails = kclManager.execState.filenames[moduleId]
+      if (!importDetails) {
+        toast.error("can't sketch on this face")
+        return
+      }
+      if (importDetails?.type === 'Local') {
+        // importDetails has OS specific separators from the rust side!
+        const fileNameWithExtension = getStringAfterLastSeparator(
+          importDetails.value
+        )
+        showSketchOnImportToast(fileNameWithExtension)
+      } else if (
+        importDetails?.type === 'Main' ||
+        importDetails?.type === 'Std'
+      ) {
+        toast.error("can't sketch on this face")
+      } else {
+        // force tsc error if more cases are added
+        const _exhaustiveCheck: never = importDetails
+      }
+    }
+  }
+
+  if (
+    artifact?.type !== 'cap' &&
+    artifact?.type !== 'wall' &&
+    !(artifact?.type === 'edgeCut' && artifact.subType === 'chamfer')
+  )
+    return
+
+  const codeRef =
+    artifact.type === 'cap'
+      ? getCapCodeRef(artifact, kclManager.artifactGraph)
+      : artifact.type === 'wall'
+        ? getWallCodeRef(artifact, kclManager.artifactGraph)
+        : artifact.codeRef
+
+  const faceInfo = await sceneEntitiesManager.getFaceDetails(faceId)
+  if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) return
+  const { z_axis, y_axis, origin } = faceInfo
+  const sketchPathToNode = err(codeRef) ? [] : codeRef.pathToNode
+
+  const edgeCutMeta = getEdgeCutMeta(
+    artifact,
+    kclManager.ast,
+    kclManager.artifactGraph
+  )
+  const _faceInfo: ExtrudeFacePlane['faceInfo'] = edgeCutMeta
+    ? edgeCutMeta
+    : artifact.type === 'cap'
+      ? {
+          type: 'cap',
+          subType: artifact.subType,
+        }
+      : { type: 'wall' }
+
+  if (err(extrusion)) {
+    return Promise.reject(
+      new Error(`Extrusion is not a valid artifact: ${extrusion}`)
+    )
+  }
+
+  const lastChild =
+    findAllChildrenAndOrderByPlaceInCode(
+      { type: 'sweep', ...extrusion },
+      kclManager.artifactGraph
+    )[0] || null
+  const lastChildCodeRef: PathToNode | null =
+    lastChild?.type === 'compositeSolid' ? lastChild.codeRef.pathToNode : null
+
+  const extrudePathToNode = !err(extrusion)
+    ? lastChildCodeRef || extrusion.codeRef.pathToNode
+    : []
+
+  return {
+    type: 'extrudeFace',
+    zAxis: [z_axis.x, z_axis.y, z_axis.z],
+    yAxis: [y_axis.x, y_axis.y, y_axis.z],
+    position: [origin.x, origin.y, origin.z].map(
+      (num) => num / sceneInfra.baseUnitMultiplier
+    ) as [number, number, number],
+    sketchPathToNode,
+    extrudePathToNode,
+    faceInfo: _faceInfo,
+    faceId: faceId,
   }
 }

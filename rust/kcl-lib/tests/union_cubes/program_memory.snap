@@ -4,7 +4,8 @@ description: Variables in memory after executing union_cubes.kcl
 ---
 {
   "cube": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "fullPart": {
     "type": "Solid",
@@ -61,9 +62,7 @@ description: Variables in memory after executing union_cubes.kcl
               -10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -80,9 +79,7 @@ description: Variables in memory after executing union_cubes.kcl
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -99,9 +96,7 @@ description: Variables in memory after executing union_cubes.kcl
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -118,38 +113,37 @@ description: Variables in memory after executing union_cubes.kcl
               -10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -161,9 +155,7 @@ description: Variables in memory after executing union_cubes.kcl
             -10.0,
             -10.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -172,16 +164,12 @@ description: Variables in memory after executing union_cubes.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "part001": {
@@ -239,9 +227,7 @@ description: Variables in memory after executing union_cubes.kcl
               -10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -258,9 +244,7 @@ description: Variables in memory after executing union_cubes.kcl
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -277,9 +261,7 @@ description: Variables in memory after executing union_cubes.kcl
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -296,38 +278,37 @@ description: Variables in memory after executing union_cubes.kcl
               -10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -339,9 +320,7 @@ description: Variables in memory after executing union_cubes.kcl
             -10.0,
             -10.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -350,16 +329,12 @@ description: Variables in memory after executing union_cubes.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "part002": {
@@ -408,18 +383,16 @@ description: Variables in memory after executing union_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              10.0,
-              0.0
+              2.0,
+              -2.0
             ],
             "tag": null,
             "to": [
-              30.0,
-              0.0
+              12.0,
+              -2.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -427,18 +400,16 @@ description: Variables in memory after executing union_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              30.0,
-              0.0
+              12.0,
+              -2.0
             ],
             "tag": null,
             "to": [
-              30.0,
-              20.0
+              12.0,
+              8.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -446,18 +417,16 @@ description: Variables in memory after executing union_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              30.0,
-              20.0
+              12.0,
+              8.0
             ],
             "tag": null,
             "to": [
-              10.0,
-              20.0
+              2.0,
+              8.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -465,61 +434,58 @@ description: Variables in memory after executing union_cubes.kcl
               "sourceRange": []
             },
             "from": [
-              10.0,
-              20.0
+              2.0,
+              8.0
             ],
             "tag": null,
             "to": [
-              10.0,
-              0.0
+              2.0,
+              -2.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
           "from": [
-            10.0,
-            0.0
+            2.0,
+            -2.0
           ],
           "to": [
-            10.0,
-            0.0
+            2.0,
+            -2.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -528,16 +494,12 @@ description: Variables in memory after executing union_cubes.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   }
 }

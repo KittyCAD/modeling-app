@@ -13,6 +13,7 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "f",
             "start": 0,
             "type": "Identifier"
@@ -24,12 +25,14 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
                   "argument": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -37,31 +40,37 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "ignored",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               }
             ],
             "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "preComments": [
           "// Make sure pipe value doesn't leak into the function call."
         ],
@@ -77,6 +86,7 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "answer",
             "start": 0,
             "type": "Identifier"
@@ -86,27 +96,22 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
               {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
                 "type": "PipeSubstitution"
               },
               {
-                "arguments": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "f",
                     "start": 0,
                     "type": "Identifier"
@@ -117,22 +122,34 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
               }
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -140,12 +157,14 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

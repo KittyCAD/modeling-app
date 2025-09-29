@@ -13,6 +13,7 @@ description: Result of parsing helix_ccw.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "part001",
             "start": 0,
             "type": "Identifier"
@@ -20,24 +21,16 @@ description: Result of parsing helix_ccw.kcl
           "init": {
             "body": [
               {
-                "arguments": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "'XY'",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "XY"
-                  }
-                ],
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -48,9 +41,28 @@ description: Result of parsing helix_ccw.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "XY",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [
@@ -59,6 +71,7 @@ description: Result of parsing helix_ccw.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
@@ -69,6 +82,7 @@ description: Result of parsing helix_ccw.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "5",
                           "start": 0,
                           "type": "Literal",
@@ -81,6 +95,7 @@ description: Result of parsing helix_ccw.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "5",
                           "start": 0,
                           "type": "Literal",
@@ -92,6 +107,7 @@ description: Result of parsing helix_ccw.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -102,6 +118,7 @@ description: Result of parsing helix_ccw.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -109,6 +126,7 @@ description: Result of parsing helix_ccw.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "10",
                       "start": 0,
                       "type": "Literal",
@@ -124,9 +142,11 @@ description: Result of parsing helix_ccw.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "circle",
                     "start": 0,
                     "type": "Identifier"
@@ -137,6 +157,7 @@ description: Result of parsing helix_ccw.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -149,6 +170,7 @@ description: Result of parsing helix_ccw.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -156,6 +178,7 @@ description: Result of parsing helix_ccw.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "10",
                       "start": 0,
                       "type": "Literal",
@@ -171,9 +194,11 @@ description: Result of parsing helix_ccw.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "extrude",
                     "start": 0,
                     "type": "Identifier"
@@ -184,6 +209,7 @@ description: Result of parsing helix_ccw.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -196,6 +222,7 @@ description: Result of parsing helix_ccw.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "revolutions",
                       "start": 0,
                       "type": "Identifier"
@@ -203,6 +230,7 @@ description: Result of parsing helix_ccw.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "16",
                       "start": 0,
                       "type": "Literal",
@@ -218,6 +246,7 @@ description: Result of parsing helix_ccw.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "angleStart",
                       "start": 0,
                       "type": "Identifier"
@@ -225,6 +254,7 @@ description: Result of parsing helix_ccw.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -240,6 +270,7 @@ description: Result of parsing helix_ccw.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "ccw",
                       "start": 0,
                       "type": "Identifier"
@@ -247,6 +278,7 @@ description: Result of parsing helix_ccw.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "true",
                       "start": 0,
                       "type": "Literal",
@@ -259,6 +291,7 @@ description: Result of parsing helix_ccw.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "cylinder",
                       "start": 0,
                       "type": "Identifier"
@@ -266,6 +299,7 @@ description: Result of parsing helix_ccw.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "PipeSubstitution",
                       "type": "PipeSubstitution"
@@ -276,9 +310,11 @@ description: Result of parsing helix_ccw.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "helix",
                     "start": 0,
                     "type": "Identifier"
@@ -289,6 +325,7 @@ description: Result of parsing helix_ccw.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -297,15 +334,18 @@ description: Result of parsing helix_ccw.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -313,6 +353,7 @@ description: Result of parsing helix_ccw.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

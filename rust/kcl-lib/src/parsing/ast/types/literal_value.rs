@@ -1,6 +1,5 @@
-use std::fmt;
+use std::{fmt, str::FromStr};
 
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use super::Node;
@@ -9,7 +8,7 @@ use crate::parsing::{
     token::NumericSuffix,
 };
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(untagged, rename_all = "snake_case")]
 pub enum LiteralValue {
@@ -31,6 +30,21 @@ impl LiteralValue {
             Self::String(s) => Some(s),
             _ => None,
         }
+    }
+
+    pub fn is_color(&self) -> Option<csscolorparser::Color> {
+        if let Self::String(s) = self {
+            // Check if the string is a color.
+            if s.starts_with('#') && s.len() == 7 {
+                let Ok(c) = csscolorparser::Color::from_str(s) else {
+                    return None;
+                };
+
+                return Some(c);
+            }
+        }
+
+        None
     }
 }
 

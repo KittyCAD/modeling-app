@@ -1,0 +1,18 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing axial-fan.kcl
+---
+{
+  "__mod_fan": {
+    "type": "Module",
+    "value": 4
+  },
+  "__mod_fanHousing": {
+    "type": "Module",
+    "value": 1
+  },
+  "__mod_motor": {
+    "type": "Module",
+    "value": 3
+  }
+}

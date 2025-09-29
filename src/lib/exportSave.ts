@@ -3,19 +3,18 @@ import toast from 'react-hot-toast'
 
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 
 const save_ = async (file: ModelingAppFile, toastId: string) => {
   try {
-    if (isDesktop()) {
+    if (window.electron) {
       const extension = file.name.split('.').pop() || null
       let extensions: string[] = []
       if (extension !== null) {
         extensions.push(extension)
       }
 
-      if (window.electron.process.env.IS_PLAYWRIGHT) {
+      if (window.electron.process.env.NODE_ENV === 'test') {
         // Skip file picker, save to the test dir downloads directory
         const testSettingsPath = await window.electron.getAppTestProperty(
           'TEST_SETTINGS_FILE_KEY'
@@ -29,7 +28,10 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
           window.electron.join(downloadDir, file.name),
           new Uint8Array(file.contents)
         )
-        toast.success(EXPORT_TOAST_MESSAGES.SUCCESS, { id: toastId })
+        toast.success(EXPORT_TOAST_MESSAGES.SUCCESS + ' [TEST]', {
+          id: toastId,
+          duration: 10_000,
+        })
         return
       }
 

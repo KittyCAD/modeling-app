@@ -2,7 +2,7 @@ import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
-import { fileSystemManager } from '@src/lang/std/fileSystemManager'
+import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import { normalizeLineEndings } from '@src/lib/codeEditor'
 import {
   BROWSER_FILE_NAME,
@@ -11,35 +11,49 @@ import {
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { getProjectInfo } from '@src/lib/desktop'
+import { readAppSettingsFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
-import { BROWSER_PATH, PATHS, getProjectMetaByRouteId } from '@src/lib/paths'
-import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import { codeManager } from '@src/lib/singletons'
+import {
+  BROWSER_PATH,
+  PATHS,
+  getProjectMetaByRouteId,
+  safeEncodeForRouterPaths,
+} from '@src/lib/paths'
+import {
+  loadAndValidateSettings,
+  readLocalStorageAppSettingsFile,
+} from '@src/lib/settings/settingsUtils'
+import { codeManager, rustContext } from '@src/lib/singletons'
+import { settingsActor } from '@src/lib/singletons'
 import type {
   FileLoaderData,
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
-import { settingsActor } from '@src/machines/appMachine'
-
-export const telemetryLoader: LoaderFunction = async ({
-  params,
-}): Promise<null> => {
-  return null
-}
 
 export const fileLoader: LoaderFunction = async (
   routerData
 ): Promise<FileLoaderData | Response> => {
   const { params } = routerData
-  let { configuration } = await loadAndValidateSettings()
 
-  const projectPathData = await getProjectMetaByRouteId(
-    params.id,
-    configuration
-  )
   const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
 
+  const heuristicProjectFilePath =
+    window.electron && params.id
+      ? params.id
+          .split(window.electron.sep)
+          .slice(0, -1)
+          .join(window.electron.sep)
+      : undefined
+
+  let settings = await loadAndValidateSettings(heuristicProjectFilePath)
+
+  const projectPathData = await getProjectMetaByRouteId(
+    readAppSettingsFile,
+    readLocalStorageAppSettingsFile,
+    params.id,
+    settings.configuration
+  )
   let code = ''
 
   if (!isBrowserProject && projectPathData) {
@@ -49,11 +63,11 @@ export const fileLoader: LoaderFunction = async (
     const urlObj = new URL(routerData.request.url)
 
     if (!urlObj.pathname.endsWith('/settings')) {
-      const fallbackFile = isDesktop()
-        ? (await getProjectInfo(projectPath)).default_file
+      const fallbackFile = window.electron
+        ? (await getProjectInfo(window.electron, projectPath)).default_file
         : ''
       let fileExists = isDesktop()
-      if (currentFilePath && fileExists) {
+      if (currentFilePath && fileExists && window.electron) {
         try {
           await window.electron.stat(currentFilePath)
         } catch (e) {
@@ -63,7 +77,24 @@ export const fileLoader: LoaderFunction = async (
         }
       }
 
-      if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
+      // If we are navigating to the project and want to navigate to its
+      // default file, redirect to it keeping everything else in the URL the same.
+      if (projectPath && !currentFileName && fileExists && params.id) {
+        const encodedId = safeEncodeForRouterPaths(params.id)
+        const requestUrlWithDefaultFile = routerData.request.url.replace(
+          encodedId,
+          safeEncodeForRouterPaths(fallbackFile)
+        )
+        return redirect(requestUrlWithDefaultFile)
+      }
+
+      if (
+        !fileExists ||
+        !currentFileName ||
+        !currentFilePath ||
+        !projectName ||
+        !window.electron
+      ) {
         return redirect(
           `${PATHS.FILE}/${encodeURIComponent(
             isDesktop() ? fallbackFile : params.id + '/' + PROJECT_ENTRYPOINT
@@ -78,7 +109,7 @@ export const fileLoader: LoaderFunction = async (
 
       // If persistCode in localStorage is present, it'll persist that code
       // through *anything*. INTENDED FOR TESTS.
-      if (window.electron.process.env.IS_PLAYWRIGHT) {
+      if (window.electron.process.env.NODE_ENV === 'test') {
         code = codeManager.localStoragePersistCode() || code
       }
 
@@ -93,7 +124,7 @@ export const fileLoader: LoaderFunction = async (
 
     // Set the file system manager to the project path
     // So that WASM gets an updated path for operations
-    fileSystemManager.dir = projectPath
+    projectFsManager.dir = projectPath
 
     const defaultProjectData = {
       name: projectName || 'unnamed',
@@ -106,11 +137,12 @@ export const fileLoader: LoaderFunction = async (
       readWriteAccess: true,
     }
 
-    const maybeProjectInfo = isDesktop()
-      ? await getProjectInfo(projectPath)
+    const maybeProjectInfo = window.electron
+      ? await getProjectInfo(window.electron, projectPath)
       : null
 
     const project = maybeProjectInfo ?? defaultProjectData
+    await rustContext.sendOpenProject(project, currentFilePath)
 
     // Fire off the event to load the project settings
     // once we know it's idle.

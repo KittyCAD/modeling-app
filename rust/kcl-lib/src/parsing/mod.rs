@@ -1,11 +1,10 @@
 use crate::{
+    ModuleId, SourceRange,
     errors::{CompilationError, KclError, KclErrorDetails},
     parsing::{
         ast::types::{Node, Program},
         token::TokenStream,
     },
-    source_range::SourceRange,
-    ModuleId,
 };
 
 pub(crate) mod ast;
@@ -18,7 +17,7 @@ pub const PIPE_OPERATOR: &str = "|>";
 
 // `?` like behavior for `Result`s to return a ParseResult if there is an error.
 macro_rules! pr_try {
-    ($e: expr) => {
+    ($e: expr_2021) => {
         match $e {
             Ok(a) => a,
             Err(e) => return e.into(),
@@ -51,7 +50,7 @@ pub fn parse_tokens(mut tokens: TokenStream) -> ParseResult {
         } else {
             format!("found unknown tokens [{}]", token_list.join(", "))
         };
-        return KclError::Lexical(KclErrorDetails { source_ranges, message }).into();
+        return KclError::new_lexical(KclErrorDetails::new(message, source_ranges)).into();
     }
 
     // Important, to not call this before the unknown tokens check.
@@ -110,7 +109,7 @@ impl ParseResult {
         let (p, errs) = self.0?;
 
         if let Some(err) = errs.iter().find(|e| e.severity.is_err()) {
-            return Err(KclError::Syntax(err.clone().into()));
+            return Err(KclError::new_syntax(err.clone().into()));
         }
         match p {
             Some(p) => Ok(p),
@@ -143,13 +142,23 @@ impl From<KclError> for ParseResult {
     }
 }
 
-const STR_DEPRECATIONS: [(&str, &str); 6] = [
+const STR_DEPRECATIONS: [(&str, &str); 16] = [
     ("XY", "XY"),
     ("XZ", "XZ"),
     ("YZ", "YZ"),
     ("-XY", "-XY"),
     ("-XZ", "-XZ"),
     ("-YZ", "-YZ"),
+    ("xy", "XY"),
+    ("xz", "XZ"),
+    ("yz", "YZ"),
+    ("-xy", "-XY"),
+    ("-xz", "-XZ"),
+    ("-yz", "-YZ"),
+    ("START", "START"),
+    ("start", "START"),
+    ("END", "END"),
+    ("end", "END"),
 ];
 const FN_DEPRECATIONS: [(&str, &str); 3] = [("pi", "PI"), ("e", "E"), ("tau", "TAU")];
 const CONST_DEPRECATIONS: [(&str, &str); 4] = [
@@ -177,7 +186,7 @@ pub fn deprecation(s: &str, kind: DeprecationKind) -> Option<&'static str> {
 #[cfg(test)]
 mod tests {
     macro_rules! parse_and_lex {
-        ($func_name:ident, $test_kcl_program:expr) => {
+        ($func_name:ident, $test_kcl_program:expr_2021) => {
             #[test]
             fn $func_name() {
                 let _ = crate::parsing::top_level_parse($test_kcl_program);

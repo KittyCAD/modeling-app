@@ -1,2 +1,2 @@
-let num = 999
-let x = num[3]
+num = 999
+x = num[3]

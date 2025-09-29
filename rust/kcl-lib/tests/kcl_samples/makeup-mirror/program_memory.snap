@@ -7,8 +7,9 @@ description: Variables in memory after executing makeup-mirror.kcl
     "type": "Number",
     "value": 90.0,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "archThickness": {
@@ -16,12 +17,8 @@ description: Variables in memory after executing makeup-mirror.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "archToMirrorGap": {
@@ -29,28 +26,21 @@ description: Variables in memory after executing makeup-mirror.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "armFn": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "armLength": {
     "type": "Number",
     "value": 170.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "armPartA": {
@@ -93,38 +83,37 @@ description: Variables in memory after executing makeup-mirror.kcl
               36.5
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "YZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 0.0,
+            "units": null
           }
         },
         "start": {
@@ -136,9 +125,7 @@ description: Variables in memory after executing makeup-mirror.kcl
             5.0,
             36.5
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -147,16 +134,12 @@ description: Variables in memory after executing makeup-mirror.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 170.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "armPartB": {
@@ -199,38 +182,37 @@ description: Variables in memory after executing makeup-mirror.kcl
               61.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 0.0,
+            "units": null
           }
         },
         "start": {
@@ -242,9 +224,7 @@ description: Variables in memory after executing makeup-mirror.kcl
             175.0,
             61.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -253,16 +233,12 @@ description: Variables in memory after executing makeup-mirror.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 170.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "armRadius": {
@@ -270,28 +246,21 @@ description: Variables in memory after executing makeup-mirror.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "hingeFn": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "hingeGap": {
     "type": "Number",
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "hingeHeight": {
@@ -299,12 +268,8 @@ description: Variables in memory after executing makeup-mirror.kcl
     "value": 24.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "hingePartA1": {
@@ -347,38 +312,37 @@ description: Variables in memory after executing makeup-mirror.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -390,9 +354,7 @@ description: Variables in memory after executing makeup-mirror.kcl
             8.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -401,16 +363,12 @@ description: Variables in memory after executing makeup-mirror.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 24.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "hingePartA2": {
@@ -453,38 +411,37 @@ description: Variables in memory after executing makeup-mirror.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 24.5
+            "z": 24.5,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -496,9 +453,7 @@ description: Variables in memory after executing makeup-mirror.kcl
             8.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -507,16 +462,12 @@ description: Variables in memory after executing makeup-mirror.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 24.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "hingePartA3": {
@@ -559,38 +510,37 @@ description: Variables in memory after executing makeup-mirror.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 49.0
+            "z": 49.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -602,9 +552,7 @@ description: Variables in memory after executing makeup-mirror.kcl
             8.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -613,16 +561,12 @@ description: Variables in memory after executing makeup-mirror.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 24.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "hingePartB2": {
@@ -665,38 +609,37 @@ description: Variables in memory after executing makeup-mirror.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 24.5
+            "z": 24.5,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -708,9 +651,7 @@ description: Variables in memory after executing makeup-mirror.kcl
             178.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -719,16 +660,12 @@ description: Variables in memory after executing makeup-mirror.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 24.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "hingePartB3": {
@@ -771,38 +708,37 @@ description: Variables in memory after executing makeup-mirror.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 49.0
+            "z": 49.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -814,9 +750,7 @@ description: Variables in memory after executing makeup-mirror.kcl
             178.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -825,16 +759,12 @@ description: Variables in memory after executing makeup-mirror.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 24.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "hingePartC2": {
@@ -877,38 +807,37 @@ description: Variables in memory after executing makeup-mirror.kcl
               -170.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 49.0
+            "z": 49.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -920,9 +849,7 @@ description: Variables in memory after executing makeup-mirror.kcl
             178.0,
             -170.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -931,16 +858,12 @@ description: Variables in memory after executing makeup-mirror.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 24.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "hingePartC3": {
@@ -983,38 +906,37 @@ description: Variables in memory after executing makeup-mirror.kcl
               -170.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 73.5
+            "z": 73.5,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -1026,9 +948,7 @@ description: Variables in memory after executing makeup-mirror.kcl
             178.0,
             -170.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1037,16 +957,12 @@ description: Variables in memory after executing makeup-mirror.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 24.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "hingeRadius": {
@@ -1054,12 +970,8 @@ description: Variables in memory after executing makeup-mirror.kcl
     "value": 8.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "mirror": {
@@ -1102,38 +1014,37 @@ description: Variables in memory after executing makeup-mirror.kcl
               188.5
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": -165.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 0.0,
+            "units": null
           }
         },
         "start": {
@@ -1145,9 +1056,7 @@ description: Variables in memory after executing makeup-mirror.kcl
             255.0,
             188.5
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1156,27 +1065,25 @@ description: Variables in memory after executing makeup-mirror.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "mirrorFn": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "mirrorRadius": {
     "type": "Number",
     "value": 85.0,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "mirrorThickness": {
@@ -1184,12 +1091,8 @@ description: Variables in memory after executing makeup-mirror.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

@@ -1,30 +1,36 @@
 use fnv::FnvHashMap;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::{
-    self as kcmc,
-    id::ModelingCmdId,
+    self as kcmc, EnableSketchMode, FaceIsPlanar, ModelingCmd,
     ok_response::OkModelingCmdResponse,
     shared::ExtrusionFaceCapType,
     websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
-    EnableSketchMode, ModelingCmd,
 };
-use schemars::JsonSchema;
-use serde::{ser::SerializeSeq, Deserialize, Serialize};
+use serde::{Serialize, ser::SerializeSeq};
 use uuid::Uuid;
 
 use crate::{
+    KclError, NodePath, SourceRange,
     errors::KclErrorDetails,
+    execution::ArtifactId,
     parsing::ast::types::{Node, Program},
-    KclError, SourceRange,
 };
 
 #[cfg(test)]
 mod mermaid_tests;
 
+macro_rules! internal_error {
+    ($range:expr, $($rest:tt)*) => {{
+        let message = format!($($rest)*);
+        debug_assert!(false, "{}", &message);
+        return Err(KclError::new_internal(KclErrorDetails::new(message, vec![$range])));
+    }};
+}
+
 /// A command that may create or update artifacts on the TS side.  Because
 /// engine commands are batched, we don't have the response yet when these are
 /// created.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct ArtifactCommand {
@@ -38,52 +44,6 @@ pub struct ArtifactCommand {
     pub command: ModelingCmd,
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, Hash, ts_rs::TS, JsonSchema)]
-#[ts(export_to = "Artifact.ts")]
-pub struct ArtifactId(Uuid);
-
-impl ArtifactId {
-    pub fn new(uuid: Uuid) -> Self {
-        Self(uuid)
-    }
-}
-
-impl From<Uuid> for ArtifactId {
-    fn from(uuid: Uuid) -> Self {
-        Self::new(uuid)
-    }
-}
-
-impl From<&Uuid> for ArtifactId {
-    fn from(uuid: &Uuid) -> Self {
-        Self::new(*uuid)
-    }
-}
-
-impl From<ArtifactId> for Uuid {
-    fn from(id: ArtifactId) -> Self {
-        id.0
-    }
-}
-
-impl From<&ArtifactId> for Uuid {
-    fn from(id: &ArtifactId) -> Self {
-        id.0
-    }
-}
-
-impl From<ModelingCmdId> for ArtifactId {
-    fn from(id: ModelingCmdId) -> Self {
-        Self::new(*id.as_ref())
-    }
-}
-
-impl From<&ModelingCmdId> for ArtifactId {
-    fn from(id: &ModelingCmdId) -> Self {
-        Self::new(*id.as_ref())
-    }
-}
-
 pub type DummyPathToNode = Vec<()>;
 
 fn serialize_dummy_path_to_node<S>(_path_to_node: &DummyPathToNode, serializer: S) -> Result<S::Ok, S::Error>
@@ -95,11 +55,12 @@ where
     seq.end()
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, ts_rs::TS)]
+#[derive(Debug, Clone, Default, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct CodeRef {
     pub range: SourceRange,
+    pub node_path: NodePath,
     // TODO: We should implement this in Rust.
     #[serde(default, serialize_with = "serialize_dummy_path_to_node")]
     #[ts(type = "Array<[string | number, string]>")]
@@ -110,12 +71,39 @@ impl CodeRef {
     pub fn placeholder(range: SourceRange) -> Self {
         Self {
             range,
+            node_path: Default::default(),
             path_to_node: Vec::new(),
         }
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct CompositeSolid {
+    pub id: ArtifactId,
+    pub sub_type: CompositeSolidSubType,
+    /// Constituent solids of the composite solid.
+    pub solid_ids: Vec<ArtifactId>,
+    /// Tool solids used for asymmetric operations like subtract.
+    pub tool_ids: Vec<ArtifactId>,
+    pub code_ref: CodeRef,
+    /// This is the ID of the composite solid that this is part of, if any, as a
+    /// composite solid can be used as input for another composite solid.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub composite_solid_id: Option<ArtifactId>,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum CompositeSolidSubType {
+    Intersect,
+    Subtract,
+    Union,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Plane {
@@ -124,7 +112,7 @@ pub struct Plane {
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Path {
@@ -136,9 +124,20 @@ pub struct Path {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub solid2d_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
+    /// This is the ID of the composite solid that this is part of, if any, as
+    /// this can be used as input for another composite solid.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub composite_solid_id: Option<ArtifactId>,
+    /// The hole, if any, from a subtract2d() call.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub inner_path_id: Option<ArtifactId>,
+    /// The `Path` that this is a hole of, if any. The inverse link of
+    /// `inner_path_id`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub outer_path_id: Option<ArtifactId>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Segment {
@@ -146,40 +145,39 @@ pub struct Segment {
     pub path_id: ArtifactId,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub edge_cut_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
+    pub common_surface_ids: Vec<ArtifactId>,
 }
 
 /// A sweep is a more generic term for extrude, revolve, loft, and sweep.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Sweep {
     pub id: ArtifactId,
     pub sub_type: SweepSubType,
     pub path_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub surface_ids: Vec<ArtifactId>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum SweepSubType {
     Extrusion,
+    ExtrusionTwist,
     Revolve,
     RevolveAboutEdge,
     Loft,
     Sweep,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Solid2d {
@@ -187,7 +185,16 @@ pub struct Solid2d {
     pub path_id: ArtifactId,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct PlaneOfFace {
+    pub id: ArtifactId,
+    pub face_id: ArtifactId,
+    pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct StartSketchOnFace {
@@ -196,7 +203,7 @@ pub struct StartSketchOnFace {
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct StartSketchOnPlane {
@@ -205,39 +212,39 @@ pub struct StartSketchOnPlane {
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Wall {
     pub id: ArtifactId,
     pub seg_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cut_edge_ids: Vec<ArtifactId>,
     pub sweep_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub path_ids: Vec<ArtifactId>,
     /// This is for the sketch-on-face plane, not for the wall itself.  Traverse
     /// to the extrude and/or segment to get the wall's code_ref.
     pub face_code_ref: CodeRef,
+    /// The command ID that got the data for this wall. Used for stable sorting.
+    pub cmd_id: uuid::Uuid,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Cap {
     pub id: ArtifactId,
     pub sub_type: CapSubType,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cut_edge_ids: Vec<ArtifactId>,
     pub sweep_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub path_ids: Vec<ArtifactId>,
     /// This is for the sketch-on-face plane, not for the cap itself.  Traverse
     /// to the extrude and/or segment to get the cap's code_ref.
     pub face_code_ref: CodeRef,
+    /// The command ID that got the data for this cap. Used for stable sorting.
+    pub cmd_id: uuid::Uuid,
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum CapSubType {
@@ -245,17 +252,22 @@ pub enum CapSubType {
     End,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct SweepEdge {
     pub id: ArtifactId,
     pub sub_type: SweepEdgeSubType,
     pub seg_id: ArtifactId,
+    pub cmd_id: uuid::Uuid,
+    // This is only used for sorting, not for the actual artifact.
+    #[serde(skip)]
+    pub index: usize,
     pub sweep_id: ArtifactId,
+    pub common_surface_ids: Vec<ArtifactId>,
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum SweepEdgeSubType {
@@ -263,21 +275,20 @@ pub enum SweepEdgeSubType {
     Adjacent,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct EdgeCut {
     pub id: ArtifactId,
     pub sub_type: EdgeCutSubType,
     pub consumed_edge_id: ArtifactId,
-    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum EdgeCutSubType {
@@ -294,7 +305,7 @@ impl From<kcmc::shared::CutType> for EdgeCutSubType {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct EdgeCutEdge {
@@ -303,7 +314,7 @@ pub struct EdgeCutEdge {
     pub surface_id: ArtifactId,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Helix {
@@ -314,14 +325,16 @@ pub struct Helix {
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Artifact {
+    CompositeSolid(CompositeSolid),
     Plane(Plane),
     Path(Path),
     Segment(Segment),
     Solid2d(Solid2d),
+    PlaneOfFace(PlaneOfFace),
     StartSketchOnFace(StartSketchOnFace),
     StartSketchOnPlane(StartSketchOnPlane),
     Sweep(Sweep),
@@ -336,12 +349,14 @@ pub enum Artifact {
 impl Artifact {
     pub(crate) fn id(&self) -> ArtifactId {
         match self {
+            Artifact::CompositeSolid(a) => a.id,
             Artifact::Plane(a) => a.id,
             Artifact::Path(a) => a.id,
             Artifact::Segment(a) => a.id,
             Artifact::Solid2d(a) => a.id,
             Artifact::StartSketchOnFace(a) => a.id,
             Artifact::StartSketchOnPlane(a) => a.id,
+            Artifact::PlaneOfFace(a) => a.id,
             Artifact::Sweep(a) => a.id,
             Artifact::Wall(a) => a.id,
             Artifact::Cap(a) => a.id,
@@ -352,15 +367,18 @@ impl Artifact {
         }
     }
 
-    #[expect(dead_code)]
-    pub(crate) fn code_ref(&self) -> Option<&CodeRef> {
+    /// The [`CodeRef`] for the artifact itself. See also
+    /// [`Self::face_code_ref`].
+    pub fn code_ref(&self) -> Option<&CodeRef> {
         match self {
+            Artifact::CompositeSolid(a) => Some(&a.code_ref),
             Artifact::Plane(a) => Some(&a.code_ref),
             Artifact::Path(a) => Some(&a.code_ref),
             Artifact::Segment(a) => Some(&a.code_ref),
             Artifact::Solid2d(_) => None,
             Artifact::StartSketchOnFace(a) => Some(&a.code_ref),
             Artifact::StartSketchOnPlane(a) => Some(&a.code_ref),
+            Artifact::PlaneOfFace(a) => Some(&a.code_ref),
             Artifact::Sweep(a) => Some(&a.code_ref),
             Artifact::Wall(_) => None,
             Artifact::Cap(_) => None,
@@ -371,16 +389,37 @@ impl Artifact {
         }
     }
 
+    /// The [`CodeRef`] referring to the face artifact that it's on, not the
+    /// artifact itself.
+    pub fn face_code_ref(&self) -> Option<&CodeRef> {
+        match self {
+            Artifact::CompositeSolid(_)
+            | Artifact::Plane(_)
+            | Artifact::Path(_)
+            | Artifact::Segment(_)
+            | Artifact::Solid2d(_)
+            | Artifact::StartSketchOnFace(_)
+            | Artifact::PlaneOfFace(_)
+            | Artifact::StartSketchOnPlane(_)
+            | Artifact::Sweep(_) => None,
+            Artifact::Wall(a) => Some(&a.face_code_ref),
+            Artifact::Cap(a) => Some(&a.face_code_ref),
+            Artifact::SweepEdge(_) | Artifact::EdgeCut(_) | Artifact::EdgeCutEdge(_) | Artifact::Helix(_) => None,
+        }
+    }
+
     /// Merge the new artifact into self.  If it can't because it's a different
     /// type, return the new artifact which should be used as a replacement.
     fn merge(&mut self, new: Artifact) -> Option<Artifact> {
         match self {
+            Artifact::CompositeSolid(a) => a.merge(new),
             Artifact::Plane(a) => a.merge(new),
             Artifact::Path(a) => a.merge(new),
             Artifact::Segment(a) => a.merge(new),
             Artifact::Solid2d(_) => Some(new),
             Artifact::StartSketchOnFace { .. } => Some(new),
             Artifact::StartSketchOnPlane { .. } => Some(new),
+            Artifact::PlaneOfFace { .. } => Some(new),
             Artifact::Sweep(a) => a.merge(new),
             Artifact::Wall(a) => a.merge(new),
             Artifact::Cap(a) => a.merge(new),
@@ -389,6 +428,19 @@ impl Artifact {
             Artifact::EdgeCutEdge(_) => Some(new),
             Artifact::Helix(_) => Some(new),
         }
+    }
+}
+
+impl CompositeSolid {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::CompositeSolid(new) = new else {
+            return Some(new);
+        };
+        merge_ids(&mut self.solid_ids, new.solid_ids);
+        merge_ids(&mut self.tool_ids, new.tool_ids);
+        merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
+
+        None
     }
 }
 
@@ -411,6 +463,9 @@ impl Path {
         merge_opt_id(&mut self.sweep_id, new.sweep_id);
         merge_ids(&mut self.seg_ids, new.seg_ids);
         merge_opt_id(&mut self.solid2d_id, new.solid2d_id);
+        merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
+        merge_opt_id(&mut self.inner_path_id, new.inner_path_id);
+        merge_opt_id(&mut self.outer_path_id, new.outer_path_id);
 
         None
     }
@@ -424,6 +479,7 @@ impl Segment {
         merge_opt_id(&mut self.surface_id, new.surface_id);
         merge_ids(&mut self.edge_ids, new.edge_ids);
         merge_opt_id(&mut self.edge_cut_id, new.edge_cut_id);
+        merge_ids(&mut self.common_surface_ids, new.common_surface_ids);
 
         None
     }
@@ -477,29 +533,66 @@ impl EdgeCut {
     }
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct ArtifactGraph {
     map: IndexMap<ArtifactId, Artifact>,
+    pub(super) item_count: usize,
 }
 
 impl ArtifactGraph {
     pub fn len(&self) -> usize {
         self.map.len()
     }
+
+    pub fn is_empty(&self) -> bool {
+        self.map.is_empty()
+    }
+
+    #[cfg(test)]
+    pub(crate) fn iter(&self) -> impl Iterator<Item = (&ArtifactId, &Artifact)> {
+        self.map.iter()
+    }
+
+    pub fn values(&self) -> impl Iterator<Item = &Artifact> {
+        self.map.values()
+    }
+
+    pub fn clear(&mut self) {
+        self.map.clear();
+        self.item_count = 0;
+    }
+
+    /// Consume the artifact graph and return the map of artifacts.
+    fn into_map(self) -> IndexMap<ArtifactId, Artifact> {
+        self.map
+    }
 }
 
+/// Build the artifact graph from the artifact commands and the responses.  The
+/// initial graph is the graph cached from a previous execution.  NodePaths of
+/// `exec_artifacts` are filled in from the AST.
 pub(super) fn build_artifact_graph(
     artifact_commands: &[ArtifactCommand],
     responses: &IndexMap<Uuid, WebSocketResponse>,
     ast: &Node<Program>,
-    exec_artifacts: &IndexMap<ArtifactId, Artifact>,
+    exec_artifacts: &mut IndexMap<ArtifactId, Artifact>,
+    initial_graph: ArtifactGraph,
 ) -> Result<ArtifactGraph, KclError> {
-    let mut map = IndexMap::new();
+    let item_count = initial_graph.item_count;
+    let mut map = initial_graph.into_map();
 
     let mut path_to_plane_id_map = FnvHashMap::default();
     let mut current_plane_id = None;
+
+    // Fill in NodePaths for artifacts that were added directly to the map
+    // during execution.
+    for exec_artifact in exec_artifacts.values_mut() {
+        // Note: We only have access to the new AST. So if these artifacts
+        // somehow came from cached AST, this won't fill in anything.
+        fill_in_node_paths(exec_artifact, ast, item_count);
+    }
 
     for artifact_command in artifact_commands {
         if let ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) = artifact_command.command {
@@ -509,10 +602,10 @@ pub(super) fn build_artifact_graph(
         // current plane ID.
         // THIS IS THE ONLY THING WE CAN ASSUME IS ALWAYS SEQUENTIAL SINCE ITS PART OF THE
         // SAME ATOMIC COMMANDS BATCHING.
-        if let ModelingCmd::StartPath(_) = artifact_command.command {
-            if let Some(plane_id) = current_plane_id {
-                path_to_plane_id_map.insert(artifact_command.cmd_id, plane_id);
-            }
+        if let ModelingCmd::StartPath(_) = artifact_command.command
+            && let Some(plane_id) = current_plane_id
+        {
+            path_to_plane_id_map.insert(artifact_command.cmd_id, plane_id);
         }
         if let ModelingCmd::SketchModeDisable(_) = artifact_command.command {
             current_plane_id = None;
@@ -525,6 +618,7 @@ pub(super) fn build_artifact_graph(
             &flattened_responses,
             &path_to_plane_id_map,
             ast,
+            item_count,
             exec_artifacts,
         )?;
         for artifact in artifact_updates {
@@ -537,7 +631,30 @@ pub(super) fn build_artifact_graph(
         merge_artifact_into_map(&mut map, exec_artifact.clone());
     }
 
-    Ok(ArtifactGraph { map })
+    Ok(ArtifactGraph {
+        map,
+        item_count: item_count + ast.body.len(),
+    })
+}
+
+/// These may have been created with placeholder `CodeRef`s because we didn't
+/// have the entire AST available. Now we fill them in.
+fn fill_in_node_paths(artifact: &mut Artifact, program: &Node<Program>, cached_body_items: usize) {
+    match artifact {
+        Artifact::StartSketchOnFace(face) => {
+            if face.code_ref.node_path.is_empty() {
+                face.code_ref.node_path =
+                    NodePath::from_range(program, cached_body_items, face.code_ref.range).unwrap_or_default();
+            }
+        }
+        Artifact::StartSketchOnPlane(plane) => {
+            if plane.code_ref.node_path.is_empty() {
+                plane.code_ref.node_path =
+                    NodePath::from_range(program, cached_body_items, plane.code_ref.range).unwrap_or_default();
+            }
+        }
+        _ => {}
+    }
 }
 
 /// Flatten the responses into a map of command IDs to modeling command
@@ -576,6 +693,7 @@ fn flatten_modeling_command_responses(
             | OkWebSocketResponseData::Export { .. }
             | OkWebSocketResponseData::MetricsRequest { .. }
             | OkWebSocketResponseData::ModelingSessionData { .. }
+            | OkWebSocketResponseData::Debug { .. }
             | OkWebSocketResponseData::Pong { .. } => {}
         }
     }
@@ -620,23 +738,26 @@ fn artifacts_to_update(
     artifact_command: &ArtifactCommand,
     responses: &FnvHashMap<Uuid, OkModelingCmdResponse>,
     path_to_plane_id_map: &FnvHashMap<Uuid, Uuid>,
-    _ast: &Node<Program>,
+    ast: &Node<Program>,
+    cached_body_items: usize,
     exec_artifacts: &IndexMap<ArtifactId, Artifact>,
 ) -> Result<Vec<Artifact>, KclError> {
+    let uuid = artifact_command.cmd_id;
+    let response = responses.get(&uuid);
+
     // TODO: Build path-to-node from artifact_command source range.  Right now,
     // we're serializing an empty array, and the TS wrapper fills it in with the
-    // correct value.
+    // correct value based on NodePath.
     let path_to_node = Vec::new();
-
     let range = artifact_command.range;
-    let uuid = artifact_command.cmd_id;
-    let id = ArtifactId::new(uuid);
-
-    let Some(response) = responses.get(&uuid) else {
-        // Response not found or not successful.
-        return Ok(Vec::new());
+    let node_path = NodePath::from_range(ast, cached_body_items, range).unwrap_or_default();
+    let code_ref = CodeRef {
+        range,
+        node_path,
+        path_to_node,
     };
 
+    let id = ArtifactId::new(uuid);
     let cmd = &artifact_command.command;
 
     match cmd {
@@ -650,7 +771,14 @@ fn artifacts_to_update(
             return Ok(vec![Artifact::Plane(Plane {
                 id,
                 path_ids: Vec::new(),
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
+            })]);
+        }
+        ModelingCmd::FaceIsPlanar(FaceIsPlanar { object_id, .. }) => {
+            return Ok(vec![Artifact::PlaneOfFace(PlaneOfFace {
+                id,
+                face_id: object_id.into(),
+                code_ref,
             })]);
         }
         ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) => {
@@ -664,6 +792,7 @@ fn artifacts_to_update(
                         sweep_id: wall.sweep_id,
                         path_ids: wall.path_ids.clone(),
                         face_code_ref: wall.face_code_ref.clone(),
+                        cmd_id: artifact_command.cmd_id,
                     })]);
                 }
                 Some(Artifact::Cap(cap)) => {
@@ -674,6 +803,7 @@ fn artifacts_to_update(
                         sweep_id: cap.sweep_id,
                         path_ids: cap.path_ids.clone(),
                         face_code_ref: cap.face_code_ref.clone(),
+                        cmd_id: artifact_command.cmd_id,
                     })]);
                 }
                 Some(_) | None => {
@@ -684,7 +814,7 @@ fn artifacts_to_update(
                     return Ok(vec![Artifact::Plane(Plane {
                         id: entity_id.into(),
                         path_ids,
-                        code_ref: CodeRef { range, path_to_node },
+                        code_ref,
                     })]);
                 }
             }
@@ -692,12 +822,10 @@ fn artifacts_to_update(
         ModelingCmd::StartPath(_) => {
             let mut return_arr = Vec::new();
             let current_plane_id = path_to_plane_id_map.get(&artifact_command.cmd_id).ok_or_else(|| {
-                KclError::Internal(KclErrorDetails {
-                    message: format!(
-                        "Expected a current plane ID when processing StartPath command, but we have none: {id:?}"
-                    ),
-                    source_ranges: vec![range],
-                })
+                KclError::new_internal(KclErrorDetails::new(
+                    format!("Expected a current plane ID when processing StartPath command, but we have none: {id:?}"),
+                    vec![range],
+                ))
             })?;
             return_arr.push(Artifact::Path(Path {
                 id,
@@ -705,15 +833,18 @@ fn artifacts_to_update(
                 seg_ids: Vec::new(),
                 sweep_id: None,
                 solid2d_id: None,
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
+                composite_solid_id: None,
+                inner_path_id: None,
+                outer_path_id: None,
             }));
             let plane = artifacts.get(&ArtifactId::new(*current_plane_id));
             if let Some(Artifact::Plane(plane)) = plane {
-                let code_ref = plane.code_ref.clone();
+                let plane_code_ref = plane.code_ref.clone();
                 return_arr.push(Artifact::Plane(Plane {
                     id: (*current_plane_id).into(),
                     path_ids: vec![id],
-                    code_ref,
+                    code_ref: plane_code_ref,
                 }));
             }
             if let Some(Artifact::Wall(wall)) = plane {
@@ -724,6 +855,7 @@ fn artifacts_to_update(
                     sweep_id: wall.sweep_id,
                     path_ids: vec![id],
                     face_code_ref: wall.face_code_ref.clone(),
+                    cmd_id: artifact_command.cmd_id,
                 }));
             }
             if let Some(Artifact::Cap(cap)) = plane {
@@ -734,6 +866,7 @@ fn artifacts_to_update(
                     sweep_id: cap.sweep_id,
                     path_ids: vec![id],
                     face_code_ref: cap.face_code_ref.clone(),
+                    cmd_id: artifact_command.cmd_id,
                 }));
             }
             return Ok(return_arr);
@@ -742,7 +875,10 @@ fn artifacts_to_update(
             let path_id = ArtifactId::new(match cmd {
                 ModelingCmd::ClosePath(c) => c.path_id,
                 ModelingCmd::ExtendPath(e) => e.path.into(),
-                _ => unreachable!(),
+                _ => internal_error!(
+                    range,
+                    "Close or extend path command variant not handled: id={id:?}, cmd={cmd:?}"
+                ),
             });
             let mut return_arr = Vec::new();
             return_arr.push(Artifact::Segment(Segment {
@@ -751,7 +887,8 @@ fn artifacts_to_update(
                 surface_id: None,
                 edge_ids: Vec::new(),
                 edge_cut_id: None,
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
+                common_surface_ids: Vec::new(),
             }));
             let path = artifacts.get(&path_id);
             if let Some(Artifact::Path(path)) = path {
@@ -759,7 +896,7 @@ fn artifacts_to_update(
                 new_path.seg_ids = vec![id];
                 return_arr.push(Artifact::Path(new_path));
             }
-            if let OkModelingCmdResponse::ClosePath(close_path) = response {
+            if let Some(OkModelingCmdResponse::ClosePath(close_path)) = response {
                 return_arr.push(Artifact::Solid2d(Solid2d {
                     id: close_path.face_id.into(),
                     path_id,
@@ -772,16 +909,91 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
+        ModelingCmd::EntityMirror(kcmc::EntityMirror {
+            ids: original_path_ids, ..
+        })
+        | ModelingCmd::EntityMirrorAcrossEdge(kcmc::EntityMirrorAcrossEdge {
+            ids: original_path_ids, ..
+        }) => {
+            let face_edge_infos = match response {
+                Some(OkModelingCmdResponse::EntityMirror(resp)) => &resp.entity_face_edge_ids,
+                Some(OkModelingCmdResponse::EntityMirrorAcrossEdge(resp)) => &resp.entity_face_edge_ids,
+                _ => internal_error!(
+                    range,
+                    "Mirror response variant not handled: id={id:?}, cmd={cmd:?}, response={response:?}"
+                ),
+            };
+            if original_path_ids.len() != face_edge_infos.len() {
+                internal_error!(
+                    range,
+                    "EntityMirror or EntityMirrorAcrossEdge response has different number face edge info than original mirrored paths: id={id:?}, cmd={cmd:?}, response={response:?}"
+                );
+            }
+            let mut return_arr = Vec::new();
+            for (face_edge_info, original_path_id) in face_edge_infos.iter().zip(original_path_ids) {
+                let original_path_id = ArtifactId::new(*original_path_id);
+                let path_id = ArtifactId::new(face_edge_info.object_id);
+                // The path may be an existing path that was extended or a new
+                // path.
+                let mut path = if let Some(Artifact::Path(path)) = artifacts.get(&path_id) {
+                    // Existing path.
+                    path.clone()
+                } else {
+                    // It's a new path.  We need the original path to get some
+                    // of its info.
+                    let Some(Artifact::Path(original_path)) = artifacts.get(&original_path_id) else {
+                        // We couldn't find the original path. This is a bug.
+                        internal_error!(
+                            range,
+                            "Couldn't find original path for mirror2d: original_path_id={original_path_id:?}, cmd={cmd:?}"
+                        );
+                    };
+                    Path {
+                        id: path_id,
+                        plane_id: original_path.plane_id,
+                        seg_ids: Vec::new(),
+                        sweep_id: None,
+                        solid2d_id: None,
+                        code_ref: code_ref.clone(),
+                        composite_solid_id: None,
+                        inner_path_id: None,
+                        outer_path_id: None,
+                    }
+                };
+
+                face_edge_info.edges.iter().for_each(|edge_id| {
+                    let edge_id = ArtifactId::new(*edge_id);
+                    return_arr.push(Artifact::Segment(Segment {
+                        id: edge_id,
+                        path_id: path.id,
+                        surface_id: None,
+                        edge_ids: Vec::new(),
+                        edge_cut_id: None,
+                        code_ref: code_ref.clone(),
+                        common_surface_ids: Vec::new(),
+                    }));
+                    // Add the edge ID to the path.
+                    path.seg_ids.push(edge_id);
+                });
+
+                return_arr.push(Artifact::Path(path));
+            }
+            return Ok(return_arr);
+        }
         ModelingCmd::Extrude(kcmc::Extrude { target, .. })
+        | ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
         | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
         | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
+        | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. })
         | ModelingCmd::Sweep(kcmc::Sweep { target, .. }) => {
             let sub_type = match cmd {
                 ModelingCmd::Extrude(_) => SweepSubType::Extrusion,
+                ModelingCmd::ExtrudeToReference(_) => SweepSubType::Extrusion,
+                ModelingCmd::TwistExtrude(_) => SweepSubType::ExtrusionTwist,
                 ModelingCmd::Revolve(_) => SweepSubType::Revolve,
                 ModelingCmd::RevolveAboutEdge(_) => SweepSubType::RevolveAboutEdge,
                 ModelingCmd::Sweep(_) => SweepSubType::Sweep,
-                _ => unreachable!(),
+                _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}",),
             };
             let mut return_arr = Vec::new();
             let target = ArtifactId::from(target);
@@ -791,18 +1003,25 @@ fn artifacts_to_update(
                 path_id: target,
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
             }));
             let path = artifacts.get(&target);
             if let Some(Artifact::Path(path)) = path {
                 let mut new_path = path.clone();
                 new_path.sweep_id = Some(id);
                 return_arr.push(Artifact::Path(new_path));
+                if let Some(inner_path_id) = path.inner_path_id
+                    && let Some(inner_path_artifact) = artifacts.get(&inner_path_id)
+                    && let Artifact::Path(mut inner_path_artifact) = inner_path_artifact.clone()
+                {
+                    inner_path_artifact.sweep_id = Some(id);
+                    return_arr.push(Artifact::Path(inner_path_artifact))
+                }
             }
             return Ok(return_arr);
         }
         ModelingCmd::Loft(loft_cmd) => {
-            let OkModelingCmdResponse::Loft(_) = response else {
+            let Some(OkModelingCmdResponse::Loft(_)) = response else {
                 return Ok(Vec::new());
             };
             let mut return_arr = Vec::new();
@@ -812,14 +1031,14 @@ fn artifacts_to_update(
                 // TODO: Using the first one.  Make sure to revisit this
                 // choice, don't think it matters for now.
                 path_id: ArtifactId::new(*loft_cmd.section_ids.first().ok_or_else(|| {
-                    KclError::Internal(KclErrorDetails {
-                        message: format!("Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"),
-                        source_ranges: vec![range],
-                    })
+                    KclError::new_internal(KclErrorDetails::new(
+                        format!("Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"),
+                        vec![range],
+                    ))
                 })?),
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
             }));
             for section_id in &loft_cmd.section_ids {
                 let path = artifacts.get(&ArtifactId::new(*section_id));
@@ -832,7 +1051,7 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::Solid3dGetExtrusionFaceInfo(_) => {
-            let OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(face_info) = response else {
+            let Some(OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(face_info)) = response else {
                 return Ok(Vec::new());
             };
             let mut return_arr = Vec::new();
@@ -854,27 +1073,35 @@ fn artifacts_to_update(
                     continue;
                 };
                 last_path = Some(path);
-                let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                    KclError::Internal(KclErrorDetails {
-                        message:format!(
-                            "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
+                let Some(path_sweep_id) = path.sweep_id else {
+                    // If the path doesn't have a sweep ID, check if it's a
+                    // hole.
+                    if path.outer_path_id.is_some() {
+                        continue; // hole not handled
+                    }
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        format!(
+                            "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none:\n{id:#?}\n{path:#?}"
                         ),
-                        source_ranges: vec![range],
-                    })
-                })?;
+                        vec![range],
+                    )));
+                };
                 let extra_artifact = exec_artifacts.values().find(|a| {
                     if let Artifact::StartSketchOnFace(s) = a {
                         s.face_id == face_id
+                    } else if let Artifact::StartSketchOnPlane(s) = a {
+                        s.plane_id == face_id
                     } else {
                         false
                     }
                 });
-                let sketch_on_face_source_range = extra_artifact
+                let sketch_on_face_code_ref = extra_artifact
                     .and_then(|a| match a {
-                        Artifact::StartSketchOnFace(s) => Some(s.code_ref.range),
-                        // TODO: If we didn't find it, it's probably a bug.
+                        Artifact::StartSketchOnFace(s) => Some(s.code_ref.clone()),
+                        Artifact::StartSketchOnPlane(s) => Some(s.code_ref.clone()),
                         _ => None,
                     })
+                    // TODO: If we didn't find it, it's probably a bug.
                     .unwrap_or_default();
 
                 return_arr.push(Artifact::Wall(Wall {
@@ -883,10 +1110,8 @@ fn artifacts_to_update(
                     edge_cut_edge_ids: Vec::new(),
                     sweep_id: path_sweep_id,
                     path_ids: Vec::new(),
-                    face_code_ref: CodeRef {
-                        range: sketch_on_face_source_range,
-                        path_to_node: Vec::new(),
-                    },
+                    face_code_ref: sketch_on_face_code_ref,
+                    cmd_id: artifact_command.cmd_id,
                 }));
                 let mut new_seg = seg.clone();
                 new_seg.surface_id = Some(face_id);
@@ -907,26 +1132,35 @@ fn artifacts_to_update(
                     let Some(face_id) = face.face_id.map(ArtifactId::new) else {
                         continue;
                     };
-                    let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                        KclError::Internal(KclErrorDetails {
-                            message:format!(
-                                "Expected a sweep ID on the path when processing last path's Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
+                    let Some(path_sweep_id) = path.sweep_id else {
+                        // If the path doesn't have a sweep ID, check if it's a
+                        // hole.
+                        if path.outer_path_id.is_some() {
+                            continue; // hole not handled
+                        }
+                        return Err(KclError::new_internal(KclErrorDetails::new(
+                            format!(
+                                "Expected a sweep ID on the path when processing last path's Solid3dGetExtrusionFaceInfo command, but we have none:\n{id:#?}\n{path:#?}"
                             ),
-                            source_ranges: vec![range],
-                        })
-                    })?;
+                            vec![range],
+                        )));
+                    };
                     let extra_artifact = exec_artifacts.values().find(|a| {
                         if let Artifact::StartSketchOnFace(s) = a {
                             s.face_id == face_id
+                        } else if let Artifact::StartSketchOnPlane(s) = a {
+                            s.plane_id == face_id
                         } else {
                             false
                         }
                     });
-                    let sketch_on_face_source_range = extra_artifact
+                    let sketch_on_face_code_ref = extra_artifact
                         .and_then(|a| match a {
-                            Artifact::StartSketchOnFace(s) => Some(s.code_ref.range),
+                            Artifact::StartSketchOnFace(s) => Some(s.code_ref.clone()),
+                            Artifact::StartSketchOnPlane(s) => Some(s.code_ref.clone()),
                             _ => None,
                         })
+                        // TODO: If we didn't find it, it's probably a bug.
                         .unwrap_or_default();
                     return_arr.push(Artifact::Cap(Cap {
                         id: face_id,
@@ -934,10 +1168,8 @@ fn artifacts_to_update(
                         edge_cut_edge_ids: Vec::new(),
                         sweep_id: path_sweep_id,
                         path_ids: Vec::new(),
-                        face_code_ref: CodeRef {
-                            range: sketch_on_face_source_range,
-                            path_to_node: Vec::new(),
-                        },
+                        face_code_ref: sketch_on_face_code_ref,
+                        cmd_id: artifact_command.cmd_id,
                     }));
                     let Some(Artifact::Sweep(sweep)) = artifacts.get(&path_sweep_id) else {
                         continue;
@@ -949,76 +1181,117 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
-        ModelingCmd::Solid3dGetNextAdjacentEdge(kcmc::Solid3dGetNextAdjacentEdge { face_id, edge_id, .. })
-        | ModelingCmd::Solid3dGetOppositeEdge(kcmc::Solid3dGetOppositeEdge { face_id, edge_id, .. }) => {
-            let sub_type = match cmd {
-                ModelingCmd::Solid3dGetNextAdjacentEdge(_) => SweepEdgeSubType::Adjacent,
-                ModelingCmd::Solid3dGetOppositeEdge(_) => SweepEdgeSubType::Opposite,
-                _ => unreachable!(),
-            };
-            let face_id = ArtifactId::new(*face_id);
-            let edge_id = ArtifactId::new(*edge_id);
-            let Some(Artifact::Wall(wall)) = artifacts.get(&face_id) else {
+        ModelingCmd::Solid3dGetAdjacencyInfo(kcmc::Solid3dGetAdjacencyInfo { .. }) => {
+            let Some(OkModelingCmdResponse::Solid3dGetAdjacencyInfo(info)) = response else {
                 return Ok(Vec::new());
-            };
-            let Some(Artifact::Sweep(sweep)) = artifacts.get(&wall.sweep_id) else {
-                return Ok(Vec::new());
-            };
-            let Some(Artifact::Path(_)) = artifacts.get(&sweep.path_id) else {
-                return Ok(Vec::new());
-            };
-            let Some(Artifact::Segment(segment)) = artifacts.get(&edge_id) else {
-                return Ok(Vec::new());
-            };
-            let response_edge_id = match response {
-                OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(r) => {
-                    let Some(edge_id) = r.edge else {
-                        return Err(KclError::Internal(KclErrorDetails {
-                            message:format!(
-                                "Expected Solid3dGetNextAdjacentEdge response to have an edge ID, but found none: id={id:?}, {response:?}"
-                            ),
-                            source_ranges: vec![range],
-                        }));
-                    };
-                    edge_id.into()
-                }
-                OkModelingCmdResponse::Solid3dGetOppositeEdge(r) => r.edge.into(),
-                _ => {
-                    return Err(KclError::Internal(KclErrorDetails {
-                        message:format!(
-                            "Expected Solid3dGetNextAdjacentEdge or Solid3dGetOppositeEdge response, but got: id={id:?}, {response:?}"
-                        ),
-                        source_ranges: vec![range],
-                    }));
-                }
             };
 
             let mut return_arr = Vec::new();
-            return_arr.push(Artifact::SweepEdge(SweepEdge {
-                id: response_edge_id,
-                sub_type,
-                seg_id: edge_id,
-                sweep_id: sweep.id,
-            }));
-            let mut new_segment = segment.clone();
-            new_segment.edge_ids = vec![response_edge_id];
-            return_arr.push(Artifact::Segment(new_segment));
-            let mut new_sweep = sweep.clone();
-            new_sweep.edge_ids = vec![response_edge_id];
-            return_arr.push(Artifact::Sweep(new_sweep));
+            for (index, edge) in info.edges.iter().enumerate() {
+                let Some(original_info) = &edge.original_info else {
+                    continue;
+                };
+                let edge_id = ArtifactId::new(original_info.edge_id);
+                let Some(artifact) = artifacts.get(&edge_id) else {
+                    continue;
+                };
+                match artifact {
+                    Artifact::Segment(segment) => {
+                        let mut new_segment = segment.clone();
+                        new_segment.common_surface_ids =
+                            original_info.faces.iter().map(|face| ArtifactId::new(*face)).collect();
+                        return_arr.push(Artifact::Segment(new_segment));
+                    }
+                    Artifact::SweepEdge(sweep_edge) => {
+                        let mut new_sweep_edge = sweep_edge.clone();
+                        new_sweep_edge.common_surface_ids =
+                            original_info.faces.iter().map(|face| ArtifactId::new(*face)).collect();
+                        return_arr.push(Artifact::SweepEdge(new_sweep_edge));
+                    }
+                    _ => {}
+                };
+
+                let Some(Artifact::Segment(segment)) = artifacts.get(&edge_id) else {
+                    continue;
+                };
+                let Some(surface_id) = segment.surface_id else {
+                    continue;
+                };
+                let Some(Artifact::Wall(wall)) = artifacts.get(&surface_id) else {
+                    continue;
+                };
+                let Some(Artifact::Sweep(sweep)) = artifacts.get(&wall.sweep_id) else {
+                    continue;
+                };
+                let Some(Artifact::Path(_)) = artifacts.get(&sweep.path_id) else {
+                    continue;
+                };
+
+                if let Some(opposite_info) = &edge.opposite_info {
+                    return_arr.push(Artifact::SweepEdge(SweepEdge {
+                        id: opposite_info.edge_id.into(),
+                        sub_type: SweepEdgeSubType::Opposite,
+                        seg_id: edge_id,
+                        cmd_id: artifact_command.cmd_id,
+                        index,
+                        sweep_id: sweep.id,
+                        common_surface_ids: opposite_info.faces.iter().map(|face| ArtifactId::new(*face)).collect(),
+                    }));
+                    let mut new_segment = segment.clone();
+                    new_segment.edge_ids = vec![opposite_info.edge_id.into()];
+                    return_arr.push(Artifact::Segment(new_segment));
+                    let mut new_sweep = sweep.clone();
+                    new_sweep.edge_ids = vec![opposite_info.edge_id.into()];
+                    return_arr.push(Artifact::Sweep(new_sweep));
+                    let mut new_wall = wall.clone();
+                    new_wall.edge_cut_edge_ids = vec![opposite_info.edge_id.into()];
+                    return_arr.push(Artifact::Wall(new_wall));
+                }
+                if let Some(adjacent_info) = &edge.adjacent_info {
+                    return_arr.push(Artifact::SweepEdge(SweepEdge {
+                        id: adjacent_info.edge_id.into(),
+                        sub_type: SweepEdgeSubType::Adjacent,
+                        seg_id: edge_id,
+                        cmd_id: artifact_command.cmd_id,
+                        index,
+                        sweep_id: sweep.id,
+                        common_surface_ids: adjacent_info.faces.iter().map(|face| ArtifactId::new(*face)).collect(),
+                    }));
+                    let mut new_segment = segment.clone();
+                    new_segment.edge_ids = vec![adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Segment(new_segment));
+                    let mut new_sweep = sweep.clone();
+                    new_sweep.edge_ids = vec![adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Sweep(new_sweep));
+                    let mut new_wall = wall.clone();
+                    new_wall.edge_cut_edge_ids = vec![adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Wall(new_wall));
+                }
+            }
             return Ok(return_arr);
         }
         ModelingCmd::Solid3dFilletEdge(cmd) => {
             let mut return_arr = Vec::new();
+            let edge_id = if let Some(edge_id) = cmd.edge_id {
+                ArtifactId::new(edge_id)
+            } else {
+                let Some(edge_id) = cmd.edge_ids.first() else {
+                    internal_error!(
+                        range,
+                        "Solid3dFilletEdge command has no edge ID: id={id:?}, cmd={cmd:?}"
+                    );
+                };
+                edge_id.into()
+            };
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
                 sub_type: cmd.cut_type.into(),
-                consumed_edge_id: cmd.edge_id.into(),
+                consumed_edge_id: edge_id,
                 edge_ids: Vec::new(),
                 surface_id: None,
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
             }));
-            let consumed_edge = artifacts.get(&ArtifactId::new(cmd.edge_id));
+            let consumed_edge = artifacts.get(&edge_id);
             if let Some(Artifact::Segment(consumed_edge)) = consumed_edge {
                 let mut new_segment = consumed_edge.clone();
                 new_segment.edge_cut_id = Some(id);
@@ -1032,7 +1305,7 @@ fn artifacts_to_update(
             let return_arr = vec![Artifact::Helix(Helix {
                 id,
                 axis_id: None,
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
             })];
             return Ok(return_arr);
         }
@@ -1041,10 +1314,150 @@ fn artifacts_to_update(
             let return_arr = vec![Artifact::Helix(Helix {
                 id,
                 axis_id: Some(edge_id),
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
             })];
             // We could add the reverse graph edge connecting from the edge to
             // the helix here, but it's not useful right now.
+            return Ok(return_arr);
+        }
+        ModelingCmd::Solid2dAddHole(solid2d_add_hole) => {
+            let mut return_arr = Vec::new();
+            // Add the hole to the outer.
+            let outer_path = artifacts.get(&ArtifactId::new(solid2d_add_hole.object_id));
+            if let Some(Artifact::Path(path)) = outer_path {
+                let mut new_path = path.clone();
+                new_path.inner_path_id = Some(ArtifactId::new(solid2d_add_hole.hole_id));
+                return_arr.push(Artifact::Path(new_path));
+            }
+            // Add the outer to the hole.
+            let inner_solid2d = artifacts.get(&ArtifactId::new(solid2d_add_hole.hole_id));
+            if let Some(Artifact::Path(path)) = inner_solid2d {
+                let mut new_path = path.clone();
+                new_path.outer_path_id = Some(ArtifactId::new(solid2d_add_hole.object_id));
+                return_arr.push(Artifact::Path(new_path));
+            }
+            return Ok(return_arr);
+        }
+        ModelingCmd::BooleanIntersection(_) | ModelingCmd::BooleanSubtract(_) | ModelingCmd::BooleanUnion(_) => {
+            let (sub_type, solid_ids, tool_ids) = match cmd {
+                ModelingCmd::BooleanIntersection(intersection) => {
+                    let solid_ids = intersection
+                        .solid_ids
+                        .iter()
+                        .copied()
+                        .map(ArtifactId::new)
+                        .collect::<Vec<_>>();
+                    (CompositeSolidSubType::Intersect, solid_ids, Vec::new())
+                }
+                ModelingCmd::BooleanSubtract(subtract) => {
+                    let solid_ids = subtract
+                        .target_ids
+                        .iter()
+                        .copied()
+                        .map(ArtifactId::new)
+                        .collect::<Vec<_>>();
+                    let tool_ids = subtract
+                        .tool_ids
+                        .iter()
+                        .copied()
+                        .map(ArtifactId::new)
+                        .collect::<Vec<_>>();
+                    (CompositeSolidSubType::Subtract, solid_ids, tool_ids)
+                }
+                ModelingCmd::BooleanUnion(union) => {
+                    let solid_ids = union.solid_ids.iter().copied().map(ArtifactId::new).collect::<Vec<_>>();
+                    (CompositeSolidSubType::Union, solid_ids, Vec::new())
+                }
+                _ => internal_error!(
+                    range,
+                    "Boolean or composite command variant not handled: id={id:?}, cmd={cmd:?}"
+                ),
+            };
+
+            let mut new_solid_ids = vec![id];
+
+            // Make sure we don't ever create a duplicate ID since merge_ids
+            // can't handle it.
+            let not_cmd_id = move |solid_id: &ArtifactId| *solid_id != id;
+
+            match response {
+                Some(OkModelingCmdResponse::BooleanIntersection(intersection)) => intersection
+                    .extra_solid_ids
+                    .iter()
+                    .copied()
+                    .map(ArtifactId::new)
+                    .filter(not_cmd_id)
+                    .for_each(|id| new_solid_ids.push(id)),
+                Some(OkModelingCmdResponse::BooleanSubtract(subtract)) => subtract
+                    .extra_solid_ids
+                    .iter()
+                    .copied()
+                    .map(ArtifactId::new)
+                    .filter(not_cmd_id)
+                    .for_each(|id| new_solid_ids.push(id)),
+                Some(OkModelingCmdResponse::BooleanUnion(union)) => union
+                    .extra_solid_ids
+                    .iter()
+                    .copied()
+                    .map(ArtifactId::new)
+                    .filter(not_cmd_id)
+                    .for_each(|id| new_solid_ids.push(id)),
+                _ => {}
+            }
+
+            let mut return_arr = Vec::new();
+
+            // Create the new composite solids and update their linked artifacts
+            for solid_id in &new_solid_ids {
+                // Create the composite solid
+                return_arr.push(Artifact::CompositeSolid(CompositeSolid {
+                    id: *solid_id,
+                    sub_type,
+                    solid_ids: solid_ids.clone(),
+                    tool_ids: tool_ids.clone(),
+                    code_ref: code_ref.clone(),
+                    composite_solid_id: None,
+                }));
+
+                // Update the artifacts that were used as input for this composite solid
+                for input_id in &solid_ids {
+                    if let Some(artifact) = artifacts.get(input_id) {
+                        match artifact {
+                            Artifact::CompositeSolid(comp) => {
+                                let mut new_comp = comp.clone();
+                                new_comp.composite_solid_id = Some(*solid_id);
+                                return_arr.push(Artifact::CompositeSolid(new_comp));
+                            }
+                            Artifact::Path(path) => {
+                                let mut new_path = path.clone();
+                                new_path.composite_solid_id = Some(*solid_id);
+                                return_arr.push(Artifact::Path(new_path));
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+
+                // Update the tool artifacts if this is a subtract operation
+                for tool_id in &tool_ids {
+                    if let Some(artifact) = artifacts.get(tool_id) {
+                        match artifact {
+                            Artifact::CompositeSolid(comp) => {
+                                let mut new_comp = comp.clone();
+                                new_comp.composite_solid_id = Some(*solid_id);
+                                return_arr.push(Artifact::CompositeSolid(new_comp));
+                            }
+                            Artifact::Path(path) => {
+                                let mut new_path = path.clone();
+                                new_path.composite_solid_id = Some(*solid_id);
+                                return_arr.push(Artifact::Path(new_path));
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+            }
+
             return Ok(return_arr);
         }
         _ => {}

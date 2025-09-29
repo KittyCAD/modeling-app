@@ -1,6 +1,6 @@
 import { executeAstMock } from '@src/lang/langHelpers'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
-import { deleteFromSelection } from '@src/lang/modifyAst'
+import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 import type { Selection } from '@src/lib/selections'
 import {
@@ -38,9 +38,16 @@ export async function deleteSelectionPromise(
   if (testExecute.errors.length) {
     return new Error(deletionErrorMessage)
   }
-  await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, {
-    kclManager,
-    editorManager,
-    codeManager,
-  })
+  await updateModelingState(
+    modifiedAst,
+    EXECUTION_TYPE_REAL,
+    {
+      kclManager,
+      editorManager,
+      codeManager,
+    },
+    {
+      isDeleting: true,
+    }
+  )
 }

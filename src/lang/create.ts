@@ -7,65 +7,66 @@ import type { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 import type { ImportPath } from '@rust/kcl-lib/bindings/ImportPath'
 import type { ImportSelector } from '@rust/kcl-lib/bindings/ImportSelector'
 import type { ItemVisibility } from '@rust/kcl-lib/bindings/ItemVisibility'
-import { ARG_TAG } from '@src/lang/constants'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { findKwArg } from '@src/lang/util'
-import type {
-  ArrayExpression,
-  BinaryExpression,
-  CallExpression,
-  CallExpressionKw,
-  Expr,
-  ExpressionStatement,
-  Identifier,
-  LabeledArg,
-  Literal,
-  LiteralValue,
-  ObjectExpression,
-  PathToNode,
-  PipeExpression,
-  PipeSubstitution,
-  Program,
-  SourceRange,
-  UnaryExpression,
-  VariableDeclaration,
-  VariableDeclarator,
+import {
+  type ArrayExpression,
+  type BinaryExpression,
+  type CallExpressionKw,
+  type Expr,
+  type ExpressionStatement,
+  type Identifier,
+  type LabeledArg,
+  type Literal,
+  type NumericSuffix,
+  type ObjectExpression,
+  type PipeExpression,
+  type PipeSubstitution,
+  type Program,
+  type UnaryExpression,
+  type VariableDeclaration,
+  type VariableDeclarator,
+  formatNumberLiteral,
 } from '@src/lang/wasm'
-import { formatNumber } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 
 /**
  * Note: This depends on WASM, but it's not async.  Callers are responsible for
  * awaiting init of the WASM module.
  */
-export function createLiteral(value: LiteralValue | number): Node<Literal> {
-  if (typeof value === 'number') {
-    value = { value, suffix: 'None' }
-  }
-  let raw: string
-  if (typeof value === 'string') {
-    // TODO: Should we handle escape sequences?
-    raw = `${value}`
-  } else if (typeof value === 'boolean') {
-    raw = `${value}`
-  } else if (typeof value.value === 'number' && value.suffix === 'None') {
-    // Fast path for numbers when there are no units.
-    raw = `${value.value}`
-  } else {
-    raw = formatNumber(value.value, value.suffix)
-  }
+export function createLiteral(
+  value: number | string | boolean,
+  suffix?: NumericSuffix
+): Node<Literal> {
+  // TODO: Should we handle string escape sequences?
   return {
     type: 'Literal',
     start: 0,
     end: 0,
     moduleId: 0,
-    value,
-    raw,
+    value:
+      typeof value === 'number'
+        ? { value, suffix: suffix ? suffix : 'None' }
+        : value,
+    raw: createRawStr(value, suffix),
     outerAttrs: [],
     preComments: [],
     commentStart: 0,
   }
+}
+
+function createRawStr(
+  value: number | string | boolean,
+  suffix?: NumericSuffix
+): string {
+  if (typeof value !== 'number' || !suffix) {
+    return `${value}`
+  }
+
+  const formatted = formatNumberLiteral(value, suffix)
+  if (err(formatted)) {
+    return `${value}`
+  }
+
+  return formatted
 }
 
 export function createTagDeclarator(value: string): Node<TagDeclarator> {
@@ -140,23 +141,6 @@ export function createPipeSubstitution(): Node<PipeSubstitution> {
   }
 }
 
-export function createCallExpressionStdLib(
-  name: string,
-  args: CallExpression['arguments']
-): Node<CallExpression> {
-  return {
-    type: 'CallExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-    callee: createLocalName(name),
-    arguments: args,
-  }
-}
-
 export const nonCodeMetaEmpty = () => {
   return { nonCodeNodes: {}, startNodes: [], start: 0, end: 0 }
 }
@@ -178,23 +162,6 @@ export function createCallExpressionStdLibKw(
     nonCodeMeta: nonCodeMeta ?? nonCodeMetaEmpty(),
     callee: createLocalName(name),
     unlabeled,
-    arguments: args,
-  }
-}
-
-export function createCallExpression(
-  name: string,
-  args: CallExpression['arguments']
-): Node<CallExpression> {
-  return {
-    type: 'CallExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-    callee: createLocalName(name),
     arguments: args,
   }
 }
@@ -411,72 +378,6 @@ export function findUniqueName(
 
   // recursive case: name is not unique and does not end in digits
   return findUniqueName(searchStr, name, pad, index + 1)
-}
-
-export function giveSketchFnCallTag(
-  ast: Node<Program>,
-  range: SourceRange,
-  tag?: string
-):
-  | {
-      modifiedAst: Node<Program>
-      tag: string
-      isTagExisting: boolean
-      pathToNode: PathToNode
-    }
-  | Error {
-  const path = getNodePathFromSourceRange(ast, range)
-  const maybeTag = (() => {
-    const callNode = getNodeFromPath<CallExpression | CallExpressionKw>(
-      ast,
-      path,
-      ['CallExpression', 'CallExpressionKw']
-    )
-    if (!err(callNode) && callNode.node.type === 'CallExpressionKw') {
-      const { node: primaryCallExp } = callNode
-      const existingTag = findKwArg(ARG_TAG, primaryCallExp)
-      const tagDeclarator =
-        existingTag || createTagDeclarator(tag || findUniqueName(ast, 'seg', 2))
-      const isTagExisting = !!existingTag
-      if (!isTagExisting) {
-        callNode.node.arguments.push(createLabeledArg(ARG_TAG, tagDeclarator))
-      }
-      return { tagDeclarator, isTagExisting }
-    }
-
-    // We've handled CallExpressionKw above, so this has to be positional.
-    const _node1 = getNodeFromPath<CallExpression>(ast, path, 'CallExpression')
-    if (err(_node1)) return _node1
-    const { node: primaryCallExp } = _node1
-
-    // Tag is always 3rd expression now, using arg index feels brittle
-    // but we can come up with a better way to identify tag later.
-    const thirdArg = primaryCallExp.arguments?.[2]
-    const tagDeclarator =
-      thirdArg ||
-      (createTagDeclarator(
-        tag || findUniqueName(ast, 'seg', 2)
-      ) as TagDeclarator)
-    const isTagExisting = !!thirdArg
-    if (!isTagExisting) {
-      primaryCallExp.arguments[2] = tagDeclarator
-    }
-    return { tagDeclarator, isTagExisting }
-  })()
-
-  if (err(maybeTag)) return maybeTag
-  const { tagDeclarator, isTagExisting } = maybeTag
-  if ('value' in tagDeclarator) {
-    // Now TypeScript knows tagDeclarator has a value property
-    return {
-      modifiedAst: ast,
-      tag: String(tagDeclarator.value),
-      isTagExisting,
-      pathToNode: path,
-    }
-  } else {
-    return new Error('Unable to assign tag without value')
-  }
 }
 
 export const createLabeledArg = (label: string, arg: Expr): LabeledArg => {

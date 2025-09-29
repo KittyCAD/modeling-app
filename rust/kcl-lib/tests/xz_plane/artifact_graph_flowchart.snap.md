@@ -1,19 +1,30 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[35, 60, 0]"]
-    3["Segment<br>[66, 96, 0]"]
-    4["Segment<br>[102, 130, 0]"]
-    5["Segment<br>[136, 144, 0]"]
+    2["Path<br>[33, 58, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    3["Segment<br>[64, 94, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
+    4["Segment<br>[100, 128, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
+    5["Segment<br>[134, 142, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
     6[Solid2d]
   end
-  1["Plane<br>[10, 29, 0]"]
-  7["Sweep Extrusion<br>[150, 173, 0]"]
+  1["Plane<br>[10, 27, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  7["Sweep Extrusion<br>[148, 171, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
   8[Wall]
+    %% face_code_ref=Missing NodePath
   9[Wall]
+    %% face_code_ref=Missing NodePath
   10[Wall]
+    %% face_code_ref=Missing NodePath
   11["Cap Start"]
+    %% face_code_ref=Missing NodePath
   12["Cap End"]
+    %% face_code_ref=Missing NodePath
   13["SweepEdge Opposite"]
   14["SweepEdge Adjacent"]
   15["SweepEdge Opposite"]
@@ -24,15 +35,18 @@ flowchart LR
   2 --- 3
   2 --- 4
   2 --- 5
-  2 ---- 7
   2 --- 6
+  2 ---- 7
   3 --- 10
+  3 x--> 11
   3 --- 17
   3 --- 18
   4 --- 9
+  4 x--> 11
   4 --- 15
   4 --- 16
   5 --- 8
+  5 x--> 11
   5 --- 13
   5 --- 14
   7 --- 8
@@ -46,4 +60,16 @@ flowchart LR
   7 --- 16
   7 --- 17
   7 --- 18
+  8 --- 13
+  8 --- 14
+  16 <--x 8
+  9 --- 15
+  9 --- 16
+  18 <--x 9
+  14 <--x 10
+  10 --- 17
+  10 --- 18
+  13 <--x 12
+  15 <--x 12
+  17 <--x 12
 ```

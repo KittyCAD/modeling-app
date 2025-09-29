@@ -18,8 +18,8 @@
 
 statement[@isGroup=Statement] {
   ImportStatement { kw<"import"> ImportItems ImportFrom String } |
-  FunctionDeclaration { kw<"export">? kw<"fn"> VariableDefinition Equals? ParamList Arrow? Body } |
-  VariableDeclaration { kw<"export">? (kw<"var"> | kw<"let"> | kw<"const">)? VariableDefinition Equals expression } |
+  FunctionDeclaration { kw<"export">? kw<"fn"> VariableDefinition ParamList Body } |
+  VariableDeclaration { kw<"export">? VariableDefinition Equals expression } |
   TypeDeclaration { kw<"export">? kw<"type"> identifier ("=" type)? } |
   ReturnStatement { kw<"return"> expression } |
   ExpressionStatement { expression } |
@@ -66,7 +66,7 @@ ObjectProperty { PropertyName (":" | Equals) expression }
 
 AnnotationProperty {
   PropertyName
-  ( AddOp | MultOp | ExpOp | LogicOp | BangOp | CompOp | Equals | Arrow | PipeOperator | PipeSubstitution )
+  ( AddOp | MultOp | ExpOp | LogicOp | BangOp | CompOp | Equals | PipeOperator | PipeSubstitution )
   expression
 }
 
@@ -107,12 +107,12 @@ commaSep1NoTrailingComma<term> { term ("," term)* }
   BangOp { "!" }
   CompOp { "==" | "!=" | "<=" | ">=" | "<" | ">" }
   Equals { "=" }
-  Arrow { "=>" }
   PipeOperator { "|>" }
 
   PipeSubstitution { "%" }
 
-  identifier { (@asciiLetter | "_") (@asciiLetter | @digit | "_")* }
+  // Includes non-whitespace unicode characters.
+  identifier { $[a-zA-Z_\u{a1}-\u{167f}\u{1681}-\u{1fff}\u{200e}-\u{2027}\u{202a}-\u{202e}\u{2030}-\u{205e}\u{2061}-\u{2fff}\u{3001}-\u{fefe}\u{ff00}-\u{10ffff}] $[a-zA-Z0-9_\u{a1}-\u{167f}\u{1681}-\u{1fff}\u{200e}-\u{2027}\u{202a}-\u{202e}\u{2030}-\u{205e}\u{2061}-\u{2fff}\u{3001}-\u{fefe}\u{ff00}-\u{10ffff}]* }
   AnnotationName { "@" identifier? }
   PropertyName { identifier }
   TagDeclarator { "$" identifier }

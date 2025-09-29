@@ -26,13 +26,13 @@ name: cargo bench
 jobs:
   cargo-bench:
     name: cargo bench
-    runs-on:
-      - runs-on=${{ github.run_id }}
-      - runner=32cpu-linux-x64
-      - extras=s3-cache
+    runs-on: ubuntu-latest
+    # runs-on: namespace-profile-ubuntu-2-cores
+    # TODO: Figure out if there is a way to make CodSpeed work with Namespace
+    # Enabling this results in the following error on GitHub Actions:
+    #   setarch: failed to set personality to x86_64: Operation not permitted
     steps:
-      - uses: runs-on/action@v1
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Use correct Rust toolchain
         shell: bash
         run: |
@@ -50,13 +50,12 @@ jobs:
       - name: Build the benchmark target(s)
         run: |
           cd rust
-          cargo codspeed build --measurement-mode walltime
+          cargo codspeed build
       - name: Run the benchmarks
         uses: CodSpeedHQ/action@v3
         with:
           working-directory: rust
           run: cargo codspeed run
           token: ${{ secrets.CODSPEED_TOKEN }}
-          mode: walltime
         env:
           KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN }}

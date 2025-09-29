@@ -4,19 +4,16 @@ description: Variables in memory after executing rotate_after_fillet.kcl
 ---
 {
   "bolt": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "boltDiameter": {
     "type": "Number",
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "boltHeadDiameter": {
@@ -24,12 +21,8 @@ description: Variables in memory after executing rotate_after_fillet.kcl
     "value": 0.938,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "boltHeadLength": {
@@ -37,28 +30,26 @@ description: Variables in memory after executing rotate_after_fillet.kcl
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "boltHexDrive": {
     "type": "Number",
     "value": 0.5,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "boltHexFlatLength": {
     "type": "Number",
-    "value": 0.2887,
+    "value": 0.28867513459481287,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "boltLength": {
@@ -66,12 +57,8 @@ description: Variables in memory after executing rotate_after_fillet.kcl
     "value": 2.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "boltThreadLength": {
@@ -79,12 +66,8 @@ description: Variables in memory after executing rotate_after_fillet.kcl
     "value": 1.75,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "filletEdge": {

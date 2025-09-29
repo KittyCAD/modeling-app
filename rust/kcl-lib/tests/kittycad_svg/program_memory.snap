@@ -1997,9 +1997,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -26.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2016,9 +2014,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -25.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2035,9 +2031,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -25.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2054,9 +2048,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -24.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2073,9 +2065,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -24.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2092,9 +2082,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -6.72
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2111,9 +2099,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -6.72
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2130,9 +2116,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2149,9 +2133,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2168,9 +2150,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2187,9 +2167,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2206,9 +2184,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2225,9 +2201,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2244,9 +2218,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2263,9 +2235,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2282,9 +2252,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2301,9 +2269,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2320,9 +2286,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2339,9 +2303,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2358,9 +2320,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2377,9 +2337,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2396,9 +2354,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -6.72
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2415,9 +2371,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -6.72
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2434,9 +2388,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -24.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2453,9 +2405,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -24.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2472,9 +2422,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -25.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2491,9 +2439,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -25.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2510,9 +2456,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -26.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2529,9 +2473,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -26.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2548,9 +2490,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -26.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2567,9 +2507,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -26.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2586,9 +2524,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -28.56
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2605,9 +2541,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -28.56
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2624,9 +2558,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -26.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2643,9 +2575,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -26.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2662,9 +2592,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -26.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2681,9 +2609,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -26.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2700,9 +2626,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -26.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2719,9 +2643,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -26.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2738,9 +2660,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -28.56
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2757,9 +2677,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -28.56
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2776,9 +2694,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -26.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2795,9 +2711,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -26.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2814,9 +2728,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -26.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2829,13 +2741,11 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              0.84,
+              0.839996,
               -20.58
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2843,18 +2753,16 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              0.84,
+              0.839996,
               -20.58
             ],
             "tag": null,
             "to": [
-              0.84,
+              0.839996,
               -24.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2862,7 +2770,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              0.84,
+              0.839996,
               -24.36
             ],
             "tag": null,
@@ -2871,9 +2779,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -24.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2890,9 +2796,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -25.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2909,9 +2813,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -25.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2928,9 +2830,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -24.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2947,9 +2847,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -24.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2966,9 +2864,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -20.58
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2985,9 +2881,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -24.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3004,9 +2898,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -22.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3023,9 +2915,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -22.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3042,9 +2932,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -24.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3061,9 +2949,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -22.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3080,9 +2966,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -21.84
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3099,9 +2983,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -21.84
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3118,9 +3000,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -22.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3137,9 +3017,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -24.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3156,9 +3034,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -23.52
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3175,9 +3051,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -23.52
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3194,9 +3068,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -24.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3213,9 +3085,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -22.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3232,9 +3102,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -21.84
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3247,13 +3115,11 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -21.84
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3261,18 +3127,16 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -21.84
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -22.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3280,7 +3144,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -22.68
             ],
             "tag": null,
@@ -3289,9 +3153,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -22.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3308,9 +3170,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -21.84
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3327,9 +3187,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -21.84
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3346,9 +3204,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -22.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3365,9 +3221,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -22.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3384,9 +3238,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -21.84
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3403,9 +3255,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -21.84
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3422,9 +3272,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -22.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3441,9 +3289,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -24.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3460,9 +3306,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -23.52
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3479,9 +3323,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -23.52
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3498,9 +3340,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -24.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3517,9 +3357,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3536,9 +3374,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3555,9 +3391,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3574,9 +3408,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3593,9 +3425,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3612,9 +3442,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3631,9 +3459,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3650,9 +3476,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3669,9 +3493,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3688,9 +3510,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -6.72
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3703,13 +3523,11 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              0.84,
+              0.839996,
               -6.72
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3717,18 +3535,16 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              0.84,
+              0.839996,
               -6.72
             ],
             "tag": null,
             "to": [
-              0.84,
+              0.839996,
               -8.4
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3736,7 +3552,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              0.84,
+              0.839996,
               -8.4
             ],
             "tag": null,
@@ -3745,9 +3561,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -8.4
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3764,9 +3578,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -6.72
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3783,9 +3595,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -6.72
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3802,9 +3612,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3821,9 +3629,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -7.56
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3836,13 +3642,11 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              0.84,
+              0.839996,
               -7.56
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3850,18 +3654,16 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              0.84,
+              0.839996,
               -7.56
             ],
             "tag": null,
             "to": [
-              0.84,
+              0.839996,
               -19.32
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3869,7 +3671,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              0.84,
+              0.839996,
               -19.32
             ],
             "tag": null,
@@ -3878,9 +3680,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -19.32
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3897,9 +3697,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -10.08
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3913,12 +3711,10 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               3.36,
-              -9.24
+              -9.24001
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3927,17 +3723,15 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               3.36,
-              -9.24
+              -9.24001
             ],
             "tag": null,
             "to": [
               17.64,
-              -9.24
+              -9.24001
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3946,7 +3740,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               17.64,
-              -9.24
+              -9.24001
             ],
             "tag": null,
             "to": [
@@ -3954,9 +3748,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -10.08
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3973,9 +3765,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -10.08
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3992,9 +3782,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -16.8
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4011,9 +3799,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -16.8
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4030,9 +3816,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -17.64
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4049,9 +3833,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -17.64
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4068,9 +3850,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -16.8
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4087,9 +3867,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -16.8
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4103,12 +3881,10 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               2.52,
-              -10.08
+              -10.080000000000002
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4117,7 +3893,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               2.52,
-              -10.08
+              -10.080000000000002
             ],
             "tag": null,
             "to": [
@@ -4125,9 +3901,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -10.92
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4144,9 +3918,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -10.08
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4163,9 +3935,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -10.08
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4182,9 +3952,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -13.44
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4201,9 +3969,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -13.44
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4220,9 +3986,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -13.44
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4239,9 +4003,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -13.44
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4258,9 +4020,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -14.28
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4277,9 +4037,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -14.28
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4293,12 +4051,10 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               10.92,
-              -15.96
+              -15.959999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4307,17 +4063,15 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               10.92,
-              -15.96
+              -15.959999999999999
             ],
             "tag": null,
             "to": [
               13.44,
-              -15.96
+              -15.959999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4326,7 +4080,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               13.44,
-              -15.96
+              -15.959999999999999
             ],
             "tag": null,
             "to": [
@@ -4334,9 +4088,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -15.12
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4353,9 +4105,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -15.12
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4369,12 +4119,10 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               14.28,
-              -15.96
+              -15.959999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4383,17 +4131,15 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               14.28,
-              -15.96
+              -15.959999999999999
             ],
             "tag": null,
             "to": [
               13.44,
-              -15.96
+              -15.959999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4402,7 +4148,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               13.44,
-              -15.96
+              -15.959999999999999
             ],
             "tag": null,
             "to": [
@@ -4410,9 +4156,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -16.8
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4429,9 +4173,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -16.8
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4448,9 +4190,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -15.96
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4467,9 +4207,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -15.96
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4483,12 +4221,10 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               6.72,
-              -15.12
+              -15.120000000000001
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4497,17 +4233,15 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               6.72,
-              -15.12
+              -15.120000000000001
             ],
             "tag": null,
             "to": [
               7.56,
-              -15.12
+              -15.120000000000001
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4516,7 +4250,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               7.56,
-              -15.12
+              -15.120000000000001
             ],
             "tag": null,
             "to": [
@@ -4524,9 +4258,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -15.96
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4543,9 +4275,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -15.96
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4562,9 +4292,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -14.28
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4581,9 +4309,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -14.28
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4600,9 +4326,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -12.6
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4619,9 +4343,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -11.76
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4638,9 +4360,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -11.76
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4657,9 +4377,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -12.6
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4676,9 +4394,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -12.6
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4695,9 +4411,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -11.76
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4714,9 +4428,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -11.76
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4733,9 +4445,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -10.92
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4748,13 +4458,11 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              7.56,
+              7.5600000000000005,
               -10.92
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4762,18 +4470,16 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              7.56,
+              7.5600000000000005,
               -10.92
             ],
             "tag": null,
             "to": [
-              7.56,
+              7.5600000000000005,
               -11.76
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4781,7 +4487,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              7.56,
+              7.5600000000000005,
               -11.76
             ],
             "tag": null,
@@ -4790,9 +4496,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -11.76
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4809,9 +4513,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -12.6
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4828,9 +4530,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4847,9 +4547,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4866,9 +4564,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4885,9 +4581,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4904,9 +4598,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4923,9 +4615,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4942,9 +4632,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4958,12 +4646,10 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               5.88,
-              -0.84
+              -0.83999599
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4972,17 +4658,15 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               5.88,
-              -0.84
+              -0.83999599
             ],
             "tag": null,
             "to": [
               6.72,
-              -0.84
+              -0.83999599
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -4991,7 +4675,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               6.72,
-              -0.84
+              -0.83999599
             ],
             "tag": null,
             "to": [
@@ -4999,9 +4683,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5018,9 +4700,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5037,9 +4717,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5056,9 +4734,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5075,9 +4751,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5094,9 +4768,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5113,9 +4785,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5132,9 +4802,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5151,9 +4819,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5170,9 +4836,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5189,9 +4853,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5208,9 +4870,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5227,9 +4887,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5246,9 +4904,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5265,9 +4921,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5284,9 +4938,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5300,12 +4952,10 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               14.28,
-              -0.84
+              -0.83999599
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5314,17 +4964,15 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               14.28,
-              -0.84
+              -0.83999599
             ],
             "tag": null,
             "to": [
               15.12,
-              -0.84
+              -0.83999599
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5333,7 +4981,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               15.12,
-              -0.84
+              -0.83999599
             ],
             "tag": null,
             "to": [
@@ -5341,9 +4989,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5356,13 +5002,11 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5370,18 +5014,16 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -1.68
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5389,7 +5031,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -3.36
             ],
             "tag": null,
@@ -5398,9 +5040,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5417,9 +5057,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5436,9 +5074,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5455,9 +5091,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5470,13 +5104,11 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5484,18 +5116,16 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -0.0
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5503,7 +5133,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -1.68
             ],
             "tag": null,
@@ -5512,9 +5142,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5531,9 +5159,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5550,9 +5176,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5569,9 +5193,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.62
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5588,9 +5210,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.62
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5607,9 +5227,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5626,9 +5244,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5645,9 +5261,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5664,9 +5278,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5680,12 +5292,10 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               15.12,
-              -0.84
+              -0.83999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5694,17 +5304,15 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               15.12,
-              -0.84
+              -0.83999999
             ],
             "tag": null,
             "to": [
               14.28,
-              -0.84
+              -0.83999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5713,7 +5321,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               14.28,
-              -0.84
+              -0.83999999
             ],
             "tag": null,
             "to": [
@@ -5721,9 +5329,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5740,9 +5346,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5759,9 +5363,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5778,9 +5380,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5797,9 +5397,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.62
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5816,9 +5414,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.62
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5835,9 +5431,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5854,9 +5448,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5873,9 +5465,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5892,9 +5482,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5911,9 +5499,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5930,9 +5516,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5949,9 +5533,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5968,9 +5550,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -5987,9 +5567,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6006,9 +5584,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6025,9 +5601,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.62
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6044,9 +5618,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.62
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6063,9 +5635,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6082,9 +5652,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6101,9 +5669,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6120,9 +5686,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6136,12 +5700,10 @@ description: Variables in memory after executing kittycad_svg.kcl
             "tag": null,
             "to": [
               6.72,
-              -0.84
+              -0.83999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6150,17 +5712,15 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               6.72,
-              -0.84
+              -0.83999999
             ],
             "tag": null,
             "to": [
               5.88,
-              -0.84
+              -0.83999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6169,7 +5729,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             },
             "from": [
               5.88,
-              -0.84
+              -0.83999999
             ],
             "tag": null,
             "to": [
@@ -6177,9 +5737,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6196,9 +5754,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6215,9 +5771,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6234,9 +5788,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6253,9 +5805,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.62
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6272,9 +5822,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.62
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6291,9 +5839,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6310,9 +5856,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -3.36
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6329,9 +5873,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -1.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6348,9 +5890,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6367,9 +5907,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6386,9 +5924,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6405,9 +5941,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6424,9 +5958,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6443,9 +5975,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6458,13 +5988,11 @@ description: Variables in memory after executing kittycad_svg.kcl
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6472,18 +6000,16 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -5.04
             ],
             "tag": null,
             "to": [
-              15.96,
+              15.959999999999999,
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6491,7 +6017,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               "sourceRange": []
             },
             "from": [
-              15.96,
+              15.959999999999999,
               -5.88
             ],
             "tag": null,
@@ -6500,9 +6026,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6519,9 +6043,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6538,9 +6060,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6557,9 +6077,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6576,9 +6094,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6595,9 +6111,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6614,9 +6128,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6633,9 +6145,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6652,9 +6162,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6671,9 +6179,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6690,9 +6196,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6709,9 +6213,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6728,9 +6230,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6747,9 +6247,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6766,9 +6264,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6785,9 +6281,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6804,9 +6298,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6823,9 +6315,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6842,9 +6332,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6861,9 +6349,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6880,9 +6366,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6899,9 +6383,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6918,9 +6400,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6937,9 +6417,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6956,9 +6434,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6975,9 +6451,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -6994,9 +6468,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7013,9 +6485,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7032,9 +6502,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7051,9 +6519,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7070,9 +6536,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7089,9 +6553,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7108,9 +6570,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7127,9 +6587,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -4.2
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7146,9 +6604,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7165,9 +6621,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7184,9 +6638,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7203,9 +6655,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.88
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7222,9 +6672,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7241,9 +6689,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -5.04
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7260,9 +6706,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -10.92
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7279,9 +6723,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -10.92
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7298,9 +6740,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -13.44
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7317,9 +6757,7 @@ description: Variables in memory after executing kittycad_svg.kcl
               -13.44
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -7336,38 +6774,37 @@ description: Variables in memory after executing kittycad_svg.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -7379,9 +6816,7 @@ description: Variables in memory after executing kittycad_svg.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -7390,16 +6825,12 @@ description: Variables in memory after executing kittycad_svg.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   }
 }

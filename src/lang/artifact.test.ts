@@ -1,4 +1,5 @@
-import { assertParse, initPromise } from '@src/lang/wasm'
+import { assertParse } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 
 beforeAll(async () => {
@@ -9,11 +10,11 @@ describe('testing artifacts', () => {
   // Enable rotations #152
   test('sketch artifacts', async () => {
     const code = `
-const mySketch001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+mySketch001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])
-  // |> rx(45, %)`
+  // |> rx(45)`
     const execState = await enginelessExecutor(assertParse(code))
     const sketch001 = execState.variables['mySketch001']
     expect(sketch001).toEqual({
@@ -24,7 +25,7 @@ const mySketch001 = startSketchOn(XY)
         start: {
           to: [0, 0],
           from: [0, 0],
-          units: { type: 'Mm' },
+          units: 'mm',
           tag: null,
           __geoMeta: {
             id: expect.any(String),
@@ -36,7 +37,7 @@ const mySketch001 = startSketchOn(XY)
             type: 'ToPoint',
             tag: null,
             to: [-1.59, -1.54],
-            units: { type: 'Mm' },
+            units: 'mm',
             from: [0, 0],
             __geoMeta: {
               sourceRange: [expect.any(Number), expect.any(Number), 0],
@@ -47,7 +48,7 @@ const mySketch001 = startSketchOn(XY)
             type: 'ToPoint',
             to: [0.46, -5.82],
             from: [-1.59, -1.54],
-            units: { type: 'Mm' },
+            units: 'mm',
             tag: null,
             __geoMeta: {
               sourceRange: [expect.any(Number), expect.any(Number), 0],
@@ -57,21 +58,20 @@ const mySketch001 = startSketchOn(XY)
         ],
         id: expect.any(String),
         artifactId: expect.any(String),
+        isClosed: false,
         originalId: expect.any(String),
-        units: {
-          type: 'Mm',
-        },
+        units: 'mm',
       },
     })
   })
   test('extrude artifacts', async () => {
     // Enable rotations #152
     const code = `
-const mySketch001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+mySketch001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])
-  // |> rx(45, %)
+  // |> rx(45)
   |> extrude(length = 2)`
     const execState = await enginelessExecutor(assertParse(code))
     const sketch001 = execState.variables['mySketch001']
@@ -101,9 +101,7 @@ const mySketch001 = startSketchOn(XY)
           id: expect.any(String),
           originalId: expect.any(String),
           artifactId: expect.any(String),
-          units: {
-            type: 'Mm',
-          },
+          units: 'mm',
           on: expect.any(Object),
           start: expect.any(Object),
           type: 'Sketch',
@@ -112,7 +110,7 @@ const mySketch001 = startSketchOn(XY)
               type: 'ToPoint',
               from: [0, 0],
               to: [-1.59, -1.54],
-              units: { type: 'Mm' },
+              units: 'mm',
               tag: null,
               __geoMeta: {
                 id: expect.any(String),
@@ -123,7 +121,7 @@ const mySketch001 = startSketchOn(XY)
               type: 'ToPoint',
               from: [-1.59, -1.54],
               to: [0.46, -5.82],
-              units: { type: 'Mm' },
+              units: 'mm',
               tag: null,
               __geoMeta: {
                 id: expect.any(String),
@@ -132,12 +130,10 @@ const mySketch001 = startSketchOn(XY)
             },
           ],
         },
-        height: 2,
+        sectional: false,
         startCapId: expect.any(String),
         endCapId: expect.any(String),
-        units: {
-          type: 'Mm',
-        },
+        units: 'mm',
       },
     })
   })
@@ -145,22 +141,22 @@ const mySketch001 = startSketchOn(XY)
     // Enable rotations #152
     // TODO #153 in order for getExtrudeWallTransform to work we need to query the engine for the location of a face.
     const code = `
-const sk1 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+sk1 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [-2.5, 0])
   |> line(endAbsolute = [0, 10], tag = $p)
   |> line(endAbsolute = [2.5, 0])
-  // |> rx(45, %)
-  // |> translate([1,0,1], %)
-  // |> ry(5, %)
-const theExtrude = extrude(sk1, length = 2)
-// const theTransf = getExtrudeWallTransform('p', theExtrude)
-const sk2 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  // |> rx(45)
+  // |> translate(x = 1, y = 0, z = 1)
+  // |> ry(5)
+theExtrude = extrude(sk1, length = 2)
+// theTransf = getExtrudeWallTransform('p', theExtrude)
+sk2 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [-2.5, 0])
   |> line(endAbsolute = [0, 3], tag = $o)
   |> line(endAbsolute = [2.5, 0])
-  // |> transform(theTransf, %)
+  // |> transform(theTransf)
   |> extrude(length = 2)
 
 `
@@ -187,8 +183,9 @@ const sk2 = startSketchOn(XY)
               type: 'extrudePlane',
               faceId: expect.any(String),
               tag: {
-                end: 138,
-                start: 136,
+                end: 132,
+                start: 130,
+                moduleId: expect.any(Number),
                 commentStart: expect.any(Number),
                 type: 'TagDeclarator',
                 value: 'p',
@@ -211,9 +208,7 @@ const sk2 = startSketchOn(XY)
             on: expect.any(Object),
             start: expect.any(Object),
             type: 'Sketch',
-            units: {
-              type: 'Mm',
-            },
+            units: 'mm',
             tags: {
               p: {
                 type: 'TagIdentifier',
@@ -225,7 +220,7 @@ const sk2 = startSketchOn(XY)
                 type: 'ToPoint',
                 from: [0, 0],
                 to: [-2.5, 0],
-                units: { type: 'Mm' },
+                units: 'mm',
                 tag: null,
                 __geoMeta: {
                   id: expect.any(String),
@@ -236,10 +231,11 @@ const sk2 = startSketchOn(XY)
                 type: 'ToPoint',
                 from: [-2.5, 0],
                 to: [0, 10],
-                units: { type: 'Mm' },
+                units: 'mm',
                 tag: {
                   end: expect.any(Number),
                   start: expect.any(Number),
+                  moduleId: expect.any(Number),
                   commentStart: expect.any(Number),
                   type: 'TagDeclarator',
                   value: 'p',
@@ -253,7 +249,7 @@ const sk2 = startSketchOn(XY)
                 type: 'ToPoint',
                 from: [0, 10],
                 to: [2.5, 0],
-                units: { type: 'Mm' },
+                units: 'mm',
                 tag: null,
                 __geoMeta: {
                   id: expect.any(String),
@@ -262,12 +258,10 @@ const sk2 = startSketchOn(XY)
               },
             ],
           },
-          height: 2,
+          sectional: false,
           startCapId: expect.any(String),
           endCapId: expect.any(String),
-          units: {
-            type: 'Mm',
-          },
+          units: 'mm',
         },
       },
       {
@@ -290,6 +284,7 @@ const sk2 = startSketchOn(XY)
               tag: {
                 end: expect.any(Number),
                 start: expect.any(Number),
+                moduleId: expect.any(Number),
                 commentStart: expect.any(Number),
                 type: 'TagDeclarator',
                 value: 'o',
@@ -309,9 +304,7 @@ const sk2 = startSketchOn(XY)
             id: expect.any(String),
             originalId: expect.any(String),
             artifactId: expect.any(String),
-            units: {
-              type: 'Mm',
-            },
+            units: 'mm',
             on: expect.any(Object),
             start: expect.any(Object),
             type: 'Sketch',
@@ -326,7 +319,7 @@ const sk2 = startSketchOn(XY)
                 type: 'ToPoint',
                 from: [0, 0],
                 to: [-2.5, 0],
-                units: { type: 'Mm' },
+                units: 'mm',
                 tag: null,
                 __geoMeta: {
                   id: expect.any(String),
@@ -337,10 +330,11 @@ const sk2 = startSketchOn(XY)
                 type: 'ToPoint',
                 from: [-2.5, 0],
                 to: [0, 3],
-                units: { type: 'Mm' },
+                units: 'mm',
                 tag: {
                   end: expect.any(Number),
                   start: expect.any(Number),
+                  moduleId: expect.any(Number),
                   commentStart: expect.any(Number),
                   type: 'TagDeclarator',
                   value: 'o',
@@ -354,7 +348,7 @@ const sk2 = startSketchOn(XY)
                 type: 'ToPoint',
                 from: [0, 3],
                 to: [2.5, 0],
-                units: { type: 'Mm' },
+                units: 'mm',
                 tag: null,
                 __geoMeta: {
                   id: expect.any(String),
@@ -363,12 +357,10 @@ const sk2 = startSketchOn(XY)
               },
             ],
           },
-          height: 2,
+          sectional: false,
           startCapId: expect.any(String),
           endCapId: expect.any(String),
-          units: {
-            type: 'Mm',
-          },
+          units: 'mm',
         },
       },
     ])

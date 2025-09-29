@@ -33,12 +33,13 @@ module.exports = {
     extend: {
       colors: {
         primary: `oklch(var(--_primary) / <alpha-value>)`,
+        'ml-green': '#29FFA4',
+        'ml-black': 'var(--chalkboard-100)',
+        'ml-white': '#FFFFFF',
+        'ml-grey': 'var(--chalkboard-80)',
         ...themeColors,
       },
       fontFamily: {
-        display: `'owners', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-        sans-serif`,
         sans: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
         sans-serif`,
@@ -79,6 +80,7 @@ module.exports = {
           return `.${e(`pressed${separator}${className}`)}[aria-pressed='true']`
         })
       })
+      addVariant('light', 'body:not(.dark) &')
     }),
   ],
 }

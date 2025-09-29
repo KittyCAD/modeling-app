@@ -1,34 +1,57 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[1016, 1041, 0]"]
-    3["Segment<br>[1047, 1092, 0]"]
-    4["Segment<br>[1098, 1141, 0]"]
-    5["Segment<br>[1147, 1174, 0]"]
-    6["Segment<br>[1180, 1238, 0]"]
-    7["Segment<br>[1244, 1284, 0]"]
-    8["Segment<br>[1290, 1298, 0]"]
+    2["Path<br>[1014, 1039, 0]"]
+      %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    3["Segment<br>[1045, 1090, 0]"]
+      %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
+    4["Segment<br>[1096, 1139, 0]"]
+      %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
+    5["Segment<br>[1145, 1172, 0]"]
+      %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
+    6["Segment<br>[1178, 1236, 0]"]
+      %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
+    7["Segment<br>[1242, 1282, 0]"]
+      %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
+    8["Segment<br>[1288, 1296, 0]"]
+      %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
     9[Solid2d]
   end
   subgraph path33 [Path]
-    33["Path<br>[1530, 1561, 0]"]
-    34["Segment<br>[1567, 1592, 0]"]
-    35["Segment<br>[1598, 1623, 0]"]
-    36["Segment<br>[1629, 1654, 0]"]
-    37["Segment<br>[1660, 1716, 0]"]
-    38["Segment<br>[1722, 1730, 0]"]
+    33["Path<br>[1535, 1566, 0]"]
+      %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    34["Segment<br>[1572, 1597, 0]"]
+      %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
+    35["Segment<br>[1603, 1628, 0]"]
+      %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
+    36["Segment<br>[1634, 1659, 0]"]
+      %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
+    37["Segment<br>[1665, 1721, 0]"]
+      %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
+    38["Segment<br>[1727, 1735, 0]"]
+      %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
     39[Solid2d]
   end
-  1["Plane<br>[991, 1010, 0]"]
-  10["Sweep Extrusion<br>[1304, 1327, 0]"]
+  1["Plane<br>[991, 1008, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  10["Sweep Extrusion<br>[1302, 1325, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 8 }]
   11[Wall]
+    %% face_code_ref=Missing NodePath
   12[Wall]
+    %% face_code_ref=[ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   13[Wall]
+    %% face_code_ref=Missing NodePath
   14[Wall]
+    %% face_code_ref=Missing NodePath
   15[Wall]
+    %% face_code_ref=Missing NodePath
   16[Wall]
+    %% face_code_ref=Missing NodePath
   17["Cap Start"]
+    %% face_code_ref=Missing NodePath
   18["Cap End"]
+    %% face_code_ref=Missing NodePath
   19["SweepEdge Opposite"]
   20["SweepEdge Adjacent"]
   21["SweepEdge Opposite"]
@@ -41,14 +64,22 @@ flowchart LR
   28["SweepEdge Adjacent"]
   29["SweepEdge Opposite"]
   30["SweepEdge Adjacent"]
-  31["EdgeCut Fillet<br>[1333, 1398, 0]"]
-  32["EdgeCut Fillet<br>[1404, 1481, 0]"]
-  40["Sweep Extrusion<br>[1736, 1756, 0]"]
+  31["EdgeCut Fillet<br>[1331, 1396, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 9 }]
+  32["EdgeCut Fillet<br>[1402, 1479, 0]"]
+    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 10 }]
+  40["Sweep Extrusion<br>[1741, 1761, 0]"]
+    %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
   41[Wall]
+    %% face_code_ref=Missing NodePath
   42[Wall]
+    %% face_code_ref=Missing NodePath
   43[Wall]
+    %% face_code_ref=Missing NodePath
   44[Wall]
+    %% face_code_ref=Missing NodePath
   45["Cap End"]
+    %% face_code_ref=Missing NodePath
   46["SweepEdge Opposite"]
   47["SweepEdge Adjacent"]
   48["SweepEdge Opposite"]
@@ -57,7 +88,8 @@ flowchart LR
   51["SweepEdge Adjacent"]
   52["SweepEdge Opposite"]
   53["SweepEdge Adjacent"]
-  54["StartSketchOnFace<br>[1495, 1524, 0]"]
+  54["StartSketchOnFace<br>[1493, 1529, 0]"]
+    %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -65,24 +97,30 @@ flowchart LR
   2 --- 6
   2 --- 7
   2 --- 8
-  2 ---- 10
   2 --- 9
+  2 ---- 10
   3 --- 11
+  3 x--> 17
   3 --- 19
   3 --- 20
   4 --- 12
+  4 x--> 17
   4 --- 21
   4 --- 22
   5 --- 13
+  5 x--> 17
   5 --- 23
   5 --- 24
   6 --- 14
+  6 x--> 17
   6 --- 25
   6 --- 26
   7 --- 15
+  7 x--> 17
   7 --- 27
   7 --- 28
   8 --- 16
+  8 x--> 17
   8 --- 29
   8 --- 30
   10 --- 11
@@ -105,16 +143,45 @@ flowchart LR
   10 --- 28
   10 --- 29
   10 --- 30
+  11 --- 19
+  11 --- 20
+  30 <--x 11
+  20 <--x 12
+  12 --- 21
+  12 --- 22
   12 --- 33
-  26 <--x 31
+  34 <--x 12
+  35 <--x 12
+  36 <--x 12
+  37 <--x 12
+  12 <--x 54
+  22 <--x 13
+  13 --- 23
+  13 --- 24
+  24 <--x 14
+  14 --- 25
+  14 --- 26
+  26 <--x 15
+  15 --- 27
+  15 --- 28
+  28 <--x 16
+  16 --- 29
+  16 --- 30
+  19 <--x 18
+  21 <--x 18
+  23 <--x 18
+  25 <--x 18
+  27 <--x 18
+  29 <--x 18
   20 <--x 32
+  26 <--x 31
   33 --- 34
   33 --- 35
   33 --- 36
   33 --- 37
   33 --- 38
-  33 ---- 40
   33 --- 39
+  33 ---- 40
   34 --- 44
   34 --- 52
   34 --- 53
@@ -140,5 +207,20 @@ flowchart LR
   40 --- 51
   40 --- 52
   40 --- 53
-  12 <--x 54
+  41 --- 46
+  41 --- 47
+  49 <--x 41
+  42 --- 48
+  42 --- 49
+  51 <--x 42
+  43 --- 50
+  43 --- 51
+  53 <--x 43
+  47 <--x 44
+  44 --- 52
+  44 --- 53
+  46 <--x 45
+  48 <--x 45
+  50 <--x 45
+  52 <--x 45
 ```

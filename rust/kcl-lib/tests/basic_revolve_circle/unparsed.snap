@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing basic_revolve_circle.kcl
+---
+sketch001 = startSketchOn(XY)
+  |> circle(center = [15, 0], radius = 5)
+  |> revolve(angle = 360, axis = Y)

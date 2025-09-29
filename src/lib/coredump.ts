@@ -1,17 +1,15 @@
-import { VITE_KC_API_BASE_URL } from '@src/env'
 import { UAParser } from 'ua-parser-js'
 
 import type { OsInfo } from '@rust/kcl-lib/bindings/OsInfo'
 import type { WebrtcStats } from '@rust/kcl-lib/bindings/WebrtcStats'
 
 import type CodeManager from '@src/lang/codeManager'
-import type {
-  CommandLog,
-  EngineCommandManager,
-} from '@src/lang/std/engineConnection'
+import type { CommandLog } from '@src/lang/std/commandLog'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { isDesktop } from '@src/lib/isDesktop'
 import type RustContext from '@src/lib/rustContext'
 import screenshot from '@src/lib/screenshot'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { APP_VERSION } from '@src/routes/utils'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
@@ -37,7 +35,7 @@ export class CoreDumpManager {
   codeManager: CodeManager
   rustContext: RustContext
   token: string | undefined
-  baseUrl: string = VITE_KC_API_BASE_URL
+  baseUrl: string = withAPIBaseURL('')
 
   constructor(
     engineCommandManager: EngineCommandManager,
@@ -80,7 +78,7 @@ export class CoreDumpManager {
 
   // Get the os information.
   getOsInfo(): string {
-    if (this.isDesktop()) {
+    if (window.electron) {
       const osinfo: OsInfo = {
         platform: window.electron.platform ?? null,
         arch: window.electron.arch ?? null,
@@ -443,7 +441,7 @@ export class CoreDumpManager {
       screenshot()
         .then((screenshotStr: string) => screenshotStr)
         // maybe rust should handle an error, but an empty string at least doesn't cause the core dump to fail entirely
-        .catch((error: any) => ``)
+        .catch((_error: any) => ``)
     )
   }
 }

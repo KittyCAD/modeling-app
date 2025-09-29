@@ -1,3 +1,4 @@
+import os from 'node:os'
 import { modelingDesignRole } from '@src/menu/designRole'
 import { modelingEditRole, projectEditRole } from '@src/menu/editRole'
 import { modelingFileRole, projectFileRole } from '@src/menu/fileRole'
@@ -6,7 +7,6 @@ import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
 import { modelingViewRole, projectViewRole } from '@src/menu/viewRole'
 import type { BrowserWindow } from 'electron'
 import { Menu, app } from 'electron'
-import os from 'node:os'
 
 const isMac = os.platform() === 'darwin'
 
@@ -66,10 +66,6 @@ export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
     {
       label: 'View',
       submenu: [
-        { role: 'reload' },
-        { role: 'forceReload' },
-        { role: 'toggleDevTools' },
-        { type: 'separator' },
         { role: 'resetZoom' },
         { role: 'zoomIn' },
         { role: 'zoomOut' },
@@ -112,10 +108,6 @@ export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
     {
       label: 'View',
       submenu: [
-        { role: 'reload' },
-        { role: 'forceReload' },
-        { role: 'toggleDevTools' },
-        { type: 'separator' },
         { role: 'resetZoom' },
         { role: 'zoomIn' },
         { role: 'zoomOut' },
@@ -123,7 +115,6 @@ export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
         { role: 'togglefullscreen' },
       ],
     },
-
     {
       label: 'Window',
       submenu: [{ role: 'minimize' }, { role: 'zoom' }, { role: 'close' }],

@@ -2,6 +2,7 @@
 import os
 
 import kcl
+from kcl import Point3d
 import pytest
 
 # Get the path to this script's parent directory.
@@ -11,14 +12,21 @@ kcl_dir = os.path.join(
 )
 tests_dir = os.path.join(kcl_dir, "tests")
 lego_file = os.path.join(kcl_dir, "e2e", "executor", "inputs", "lego.kcl")
-walkie_talkie_dir = os.path.join(
+
+engine_error_file = os.path.join(
+    tests_dir, "error_revolve_on_edge_get_edge", "input.kcl"
+)
+cube_step_file = os.path.join(
+    os.path.dirname(os.path.realpath(__file__)), "..", "files", "cube.step"
+)
+car_wheel_dir = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
     "..",
     "..",
     "..",
     "public",
     "kcl-samples",
-    "walkie-talkie",
+    "car-wheel-assembly",
 )
 
 
@@ -37,6 +45,82 @@ async def test_kcl_execute_with_exception():
 async def test_kcl_execute():
     # Read from a file.
     await kcl.execute(lego_file)
+
+
+@pytest.mark.asyncio
+async def test_kcl_parse_with_exception():
+    # Read from a file.
+    try:
+        await kcl.parse(os.path.join(files_dir, "parse_file_error"))
+    except Exception as e:
+        assert e is not None
+        assert len(str(e)) > 0
+        assert "lksjndflsskjfnak;jfna##" in str(e)
+
+
+@pytest.mark.asyncio
+async def test_kcl_parse():
+    # Read from a file.
+    result = await kcl.parse(lego_file)
+    assert result is True
+
+
+@pytest.mark.asyncio
+async def test_kcl_parse_code():
+    # Read from a file.
+    with open(lego_file, "r") as f:
+        code = str(f.read())
+        assert code is not None
+        assert len(code) > 0
+        result = kcl.parse_code(code)
+        assert result is True
+
+
+@pytest.mark.asyncio
+async def test_kcl_mock_execute_with_exception():
+    # Read from a file.
+    try:
+        await kcl.mock_execute(os.path.join(files_dir, "parse_file_error"))
+    except Exception as e:
+        assert e is not None
+        assert len(str(e)) > 0
+        assert "lksjndflsskjfnak;jfna##" in str(e)
+
+
+@pytest.mark.asyncio
+async def test_kcl_mock_execute_with_engine_exception_should_pass():
+    # Read from a file.
+    result = await kcl.mock_execute(engine_error_file)
+    assert result is True
+
+
+@pytest.mark.asyncio
+async def test_kcl_execute_with_engine_exception_should_fail():
+    # Read from a file.
+    try:
+        await kcl.execute(engine_error_file)
+    except Exception as e:
+        assert e is not None
+        assert len(str(e)) > 0
+        assert "engine" in str(e)
+
+
+@pytest.mark.asyncio
+async def test_kcl_mock_execute():
+    # Read from a file.
+    result = await kcl.mock_execute(lego_file)
+    assert result is True
+
+
+@pytest.mark.asyncio
+async def test_kcl_mock_execute_code():
+    # Read from a file.
+    with open(lego_file, "r") as f:
+        code = str(f.read())
+        assert code is not None
+        assert len(code) > 0
+        result = await kcl.mock_execute_code(code)
+        assert result is True
 
 
 @pytest.mark.asyncio
@@ -83,7 +167,7 @@ async def test_kcl_execute_code_and_export():
 @pytest.mark.asyncio
 async def test_kcl_execute_dir_assembly():
     # Read from a file.
-    await kcl.execute(walkie_talkie_dir)
+    await kcl.execute(car_wheel_dir)
 
 
 @pytest.mark.asyncio
@@ -95,11 +179,75 @@ async def test_kcl_execute_and_snapshot():
 
 
 @pytest.mark.asyncio
+async def test_kcl_execute_and_snapshot_options():
+    camera = kcl.CameraLookAt(
+        # Test both constructors, with unnamed fields and named fields.
+        up=Point3d(0, 0, 1),
+        vantage=Point3d(x=0, y=-1, z=0),
+        center=Point3d(x=0, y=0, z=0),
+    )
+    views = [
+        # Specific camera perspective
+        kcl.SnapshotOptions(camera=camera, padding=0.5),
+        # Camera=None means isometric view.
+        kcl.SnapshotOptions(camera=None, padding=0),
+    ]
+    # Read from a file.
+    images = await kcl.execute_and_snapshot_views(
+        lego_file, kcl.ImageFormat.Jpeg, views
+    )
+    assert images is not None
+    assert len(images) == len(views)
+    image_bytes = images[0]
+    assert image_bytes is not None
+    assert len(image_bytes) > 0
+
+
+@pytest.mark.asyncio
+async def test_import_and_snapshots():
+    camera = kcl.CameraLookAt(
+        # Test both constructors, with unnamed fields and named fields.
+        up=Point3d(0, 0, 1),
+        vantage=Point3d(x=0, y=-1, z=0),
+        center=Point3d(x=0, y=0, z=0),
+    )
+    views = [
+        # Specific camera perspective
+        kcl.SnapshotOptions(camera=camera, padding=0.5),
+        # Camera=None means isometric view.
+        kcl.SnapshotOptions(camera=None, padding=0),
+    ]
+    # Read from a file.
+    step_options = kcl.StepImportOptions()
+    input_format = kcl.InputFormat3d.Step(step_options)
+    print(cube_step_file)
+    images = await kcl.import_and_snapshot_views(
+        [cube_step_file], input_format, kcl.ImageFormat.Jpeg, views
+    )
+    assert images is not None
+    assert len(images) == len(views)
+    for i, image_bytes in enumerate(images):
+        assert image_bytes is not None
+        assert len(image_bytes) > 0
+
+
+@pytest.mark.asyncio
+async def test_import_and_snapshots_single():
+    # Read from a file.
+    step_options = kcl.StepImportOptions()
+    input_format = kcl.InputFormat3d.Step(step_options)
+    print(cube_step_file)
+    image_bytes = await kcl.import_and_snapshot(
+        [cube_step_file], input_format, kcl.ImageFormat.Jpeg
+    )
+    assert image_bytes is not None
+    assert len(image_bytes) > 0
+
+
+@pytest.mark.asyncio
 async def test_kcl_execute_and_snapshot_dir():
     # Read from a file.
-    image_bytes = await kcl.execute_and_snapshot(
-        walkie_talkie_dir, kcl.ImageFormat.Jpeg
-    )
+    image_bytes = await kcl.execute_and_snapshot(car_wheel_dir, kcl.ImageFormat.Jpeg)
     assert image_bytes is not None
     assert len(image_bytes) > 0
 
@@ -129,9 +277,11 @@ def test_kcl_format():
         assert formatted_code is not None
         assert len(formatted_code) > 0
 
+
 @pytest.mark.asyncio
 async def test_kcl_format_dir():
-    await kcl.format_dir(walkie_talkie_dir)
+    await kcl.format_dir(car_wheel_dir)
+
 
 def test_kcl_lint():
     # Read from a file.
@@ -167,3 +317,13 @@ async def test_kcl_execute_code_and_export_with_bad_units():
             assert len(str(e)) > 0
             print(e)
             assert "[1:1]" in str(e)
+
+
+def test_relevant_file_extensions():
+    exts = kcl.relevant_file_extensions()
+    assert isinstance(exts, list)
+    assert len(exts) > 0
+    assert len(exts) > 5
+    assert all(isinstance(x, str) and len(x) > 0 for x in exts)
+    # kcl should always be included in the set
+    assert "kcl" in exts

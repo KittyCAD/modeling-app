@@ -1,0 +1,25 @@
+name: sync-branch
+
+# This is used to sync the `staging` branch with the `main` branch to
+# continuously deploy the pre-production web app to Vercel
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  staging:
+    runs-on: namespace-profile-ubuntu-2-cores
+
+    steps:
+      - uses: actions/checkout@v5
+      - shell: bash
+        run: |
+          git checkout staging || git checkout -b staging
+          git fetch origin
+          git reset --hard origin/main
+          git push --force origin staging

@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
-import { defaultSourceRange } from '@src/lang/wasm'
 import { codeToIdSelections } from '@src/lib/selections'
 import { editorManager, kclManager } from '@src/lib/singletons'
 import { trap } from '@src/lib/trap'
@@ -36,7 +36,7 @@ export function AstExplorer() {
                 type="checkbox"
                 className="form-checkbox"
                 checked={filterKeys.includes(key)}
-                onChange={(e) => {
+                onChange={(_e) => {
                   if (filterKeys.includes(key)) {
                     setFilterKeys(filterKeys.filter((k) => k !== key))
                   } else {
@@ -51,7 +51,7 @@ export function AstExplorer() {
       </div>
       <div
         className="h-full relative"
-        onMouseLeave={(e) => {
+        onMouseLeave={(_e) => {
           editorManager.setHighlightRange([defaultSourceRange()])
         }}
       >
@@ -113,6 +113,7 @@ function DisplayObj({
     } else {
       setHasCursor(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [node.start, node.end, node.type])
 
   return (

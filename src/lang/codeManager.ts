@@ -2,10 +2,11 @@
 // NOT updating the code state when we don't need to.
 // This prevents re-renders of the codemirror editor, when typing.
 import { history } from '@codemirror/commands'
-import { Annotation, Compartment, Transaction } from '@codemirror/state'
-import type { EditorView, KeyBinding } from '@codemirror/view'
+import { Annotation, Transaction } from '@codemirror/state'
+import type { KeyBinding } from '@codemirror/view'
 import toast from 'react-hot-toast'
 
+import { historyCompartment } from '@src/editor/compartments'
 import type { Program } from '@src/lang/wasm'
 import { parse, recast } from '@src/lang/wasm'
 import { bracket } from '@src/lib/exampleKcl'
@@ -17,7 +18,6 @@ const PERSIST_CODE_KEY = 'persistCode'
 
 const codeManagerUpdateAnnotation = Annotation.define<boolean>()
 export const codeManagerUpdateEvent = codeManagerUpdateAnnotation.of(true)
-export const codeManagerHistoryCompartment = new Compartment()
 
 export default class CodeManager {
   private _code: string = bracket
@@ -27,6 +27,8 @@ export default class CodeManager {
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
 
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+
+  public isBufferMode = false
 
   constructor() {
     if (isDesktop()) {
@@ -101,25 +103,24 @@ export default class CodeManager {
 
   /**
    * Update the code in the editor.
+   * This is invoked when a segment is being dragged on the canvas, among other things.
    */
   updateCodeEditor(code: string, clearHistory?: boolean): void {
     this.code = code
-    if (editorManager.editorView) {
-      if (clearHistory) {
-        clearCodeMirrorHistory(editorManager.editorView)
-      }
-      editorManager.editorView.dispatch({
-        changes: {
-          from: 0,
-          to: editorManager.editorView.state.doc.length,
-          insert: code,
-        },
-        annotations: [
-          codeManagerUpdateEvent,
-          Transaction.addToHistory.of(!clearHistory),
-        ],
-      })
+    if (clearHistory) {
+      clearCodeMirrorHistory()
     }
+    editorManager.dispatch({
+      changes: {
+        from: 0,
+        to: editorManager.editorState?.doc.length || 0,
+        insert: code,
+      },
+      annotations: [
+        codeManagerUpdateEvent,
+        Transaction.addToHistory.of(!clearHistory),
+      ],
+    })
   }
 
   /**
@@ -134,7 +135,10 @@ export default class CodeManager {
   }
 
   async writeToFile() {
-    if (isDesktop()) {
+    if (this.isBufferMode) return
+
+    if (window.electron) {
+      const electron = window.electron
       // Only write our buffer contents to file once per second. Any faster
       // and file-system watchers which read, will receive empty data during
       // writes.
@@ -149,7 +153,7 @@ export default class CodeManager {
 
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
-          window.electron
+          electron
             .writeFile(this._currentFilePath, this.code ?? '')
             .then(resolve)
             .catch((err: Error) => {
@@ -165,13 +169,16 @@ export default class CodeManager {
     }
   }
 
-  async updateEditorWithAstAndWriteToFile(ast: Program) {
+  async updateEditorWithAstAndWriteToFile(
+    ast: Program,
+    options?: Partial<{ isDeleting: boolean }>
+  ) {
     // We clear the AST when it cannot be parsed. If we are trying to write an
     // empty AST, it's probably because of an earlier error. That's a bad state
     // to be in, and it's not going to be pretty, but at the least, let's not
-    // permanently delete the user's code. If you want to clear the scene, call
-    // updateCodeStateEditor directly.
-    if (ast.body.length === 0) return
+    // permanently delete the user's code accidentally.
+    // if you want to clear the scene, pass in the `isDeleting` option.
+    if (ast.body.length === 0 && !options?.isDeleting) return
     const newCode = recast(ast)
     if (err(newCode)) return
     // Test to see if we can parse the recast code, and never update the editor with bad code.
@@ -182,6 +189,16 @@ export default class CodeManager {
       return
     }
     this.updateCodeStateEditor(newCode)
+    this.writeToFile().catch(reportRejection)
+  }
+
+  goIntoTemporaryWorkspaceModeWithCode(code: string) {
+    this.isBufferMode = true
+    this.updateCodeStateEditor(code, true)
+  }
+
+  exitFromTemporaryWorkspaceMode() {
+    this.isBufferMode = false
     this.writeToFile().catch(reportRejection)
   }
 }
@@ -196,16 +213,16 @@ function safeLSSetItem(key: string, value: string) {
   localStorage?.setItem(key, value)
 }
 
-function clearCodeMirrorHistory(view: EditorView) {
+function clearCodeMirrorHistory() {
   // Clear history
-  view.dispatch({
-    effects: [codeManagerHistoryCompartment.reconfigure([])],
+  editorManager.dispatch({
+    effects: [historyCompartment.reconfigure([])],
     annotations: [codeManagerUpdateEvent],
   })
 
   // Add history back
-  view.dispatch({
-    effects: [codeManagerHistoryCompartment.reconfigure([history()])],
+  editorManager.dispatch({
+    effects: [historyCompartment.reconfigure([history()])],
     annotations: [codeManagerUpdateEvent],
   })
 }

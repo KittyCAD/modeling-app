@@ -6,12 +6,10 @@ import type { Selections } from '@src/lib/selections'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
+  getSelectionTypeDisplayText,
 } from '@src/lib/selections'
 import { kclManager } from '@src/lib/singletons'
-import {
-  commandBarActor,
-  useCommandBarState,
-} from '@src/machines/commandBarMachine'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
@@ -33,8 +31,14 @@ export default function CommandBarSelectionMixedInput({
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(selection)
   }, [selection])
+  const isArgRequired =
+    arg.required instanceof Function
+      ? arg.required(commandBarState.context)
+      : arg.required
 
   const canSubmitSelection = useMemo<boolean>(() => {
+    // Don't do additional checks if this argument is not required
+    if (!isArgRequired) return true
     if (!selection) return false
     const isNonZeroRange = selection.graphSelections.some((sel) => {
       const range = sel.codeRef.range
@@ -42,7 +46,7 @@ export default function CommandBarSelectionMixedInput({
     })
     if (isNonZeroRange) return true
     return canSubmitSelectionArg(selectionsByType, arg)
-  }, [selectionsByType, selection])
+  }, [selectionsByType, selection, arg, isArgRequired])
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -59,13 +63,34 @@ export default function CommandBarSelectionMixedInput({
         setHasAutoSkipped(true)
       }
     }
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [arg.name])
 
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
     return () => kclManager.defaultSelectionFilter(selection)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.selectionFilter])
+
+  // Watch for outside teardowns of this component
+  // (such as clicking another argument in the command palette header)
+  // and quickly save the current selection if we can
+  useEffect(() => {
+    return () => {
+      const resolvedSelection: Selections | undefined = isArgRequired
+        ? selection
+        : selection || {
+            graphSelections: [],
+            otherSelections: [],
+          }
+
+      if (canSubmitSelection && resolvedSelection) {
+        onSubmit(resolvedSelection)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [])
 
   function handleChange() {
     inputRef.current?.focus()
@@ -79,7 +104,18 @@ export default function CommandBarSelectionMixedInput({
       return
     }
 
-    onSubmit(selection)
+    /**
+     * Now that arguments like this can be optional, we need to
+     * construct an empty selection if it's not required to get it past our validation.
+     */
+    const resolvedSelection: Selections | undefined = isArgRequired
+      ? selection
+      : selection || {
+          graphSelections: [],
+          otherSelections: [],
+        }
+
+    onSubmit(resolvedSelection)
   }
 
   const isMixedSelection = arg.inputType === 'selectionMixed'
@@ -95,9 +131,10 @@ export default function CommandBarSelectionMixedInput({
           (!hasSubmitted || canSubmitSelection || 'text-destroy-50')
         }
       >
-        {canSubmitSelection
-          ? 'Select objects in the scene'
-          : 'Select code or objects in the scene'}
+        {canSubmitSelection &&
+        (selection.graphSelections.length || selection.otherSelections.length)
+          ? getSelectionTypeDisplayText(selection) + ' selected'
+          : 'Select code/objects, or skip'}
 
         {showSceneSelection && (
           <div className="scene-selection mt-2">
@@ -117,7 +154,6 @@ export default function CommandBarSelectionMixedInput({
             Continue without selection
           </button>
         )}
-
         <span data-testid="cmd-bar-arg-name" className="sr-only">
           {arg.name}
         </span>
@@ -130,7 +166,7 @@ export default function CommandBarSelectionMixedInput({
           placeholder="Select an entity with your mouse"
           className="absolute inset-0 w-full h-full opacity-0 cursor-default"
           onKeyDown={(event) => {
-            if (event.key === 'Backspace' && event.shiftKey) {
+            if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
             } else if (event.key === 'Escape') {
               commandBarActor.send({ type: 'Close' })

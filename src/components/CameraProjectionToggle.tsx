@@ -1,7 +1,7 @@
 import { Switch } from '@headlessui/react'
 import { useEffect, useState } from 'react'
 
-import { settingsActor, useSettings } from '@src/machines/appMachine'
+import { settingsActor, useSettings } from '@src/lib/singletons'
 
 export function CameraProjectionToggle() {
   const settings = useSettings()
@@ -11,6 +11,7 @@ export function CameraProjectionToggle() {
 
   useEffect(() => {
     setChecked(settings.modeling.cameraProjection.current === 'perspective')
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settings.modeling.cameraProjection.current])
 
   return (

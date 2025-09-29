@@ -13,6 +13,7 @@ use std::{
 use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use tower_lsp::{
+    LanguageServer,
     jsonrpc::{Error, Result},
     lsp_types::{
         CreateFilesParams, DeleteFilesParams, Diagnostic, DidChangeConfigurationParams, DidChangeTextDocumentParams,
@@ -22,7 +23,6 @@ use tower_lsp::{
         TextDocumentSyncKind, TextDocumentSyncOptions, WorkspaceFolder, WorkspaceFoldersServerCapabilities,
         WorkspaceServerCapabilities,
     },
-    LanguageServer,
 };
 
 use crate::lsp::{
@@ -198,7 +198,7 @@ impl Backend {
             .map_err(|err| Error {
                 code: tower_lsp::jsonrpc::ErrorCode::from(69),
                 data: None,
-                message: Cow::from(format!("Failed to get completions from zoo api: {}", err)),
+                message: Cow::from(format!("Failed to get completions from zoo api: {err}")),
             })?;
         Ok(resp.completions)
     }
@@ -209,7 +209,7 @@ impl Backend {
         let mut lock = copy.write().map_err(|err| Error {
             code: tower_lsp::jsonrpc::ErrorCode::from(69),
             data: None,
-            message: Cow::from(format!("Failed lock: {}", err)),
+            message: Cow::from(format!("Failed lock: {err}")),
         })?;
         *lock = params;
         Ok(Success::new(true))
@@ -254,7 +254,7 @@ impl Backend {
             .map_err(|err| Error {
                 code: tower_lsp::jsonrpc::ErrorCode::from(69),
                 data: None,
-                message: Cow::from(format!("Failed to get completions: {}", err)),
+                message: Cow::from(format!("Failed to get completions: {err}")),
             })?;
         #[cfg(not(test))]
         let mut completion_list = vec![];
@@ -262,16 +262,16 @@ impl Backend {
         // if self.dev_mode
         if false {
             completion_list.push(
-                r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+                r#"fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = pos)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
   return sg
 }
-const part001 = cube([0,0], 20)
-    |> close(%)
+part001 = cube(pos = [0,0], scale = 20)
+    |> close()
     |> extrude(length=20)"#
                     .to_string(),
             );
@@ -294,7 +294,7 @@ const part001 = cube([0,0], 20)
 
     pub async fn accept_completion(&self, params: CopilotAcceptCompletionParams) {
         self.client
-            .log_message(MessageType::INFO, format!("Accepted completions: {:?}", params))
+            .log_message(MessageType::INFO, format!("Accepted completions: {params:?}"))
             .await;
 
         // Get the original telemetry data.
@@ -303,7 +303,7 @@ const part001 = cube([0,0], 20)
         };
 
         self.client
-            .log_message(MessageType::INFO, format!("Original telemetry: {:?}", original))
+            .log_message(MessageType::INFO, format!("Original telemetry: {original:?}"))
             .await;
 
         // TODO: Send the telemetry data to the zoo api.
@@ -311,7 +311,7 @@ const part001 = cube([0,0], 20)
 
     pub async fn reject_completions(&self, params: CopilotRejectCompletionParams) {
         self.client
-            .log_message(MessageType::INFO, format!("Rejected completions: {:?}", params))
+            .log_message(MessageType::INFO, format!("Rejected completions: {params:?}"))
             .await;
 
         // Get the original telemetry data.
@@ -323,7 +323,7 @@ const part001 = cube([0,0], 20)
         }
 
         self.client
-            .log_message(MessageType::INFO, format!("Original telemetry: {:?}", originals))
+            .log_message(MessageType::INFO, format!("Original telemetry: {originals:?}"))
             .await;
 
         // TODO: Send the telemetry data to the zoo api.

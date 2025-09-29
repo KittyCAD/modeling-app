@@ -1,5 +1,6 @@
-use std::{collections::HashSet, fmt, str::FromStr};
+use std::{fmt, str::FromStr};
 
+use indexmap::IndexMap;
 use regex::Regex;
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
@@ -7,95 +8,176 @@ use tower_lsp::lsp_types::{
 };
 
 use crate::{
+    ModuleId,
     execution::annotations,
     parsing::{
-        ast::types::{Annotation, ImportSelector, Node, PrimitiveType, Type, VariableKind},
+        ast::types::{
+            Annotation, Expr, ImportSelector, ItemVisibility, LiteralValue, Node, NonCodeValue, VariableKind,
+        },
         token::NumericSuffix,
     },
-    ModuleId,
 };
 
-pub fn walk_prelude() -> Vec<DocData> {
-    let mut visitor = CollectionVisitor::default();
-    visitor.visit_module("prelude", "").unwrap();
-    visitor.result
+pub fn walk_prelude() -> ModData {
+    visit_module("prelude", "", WalkForNames::All).unwrap()
 }
 
-#[derive(Debug, Clone, Default)]
-struct CollectionVisitor {
-    name: String,
-    result: Vec<DocData>,
-    id: usize,
+#[derive(Clone, Debug)]
+enum WalkForNames<'a> {
+    All,
+    Selected(Vec<&'a str>),
 }
 
-impl CollectionVisitor {
-    fn visit_module(&mut self, name: &str, preferred_prefix: &str) -> Result<(), String> {
-        let old_name = std::mem::replace(&mut self.name, name.to_owned());
-        let source = crate::modules::read_std(name).unwrap();
-        let parsed = crate::parsing::parse_str(source, ModuleId::from_usize(self.id))
-            .parse_errs_as_err()
-            .unwrap();
-        self.id += 1;
+impl<'a> WalkForNames<'a> {
+    fn contains(&self, name: &str) -> bool {
+        match self {
+            WalkForNames::All => true,
+            WalkForNames::Selected(names) => names.contains(&name),
+        }
+    }
 
-        for n in &parsed.body {
-            match n {
-                crate::parsing::ast::types::BodyItem::ImportStatement(import) if !import.visibility.is_default() => {
-                    match &import.path {
-                        crate::parsing::ast::types::ImportPath::Std { path } => {
-                            match import.selector {
-                                ImportSelector::Glob(..) => self.visit_module(&path[1], "")?,
-                                ImportSelector::None { .. } => {
-                                    self.visit_module(&path[1], &format!("{}::", import.module_name().unwrap()))?
+    fn intersect(&self, names: impl Iterator<Item = &'a str>) -> Self {
+        match self {
+            WalkForNames::All => WalkForNames::Selected(names.collect()),
+            WalkForNames::Selected(mine) => WalkForNames::Selected(names.filter(|n| mine.contains(n)).collect()),
+        }
+    }
+}
+
+fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Result<ModData, String> {
+    let mut result = ModData::new(name, preferred_prefix);
+
+    let source = crate::modules::read_std(name).unwrap();
+    let parsed = crate::parsing::parse_str(source, ModuleId::from_usize(0))
+        .parse_errs_as_err()
+        .unwrap();
+
+    // TODO handle examples; use with_comments
+    let mut summary = String::new();
+    let mut description = None;
+    for n in &parsed.non_code_meta.start_nodes {
+        match &n.value {
+            NonCodeValue::BlockComment { value, .. } if value.starts_with('/') => {
+                let line = value[1..].trim();
+                if line.is_empty() {
+                    match &mut description {
+                        None => description = Some(String::new()),
+                        Some(d) => d.push_str("\n\n"),
+                    }
+                } else {
+                    match &mut description {
+                        None => {
+                            summary.push_str(line);
+                            summary.push(' ');
+                        }
+                        Some(d) => {
+                            d.push_str(line);
+                            d.push(' ');
+                        }
+                    }
+                }
+            }
+            _ => break,
+        }
+    }
+    if !summary.is_empty() {
+        result.summary = Some(summary);
+    }
+    result.description = description;
+
+    'items: for n in &parsed.body {
+        if n.visibility() != ItemVisibility::Export {
+            continue;
+        }
+        match n {
+            crate::parsing::ast::types::BodyItem::ImportStatement(import) => match &import.path {
+                crate::parsing::ast::types::ImportPath::Std { path } => {
+                    // Just hide modules where the import is marked as experimental.
+                    for attr in &import.outer_attrs {
+                        if let Annotation {
+                            name: None,
+                            properties: Some(props),
+                            ..
+                        } = &attr.inner
+                        {
+                            for p in props {
+                                if p.key.name == annotations::EXPERIMENTAL {
+                                    continue 'items;
                                 }
-                                // Only supports glob or whole-module imports for now.
-                                _ => unimplemented!(),
                             }
                         }
-                        p => return Err(format!("Unexpected import: `{p}`")),
+                    }
+
+                    let m = match &import.selector {
+                        ImportSelector::Glob(..) => Some(visit_module(&path[1], "", names.clone())?),
+                        ImportSelector::None { .. } => {
+                            let name = import.module_name().unwrap();
+                            if names.contains(&name) {
+                                Some(visit_module(&path[1], &format!("{name}::"), WalkForNames::All)?)
+                            } else {
+                                None
+                            }
+                        }
+                        ImportSelector::List { items } => Some(visit_module(
+                            &path[1],
+                            "",
+                            names.intersect(items.iter().map(|n| &*n.name.name)),
+                        )?),
+                    };
+                    if let Some(m) = m {
+                        result.children.insert(format!("M:{}", m.qual_name), DocData::Mod(m));
                     }
                 }
-                crate::parsing::ast::types::BodyItem::VariableDeclaration(var) if !var.visibility.is_default() => {
-                    let qual_name = if self.name == "prelude" {
-                        "std::".to_owned()
-                    } else {
-                        format!("std::{}::", self.name)
-                    };
-                    let mut dd = match var.kind {
-                        VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual_name, preferred_prefix)),
-                        VariableKind::Const => DocData::Const(ConstData::from_ast(var, qual_name, preferred_prefix)),
-                    };
-
-                    dd.with_meta(&var.outer_attrs);
-                    for a in &var.outer_attrs {
-                        dd.with_comments(&a.pre_comments);
-                    }
-                    dd.with_comments(n.get_comments());
-
-                    self.result.push(dd);
+                p => return Err(format!("Unexpected import: `{p}`")),
+            },
+            crate::parsing::ast::types::BodyItem::VariableDeclaration(var) => {
+                if !names.contains(var.name()) {
+                    continue;
                 }
-                crate::parsing::ast::types::BodyItem::TypeDeclaration(ty) if !ty.visibility.is_default() => {
-                    let qual_name = if self.name == "prelude" {
-                        "std::".to_owned()
-                    } else {
-                        format!("std::{}::", self.name)
-                    };
-                    let mut dd = DocData::Ty(TyData::from_ast(ty, qual_name, preferred_prefix));
-
-                    dd.with_meta(&ty.outer_attrs);
-                    for a in &ty.outer_attrs {
-                        dd.with_comments(&a.pre_comments);
+                let qual = format!("{}::", &result.qual_name);
+                let mut dd = match var.kind {
+                    VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual, preferred_prefix, &result.name)),
+                    VariableKind::Const => {
+                        DocData::Const(ConstData::from_ast(var, qual, preferred_prefix, &result.name))
                     }
-                    dd.with_comments(n.get_comments());
-
-                    self.result.push(dd);
+                };
+                let key = format!("I:{}", dd.qual_name());
+                if result.children.contains_key(&key) {
+                    continue;
                 }
-                _ => {}
+
+                dd.with_meta(&var.outer_attrs);
+                for a in &var.outer_attrs {
+                    dd.with_comments(&a.pre_comments);
+                }
+                dd.with_comments(n.get_comments());
+
+                result.children.insert(key, dd);
             }
-        }
+            crate::parsing::ast::types::BodyItem::TypeDeclaration(ty) => {
+                if !names.contains(ty.name()) {
+                    continue;
+                }
+                let qual = format!("{}::", &result.qual_name);
+                let mut dd = DocData::Ty(TyData::from_ast(ty, qual, preferred_prefix, &result.name));
+                let key = format!("T:{}", dd.qual_name());
+                if result.children.contains_key(&key) {
+                    continue;
+                }
 
-        self.name = old_name;
-        Ok(())
+                dd.with_meta(&ty.outer_attrs);
+                for a in &ty.outer_attrs {
+                    dd.with_comments(&a.pre_comments);
+                }
+                dd.with_comments(n.get_comments());
+
+                result.children.insert(key, dd);
+            }
+            _ => {}
+        }
     }
+
+    Ok(result)
 }
 
 #[derive(Debug, Clone)]
@@ -103,6 +185,7 @@ pub enum DocData {
     Fn(FnData),
     Const(ConstData),
     Ty(TyData),
+    Mod(ModData),
 }
 
 impl DocData {
@@ -111,27 +194,61 @@ impl DocData {
             DocData::Fn(f) => &f.name,
             DocData::Const(c) => &c.name,
             DocData::Ty(t) => &t.name,
+            DocData::Mod(m) => &m.name,
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn preferred_name(&self) -> &str {
+        match self {
+            DocData::Fn(f) => &f.preferred_name,
+            DocData::Const(c) => &c.preferred_name,
+            DocData::Ty(t) => &t.preferred_name,
+            DocData::Mod(m) => &m.preferred_name,
+        }
+    }
+
+    pub fn qual_name(&self) -> &str {
+        match self {
+            DocData::Fn(f) => &f.qual_name,
+            DocData::Const(c) => &c.qual_name,
+            DocData::Ty(t) => &t.qual_name,
+            DocData::Mod(m) => &m.qual_name,
+        }
+    }
+
+    /// The name of the module in which the item is declared, e.g., `sketch`
+    #[allow(dead_code)]
+    pub fn module_name(&self) -> &str {
+        match self {
+            DocData::Fn(f) => &f.module_name,
+            DocData::Const(c) => &c.module_name,
+            DocData::Ty(t) => &t.module_name,
+            DocData::Mod(m) => &m.module_name,
         }
     }
 
     #[allow(dead_code)]
     pub fn file_name(&self) -> String {
         match self {
-            DocData::Fn(f) => f.qual_name.replace("::", "-"),
+            DocData::Fn(f) => format!("functions/{}", f.qual_name.replace("::", "-")),
             DocData::Const(c) => format!("consts/{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => format!("types/{}", t.name.clone()),
+            DocData::Ty(t) => format!("types/{}", t.qual_name.replace("::", "-")),
+            DocData::Mod(m) => format!("modules/{}", m.qual_name.replace("::", "-")),
         }
     }
 
     #[allow(dead_code)]
     pub fn example_name(&self) -> String {
         match self {
-            DocData::Fn(f) => f.qual_name.replace("::", "-"),
+            DocData::Fn(f) => format!("fn_{}", f.qual_name.replace("::", "-")),
             DocData::Const(c) => format!("const_{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => t.name.clone(),
+            DocData::Ty(t) => format!("ty_{}", t.qual_name.replace("::", "-")),
+            DocData::Mod(_) => unimplemented!(),
         }
     }
 
+    /// The path to the module through which the item is accessed, e.g., `std::sketch`
     #[allow(dead_code)]
     pub fn mod_name(&self) -> String {
         let q = match self {
@@ -143,6 +260,7 @@ impl DocData {
                 }
                 &t.qual_name
             }
+            DocData::Mod(m) => &m.qual_name,
         };
         q[0..q.rfind("::").unwrap()].to_owned()
     }
@@ -153,14 +271,16 @@ impl DocData {
             DocData::Fn(f) => f.properties.doc_hidden || f.properties.deprecated,
             DocData::Const(c) => c.properties.doc_hidden || c.properties.deprecated,
             DocData::Ty(t) => t.properties.doc_hidden || t.properties.deprecated,
+            DocData::Mod(_) => false,
         }
     }
 
-    pub fn to_completion_item(&self) -> CompletionItem {
+    pub fn to_completion_item(&self) -> Option<CompletionItem> {
         match self {
-            DocData::Fn(f) => f.to_completion_item(),
-            DocData::Const(c) => c.to_completion_item(),
-            DocData::Ty(t) => t.to_completion_item(),
+            DocData::Fn(f) => Some(f.to_completion_item()),
+            DocData::Const(c) => Some(c.to_completion_item()),
+            DocData::Ty(t) => Some(t.to_completion_item()),
+            DocData::Mod(_) => None,
         }
     }
 
@@ -169,6 +289,7 @@ impl DocData {
             DocData::Fn(f) => Some(f.to_signature_help()),
             DocData::Const(_) => None,
             DocData::Ty(_) => None,
+            DocData::Mod(_) => None,
         }
     }
 
@@ -177,6 +298,7 @@ impl DocData {
             DocData::Fn(f) => f.with_meta(attrs),
             DocData::Const(c) => c.with_meta(attrs),
             DocData::Ty(t) => t.with_meta(attrs),
+            DocData::Mod(m) => m.with_meta(attrs),
         }
     }
 
@@ -185,17 +307,25 @@ impl DocData {
             DocData::Fn(f) => f.with_comments(comments),
             DocData::Const(c) => c.with_comments(comments),
             DocData::Ty(t) => t.with_comments(comments),
+            DocData::Mod(m) => m.with_comments(comments),
         }
     }
 
-    #[cfg(test)]
-    fn examples(&self) -> impl Iterator<Item = &String> {
+    fn expect_mod(&self) -> &ModData {
         match self {
-            DocData::Fn(f) => f.examples.iter(),
-            DocData::Const(c) => c.examples.iter(),
-            DocData::Ty(t) => t.examples.iter(),
+            DocData::Mod(m) => m,
+            _ => unreachable!(),
         }
-        .filter_map(|(s, p)| (!p.norun).then_some(s))
+    }
+
+    #[allow(dead_code)]
+    pub(super) fn summary(&self) -> Option<&String> {
+        match self {
+            DocData::Fn(f) => f.summary.as_ref(),
+            DocData::Const(c) => c.summary.as_ref(),
+            DocData::Ty(t) => t.summary.as_ref(),
+            DocData::Mod(m) => m.summary.as_ref(),
+        }
     }
 }
 
@@ -217,6 +347,8 @@ pub struct ConstData {
     /// Code examples.
     /// These are tested and we know they compile and execute.
     pub examples: Vec<(String, ExampleProperties)>,
+
+    pub module_name: String,
 }
 
 impl ConstData {
@@ -224,6 +356,7 @@ impl ConstData {
         var: &crate::parsing::ast::types::VariableDeclaration,
         mut qual_name: String,
         preferred_prefix: &str,
+        module_name: &str,
     ) -> Self {
         assert_eq!(var.kind, crate::parsing::ast::types::VariableKind::Const);
 
@@ -242,6 +375,7 @@ impl ConstData {
                     crate::parsing::ast::types::LiteralValue::Bool { .. } => "boolean".to_owned(),
                 }),
             ),
+            crate::parsing::ast::types::Expr::AscribedExpression(e) => (None, Some(e.ty.to_string())),
             _ => (None, None),
         };
 
@@ -257,12 +391,14 @@ impl ConstData {
             properties: Properties {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
+                experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
             },
             summary: None,
             description: None,
             examples: Vec::new(),
+            module_name: module_name.to_owned(),
         }
     }
 
@@ -312,6 +448,74 @@ impl ConstData {
 }
 
 #[derive(Debug, Clone)]
+pub struct ModData {
+    pub name: String,
+    /// How the module is indexed, etc.
+    pub preferred_name: String,
+    /// The fully qualified name.
+    pub qual_name: String,
+    /// The summary of the module.
+    pub summary: Option<String>,
+    /// The description of the module.
+    pub description: Option<String>,
+    pub module_name: String,
+
+    pub children: IndexMap<String, DocData>,
+}
+
+impl ModData {
+    fn new(name: &str, preferred_prefix: &str) -> Self {
+        let (name, qual_name, module_name) = if name == "prelude" {
+            ("std", "std".to_owned(), String::new())
+        } else {
+            (name, format!("std::{name}"), "std".to_owned())
+        };
+        Self {
+            preferred_name: format!("{preferred_prefix}{name}"),
+            name: name.to_owned(),
+            qual_name,
+            summary: None,
+            description: None,
+            children: IndexMap::new(),
+            module_name,
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn find_by_name(&self, name: &str) -> Option<&DocData> {
+        if let Some(result) = self
+            .children
+            .values()
+            .find(|dd| dd.name() == name && !matches!(dd, DocData::Mod(_)))
+        {
+            return Some(result);
+        }
+
+        #[allow(clippy::iter_over_hash_type)]
+        for (k, v) in &self.children {
+            if k.starts_with("M:")
+                && let Some(result) = v.expect_mod().find_by_name(name)
+            {
+                return Some(result);
+            }
+        }
+
+        None
+    }
+
+    pub fn all_docs(&self) -> impl Iterator<Item = &DocData> {
+        let result = self.children.values();
+        // TODO really this should be recursive, currently assume std is only one module deep.
+        result.chain(
+            self.children
+                .iter()
+                .filter(|(k, _)| k.starts_with("M:"))
+                .flat_map(|(_, d)| d.expect_mod().children.values()),
+        )
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct FnData {
     /// The name of the function.
     pub name: String,
@@ -332,8 +536,8 @@ pub struct FnData {
     /// Code examples.
     /// These are tested and we know they compile and execute.
     pub examples: Vec<(String, ExampleProperties)>,
-    #[allow(dead_code)]
-    pub referenced_types: Vec<String>,
+
+    pub module_name: String,
 }
 
 impl FnData {
@@ -341,6 +545,7 @@ impl FnData {
         var: &crate::parsing::ast::types::VariableDeclaration,
         mut qual_name: String,
         preferred_prefix: &str,
+        module_name: &str,
     ) -> Self {
         assert_eq!(var.kind, crate::parsing::ast::types::VariableKind::Fn);
         let crate::parsing::ast::types::Expr::FunctionExpression(expr) = &var.declaration.init else {
@@ -348,16 +553,6 @@ impl FnData {
         };
         let name = var.declaration.id.name.clone();
         qual_name.push_str(&name);
-
-        let mut referenced_types = HashSet::new();
-        if let Some(t) = &expr.return_type {
-            collect_type_names(&mut referenced_types, t);
-        }
-        for p in &expr.params {
-            if let Some(t) = &p.type_ {
-                collect_type_names(&mut referenced_types, t);
-            }
-        }
 
         FnData {
             preferred_name: format!("{preferred_prefix}{name}"),
@@ -368,13 +563,14 @@ impl FnData {
             properties: Properties {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
+                experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
             },
             summary: None,
             description: None,
             examples: Vec::new(),
-            referenced_types: referenced_types.into_iter().collect(),
+            module_name: module_name.to_owned(),
         }
     }
 
@@ -444,12 +640,21 @@ impl FnData {
         }
     }
 
-    #[allow(clippy::literal_string_with_formatting_args)]
     pub(super) fn to_autocomplete_snippet(&self) -> String {
         if self.name == "loft" {
-            return "loft([${0:sketch000}, ${1:sketch001}])${}".to_owned();
+            return "loft([${0:sketch000}, ${1:sketch001}])".to_owned();
+        } else if self.name == "union" {
+            return "union([${0:extrude001}, ${1:extrude002}])".to_owned();
+        } else if self.name == "subtract" {
+            return "subtract([${0:extrude001}], tools = [${1:extrude002}])".to_owned();
+        } else if self.name == "intersect" {
+            return "intersect([${0:extrude001}, ${1:extrude002}])".to_owned();
+        } else if self.name == "clone" {
+            return "clone(${0:part001})".to_owned();
         } else if self.name == "hole" {
-            return "hole(${0:holeSketch}, ${1:%})${}".to_owned();
+            return "hole(${0:holeSketch}, ${1:%})".to_owned();
+        } else if self.name == "extrude" {
+            return "extrude(length = ${0:10})".to_owned();
         }
         let mut args = Vec::new();
         let mut index = 0;
@@ -459,18 +664,16 @@ impl FnData {
                 args.push(arg_str);
             }
         }
-        // We end with ${} so you can jump to the end of the snippet.
-        // After the last argument.
-        format!("{}({})${{}}", self.preferred_name, args.join(", "))
+        format!("{}({})", self.preferred_name, args.join(", "))
     }
 
-    fn to_signature_help(&self) -> SignatureHelp {
+    pub(crate) fn to_signature_help(&self) -> SignatureHelp {
         // TODO Fill this in based on the current position of the cursor.
         let active_parameter = None;
 
         SignatureHelp {
             signatures: vec![SignatureInformation {
-                label: self.preferred_name.clone(),
+                label: self.preferred_name.clone() + &self.fn_signature(),
                 documentation: self.short_docs().map(|s| {
                     Documentation::MarkupContent(MarkupContent {
                         kind: MarkupKind::Markdown,
@@ -489,6 +692,7 @@ impl FnData {
 #[derive(Debug, Clone)]
 pub struct Properties {
     pub deprecated: bool,
+    pub experimental: bool,
     pub doc_hidden: bool,
     #[allow(dead_code)]
     pub exported: bool,
@@ -499,6 +703,7 @@ pub struct Properties {
 #[derive(Debug, Clone)]
 pub struct ExampleProperties {
     pub norun: bool,
+    pub no3d: bool,
     pub inline: bool,
 }
 
@@ -515,6 +720,8 @@ pub struct ArgData {
     /// This is helpful if the type is really basic, like "number" -- that won't tell the user much about
     /// how this argument is meant to be used.
     pub docs: Option<String>,
+    /// If given, LSP should use these as completion items.
+    pub snippet_array: Option<Vec<String>>,
 }
 
 impl fmt::Display for ArgData {
@@ -542,8 +749,9 @@ pub enum ArgKind {
 impl ArgData {
     fn from_ast(arg: &crate::parsing::ast::types::Parameter) -> Self {
         let mut result = ArgData {
+            snippet_array: Default::default(),
             name: arg.identifier.name.clone(),
-            ty: arg.type_.as_ref().map(|t| t.to_string()),
+            ty: arg.param_type.as_ref().map(|t| t.to_string()),
             docs: None,
             override_in_snippet: None,
             kind: if arg.labeled {
@@ -561,15 +769,37 @@ impl ArgData {
             } = &attr.inner
             {
                 for p in props {
-                    if p.key.name == "include_in_snippet" {
+                    if p.key.name == "includeInSnippet" {
                         if let Some(b) = p.value.literal_bool() {
                             result.override_in_snippet = Some(b);
                         } else {
                             panic!(
-                                "Invalid value for `include_in_snippet`, expected bool literal, found {:?}",
+                                "Invalid value for `includeInSnippet`, expected bool literal, found {:?}",
                                 p.value
                             );
                         }
+                    } else if p.key.name == "snippetArray" {
+                        let Expr::ArrayExpression(arr) = &p.value else {
+                            panic!(
+                                "Invalid value for `snippetArray`, expected array literal, found {:?}",
+                                p.value
+                            );
+                        };
+                        let mut items = Vec::new();
+                        for s in &arr.elements {
+                            let Expr::Literal(lit) = s else {
+                                panic!(
+                                    "Invalid value in `snippetArray`, all items must be string literals but found {s:?}"
+                                );
+                            };
+                            let LiteralValue::String(litstr) = &lit.inner.value else {
+                                panic!(
+                                    "Invalid value in `snippetArray`, all items must be string literals but found {s:?}"
+                                );
+                            };
+                            items.push(litstr.to_owned());
+                        }
+                        result.snippet_array = Some(items);
                     }
                 }
             }
@@ -591,25 +821,59 @@ impl ArgData {
         } else {
             format!("{} = ", self.name)
         };
+        if let Some(vals) = &self.snippet_array {
+            let mut snippet = label.to_owned();
+            snippet.push('[');
+            let n = vals.len();
+            for (i, val) in vals.iter().enumerate() {
+                snippet.push_str(&format!("${{{}:{}}}", index + i, val));
+                if i != n - 1 {
+                    snippet.push_str(", ");
+                }
+            }
+            snippet.push(']');
+            return Some((index + n - 1, snippet));
+        }
         match self.ty.as_deref() {
-            Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{}:3.14}}"#, index))),
-            Some("Point2d") => Some((
-                index + 1,
-                format!(r#"{label}[${{{}:3.14}}, ${{{}:3.14}}]"#, index, index + 1),
-            )),
+            Some("Sketch") if self.kind == ArgKind::Special => None,
+            Some(s) if s.starts_with("number") => {
+                let value = match &*self.name {
+                    "angleStart" => "0deg",
+                    "angleEnd" => "180deg",
+                    "angle" => "180deg",
+                    "arcDegrees" => "360deg",
+                    _ => "10",
+                };
+                Some((index, format!(r#"{label}${{{index}:{value}}}"#)))
+            }
+            Some("Point2d") => Some((index + 1, format!(r#"{label}[${{{}:0}}, ${{{}:0}}]"#, index, index + 1))),
             Some("Point3d") => Some((
                 index + 2,
                 format!(
-                    r#"{label}[${{{}:3.14}}, ${{{}:3.14}}, ${{{}:3.14}}]"#,
+                    r#"{label}[${{{}:0}}, ${{{}:0}}, ${{{}:0}}]"#,
                     index,
                     index + 1,
                     index + 2
                 ),
             )),
-            Some("Axis2d | Edge") | Some("Axis3d | Edge") => Some((index, format!(r#"{label}${{{}:X}}"#, index))),
+            Some("Axis2d | Edge") | Some("Axis3d | Edge") => Some((index, format!(r#"{label}${{{index}:X}}"#))),
+            Some("Sketch") | Some("Sketch | Helix") => Some((index, format!(r#"{label}${{{index}:sketch000}}"#))),
+            Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
+            Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
+            Some("Plane") | Some("Solid | Plane") => Some((index, format!(r#"{label}${{{index}:XY}}"#))),
+            Some("[TaggedFace; 2]") => Some((
+                index + 1,
+                format!(r#"{label}[${{{}:tag}}, ${{{}:tag}}]"#, index, index + 1),
+            )),
 
-            Some("string") => Some((index, format!(r#"{label}${{{}:"string"}}"#, index))),
-            Some("bool") => Some((index, format!(r#"{label}${{{}:false}}"#, index))),
+            Some("string") => {
+                if self.name == "color" {
+                    Some((index, format!(r"{label}${{{}:{}}}", index, "\"#ff0000\"")))
+                } else {
+                    Some((index, format!(r#"{label}${{{index}:"string"}}"#)))
+                }
+            }
+            Some("bool") => Some((index, format!(r#"{label}${{{index}:false}}"#))),
             _ => None,
         }
     }
@@ -655,8 +919,8 @@ pub struct TyData {
     /// Code examples.
     /// These are tested and we know they compile and execute.
     pub examples: Vec<(String, ExampleProperties)>,
-    #[allow(dead_code)]
-    pub referenced_types: Vec<String>,
+
+    pub module_name: String,
 }
 
 impl TyData {
@@ -664,13 +928,10 @@ impl TyData {
         ty: &crate::parsing::ast::types::TypeDeclaration,
         mut qual_name: String,
         preferred_prefix: &str,
+        module_name: &str,
     ) -> Self {
         let name = ty.name.name.clone();
         qual_name.push_str(&name);
-        let mut referenced_types = HashSet::new();
-        if let Some(t) = &ty.alias {
-            collect_type_names(&mut referenced_types, t);
-        }
 
         TyData {
             preferred_name: format!("{preferred_prefix}{name}"),
@@ -679,6 +940,7 @@ impl TyData {
             properties: Properties {
                 exported: !ty.visibility.is_default(),
                 deprecated: false,
+                experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
             },
@@ -686,7 +948,7 @@ impl TyData {
             summary: None,
             description: None,
             examples: Vec::new(),
-            referenced_types: referenced_types.into_iter().collect(),
+            module_name: module_name.to_owned(),
         }
     }
 
@@ -752,6 +1014,7 @@ trait ApplyMeta {
         examples: Vec<(String, ExampleProperties)>,
     );
     fn deprecated(&mut self, deprecated: bool);
+    fn experimental(&mut self, experimental: bool);
     fn doc_hidden(&mut self, doc_hidden: bool);
     fn impl_kind(&mut self, impl_kind: annotations::Impl);
 
@@ -761,7 +1024,7 @@ trait ApplyMeta {
         }
 
         let mut summary = None;
-        let mut description = None;
+        let mut description: Option<String> = None;
         let mut example: Option<(String, ExampleProperties)> = None;
         let mut examples = Vec::new();
         for l in comments.iter().filter(|l| l.starts_with("///")).map(|l| {
@@ -771,22 +1034,6 @@ trait ApplyMeta {
                 &l[3..]
             }
         }) {
-            if description.is_none() && summary.is_none() {
-                summary = Some(l.to_owned());
-                continue;
-            }
-            if description.is_none() {
-                if l.is_empty() {
-                    description = Some(String::new());
-                } else {
-                    description = summary;
-                    summary = None;
-                    let d = description.as_mut().unwrap();
-                    d.push('\n');
-                    d.push_str(l);
-                }
-                continue;
-            }
             #[allow(clippy::manual_strip)]
             if l.starts_with("```") {
                 if let Some((e, p)) = example {
@@ -800,14 +1047,16 @@ trait ApplyMeta {
                     let args = l[3..].split(',');
                     let mut inline = false;
                     let mut norun = false;
+                    let mut no3d = false;
                     for a in args {
                         match a.trim() {
                             "inline" => inline = true,
                             "norun" | "no_run" => norun = true,
+                            "no3d" | "no_3d" => no3d = true,
                             _ => {}
                         }
                     }
-                    example = Some((String::new(), ExampleProperties { norun, inline }));
+                    example = Some((String::new(), ExampleProperties { norun, no3d, inline }));
 
                     if inline {
                         description.as_mut().unwrap().push_str("```js\n");
@@ -822,19 +1071,43 @@ trait ApplyMeta {
                     continue;
                 }
             }
+
+            // An empty line outside of an example. This either starts the description (with or
+            // without a summary) or adds a blank line to the description.
+            if l.is_empty() {
+                match &mut description {
+                    Some(d) => {
+                        d.push('\n');
+                    }
+                    None => description = Some(String::new()),
+                }
+                continue;
+            }
+
+            // Our first line, start the summary.
+            if description.is_none() && summary.is_none() {
+                summary = Some(l.to_owned());
+                continue;
+            }
+
+            // Append the line to either the description or summary.
             match &mut description {
                 Some(d) => {
                     d.push_str(l);
                     d.push('\n');
                 }
-                None => unreachable!(),
+                None => {
+                    let s = summary.as_mut().unwrap();
+                    s.push(' ');
+                    s.push_str(l);
+                }
             }
         }
         assert!(example.is_none());
-        if let Some(d) = &mut description {
-            if d.is_empty() {
-                description = None;
-            }
+        if let Some(d) = &mut description
+            && d.is_empty()
+        {
+            description = None;
         }
 
         self.apply_docs(
@@ -859,9 +1132,14 @@ trait ApplyMeta {
                                 self.impl_kind(annotations::Impl::from_str(s).unwrap());
                             }
                         }
-                        "deprecated" => {
+                        annotations::DEPRECATED => {
                             if let Some(b) = p.value.literal_bool() {
                                 self.deprecated(b);
+                            }
+                        }
+                        annotations::EXPERIMENTAL => {
+                            if let Some(b) = p.value.literal_bool() {
+                                self.experimental(b);
                             }
                         }
                         "doc_hidden" => {
@@ -893,6 +1171,10 @@ impl ApplyMeta for ConstData {
         self.properties.deprecated = deprecated;
     }
 
+    fn experimental(&mut self, experimental: bool) {
+        self.properties.experimental = experimental;
+    }
+
     fn doc_hidden(&mut self, doc_hidden: bool) {
         self.properties.doc_hidden = doc_hidden;
     }
@@ -916,6 +1198,10 @@ impl ApplyMeta for FnData {
         self.properties.deprecated = deprecated;
     }
 
+    fn experimental(&mut self, experimental: bool) {
+        self.properties.experimental = experimental;
+    }
+
     fn doc_hidden(&mut self, doc_hidden: bool) {
         self.properties.doc_hidden = doc_hidden;
     }
@@ -923,6 +1209,33 @@ impl ApplyMeta for FnData {
     fn impl_kind(&mut self, impl_kind: annotations::Impl) {
         self.properties.impl_kind = impl_kind;
     }
+}
+
+impl ApplyMeta for ModData {
+    fn apply_docs(
+        &mut self,
+        summary: Option<String>,
+        description: Option<String>,
+        examples: Vec<(String, ExampleProperties)>,
+    ) {
+        self.summary = summary;
+        self.description = description;
+        assert!(examples.is_empty());
+    }
+
+    fn deprecated(&mut self, deprecated: bool) {
+        assert!(!deprecated);
+    }
+
+    fn experimental(&mut self, experimental: bool) {
+        assert!(!experimental);
+    }
+
+    fn doc_hidden(&mut self, doc_hidden: bool) {
+        assert!(!doc_hidden);
+    }
+
+    fn impl_kind(&mut self, _: annotations::Impl) {}
 }
 
 impl ApplyMeta for TyData {
@@ -939,6 +1252,10 @@ impl ApplyMeta for TyData {
 
     fn deprecated(&mut self, deprecated: bool) {
         self.properties.deprecated = deprecated;
+    }
+
+    fn experimental(&mut self, experimental: bool) {
+        self.properties.experimental = experimental;
     }
 
     fn doc_hidden(&mut self, doc_hidden: bool) {
@@ -972,6 +1289,10 @@ impl ApplyMeta for ArgData {
         unreachable!();
     }
 
+    fn experimental(&mut self, _experimental: bool) {
+        unreachable!();
+    }
+
     fn doc_hidden(&mut self, _doc_hidden: bool) {
         unreachable!();
     }
@@ -981,53 +1302,24 @@ impl ApplyMeta for ArgData {
     }
 }
 
-fn collect_type_names(acc: &mut HashSet<String>, ty: &Type) {
-    match ty {
-        Type::Primitive(primitive_type) => {
-            acc.insert(collect_type_names_from_primitive(primitive_type));
-        }
-        Type::Array { ty, .. } => {
-            acc.insert(collect_type_names_from_primitive(ty));
-        }
-        Type::Union { tys } => tys.iter().for_each(|t| {
-            acc.insert(collect_type_names_from_primitive(t));
-        }),
-        Type::Object { properties } => properties.iter().for_each(|p| {
-            if let Some(t) = &p.type_ {
-                collect_type_names(acc, t)
-            }
-        }),
-    }
-}
-
-fn collect_type_names_from_primitive(ty: &PrimitiveType) -> String {
-    match ty {
-        PrimitiveType::String => "string".to_owned(),
-        PrimitiveType::Number(_) => "number".to_owned(),
-        PrimitiveType::Boolean => "bool".to_owned(),
-        PrimitiveType::Tag => "tag".to_owned(),
-        PrimitiveType::Named(id) => id.name.clone(),
-    }
-}
-
 #[cfg(test)]
 mod test {
+    use kcl_derive_docs::{for_all_example_test, for_each_example_test};
+
     use super::*;
 
     #[test]
     fn smoke() {
         let result = walk_prelude();
-        for d in result {
-            if let DocData::Const(d) = d {
-                if d.name == "PI" {
-                    assert!(d.value.unwrap().starts_with('3'));
-                    assert_eq!(d.ty, Some("number".to_owned()));
-                    assert_eq!(d.qual_name, "std::math::PI");
-                    assert!(d.summary.is_some());
-                    assert!(!d.examples.is_empty());
-                    return;
-                }
-            }
+        if let DocData::Const(d) = result.find_by_name("PI").unwrap()
+            && d.name == "PI"
+        {
+            assert!(d.value.as_ref().unwrap().starts_with('3'));
+            assert_eq!(d.ty, Some("number(_?)".to_owned()));
+            assert_eq!(d.qual_name, "std::math::PI");
+            assert!(d.summary.is_some());
+            assert!(!d.examples.is_empty());
+            return;
         }
         panic!("didn't find PI");
     }
@@ -1050,30 +1342,100 @@ mod test {
         );
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn test_examples() -> miette::Result<()> {
-        let std = walk_prelude();
-        for d in std {
-            for (i, eg) in d.examples().enumerate() {
-                let result = match crate::test_server::execute_and_snapshot(eg, None).await {
-                    Err(crate::errors::ExecError::Kcl(e)) => {
-                        return Err(miette::Report::new(crate::errors::Report {
-                            error: e.error,
-                            filename: format!("{}{i}", d.name()),
-                            kcl_source: eg.to_string(),
-                        }));
-                    }
-                    Err(other_err) => panic!("{}", other_err),
-                    Ok(img) => img,
+    #[for_all_example_test]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn missing_test_examples() {
+        fn check_mod(m: &ModData) {
+            for d in m.children.values() {
+                let DocData::Fn(f) = d else {
+                    continue;
                 };
-                twenty_twenty::assert_image(
-                    format!("tests/outputs/serial_test_example_{}{i}.png", d.example_name()),
-                    &result,
-                    0.99,
-                );
+
+                for (i, (_, props)) in f.examples.iter().enumerate() {
+                    if props.norun {
+                        continue;
+                    }
+                    let name = format!("{}-{i}", f.qual_name.replace("::", "-"));
+                    assert!(
+                        TEST_NAMES.contains(&&*name),
+                        "Missing test for example \"{name}\", maybe need to update kcl-derive-docs/src/example_tests.rs?"
+                    )
+                }
             }
         }
 
-        Ok(())
+        let data = walk_prelude();
+
+        check_mod(&data);
+        for m in data.children.values() {
+            if let DocData::Mod(m) = m {
+                check_mod(m);
+            }
+        }
+    }
+
+    #[for_each_example_test]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_examples() {
+        let std = walk_prelude();
+
+        let names = NAME.split('-');
+        let mut mods: Vec<_> = names.collect();
+        let number = mods.pop().unwrap();
+        let number: usize = number.parse().unwrap();
+        let name = mods.pop().unwrap();
+        let mut qualname = mods.join("::");
+        qualname.push_str("::");
+        qualname.push_str(name);
+
+        let data = if mods.len() == 1 {
+            &std
+        } else {
+            std.children.get(&format!("M:std::{}", mods[1])).unwrap().expect_mod()
+        };
+
+        let Some(DocData::Fn(d)) = data.children.get(&format!("I:{qualname}")) else {
+            panic!(
+                "Could not find data for {NAME} (missing a child entry for {qualname}), maybe need to update kcl-derive-docs/src/example_tests.rs?"
+            );
+        };
+
+        for (i, eg) in d.examples.iter().enumerate() {
+            if i != number {
+                continue;
+            }
+            let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None).await {
+                Err(crate::errors::ExecError::Kcl(e)) => {
+                    panic!("Error testing example {}{i}: {}", d.name, e.error.message());
+                }
+                Err(other_err) => panic!("{}", other_err),
+                Ok(img) => img,
+            };
+            if eg.1.norun {
+                return;
+            }
+            twenty_twenty::assert_image(
+                format!(
+                    "tests/outputs/serial_test_example_fn_{}{i}.png",
+                    qualname.replace("::", "-")
+                ),
+                &result.image,
+                0.99,
+            );
+            for gltf_file in result.gltf {
+                let path = format!(
+                    "tests/outputs/models/serial_test_example_fn_{}{i}_{}",
+                    qualname.replace("::", "-"),
+                    gltf_file.name,
+                );
+                let mut f = std::fs::File::create(path).expect("could not create file");
+                std::io::Write::write_all(&mut f, &gltf_file.contents).expect("could not write to file");
+            }
+            return;
+        }
+
+        panic!(
+            "Could not find data for {NAME} (no example {number}), maybe need to update kcl-derive-docs/src/example_tests.rs?"
+        );
     }
 }

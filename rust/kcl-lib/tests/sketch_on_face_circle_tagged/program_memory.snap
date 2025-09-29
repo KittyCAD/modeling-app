@@ -4,7 +4,8 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
 ---
 {
   "cube": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "myCircle": {
     "type": "TagIdentifier",
@@ -66,9 +67,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               20.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -85,9 +84,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               20.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -104,9 +101,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -123,38 +118,37 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -166,9 +160,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -177,16 +169,12 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "part002": {
@@ -201,9 +189,10 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 340,
-            "end": 349,
-            "start": 340,
+            "commentStart": 359,
+            "end": 368,
+            "moduleId": 0,
+            "start": 359,
             "type": "TagDeclarator",
             "value": "myCircle"
           },
@@ -230,9 +219,10 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 340,
-              "end": 349,
-              "start": 340,
+              "commentStart": 359,
+              "end": 368,
+              "moduleId": 0,
+              "start": 359,
               "type": "TagDeclarator",
               "value": "myCircle"
             },
@@ -241,9 +231,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -254,17 +242,14 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
+            "z": 0.0,
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -319,9 +304,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                     20.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -338,9 +321,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                     20.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -357,9 +338,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -376,38 +355,37 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
-                "type": "plane",
-                "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "value": "XY",
+                "id": "[uuid]",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": "mm"
                 },
+                "type": "plane",
+                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
-                },
-                "units": {
-                  "type": "Mm"
+                  "z": 1.0,
+                  "units": null
                 }
               },
               "start": {
@@ -419,9 +397,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                   0.0,
                   0.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -430,20 +406,14 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": 20.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm",
+            "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -454,9 +424,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             5.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -471,16 +439,12 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   }
 }

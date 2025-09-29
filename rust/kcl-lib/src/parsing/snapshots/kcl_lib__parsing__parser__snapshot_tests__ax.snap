@@ -7,23 +7,25 @@ expression: actual
     {
       "commentStart": 0,
       "declaration": {
-        "commentStart": 4,
-        "end": 91,
+        "commentStart": 0,
+        "end": 87,
         "id": {
-          "commentStart": 4,
-          "end": 11,
+          "commentStart": 0,
+          "end": 7,
+          "moduleId": 0,
           "name": "numbers",
-          "start": 4,
+          "start": 0,
           "type": "Identifier"
         },
         "init": {
-          "commentStart": 14,
+          "commentStart": 10,
           "elements": [
             {
-              "commentStart": 28,
-              "end": 29,
+              "commentStart": 24,
+              "end": 25,
+              "moduleId": 0,
               "raw": "1",
-              "start": 28,
+              "start": 24,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -32,10 +34,11 @@ expression: actual
               }
             },
             {
-              "commentStart": 43,
-              "end": 44,
+              "commentStart": 39,
+              "end": 40,
+              "moduleId": 0,
               "raw": "2",
-              "start": 43,
+              "start": 39,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -44,14 +47,16 @@ expression: actual
               }
             }
           ],
-          "end": 91,
+          "end": 87,
+          "moduleId": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "2": [
                 {
-                  "commentStart": 58,
-                  "end": 63,
-                  "start": 58,
+                  "commentStart": 54,
+                  "end": 59,
+                  "moduleId": 0,
+                  "start": 54,
                   "type": "NonCodeNode",
                   "value": {
                     "type": "blockComment",
@@ -62,9 +67,10 @@ expression: actual
               ],
               "3": [
                 {
-                  "commentStart": 76,
-                  "end": 81,
-                  "start": 76,
+                  "commentStart": 72,
+                  "end": 77,
+                  "moduleId": 0,
+                  "start": 72,
                   "type": "NonCodeNode",
                   "value": {
                     "type": "blockComment",
@@ -76,21 +82,24 @@ expression: actual
             },
             "startNodes": []
           },
-          "start": 14,
+          "start": 10,
           "type": "ArrayExpression",
           "type": "ArrayExpression"
         },
-        "start": 4,
+        "moduleId": 0,
+        "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 91,
+      "end": 87,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "commentStart": 0,
-  "end": 91,
+  "end": 87,
+  "moduleId": 0,
   "start": 0
 }

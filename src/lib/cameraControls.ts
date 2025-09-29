@@ -58,6 +58,29 @@ export function mouseControlsToCameraSystem(
   }
 }
 
+export function cameraSystemToMouseControl(
+  cameraSystem: CameraSystem
+): MouseControlType | undefined {
+  switch (cameraSystem) {
+    case 'Zoo':
+      return 'zoo'
+    case 'OnShape':
+      return 'onshape'
+    case 'Trackpad Friendly':
+      return 'trackpad_friendly'
+    case 'Solidworks':
+      return 'solidworks'
+    case 'NX':
+      return 'nx'
+    case 'Creo':
+      return 'creo'
+    case 'AutoCAD':
+      return 'autocad'
+    default:
+      return undefined
+  }
+}
+
 interface MouseGuardHandler {
   description: string
   callback: (e: MouseEvent) => boolean

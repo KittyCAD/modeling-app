@@ -1,0 +1,6 @@
+@settings(defaultLengthUnit = mm)
+
+import "part.kcl"
+
+bar = part
+    |> translate(z=1)

@@ -1,25 +1,25 @@
 import toast from 'react-hot-toast'
 
+import type { ApiFile } from '@rust/kcl-lib/bindings/ApiFile'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
-import type { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import { BSON } from 'bson'
 
+import type { WebSocketResponse } from '@kittycad/lib'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import { fileSystemManager } from '@src/lang/std/fileSystemManager'
+import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { ExecState } from '@src/lang/wasm'
-import {
-  errFromErrWithOutputs,
-  execStateFromRust,
-  initPromise,
-  mockExecStateFromRust,
-} from '@src/lang/wasm'
+import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { defaultPlaneStrToKey } from '@src/lib/planes'
+import type { FileEntry, Project } from '@src/lib/project'
 import { err, reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -31,8 +31,9 @@ export default class RustContext {
   private ctxInstance: Context | null = null
   private _defaultPlanes: DefaultPlanes | null = null
   private engineCommandManager: EngineCommandManager
+  private projectId = 0
 
-  // Initialize the WASM module
+  /** Initialize the WASM module */
   async ensureWasmInit() {
     try {
       await initPromise
@@ -49,33 +50,53 @@ export default class RustContext {
     this.engineCommandManager = engineCommandManager
 
     this.ensureWasmInit()
-      .then(async () => {
-        this.ctxInstance = await this.create()
+      .then(() => {
+        this.ctxInstance = this.create()
       })
       .catch(reportRejection)
   }
 
-  // Create a new context instance
-  async create(): Promise<Context> {
+  /** Create a new context instance */
+  create(): Context {
     this.rustInstance = getModule()
-    // We need this await here, DO NOT REMOVE it even if your editor says it's
-    // unnecessary. The constructor of the module is async and it will not
-    // resolve if you don't await it.
-    const ctxInstance = await new this.rustInstance.Context(
+
+    const ctxInstance = new this.rustInstance.Context(
       this.engineCommandManager,
-      fileSystemManager
+      projectFsManager
     )
 
     return ctxInstance
   }
 
-  // Execute a program.
+  async sendOpenProject(
+    project: Project,
+    currentFilePath: string | null
+  ): Promise<void> {
+    this.projectId += 1
+    let files: ApiFile[] = []
+    collectFiles(project, files)
+    let openFile = 0
+    for (let f of files) {
+      if (f.path === currentFilePath) {
+        openFile = f.id
+      }
+    }
+    // TODO need to find text of files and add it to this call (which might mean we want to call this function later when we're not on the
+    // critical path for opening a project).
+    await this.ctxInstance?.open_project(
+      this.projectId,
+      JSON.stringify(files),
+      openFile
+    )
+  }
+
+  /** Execute a program. */
   async execute(
     node: Node<Program>,
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
-    const instance = await this._checkInstance()
+    const instance = this._checkInstance()
 
     try {
       const result = await instance.execute(
@@ -83,8 +104,8 @@ export default class RustContext {
         path,
         JSON.stringify(settings)
       )
-      /* Set the default planes, safe to call after execute. */
-      const outcome = execStateFromRust(result, node)
+      // Set the default planes, safe to call after execute.
+      const outcome = execStateFromRust(result)
 
       this._defaultPlanes = outcome.defaultPlanes
 
@@ -97,14 +118,14 @@ export default class RustContext {
     }
   }
 
-  // Execute a program with in mock mode.
+  /** Execute a program with in mock mode. */
   async executeMock(
     node: Node<Program>,
     settings: DeepPartial<Configuration>,
     path?: string,
     usePrevMemory?: boolean
   ): Promise<ExecState> {
-    const instance = await this._checkInstance()
+    const instance = this._checkInstance()
 
     if (usePrevMemory === undefined) {
       usePrevMemory = true
@@ -117,19 +138,19 @@ export default class RustContext {
         JSON.stringify(settings),
         usePrevMemory
       )
-      return mockExecStateFromRust(result)
+      return execStateFromRust(result)
     } catch (e: any) {
       return Promise.reject(errFromErrWithOutputs(e))
     }
   }
 
-  // Export a scene to a file.
+  /** Export a scene to a file. */
   async export(
     format: DeepPartial<OutputFormat3d>,
     settings: DeepPartial<Configuration>,
     toastId: string
   ): Promise<ModelingAppFile[] | undefined> {
-    const instance = await this._checkInstance()
+    const instance = this._checkInstance()
 
     try {
       return await instance.export(
@@ -138,7 +159,7 @@ export default class RustContext {
       )
     } catch (e: any) {
       const parsed: RustKclError = JSON.parse(e.toString())
-      toast.error(parsed.msg, { id: toastId })
+      toast.error(parsed.details.msg, { id: toastId })
       return
     }
   }
@@ -151,28 +172,27 @@ export default class RustContext {
     return this._defaultPlanes
   }
 
-  // Clear/reset the scene and bust the cache.
+  /**
+   * Clear/reset the scene and bust the cache.
+   * Do not use this function unless you absolutely need to. In most cases,
+   * we should just fix the  cache for whatever bug you are seeing.
+   * The only time it makes sense to run this is if the engine disconnects and
+   * reconnects. The rust side has no idea that happened and will think the
+   * cache is still valid.
+   * Caching on the rust side accounts for changes to files outside of the
+   * scope of the current file the user is on. It collects all the dependencies
+   * and checks if any of them have changed. If they have, it will bust the
+   * cache and recompile the scene.
+   * The typescript side should never raw dog clear the scene since that would
+   * fuck with the cache as well. So if you _really_ want to just clear the scene
+   * AND NOT re-execute, you can use this for that. But in 99.999999% of cases just
+   * re-execute.
+   */
   async clearSceneAndBustCache(
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
-    const instance = await this._checkInstance()
-
-    const ast: Node<Program> = {
-      body: [],
-      shebang: null,
-      start: 0,
-      end: 0,
-      moduleId: 0,
-      nonCodeMeta: {
-        nonCodeNodes: {},
-        startNodes: [],
-      },
-      innerAttrs: [],
-      outerAttrs: [],
-      preComments: [],
-      commentStart: 0,
-    }
+    const instance = this._checkInstance()
 
     try {
       const result = await instance.bustCacheAndResetScene(
@@ -180,7 +200,7 @@ export default class RustContext {
         path
       )
       /* Set the default planes, safe to call after execute. */
-      const outcome = execStateFromRust(result, ast)
+      const outcome = execStateFromRust(result)
 
       this._defaultPlanes = outcome.defaultPlanes
 
@@ -203,21 +223,50 @@ export default class RustContext {
     return this.defaultPlanes[key]
   }
 
-  // Helper to check if context instance exists
-  private async _checkInstance(): Promise<Context> {
+  /** Send a response back to the rust side, that we got back from the engine. */
+  async sendResponse(response: WebSocketResponse): Promise<void> {
+    const instance = this._checkInstance()
+
+    try {
+      const serialized = BSON.serialize(response)
+      await instance.sendResponse(serialized)
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
+  /** Helper to check if context instance exists */
+  private _checkInstance(): Context {
     if (!this.ctxInstance) {
       // Create the context instance.
-      this.ctxInstance = await this.create()
+      this.ctxInstance = this.create()
     }
 
     return this.ctxInstance
   }
 
-  // Clean up resources
+  /** Clean up resources */
   destroy() {
     if (this.ctxInstance) {
       // In a real implementation, you might need to manually free resources
       this.ctxInstance = null
+    }
+  }
+}
+
+const collectFiles = (file: FileEntry, files: ApiFile[]) => {
+  if (file.children) {
+    for (let entry of file.children) {
+      if (entry.name.endsWith('.kcl')) {
+        files.push({
+          id: files.length,
+          path: entry.path,
+          text: '',
+        })
+      } else {
+        collectFiles(entry, files)
+      }
     }
   }
 }

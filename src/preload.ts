@@ -1,12 +1,12 @@
+import fsSync from 'node:fs'
+import fs from 'node:fs/promises'
+import os from 'node:os'
+import path from 'path'
 import packageJson from '@root/package.json'
 import type { MachinesListing } from '@src/components/MachineManagerProvider'
 import chokidar from 'chokidar'
 import type { IpcRendererEvent } from 'electron'
 import { contextBridge, ipcRenderer } from 'electron'
-import fsSync from 'node:fs'
-import fs from 'node:fs/promises'
-import os from 'node:os'
-import path from 'path'
 
 import type { Channel } from '@src/channels'
 import type { WebContentSendPayload } from '@src/menu/channels'
@@ -21,6 +21,7 @@ const resizeWindow = (width: number, height: number) =>
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
+const openInNewWindow = (url: any) => ipcRenderer.invoke('openInNewWindow', url)
 const takeElectronWindowScreenshot = ({
   width,
   height,
@@ -44,6 +45,10 @@ const onUpdateDownloadStart = (
   ipcRenderer.on('update-download-start', (_event: any, value) =>
     callback(value)
   )
+const onUpdateChecking = (callback: () => void) =>
+  ipcRenderer.on('update-checking', (_event: any) => callback())
+const onUpdateNotAvailable = (callback: () => void) =>
+  ipcRenderer.on('update-not-available', (_event: any) => callback())
 const onUpdateError = (callback: (value: Error) => void) =>
   ipcRenderer.on('update-error', (_event: any, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
@@ -99,6 +104,7 @@ const watchFileOff = (path: string, key: string) => {
     fsWatchListeners.set(path, watchers)
   }
 }
+const copy = fs.cp
 const readFile = fs.readFile
 // It seems like from the node source code this does not actually block but also
 // don't trust me on that (jess).
@@ -113,8 +119,19 @@ const stat = (path: string) => {
 
 // Electron has behavior where it doesn't clone the prototype chain over.
 // So we need to call stat.isDirectory on this side.
-const statIsDirectory = (path: string) =>
-  stat(path).then((res) => res.isDirectory())
+async function statIsDirectory(path: string): Promise<boolean> {
+  try {
+    const res = await stat(path)
+    return res.isDirectory()
+  } catch (e) {
+    if (e === 'ENOENT') {
+      console.error('File does not exist', e)
+      return false
+    }
+    return false // either way we don't know if it is a directory
+  }
+}
+
 const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
 
 const canReadWriteDirectory = async (
@@ -248,6 +265,7 @@ contextBridge.exposeInMainWorld('electron', {
   save,
   // opens the URL
   openExternal,
+  openInNewWindow,
   showInFolder,
   getPath,
   packageJson,
@@ -271,27 +289,17 @@ contextBridge.exposeInMainWorld('electron', {
       {},
       exposeProcessEnvs([
         'NODE_ENV',
-        'VITE_KC_API_WS_MODELING_URL',
-        'VITE_KC_API_BASE_URL',
-        'VITE_KC_SITE_BASE_URL',
-        'VITE_KC_SITE_APP_URL',
-        'VITE_KC_SKIP_AUTH',
-        'VITE_KC_CONNECTION_TIMEOUT_MS',
-        'VITE_KC_DEV_TOKEN',
-
-        'IS_PLAYWRIGHT',
-
-        // Really we shouldn't use these and our code should use NODE_ENV
-        'DEV',
-        'PROD',
-        'TEST',
-        'CI',
+        'VITE_KITTYCAD_BASE_DOMAIN',
+        'VITE_KITTYCAD_API_WEBSOCKET_URL',
+        'VITE_KITTYCAD_API_TOKEN',
       ])
     ),
   },
   kittycad,
   listMachines,
   getMachineApiIp,
+  onUpdateChecking,
+  onUpdateNotAvailable,
   onUpdateDownloadStart,
   onUpdateDownloaded,
   onUpdateError,
@@ -306,4 +314,5 @@ contextBridge.exposeInMainWorld('electron', {
   disableMenu,
   menuOn,
   canReadWriteDirectory,
+  copy,
 })

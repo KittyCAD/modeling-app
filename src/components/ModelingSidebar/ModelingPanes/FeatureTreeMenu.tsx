@@ -2,7 +2,7 @@ import { Menu } from '@headlessui/react'
 import type { PropsWithChildren } from 'react'
 
 import { ActionIcon } from '@src/components/ActionIcon'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { commandBarActor } from '@src/lib/singletons'
 
 import styles from './KclEditorMenu.module.css'
 
@@ -36,8 +36,8 @@ export const FeatureTreeMenu = ({ children }: PropsWithChildren) => {
                 commandBarActor.send({
                   type: 'Find and select command',
                   data: {
-                    groupId: 'modeling',
-                    name: 'event.parameter.create',
+                    groupId: 'code',
+                    name: 'parameter.create',
                   },
                 })
               }

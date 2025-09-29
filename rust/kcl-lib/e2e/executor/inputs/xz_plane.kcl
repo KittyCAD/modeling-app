@@ -1,5 +1,5 @@
 part001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [100, 100])
   |> line(endAbsolute = [100, 0])
   |> close()

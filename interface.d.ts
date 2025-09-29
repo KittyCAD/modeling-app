@@ -1,10 +1,10 @@
-import { MachinesListing } from 'components/MachineManagerProvider'
+import type { MachinesListing } from 'components/MachineManagerProvider'
 import 'electron'
-import { dialog, shell } from 'electron'
+import type fs from 'node:fs/promises'
+import type path from 'path'
+import type { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
-import { ZooLabel } from 'menu/roles'
-import fs from 'node:fs/promises'
-import path from 'path'
+import type { ZooLabel } from 'menu/roles'
 
 // Extend the interface with additional custom properties
 declare module 'electron' {
@@ -20,6 +20,7 @@ export interface IElectronAPI {
   open: typeof dialog.showOpenDialog
   save: typeof dialog.showSaveDialog
   openExternal: typeof shell.openExternal
+  openInNewWindow: (name: string) => void
   takeElectronWindowScreenshot: ({
     width,
     height,
@@ -46,12 +47,14 @@ export interface IElectronAPI {
   writeFile: (
     path: string,
     data: string | Uint8Array
-  ) => ReturnType<fs.writeFile>
-  readdir: (path: string) => ReturnType<fs.readdir>
-  exists: (path: string) => ReturnType<fs.exists>
+  ) => ReturnType<typeof fs.writeFile>
+  readdir: (path: string) => Promise<string[]>
+  // This is synchronous.
+  exists: (path: string) => boolean
   getPath: (name: string) => Promise<string>
   rm: typeof fs.rm
-  stat: (path: string) => ReturnType<fs.stat>
+  // TODO: Use a real return type.
+  stat: (path: string) => Promise<any>
   statIsDirectory: (path: string) => Promise<boolean>
   canReadWriteDirectory: (
     path: string
@@ -60,7 +63,8 @@ export interface IElectronAPI {
   mkdir: typeof fs.mkdir
   join: typeof path.join
   sep: typeof path.sep
-  rename: (prev: string, next: string) => typeof fs.rename
+  copy: typeof fs.cp
+  rename: (prev: string, next: string) => ReturnType<typeof fs.rename>
   packageJson: {
     name: string
   }
@@ -71,26 +75,17 @@ export interface IElectronAPI {
   }
   process: {
     env: {
-      BASE_URL: string
-      IS_PLAYWRIGHT: string
-      VITE_KC_DEV_TOKEN: string
-      VITE_KC_API_WS_MODELING_URL: string
-      VITE_KC_API_BASE_URL: string
-      VITE_KC_SITE_BASE_URL: string
-      VITE_KC_SITE_APP_URL: string
-      VITE_KC_SKIP_AUTH: string
-      VITE_KC_CONNECTION_TIMEOUT_MS: string
-      VITE_KC_DEV_TOKEN: string
       NODE_ENV: string
-      PROD: string
-      DEV: string
-      TEST: string
-      CI: string
+      VITE_KITTYCAD_BASE_DOMAIN: string
+      VITE_KITTYCAD_API_WEBSOCKET_URL: string
+      VITE_KITTYCAD_API_TOKEN: string
     }
   }
   kittycad: (access: string, args: any) => any
   listMachines: (machineApiIp: string) => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
+  onUpdateChecking: (callback: () => void) => Electron.IpcRenderer
+  onUpdateNotAvailable: (callback: () => void) => Electron.IpcRenderer
   onUpdateDownloadStart: (
     callback: (value: { version: string }) => void
   ) => Electron.IpcRenderer
@@ -114,7 +109,9 @@ export interface IElectronAPI {
 
 declare global {
   interface Window {
-    electron: IElectronAPI
-    openExternalLink: (e: React.MouseEvent<HTMLAnchorElement>) => void
+    electron: IElectronAPI | undefined
+    openExternalLink:
+      | ((e: React.MouseEvent<HTMLAnchorElement>) => void)
+      | undefined
   }
 }

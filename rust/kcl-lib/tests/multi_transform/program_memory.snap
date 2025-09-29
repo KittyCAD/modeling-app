@@ -4,6 +4,7 @@ description: Variables in memory after executing multi_transform.kcl
 ---
 {
   "transform": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   }
 }

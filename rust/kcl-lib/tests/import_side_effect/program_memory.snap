@@ -4,6 +4,7 @@ description: Variables in memory after executing import_side_effect.kcl
 ---
 {
   "foo": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   }
 }

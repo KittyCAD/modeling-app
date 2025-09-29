@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart elliptic_curve_inches_regression.kcl
+extension: md
+snapshot_kind: binary
+---

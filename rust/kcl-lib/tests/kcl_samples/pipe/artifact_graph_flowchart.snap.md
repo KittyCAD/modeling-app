@@ -1,32 +1,45 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[241, 299, 0]"]
-    3["Segment<br>[241, 299, 0]"]
+    2["Path<br>[259, 314, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    3["Segment<br>[259, 314, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     4[Solid2d]
   end
   subgraph path11 [Path]
-    11["Path<br>[430, 485, 0]"]
-    12["Segment<br>[430, 485, 0]"]
+    11["Path<br>[447, 502, 0]"]
+      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    12["Segment<br>[447, 502, 0]"]
+      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     13[Solid2d]
   end
-  1["Plane<br>[218, 235, 0]"]
-  5["Sweep Extrusion<br>[305, 336, 0]"]
+  1["Plane<br>[236, 253, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  5["Sweep Extrusion<br>[320, 348, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
   6[Wall]
+    %% face_code_ref=Missing NodePath
   7["Cap Start"]
+    %% face_code_ref=Missing NodePath
   8["Cap End"]
+    %% face_code_ref=[ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   9["SweepEdge Opposite"]
   10["SweepEdge Adjacent"]
-  14["Sweep Extrusion<br>[491, 523, 0]"]
+  14["Sweep Extrusion<br>[508, 537, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
   15[Wall]
+    %% face_code_ref=Missing NodePath
   16["SweepEdge Opposite"]
   17["SweepEdge Adjacent"]
-  18["StartSketchOnFace<br>[394, 424, 0]"]
+  18["StartSketchOnFace<br>[406, 441, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
-  2 ---- 5
   2 --- 4
+  2 ---- 5
   3 --- 6
+  3 x--> 7
   3 --- 9
   3 --- 10
   5 --- 6
@@ -34,15 +47,22 @@ flowchart LR
   5 --- 8
   5 --- 9
   5 --- 10
+  6 --- 9
+  6 --- 10
+  16 <--x 7
+  9 <--x 8
   8 --- 11
+  12 <--x 8
+  8 <--x 18
   11 --- 12
-  11 ---- 14
   11 --- 13
+  11 ---- 14
   12 --- 15
   12 --- 16
   12 --- 17
   14 --- 15
   14 --- 16
   14 --- 17
-  8 <--x 18
+  15 --- 16
+  15 --- 17
 ```

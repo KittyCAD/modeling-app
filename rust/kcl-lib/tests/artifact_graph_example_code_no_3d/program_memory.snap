@@ -34,20 +34,19 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             0.0
           ],
           "tag": {
-            "commentStart": 117,
-            "end": 138,
-            "start": 117,
+            "commentStart": 115,
+            "end": 136,
+            "moduleId": 0,
+            "start": 115,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
           "to": [
-            -5.72,
-            0.0
+            -5.719999999999999,
+            0.0000000000000014132424062160455
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -55,24 +54,23 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "sourceRange": []
           },
           "from": [
-            -5.72,
-            0.0
+            -5.719999999999999,
+            0.0000000000000014132424062160455
           ],
           "tag": {
-            "commentStart": 220,
-            "end": 241,
-            "start": 220,
+            "commentStart": 218,
+            "end": 239,
+            "moduleId": 0,
+            "start": 218,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
           "to": [
-            -5.72,
-            8.21
+            -5.719999999999998,
+            8.210000000000003
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -80,24 +78,23 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "sourceRange": []
           },
           "from": [
-            -5.72,
-            8.21
+            -5.719999999999998,
+            8.210000000000003
           ],
           "tag": {
-            "commentStart": 343,
-            "end": 364,
-            "start": 343,
+            "commentStart": 341,
+            "end": 362,
+            "moduleId": 0,
+            "start": 341,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
           "to": [
-            5.82,
+            5.820000000000001,
             8.21
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -105,7 +102,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "sourceRange": []
           },
           "from": [
-            5.82,
+            5.820000000000001,
             8.21
           ],
           "tag": null,
@@ -114,9 +111,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -133,38 +128,37 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "YZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": null
         },
         "zAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 0.0,
+          "units": null
         }
       },
       "start": {
@@ -176,9 +170,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           5.82,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -201,9 +193,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sketch004": {
@@ -227,9 +217,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             14.41
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -238,8 +226,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           },
           "ccw": false,
           "center": [
-            15.5403,
-            -1.1745
+            15.54030518835946,
+            -1.1745473537604454
           ],
           "from": [
             15.49,
@@ -251,9 +239,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             0.0
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -262,8 +248,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           },
           "ccw": true,
           "center": [
-            -7.6164,
-            0.5757
+            -7.6163791614610235,
+            0.5756513711217917
           ],
           "from": [
             0.0,
@@ -275,38 +261,37 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             8.17
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": -1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 0.0,
+          "units": null
         }
       },
       "start": {
@@ -318,9 +303,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           0.0,
           14.36
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -329,9 +312,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "isClosed": false
     }
   }
 }

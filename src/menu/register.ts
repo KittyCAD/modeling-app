@@ -1,30 +1,26 @@
 import { AxisNames } from '@src/lib/constants'
-import { copyFileShareLink } from '@src/lib/links'
 import { PATHS } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
 import {
-  codeManager,
-  engineCommandManager,
-  sceneInfra,
+  authActor,
+  commandBarActor,
+  editorManager,
+  settingsActor,
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
-import { authActor, settingsActor } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
 
 export function modelingMenuCallbackMostActions(
   settings: SettingsType,
   navigate: NavigateFunction,
-  filePath: string,
-  project: Project | undefined,
-  token: string | undefined
+  filePath: string
 ) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
-    if (data.menuLabel === 'File.New project') {
+    if (data.menuLabel === 'File.Create project') {
       commandBarActor.send({
         type: 'Find and select command',
         data: {
@@ -84,20 +80,19 @@ export function modelingMenuCallbackMostActions(
       })
     } else if (data.menuLabel === 'File.Preferences.Theme color') {
       navigate(filePath + PATHS.SETTINGS_USER + '#themeColor')
-    } else if (data.menuLabel === 'File.Share current part (via Zoo link)') {
-      copyFileShareLink({
-        token: token ?? '',
-        code: codeManager.code,
-        name: project?.name || '',
-      }).catch(reportRejection)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
-    } else if (data.menuLabel === 'File.Insert from project file') {
+    } else if (data.menuLabel === 'File.Add file to project') {
+      const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
         type: 'Find and select command',
         data: {
-          groupId: 'code',
-          name: 'Insert',
+          name: 'add-kcl-file-to-project',
+          groupId: 'application',
+          argDefaultValues: {
+            method: 'existingProject',
+            projectName: currentProject?.name,
+          },
         },
       })
     } else if (data.menuLabel === 'File.Export current part') {
@@ -106,14 +101,6 @@ export function modelingMenuCallbackMostActions(
         data: {
           groupId: 'modeling',
           name: 'Export',
-        },
-      })
-    } else if (data.menuLabel === 'File.Load a sample model') {
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: {
-          groupId: 'code',
-          name: 'open-kcl-example',
         },
       })
     } else if (data.menuLabel === 'File.Create new file') {
@@ -126,13 +113,27 @@ export function modelingMenuCallbackMostActions(
     } else if (data.menuLabel === 'Edit.Edit parameter') {
       commandBarActor.send({
         type: 'Find and select command',
-        data: { name: 'event.parameter.edit', groupId: 'modeling' },
+        data: { name: 'parameter.edit', groupId: 'code' },
       })
     } else if (data.menuLabel === 'Edit.Format code') {
       commandBarActor.send({
         type: 'Find and select command',
         data: { name: 'format-code', groupId: 'code' },
       })
+    } else if (data.menuLabel === 'Edit.Undo') {
+      if (activeFocusIsInput()) {
+        document.execCommand('undo')
+        // Cleaner, but can't import 'electron' to this file:
+        // webContents.getFocusedWebContents()?.undo()
+      } else {
+        editorManager.undo()
+      }
+    } else if (data.menuLabel === 'Edit.Redo') {
+      if (activeFocusIsInput()) {
+        document.execCommand('redo')
+      } else {
+        editorManager.redo()
+      }
     } else if (data.menuLabel === 'View.Orthographic view') {
       settingsActor.send({
         type: 'set.modeling.cameraProjection',
@@ -189,8 +190,6 @@ export function modelingMenuCallbackMostActions(
           },
         })
         .catch(reportRejection)
-    } else if (data.menuLabel === 'View.Standard views.Refresh') {
-      globalThis?.window?.location.reload()
     } else if (data.menuLabel === 'View.Named views.Create named view') {
       commandBarActor.send({
         type: 'Find and select command',
@@ -219,7 +218,7 @@ export function modelingMenuCallbackMostActions(
     } else if (data.menuLabel === 'Design.Create a parameter') {
       commandBarActor.send({
         type: 'Find and select command',
-        data: { name: 'event.parameter.create', groupId: 'modeling' },
+        data: { name: 'parameter.create', groupId: 'code' },
       })
     } else if (data.menuLabel === 'Design.Create an additive feature.Extrude') {
       commandBarActor.send({
@@ -256,10 +255,26 @@ export function modelingMenuCallbackMostActions(
         type: 'Find and select command',
         data: { name: 'Shell', groupId: 'modeling' },
       })
-    } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
+    } else if (data.menuLabel === 'Design.Insert from project file') {
       commandBarActor.send({
         type: 'Find and select command',
-        data: { name: 'Text-to-CAD', groupId: 'modeling' },
+        data: {
+          groupId: 'code',
+          name: 'Insert',
+        },
+      })
+    } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
+      const currentProject = settingsActor.getSnapshot().context.currentProject
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          name: 'Text-to-CAD',
+          groupId: 'application',
+          argDefaultValues: {
+            method: 'existingProject',
+            projectName: currentProject?.name,
+          },
+        },
       })
     } else if (data.menuLabel === 'Design.Modify with Zoo Text-To-CAD') {
       commandBarActor.send({

@@ -3,21 +3,33 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing walkie-talkie.kcl
 ---
 {
-  "antenna": {
+  "__mod_antenna": {
     "type": "Module",
-    "value": 8
+    "value": 5
+  },
+  "__mod_body": {
+    "type": "Module",
+    "value": 2
+  },
+  "__mod_case": {
+    "type": "Module",
+    "value": 3
+  },
+  "__mod_knob": {
+    "type": "Module",
+    "value": 7
+  },
+  "__mod_talkButton": {
+    "type": "Module",
+    "value": 6
   },
   "antennaBaseHeight": {
     "type": "Number",
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "antennaBaseWidth": {
@@ -25,66 +37,48 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "antennaLength": {
     "type": "Number",
-    "value": 3.0,
+    "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "antennaTopHeight": {
     "type": "Number",
-    "value": 0.05,
+    "value": 0.125,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "antennaTopWidth": {
     "type": "Number",
-    "value": 0.3,
+    "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
-  "body": {
-    "type": "Module",
-    "value": 6
-  },
   "button": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "buttonHeight": {
     "type": "Number",
     "value": 0.48,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "buttonThickness": {
@@ -92,12 +86,8 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 0.04,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "buttonWidth": {
@@ -105,29 +95,17 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 0.15,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
-  },
-  "case": {
-    "type": "Module",
-    "value": 7
   },
   "caseTolerance": {
     "type": "Number",
     "value": 0.01,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "chamferLength": {
@@ -135,12 +113,8 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 0.325,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "height": {
@@ -148,29 +122,31 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
-  "knob": {
-    "type": "Module",
-    "value": 10
+  "knobBend": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "knobBend"
   },
   "knobDiameter": {
     "type": "Number",
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "knobFilletRadius": {
+    "type": "Number",
+    "value": 0.05,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "knobHeight": {
@@ -178,25 +154,8 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "knobRadius": {
-    "type": "Number",
-    "value": 0.05,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "offset": {
@@ -204,12 +163,8 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 0.125,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "screenDepth": {
@@ -217,12 +172,8 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": -0.0625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "screenHeight": {
@@ -230,12 +181,8 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "screenWidth": {
@@ -243,33 +190,41 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 1.75,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "screenYPosition": {
     "type": "Number",
     "value": 1.25,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
+  },
+  "seg1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg1"
+  },
+  "seg2": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg2"
+  },
+  "seg3": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg3"
   },
   "speakerBoxHeight": {
     "type": "Number",
     "value": 1.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "speakerBoxWidth": {
@@ -277,12 +232,8 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 1.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "squareHoleSideLength": {
@@ -290,12 +241,8 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 0.0625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "tag1": {
@@ -318,21 +265,13 @@ description: Variables in memory after executing walkie-talkie.kcl
     "type": "TagIdentifier",
     "value": "tag4"
   },
-  "talkButton": {
-    "type": "Module",
-    "value": 9
-  },
   "talkButtonHeight": {
     "type": "Number",
     "value": 0.05,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "talkButtonSideLength": {
@@ -340,12 +279,8 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "thickness": {
@@ -353,12 +288,8 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "tolerance": {
@@ -366,12 +297,8 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 0.02,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "width": {
@@ -379,12 +306,8 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 2.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

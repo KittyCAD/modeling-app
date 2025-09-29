@@ -14,6 +14,7 @@ import { fromPromise } from 'xstate'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { newKclFile } from '@src/lang/project'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import {
@@ -24,17 +25,14 @@ import {
 } from '@src/lib/constants'
 import { getProjectInfo } from '@src/lib/desktop'
 import { getNextDirName, getNextFileName } from '@src/lib/desktopFS'
-import type { KclSamplesManifestItem } from '@src/lib/getKclSamplesManifest'
-import { getKclSamplesManifest } from '@src/lib/getKclSamplesManifest'
-import { isDesktop } from '@src/lib/isDesktop'
 import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { codeManager, kclManager } from '@src/lib/singletons'
-import { err, reportRejection } from '@src/lib/trap'
+import { useSettings, useToken } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 import { type IndexLoaderData } from '@src/lib/types'
-import { useSettings, useToken } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
 import { fileMachine } from '@src/machines/fileMachine'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 
@@ -59,17 +57,8 @@ export const FileMachineProvider = ({
   const settings = useSettings()
   const projectData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { project, file } = projectData
-  const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
-    []
-  )
 
   const filePath = useAbsoluteFilePath()
-  // Only create the native file menus on desktop
-  useEffect(() => {
-    if (isDesktop()) {
-      window.electron.createModelingPageMenu().catch(reportRejection)
-    }
-  }, [])
 
   useEffect(() => {
     const {
@@ -100,50 +89,8 @@ export const FileMachineProvider = ({
     }
   }, [])
 
-  // Due to the route provider, i've moved this to the FileMachineProvider instead of CommandBarProvider
-  // This will register the commands to route to Telemetry, Home, and Settings.
-  useEffect(() => {
-    const filePath =
-      PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
-    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
-      createRouteCommands(navigate, location, filePath)
-    commandBarActor.send({
-      type: 'Remove commands',
-      data: {
-        commands: [
-          RouteTelemetryCommand,
-          RouteHomeCommand,
-          RouteSettingsCommand,
-        ],
-      },
-    })
-    if (location.pathname === PATHS.HOME) {
-      commandBarActor.send({
-        type: 'Add commands',
-        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
-      })
-    } else if (location.pathname.includes(PATHS.FILE)) {
-      commandBarActor.send({
-        type: 'Add commands',
-        data: {
-          commands: [
-            RouteTelemetryCommand,
-            RouteSettingsCommand,
-            RouteHomeCommand,
-          ],
-        },
-      })
-    }
-  }, [location])
-
   useEffect(() => {
     markOnce('code/didLoadFile')
-    async function fetchKclSamples() {
-      const manifest = await getKclSamplesManifest()
-      const filteredFiles = manifest.filter((file) => !file.multipleFiles)
-      setKclSamples(filteredFiles)
-    }
-    fetchKclSamples().catch(reportError)
   }, [])
 
   const [state, send] = useMachine(
@@ -180,7 +127,7 @@ export const FileMachineProvider = ({
                 // TODO: Should this be context.selectedDirectory.path?
                 // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                 context.selectedDirectory +
-                  window.electron.path.sep +
+                  fsManager.path.sep +
                   // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
                   event.output.name
               )}`
@@ -194,18 +141,30 @@ export const FileMachineProvider = ({
             navigate(`..${PATHS.FILE}/${encodeURIComponent(event.output.path)}`)
           }
         },
+        openFileInNewWindow: ({ event }) => {
+          if (event.type !== 'Open file in new window') {
+            return
+          }
+
+          commandBarActor.send({ type: 'Close' })
+          window.electron?.openInNewWindow(event.data.name)
+        },
       },
       actors: {
         readFiles: fromPromise(async ({ input }) => {
           const newFiles =
-            (isDesktop() ? (await getProjectInfo(input.path)).children : []) ??
-            []
+            (window.electron
+              ? (await getProjectInfo(window.electron, input.path)).children
+              : []) ?? []
           return {
             ...input,
             children: newFiles,
           }
         }),
         createAndOpenFile: fromPromise(async ({ input }) => {
+          if (!window.electron) {
+            return Promise.reject(new Error('No file system present'))
+          }
           let createdName = input.name.trim() || DEFAULT_FILE_NAME
           let createdPath: string
 
@@ -217,6 +176,7 @@ export const FileMachineProvider = ({
             input.makeDir
           ) {
             let { name, path } = getNextDirName({
+              electron: window.electron,
               entryName: input.targetPathToClone
                 ? window.electron.path.basename(input.targetPathToClone)
                 : createdName,
@@ -228,16 +188,32 @@ export const FileMachineProvider = ({
             createdPath = path
             await window.electron.mkdir(createdPath)
           } else {
-            const { name, path } = getNextFileName({
-              entryName: input.targetPathToClone
-                ? window.electron.path.basename(input.targetPathToClone)
-                : createdName,
-              baseDir: input.targetPathToClone
-                ? window.electron.path.dirname(input.targetPathToClone)
-                : input.selectedDirectory.path,
-            })
-            createdName = name
-            createdPath = path
+            const isTargetPathToCloneASubPath =
+              input.targetPathToClone &&
+              input.selectedDirectory.path.indexOf(input.targetPathToClone) > -1
+            if (isTargetPathToCloneASubPath) {
+              const { name, path } = await getNextFileName({
+                electron: window.electron,
+                entryName: input.targetPathToClone
+                  ? window.electron.path.basename(input.targetPathToClone)
+                  : createdName,
+                baseDir: input.targetPathToClone
+                  ? window.electron.path.dirname(input.targetPathToClone)
+                  : input.selectedDirectory.path,
+              })
+              createdName = name
+              createdPath = path
+            } else {
+              const { name, path } = await getNextFileName({
+                electron: window.electron,
+                entryName: input.targetPathToClone
+                  ? window.electron.path.basename(input.targetPathToClone)
+                  : createdName,
+                baseDir: input.selectedDirectory.path,
+              })
+              createdName = name
+              createdPath = path
+            }
             if (input.targetPathToClone) {
               await window.electron.copyFile(
                 input.targetPathToClone,
@@ -260,11 +236,15 @@ export const FileMachineProvider = ({
           }
         }),
         createFile: fromPromise(async ({ input }) => {
+          if (!window.electron) {
+            return Promise.reject(new Error('No file system present'))
+          }
           let createdName = input.name.trim() || DEFAULT_FILE_NAME
           let createdPath: string
 
           if (input.makeDir) {
             let { name, path } = getNextDirName({
+              electron: window.electron,
               entryName: createdName,
               baseDir: input.selectedDirectory.path,
             })
@@ -272,7 +252,8 @@ export const FileMachineProvider = ({
             createdPath = path
             await window.electron.mkdir(createdPath)
           } else {
-            const { name, path } = getNextFileName({
+            const { name, path } = await getNextFileName({
+              electron: window.electron,
               entryName: createdName,
               baseDir: input.selectedDirectory.path,
             })
@@ -291,6 +272,9 @@ export const FileMachineProvider = ({
           }
         }),
         renameFile: fromPromise(async ({ input }) => {
+          if (!window.electron) {
+            return Promise.reject(new Error('No file system present'))
+          }
           const { oldName, newName, isDir } = input
           const name = newName
             ? newName.endsWith(FILE_EXT) || isDir
@@ -298,11 +282,11 @@ export const FileMachineProvider = ({
               : newName + FILE_EXT
             : DEFAULT_FILE_NAME
           const oldPath = window.electron.path.join(
-            input.selectedDirectory.path,
+            input.parentDirectory.path,
             oldName
           )
           const newPath = window.electron.path.join(
-            input.selectedDirectory.path,
+            input.parentDirectory.path,
             name
           )
 
@@ -325,7 +309,7 @@ export const FileMachineProvider = ({
             }
           }
 
-          window.electron.rename(oldPath, newPath)
+          await window.electron.rename(oldPath, newPath)
 
           if (!file) {
             return Promise.reject(new Error('file is not defined'))
@@ -350,6 +334,9 @@ export const FileMachineProvider = ({
           }
         }),
         deleteFile: fromPromise(async ({ input }) => {
+          if (!window.electron) {
+            return Promise.reject(new Error('No file system present'))
+          }
           const isDir = !!input.children
 
           if (isDir) {
@@ -418,72 +405,96 @@ export const FileMachineProvider = ({
     }
   )
 
-  const cb = modelingMenuCallbackMostActions(
-    settings,
-    navigate,
-    filePath,
-    project,
-    token
-  )
+  // Due to the route provider, i've moved this to the FileMachineProvider instead of CommandBarProvider
+  // This will register the commands to route to Telemetry, Home, and Settings.
+  useEffect(() => {
+    const filePath =
+      PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
+    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
+      createRouteCommands(navigate, location, filePath)
+    commandBarActor.send({
+      type: 'Remove commands',
+      data: {
+        commands: [
+          RouteTelemetryCommand,
+          RouteHomeCommand,
+          RouteSettingsCommand,
+        ],
+      },
+    })
+    if (location.pathname === PATHS.HOME) {
+      commandBarActor.send({
+        type: 'Add commands',
+        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
+      })
+    } else if (location.pathname.includes(PATHS.FILE)) {
+      commandBarActor.send({
+        type: 'Add commands',
+        data: {
+          commands: [
+            RouteTelemetryCommand,
+            RouteSettingsCommand,
+            RouteHomeCommand,
+          ],
+        },
+      })
+    }
+
+    // GOTCHA: If we call navigate() while in the /file route the fileMachineProvider
+    // has a context.project of the original one that was loaded. It does not update
+    // Watch when the navigation changes, if it changes set a new Project within the fileMachine
+    // to load the latest state of the project you are in.
+    if (project) {
+      // TODO: Clean this up with global application state when fileMachine gets merged into SystemIOMachine
+      send({ type: 'Refresh with new project', data: { project } })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [location])
+
+  const cb = modelingMenuCallbackMostActions(settings, navigate, filePath)
   useMenuListener(cb)
 
-  const kclCommandMemo = useMemo(
-    () =>
-      kclCommands({
-        authToken: token ?? '',
-        projectData,
-        settings: {
-          defaultUnit:
-            settings.modeling.defaultUnit.current ??
-            DEFAULT_DEFAULT_LENGTH_UNIT,
-        },
-        specialPropsForSampleCommand: {
-          onSubmit: async (data) => {
-            if (data.method === 'overwrite') {
-              codeManager.updateCodeStateEditor(data.code)
-              await kclManager.executeCode()
-              await codeManager.writeToFile()
-            } else if (data.method === 'newFile' && isDesktop()) {
-              send({
-                type: 'Create file',
-                data: {
-                  name: data.sampleName,
-                  content: data.code,
-                  makeDir: false,
-                },
-              })
-            }
-          },
-          providedOptions: kclSamples.map((sample) => ({
-            value: sample.pathFromProjectDirectoryToFirstFile,
-            name: sample.title,
-          })),
-        },
-        specialPropsForInsertCommand: {
-          providedOptions: (isDesktop() && project?.children
-            ? project.children
-            : []
-          ).flatMap((v) => {
-            // TODO: add support for full tree traversal when KCL support subdir imports
-            const relativeFilePath = v.path.replace(
-              project?.path + window.electron.sep,
-              ''
-            )
-            const isDirectory = v.children
-            const isCurrentFile = v.path === file?.path
-            return isDirectory || isCurrentFile
-              ? []
-              : {
-                  name: relativeFilePath,
-                  value: relativeFilePath,
-                }
-          }),
-        },
-      }).filter(
-        (command) => kclSamples.length || command.name !== 'open-kcl-example'
-      ),
-    [codeManager, kclManager, send, kclSamples, project, file]
-  )
+  const kclCommandMemo = useMemo(() => {
+    const providedOptions = []
+    if (window.electron && project?.children && file?.path) {
+      const projectPath = project.path
+      const filePath = file.path
+      let children = project.children
+      while (children.length > 0) {
+        const v = children.pop()
+        if (!v) {
+          continue
+        }
+
+        if (v.children) {
+          children.push(...v.children)
+          continue
+        }
+
+        const relativeFilePath = v.path.replace(
+          projectPath + window.electron.sep,
+          ''
+        )
+        const isCurrentFile = v.path === filePath
+        if (!isCurrentFile) {
+          providedOptions.push({
+            name: relativeFilePath.replaceAll(window.electron.sep, '/'),
+            value: relativeFilePath.replaceAll(window.electron.sep, '/'),
+          })
+        }
+      }
+    }
+    return kclCommands({
+      authToken: token ?? '',
+      projectData,
+      settings: {
+        defaultUnit:
+          settings.modeling.defaultUnit.current ?? DEFAULT_DEFAULT_LENGTH_UNIT,
+      },
+      specialPropsForInsertCommand: { providedOptions },
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [codeManager, kclManager, send, project, file])
 
   useEffect(() => {
     commandBarActor.send({
@@ -497,6 +508,7 @@ export const FileMachineProvider = ({
         data: { commands: kclCommandMemo },
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [commandBarActor.send, kclCommandMemo])
 
   return (

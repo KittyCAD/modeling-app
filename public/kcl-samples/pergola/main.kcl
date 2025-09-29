@@ -1,0 +1,120 @@
+// Stylized Pergola
+// A parametric modern pergola with vertical posts, surrounding beams, and evenly spaced roof slats. Designed for garden, patio, or backyard use. Ideal for architectural visualization and parametric prototyping.
+
+
+
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// Overall dimensions
+pergolaLength = 4000 // length along the main axis
+pergolaWidth = 3000 // width across the short axis
+pergolaHeight = 2400 // total height to top of beams
+
+
+// Structural sizes
+beamHeight = 250 // vertical size of beams
+beamWidth = 120 // horizontal thickness of beams
+postSize = beamWidth // square posts
+postLength = pergolaHeight - beamHeight
+
+// Roof slats
+slatCount = 16
+slatHeight = beamHeight // same as beam for a solid top edge
+slatThickness = 50
+slatSpacing = (pergolaLength - (beamWidth * 2)) / (slatCount + 1) // spacing between slats
+
+
+// Post profile
+postSketch = startSketchOn(XY)
+postProfile = startProfile(postSketch, at = [-postSize / 2, -postSize / 2])
+  |> xLine(length = postSize)
+  |> yLine(length = postSize)
+  |> xLine(length = -postSize)
+  |> close()
+post = extrude(postProfile, length = postLength)
+  |> appearance(%, color = "#a0825c")
+
+// Corner posts
+posts = translate(post, x = (pergolaLength - postSize) / 2, y = (pergolaWidth - postSize) / 2)
+  |> patternLinear3d(
+       %,
+       instances = 2,
+       distance = pergolaLength - postSize,
+       axis = [-1, 0, 0],
+     )
+  |> patternLinear3d(
+       %,
+       instances = 2,
+       distance = pergolaWidth - postSize,
+       axis = [0, -1, 0],
+     )
+
+// Long beams (front and back)
+longBeamSketch = startSketchOn(XY)
+longBeamProfile = startProfile(longBeamSketch, at = [-pergolaLength / 2, -beamWidth / 2])
+  |> xLine(length = pergolaLength)
+  |> yLine(length = beamWidth)
+  |> xLine(length = -pergolaLength)
+  |> close()
+longBeam = extrude(longBeamProfile, length = beamHeight)
+  |> translate(z = postLength)
+  |> appearance(%, color = "#a0825c")
+
+longBeams = translate(longBeam, y = pergolaWidth / 2 - (beamWidth / 2))
+  |> patternLinear3d(
+       %,
+       instances = 2,
+       distance = pergolaWidth - beamWidth,
+       axis = [0, -1, 0],
+     )
+
+// Side beams (left and right)
+sideBeamSketch = startSketchOn(XY)
+sideBeamProfile = startProfile(
+       sideBeamSketch,
+       at = [
+         -beamWidth / 2,
+         -(pergolaWidth - (beamWidth * 2)) / 2
+       ],
+     )
+  |> xLine(length = beamWidth)
+  |> yLine(length = pergolaWidth - (beamWidth * 2))
+  |> xLine(length = -beamWidth)
+  |> close()
+sideBeam = extrude(sideBeamProfile, length = beamHeight)
+  |> translate(z = postLength)
+  |> appearance(%, color = "#a0825c")
+
+sideBeams = translate(sideBeam, x = pergolaLength / 2 - (beamWidth / 2))
+  |> patternLinear3d(
+       %,
+       instances = 2,
+       distance = pergolaLength - beamWidth,
+       axis = [-1, 0, 0],
+     )
+
+// Slat profile (crosswise)
+slatSketch = startSketchOn(XY)
+slatProfile = startProfile(
+       slatSketch,
+       at = [
+         -slatThickness / 2,
+         -(pergolaWidth - (beamWidth * 2)) / 2
+       ],
+     )
+  |> xLine(length = slatThickness)
+  |> yLine(length = pergolaWidth - (beamWidth * 2))
+  |> xLine(length = -slatThickness)
+  |> close()
+slat = extrude(slatProfile, length = slatHeight)
+  |> translate(z = postLength)
+  |> appearance(%, color = "#a0825c")
+
+slats = translate(slat, x = -pergolaLength / 2 + beamWidth + slatSpacing)
+  |> patternLinear3d(
+       %,
+       instances = slatCount,
+       distance = slatSpacing,
+       axis = [1, 0, 0],
+     )

@@ -1,17 +1,7 @@
-import {
-  FILE_EXT,
-  INDEX_IDENTIFIER,
-  MAX_PADDING,
-  ONBOARDING_PROJECT_NAME,
-} from '@src/lib/constants'
-import {
-  createNewProjectDirectory,
-  listProjects,
-  readAppSettingsFile,
-} from '@src/lib/desktop'
-import { bracket } from '@src/lib/exampleKcl'
-import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
+import type { IElectronAPI } from '@root/interface'
+import { fsManager } from '@src/lang/std/fileSystemManager'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { FILE_EXT, INDEX_IDENTIFIER, MAX_PADDING } from '@src/lib/constants'
 import type { FileEntry } from '@src/lib/project'
 
 export const isHidden = (fileOrDir: FileEntry) =>
@@ -122,7 +112,7 @@ function getPaddedIdentifierRegExp() {
 }
 
 export async function getSettingsFolderPaths(projectPath?: string) {
-  const user = isDesktop() ? await window.electron.getPath('appData') : '/'
+  const user = window.electron ? await window.electron.getPath('appData') : '/'
   const project = projectPath !== undefined ? projectPath : undefined
 
   return {
@@ -131,84 +121,33 @@ export async function getSettingsFolderPaths(projectPath?: string) {
   }
 }
 
-export async function createAndOpenNewTutorialProject({
-  onProjectOpen,
-  navigate,
-}: {
-  onProjectOpen: (
-    project: {
-      name: string | null
-      path: string | null
-    } | null,
-    file: FileEntry | null
-  ) => void
-  navigate: (path: string) => void
-}) {
-  // Create a new project with the onboarding project name
-  const configuration = await readAppSettingsFile()
-  const projects = await listProjects(configuration)
-  const nextIndex = getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
-  const name = interpolateProjectNameWithIndex(
-    ONBOARDING_PROJECT_NAME,
-    nextIndex
-  )
-
-  // Delete the tutorial project if it already exists.
-  if (isDesktop()) {
-    if (configuration.settings?.project?.directory === undefined) {
-      return Promise.reject(new Error('configuration settings are undefined'))
-    }
-
-    const fullPath = window.electron.join(
-      configuration.settings.project.directory,
-      name
-    )
-    if (window.electron.exists(fullPath)) {
-      await window.electron.rm(fullPath)
-    }
-  }
-
-  const newProject = await createNewProjectDirectory(
-    name,
-    bracket,
-    configuration
-  )
-
-  // Prep the LSP and navigate to the onboarding start
-  onProjectOpen(
-    {
-      name: newProject.name,
-      path: newProject.path,
-    },
-    null
-  )
-  navigate(
-    `${PATHS.FILE}/${encodeURIComponent(newProject.default_file)}${
-      PATHS.ONBOARDING.INDEX
-    }`
-  )
-  return newProject
-}
-
 /**
  * Get the next available file name by appending a hyphen and number to the end of the name
  */
-export function getNextFileName({
+export async function getNextFileName({
+  electron: _electron,
   entryName,
   baseDir,
 }: {
+  electron: IElectronAPI
   entryName: string
   baseDir: string
 }) {
+  // Preserve the extension in case of a relevant but foreign file
+  let extension = fsManager.path.extname(entryName)
+  if (!relevantFileExtensions().includes(extension.replace('.', ''))) {
+    extension = FILE_EXT
+  }
+
   // Remove any existing index from the name before adding a new one
-  let createdName = entryName.replace(FILE_EXT, '') + FILE_EXT
-  let createdPath = window.electron.path.join(baseDir, createdName)
+  let createdName = entryName.replace(extension, '') + extension
+  let createdPath = fsManager.path.join(baseDir, createdName)
   let i = 1
-  while (window.electron.exists(createdPath)) {
-    const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${FILE_EXT})?$`)
+  while (await fsManager.exists(createdPath)) {
+    const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${extension})?$`)
     createdName =
-      entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + FILE_EXT
-    createdPath = window.electron.path.join(baseDir, createdName)
+      entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + extension
+    createdPath = fsManager.path.join(baseDir, createdName)
     i++
   }
   return {
@@ -221,18 +160,20 @@ export function getNextFileName({
  * Get the next available directory name by appending a hyphen and number to the end of the name
  */
 export function getNextDirName({
+  electron,
   entryName,
   baseDir,
 }: {
+  electron: IElectronAPI
   entryName: string
   baseDir: string
 }) {
   let createdName = entryName
-  let createdPath = window.electron.path.join(baseDir, createdName)
+  let createdPath = electron.path.join(baseDir, createdName)
   let i = 1
-  while (window.electron.exists(createdPath)) {
+  while (electron.exists(createdPath)) {
     createdName = entryName.replace(/-\d+$/, '') + `-${i}`
-    createdPath = window.electron.path.join(baseDir, createdName)
+    createdPath = electron.path.join(baseDir, createdName)
     i++
   }
   return {

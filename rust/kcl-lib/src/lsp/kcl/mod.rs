@@ -15,45 +15,47 @@ use dashmap::DashMap;
 use sha2::Digest;
 use tokio::sync::RwLock;
 use tower_lsp::{
+    Client, LanguageServer,
     jsonrpc::Result as RpcResult,
     lsp_types::{
-        CodeAction, CodeActionKind, CodeActionOrCommand, CodeActionParams, CodeActionResponse, CompletionItem,
-        CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
-        DeleteFilesParams, Diagnostic, DiagnosticOptions, DiagnosticServerCapabilities, DiagnosticSeverity,
-        DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
-        DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
-        DidSaveTextDocumentParams, DocumentDiagnosticParams, DocumentDiagnosticReport, DocumentDiagnosticReportResult,
-        DocumentFilter, DocumentFormattingParams, DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse,
-        Documentation, FoldingRange, FoldingRangeParams, FoldingRangeProviderCapability, FullDocumentDiagnosticReport,
-        Hover as LspHover, HoverContents, HoverParams, HoverProviderCapability, InitializeParams, InitializeResult,
-        InitializedParams, InlayHint, InlayHintParams, InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf,
-        Position, RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken,
-        SemanticTokenModifier, SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend,
-        SemanticTokensOptions, SemanticTokensParams, SemanticTokensRegistrationOptions, SemanticTokensResult,
+        CodeAction, CodeActionKind, CodeActionOptions, CodeActionOrCommand, CodeActionParams,
+        CodeActionProviderCapability, CodeActionResponse, ColorInformation, ColorPresentation, ColorPresentationParams,
+        ColorProviderCapability, CompletionItem, CompletionItemKind, CompletionOptions, CompletionParams,
+        CompletionResponse, CreateFilesParams, DeleteFilesParams, Diagnostic, DiagnosticOptions,
+        DiagnosticServerCapabilities, DiagnosticSeverity, DidChangeConfigurationParams, DidChangeTextDocumentParams,
+        DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
+        DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentColorParams, DocumentDiagnosticParams,
+        DocumentDiagnosticReport, DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams,
+        DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams,
+        FoldingRangeProviderCapability, FullDocumentDiagnosticReport, Hover as LspHover, HoverContents, HoverParams,
+        HoverProviderCapability, InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams,
+        InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf, Position, PrepareRenameResponse,
+        RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken, SemanticTokenModifier,
+        SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions,
+        SemanticTokensParams, SemanticTokensRegistrationOptions, SemanticTokensResult,
         SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp, SignatureHelpOptions, SignatureHelpParams,
-        StaticRegistrationOptions, TextDocumentItem, TextDocumentRegistrationOptions, TextDocumentSyncCapability,
-        TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions, WorkspaceEdit,
-        WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
+        StaticRegistrationOptions, TextDocumentItem, TextDocumentPositionParams, TextDocumentRegistrationOptions,
+        TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions,
+        WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
     },
-    Client, LanguageServer,
 };
 
 use crate::{
-    docs::kcl_doc::DocData,
-    errors::Suggestion,
+    ModuleId, Program, SourceRange,
+    docs::kcl_doc::ModData,
     exec::KclValue,
-    execution::{cache, kcl_value::FunctionSource},
+    execution::cache,
     lsp::{
+        LspSuggestion, ToLspRange,
         backend::Backend as _,
         kcl::hover::{Hover, HoverOpts},
         util::IntoDiagnostic,
     },
     parsing::{
+        PIPE_OPERATOR,
         ast::types::{Expr, VariableKind},
         token::TokenStream,
-        PIPE_OPERATOR,
     },
-    ModuleId, Program, SourceRange,
 };
 
 pub mod custom_notifications;
@@ -173,11 +175,10 @@ impl Backend {
         zoo_client: kittycad::Client,
         can_send_telemetry: bool,
     ) -> Result<Self, String> {
-        let stdlib = crate::std::StdLib::new();
         let kcl_std = crate::docs::kcl_doc::walk_prelude();
-        let stdlib_completions = get_completions_from_stdlib(&stdlib, &kcl_std).map_err(|e| e.to_string())?;
-        let stdlib_signatures = get_signatures_from_stdlib(&stdlib, &kcl_std);
-        let stdlib_args = get_arg_maps_from_stdlib(&stdlib, &kcl_std);
+        let stdlib_completions = get_completions_from_stdlib(&kcl_std).map_err(|e| e.to_string())?;
+        let stdlib_signatures = get_signatures_from_stdlib(&kcl_std);
+        let stdlib_args = get_arg_maps_from_stdlib(&kcl_std);
 
         Ok(Self {
             client,
@@ -289,10 +290,9 @@ impl crate::lsp::backend::Backend for Backend {
         };
 
         // Get the previous tokens.
-        let tokens_changed = if let Some(previous_tokens) = self.token_map.get(&filename) {
-            *previous_tokens != tokens
-        } else {
-            true
+        let tokens_changed = match self.token_map.get(&filename) {
+            Some(previous_tokens) => *previous_tokens != tokens,
+            _ => true,
         };
 
         let had_diagnostics = self.has_diagnostics(params.uri.as_ref()).await;
@@ -423,7 +423,7 @@ impl Backend {
                     self.client
                         .log_message(
                             MessageType::ERROR,
-                            format!("token type `{:?}` not accounted for", token_type),
+                            format!("token type `{token_type:?}` not accounted for"),
                         )
                         .await;
                     continue;
@@ -435,141 +435,143 @@ impl Backend {
 
             // Calculate the token modifiers.
             // Get the value at the current position.
-            let token_modifiers_bitset = if let Some(ast) = self.ast_map.get(params.uri.as_str()) {
-                let token_index = Arc::new(Mutex::new(token_type_index));
-                let modifier_index: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
-                crate::walk::walk(&ast.ast, |node: crate::walk::Node| {
-                    let Ok(node_range): Result<SourceRange, _> = (&node).try_into() else {
-                        return Ok(true);
-                    };
-
-                    if !node_range.contains(source_range.start()) {
-                        return Ok(true);
-                    }
-
-                    let get_modifier = |modifier: Vec<SemanticTokenModifier>| -> Result<bool> {
-                        let mut mods = modifier_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                        let Some(token_modifier_index) = self.get_semantic_token_modifier_index(modifier) else {
+            let token_modifiers_bitset = match self.ast_map.get(params.uri.as_str()) {
+                Some(ast) => {
+                    let token_index = Arc::new(Mutex::new(token_type_index));
+                    let modifier_index: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
+                    crate::walk::walk(&ast.ast, |node: crate::walk::Node| {
+                        let Ok(node_range): Result<SourceRange, _> = (&node).try_into() else {
                             return Ok(true);
                         };
-                        if *mods == 0 {
-                            *mods = token_modifier_index;
-                        } else {
-                            *mods |= token_modifier_index;
-                        }
-                        Ok(false)
-                    };
 
-                    match node {
-                        crate::walk::Node::TagDeclarator(_) => {
-                            return get_modifier(vec![
-                                SemanticTokenModifier::DEFINITION,
-                                SemanticTokenModifier::STATIC,
-                            ]);
+                        if !node_range.contains(source_range.start()) {
+                            return Ok(true);
                         }
-                        crate::walk::Node::VariableDeclarator(variable) => {
-                            let sr: SourceRange = (&variable.id).into();
-                            if sr.contains(source_range.start()) {
-                                if let Expr::FunctionExpression(_) = &variable.init {
+
+                        let get_modifier = |modifier: Vec<SemanticTokenModifier>| -> Result<bool> {
+                            let mut mods = modifier_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                            let Some(token_modifier_index) = self.get_semantic_token_modifier_index(modifier) else {
+                                return Ok(true);
+                            };
+                            if *mods == 0 {
+                                *mods = token_modifier_index;
+                            } else {
+                                *mods |= token_modifier_index;
+                            }
+                            Ok(false)
+                        };
+
+                        match node {
+                            crate::walk::Node::TagDeclarator(_) => {
+                                return get_modifier(vec![
+                                    SemanticTokenModifier::DEFINITION,
+                                    SemanticTokenModifier::STATIC,
+                                ]);
+                            }
+                            crate::walk::Node::VariableDeclarator(variable) => {
+                                let sr: SourceRange = (&variable.id).into();
+                                if sr.contains(source_range.start()) {
+                                    if let Expr::FunctionExpression(_) = &variable.init {
+                                        let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                                        *ti = match self.get_semantic_token_type_index(&SemanticTokenType::FUNCTION) {
+                                            Some(index) => index,
+                                            None => token_type_index,
+                                        };
+                                    }
+
+                                    return get_modifier(vec![
+                                        SemanticTokenModifier::DECLARATION,
+                                        SemanticTokenModifier::READONLY,
+                                    ]);
+                                }
+                            }
+                            crate::walk::Node::Parameter(_) => {
+                                let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                                *ti = match self.get_semantic_token_type_index(&SemanticTokenType::PARAMETER) {
+                                    Some(index) => index,
+                                    None => token_type_index,
+                                };
+                                return Ok(false);
+                            }
+                            crate::walk::Node::MemberExpression(member_expression) => {
+                                let sr: SourceRange = (&member_expression.property).into();
+                                if sr.contains(source_range.start()) {
+                                    let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                                    *ti = match self.get_semantic_token_type_index(&SemanticTokenType::PROPERTY) {
+                                        Some(index) => index,
+                                        None => token_type_index,
+                                    };
+                                    return Ok(false);
+                                }
+                            }
+                            crate::walk::Node::ObjectProperty(object_property) => {
+                                let sr: SourceRange = (&object_property.key).into();
+                                if sr.contains(source_range.start()) {
+                                    let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                                    *ti = match self.get_semantic_token_type_index(&SemanticTokenType::PROPERTY) {
+                                        Some(index) => index,
+                                        None => token_type_index,
+                                    };
+                                }
+                                return get_modifier(vec![SemanticTokenModifier::DECLARATION]);
+                            }
+                            crate::walk::Node::CallExpressionKw(call_expr) => {
+                                let sr: SourceRange = (&call_expr.callee).into();
+                                if sr.contains(source_range.start()) {
                                     let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
                                     *ti = match self.get_semantic_token_type_index(&SemanticTokenType::FUNCTION) {
                                         Some(index) => index,
                                         None => token_type_index,
                                     };
+
+                                    if self.stdlib_completions.contains_key(&call_expr.callee.name.name) {
+                                        // This is a stdlib function.
+                                        return get_modifier(vec![SemanticTokenModifier::DEFAULT_LIBRARY]);
+                                    }
+
+                                    return Ok(false);
                                 }
+                            }
+                            _ => {}
+                        }
+                        Ok(true)
+                    })
+                    .unwrap_or_default();
 
-                                return get_modifier(vec![
-                                    SemanticTokenModifier::DECLARATION,
-                                    SemanticTokenModifier::READONLY,
-                                ]);
-                            }
-                        }
-                        crate::walk::Node::Parameter(_) => {
-                            let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                            *ti = match self.get_semantic_token_type_index(&SemanticTokenType::PARAMETER) {
-                                Some(index) => index,
-                                None => token_type_index,
-                            };
-                            return Ok(false);
-                        }
-                        crate::walk::Node::MemberExpression(member_expression) => {
-                            let sr: SourceRange = (&member_expression.property).into();
-                            if sr.contains(source_range.start()) {
-                                let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                                *ti = match self.get_semantic_token_type_index(&SemanticTokenType::PROPERTY) {
-                                    Some(index) => index,
-                                    None => token_type_index,
-                                };
-                                return Ok(false);
-                            }
-                        }
-                        crate::walk::Node::ObjectProperty(object_property) => {
-                            let sr: SourceRange = (&object_property.key).into();
-                            if sr.contains(source_range.start()) {
-                                let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                                *ti = match self.get_semantic_token_type_index(&SemanticTokenType::PROPERTY) {
-                                    Some(index) => index,
-                                    None => token_type_index,
-                                };
-                            }
-                            return get_modifier(vec![SemanticTokenModifier::DECLARATION]);
-                        }
-                        crate::walk::Node::CallExpression(call_expr) => {
-                            let sr: SourceRange = (&call_expr.callee).into();
-                            if sr.contains(source_range.start()) {
-                                let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                                *ti = match self.get_semantic_token_type_index(&SemanticTokenType::FUNCTION) {
-                                    Some(index) => index,
-                                    None => token_type_index,
-                                };
+                    let t = match token_index.lock() {
+                        Ok(guard) => *guard,
+                        _ => 0,
+                    };
+                    token_type_index = t;
 
-                                if self.stdlib_completions.contains_key(&call_expr.callee.name.name) {
-                                    // This is a stdlib function.
-                                    return get_modifier(vec![SemanticTokenModifier::DEFAULT_LIBRARY]);
-                                }
-
-                                return Ok(false);
-                            }
-                        }
-                        _ => {}
+                    match modifier_index.lock() {
+                        Ok(guard) => *guard,
+                        _ => 0,
                     }
-                    Ok(true)
-                })
-                .unwrap_or_default();
-
-                let t = if let Ok(guard) = token_index.lock() { *guard } else { 0 };
-                token_type_index = t;
-
-                let m = if let Ok(guard) = modifier_index.lock() {
-                    *guard
-                } else {
-                    0
-                };
-                m
-            } else {
-                0
+                }
+                _ => 0,
             };
 
             // We need to check if we are on the last token of the line.
             // If we are starting from the end of the last line just add 1 to the line.
             // Check if we are on the last token of the line.
-            if let Some(line) = params.text.lines().nth(position.line as usize) {
-                if line.len() == position.character as usize {
-                    // We are on the last token of the line.
-                    // We need to add a new line.
-                    let semantic_token = SemanticToken {
-                        delta_line: position.line - last_position.line + 1,
-                        delta_start: 0,
-                        length: (token.end - token.start) as u32,
-                        token_type: token_type_index,
-                        token_modifiers_bitset,
-                    };
+            if let Some(line) = params.text.lines().nth(position.line as usize)
+                && line.len() == position.character as usize
+            {
+                // We are on the last token of the line.
+                // We need to add a new line.
+                let semantic_token = SemanticToken {
+                    delta_line: position.line - last_position.line + 1,
+                    delta_start: 0,
+                    length: (token.end - token.start) as u32,
+                    token_type: token_type_index,
+                    token_modifiers_bitset,
+                };
 
-                    semantic_tokens.push(semantic_token);
+                semantic_tokens.push(semantic_token);
 
-                    last_position = Position::new(position.line + 1, 0);
-                    continue;
-                }
+                last_position = Position::new(position.line + 1, 0);
+                continue;
             }
 
             let semantic_token = SemanticToken {
@@ -651,11 +653,14 @@ impl Backend {
                 .await;
         }
 
-        let mut items = if let Some(items) = self.diagnostics_map.get(params.uri.as_str()) {
-            // TODO: Would be awesome to fix the clone here.
-            items.clone()
-        } else {
-            vec![]
+        let mut items = match self.diagnostics_map.get(params.uri.as_str()) {
+            Some(items) => {
+                // TODO: Would be awesome to fix the clone here.
+                items.clone()
+            }
+            _ => {
+                vec![]
+            }
         };
 
         for diagnostic in diagnostics {
@@ -767,7 +772,7 @@ impl Backend {
         // Read hash digest and consume hasher
         let result = hasher.finalize();
         // Get the hash as a string.
-        let user_id_hash = format!("{:x}", result);
+        let user_id_hash = format!("{result:x}");
 
         // Get the workspace folders.
         // The key of the workspace folder is the project name.
@@ -826,17 +831,56 @@ impl Backend {
 
         Ok(custom_notifications::UpdateCanExecuteResponse {})
     }
+
+    /// Returns the new string for the code after rename.
+    pub fn inner_prepare_rename(
+        &self,
+        params: &TextDocumentPositionParams,
+        new_name: &str,
+    ) -> RpcResult<Option<(String, String)>> {
+        let filename = params.text_document.uri.to_string();
+
+        let Some(current_code) = self.code_map.get(&filename) else {
+            return Ok(None);
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(None);
+        };
+
+        // Parse the ast.
+        // I don't know if we need to do this again since it should be updated in the context.
+        // But I figure better safe than sorry since this will write back out to the file.
+        let module_id = ModuleId::default();
+        let Ok(mut ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
+            return Ok(None);
+        };
+
+        // Let's convert the position to a character index.
+        let pos = position_to_char_index(params.position, current_code);
+        // Now let's perform the rename on the ast.
+        ast.rename_symbol(new_name, pos);
+        // Now recast it.
+        let recast = ast.recast_top(&Default::default(), 0);
+
+        Ok(Some((current_code.to_string(), recast)))
+    }
 }
 
 #[tower_lsp::async_trait]
 impl LanguageServer for Backend {
     async fn initialize(&self, params: InitializeParams) -> RpcResult<InitializeResult> {
         self.client
-            .log_message(MessageType::INFO, format!("initialize: {:?}", params))
+            .log_message(MessageType::INFO, format!("initialize: {params:?}"))
             .await;
 
         Ok(InitializeResult {
             capabilities: ServerCapabilities {
+                color_provider: Some(ColorProviderCapability::Simple(true)),
+                code_action_provider: Some(CodeActionProviderCapability::Options(CodeActionOptions {
+                    code_action_kinds: Some(vec![CodeActionKind::QUICKFIX]),
+                    resolve_provider: Some(false),
+                    work_done_progress_options: WorkDoneProgressOptions::default(),
+                })),
                 completion_provider: Some(CompletionOptions {
                     resolve_provider: Some(false),
                     trigger_characters: Some(vec![".".to_string()]),
@@ -966,7 +1010,7 @@ impl LanguageServer for Backend {
         #[cfg(not(target_arch = "wasm32"))]
         if let Err(err) = self.send_telemetry().await {
             self.client
-                .log_message(MessageType::WARNING, format!("failed to send telemetry: {}", err))
+                .log_message(MessageType::WARNING, format!("failed to send telemetry: {err}"))
                 .await;
         }
     }
@@ -999,13 +1043,10 @@ impl LanguageServer for Backend {
             Hover::Function { name, range } => {
                 let (sig, docs) = if let Some(Some(result)) = with_cached_var(&name, |value| {
                     match value {
-                        // User-defined or KCL std function
-                        KclValue::Function {
-                            value: FunctionSource::User { ast, .. },
-                            ..
-                        } => {
+                        // User-defined function
+                        KclValue::Function { value, .. } if !value.is_std => {
                             // TODO get docs from comments
-                            Some((ast.signature(), ""))
+                            Some((value.ast.signature(), ""))
                         }
                         _ => None,
                     }
@@ -1050,7 +1091,7 @@ impl LanguageServer for Backend {
                 Ok(Some(LspHover {
                     contents: HoverContents::Markup(MarkupContent {
                         kind: MarkupKind::Markdown,
-                        value: format!("```\n{}{}\n```\n\n{}", name, sig, docs),
+                        value: format!("```\n{name}{sig}\n```\n\n{docs}"),
                     }),
                     range: Some(range),
                 }))
@@ -1078,7 +1119,7 @@ impl LanguageServer for Backend {
                 Ok(Some(LspHover {
                     contents: HoverContents::Markup(MarkupContent {
                         kind: MarkupKind::Markdown,
-                        value: format!("```\n{}\n```\n\n{}", name, docs),
+                        value: format!("```\n{name}\n```\n\n{docs}"),
                     }),
                     range: Some(range),
                 }))
@@ -1113,17 +1154,17 @@ impl LanguageServer for Backend {
             } => Ok(Some(LspHover {
                 contents: HoverContents::Markup(MarkupContent {
                     kind: MarkupKind::Markdown,
-                    value: format!("```\n{}: {}\n```", name, ty),
+                    value: format!("```\n{name}: {ty}\n```"),
                 }),
                 range: Some(range),
             })),
             Hover::Variable { name, ty: None, range } => Ok(with_cached_var(&name, |value| {
-                let mut text: String = format!("```\n{}", name);
+                let mut text: String = format!("```\n{name}");
                 if let Some(ty) = value.principal_type() {
                     text.push_str(&format!(": {}", ty.human_friendly_type()));
                 }
                 if let Some(v) = value.value_str() {
-                    text.push_str(&format!(" = {}", v));
+                    text.push_str(&format!(" = {v}"));
                 }
                 text.push_str("\n```");
 
@@ -1281,6 +1322,69 @@ impl LanguageServer for Backend {
 
         let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
+        // Get the character at the position.
+        let Some(ch) = current_code.chars().nth(pos) else {
+            return Ok(None);
+        };
+
+        let check_char = |ch: char| {
+            // If  we are on a (, then get the string in front of the (
+            // and try to get the signature.
+            // We do these before the ast check because we might not have a valid ast.
+            if ch == '(' {
+                // If the current character is not a " " then get the next space after
+                // our position so we can split on that.
+                // Find the next space after the current position.
+                let next_space = if ch != ' ' {
+                    if let Some(next_space) = current_code[pos..].find(' ') {
+                        pos + next_space
+                    } else if let Some(next_space) = current_code[pos..].find('(') {
+                        pos + next_space
+                    } else {
+                        pos
+                    }
+                } else {
+                    pos
+                };
+                let p2 = std::cmp::max(pos, next_space);
+
+                let last_word = current_code[..p2].split_whitespace().last()?;
+
+                // Get the function name.
+                return self.stdlib_signatures.get(last_word);
+            } else if ch == ',' {
+                // If we have a comma, then get the string in front of
+                // the closest ( and try to get the signature.
+
+                // Find the last ( before the comma.
+                let last_paren = current_code[..pos].rfind('(')?;
+                // Get the string in front of the (.
+                let last_word = current_code[..last_paren].split_whitespace().last()?;
+                // Get the function name.
+                return self.stdlib_signatures.get(last_word);
+            }
+
+            None
+        };
+
+        if let Some(signature) = check_char(ch) {
+            return Ok(Some(signature.clone()));
+        }
+
+        // Check if we have context.
+        if let Some(context) = params.context
+            && let Some(character) = context.trigger_character
+        {
+            for character in character.chars() {
+                // Check if we are on a ( or a ,.
+                if (character == '(' || character == ',')
+                    && let Some(signature) = check_char(character)
+                {
+                    return Ok(Some(signature.clone()));
+                }
+            }
+        }
+
         // Let's iterate over the AST and find the node that contains the cursor.
         let Some(ast) = self.ast_map.get(&filename) else {
             return Ok(None);
@@ -1373,7 +1477,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
         // Now recast it.
-        let recast = ast.recast(
+        let recast = ast.recast_top(
             &crate::parsing::ast::types::FormatOptions {
                 tab_size: params.options.tab_size as usize,
                 insert_final_newline: params.options.insert_final_newline.unwrap_or(false),
@@ -1390,42 +1494,37 @@ impl LanguageServer for Backend {
     }
 
     async fn rename(&self, params: RenameParams) -> RpcResult<Option<WorkspaceEdit>> {
-        let filename = params.text_document_position.text_document.uri.to_string();
-
-        let Some(current_code) = self.code_map.get(&filename) else {
-            return Ok(None);
-        };
-        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+        let Some((current_code, new_code)) =
+            self.inner_prepare_rename(&params.text_document_position, &params.new_name)?
+        else {
             return Ok(None);
         };
 
-        // Parse the ast.
-        // I don't know if we need to do this again since it should be updated in the context.
-        // But I figure better safe than sorry since this will write back out to the file.
-        let module_id = ModuleId::default();
-        let Ok(mut ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
-            return Ok(None);
-        };
-
-        // Let's convert the position to a character index.
-        let pos = position_to_char_index(params.text_document_position.position, current_code);
-        // Now let's perform the rename on the ast.
-        ast.rename_symbol(&params.new_name, pos);
-        // Now recast it.
-        let recast = ast.recast(&Default::default(), 0);
-        let source_range = SourceRange::new(0, current_code.len() - 1, module_id);
-        let range = source_range.to_lsp_range(current_code);
+        let source_range = SourceRange::new(0, current_code.len(), ModuleId::default());
+        let range = source_range.to_lsp_range(&current_code);
         Ok(Some(WorkspaceEdit {
             changes: Some(HashMap::from([(
                 params.text_document_position.text_document.uri,
                 vec![TextEdit {
-                    new_text: recast,
+                    new_text: new_code,
                     range,
                 }],
             )])),
             document_changes: None,
             change_annotations: None,
         }))
+    }
+
+    async fn prepare_rename(&self, params: TextDocumentPositionParams) -> RpcResult<Option<PrepareRenameResponse>> {
+        if self
+            .inner_prepare_rename(&params, "someNameNoOneInTheirRightMindWouldEverUseForTesting")?
+            .is_none()
+        {
+            return Ok(None);
+        }
+
+        // Return back to the client, that it is safe to use the rename behavior.
+        Ok(Some(PrepareRenameResponse::DefaultBehavior { default_behavior: true }))
     }
 
     async fn folding_range(&self, params: FoldingRangeParams) -> RpcResult<Option<Vec<FoldingRange>>> {
@@ -1452,14 +1551,18 @@ impl LanguageServer for Backend {
             .diagnostics
             .into_iter()
             .filter_map(|diagnostic| {
-                let (suggestion, range) = diagnostic.data.as_ref().and_then(|data| {
-                    serde_json::from_value::<(Suggestion, tower_lsp::lsp_types::Range)>(data.clone()).ok()
-                })?;
+                let (suggestion, range) = diagnostic
+                    .data
+                    .as_ref()
+                    .and_then(|data| serde_json::from_value::<LspSuggestion>(data.clone()).ok())?;
                 let edit = TextEdit {
                     range,
                     new_text: suggestion.insert,
                 };
                 let changes = HashMap::from([(params.text_document.uri.clone(), vec![edit])]);
+
+                // If you add more code action kinds, make sure you add it to the server
+                // capabilities on initialization!
                 Some(CodeActionOrCommand::CodeAction(CodeAction {
                     title: suggestion.title,
                     kind: Some(CodeActionKind::QUICKFIX),
@@ -1479,22 +1582,65 @@ impl LanguageServer for Backend {
 
         Ok(Some(actions))
     }
+
+    async fn document_color(&self, params: DocumentColorParams) -> RpcResult<Vec<ColorInformation>> {
+        let filename = params.text_document.uri.to_string();
+
+        let Some(current_code) = self.code_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(vec![]);
+        };
+
+        // Get the ast from our map.
+        let Some(ast) = self.ast_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+
+        // Get the colors from the ast.
+        let Ok(colors) = ast.ast.document_color(current_code) else {
+            return Ok(vec![]);
+        };
+
+        Ok(colors)
+    }
+
+    async fn color_presentation(&self, params: ColorPresentationParams) -> RpcResult<Vec<ColorPresentation>> {
+        let filename = params.text_document.uri.to_string();
+
+        let Some(current_code) = self.code_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(vec![]);
+        };
+
+        // Get the ast from our map.
+        let Some(ast) = self.ast_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+
+        let pos_start = position_to_char_index(params.range.start, current_code);
+        let pos_end = position_to_char_index(params.range.end, current_code);
+
+        // Get the colors from the ast.
+        let Ok(Some(presentation)) = ast.ast.color_presentation(&params.color, pos_start, pos_end) else {
+            return Ok(vec![]);
+        };
+
+        Ok(vec![presentation])
+    }
 }
 
 /// Get completions from our stdlib.
-pub fn get_completions_from_stdlib(
-    stdlib: &crate::std::StdLib,
-    kcl_std: &[DocData],
-) -> Result<HashMap<String, CompletionItem>> {
+pub fn get_completions_from_stdlib(kcl_std: &ModData) -> Result<HashMap<String, CompletionItem>> {
     let mut completions = HashMap::new();
-    let combined = stdlib.combined();
 
-    for internal_fn in combined.values() {
-        completions.insert(internal_fn.name(), internal_fn.to_completion_item()?);
-    }
-
-    for d in kcl_std {
-        completions.insert(d.name().to_owned(), d.to_completion_item());
+    for d in kcl_std.all_docs() {
+        if let Some(ci) = d.to_completion_item() {
+            completions.insert(d.name().to_owned(), ci);
+        }
     }
 
     let variable_kinds = VariableKind::to_completion_items();
@@ -1506,15 +1652,10 @@ pub fn get_completions_from_stdlib(
 }
 
 /// Get signatures from our stdlib.
-pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &[DocData]) -> HashMap<String, SignatureHelp> {
+pub fn get_signatures_from_stdlib(kcl_std: &ModData) -> HashMap<String, SignatureHelp> {
     let mut signatures = HashMap::new();
-    let combined = stdlib.combined();
 
-    for internal_fn in combined.values() {
-        signatures.insert(internal_fn.name(), internal_fn.to_signature_help());
-    }
-
-    for d in kcl_std {
+    for d in kcl_std.all_docs() {
         if let Some(sig) = d.to_signature_help() {
             signatures.insert(d.name().to_owned(), sig);
         }
@@ -1524,44 +1665,30 @@ pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &[DocDat
 }
 
 /// Get signatures from our stdlib.
-pub fn get_arg_maps_from_stdlib(
-    stdlib: &crate::std::StdLib,
-    kcl_std: &[DocData],
-) -> HashMap<String, HashMap<String, String>> {
+pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<String, String>> {
     let mut result = HashMap::new();
-    let combined = stdlib.combined();
 
-    for internal_fn in combined.values() {
-        if internal_fn.keyword_arguments() {
-            let arg_map: HashMap<String, String> = internal_fn
-                .args(false)
-                .into_iter()
-                .map(|data| {
-                    let mut tip = "```\n".to_owned();
-                    tip.push_str(&data.name.clone());
-                    if !data.required {
-                        tip.push('?');
-                    }
-                    if !data.type_.is_empty() {
-                        tip.push_str(": ");
-                        tip.push_str(&data.type_);
-                    }
-                    tip.push_str("\n```");
-                    if !data.description.is_empty() {
-                        tip.push_str("\n\n");
-                        tip.push_str(&data.description);
-                    }
-                    (data.name, tip)
-                })
-                .collect();
-            if !arg_map.is_empty() {
-                result.insert(internal_fn.name(), arg_map);
-            }
+    for d in kcl_std.all_docs() {
+        let crate::docs::kcl_doc::DocData::Fn(f) = d else {
+            continue;
+        };
+        let arg_map: HashMap<String, String> = f
+            .args
+            .iter()
+            .map(|data| {
+                let mut tip = "```\n".to_owned();
+                tip.push_str(&data.to_string());
+                tip.push_str("\n```");
+                if let Some(docs) = &data.docs {
+                    tip.push_str("\n\n");
+                    tip.push_str(docs);
+                }
+                (data.name.clone(), tip)
+            })
+            .collect();
+        if !arg_map.is_empty() {
+            result.insert(f.name.clone(), arg_map);
         }
-    }
-
-    for _d in kcl_std {
-        // TODO add KCL std fns
     }
 
     result
@@ -1580,7 +1707,7 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
         }
     }
 
-    char_position
+    std::cmp::min(char_position, code.len() - 1)
 }
 
 async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
@@ -1588,4 +1715,49 @@ async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T>
     let value = mem.0.get(name, SourceRange::default()).ok()?;
 
     Some(f(value))
+}
+
+#[cfg(test)]
+mod tests {
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+
+    #[test]
+    fn test_position_to_char_index_first_line() {
+        let code = r#"def foo():
+return 42"#;
+        let position = Position::new(0, 3);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 3);
+    }
+
+    #[test]
+    fn test_position_to_char_index() {
+        let code = r#"def foo():
+return 42"#;
+        let position = Position::new(1, 4);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 15);
+    }
+
+    #[test]
+    fn test_position_to_char_index_with_newline() {
+        let code = r#"def foo():
+
+return 42"#;
+        let position = Position::new(2, 0);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 12);
+    }
+
+    #[test]
+    fn test_position_to_char_at_end() {
+        let code = r#"def foo():
+return 42"#;
+
+        let position = Position::new(1, 8);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 19);
+    }
 }

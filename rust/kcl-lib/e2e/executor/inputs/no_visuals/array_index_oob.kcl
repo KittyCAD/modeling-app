@@ -1,2 +1,2 @@
-let arr = []
-let x = arr[0]
+arr = []
+x = arr[0]

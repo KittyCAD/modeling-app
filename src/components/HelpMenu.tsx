@@ -1,64 +1,58 @@
 import { Popover } from '@headlessui/react'
-import { useLocation, useNavigate } from 'react-router-dom'
-
 import { CustomIcon } from '@src/components/CustomIcon'
-import { useLspContext } from '@src/components/LspProvider'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
-import { createAndOpenNewTutorialProject } from '@src/lib/desktopFS'
+import { isDesktop } from '@src/lib/isDesktop'
+import { onboardingStartPath } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
+import { codeManager, kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { settingsActor } from '@src/machines/appMachine'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import {
+  acceptOnboarding,
+  catchOnboardingWarnError,
+} from '@src/routes/Onboarding/utils'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
 )
 
-export function HelpMenu(props: React.PropsWithChildren) {
-  const location = useLocation()
-  const { onProjectOpen } = useLspContext()
-  const filePath = useAbsoluteFilePath()
-  const isInProject = location.pathname.includes(PATHS.FILE)
+export function HelpMenu() {
   const navigate = useNavigate()
+  const location = useLocation()
+  const filePath = useAbsoluteFilePath()
 
   const resetOnboardingWorkflow = () => {
-    settingsActor.send({
-      type: 'set.app.onboardingStatus',
-      data: {
-        value: '',
-        level: 'user',
-      },
-    })
-    if (isInProject) {
-      navigate(filePath + PATHS.ONBOARDING.INDEX)
-    } else {
-      createAndOpenNewTutorialProject({
-        onProjectOpen,
-        navigate,
-      }).catch(reportRejection)
+    const props = {
+      onboardingStatus: onboardingStartPath,
+      navigate,
+      codeManager,
+      kclManager,
     }
+    acceptOnboarding(props).catch((reason) =>
+      catchOnboardingWarnError(reason, props)
+    )
   }
 
   const cb = (data: WebContentSendPayload) => {
-    if (data.menuLabel === 'Help.Reset onboarding') {
+    if (data.menuLabel === 'Help.Replay onboarding tutorial') {
       resetOnboardingWorkflow()
     }
   }
   useMenuListener(cb)
 
   return (
-    <Popover className="relative">
+    <Popover className="relative flex items-stretch">
       <Popover.Button
-        className="grid p-0 m-0 border-none rounded-full place-content-center"
+        className={`${defaultStatusBarItemClassNames} m-0`}
         data-testid="help-button"
       >
-        <CustomIcon
-          name="questionMark"
-          className="rounded-full w-7 h-7 bg-chalkboard-110 dark:bg-chalkboard-80 text-chalkboard-10"
-        />
+        <CustomIcon name="questionMark" className="w-5 h-5" />
         <span className="sr-only">Help and resources</span>
         <Tooltip position="top-right" wrapperClassName="ui-open:hidden">
           Help and resources
@@ -68,71 +62,92 @@ export function HelpMenu(props: React.PropsWithChildren) {
         as="ul"
         className="absolute right-0 left-auto flex flex-col w-64 gap-1 p-0 py-2 m-0 mb-1 text-sm border border-solid rounded shadow-lg bottom-full align-stretch text-chalkboard-10 dark:text-inherit bg-chalkboard-110 dark:bg-chalkboard-100 border-chalkboard-110 dark:border-chalkboard-80"
       >
-        <HelpMenuItem
-          as="a"
-          href="https://github.com/KittyCAD/modeling-app/issues/new/choose"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Report a bug
-        </HelpMenuItem>
-        <HelpMenuItem
-          as="a"
-          href="https://github.com/KittyCAD/modeling-app/discussions"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Request a feature
-        </HelpMenuItem>
-        <HelpMenuItem
-          as="a"
-          href="https://discord.gg/JQEpHR7Nt2"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Ask the community
-        </HelpMenuItem>
-        <HelpMenuDivider />
-        <HelpMenuItem
-          as="a"
-          href="https://zoo.dev/docs/kcl-samples"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          KCL code samples
-        </HelpMenuItem>
-        <HelpMenuItem
-          as="a"
-          href="https://zoo.dev/docs/kcl"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          KCL docs
-        </HelpMenuItem>
-        <HelpMenuDivider />
-        <HelpMenuItem
-          as="a"
-          href="https://github.com/KittyCAD/modeling-app/releases"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Release notes
-        </HelpMenuItem>
-        <HelpMenuItem
-          as="button"
-          onClick={() => {
-            const targetPath = location.pathname.includes(PATHS.FILE)
-              ? filePath + PATHS.SETTINGS_KEYBINDINGS
-              : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
-            navigate(targetPath)
-          }}
-          data-testid="keybindings-button"
-        >
-          Keyboard shortcuts
-        </HelpMenuItem>
-        <HelpMenuItem as="button" onClick={resetOnboardingWorkflow}>
-          Reset onboarding
-        </HelpMenuItem>
+        {({ close }) => (
+          <>
+            <HelpMenuItem
+              as="a"
+              href="https://github.com/KittyCAD/modeling-app/issues/new/choose"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Report a bug
+            </HelpMenuItem>
+            <HelpMenuItem
+              as="a"
+              href="https://github.com/KittyCAD/modeling-app/discussions"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Request a feature
+            </HelpMenuItem>
+            <HelpMenuItem
+              as="a"
+              href="https://discord.gg/JQEpHR7Nt2"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Ask the community
+            </HelpMenuItem>
+            <HelpMenuDivider />
+            <HelpMenuItem
+              as="a"
+              href={withSiteBaseURL('/docs/kcl-samples')}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              KCL code samples
+            </HelpMenuItem>
+            <HelpMenuItem
+              as="a"
+              href={withSiteBaseURL('/docs/kcl-lang')}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              KCL docs
+            </HelpMenuItem>
+            <HelpMenuDivider />
+            <HelpMenuItem
+              as="a"
+              href="https://github.com/KittyCAD/modeling-app/releases"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Release notes
+            </HelpMenuItem>
+            {isDesktop() && (
+              <HelpMenuItem
+                as="button"
+                onClick={() => {
+                  close()
+                  window.electron?.appCheckForUpdates().catch(reportRejection)
+                }}
+              >
+                Check for updates
+              </HelpMenuItem>
+            )}
+            <HelpMenuItem
+              as="button"
+              onClick={() => {
+                const targetPath = location.pathname.includes(PATHS.FILE)
+                  ? filePath + PATHS.SETTINGS_KEYBINDINGS
+                  : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
+                navigate(targetPath)
+              }}
+              data-testid="keybindings-button"
+            >
+              Keyboard shortcuts
+            </HelpMenuItem>
+            <HelpMenuItem
+              as="button"
+              onClick={() => {
+                close()
+                resetOnboardingWorkflow()
+              }}
+            >
+              Replay onboarding tutorial
+            </HelpMenuItem>
+          </>
+        )}
       </Popover.Panel>
     </Popover>
   )

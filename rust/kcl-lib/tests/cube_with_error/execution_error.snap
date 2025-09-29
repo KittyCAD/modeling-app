@@ -4,7 +4,7 @@ description: Error from executing cube_with_error.kcl
 ---
 KCL UndefinedValue error
 
-  × undefined value: memory item key `foo` is not defined
+  × undefined value: `foo` is not defined
     ╭─[23:1]
  22 │ // Error, after creating meaningful output.
  23 │ foo

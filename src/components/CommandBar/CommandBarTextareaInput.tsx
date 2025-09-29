@@ -3,10 +3,7 @@ import { useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
-import {
-  commandBarActor,
-  useCommandBarState,
-} from '@src/machines/commandBarMachine'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
 function CommandBarTextareaInput({
   arg,
@@ -39,8 +36,13 @@ function CommandBarTextareaInput({
   }
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit} ref={formRef}>
-      <label className="flex items-start rounded mx-4 my-4 border border-chalkboard-100 dark:border-chalkboard-80">
+    <form
+      id="arg-form"
+      className="flex flex-col items-stretch gap-2 mx-4 my-4 "
+      onSubmit={handleSubmit}
+      ref={formRef}
+    >
+      <label className="flex items-start rounded border border-chalkboard-100 dark:border-chalkboard-80">
         <span
           data-testid="cmd-bar-arg-name"
           className="capitalize px-2 py-1 rounded-br bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80"
@@ -61,7 +63,7 @@ function CommandBarTextareaInput({
               | undefined) || (arg.defaultValue as string)
           }
           onKeyDown={(event) => {
-            if (event.key === 'Backspace' && event.shiftKey) {
+            if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
             } else if (
               event.key === 'Enter' &&
@@ -84,6 +86,8 @@ function CommandBarTextareaInput({
               formRef.current?.dispatchEvent(
                 new Event('submit', { bubbles: true })
               )
+            } else if (event.key === 'Escape') {
+              commandBarActor.send({ type: 'Close' })
             }
           }}
           autoFocus
@@ -107,12 +111,16 @@ const useTextareaAutoGrow = (ref: RefObject<HTMLTextAreaElement>) => {
     }
 
     if (ref.current === null) return
+    // Run initially to set all this stuff at the start
+    listener()
     ref.current.addEventListener('input', listener)
 
     return () => {
       if (ref.current === null) return
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       ref.current.removeEventListener('input', listener)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [ref.current])
 }
 

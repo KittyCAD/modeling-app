@@ -16,6 +16,7 @@ import { expect } from '@e2e/playwright/zoo-test'
 type MouseParams = {
   pixelDiff?: number
   shouldDbClick?: boolean
+  shouldRightClick?: boolean
   delay?: number
 }
 type MouseDragToParams = MouseParams & {
@@ -44,7 +45,9 @@ export class SceneFixture {
   public page: Page
   public streamWrapper!: Locator
   public networkToggleConnected!: Locator
+  public engineConnectionsSpinner!: Locator
   public startEditSketchBtn!: Locator
+  public appHeader!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -52,9 +55,11 @@ export class SceneFixture {
     this.networkToggleConnected = page
       .getByTestId('network-toggle-ok')
       .or(page.getByTestId('network-toggle-other'))
+    this.engineConnectionsSpinner = page.getByTestId(`loading-engine`)
     this.startEditSketchBtn = page
       .getByRole('button', { name: 'Start Sketch' })
       .or(page.getByRole('button', { name: 'Edit Sketch' }))
+    this.appHeader = this.page.getByTestId('app-header')
   }
   private _serialiseScene = async (): Promise<SceneSerialised> => {
     const camera = await this.getCameraInfo()
@@ -73,90 +78,213 @@ export class SceneFixture {
       .toEqual(expected)
   }
 
+  /**
+   * We've written a lot of tests using hard-coded pixel coordinates.
+   * This function translates those to stream-relative ones,
+   * or can be used to get stream coordinates by ratio.
+   */
+  convertPagePositionToStream = async (
+    x: number,
+    y: number,
+    format: 'pixels' | 'ratio' | undefined = 'pixels',
+    relativeToStream = false
+  ) => {
+    const viewportSize = this.page.viewportSize()
+    const streamBoundingBox = await this.streamWrapper.boundingBox()
+    if (viewportSize === null) {
+      throw Error('No viewport')
+    }
+    if (streamBoundingBox === null) {
+      throw Error('No stream to click')
+    }
+
+    const resolvedX =
+      (x / (format === 'pixels' ? viewportSize.width : 1)) *
+        streamBoundingBox.width +
+      (relativeToStream ? 0 : streamBoundingBox.x)
+    const resolvedY =
+      (y / (format === 'pixels' ? viewportSize.height : 1)) *
+        streamBoundingBox.height +
+      (relativeToStream ? 0 : streamBoundingBox.y)
+
+    const resolvedPoint = {
+      x: Math.round(resolvedX),
+      y: Math.round(resolvedY),
+    }
+
+    return resolvedPoint
+  }
+
   makeMouseHelpers = (
     x: number,
     y: number,
-    { steps }: { steps: number } = { steps: 20 }
+    { steps, format }: { steps?: number; format?: 'pixels' | 'ratio' } = {
+      steps: 20,
+      format: 'pixels',
+    }
   ): [ClickHandler, MoveHandler, DblClickHandler] =>
     [
-      (clickParams?: MouseParams) => {
+      async (clickParams?: MouseParams) => {
+        const resolvedPoint = await this.convertPagePositionToStream(
+          x,
+          y,
+          format
+        )
         if (clickParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
             () =>
               clickParams?.shouldDbClick
-                ? this.page.mouse.dblclick(x, y, {
+                ? this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
                     delay: clickParams?.delay || 0,
                   })
-                : this.page.mouse.click(x, y, {
-                    delay: clickParams?.delay || 0,
-                  }),
+                : clickParams?.shouldRightClick
+                  ? this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+                      button: 'right',
+                      delay: clickParams?.delay || 0,
+                    })
+                  : this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+                      delay: clickParams?.delay || 0,
+                    }),
             clickParams.pixelDiff
           )
         }
         return clickParams?.shouldDbClick
-          ? this.page.mouse.dblclick(x, y, { delay: clickParams?.delay || 0 })
-          : this.page.mouse.click(x, y, { delay: clickParams?.delay || 0 })
+          ? this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
+              delay: clickParams?.delay || 0,
+            })
+          : clickParams?.shouldRightClick
+            ? this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+                button: 'right',
+                delay: clickParams?.delay || 0,
+              })
+            : this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+                delay: clickParams?.delay || 0,
+              })
       },
-      (moveParams?: MouseParams) => {
+      async (moveParams?: MouseParams) => {
+        const resolvedPoint = await this.convertPagePositionToStream(
+          x,
+          y,
+          format
+        )
         if (moveParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
-            () => this.page.mouse.move(x, y, { steps }),
+            () =>
+              this.page.mouse.move(resolvedPoint.x, resolvedPoint.y, { steps }),
             moveParams.pixelDiff
           )
         }
-        return this.page.mouse.move(x, y, { steps })
+        return this.page.mouse.move(resolvedPoint.x, resolvedPoint.y, { steps })
       },
-      (clickParams?: MouseParams) => {
+      async (clickParams?: MouseParams) => {
+        const resolvedPoint = await this.convertPagePositionToStream(
+          x,
+          y,
+          format
+        )
         if (clickParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
-            () => this.page.mouse.dblclick(x, y),
+            () => this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y),
             clickParams.pixelDiff
           )
         }
-        return this.page.mouse.dblclick(x, y)
+        return this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y)
       },
     ] as const
   makeDragHelpers = (
     x: number,
     y: number,
-    { steps }: { steps: number } = { steps: 20 }
+    {
+      steps,
+      format,
+      debug,
+    }: Partial<{
+      steps: number
+      format: 'pixels' | 'ratio'
+      debug: boolean
+    }> = {
+      steps: 20,
+      format: 'pixels',
+    }
   ): [DragToHandler, DragFromHandler] =>
     [
-      (dragToParams: MouseDragToParams) => {
+      async (dragToParams: MouseDragToParams) => {
+        const resolvedToPoint = await this.convertPagePositionToStream(
+          x,
+          y,
+          format,
+          true
+        )
+        const resolvedFromPoint = await this.convertPagePositionToStream(
+          dragToParams.fromPoint.x,
+          dragToParams.fromPoint.y,
+          format,
+          true
+        )
+        if (debug) {
+          console.log({
+            x,
+            y,
+            dragToParams,
+            resolvedToPoint,
+            resolvedFromPoint,
+          })
+        }
         if (dragToParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
             () =>
               this.page.dragAndDrop('#stream', '#stream', {
-                sourcePosition: dragToParams.fromPoint,
-                targetPosition: { x, y },
+                sourcePosition: resolvedFromPoint,
+                targetPosition: resolvedToPoint,
               }),
             dragToParams.pixelDiff
           )
         }
         return this.page.dragAndDrop('#stream', '#stream', {
-          sourcePosition: dragToParams.fromPoint,
-          targetPosition: { x, y },
+          sourcePosition: resolvedFromPoint,
+          targetPosition: resolvedToPoint,
         })
       },
-      (dragFromParams: MouseDragFromParams) => {
+      async (dragFromParams: MouseDragFromParams) => {
+        const resolvedFromPoint = await this.convertPagePositionToStream(
+          x,
+          y,
+          format,
+          true
+        )
+        const resolvedToPoint = await this.convertPagePositionToStream(
+          dragFromParams.toPoint.x,
+          dragFromParams.toPoint.y,
+          format,
+          true
+        )
+        if (debug) {
+          console.log({
+            x,
+            y,
+            dragFromParams,
+            resolvedToPoint,
+            resolvedFromPoint,
+          })
+        }
         if (dragFromParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
             () =>
               this.page.dragAndDrop('#stream', '#stream', {
-                sourcePosition: { x, y },
-                targetPosition: dragFromParams.toPoint,
+                sourcePosition: resolvedFromPoint,
+                targetPosition: resolvedToPoint,
               }),
             dragFromParams.pixelDiff
           )
         }
         return this.page.dragAndDrop('#stream', '#stream', {
-          sourcePosition: { x, y },
-          targetPosition: dragFromParams.toPoint,
+          sourcePosition: resolvedFromPoint,
+          targetPosition: resolvedToPoint,
         })
       },
     ] as const
@@ -166,9 +294,35 @@ export class SceneFixture {
    * Expects the viewPort to be 1000x500 */
   clickNoWhere = () => this.page.mouse.click(998, 60)
   /** Likely no where, there's a chance it will click something in the scene, depending what you have in the scene.
-   *
-   * Expects the viewPort to be 1000x500 */
-  moveNoWhere = (steps?: number) => this.page.mouse.move(998, 60, { steps })
+   */
+  moveNoWhere = async (steps?: number) => {
+    const point = await this.convertPagePositionToStream(
+      998 / 1000,
+      60 / 500,
+      'ratio'
+    )
+    return this.page.mouse.move(point.x, point.y, { steps })
+  }
+
+  /** Select the X-axis, the blue horizontal line. Must be in sketch mode. */
+  clickXAxis = async () => {
+    const pointOnXAxis = await this.convertPagePositionToStream(
+      0.9,
+      0.5,
+      'ratio'
+    )
+    await this.page.mouse.click(pointOnXAxis.x, pointOnXAxis.y)
+  }
+
+  /** Select the Y-axis, the red vertical line. Must be in sketch mode. */
+  clickYAxis = async () => {
+    const pointOnYAxis = await this.convertPagePositionToStream(
+      0.5,
+      0.25,
+      'ratio'
+    )
+    await this.page.mouse.click(pointOnYAxis.x, pointOnYAxis.y)
+  }
 
   moveCameraTo = async (
     pos: { x: number; y: number; z: number },
@@ -226,15 +380,29 @@ export class SceneFixture {
   }
 
   connectionEstablished = async () => {
-    const timeout = 30000
-    await expect(this.networkToggleConnected).toBeVisible({ timeout })
+    const timeout = 30_000
+    await Promise.all([
+      expect(this.networkToggleConnected).toBeVisible({ timeout }),
+      expect(this.engineConnectionsSpinner).not.toBeVisible({ timeout }),
+    ])
   }
 
-  settled = async (cmdBar: CmdBarFixture) => {
+  settled = async (
+    cmdBar: CmdBarFixture,
+    { expectError }: Partial<{ expectError: boolean }> | undefined = {
+      expectError: false,
+    }
+  ) => {
     const u = await getUtils(this.page)
 
-    await expect(this.startEditSketchBtn).not.toBeDisabled()
+    // If the caller expects a KCL error, don't wait for the sketch button to enable.
+    if (!expectError) {
+      await expect(this.startEditSketchBtn).not.toBeDisabled({
+        timeout: 15_000,
+      })
+    }
     await expect(this.startEditSketchBtn).toBeVisible()
+    await expect(this.engineConnectionsSpinner).not.toBeVisible()
 
     await cmdBar.openCmdBar()
     await cmdBar.chooseCommand('Settings · app · show debug panel')
@@ -248,9 +416,33 @@ export class SceneFixture {
   expectPixelColor = async (
     colour: [number, number, number] | [number, number, number][],
     coords: { x: number; y: number },
-    diff: number
+    diff: number,
+    { format }: Partial<{ format?: 'pixels' | 'ratio' }> = {
+      format: 'pixels',
+    }
   ) => {
-    await expectPixelColor(this.page, colour, coords, diff)
+    const transformedCoords = await this.convertPagePositionToStream(
+      coords.x,
+      coords.y,
+      format
+    )
+    await expectPixelColor(this.page, colour, transformedCoords, diff)
+  }
+
+  expectPixelColorNotToBe = async (
+    colour: [number, number, number] | [number, number, number][],
+    coords: { x: number; y: number },
+    diff: number,
+    { format }: Partial<{ format?: 'pixels' | 'ratio' }> = {
+      format: 'pixels',
+    }
+  ) => {
+    const transformedCoords = await this.convertPagePositionToStream(
+      coords.x,
+      coords.y,
+      format
+    )
+    await expectPixelColorNotToBe(this.page, colour, transformedCoords, diff)
   }
 
   get gizmo() {
@@ -266,6 +458,13 @@ export class SceneFixture {
     await expect(buttonToTest).toBeVisible()
     await buttonToTest.click()
   }
+
+  isNativeFileMenuCreated = async () => {
+    await expect(this.appHeader).toHaveAttribute(
+      'data-native-file-menu',
+      'true'
+    )
+  }
 }
 
 function isColourArray(
@@ -274,37 +473,69 @@ function isColourArray(
   return isArray(colour[0])
 }
 
-export async function expectPixelColor(
+type PixelColorMatchMode = 'matches' | 'differs'
+
+async function checkPixelColor(
   page: Page,
   colour: [number, number, number] | [number, number, number][],
   coords: { x: number; y: number },
-  diff: number
+  diff: number,
+  mode: PixelColorMatchMode
 ) {
   let finalValue = colour
+  const isMatchMode = mode === 'matches'
+  const actionText = isMatchMode ? 'expecting' : 'not expecting'
+  const functionName = isMatchMode
+    ? 'ExpectPixelColor'
+    : 'ExpectPixelColourNotToBe'
+
   await expect
     .poll(
       async () => {
         const pixel = (await getPixelRGBs(page)(coords, 1))[0]
         if (!pixel) return null
         finalValue = pixel
+
+        let matches
         if (!isColourArray(colour)) {
-          return pixel.every(
+          matches = pixel.every(
             (channel, index) => Math.abs(channel - colour[index]) < diff
           )
+        } else {
+          matches = colour.some((c) =>
+            c.every((channel, index) => Math.abs(pixel[index] - channel) < diff)
+          )
         }
-        return colour.some((c) =>
-          c.every((channel, index) => Math.abs(pixel[index] - channel) < diff)
-        )
+
+        return isMatchMode ? matches : !matches
       },
       { timeout: 10_000 }
     )
     .toBeTruthy()
     .catch((cause) => {
       throw new Error(
-        `ExpectPixelColor: point ${JSON.stringify(
+        `${functionName}: point ${JSON.stringify(
           coords
-        )} was expecting ${colour} but got ${finalValue}`,
+        )} was ${actionText} ${colour} but got ${finalValue}`,
         { cause }
       )
     })
+}
+
+async function expectPixelColor(
+  page: Page,
+  colour: [number, number, number] | [number, number, number][],
+  coords: { x: number; y: number },
+  diff: number
+) {
+  await checkPixelColor(page, colour, coords, diff, 'matches')
+}
+
+async function expectPixelColorNotToBe(
+  page: Page,
+  colour: [number, number, number] | [number, number, number][],
+  coords: { x: number; y: number },
+  diff: number
+) {
+  await checkPixelColor(page, colour, coords, diff, 'differs')
 }

@@ -7,11 +7,32 @@ import { ActionIcon } from '@src/components/ActionIcon'
 import { editorShortcutMeta } from '@src/components/ModelingSidebar/ModelingPanes/KclEditorPane'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { kclManager } from '@src/lib/singletons'
-import { reportRejection } from '@src/lib/trap'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { commandBarActor, settingsActor } from '@src/lib/singletons'
+import { reportRejection, trap } from '@src/lib/trap'
 
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
+
+function copyKclCodeToClipboard() {
+  if (!codeManager.code) {
+    toast.error('No code available to copy')
+    return
+  }
+
+  if (!globalThis?.navigator?.clipboard?.writeText) {
+    toast.error('Clipboard functionality not available in your browser')
+    return
+  }
+
+  navigator.clipboard
+    .writeText(codeManager.code)
+    .then(() => toast.success(`Copied current file's code to clipboard`))
+    .catch((e) =>
+      trap(new Error(`Failed to copy code to clipboard: ${e.message}`))
+    )
+}
 
 export const KclEditorMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
@@ -51,6 +72,11 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
               <small>{editorShortcutMeta.formatCode.display}</small>
             </button>
           </Menu.Item>
+          <Menu.Item>
+            <button onClick={copyKclCodeToClipboard} className={styles.button}>
+              <span>Copy code</span>
+            </button>
+          </Menu.Item>
           {convertToVarEnabled && (
             <Menu.Item>
               <button
@@ -67,7 +93,7 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <a
               className={styles.button}
-              href="https://zoo.dev/docs/kcl"
+              href={withSiteBaseURL('/docs/kcl-lang')}
               target="_blank"
               rel="noopener noreferrer"
               onClick={openExternalBrowserIfDesktop()}
@@ -86,23 +112,29 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <button
               onClick={() => {
+                const currentProject =
+                  settingsActor.getSnapshot().context.currentProject
                 commandBarActor.send({
                   type: 'Find and select command',
                   data: {
-                    groupId: 'code',
-                    name: 'open-kcl-example',
+                    name: 'add-kcl-file-to-project',
+                    groupId: 'application',
+                    argDefaultValues: {
+                      method: 'existingProject',
+                      projectName: currentProject?.name,
+                    },
                   },
                 })
               }}
               className={styles.button}
             >
-              <span>Load a sample model</span>
+              <span>Add file to project</span>
             </button>
           </Menu.Item>
           <Menu.Item>
             <a
               className={styles.button}
-              href="https://zoo.dev/docs/kcl-samples"
+              href={withSiteBaseURL('/docs/kcl-samples')}
               target="_blank"
               rel="noopener noreferrer"
               onClick={openExternalBrowserIfDesktop()}

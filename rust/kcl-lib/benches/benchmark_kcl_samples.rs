@@ -1,9 +1,10 @@
 use std::{
     fs,
+    hint::black_box,
     path::{Path, PathBuf},
 };
 
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, criterion_group, criterion_main};
 
 const IGNORE_DIRS: [&str; 2] = ["step", "screenshots"];
 
@@ -45,6 +46,7 @@ fn run_benchmarks(c: &mut Criterion) {
 
     let benchmark_dirs = discover_benchmark_dirs(&base_dir);
 
+    #[cfg(feature = "benchmark-execution")]
     let rt = tokio::runtime::Runtime::new().unwrap();
 
     for dir in benchmark_dirs {
@@ -59,7 +61,7 @@ fn run_benchmarks(c: &mut Criterion) {
 
         // Read the file content (panic on failure)
         let input_content = fs::read_to_string(&input_file)
-            .unwrap_or_else(|e| panic!("Failed to read main.kcl in directory {}: {}", dir_name, e));
+            .unwrap_or_else(|e| panic!("Failed to read main.kcl in directory {dir_name}: {e}"));
 
         // Create a benchmark group for this directory
         let mut group = c.benchmark_group(&dir_name);
@@ -67,13 +69,15 @@ fn run_benchmarks(c: &mut Criterion) {
             .sample_size(10)
             .measurement_time(std::time::Duration::from_secs(1)); // Short measurement time to keep it from running in parallel
 
+        #[cfg(feature = "benchmark-execution")]
         let program = kcl_lib::Program::parse_no_errs(&input_content).unwrap();
 
-        group.bench_function(format!("parse_{}", dir_name), |b| {
+        group.bench_function(format!("parse_{dir_name}"), |b| {
             b.iter(|| kcl_lib::Program::parse_no_errs(black_box(&input_content)).unwrap())
         });
 
-        group.bench_function(format!("execute_{}", dir_name), |b| {
+        #[cfg(feature = "benchmark-execution")]
+        group.bench_function(format!("execute_{dir_name}"), |b| {
             b.iter(|| {
                 if let Err(err) = rt.block_on(async {
                     let ctx = kcl_lib::ExecutorContext::new_with_default_client().await?;
@@ -82,7 +86,7 @@ fn run_benchmarks(c: &mut Criterion) {
                     ctx.close().await;
                     Ok::<(), anyhow::Error>(())
                 }) {
-                    panic!("Failed to execute program: {}", err);
+                    panic!("Failed to execute program: {err}");
                 }
             })
         });

@@ -1,4 +1,5 @@
 //! Web assembly utils.
+
 use std::{
     pin::Pin,
     task::{Context, Poll},

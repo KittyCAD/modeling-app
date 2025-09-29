@@ -1,0 +1,110 @@
+---
+source: kcl-lib/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "commentStart": 0,
+      "declaration": {
+        "commentStart": 0,
+        "end": 18,
+        "id": {
+          "commentStart": 0,
+          "end": 3,
+          "moduleId": 0,
+          "name": "val",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "commentStart": 6,
+          "end": 18,
+          "left": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 8,
+                  "end": 9,
+                  "moduleId": 0,
+                  "name": "x",
+                  "start": 8,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 12,
+                  "end": 13,
+                  "moduleId": 0,
+                  "raw": "1",
+                  "start": 12,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
+                }
+              }
+            ],
+            "callee": {
+              "abs_path": false,
+              "commentStart": 6,
+              "end": 7,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 6,
+                "end": 7,
+                "moduleId": 0,
+                "name": "f",
+                "start": 6,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 6,
+              "type": "Name"
+            },
+            "commentStart": 6,
+            "end": 14,
+            "moduleId": 0,
+            "start": 6,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": null
+          },
+          "moduleId": 0,
+          "operator": "+",
+          "right": {
+            "commentStart": 17,
+            "end": 18,
+            "moduleId": 0,
+            "raw": "1",
+            "start": 17,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 1.0,
+              "suffix": "None"
+            }
+          },
+          "start": 6,
+          "type": "BinaryExpression",
+          "type": "BinaryExpression"
+        },
+        "moduleId": 0,
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 18,
+      "kind": "const",
+      "moduleId": 0,
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "commentStart": 0,
+  "end": 18,
+  "moduleId": 0,
+  "start": 0
+}

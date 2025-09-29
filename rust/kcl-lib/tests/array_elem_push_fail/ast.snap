@@ -13,6 +13,7 @@ description: Result of parsing array_elem_push_fail.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
@@ -23,6 +24,7 @@ description: Result of parsing array_elem_push_fail.kcl
               {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "1",
                 "start": 0,
                 "type": "Literal",
@@ -35,6 +37,7 @@ description: Result of parsing array_elem_push_fail.kcl
               {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "2",
                 "start": 0,
                 "type": "Literal",
@@ -47,6 +50,7 @@ description: Result of parsing array_elem_push_fail.kcl
               {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "raw": "3",
                 "start": 0,
                 "type": "Literal",
@@ -58,15 +62,18 @@ description: Result of parsing array_elem_push_fail.kcl
               }
             ],
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -79,6 +86,7 @@ description: Result of parsing array_elem_push_fail.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "pushedArr",
             "start": 0,
             "type": "Identifier"
@@ -86,31 +94,27 @@ description: Result of parsing array_elem_push_fail.kcl
           "init": {
             "arguments": [
               {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "name": {
+                "type": "LabeledArg",
+                "label": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "arr",
+                  "moduleId": 0,
+                  "name": "item",
                   "start": 0,
                   "type": "Identifier"
                 },
-                "path": [],
-                "start": 0,
-                "type": "Name",
-                "type": "Name"
-              },
-              {
-                "commentStart": 0,
-                "end": 0,
-                "raw": "4",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 4.0,
-                  "suffix": "None"
+                "arg": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "4",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 4.0,
+                    "suffix": "None"
+                  }
                 }
               }
             ],
@@ -118,9 +122,11 @@ description: Result of parsing array_elem_push_fail.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "push",
                 "start": 0,
                 "type": "Identifier"
@@ -131,15 +137,36 @@ description: Result of parsing array_elem_push_fail.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "arr",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -152,25 +179,38 @@ description: Result of parsing array_elem_push_fail.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "fail",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
             "commentStart": 0,
-            "computed": false,
+            "computed": true,
             "end": 0,
+            "moduleId": 0,
             "object": {
+              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "name": "arr",
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "arr",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "property": {
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "raw": "3",
               "start": 0,
               "type": "Literal",
@@ -184,11 +224,13 @@ description: Result of parsing array_elem_push_fail.kcl
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -196,6 +238,7 @@ description: Result of parsing array_elem_push_fail.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

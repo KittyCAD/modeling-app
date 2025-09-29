@@ -1,17 +1,17 @@
 // Walkie talkie talk button
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
 import width, thickness, talkButtonSideLength, talkButtonHeight from "parameters.kcl"
 
 // Create the talk button sketch
 talkButtonSketch = startSketchOn(YZ)
-  |> startProfileAt([
+  |> startProfile(at = [
        -talkButtonSideLength / 2,
        talkButtonSideLength / 2
-     ], %)
+     ])
   |> xLine(length = talkButtonSideLength, tag = $tag1)
   |> yLine(length = -talkButtonSideLength, tag = $tag2)
   |> xLine(length = -talkButtonSideLength, tag = $tag3)

@@ -7,6 +7,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
 import { ProjectCardRenameForm } from '@src/components/ProjectCard/ProjectCardRenameForm'
 import Tooltip from '@src/components/Tooltip'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 import { FILE_EXT, PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
@@ -58,20 +59,28 @@ function ProjectCard({
     }
 
     async function setupImageUrl() {
-      const projectImagePath = window.electron.path.join(
+      const projectImagePath = fsManager.path.join(
         project.path,
         PROJECT_IMAGE_NAME
       )
-      if (await window.electron.exists(projectImagePath)) {
-        const imageData = await window.electron.readFile(projectImagePath)
+      if (await fsManager.exists(projectImagePath)) {
+        const imageData = await fsManager.readFile(projectImagePath)
         const blob = new Blob([imageData], { type: 'image/png' })
         const imageUrl = URL.createObjectURL(blob)
-        setImageUrl(imageUrl)
+
+        if (blob.size > 0) {
+          /**
+           * Off chance that a thumbnail.png is cancelled writing and ends up writing 0 bytes
+           * We do not want to load a 0 byte image
+           */
+          setImageUrl(imageUrl)
+        }
       }
     }
 
     void getNumberOfFiles()
     void setupImageUrl()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [project.kcl_file_count, project.directory_count])
 
   useEffect(() => {
@@ -79,12 +88,15 @@ function ProjectCard({
       inputRef.current.focus()
       inputRef.current.select()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [isEditing, inputRef.current])
+
+  const projectName = project.name?.replace(FILE_EXT, '')
 
   return (
     <li
       {...props}
-      className="group relative flex flex-col rounded-sm border border-primary/40 dark:border-chalkboard-80 hover:!border-primary"
+      className="group relative flex flex-col rounded-sm border border-chalkboard-50 dark:border-chalkboard-80 hover:!border-primary"
     >
       <Link
         data-testid="project-link"
@@ -93,7 +105,7 @@ function ProjectCard({
             ? `${PATHS.FILE}/${encodeURIComponent(project.default_file)}`
             : ''
         }
-        className={`flex flex-col flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 min-h-[5em] divide-y divide-primary/40 dark:divide-chalkboard-80  ${
+        className={`flex flex-col flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 min-h-[5em] divide-y divide-chalkboard-50 dark:divide-chalkboard-80  ${
           project.readWriteAccess
             ? 'group-hover:!divide-primary group-hover:!hue-rotate-0'
             : 'cursor-not-allowed'
@@ -120,10 +132,11 @@ function ProjectCard({
             />
           ) : (
             <h3
-              className="font-sans relative z-0 p-2"
+              className="font-sans relative z-0 p-2 truncate"
               data-testid="project-title"
+              title={projectName}
             >
-              {project.name?.replace(FILE_EXT, '')}
+              {projectName}
             </h3>
           )}
           {project.readWriteAccess && (
@@ -201,11 +214,11 @@ function ProjectCard({
           }, reportRejection)}
           onDismiss={() => setIsConfirmingDelete(false)}
         >
-          <p className="my-4">
+          <p className="my-4 text-wrap break-words">
             This will permanently delete "{project.name || 'this file'}
             ".
           </p>
-          <p className="my-4">
+          <p className="my-4 text-wrap break-words">
             Are you sure you want to delete "{project.name || 'this file'}
             "? This action cannot be undone.
           </p>

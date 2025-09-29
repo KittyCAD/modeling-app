@@ -1,16 +1,20 @@
-import { VITE_KC_API_BASE_URL, VITE_KC_SITE_APP_URL } from '@src/env'
+import env from '@src/env'
 import toast from 'react-hot-toast'
 
+import { users } from '@kittycad/lib'
 import { stringToBase64 } from '@src/lib/base64'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
   CREATE_FILE_URL_PARAM,
 } from '@src/lib/constants'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { err } from '@src/lib/trap'
 
 export interface FileLinkParams {
   code: string
   name: string
+  isRestrictedToOrg: boolean
+  password?: string
 }
 
 export async function copyFileShareLink(
@@ -24,7 +28,12 @@ export async function copyFileShareLink(
     return
   }
   const shareUrl = createCreateFileUrl(args)
-  const shortlink = await createShortlink(token, shareUrl.toString())
+  const shortlink = await createShortlink(
+    token,
+    shareUrl.toString(),
+    args.isRestrictedToOrg,
+    args.password
+  )
 
   if (err(shortlink)) {
     toast.error(shortlink.message, {
@@ -50,7 +59,7 @@ export async function copyFileShareLink(
  * open the URL in the desktop app.
  */
 export function createCreateFileUrl({ code, name }: FileLinkParams) {
-  let origin = VITE_KC_SITE_APP_URL
+  let origin = env().VITE_KITTYCAD_SITE_APP_URL
   const searchParams = new URLSearchParams({
     [CREATE_FILE_URL_PARAM]: String(true),
     name,
@@ -70,28 +79,27 @@ export function createCreateFileUrl({ code, name }: FileLinkParams) {
  */
 export async function createShortlink(
   token: string,
-  url: string
+  url: string,
+  isRestrictedToOrg: boolean,
+  password?: string
 ): Promise<Error | { key: string; url: string }> {
   /**
    * We don't use our `withBaseURL` function here because
    * there is no URL shortener service in the dev API.
    */
-  const response = await fetch(`${VITE_KC_API_BASE_URL}/user/shortlinks`, {
-    method: 'POST',
-    headers: {
-      'Content-type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      url,
-      // In future we can support org-scoped and password-protected shortlinks here
-      // https://zoo.dev/docs/api/shortlinks/create-a-shortlink-for-a-user?lang=typescript
-    }),
-  })
-  if (!response.ok) {
-    const error = await response.json()
-    return new Error(`Failed to create shortlink: ${error.message}`)
-  } else {
-    return response.json()
+  const body: {
+    url: string
+    restrict_to_org: boolean
+    password?: string
+  } = {
+    url,
+    restrict_to_org: isRestrictedToOrg,
   }
+  if (password) {
+    body.password = password
+  }
+  const client = createKCClient(token)
+  const resp = await kcCall(() => users.create_user_shortlink({ client, body }))
+  if (resp instanceof Error) return resp
+  return resp
 }

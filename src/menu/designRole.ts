@@ -9,7 +9,7 @@ export const modelingDesignRole = (
     label: 'Design',
     submenu: [
       {
-        label: 'Start sketch',
+        label: 'Start Sketch',
         id: 'Design.Start sketch',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -19,7 +19,7 @@ export const modelingDesignRole = (
       },
       { type: 'separator' },
       {
-        label: 'Create an offset plane',
+        label: 'Create an Offset Plane',
         id: 'Design.Create an offset plane',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -28,7 +28,7 @@ export const modelingDesignRole = (
         },
       },
       {
-        label: 'Create a helix',
+        label: 'Create a Helix',
         id: 'Design.Create a helix',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -37,7 +37,7 @@ export const modelingDesignRole = (
         },
       },
       {
-        label: 'Create a parameter',
+        label: 'Create a Parameter',
         id: 'Design.Create a parameter',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -47,7 +47,7 @@ export const modelingDesignRole = (
       },
       { type: 'separator' },
       {
-        label: 'Create an additive feature',
+        label: 'Create an Additive Feature',
         id: 'Design.Create an additive feature',
         submenu: [
           {
@@ -89,7 +89,7 @@ export const modelingDesignRole = (
         ],
       },
       {
-        label: 'Apply modification feature',
+        label: 'Apply Modification Feature',
         id: 'Design.Apply modification feature',
         submenu: [
           {
@@ -120,6 +120,16 @@ export const modelingDesignRole = (
             },
           },
         ],
+      },
+      { type: 'separator' },
+      {
+        label: 'Insert from Project File',
+        id: 'Design.Insert from project file',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'Design.Insert from project file',
+          })
+        },
       },
       { type: 'separator' },
       {

@@ -1,0 +1,12 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing ascription_unknown_type.kcl
+---
+KCL Semantic error
+
+  × semantic: Unknown type: NotARealType
+   ╭────
+ 1 │ z = 10: NotARealType
+   ·     ─┬
+   ·      ╰── tests/ascription_unknown_type/input.kcl
+   ╰────

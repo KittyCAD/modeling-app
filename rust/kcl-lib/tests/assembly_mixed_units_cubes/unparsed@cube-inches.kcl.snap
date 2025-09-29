@@ -5,7 +5,7 @@ description: Result of unparsing tests/assembly_mixed_units_cubes/cube-inches.kc
 @settings(defaultLengthUnit = in)
 
 sketch001 = startSketchOn(XY)
-cubeIn = startProfileAt([-10, -10], sketch001)
+cubeIn = startProfile(sketch001, at = [-10, -10])
   |> xLine(length = 5)
   |> yLine(length = -5)
   |> xLine(length = -5)

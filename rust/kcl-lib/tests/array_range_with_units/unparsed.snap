@@ -1,0 +1,8 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing array_range_with_units.kcl
+---
+a = [1cm..3cm]
+assert(a[0], isEqualTo = 1cm)
+assert(a[1], isEqualTo = 2cm)
+assert(a[2], isEqualTo = 3cm)

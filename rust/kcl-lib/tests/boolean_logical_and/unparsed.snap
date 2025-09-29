@@ -8,7 +8,7 @@ a = if aa {
 } else {
   2
 }
-assert(a == 2, "right branch of and is false makes the whole expression false")
+assert(a, isEqualTo = 2, error = "right branch of and is false makes the whole expression false")
 
 bb = false & true
 b = if bb {
@@ -16,7 +16,7 @@ b = if bb {
 } else {
   2
 }
-assert(b == 2, "left branch of and is false makes the whole expression false")
+assert(b, isEqualTo = 2, error = "left branch of and is false makes the whole expression false")
 
 cc = true & true
 c = if cc {
@@ -24,7 +24,7 @@ c = if cc {
 } else {
   2
 }
-assert(c == 1, "both branches of and are true makes the whole expression true")
+assert(c, isEqualTo = 1, error = "both branches of and are true makes the whole expression true")
 
 dd = false & false
 d = if dd {
@@ -32,4 +32,4 @@ d = if dd {
 } else {
   2
 }
-assert(d == 2, "both branches of and are false makes the whole expression false")
+assert(d, isEqualTo = 2, error = "both branches of and are false makes the whole expression false")

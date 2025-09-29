@@ -1,18 +1,20 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 
+import { NIL as uuidNIL } from 'uuid'
+
 import { CustomIcon } from '@src/components/CustomIcon'
-import { Toggle } from '@src/components/Toggle/Toggle'
 import Tooltip from '@src/components/Tooltip'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_PROJECT_NAME,
+  REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type {
@@ -24,7 +26,8 @@ import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
-import { isArray, toSync } from '@src/lib/utils'
+import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -41,6 +44,7 @@ export class Setting<T = unknown> {
   public Component: SettingProps<T>['Component']
   public description?: string
   private validate: (v: T) => boolean
+  public readonly isEnabled: (c: SettingsType) => boolean
   private _default: T
   private _user?: T
   private _project?: T
@@ -49,6 +53,7 @@ export class Setting<T = unknown> {
     this._default = props.defaultValue
     this.current = props.defaultValue
     this.validate = props.validate
+    this.isEnabled = props.isEnabled || (() => true)
     this.description = props.description
     this.hideOnLevel = props.hideOnLevel
     this.hideOnPlatform = props.hideOnPlatform
@@ -128,9 +133,7 @@ const MS_IN_MINUTE = 1000 * 60
 
 export function createSettings() {
   return {
-    /** Settings that affect the behavior of the entire app,
-     *  beyond just modeling or navigating, for example
-     */
+    // Gotcha: If you add a new setting here, you will likely need to update rust/kcl-lib/src/settings/types/mod.rs as well.
     app: {
       /**
        * The overall appearance of the app: light, dark, or system
@@ -159,19 +162,41 @@ export function createSettings() {
         defaultValue: '264.5',
         description: 'The hue of the primary theme color for the app',
         validate: (v) => Number(v) >= 0 && Number(v) < 360,
+
+        // The same component instance is used across settings panes / tabs.
         Component: ({ value, updateValue }) => {
+          const refInput = useRef<HTMLInputElement>(null)
+
+          const updateColorDot = (value: string) => {
+            document.documentElement.style.setProperty(
+              `--primary-hue`,
+              String(value)
+            )
+          }
+
+          useEffect(() => {
+            if (refInput.current === null) return
+            refInput.current.value = value
+            updateColorDot(value)
+          }, [value])
+
           const preview = (e: React.SyntheticEvent) =>
             e.isTrusted &&
             'value' in e.currentTarget &&
-            document.documentElement.style.setProperty(
-              `--primary-hue`,
-              String(e.currentTarget.value)
-            )
-          const save = (e: React.SyntheticEvent) =>
-            e.isTrusted &&
-            'value' in e.currentTarget &&
-            e.currentTarget.value &&
-            updateValue(String(e.currentTarget.value))
+            updateColorDot(String(e.currentTarget.value))
+
+          const save = (e: React.SyntheticEvent) => {
+            if (
+              e.isTrusted &&
+              'value' in e.currentTarget &&
+              e.currentTarget.value
+            ) {
+              const valueNext = String(e.currentTarget.value)
+              updateValue(valueNext)
+              updateColorDot(valueNext)
+            }
+          }
+
           return (
             <div className="flex item-center gap-4 px-2 m-0 py-0">
               <div
@@ -182,11 +207,11 @@ export function createSettings() {
               />
               <input
                 type="range"
+                ref={refInput}
                 onInput={preview}
                 onMouseUp={save}
                 onKeyUp={save}
                 onPointerUp={save}
-                defaultValue={value}
                 min={0}
                 max={259}
                 step={1}
@@ -212,117 +237,50 @@ export function createSettings() {
        * Stream resource saving behavior toggle
        */
       streamIdleMode: new Setting<number | undefined>({
-        defaultValue: undefined,
+        defaultValue: 5 * MS_IN_MINUTE,
         hideOnLevel: 'project',
+        hideOnPlatform: 'both',
         description: 'Save bandwidth & battery',
         validate: (v) =>
-          v === undefined ||
-          (typeof v === 'number' &&
-            v >= 1 * MS_IN_MINUTE &&
-            v <= 60 * MS_IN_MINUTE),
-        Component: ({
-          value: settingValueInStorage,
-          updateValue: writeSettingValueToStorage,
-        }) => {
-          const [timeoutId, setTimeoutId] = useState<
-            ReturnType<typeof setTimeout> | undefined
-          >(undefined)
-          const [preview, setPreview] = useState(
-            settingValueInStorage === undefined
-              ? settingValueInStorage
-              : settingValueInStorage / MS_IN_MINUTE
-          )
-          const onChangeRange = (e: React.SyntheticEvent) => {
-            if (
-              !(
-                e.isTrusted &&
-                'value' in e.currentTarget &&
-                e.currentTarget.value
-              )
-            )
-              return
-            setPreview(Number(e.currentTarget.value))
-          }
-          const onSaveRange = (e: React.SyntheticEvent) => {
-            if (preview === undefined) return
-            if (
-              !(
-                e.isTrusted &&
-                'value' in e.currentTarget &&
-                e.currentTarget.value
-              )
-            )
-              return
-            writeSettingValueToStorage(
-              Number(e.currentTarget.value) * MS_IN_MINUTE
-            )
-          }
-
-          return (
-            <div className="flex item-center gap-4 m-0 py-0">
-              <Toggle
-                name="streamIdleModeToggle"
-                offLabel="Off"
-                onLabel="On"
-                checked={settingValueInStorage !== undefined}
-                onChange={(event: React.SyntheticEvent<HTMLInputElement>) => {
-                  if (timeoutId) {
-                    return
-                  }
-                  const isChecked = event.currentTarget.checked
-                  clearTimeout(timeoutId)
-                  setTimeoutId(
-                    setTimeout(() => {
-                      const requested = !isChecked ? undefined : 5
-                      setPreview(requested)
-                      writeSettingValueToStorage(
-                        requested === undefined
-                          ? undefined
-                          : Number(requested) * MS_IN_MINUTE
-                      )
-                      setTimeoutId(undefined)
-                    }, 100)
-                  )
-                }}
-                className="block w-4 h-4"
-              />
-              <div className="flex flex-col grow">
-                <input
-                  type="range"
-                  onChange={onChangeRange}
-                  onMouseUp={onSaveRange}
-                  onKeyUp={onSaveRange}
-                  onPointerUp={onSaveRange}
-                  disabled={preview === undefined}
-                  value={
-                    preview !== null && preview !== undefined ? preview : 5
-                  }
-                  min={1}
-                  max={60}
-                  step={1}
-                  className="block flex-1"
-                />
-                {preview !== undefined && preview !== null && (
-                  <div>
-                    {preview / MS_IN_MINUTE === 60
-                      ? '1 hour'
-                      : preview / MS_IN_MINUTE === 1
-                        ? '1 minute'
-                        : preview + ' minutes'}
-                  </div>
-                )}
-              </div>
-            </div>
-          )
+          String(v) == 'undefined' ||
+          (Number(v) >= 0 && Number(v) <= 60 * MS_IN_MINUTE),
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.app.streamIdleMode.current,
+          options: (cmdContext, settingsContext) =>
+            [
+              undefined,
+              5 * 1000,
+              30 * 1000,
+              1 * MS_IN_MINUTE,
+              2 * MS_IN_MINUTE,
+              5 * MS_IN_MINUTE,
+              15 * MS_IN_MINUTE,
+              30 * MS_IN_MINUTE,
+              60 * MS_IN_MINUTE,
+            ].map((v) => ({
+              name:
+                v === undefined
+                  ? 'Off'
+                  : v < MS_IN_MINUTE
+                    ? `${Math.floor(v / 1000)} seconds`
+                    : `${Math.floor(v / MS_IN_MINUTE)} minutes`,
+              value: v,
+              isCurrent:
+                v ===
+                settingsContext.app.streamIdleMode[
+                  cmdContext.argumentsToSubmit.level as SettingsLevel
+                ],
+            })),
         },
       }),
       allowOrbitInSketchMode: new Setting<boolean>({
+        /** Unhide this once we make sketch mode unbreakable */
+        hideOnPlatform: 'both',
         defaultValue: false,
         description: 'Toggle free camera while in sketch mode',
         validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
       }),
       onboardingStatus: new Setting<OnboardingStatus>({
         defaultValue: '',
@@ -340,7 +298,7 @@ export function createSettings() {
         hideOnPlatform: 'desktop',
       }),
       projectDirectory: new Setting<string>({
-        defaultValue: '',
+        defaultValue: '', // gets set async in settingsUtils.ts
         description: 'The directory to save and load projects from',
         hideOnLevel: 'project',
         hideOnPlatform: 'web',
@@ -369,6 +327,9 @@ export function createSettings() {
                   ) {
                     updateValue(inputRefVal)
                   } else {
+                    if (!window.electron) {
+                      return Promise.reject(new Error("Can't open file dialog"))
+                    }
                     const newPath = await window.electron.open({
                       properties: ['openDirectory', 'createDirectory'],
                       defaultPath: value,
@@ -390,7 +351,7 @@ export function createSettings() {
       }),
       namedViews: new Setting<{ [key in string]: NamedView }>({
         defaultValue: {},
-        validate: (v) => true,
+        validate: (_v) => true,
         hideOnLevel: 'user',
       }),
     },
@@ -489,6 +450,43 @@ export function createSettings() {
           </>
         ),
       }),
+      /** Whether to enable the touch listeners for controlling the camera, which run separate from the mouse control listeners
+       *
+       */
+      enableTouchControls: new Setting<boolean>({
+        defaultValue: true,
+        hideOnLevel: 'project',
+        description:
+          'Enable touch events to navigate the 3D scene. When enabled, orbit with one-finger drag, pan with two-finger drag, and zoom with pinch.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      /**
+       * Use the new sketch mode implementation - solver (Dev only)
+       */
+      enableCopilot: new Setting<boolean>({
+        hideOnLevel: 'project',
+        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
+        defaultValue: false,
+        description: 'Toggle copilot',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      useNewSketchMode: new Setting<boolean>({
+        hideOnLevel: 'project',
+        // Don't show in prod, consider switching to use AdamS's endpoint https://github.com/KittyCAD/common/pull/1704
+        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
+        defaultValue: false,
+        description: 'Use the new sketch mode implementation',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
       /**
        * Projection method applied to the 3D view, perspective or orthographic
        */
@@ -509,7 +507,7 @@ export function createSettings() {
               : 'perspective',
           options: (cmdContext, settingsContext) =>
             (['perspective', 'orthographic'] as const).map((v) => ({
-              name: v.charAt(0).toUpperCase() + v.slice(1),
+              name: capitaliseFC(v),
               value: v,
               isCurrent:
                 settingsContext.modeling.cameraProjection.shouldShowCurrentLabel(
@@ -533,7 +531,7 @@ export function createSettings() {
             context.modeling.cameraOrbit.current,
           options: (cmdContext, settingsContext) =>
             (['spherical', 'trackball'] as const).map((v) => ({
-              name: v.charAt(0).toUpperCase() + v.slice(1),
+              name: capitaliseFC(v),
               value: v,
               isCurrent:
                 settingsContext.modeling.cameraOrbit.shouldShowCurrentLabel(
@@ -567,6 +565,56 @@ export function createSettings() {
         },
         hideOnLevel: 'project',
       }),
+      fixedSizeGrid: new Setting<boolean>({
+        defaultValue: true,
+        description:
+          'When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      majorGridSpacing: new Setting<number>({
+        defaultValue: 1,
+        description:
+          'The space between major grid lines, specified in the current unit',
+        validate: (v) => typeof v === 'number',
+        commandConfig: {
+          inputType: 'number',
+          min: 0,
+        },
+      }),
+      minorGridsPerMajor: new Setting<number>({
+        defaultValue: 4,
+        description: 'Number of minor grid lines per major grid line',
+        validate: (v) => typeof v === 'number',
+        commandConfig: {
+          inputType: 'number',
+          min: 1,
+          integer: true,
+        },
+      }),
+      snapToGrid: new Setting<boolean>({
+        defaultValue: false,
+        description:
+          'Snap the cursor to the unit grid when drawing lines, arcs, and other segment-based tools',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
+      snapsPerMinor: new Setting<number>({
+        defaultValue: 1,
+        description:
+          'Number of snaps between minor grid lines. 1 means snapping to every minor grid line',
+        validate: (v) => typeof v === 'number',
+        isEnabled: (context) => context.modeling.snapToGrid.current,
+        commandConfig: {
+          inputType: 'number',
+          min: 0.001,
+        },
+      }),
+
       /**
        * TODO: This setting is not yet implemented.
        * Whether to turn off animations and other motion effects
@@ -673,6 +721,32 @@ export function createSettings() {
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
+        },
+      }),
+    },
+    /** Settings that affect the behavior of the entire app,
+     *  beyond just modeling or navigating, for example
+     *  NOTE: before using the project id for anything, check it isn't the
+     *  NIL uuid, which is the default value.
+     */
+    meta: {
+      id: new Setting<string>({
+        hideOnLevel: 'user',
+        defaultValue: uuidNIL,
+        description: 'The unique project identifier',
+        // Never allow the user to change the id, only view it.
+        validate: (v) => REGEXP_UUIDV4.test(v),
+        Component: ({ value }) => {
+          return (
+            <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
+              <input
+                className="flex-grow text-xs px-2 bg-chalkboard-30 dark:bg-chalkboard-80 cursor-not-allowed"
+                value={value}
+                disabled
+                data-testid="project-id"
+              />
+            </div>
+          )
         },
       }),
     },

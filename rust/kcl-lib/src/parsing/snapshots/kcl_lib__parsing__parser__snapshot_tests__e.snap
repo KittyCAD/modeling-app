@@ -7,23 +7,25 @@ expression: actual
     {
       "commentStart": 0,
       "declaration": {
-        "commentStart": 4,
-        "end": 18,
+        "commentStart": 0,
+        "end": 14,
         "id": {
-          "commentStart": 4,
-          "end": 5,
+          "commentStart": 0,
+          "end": 1,
+          "moduleId": 0,
           "name": "x",
-          "start": 4,
+          "start": 0,
           "type": "Identifier"
         },
         "init": {
-          "commentStart": 8,
-          "end": 18,
+          "commentStart": 4,
+          "end": 14,
           "left": {
-            "commentStart": 8,
-            "end": 9,
+            "commentStart": 4,
+            "end": 5,
+            "moduleId": 0,
             "raw": "1",
-            "start": 8,
+            "start": 4,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -31,15 +33,17 @@ expression: actual
               "suffix": "None"
             }
           },
+          "moduleId": 0,
           "operator": "*",
           "right": {
-            "commentStart": 13,
-            "end": 18,
+            "commentStart": 9,
+            "end": 14,
             "left": {
-              "commentStart": 13,
-              "end": 14,
+              "commentStart": 9,
+              "end": 10,
+              "moduleId": 0,
               "raw": "3",
-              "start": 13,
+              "start": 9,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -47,12 +51,14 @@ expression: actual
                 "suffix": "None"
               }
             },
+            "moduleId": 0,
             "operator": "-",
             "right": {
-              "commentStart": 17,
-              "end": 18,
+              "commentStart": 13,
+              "end": 14,
+              "moduleId": 0,
               "raw": "4",
-              "start": 17,
+              "start": 13,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -60,25 +66,28 @@ expression: actual
                 "suffix": "None"
               }
             },
-            "start": 13,
+            "start": 9,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 8,
+          "start": 4,
           "type": "BinaryExpression",
           "type": "BinaryExpression"
         },
-        "start": 4,
+        "moduleId": 0,
+        "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 18,
+      "end": 14,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "commentStart": 0,
-  "end": 18,
+  "end": 14,
+  "moduleId": 0,
   "start": 0
 }

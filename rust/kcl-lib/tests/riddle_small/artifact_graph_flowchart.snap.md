@@ -1,21 +1,34 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[166, 193, 0]"]
-    3["Segment<br>[199, 217, 0]"]
-    4["Segment<br>[223, 242, 0]"]
-    5["Segment<br>[248, 267, 0]"]
-    6["Segment<br>[273, 281, 0]"]
+    2["Path<br>[165, 192, 0]"]
+      %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    3["Segment<br>[198, 216, 0]"]
+      %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
+    4["Segment<br>[222, 241, 0]"]
+      %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
+    5["Segment<br>[247, 266, 0]"]
+      %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
+    6["Segment<br>[272, 280, 0]"]
+      %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
     7[Solid2d]
   end
-  1["Plane<br>[141, 160, 0]"]
-  8["Sweep Extrusion<br>[287, 306, 0]"]
+  1["Plane<br>[142, 159, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  8["Sweep Extrusion<br>[286, 305, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
   9[Wall]
+    %% face_code_ref=Missing NodePath
   10[Wall]
+    %% face_code_ref=Missing NodePath
   11[Wall]
+    %% face_code_ref=Missing NodePath
   12[Wall]
+    %% face_code_ref=Missing NodePath
   13["Cap Start"]
+    %% face_code_ref=Missing NodePath
   14["Cap End"]
+    %% face_code_ref=Missing NodePath
   15["SweepEdge Opposite"]
   16["SweepEdge Adjacent"]
   17["SweepEdge Opposite"]
@@ -29,18 +42,22 @@ flowchart LR
   2 --- 4
   2 --- 5
   2 --- 6
-  2 ---- 8
   2 --- 7
+  2 ---- 8
   3 --- 12
+  3 x--> 13
   3 --- 21
   3 --- 22
   4 --- 11
+  4 x--> 13
   4 --- 19
   4 --- 20
   5 --- 10
+  5 x--> 13
   5 --- 17
   5 --- 18
   6 --- 9
+  6 x--> 13
   6 --- 15
   6 --- 16
   8 --- 9
@@ -57,4 +74,20 @@ flowchart LR
   8 --- 20
   8 --- 21
   8 --- 22
+  9 --- 15
+  9 --- 16
+  18 <--x 9
+  10 --- 17
+  10 --- 18
+  20 <--x 10
+  11 --- 19
+  11 --- 20
+  22 <--x 11
+  16 <--x 12
+  12 --- 21
+  12 --- 22
+  15 <--x 14
+  17 <--x 14
+  19 <--x 14
+  21 <--x 14
 ```

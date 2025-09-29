@@ -5,21 +5,49 @@ import {
   ContextMenu,
   ContextMenuDivider,
   ContextMenuItem,
-  ContextMenuItemRefresh,
 } from '@src/components/ContextMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { getSelectedPlaneId } from '@src/lang/queryAst'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
-import { sceneInfra } from '@src/lib/singletons'
-import { reportRejection } from '@src/lib/trap'
-import { useSettings } from '@src/machines/appMachine'
+import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import {
+  selectDefaultSketchPlane,
+  selectOffsetSketchPlane,
+} from '@src/lib/selections'
+import { kclManager, sceneInfra, settingsActor } from '@src/lib/singletons'
+import { useSettings } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import toast from 'react-hot-toast'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
+  const selectedPlaneId = getSelectedPlaneId(
+    modelingState.context.selectionRanges
+  )
+
   const settings = useSettings()
   const shouldLockView =
     modelingState.matches('Sketch') &&
     !settings.app.allowOrbitInSketchMode.current
+
+  const sketching = modelingState.matches('Sketch')
+  const snapToGrid = settings.modeling.snapToGrid.current
+
+  // Check if there's a valid selection with source range for "View KCL source code"
+  const firstValidSelection = useMemo(() => {
+    return modelingState.context.selectionRanges.graphSelections.find(
+      (selection) => {
+        return (
+          selection.codeRef?.range &&
+          selection.codeRef.range[0] !== undefined &&
+          selection.codeRef.range[1] !== undefined
+        )
+      }
+    )
+  }, [modelingState.context.selectionRanges.graphSelections])
+
   const menuItems = useMemo(
     () => [
       ...Object.entries(VIEW_NAMES_SEMANTIC).map(([axisName, axisSemantic]) => (
@@ -38,9 +66,10 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
-          sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+          resetCameraPosition().catch(reportRejection)
         }}
         disabled={shouldLockView}
+        hotkey="mod+alt+x"
       >
         Reset view
       </ContextMenuItem>,
@@ -49,13 +78,101 @@ export function useViewControlMenuItems() {
           modelingSend({ type: 'Center camera on selection' })
         }}
         disabled={shouldLockView}
+        hotkey={`mod+alt+c`}
       >
         Center view on selection
       </ContextMenuItem>,
+      <ContextMenuItem
+        onClick={() => {
+          if (firstValidSelection?.codeRef?.range) {
+            // First, open the code pane if it's not already open
+            if (!modelingState.context.store.openPanes.includes('code')) {
+              modelingSend({
+                type: 'Set context',
+                data: {
+                  openPanes: [...modelingState.context.store.openPanes, 'code'],
+                },
+              })
+            }
+
+            // Navigate to the source code location
+            modelingSend({
+              type: 'Set selection',
+              data: {
+                selectionType: 'singleCodeCursor',
+                selection: {
+                  artifact: firstValidSelection.artifact,
+                  codeRef: firstValidSelection.codeRef,
+                },
+                scrollIntoView: true,
+              },
+            })
+          } else {
+            toast.error(
+              'No valid selection with source range found. Please select a valid element.'
+            )
+          }
+        }}
+        disabled={!firstValidSelection}
+      >
+        View KCL source code
+      </ContextMenuItem>,
       <ContextMenuDivider />,
-      <ContextMenuItemRefresh />,
+      <ContextMenuItem
+        onClick={() => {
+          if (selectedPlaneId) {
+            sceneInfra.modelingSend({
+              type: 'Enter sketch',
+              data: { forceNewSketch: true },
+            })
+
+            const defaultSketchPlaneSelected =
+              selectDefaultSketchPlane(selectedPlaneId)
+            if (
+              !err(defaultSketchPlaneSelected) &&
+              defaultSketchPlaneSelected
+            ) {
+              return
+            }
+
+            const artifact = kclManager.artifactGraph.get(selectedPlaneId)
+            void selectOffsetSketchPlane(artifact)
+          }
+        }}
+        disabled={!selectedPlaneId}
+      >
+        Start sketch on selection
+      </ContextMenuItem>,
+      ...(sketching
+        ? [
+            <ContextMenuDivider />,
+            <ContextMenuItem
+              icon={snapToGrid ? 'checkmark' : undefined}
+              hotkey={SNAP_TO_GRID_HOTKEY}
+              onClick={() => {
+                settingsActor.send({
+                  type: 'set.modeling.snapToGrid',
+                  data: {
+                    level: 'project',
+                    value: !snapToGrid,
+                  },
+                })
+              }}
+            >
+              Snap to Grid
+            </ContextMenuItem>,
+          ]
+        : []),
     ],
-    [VIEW_NAMES_SEMANTIC, shouldLockView]
+    [
+      shouldLockView,
+      selectedPlaneId,
+      firstValidSelection,
+      modelingSend,
+      modelingState.context.store.openPanes,
+      sketching,
+      snapToGrid,
+    ]
   )
   return menuItems
 }

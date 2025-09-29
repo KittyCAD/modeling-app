@@ -1,6 +1,6 @@
 fn test() {
-  return startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+  return startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(end = [0, 1])
     |> line(end = [1, 0])
     |> line(end = [0, -1])
@@ -10,8 +10,8 @@ fn test() {
 fn test2() {
   return {
     thing1 = {
-      thing2 = startSketchOn('XY')
-        |> startProfileAt([0, 0], %)
+      thing2 = startSketchOn(XY)
+        |> startProfile(at = [0, 0])
         |> line(end = [0, 1])
         |> line(end = [1, 0])
         |> line(end = [0, -1])

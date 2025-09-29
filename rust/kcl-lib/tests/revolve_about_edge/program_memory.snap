@@ -24,9 +24,10 @@ description: Variables in memory after executing revolve_about_edge.kcl
             25.0
           ],
           "tag": {
-            "commentStart": 97,
-            "end": 118,
-            "start": 97,
+            "commentStart": 95,
+            "end": 116,
+            "moduleId": 0,
+            "start": 95,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -35,38 +36,37 @@ description: Variables in memory after executing revolve_about_edge.kcl
             -25.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 1.0,
+          "units": null
         }
       },
       "start": {
@@ -78,9 +78,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
           -25.0,
           25.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -95,9 +93,8 @@ description: Variables in memory after executing revolve_about_edge.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "isClosed": false
     }
   },
   "sketch002": {
@@ -140,38 +137,37 @@ description: Variables in memory after executing revolve_about_edge.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -183,9 +179,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
             -40.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -194,16 +188,12 @@ description: Variables in memory after executing revolve_about_edge.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   }
 }

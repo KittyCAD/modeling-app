@@ -1,5 +1,5 @@
-fn f(i) {
+fn f(@i) {
   return 5
 }
 
-map(f, [0, 1])
+map(f, f = [0, 1])

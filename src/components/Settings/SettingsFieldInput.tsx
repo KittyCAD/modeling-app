@@ -9,7 +9,7 @@ import type {
   WildcardSetEvent,
 } from '@src/lib/settings/settingsTypes'
 import { getSettingInputType } from '@src/lib/settings/settingsUtils'
-import { settingsActor, useSettings } from '@src/machines/appMachine'
+import { settingsActor, useSettings } from '@src/lib/singletons'
 
 interface SettingsFieldInputProps {
   // We don't need the fancy types here,
@@ -101,7 +101,10 @@ export function SettingsFieldInput({
               type: `set.${category}.${settingName}`,
               data: {
                 level: settingsLevel,
-                value: e.target.value,
+                // undefined is the only special string due to no way to
+                // encode it in the string-only options.
+                value:
+                  e.target.value === 'undefined' ? undefined : e.target.value,
               },
             } as unknown as EventFrom<WildcardSetEvent>)
           }
@@ -115,16 +118,23 @@ export function SettingsFieldInput({
             ))}
         </select>
       )
-    case 'string':
+    case 'string': {
+      const effectiveValue =
+        setting[settingsLevel] !== undefined
+          ? setting[settingsLevel]
+          : setting.getFallback(settingsLevel)
       return (
         <input
+          // When reverting to default value then the input doesn't update without a key change.
+          // Another fix for this would be to make this a controlled component.
+          key={`${category}-${settingName}-${settingsLevel}-${String(
+            effectiveValue
+          )}`}
           name={`${category}-${settingName}`}
           data-testid={`${category}-${settingName}`}
           type="text"
           className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full"
-          defaultValue={String(
-            setting[settingsLevel] || setting.getFallback(settingsLevel)
-          )}
+          defaultValue={String(effectiveValue)}
           onBlur={(e) => {
             if (
               setting[settingsLevel] === undefined
@@ -142,6 +152,64 @@ export function SettingsFieldInput({
           }}
         />
       )
+    }
+    case 'number': {
+      const effectiveValue =
+        setting[settingsLevel] !== undefined
+          ? setting[settingsLevel]
+          : setting.getFallback(settingsLevel)
+      const min =
+        setting.commandConfig && 'min' in setting.commandConfig
+          ? setting.commandConfig.min
+          : undefined
+      return (
+        <input
+          // When reverting to default value then the input doesn't update without a key change.
+          // Another fix for this would be to make this a controlled component.
+          key={`${category}-${settingName}-${settingsLevel}-${String(
+            effectiveValue
+          )}`}
+          name={`${category}-${settingName}`}
+          data-testid={`${category}-${settingName}`}
+          type="number"
+          step="any"
+          className="p-1 bg-transparent border rounded-sm border-chalkboard-30 w-full disabled:opacity-50 disabled:pointer-events-none"
+          defaultValue={Number(effectiveValue)}
+          min={min}
+          disabled={!setting.isEnabled(context)}
+          onBlur={(e) => {
+            let numValue = parseFloat(e.target.value)
+            let updatedValue = numValue
+            // "integer" option
+            if (setting.commandConfig && 'integer' in setting.commandConfig) {
+              if (setting.commandConfig.integer) {
+                updatedValue = Math.round(numValue)
+              }
+            }
+            // "min" option
+            if (min !== undefined) {
+              updatedValue = Math.max(updatedValue, min)
+            }
+
+            // Update input if the value is changed (might not get updated otherwise if effectiveValue is the same)
+            if (updatedValue !== numValue) {
+              e.target.value = String(updatedValue)
+            }
+            if (!Number.isNaN(updatedValue)) {
+              if (effectiveValue !== updatedValue) {
+                send({
+                  type: `set.${category}.${settingName}`,
+                  data: {
+                    level: settingsLevel,
+                    value: updatedValue,
+                  },
+                } as unknown as EventFrom<WildcardSetEvent>)
+              }
+            }
+          }}
+        />
+      )
+    }
   }
   return (
     <p className="text-destroy-70 dark:text-destroy-20">

@@ -5,12 +5,14 @@ import { type InstanceProps, create } from 'react-modal-promise'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { CreateNewVariable } from '@src/components/AvailableVarsHelpers'
+import type { Selections } from '@src/lib/selections'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 
 type ModalResolve = { variableName: string }
 type ModalReject = boolean
 type SetVarNameModalProps = InstanceProps<ModalResolve, ModalReject> & {
   valueName: string
+  selectionRanges: Selections
 }
 
 export const createSetVarNameModal = create<
@@ -24,9 +26,14 @@ export const SetVarNameModal = ({
   onResolve,
   onReject,
   valueName,
+  selectionRanges,
 }: SetVarNameModalProps) => {
   const { isNewVariableNameUnique, newVariableName, setNewVariableName } =
-    useCalculateKclExpression({ value: '', initialVariableName: valueName })
+    useCalculateKclExpression({
+      value: '',
+      initialVariableName: valueName,
+      selectionRanges,
+    })
 
   return (
     <Transition appear show={isOpen} as={Fragment}>

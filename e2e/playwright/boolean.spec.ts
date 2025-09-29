@@ -12,7 +12,7 @@ test.describe('Point and click for boolean workflows', () => {
     },
     {
       name: 'subtract',
-      code: 'subtract([extrude001], tools = [extrude006])',
+      code: 'subtract(extrude001, tools = extrude006)',
     },
     {
       name: 'intersect',
@@ -47,6 +47,7 @@ test.describe('Point and click for boolean workflows', () => {
       }, file)
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
+      await toolbar.closePane('code')
 
       // Test coordinates for selection - these might need adjustment based on actual scene layout
       const cylinderPoint = { x: 592, y: 174 }
@@ -81,6 +82,8 @@ test.describe('Point and click for boolean workflows', () => {
         if (operationName !== 'subtract') {
           // should down shift key to select multiple objects
           await page.keyboard.down('Shift')
+        } else {
+          await cmdBar.progressCmdBar()
         }
 
         // Select second object
@@ -103,16 +106,33 @@ test.describe('Point and click for boolean workflows', () => {
           await cmdBar.expectState({
             stage: 'review',
             headerArguments: {
-              Tool: '1 path',
-              Target: '1 path',
+              Solids: '1 path',
+              Tools: '1 path',
             },
             commandName,
           })
         }
 
         await cmdBar.submit()
-
+        await scene.settled(cmdBar)
+        await editor.openPane()
+        await editor.scrollToText(operation.code)
         await editor.expectEditor.toContain(operation.code)
+      })
+
+      await test.step(`Delete ${operationName} operation via feature tree selection`, async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation(operationName, 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+
+        // Expect changes in ft and code
+        await editor.expectEditor.not.toContain(operation.code)
+        await expect(
+          await toolbar.getFeatureTreeOperation(operationName, 0)
+        ).not.toBeVisible()
       })
     })
   }

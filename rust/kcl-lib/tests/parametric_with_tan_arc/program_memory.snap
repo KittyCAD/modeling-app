@@ -8,12 +8,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "bracket": {
@@ -99,9 +95,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
               8.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -110,7 +104,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             },
             "ccw": true,
             "center": [
-              -0.7236,
+              -0.7236272269866327,
               8.0
             ],
             "from": [
@@ -119,13 +113,11 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             ],
             "tag": null,
             "to": [
-              -0.7236,
-              8.7236
+              -0.7236272269866327,
+              8.723627226986633
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -133,18 +125,16 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
               "sourceRange": []
             },
             "from": [
-              -0.7236,
-              8.7236
+              -0.7236272269866327,
+              8.723627226986633
             ],
             "tag": null,
             "to": [
-              -9.7236,
-              8.7236
+              -9.723627226986633,
+              8.723627226986633
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -152,18 +142,16 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
               "sourceRange": []
             },
             "from": [
-              -9.7236,
-              8.7236
+              -9.723627226986633,
+              8.723627226986633
             ],
             "tag": null,
             "to": [
-              -9.7236,
-              8.3618
+              -9.723627226986633,
+              8.361813613493316
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -171,18 +159,16 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
               "sourceRange": []
             },
             "from": [
-              -9.7236,
-              8.3618
+              -9.723627226986633,
+              8.361813613493316
             ],
             "tag": null,
             "to": [
-              -0.7236,
-              8.3618
+              -0.7236272269866326,
+              8.361813613493316
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -191,22 +177,20 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             },
             "ccw": false,
             "center": [
-              -0.7236,
+              -0.7236272269866326,
               8.0
             ],
             "from": [
-              -0.7236,
-              8.3618
+              -0.7236272269866326,
+              8.361813613493316
             ],
             "tag": null,
             "to": [
-              -0.3618,
+              -0.36181361349331626,
               8.0
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -214,18 +198,16 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
               "sourceRange": []
             },
             "from": [
-              -0.3618,
+              -0.36181361349331626,
               8.0
             ],
             "tag": null,
             "to": [
-              -0.3618,
+              -0.36181361349331626,
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -233,7 +215,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
               "sourceRange": []
             },
             "from": [
-              -0.3618,
+              -0.36181361349331626,
               0.0
             ],
             "tag": null,
@@ -242,38 +224,37 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -285,9 +266,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -296,16 +275,12 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 11.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "distance": {
@@ -313,19 +288,17 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 12.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "filletR": {
     "type": "Number",
-    "value": 0.7236,
+    "value": 0.7236272269866327,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "p": {
@@ -333,12 +306,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 150.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "shelfMountL": {
@@ -346,12 +315,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 9.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "sigmaAllow": {
@@ -359,19 +324,17 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 15000.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "thickness": {
     "type": "Number",
-    "value": 0.3618,
+    "value": 0.36181361349331637,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "wallMountL": {
@@ -379,12 +342,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 8.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "width": {
@@ -392,12 +351,8 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
     "value": 11.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

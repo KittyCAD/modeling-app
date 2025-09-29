@@ -11,7 +11,6 @@ use std::path::Path;
 use anyhow::Result;
 use base64::Engine;
 use kittycad::Client;
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 /// "Value" would be OK. This is imported as "JValue" throughout the rest of this crate.
 use serde_json::Value as JValue;
@@ -101,7 +100,7 @@ pub trait CoreDump: Clone {
             .meta()
             .create_debug_uploads(vec![kittycad::types::multipart::Attachment {
                 name: "".to_string(),
-                filepath: Some(format!(r#"modeling-app/coredump-{}.json"#, coredump_id).into()),
+                filepath: Some(format!(r#"modeling-app/coredump-{coredump_id}.json"#).into()),
                 content_type: Some("application/json".to_string()),
                 data,
             }])
@@ -122,7 +121,7 @@ pub trait CoreDump: Clone {
 
 /// The app info structure.
 /// The Core Dump Info structure.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct CoreDumpInfo {
@@ -210,7 +209,7 @@ Reference ID: {coredump_id}
 }
 
 /// The os info structure.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct OsInfo {
@@ -229,7 +228,7 @@ pub struct OsInfo {
 }
 
 /// The webrtc stats structure.
-#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Default, Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct WebrtcStats {

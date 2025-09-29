@@ -3,27 +3,26 @@
 
 use std::{collections::HashMap, sync::Arc};
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use futures::{SinkExt, StreamExt};
 use indexmap::IndexMap;
 use kcmc::{
+    ModelingCmd,
     websocket::{
         BatchResponse, FailureWebSocketResponse, ModelingCmdReq, ModelingSessionData, OkWebSocketResponseData,
         SuccessWebSocketResponse, WebSocketRequest, WebSocketResponse,
     },
-    ModelingCmd,
 };
 use kittycad_modeling_cmds::{self as kcmc};
-use tokio::sync::{mpsc, oneshot, RwLock};
+use tokio::sync::{RwLock, mpsc, oneshot};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
 
-use super::{EngineStats, ExecutionKind};
 use crate::{
-    engine::EngineManager,
-    errors::{KclError, KclErrorDetails},
-    execution::{ArtifactCommand, DefaultPlanes, IdGenerator},
     SourceRange,
+    engine::{AsyncTasks, EngineManager, EngineStats},
+    errors::{KclError, KclErrorDetails},
+    execution::{DefaultPlanes, IdGenerator},
 };
 
 #[derive(Debug, PartialEq)]
@@ -37,22 +36,25 @@ type WebSocketTcpWrite = futures::stream::SplitSink<tokio_tungstenite::WebSocket
 pub struct EngineConnection {
     engine_req_tx: mpsc::Sender<ToEngineReq>,
     shutdown_tx: mpsc::Sender<()>,
-    responses: Arc<RwLock<IndexMap<uuid::Uuid, WebSocketResponse>>>,
+    responses: ResponseInformation,
     pending_errors: Arc<RwLock<Vec<String>>>,
     #[allow(dead_code)]
     tcp_read_handle: Arc<TcpReadHandle>,
     socket_health: Arc<RwLock<SocketHealth>>,
     batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
-    artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
+    ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
 
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     /// If the server sends session data, it'll be copied to here.
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
 
-    execution_kind: Arc<RwLock<ExecutionKind>>,
     stats: EngineStats,
+
+    async_tasks: AsyncTasks,
+
+    debug_info: Arc<RwLock<Option<OkWebSocketResponseData>>>,
 }
 
 pub struct TcpRead {
@@ -61,6 +63,7 @@ pub struct TcpRead {
 
 /// Occurs when client couldn't read from the WebSocket to the engine.
 // #[derive(Debug)]
+#[allow(clippy::large_enum_variant)]
 pub enum WebSocketReadError {
     /// Could not read a message due to WebSocket errors.
     Read(tokio_tungstenite::tungstenite::Error),
@@ -82,7 +85,7 @@ impl TcpRead {
         let msg = match msg {
             Ok(msg) => msg,
             Err(e) if matches!(e, tokio_tungstenite::tungstenite::Error::Protocol(_)) => {
-                return Err(WebSocketReadError::Read(e))
+                return Err(WebSocketReadError::Read(e));
             }
             Err(e) => return Err(anyhow::anyhow!("Error reading from engine's WebSocket: {e}").into()),
         };
@@ -113,6 +116,19 @@ impl Drop for TcpReadHandle {
     fn drop(&mut self) {
         // Drop the read handle.
         self.handle.abort();
+    }
+}
+
+/// Information about the responses from the engine.
+#[derive(Clone, Debug)]
+struct ResponseInformation {
+    /// The responses from the engine.
+    responses: Arc<RwLock<IndexMap<uuid::Uuid, WebSocketResponse>>>,
+}
+
+impl ResponseInformation {
+    pub async fn add(&self, id: Uuid, response: WebSocketResponse) {
+        self.responses.write().await.insert(id, response);
     }
 }
 
@@ -187,7 +203,7 @@ impl EngineConnection {
     async fn inner_send_to_engine(request: WebSocketRequest, tcp_write: &mut WebSocketTcpWrite) -> Result<()> {
         let msg = serde_json::to_string(&request).map_err(|e| anyhow!("could not serialize json: {e}"))?;
         tcp_write
-            .send(WsMsg::Text(msg))
+            .send(WsMsg::Text(msg.into()))
             .await
             .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
         Ok(())
@@ -197,19 +213,17 @@ impl EngineConnection {
     async fn inner_send_to_engine_binary(request: WebSocketRequest, tcp_write: &mut WebSocketTcpWrite) -> Result<()> {
         let msg = bson::to_vec(&request).map_err(|e| anyhow!("could not serialize bson: {e}"))?;
         tcp_write
-            .send(WsMsg::Binary(msg))
+            .send(WsMsg::Binary(msg.into()))
             .await
             .map_err(|e| anyhow!("could not send json over websocket: {e}"))?;
         Ok(())
     }
 
     pub async fn new(ws: reqwest::Upgraded) -> Result<EngineConnection> {
-        let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig {
+        let wsconfig = tokio_tungstenite::tungstenite::protocol::WebSocketConfig::default()
             // 4294967296 bytes, which is around 4.2 GB.
-            max_message_size: Some(usize::MAX),
-            max_frame_size: Some(usize::MAX),
-            ..Default::default()
-        };
+            .max_message_size(Some(usize::MAX))
+            .max_frame_size(Some(usize::MAX));
 
         let ws_stream = tokio_tungstenite::WebSocketStream::from_raw_socket(
             ws,
@@ -227,11 +241,16 @@ impl EngineConnection {
 
         let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
         let session_data2 = session_data.clone();
-        let responses: Arc<RwLock<IndexMap<uuid::Uuid, WebSocketResponse>>> = Arc::new(RwLock::new(IndexMap::new()));
-        let responses_clone = responses.clone();
+        let ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>> = Arc::new(RwLock::new(IndexMap::new()));
         let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
         let pending_errors = Arc::new(RwLock::new(Vec::new()));
         let pending_errors_clone = pending_errors.clone();
+        let response_information = ResponseInformation {
+            responses: Arc::new(RwLock::new(IndexMap::new())),
+        };
+        let response_information_cloned = response_information.clone();
+        let debug_info = Arc::new(RwLock::new(None));
+        let debug_info_cloned = debug_info.clone();
 
         let socket_health_tcp_read = socket_health.clone();
         let tcp_read_handle = tokio::spawn(async move {
@@ -245,8 +264,7 @@ impl EngineConnection {
                             WebSocketResponse::Success(SuccessWebSocketResponse {
                                 resp: OkWebSocketResponseData::ModelingBatch { responses },
                                 ..
-                            }) =>
-                            {
+                            }) => {
                                 #[expect(
                                     clippy::iter_over_hash_type,
                                     reason = "modeling command uses a HashMap and keys are random, so we don't really have a choice"
@@ -255,26 +273,32 @@ impl EngineConnection {
                                     let id: uuid::Uuid = (*resp_id).into();
                                     match batch_response {
                                         BatchResponse::Success { response } => {
-                                            responses_clone.write().await.insert(
-                                                id,
-                                                WebSocketResponse::Success(SuccessWebSocketResponse {
-                                                    success: true,
-                                                    request_id: Some(id),
-                                                    resp: OkWebSocketResponseData::Modeling {
-                                                        modeling_response: response.clone(),
-                                                    },
-                                                }),
-                                            );
+                                            // If the id is in our ids of async commands, remove
+                                            // it.
+                                            response_information_cloned
+                                                .add(
+                                                    id,
+                                                    WebSocketResponse::Success(SuccessWebSocketResponse {
+                                                        success: true,
+                                                        request_id: Some(id),
+                                                        resp: OkWebSocketResponseData::Modeling {
+                                                            modeling_response: response.clone(),
+                                                        },
+                                                    }),
+                                                )
+                                                .await;
                                         }
                                         BatchResponse::Failure { errors } => {
-                                            responses_clone.write().await.insert(
-                                                id,
-                                                WebSocketResponse::Failure(FailureWebSocketResponse {
-                                                    success: false,
-                                                    request_id: Some(id),
-                                                    errors: errors.clone(),
-                                                }),
-                                            );
+                                            response_information_cloned
+                                                .add(
+                                                    id,
+                                                    WebSocketResponse::Failure(FailureWebSocketResponse {
+                                                        success: false,
+                                                        request_id: Some(id),
+                                                        errors: errors.clone(),
+                                                    }),
+                                                )
+                                                .await;
                                         }
                                     }
                                 }
@@ -292,14 +316,16 @@ impl EngineConnection {
                                 errors,
                             }) => {
                                 if let Some(id) = request_id {
-                                    responses_clone.write().await.insert(
-                                        *id,
-                                        WebSocketResponse::Failure(FailureWebSocketResponse {
-                                            success: false,
-                                            request_id: *request_id,
-                                            errors: errors.clone(),
-                                        }),
-                                    );
+                                    response_information_cloned
+                                        .add(
+                                            *id,
+                                            WebSocketResponse::Failure(FailureWebSocketResponse {
+                                                success: false,
+                                                request_id: *request_id,
+                                                errors: errors.clone(),
+                                            }),
+                                        )
+                                        .await;
                                 } else {
                                     // Add it to our pending errors.
                                     let mut pe = pending_errors_clone.write().await;
@@ -311,11 +337,18 @@ impl EngineConnection {
                                     drop(pe);
                                 }
                             }
+                            WebSocketResponse::Success(SuccessWebSocketResponse {
+                                resp: debug @ OkWebSocketResponseData::Debug { .. },
+                                ..
+                            }) => {
+                                let mut handle = debug_info_cloned.write().await;
+                                *handle = Some(debug.clone());
+                            }
                             _ => {}
                         }
 
                         if let Some(id) = id {
-                            responses_clone.write().await.insert(id, ws_resp.clone());
+                            response_information_cloned.add(id, ws_resp.clone()).await;
                         }
                     }
                     Err(e) => {
@@ -336,16 +369,17 @@ impl EngineConnection {
             tcp_read_handle: Arc::new(TcpReadHandle {
                 handle: Arc::new(tcp_read_handle),
             }),
-            responses,
+            responses: response_information,
             pending_errors,
             socket_health,
             batch: Arc::new(RwLock::new(Vec::new())),
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
-            artifact_commands: Arc::new(RwLock::new(Vec::new())),
+            ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
-            execution_kind: Default::default(),
             stats: Default::default(),
+            async_tasks: AsyncTasks::new(),
+            debug_info,
         })
     }
 }
@@ -361,23 +395,15 @@ impl EngineManager for EngineConnection {
     }
 
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
-        self.responses.clone()
+        self.responses.responses.clone()
     }
 
-    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
-        self.artifact_commands.clone()
+    fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>> {
+        self.ids_of_async_commands.clone()
     }
 
-    async fn execution_kind(&self) -> ExecutionKind {
-        let guard = self.execution_kind.read().await;
-        *guard
-    }
-
-    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
-        let mut guard = self.execution_kind.write().await;
-        let original = *guard;
-        *guard = execution_kind;
-        original
+    fn async_tasks(&self) -> AsyncTasks {
+        self.async_tasks.clone()
     }
 
     fn stats(&self) -> &EngineStats {
@@ -386,6 +412,25 @@ impl EngineManager for EngineConnection {
 
     fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {
         self.default_planes.clone()
+    }
+
+    async fn get_debug(&self) -> Option<OkWebSocketResponseData> {
+        self.debug_info.read().await.clone()
+    }
+
+    async fn fetch_debug(&self) -> Result<(), KclError> {
+        let (tx, rx) = oneshot::channel();
+
+        self.engine_req_tx
+            .send(ToEngineReq {
+                req: WebSocketRequest::Debug {},
+                request_sent: tx,
+            })
+            .await
+            .map_err(|e| KclError::new_engine(KclErrorDetails::new(format!("Failed to send debug: {e}"), vec![])))?;
+
+        let _ = rx.await;
+        Ok(())
     }
 
     async fn clear_scene_post_hook(
@@ -400,13 +445,13 @@ impl EngineManager for EngineConnection {
         Ok(())
     }
 
-    async fn inner_send_modeling_cmd(
+    async fn inner_fire_modeling_cmd(
         &self,
-        id: uuid::Uuid,
+        _id: uuid::Uuid,
         source_range: SourceRange,
         cmd: WebSocketRequest,
         _id_to_source_range: HashMap<Uuid, SourceRange>,
-    ) -> Result<WebSocketResponse, KclError> {
+    ) -> Result<(), KclError> {
         let (tx, rx) = oneshot::channel();
 
         // Send the request to the engine, via the actor.
@@ -417,56 +462,80 @@ impl EngineManager for EngineConnection {
             })
             .await
             .map_err(|e| {
-                KclError::Engine(KclErrorDetails {
-                    message: format!("Failed to send modeling command: {}", e),
-                    source_ranges: vec![source_range],
-                })
+                KclError::new_engine(KclErrorDetails::new(
+                    format!("Failed to send modeling command: {e}"),
+                    vec![source_range],
+                ))
             })?;
 
         // Wait for the request to be sent.
         rx.await
             .map_err(|e| {
-                KclError::Engine(KclErrorDetails {
-                    message: format!("could not send request to the engine actor: {e}"),
-                    source_ranges: vec![source_range],
-                })
+                KclError::new_engine(KclErrorDetails::new(
+                    format!("could not send request to the engine actor: {e}"),
+                    vec![source_range],
+                ))
             })?
             .map_err(|e| {
-                KclError::Engine(KclErrorDetails {
-                    message: format!("could not send request to the engine: {e}"),
-                    source_ranges: vec![source_range],
-                })
+                KclError::new_engine(KclErrorDetails::new(
+                    format!("could not send request to the engine: {e}"),
+                    vec![source_range],
+                ))
             })?;
 
+        Ok(())
+    }
+
+    async fn inner_send_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: SourceRange,
+        cmd: WebSocketRequest,
+        id_to_source_range: HashMap<Uuid, SourceRange>,
+    ) -> Result<WebSocketResponse, KclError> {
+        self.inner_fire_modeling_cmd(id, source_range, cmd, id_to_source_range)
+            .await?;
+
         // Wait for the response.
+        let response_timeout = 300;
         let current_time = std::time::Instant::now();
-        while current_time.elapsed().as_secs() < 60 {
+        while current_time.elapsed().as_secs() < response_timeout {
             let guard = self.socket_health.read().await;
             if *guard == SocketHealth::Inactive {
                 // Check if we have any pending errors.
                 let pe = self.pending_errors.read().await;
                 if !pe.is_empty() {
-                    return Err(KclError::Engine(KclErrorDetails {
-                        message: pe.join(", ").to_string(),
-                        source_ranges: vec![source_range],
-                    }));
+                    return Err(KclError::new_engine(KclErrorDetails::new(
+                        pe.join(", ").to_string(),
+                        vec![source_range],
+                    )));
                 } else {
-                    return Err(KclError::Engine(KclErrorDetails {
-                        message: "Modeling command failed: websocket closed early".to_string(),
-                        source_ranges: vec![source_range],
-                    }));
+                    return Err(KclError::new_engine(KclErrorDetails::new(
+                        "Modeling command failed: websocket closed early".to_string(),
+                        vec![source_range],
+                    )));
                 }
             }
-            // We pop off the responses to cleanup our mappings.
-            if let Some(resp) = self.responses.write().await.shift_remove(&id) {
-                return Ok(resp);
+
+            #[cfg(feature = "artifact-graph")]
+            {
+                // We cannot pop here or it will break the artifact graph.
+                if let Some(resp) = self.responses.responses.read().await.get(&id) {
+                    return Ok(resp.clone());
+                }
+            }
+            #[cfg(not(feature = "artifact-graph"))]
+            {
+                if let Some(resp) = self.responses.responses.write().await.shift_remove(&id) {
+                    return Ok(resp);
+                }
             }
         }
 
-        Err(KclError::Engine(KclErrorDetails {
-            message: format!("Modeling command timed out `{}`", id),
-            source_ranges: vec![source_range],
-        }))
+        Err(KclError::new_engine(KclErrorDetails::new(
+            format!("Modeling command timed out `{id}`"),
+            vec![source_range],
+        )))
     }
 
     async fn get_session_data(&self) -> Option<ModelingSessionData> {

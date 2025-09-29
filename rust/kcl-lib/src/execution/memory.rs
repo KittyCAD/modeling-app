@@ -207,27 +207,27 @@ use std::{
     fmt,
     pin::Pin,
     sync::{
-        atomic::{AtomicBool, AtomicUsize, Ordering},
         Arc,
+        atomic::{AtomicBool, AtomicUsize, Ordering},
     },
 };
 
 use anyhow::Result;
 use env::Environment;
 use indexmap::IndexMap;
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::KclValue,
-    source_range::SourceRange,
 };
 
 /// The distinguished name of the return value of a function.
 pub(crate) const RETURN_NAME: &str = "__return";
-/// Low-budget namespacing for types.
+/// Low-budget namespacing for types and modules.
 pub(crate) const TYPE_PREFIX: &str = "__ty_";
+pub(crate) const MODULE_PREFIX: &str = "__mod_";
 
 /// KCL memory. There should be only one ProgramMemory for the interpretation of a program (
 /// including other modules). Multiple interpretation runs should have fresh instances.
@@ -364,10 +364,12 @@ impl ProgramMemory {
             };
         }
 
-        Err(KclError::UndefinedValue(KclErrorDetails {
-            message: format!("memory item key `{}` is not defined", var),
-            source_ranges: vec![source_range],
-        }))
+        let name = var.trim_start_matches(TYPE_PREFIX).trim_start_matches(MODULE_PREFIX);
+
+        Err(KclError::new_undefined_value(
+            KclErrorDetails::new(format!("`{name}` is not defined"), vec![source_range]),
+            Some(name.to_owned()),
+        ))
     }
 
     /// Iterate over all key/value pairs in the specified environment which satisfy the provided
@@ -485,10 +487,10 @@ impl ProgramMemory {
             };
         }
 
-        Err(KclError::UndefinedValue(KclErrorDetails {
-            message: format!("memory item key `{}` is not defined", var),
-            source_ranges: vec![],
-        }))
+        Err(KclError::new_undefined_value(
+            KclErrorDetails::new(format!("`{var}` is not defined"), vec![]),
+            Some(var.to_owned()),
+        ))
     }
 }
 
@@ -536,22 +538,6 @@ impl Stack {
         // We need to snapshot in case there is a function decl in the new scope.
         let snapshot = self.snapshot();
         self.push_new_env_for_call(snapshot);
-    }
-
-    /// Push a new stack frame on to the call stack for callees which should not read or write
-    /// from memory.
-    ///
-    /// This is suitable for calling standard library functions or other functions written in Rust
-    /// which will use 'Rust memory' rather than KCL's memory and cannot reach into the wider
-    /// environment.
-    ///
-    /// Trying to read or write from this environment will panic with an index out of bounds.
-    pub fn push_new_env_for_rust_call(&mut self) {
-        self.call_stack.push(self.current_env);
-        // Rust functions shouldn't try to set or access anything in their environment, so don't
-        // waste time and space on a new env. Using usize::MAX means we'll get an overflow if we
-        // try to access anything rather than a silent error.
-        self.current_env = EnvironmentRef(usize::MAX, 0);
     }
 
     /// Push a new stack frame on to the call stack with no connection to a parent environment.
@@ -643,10 +629,10 @@ impl Stack {
     pub fn add(&mut self, key: String, value: KclValue, source_range: SourceRange) -> Result<(), KclError> {
         let env = self.memory.get_env(self.current_env.index());
         if env.contains_key(&key) {
-            return Err(KclError::ValueAlreadyDefined(KclErrorDetails {
-                message: format!("Cannot redefine `{}`", key),
-                source_ranges: vec![source_range],
-            }));
+            return Err(KclError::new_value_already_defined(KclErrorDetails::new(
+                format!("Cannot redefine `{key}`"),
+                vec![source_range],
+            )));
         }
 
         self.memory.stats.mutation_count.fetch_add(1, Ordering::Relaxed);
@@ -680,7 +666,7 @@ impl Stack {
         env.contains_key(var)
     }
 
-    /// Get a key from the first KCL (i.e., non-Rust) stack frame on the call stack.
+    /// Get a key from the first stack frame on the call stack.
     pub fn get_from_call_stack(&self, key: &str, source_range: SourceRange) -> Result<(usize, &KclValue), KclError> {
         if !self.current_env.skip_env() {
             return Ok((self.current_env.1, self.get(key, source_range)?));
@@ -692,7 +678,7 @@ impl Stack {
             }
         }
 
-        unreachable!("It can't be Rust frames all the way down");
+        unreachable!("No frames on the stack?");
     }
 
     /// Iterate over all keys in the current environment which satisfy the provided predicate.
@@ -816,11 +802,11 @@ impl PartialEq for Stack {
 /// The first field indexes an environment, the second field is an epoch. An epoch of 0 is indicates
 /// a dummy, error, or placeholder env ref, an epoch of `usize::MAX` represents the current most
 /// recent epoch.
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, Eq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, Eq, ts_rs::TS)]
 pub struct EnvironmentRef(usize, usize);
 
 impl EnvironmentRef {
-    fn dummy() -> Self {
+    pub fn dummy() -> Self {
         Self(usize::MAX, 0)
     }
 
@@ -1044,7 +1030,7 @@ mod env {
         }
 
         /// Take all bindings from the environment.
-        pub(super) fn take_bindings(self: Pin<&mut Self>) -> impl Iterator<Item = (String, (usize, KclValue))> {
+        pub(super) fn take_bindings(self: Pin<&mut Self>) -> impl Iterator<Item = (String, (usize, KclValue))> + use<> {
             // SAFETY: caller must have unique access since self is mut. We're not moving or invalidating `self`.
             let bindings = std::mem::take(unsafe { self.bindings.get().as_mut().unwrap() });
             bindings.into_iter()
@@ -1215,24 +1201,6 @@ mod test {
     }
 
     #[test]
-    fn rust_env() {
-        let mem = &mut Stack::new_for_tests();
-        mem.add("a".to_owned(), val(1), sr()).unwrap();
-        mem.add("b".to_owned(), val(3), sr()).unwrap();
-        let sn = mem.snapshot();
-
-        mem.push_new_env_for_rust_call();
-        mem.push_new_env_for_call(sn);
-        assert_get(mem, "b", 3);
-        mem.add("b".to_owned(), val(4), sr()).unwrap();
-        assert_get(mem, "b", 4);
-
-        mem.pop_env();
-        mem.pop_env();
-        assert_get(mem, "b", 3);
-    }
-
-    #[test]
     fn deep_call_env() {
         let mem = &mut Stack::new_for_tests();
         mem.add("a".to_owned(), val(1), sr()).unwrap();
@@ -1323,11 +1291,11 @@ mod test {
         mem.add(
             "f".to_owned(),
             KclValue::Function {
-                value: FunctionSource::User {
-                    ast: crate::parsing::ast::types::FunctionExpression::dummy(),
-                    settings: crate::MetaSettings::default(),
-                    memory: sn2,
-                },
+                value: Box::new(FunctionSource::kcl(
+                    crate::parsing::ast::types::FunctionExpression::dummy(),
+                    sn2,
+                    false,
+                )),
                 meta: Vec::new(),
             },
             sr(),
@@ -1338,10 +1306,13 @@ mod test {
         assert_get(mem, "a", 1);
         assert_get(mem, "b", 2);
         match mem.get("f", SourceRange::default()).unwrap() {
-            KclValue::Function {
-                value: FunctionSource::User { memory, .. },
-                ..
-            } if memory.0 == mem.current_env.0 => {}
+            KclValue::Function { value, .. } => match &**value {
+                FunctionSource {
+                    body: crate::execution::kcl_value::FunctionBody::Kcl(memory),
+                    ..
+                } if memory.0 == mem.current_env.0 => {}
+                v => panic!("{v:#?}, expected {sn1:?}"),
+            },
             v => panic!("{v:#?}, expected {sn1:?}"),
         }
         assert_eq!(mem.memory.envs().len(), 2);

@@ -13,6 +13,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "exampleSketch",
             "start": 0,
             "type": "Identifier"
@@ -20,24 +21,16 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
           "init": {
             "body": [
               {
-                "arguments": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "'XZ'",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "XZ"
-                  }
-                ],
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "startSketchOn",
                     "start": 0,
                     "type": "Identifier"
@@ -48,73 +41,28 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "commentStart": 0,
-                    "elements": [
-                      {
-                        "commentStart": 0,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 0,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    ],
-                    "end": 0,
-                    "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
-                    "name": "startProfileAt",
+                    "moduleId": 0,
+                    "name": "XZ",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "path": [],
                   "start": 0,
+                  "type": "Name",
                   "type": "Name"
-                },
-                "commentStart": 0,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                }
               },
               {
                 "arguments": [
@@ -123,7 +71,8 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "end",
+                      "moduleId": 0,
+                      "name": "at",
                       "start": 0,
                       "type": "Identifier"
                     },
@@ -133,6 +82,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -145,17 +95,19 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
-                          "raw": "2",
+                          "moduleId": 0,
+                          "raw": "0",
                           "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
-                            "value": 2.0,
+                            "value": 0.0,
                             "suffix": "None"
                           }
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -166,10 +118,12 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
-                    "name": "line",
+                    "moduleId": 0,
+                    "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -179,6 +133,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -191,6 +146,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -201,6 +157,82 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
+                          "raw": "0",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "raw": "2",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 2.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "end",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
                           "raw": "3",
                           "start": 0,
                           "type": "Literal",
@@ -213,6 +245,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "1",
                           "start": 0,
                           "type": "Literal",
@@ -224,6 +257,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -234,9 +268,11 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -247,6 +283,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -259,6 +296,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
@@ -269,6 +307,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "raw": "0",
                           "start": 0,
                           "type": "Literal",
@@ -282,6 +321,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                           "argument": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "raw": "4",
                             "start": 0,
                             "type": "Literal",
@@ -293,6 +333,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                           },
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "operator": "-",
                           "start": 0,
                           "type": "UnaryExpression",
@@ -300,6 +341,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                         }
                       ],
                       "end": 0,
+                      "moduleId": 0,
                       "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -310,9 +352,11 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "line",
                     "start": 0,
                     "type": "Identifier"
@@ -323,28 +367,23 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               },
               {
-                "arguments": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "close",
                     "start": 0,
                     "type": "Identifier"
@@ -355,9 +394,18 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
               },
               {
                 "arguments": [
@@ -366,6 +414,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                     "label": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
@@ -373,6 +422,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "1",
                       "start": 0,
                       "type": "Literal",
@@ -388,9 +438,11 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "extrude",
                     "start": 0,
                     "type": "Identifier"
@@ -401,6 +453,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 },
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -409,15 +462,18 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
             ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -430,6 +486,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "pattn1",
             "start": 0,
             "type": "Identifier"
@@ -441,6 +498,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
@@ -451,6 +509,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "1",
                       "start": 0,
                       "type": "Literal",
@@ -463,6 +522,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -475,6 +535,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -486,6 +547,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                     }
                   ],
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -496,6 +558,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "instances",
                   "start": 0,
                   "type": "Identifier"
@@ -503,6 +566,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "7",
                   "start": 0,
                   "type": "Literal",
@@ -518,6 +582,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "distance",
                   "start": 0,
                   "type": "Identifier"
@@ -525,6 +590,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "6",
                   "start": 0,
                   "type": "Literal",
@@ -540,9 +606,11 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "patternLinear3d",
                 "start": 0,
                 "type": "Identifier"
@@ -553,6 +621,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -560,9 +629,11 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "exampleSketch",
                 "start": 0,
                 "type": "Identifier"
@@ -573,11 +644,13 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -590,6 +663,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "pattn2",
             "start": 0,
             "type": "Identifier"
@@ -601,6 +675,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
@@ -611,6 +686,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -623,6 +699,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "0",
                       "start": 0,
                       "type": "Literal",
@@ -635,6 +712,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
+                      "moduleId": 0,
                       "raw": "1",
                       "start": 0,
                       "type": "Literal",
@@ -646,6 +724,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                     }
                   ],
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
@@ -656,6 +735,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "distance",
                   "start": 0,
                   "type": "Identifier"
@@ -663,6 +743,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "1",
                   "start": 0,
                   "type": "Literal",
@@ -678,6 +759,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 "label": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "instances",
                   "start": 0,
                   "type": "Identifier"
@@ -685,6 +767,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                 "arg": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "raw": "7",
                   "start": 0,
                   "type": "Literal",
@@ -700,9 +783,11 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "patternLinear3d",
                 "start": 0,
                 "type": "Identifier"
@@ -713,6 +798,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -720,9 +806,11 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "pattn1",
                 "start": 0,
                 "type": "Identifier"
@@ -733,11 +821,13 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
               "type": "Name"
             }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -745,12 +835,14 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -762,6 +854,7 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

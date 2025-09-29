@@ -6,28 +6,60 @@ import React, {
   useMemo,
   useRef,
 } from 'react'
+import type { MutableRefObject } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLoaderData, useNavigate } from 'react-router-dom'
+import { useLoaderData } from 'react-router-dom'
 import type { Actor, ContextFrom, Prop, SnapshotFrom, StateFrom } from 'xstate'
 import { assign, fromPromise } from 'xstate'
 
-import type {
-  OutputFormat3d,
-  Point3d,
-} from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import {
-  SEGMENT_BODIES,
+  SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
+import {
+  applyConstraintAngleLength,
+  applyConstraintLength,
+} from '@src/components/Toolbar/setAngleLength'
+import {
+  useMenuListener,
+  useSketchModeMenuEnableDisable,
+} from '@src/hooks/useMenu'
+import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
+import { useKclContext } from '@src/lang/KclProvider'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
+import {
+  sketchOnExtrudedFace,
+  sketchOnOffsetPlane,
+  splitPipedProfile,
+  startSketchOnDefault,
+} from '@src/lang/modifyAst'
+import {
+  doesSketchPipeNeedSplitting,
+  getNodeFromPath,
+  traverse,
+} from '@src/lang/queryAst'
+import {
+  EngineConnectionEvents,
+  EngineConnectionStateType,
+} from '@src/lang/std/engineConnection'
+import { err, reject, reportRejection, trap } from '@src/lib/trap'
+
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
+
+import { commandBarActor, settingsActor } from '@src/lib/singletons'
+import { useSettings } from '@src/lib/singletons'
+import { platform, uuidv4 } from '@src/lib/utils'
+
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
 import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
 import {
@@ -35,58 +67,18 @@ import {
   applyConstraintAngleBetween,
 } from '@src/components/Toolbar/SetAngleBetween'
 import { applyConstraintHorzVertDistance } from '@src/components/Toolbar/SetHorzVertDistance'
-import {
-  applyConstraintAngleLength,
-  applyConstraintLength,
-} from '@src/components/Toolbar/setAngleLength'
-import { useFileContext } from '@src/hooks/useFileContext'
-import {
-  useMenuListener,
-  useSketchModeMenuEnableDisable,
-} from '@src/hooks/useMenu'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
-import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
-import { useKclContext } from '@src/lang/KclProvider'
-import { updateModelingState } from '@src/lang/modelingWorkflows'
-import {
-  insertNamedConstant,
-  replaceValueAtNodePath,
-  sketchOnExtrudedFace,
-  sketchOnOffsetPlane,
-  splitPipedProfile,
-  startSketchOnDefault,
-} from '@src/lang/modifyAst'
-import {
-  artifactIsPlaneWithPaths,
-  doesSketchPipeNeedSplitting,
-  getNodeFromPath,
-  isCursorInFunctionDefinition,
-  traverse,
-} from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import {
-  getFaceCodeRef,
-  getPathsFromArtifact,
-  getPlaneFromArtifact,
-} from '@src/lang/std/artifactGraph'
-import {
-  EngineConnectionEvents,
-  EngineConnectionStateType,
-} from '@src/lang/std/engineConnection'
-import {
-  isCursorInSketchCommandRange,
-  updateSketchDetailsNodePaths,
-} from '@src/lang/util'
+import { updateSketchDetailsNodePaths } from '@src/lang/util'
 import type {
-  KclValue,
-  PathToNode,
   PipeExpression,
   Program,
   VariableDeclaration,
 } from '@src/lang/wasm'
 import { parse, recast, resultIsOk } from '@src/lang/wasm'
-import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import {
+  type ModelingCommandSchema,
+  modelingMachineCommandConfig,
+} from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import {
   EXECUTION_TYPE_MOCK,
   EXPORT_TOAST_MESSAGES,
@@ -94,9 +86,14 @@ import {
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
-import { promptToEditFlow } from '@src/lib/promptToEdit'
-import type { Selections } from '@src/lib/selections'
-import { handleSelectionBatch, updateSelections } from '@src/lib/selections'
+import type { Project } from '@src/lib/project'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import {
+  getDefaultSketchPlaneData,
+  selectionBodyFace,
+  getOffsetSketchPlaneData,
+  updateSelections,
+} from '@src/lib/selections'
 import {
   codeManager,
   editorManager,
@@ -106,25 +103,28 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import { submitAndAwaitTextToKcl } from '@src/lib/textToCad'
-import { err, reject, reportRejection, trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
-import { platform, uuidv4 } from '@src/lib/utils'
-import { useSettings, useToken } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
+import type {
+  DefaultPlane,
+  ExtrudeFacePlane,
+  OffsetPlane,
+} from '@src/machines/modelingSharedTypes'
 import {
   getPersistedContext,
   modelingMachine,
-  modelingMachineDefaultContext,
 } from '@src/machines/modelingMachine'
+import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+import { useFolders } from '@src/machines/systemIO/hooks'
 import type { WebContentSendPayload } from '@src/menu/channels'
+
+const OVERLAY_TIMEOUT_MS = 1_000
 
 export const ModelingMachineContext = createContext(
   {} as {
     state: StateFrom<typeof modelingMachine>
     context: ContextFrom<typeof modelingMachine>
     send: Prop<Actor<typeof modelingMachine>, 'send'>
+    theProject: MutableRefObject<Project | undefined>
   }
 )
 
@@ -138,13 +138,38 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   const {
-    app: { theme, allowOrbitInSketchMode },
-    modeling: { defaultUnit, cameraProjection, highlightEdges, cameraOrbit },
+    app: { allowOrbitInSketchMode },
+    modeling: {
+      defaultUnit,
+      cameraProjection,
+      cameraOrbit,
+      useNewSketchMode,
+      snapToGrid,
+    },
   } = useSettings()
-  const navigate = useNavigate()
-  const { context, send: fileMachineSend } = useFileContext()
-  const { file } = useLoaderData() as IndexLoaderData
-  const token = useToken()
+  const loaderData = useLoaderData() as IndexLoaderData
+  const projects = useFolders()
+  const { project, file } = loaderData
+  const theProject = useRef<Project | undefined>(project)
+  useEffect(() => {
+    // Have no idea why the project loader data doesn't have the children from the ls on disk
+    // That means it is a different object or cached incorrectly?
+    if (!project || !file) {
+      return
+    }
+
+    // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
+    const foundYourProject = projects.find((p) => {
+      return p.name === project.name
+    })
+
+    if (!foundYourProject) {
+      return
+    }
+    theProject.current = foundYourProject
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [projects, loaderData, file])
+
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
 
@@ -177,51 +202,19 @@ export const ModelingMachineProvider = ({
         'enable copilot': () => {
           editorManager.setCopilotEnabled(true)
         },
-        'sketch exit execute': ({ context: { store } }) => {
-          // TODO: Remove this async callback.  For some reason eslint wouldn't
-          // let me disable @typescript-eslint/no-misused-promises for the line.
-          ;(async () => {
-            // When cancelling the sketch mode we should disable sketch mode within the engine.
-            await engineCommandManager.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: { type: 'sketch_mode_disable' },
-            })
-
-            sceneInfra.camControls.syncDirection = 'clientToEngine'
-
-            if (cameraProjection.current === 'perspective') {
-              await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
-            }
-
-            sceneInfra.camControls.syncDirection = 'engineToClient'
-
-            store.videoElement?.pause()
-
-            return kclManager
-              .executeCode()
-              .then(() => {
-                if (engineCommandManager.engineConnection?.idleMode) return
-
-                store.videoElement?.play().catch((e) => {
-                  console.warn('Video playing was prevented', e)
-                })
-              })
-              .catch(reportRejection)
-          })().catch(reportRejection)
-        },
         'Set mouse state': assign(({ context, event }) => {
           if (event.type !== 'Set mouse state') return {}
           const nextSegmentHoverMap = () => {
             if (event.data.type === 'isHovering') {
-              const parent = getParentGroup(event.data.on, SEGMENT_BODIES)
+              const parent = getParentGroup(
+                event.data.on,
+                SEGMENT_BODIES_PLUS_PROFILE_START
+              )
               const pathToNode = parent?.userData?.pathToNode
               const pathToNodeString = JSON.stringify(pathToNode)
               if (!parent || !pathToNode) return context.segmentHoverMap
               if (context.segmentHoverMap[pathToNodeString] !== undefined)
-                clearTimeout(
-                  context.segmentHoverMap[JSON.stringify(pathToNode)]
-                )
+                clearTimeout(context.segmentHoverMap[pathToNodeString])
               return {
                 ...context.segmentHoverMap,
                 [pathToNodeString]: 0,
@@ -232,7 +225,7 @@ export const ModelingMachineProvider = ({
             ) {
               const mouseOnParent = getParentGroup(
                 context.mouseState.on,
-                SEGMENT_BODIES
+                SEGMENT_BODIES_PLUS_PROFILE_START
               )
               if (!mouseOnParent || !mouseOnParent?.userData?.pathToNode)
                 return context.segmentHoverMap
@@ -247,8 +240,7 @@ export const ModelingMachineProvider = ({
                     pathToNodeString,
                   },
                 })
-                // overlay timeout is 1s
-              }, 1000) as unknown as number
+              }, OVERLAY_TIMEOUT_MS) as unknown as number
               return {
                 ...context.segmentHoverMap,
                 [pathToNodeString]: timeoutId,
@@ -268,11 +260,11 @@ export const ModelingMachineProvider = ({
         'Set Segment Overlays': assign({
           segmentOverlays: ({ context: { segmentOverlays }, event }) => {
             if (event.type !== 'Set Segment Overlays') return {}
-            if (event.data.type === 'add-many')
+            if (event.data.type === 'set-many') {
               return {
-                ...segmentOverlays,
                 ...event.data.overlays,
               }
+            }
             if (event.data.type === 'set-one')
               return {
                 ...segmentOverlays,
@@ -300,248 +292,17 @@ export const ModelingMachineProvider = ({
             .catch(reportRejection)
         },
         'Set sketchDetails': assign(({ context: { sketchDetails }, event }) => {
-          if (event.type !== 'Delete segment') return {}
           if (!sketchDetails) return {}
-          return {
-            sketchDetails: {
-              ...sketchDetails,
-              sketchEntryNodePath: event.data,
-            },
+          if (event.type === 'Update sketch details') {
+            return {
+              sketchDetails: {
+                ...sketchDetails,
+                ...event.data,
+              },
+            }
           }
+          return {}
         }),
-        'Set selection': assign(
-          ({ context: { selectionRanges, sketchDetails }, event }) => {
-            // this was needed for ts after adding 'Set selection' action to on done modal events
-            const setSelections =
-              ('data' in event &&
-                event.data &&
-                'selectionType' in event.data &&
-                event.data) ||
-              ('output' in event &&
-                event.output &&
-                'selectionType' in event.output &&
-                event.output) ||
-              null
-            if (!setSelections) return {}
-
-            let selections: Selections = {
-              graphSelections: [],
-              otherSelections: [],
-            }
-            if (setSelections.selectionType === 'singleCodeCursor') {
-              if (!setSelections.selection && editorManager.isShiftDown) {
-              } else if (
-                !setSelections.selection &&
-                !editorManager.isShiftDown
-              ) {
-                selections = {
-                  graphSelections: [],
-                  otherSelections: [],
-                }
-              } else if (
-                setSelections.selection &&
-                !editorManager.isShiftDown
-              ) {
-                selections = {
-                  graphSelections: [setSelections.selection],
-                  otherSelections: [],
-                }
-              } else if (setSelections.selection && editorManager.isShiftDown) {
-                // selecting and deselecting multiple objects
-
-                /**
-                 * There are two scenarios:
-                 * 1. General case:
-                 *    When selecting and deselecting edges,
-                 *    faces or segment (during sketch edit)
-                 *    we use its artifact ID to identify the selection
-                 * 2. Initial sketch setup:
-                 *    The artifact is not yet created
-                 *    so we use the codeRef.range
-                 */
-
-                let updatedSelections: typeof selectionRanges.graphSelections
-
-                // 1. General case: Artifact exists, use its ID
-                if (setSelections.selection.artifact?.id) {
-                  // check if already selected
-                  const alreadySelected = selectionRanges.graphSelections.some(
-                    (selection) =>
-                      selection.artifact?.id ===
-                      setSelections.selection?.artifact?.id
-                  )
-                  if (
-                    alreadySelected &&
-                    setSelections.selection?.artifact?.id
-                  ) {
-                    // remove it
-                    updatedSelections = selectionRanges.graphSelections.filter(
-                      (selection) =>
-                        selection.artifact?.id !==
-                        setSelections.selection?.artifact?.id
-                    )
-                  } else {
-                    // add it
-                    updatedSelections = [
-                      ...selectionRanges.graphSelections,
-                      setSelections.selection,
-                    ]
-                  }
-                } else {
-                  // 2. Initial sketch setup: Artifact not yet created – use codeRef.range
-                  const selectionRange = JSON.stringify(
-                    setSelections.selection?.codeRef?.range
-                  )
-
-                  // check if already selected
-                  const alreadySelected = selectionRanges.graphSelections.some(
-                    (selection) => {
-                      const existingRange = JSON.stringify(
-                        selection.codeRef?.range
-                      )
-                      return existingRange === selectionRange
-                    }
-                  )
-
-                  if (
-                    alreadySelected &&
-                    setSelections.selection?.codeRef?.range
-                  ) {
-                    // remove it
-                    updatedSelections = selectionRanges.graphSelections.filter(
-                      (selection) =>
-                        JSON.stringify(selection.codeRef?.range) !==
-                        selectionRange
-                    )
-                  } else {
-                    // add it
-                    updatedSelections = [
-                      ...selectionRanges.graphSelections,
-                      setSelections.selection,
-                    ]
-                  }
-                }
-
-                selections = {
-                  graphSelections: updatedSelections,
-                  otherSelections: selectionRanges.otherSelections,
-                }
-              }
-
-              const {
-                engineEvents,
-                codeMirrorSelection,
-                updateSceneObjectColors,
-              } = handleSelectionBatch({
-                selections,
-              })
-              if (codeMirrorSelection) {
-                kclEditorActor.send({
-                  type: 'setLastSelectionEvent',
-                  data: {
-                    codeMirrorSelection,
-                    scrollIntoView: setSelections.scrollIntoView ?? false,
-                  },
-                })
-              }
-
-              // If there are engine commands that need sent off, send them
-              // TODO: This should be handled outside of an action as its own
-              // actor, so that the system state is more controlled.
-              engineEvents &&
-                engineEvents.forEach((event) => {
-                  engineCommandManager
-                    .sendSceneCommand(event)
-                    .catch(reportRejection)
-                })
-              updateSceneObjectColors()
-
-              return {
-                selectionRanges: selections,
-              }
-            }
-
-            if (setSelections.selectionType === 'mirrorCodeMirrorSelections') {
-              return {
-                selectionRanges: setSelections.selection,
-              }
-            }
-
-            if (
-              setSelections.selectionType === 'axisSelection' ||
-              setSelections.selectionType === 'defaultPlaneSelection'
-            ) {
-              if (editorManager.isShiftDown) {
-                selections = {
-                  graphSelections: selectionRanges.graphSelections,
-                  otherSelections: [setSelections.selection],
-                }
-              } else {
-                selections = {
-                  graphSelections: [],
-                  otherSelections: [setSelections.selection],
-                }
-              }
-              return {
-                selectionRanges: selections,
-              }
-            }
-
-            if (setSelections.selectionType === 'completeSelection') {
-              const codeMirrorSelection = editorManager.createEditorSelection(
-                setSelections.selection
-              )
-              kclEditorActor.send({
-                type: 'setLastSelectionEvent',
-                data: {
-                  codeMirrorSelection,
-                  scrollIntoView: false,
-                },
-              })
-              if (!sketchDetails)
-                return {
-                  selectionRanges: setSelections.selection,
-                }
-              return {
-                selectionRanges: setSelections.selection,
-                sketchDetails: {
-                  ...sketchDetails,
-                  sketchEntryNodePath:
-                    setSelections.updatedSketchEntryNodePath ||
-                    sketchDetails?.sketchEntryNodePath ||
-                    [],
-                  sketchNodePaths:
-                    setSelections.updatedSketchNodePaths ||
-                    sketchDetails?.sketchNodePaths ||
-                    [],
-                  planeNodePath:
-                    setSelections.updatedPlaneNodePath ||
-                    sketchDetails?.planeNodePath ||
-                    [],
-                },
-              }
-            }
-
-            return {}
-          }
-        ),
-        'Submit to Text-to-CAD API': ({ event }) => {
-          if (event.type !== 'Text-to-CAD') return
-          const trimmedPrompt = event.data.prompt.trim()
-          if (!trimmedPrompt) return
-
-          submitAndAwaitTextToKcl({
-            trimmedPrompt,
-            fileMachineSend,
-            navigate,
-            context,
-            token,
-            settings: {
-              theme: theme.current,
-              highlightEdges: highlightEdges.current,
-            },
-          }).catch(reportRejection)
-        },
       },
       guards: {
         'has valid selection for deletion': ({
@@ -551,50 +312,24 @@ export const ModelingMachineProvider = ({
           if (selectionRanges.graphSelections.length <= 0) return false
           return true
         },
-        'Selection is on face': ({ context: { selectionRanges }, event }) => {
-          if (event.type !== 'Enter sketch') return false
-          if (event.data?.forceNewSketch) return false
-          if (artifactIsPlaneWithPaths(selectionRanges)) {
-            return true
-          } else if (selectionRanges.graphSelections[0]?.artifact) {
-            // See if the selection is "close enough" to be coerced to the plane later
-            const maybePlane = getPlaneFromArtifact(
-              selectionRanges.graphSelections[0].artifact,
-              kclManager.artifactGraph
-            )
-            return !err(maybePlane)
-          }
-          if (
-            isCursorInFunctionDefinition(
-              kclManager.ast,
-              selectionRanges.graphSelections[0]
-            )
-          ) {
-            return false
-          }
-          return !!isCursorInSketchCommandRange(
-            kclManager.artifactGraph,
-            selectionRanges
-          )
-        },
-        'Has exportable geometry': () => {
-          if (!kclManager.hasErrors() && kclManager.ast.body.length > 0)
-            return true
-          else {
-            let errorMessage = 'Unable to Export '
-            if (kclManager.hasErrors()) errorMessage += 'due to KCL Errors'
-            else if (kclManager.ast.body.length === 0)
-              errorMessage += 'due to Empty Scene'
-            console.error(errorMessage)
-            toast.error(errorMessage)
-            return false
-          }
-        },
+        'Has exportable geometry': () =>
+          !kclManager.hasErrors() && kclManager.ast.body.length > 0,
+        'should use new sketch mode': () => !!useNewSketchMode?.current,
       },
       actors: {
         exportFromEngine: fromPromise(
           async ({ input }: { input?: ModelingCommandSchema['Export'] }) => {
-            if (!input) {
+            if (kclManager.hasErrors() || kclManager.ast.body.length === 0) {
+              let errorMessage = 'Unable to Export '
+              if (kclManager.hasErrors()) {
+                errorMessage += 'due to KCL Errors'
+              } else if (kclManager.ast.body.length === 0) {
+                errorMessage += 'due to Empty Scene'
+              }
+              console.error(errorMessage)
+              toast.error(errorMessage)
+              return new Error(errorMessage)
+            } else if (!input) {
               return new Error('No input provided')
             }
 
@@ -749,18 +484,28 @@ export const ModelingMachineProvider = ({
               if (err(varDec)) return reject(new Error('No varDec'))
               const variableName = varDec.node.declaration.id.name
               let isIdentifierUsed = false
-              traverse(newAst, {
-                enter: (node) => {
-                  if (node.type === 'Name' && node.name.name === variableName) {
-                    isIdentifierUsed = true
-                  }
-                },
-              })
+              const isInitAPipe =
+                varDec.node.declaration.init.type === 'PipeExpression'
+              if (isInitAPipe) {
+                isIdentifierUsed = true
+              } else {
+                traverse(newAst, {
+                  enter: (node) => {
+                    if (
+                      node.type === 'Name' &&
+                      node.name.name === variableName
+                    ) {
+                      isIdentifierUsed = true
+                    }
+                  },
+                })
+              }
               if (isIdentifierUsed) return
 
               // remove body item at varDecIndex
               newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
-              await kclManager.executeAstMock(newAst)
+              const didReParse = await kclManager.executeAstMock(newAst)
+              if (err(didReParse)) return reject(didReParse)
               await codeManager.updateEditorWithAstAndWriteToFile(newAst)
             }
             sceneInfra.setCallbacks({
@@ -770,9 +515,58 @@ export const ModelingMachineProvider = ({
             return undefined
           }
         ),
+        'animate-to-sketch-solve': fromPromise(
+          async ({
+            input: artifactOrPlaneId,
+          }): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane> => {
+            if (!artifactOrPlaneId) {
+              const errorMessage = 'No artifact or plane ID provided'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+            let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null =
+              null
+
+            const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId)
+            if (!err(defaultResult) && defaultResult) {
+              result = defaultResult
+            }
+            console.log('result', result)
+
+            // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
+            if (!result) {
+              const artifact = kclManager.artifactGraph.get(artifactOrPlaneId)
+              const offsetResult = await getOffsetSketchPlaneData(artifact)
+              if (!err(offsetResult) && offsetResult) {
+                result = offsetResult
+              }
+            }
+            console.log('result', result)
+            if (!result) {
+              const sweepFaceSelected =
+                await selectionBodyFace(artifactOrPlaneId)
+              if (sweepFaceSelected) {
+                result = sweepFaceSelected
+              }
+            }
+            if (!result) {
+              const errorMessage = 'Please select a valid sketch plane'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            const id =
+              result.type === 'extrudeFace' ? result.faceId : result.planeId
+            await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
+            console.log('result', result)
+            return result
+          }
+        ),
         'animate-to-face': fromPromise(async ({ input }) => {
           if (!input) return null
           if (input.type === 'extrudeFace' || input.type === 'offsetPlane') {
+            const originalCode = codeManager.code
             const sketched =
               input.type === 'extrudeFace'
                 ? sketchOnExtrudedFace(
@@ -781,7 +575,11 @@ export const ModelingMachineProvider = ({
                     input.extrudePathToNode,
                     input.faceInfo
                   )
-                : sketchOnOffsetPlane(kclManager.ast, input.pathToNode)
+                : sketchOnOffsetPlane(
+                    kclManager.ast,
+                    input.pathToNode,
+                    input.negated
+                  )
             if (err(sketched)) {
               const sketchedError = new Error(
                 'Incompatible face, please try another'
@@ -791,7 +589,13 @@ export const ModelingMachineProvider = ({
             }
             const { modifiedAst, pathToNode: pathToNewSketchNode } = sketched
 
-            await kclManager.executeAstMock(modifiedAst)
+            const didReParse = await kclManager.executeAstMock(modifiedAst)
+            if (err(didReParse)) {
+              // there was a problem, restore the original code
+              codeManager.code = originalCode
+              await kclManager.executeCode()
+              return reject(didReParse)
+            }
 
             const id =
               input.type === 'extrudeFace' ? input.faceId : input.planeId
@@ -830,120 +634,6 @@ export const ModelingMachineProvider = ({
             animateTargetId: input.planeId,
           }
         }),
-        'animate-to-sketch': fromPromise(
-          async ({ input: { selectionRanges } }) => {
-            const artifact = selectionRanges.graphSelections[0].artifact
-            const plane = getPlaneFromArtifact(
-              artifact,
-              kclManager.artifactGraph
-            )
-            if (err(plane)) return Promise.reject(plane)
-            // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plane
-            // but still works if the user selected a plane/face by defaulting to the first path
-            const mainPath =
-              artifact?.type === 'segment' || artifact?.type === 'solid2d'
-                ? artifact?.pathId
-                : plane?.pathIds[0]
-            let sketch: KclValue | null = null
-            let planeVar: Plane | null = null
-            for (const variable of Object.values(
-              kclManager.execState.variables
-            )) {
-              // find programMemory that matches path artifact
-              if (
-                variable?.type === 'Sketch' &&
-                variable.value.artifactId === mainPath
-              ) {
-                sketch = variable
-                break
-              }
-              if (
-                // if the variable is an sweep, check if the underlying sketch matches the artifact
-                variable?.type === 'Solid' &&
-                variable.value.sketch.on.type === 'plane' &&
-                variable.value.sketch.artifactId === mainPath
-              ) {
-                sketch = {
-                  type: 'Sketch',
-                  value: variable.value.sketch,
-                }
-                break
-              }
-              if (
-                variable?.type === 'Plane' &&
-                plane.id === variable.value.id
-              ) {
-                planeVar = variable.value
-              }
-            }
-            if (!sketch || sketch.type !== 'Sketch') {
-              if (artifact?.type !== 'plane')
-                return Promise.reject(new Error('No sketch'))
-              const planeCodeRef = getFaceCodeRef(artifact)
-              if (planeVar && planeCodeRef) {
-                const toTuple = (point: Point3d): [number, number, number] => [
-                  point.x,
-                  point.y,
-                  point.z,
-                ]
-                const planPath = getNodePathFromSourceRange(
-                  kclManager.ast,
-                  planeCodeRef.range
-                )
-                await letEngineAnimateAndSyncCamAfter(
-                  engineCommandManager,
-                  artifact.id
-                )
-                return {
-                  sketchEntryNodePath: [],
-                  planeNodePath: planPath,
-                  sketchNodePaths: [],
-                  zAxis: toTuple(planeVar.zAxis),
-                  yAxis: toTuple(planeVar.yAxis),
-                  origin: toTuple(planeVar.origin),
-                }
-              }
-              return Promise.reject(new Error('No sketch'))
-            }
-            const info = await sceneEntitiesManager.getSketchOrientationDetails(
-              sketch.value
-            )
-            await letEngineAnimateAndSyncCamAfter(
-              engineCommandManager,
-              info?.sketchDetails?.faceId || ''
-            )
-
-            const sketchArtifact = kclManager.artifactGraph.get(mainPath)
-            if (sketchArtifact?.type !== 'path')
-              return Promise.reject(new Error('No sketch artifact'))
-            const sketchPaths = getPathsFromArtifact({
-              artifact: kclManager.artifactGraph.get(plane.id),
-              sketchPathToNode: sketchArtifact?.codeRef?.pathToNode,
-              artifactGraph: kclManager.artifactGraph,
-              ast: kclManager.ast,
-            })
-            if (err(sketchPaths)) return Promise.reject(sketchPaths)
-            let codeRef = getFaceCodeRef(plane)
-            if (!codeRef) return Promise.reject(new Error('No plane codeRef'))
-            // codeRef.pathToNode is not always populated correctly
-            const planeNodePath = getNodePathFromSourceRange(
-              kclManager.ast,
-              codeRef.range
-            )
-            return {
-              sketchEntryNodePath: sketchArtifact.codeRef.pathToNode || [],
-              sketchNodePaths: sketchPaths,
-              planeNodePath,
-              zAxis: info.sketchDetails.zAxis || null,
-              yAxis: info.sketchDetails.yAxis || null,
-              origin: info.sketchDetails.origin.map(
-                (a) => a / sceneInfra._baseUnitMultiplier
-              ) as [number, number, number],
-              animateTargetId: info?.sketchDetails?.faceId || '',
-            }
-          }
-        ),
-
         'Get horizontal info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails } }) => {
             const { modifiedAst, pathToNodeMap, exprInsertIndex } =
@@ -1348,136 +1038,12 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
-        'Apply named value constraint': fromPromise(
-          async ({ input: { selectionRanges, sketchDetails, data } }) => {
-            if (!sketchDetails) {
-              return Promise.reject(new Error('No sketch details'))
-            }
-            if (!data) {
-              return Promise.reject(new Error('No data from command flow'))
-            }
-            let pResult = parse(recast(kclManager.ast))
-            if (trap(pResult) || !resultIsOk(pResult))
-              return Promise.reject(new Error('Unexpected compilation error'))
-            let parsed = pResult.program
-
-            let result: {
-              modifiedAst: Node<Program>
-              pathToReplaced: PathToNode | null
-              exprInsertIndex: number
-            } = {
-              modifiedAst: parsed,
-              pathToReplaced: null,
-              exprInsertIndex: -1,
-            }
-            // If the user provided a constant name,
-            // we need to insert the named constant
-            // and then replace the node with the constant's name.
-            if ('variableName' in data.namedValue) {
-              const astAfterReplacement = replaceValueAtNodePath({
-                ast: parsed,
-                pathToNode: data.currentValue.pathToNode,
-                newExpressionString: data.namedValue.variableName,
-              })
-              if (trap(astAfterReplacement)) {
-                return Promise.reject(astAfterReplacement)
-              }
-              const parseResultAfterInsertion = parse(
-                recast(
-                  insertNamedConstant({
-                    node: astAfterReplacement.modifiedAst,
-                    newExpression: data.namedValue,
-                  })
-                )
-              )
-              if (
-                trap(parseResultAfterInsertion) ||
-                !resultIsOk(parseResultAfterInsertion)
-              )
-                return Promise.reject(parseResultAfterInsertion)
-              result = {
-                modifiedAst: parseResultAfterInsertion.program,
-                pathToReplaced: astAfterReplacement.pathToReplaced,
-                exprInsertIndex: astAfterReplacement.exprInsertIndex,
-              }
-            } else if ('valueText' in data.namedValue) {
-              // If they didn't provide a constant name,
-              // just replace the node with the value.
-              const astAfterReplacement = replaceValueAtNodePath({
-                ast: parsed,
-                pathToNode: data.currentValue.pathToNode,
-                newExpressionString: data.namedValue.valueText,
-              })
-              if (trap(astAfterReplacement)) {
-                return Promise.reject(astAfterReplacement)
-              }
-              // The `replacer` function returns a pathToNode that assumes
-              // an identifier is also being inserted into the AST, creating an off-by-one error.
-              // This corrects that error, but TODO we should fix this upstream
-              // to avoid this kind of error in the future.
-              astAfterReplacement.pathToReplaced[1][0] =
-                (astAfterReplacement.pathToReplaced[1][0] as number) - 1
-              result = astAfterReplacement
-            }
-
-            pResult = parse(recast(result.modifiedAst))
-            if (trap(pResult) || !resultIsOk(pResult))
-              return Promise.reject(new Error('Unexpected compilation error'))
-            parsed = pResult.program
-
-            if (trap(parsed)) return Promise.reject(parsed)
-            if (!result.pathToReplaced)
-              return Promise.reject(new Error('No path to replaced node'))
-            const {
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
-            } = updateSketchDetailsNodePaths({
-              sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
-              sketchNodePaths: sketchDetails.sketchNodePaths,
-              planeNodePath: sketchDetails.planeNodePath,
-              exprInsertIndex: result.exprInsertIndex,
-            })
-
-            const updatedAst =
-              await sceneEntitiesManager.updateAstAndRejigSketch(
-                updatedSketchEntryNodePath,
-                updatedSketchNodePaths,
-                updatedPlaneNodePath,
-                parsed,
-                sketchDetails.zAxis,
-                sketchDetails.yAxis,
-                sketchDetails.origin
-              )
-            if (err(updatedAst)) return Promise.reject(updatedAst)
-
-            await codeManager.updateEditorWithAstAndWriteToFile(
-              updatedAst.newAst
-            )
-
-            const selection = updateSelections(
-              { 0: result.pathToReplaced },
-              selectionRanges,
-              updatedAst.newAst
-            )
-            if (err(selection)) return Promise.reject(selection)
-            return {
-              selectionType: 'completeSelection',
-              selection,
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
-            }
-          }
-        ),
         'set-up-draft-circle': fromPromise(
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
 
             const result = await sceneEntitiesManager.setupDraftCircle(
-              sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
               sketchDetails.planeNodePath,
               sketchDetails.zAxis,
@@ -1495,11 +1061,9 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
 
             const result =
               await sceneEntitiesManager.setupDraftCircleThreePoint(
-                sketchDetails.sketchEntryNodePath,
                 sketchDetails.sketchNodePaths,
                 sketchDetails.planeNodePath,
                 sketchDetails.zAxis,
@@ -1518,10 +1082,8 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
 
             const result = await sceneEntitiesManager.setupDraftRectangle(
-              sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
               sketchDetails.planeNodePath,
               sketchDetails.zAxis,
@@ -1539,9 +1101,7 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             const result = await sceneEntitiesManager.setupDraftCenterRectangle(
-              sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
               sketchDetails.planeNodePath,
               sketchDetails.zAxis,
@@ -1559,11 +1119,9 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             const result = await sceneEntitiesManager.setupDraftArcThreePoint(
               sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
-              sketchDetails.planeNodePath,
               sketchDetails.zAxis,
               sketchDetails.yAxis,
               sketchDetails.origin,
@@ -1579,11 +1137,9 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             const result = await sceneEntitiesManager.setupDraftArc(
               sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
-              sketchDetails.planeNodePath,
               sketchDetails.zAxis,
               sketchDetails.yAxis,
               sketchDetails.origin,
@@ -1593,41 +1149,6 @@ export const ModelingMachineProvider = ({
             await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
 
             return result
-          }
-        ),
-        'setup-client-side-sketch-segments': fromPromise(
-          async ({ input: { sketchDetails, selectionRanges } }) => {
-            if (!sketchDetails) return
-            if (!sketchDetails.sketchEntryNodePath?.length) return
-            if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
-              sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-            }
-            sceneInfra.resetMouseListeners()
-            await sceneEntitiesManager.setupSketch({
-              sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
-              sketchNodePaths: sketchDetails.sketchNodePaths,
-              forward: sketchDetails.zAxis,
-              up: sketchDetails.yAxis,
-              position: sketchDetails.origin,
-              maybeModdedAst: kclManager.ast,
-              selectionRanges,
-            })
-            sceneInfra.resetMouseListeners()
-
-            sceneEntitiesManager.setupSketchIdleCallbacks({
-              sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
-              forward: sketchDetails.zAxis,
-              up: sketchDetails.yAxis,
-              position: sketchDetails.origin,
-              sketchNodePaths: sketchDetails.sketchNodePaths,
-              planeNodePath: sketchDetails.planeNodePath,
-              // We will want to pass sketchTools here
-              // to add their interactions
-            })
-
-            // We will want to update the context with sketchTools.
-            // They'll be used for their .destroy() in tearDownSketch
-            return undefined
           }
         ),
         'split-sketch-pipe-if-needed': fromPromise(
@@ -1687,7 +1208,7 @@ export const ModelingMachineProvider = ({
                 if (
                   lastInPipe &&
                   Number(pathToProfile[1][0]) === indexToDelete &&
-                  lastInPipe.type === 'CallExpression' &&
+                  lastInPipe.type === 'CallExpressionKw' &&
                   lastInPipe.callee.type === 'Name' &&
                   lastInPipe.callee.name.name === 'arcTo'
                 ) {
@@ -1730,16 +1251,7 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
-        'submit-prompt-edit': fromPromise(async ({ input }) => {
-          return await promptToEditFlow({
-            code: codeManager.code,
-            prompt: input.prompt,
-            selections: input.selection,
-            token,
-            artifactGraph: kclManager.artifactGraph,
-            projectName: context.project.name,
-          })
-        }),
+        'submit-prompt-edit': fromPromise(async ({ input }) => {}),
       },
     }),
     {
@@ -1748,6 +1260,8 @@ export const ModelingMachineProvider = ({
         store: {
           ...modelingMachineDefaultContext.store,
           ...persistedContext,
+          cameraProjection,
+          useNewSketchMode,
         },
         machineManager,
       },
@@ -1759,8 +1273,8 @@ export const ModelingMachineProvider = ({
   const cb = (data: WebContentSendPayload) => {
     const openPanes = modelingActor.getSnapshot().context.store.openPanes
     if (data.menuLabel === 'View.Panes.Feature tree') {
-      const featureTree: SidebarType = 'feature-tree'
-      const alwaysAddFeatureTree: SidebarType[] = [
+      const featureTree: SidebarId = 'feature-tree'
+      const alwaysAddFeatureTree: SidebarId[] = [
         ...new Set([...openPanes, featureTree]),
       ]
       modelingSend({
@@ -1770,8 +1284,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.KCL code') {
-      const code: SidebarType = 'code'
-      const alwaysAddCode: SidebarType[] = [...new Set([...openPanes, code])]
+      const code: SidebarId = 'code'
+      const alwaysAddCode: SidebarId[] = [...new Set([...openPanes, code])]
       modelingSend({
         type: 'Set context',
         data: {
@@ -1779,8 +1293,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.Project files') {
-      const projectFiles: SidebarType = 'files'
-      const alwaysAddProjectFiles: SidebarType[] = [
+      const projectFiles: SidebarId = 'files'
+      const alwaysAddProjectFiles: SidebarId[] = [
         ...new Set([...openPanes, projectFiles]),
       ]
       modelingSend({
@@ -1790,8 +1304,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.Variables') {
-      const variables: SidebarType = 'variables'
-      const alwaysAddVariables: SidebarType[] = [
+      const variables: SidebarId = 'variables'
+      const alwaysAddVariables: SidebarId[] = [
         ...new Set([...openPanes, variables]),
       ]
       modelingSend({
@@ -1801,8 +1315,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.Logs') {
-      const logs: SidebarType = 'logs'
-      const alwaysAddLogs: SidebarType[] = [...new Set([...openPanes, logs])]
+      const logs: SidebarId = 'logs'
+      const alwaysAddLogs: SidebarId[] = [...new Set([...openPanes, logs])]
       modelingSend({
         type: 'Set context',
         data: {
@@ -1879,11 +1393,6 @@ export const ModelingMachineProvider = ({
         groupId: 'modeling',
       },
       {
-        menuLabel: 'Design.Create with Zoo Text-To-CAD',
-        commandName: 'Text-to-CAD',
-        groupId: 'modeling',
-      },
-      {
         menuLabel: 'Design.Modify with Zoo Text-To-CAD',
         commandName: 'Prompt-to-edit',
         groupId: 'modeling',
@@ -1903,18 +1412,6 @@ export const ModelingMachineProvider = ({
     }
   }, [modelingActor])
 
-  useEffect(() => {
-    kclManager.registerExecuteCallback(() => {
-      modelingSend({ type: 'Re-execute' })
-    })
-
-    // Before this component unmounts, call the 'Cancel'
-    // event to clean up any state in the modeling machine.
-    return () => {
-      modelingSend({ type: 'Cancel' })
-    }
-  }, [modelingSend])
-
   // Give the state back to the editorManager.
   useEffect(() => {
     editorManager.modelingSend = modelingSend
@@ -1933,6 +1430,7 @@ export const ModelingMachineProvider = ({
   // wrong
   useEffect(() => {
     sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [cameraOrbit.current])
 
   useEffect(() => {
@@ -1954,6 +1452,7 @@ export const ModelingMachineProvider = ({
         onConnectionStateChanged as EventListener
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager.engineConnection, modelingSend])
 
   useEffect(() => {
@@ -1979,28 +1478,58 @@ export const ModelingMachineProvider = ({
     if (inSketchMode) {
       sceneInfra.camControls.enableRotate = allowOrbitInSketchMode.current
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [allowOrbitInSketchMode.current])
 
   // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
   // `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
   const deleteKeys =
     platform() === 'macos' ? ['backspace', 'delete', 'del'] : ['delete', 'del']
+
   useHotkeys(deleteKeys, () => {
-    modelingSend({ type: 'Delete selection' })
+    // When the current selection is a segment, delete that directly ('Delete selection' doesn't support it)
+    const segmentNodePaths = Object.keys(modelingState.context.segmentOverlays)
+    const selections =
+      modelingState.context.selectionRanges.graphSelections.filter((sel) =>
+        segmentNodePaths.includes(JSON.stringify(sel.codeRef.pathToNode))
+      )
+    selections.forEach((selection) => {
+      modelingSend({
+        type: 'Delete segment',
+        data: selection.codeRef.pathToNode,
+      })
+    })
+    if (
+      modelingState.context.selectionRanges.graphSelections.length >
+      selections.length
+    ) {
+      // Not all selection were segments -> keep the default delete behavior
+      modelingSend({ type: 'Delete selection' })
+    }
   })
 
   // Allow ctrl+alt+c to center to selection
   useHotkeys(['mod + alt + c'], () => {
     modelingSend({ type: 'Center camera on selection' })
   })
+  useHotkeys(['mod + alt + x'], () => {
+    resetCameraPosition().catch(reportRejection)
+  })
 
-  useStateMachineCommands({
+  // Toggle Snap to grid
+  useHotkeyWrapper([SNAP_TO_GRID_HOTKEY], () => {
+    settingsActor.send({
+      type: 'set.modeling.snapToGrid',
+      data: { level: 'project', value: !snapToGrid.current },
+    })
+  })
+
+  useModelingMachineCommands({
     machineId: 'modeling',
     state: modelingState,
     send: modelingSend,
     actor: modelingActor,
     commandBarConfig: modelingMachineCommandConfig,
-    allCommandsRequireNetwork: true,
     // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
     // but we need to support "SketchCancel" and basically
     // make this function take the actor or state so it
@@ -2014,6 +1543,7 @@ export const ModelingMachineProvider = ({
         state: modelingState,
         context: modelingState.context,
         send: modelingSend,
+        theProject,
       }}
     >
       {/* TODO #818: maybe pass reff down to children/app.ts or render app.tsx directly?

@@ -44,6 +44,7 @@ export function useConvertToVariable(range?: SourceRange) {
       !!range || context.selectionRanges.graphSelections.length === 1
 
     setEnabled(canReplace && isOnlyOneSelection)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [context.selectionRanges])
 
   const handleClick = async (
@@ -52,6 +53,7 @@ export function useConvertToVariable(range?: SourceRange) {
     try {
       const { variableName } = await getVarNameModal({
         valueName: valueName || 'var',
+        selectionRanges: context.selectionRanges,
       })
 
       const { modifiedAst: _modifiedAst, pathToReplacedNode } =

@@ -2,18 +2,21 @@ import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import { default_app_settings } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
-import { TEST } from '@src/env'
+import { NIL as uuidNIL, v4 } from 'uuid'
 
 import {
   defaultAppSettings,
   defaultProjectSettings,
-  initPromise,
   parseAppSettings,
   parseProjectSettings,
   serializeConfiguration,
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
-import { mouseControlsToCameraSystem } from '@src/lib/cameraControls'
+import { initPromise } from '@src/lang/wasmUtils'
+import {
+  cameraSystemToMouseControl,
+  mouseControlsToCameraSystem,
+} from '@src/lib/cameraControls'
 import { BROWSER_PROJECT_NAME } from '@src/lib/constants'
 import {
   getInitialDefaultDir,
@@ -24,7 +27,10 @@ import {
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { Setting } from '@src/lib/settings/initialSettings'
-import { createSettings, settings } from '@src/lib/settings/initialSettings'
+import {
+  createSettings,
+  type settings,
+} from '@src/lib/settings/initialSettings'
 import type {
   SaveSettingsPayload,
   SettingsLevel,
@@ -68,9 +74,19 @@ export function configurationToSettingsPayload(
       mouseControls: mouseControlsToCameraSystem(
         configuration?.settings?.modeling?.mouse_controls
       ),
+      enableTouchControls:
+        configuration?.settings?.modeling?.enable_touch_controls,
+      enableCopilot: configuration?.settings?.modeling?.enable_copilot,
+      useNewSketchMode: configuration?.settings?.modeling?.use_new_sketch_mode,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
       showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
+      fixedSizeGrid: configuration?.settings?.modeling?.fixed_size_grid,
+      snapToGrid: configuration?.settings?.modeling?.snap_to_grid,
+      majorGridSpacing: configuration?.settings?.modeling?.major_grid_spacing,
+      minorGridsPerMajor:
+        configuration?.settings?.modeling?.minor_grids_per_major,
+      snapsPerMinor: configuration?.settings?.modeling?.snaps_per_minor,
     },
     textEditor: {
       textWrapping: configuration?.settings?.text_editor?.text_wrapping,
@@ -82,6 +98,58 @@ export function configurationToSettingsPayload(
     },
     commandBar: {
       includeSettings: configuration?.settings?.command_bar?.include_settings,
+    },
+  }
+}
+
+export function settingsPayloadToConfiguration(
+  configuration: DeepPartial<SaveSettingsPayload>
+): DeepPartial<Configuration> {
+  return {
+    settings: {
+      app: {
+        appearance: {
+          theme: configuration?.app?.theme,
+          color: configuration?.app?.themeColor
+            ? parseFloat(configuration.app.themeColor)
+            : undefined,
+        },
+        onboarding_status: configuration?.app?.onboardingStatus,
+        dismiss_web_banner: configuration?.app?.dismissWebBanner,
+        stream_idle_mode: configuration?.app?.streamIdleMode,
+        allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
+        show_debug_panel: configuration?.app?.showDebugPanel,
+      },
+      modeling: {
+        base_unit: configuration?.modeling?.defaultUnit,
+        camera_projection: configuration?.modeling?.cameraProjection,
+        camera_orbit: configuration?.modeling?.cameraOrbit,
+        mouse_controls: configuration?.modeling?.mouseControls
+          ? cameraSystemToMouseControl(configuration?.modeling?.mouseControls)
+          : undefined,
+        enable_touch_controls: configuration?.modeling?.enableTouchControls,
+        enable_copilot: configuration?.modeling?.enableCopilot,
+        use_new_sketch_mode: configuration?.modeling?.useNewSketchMode,
+        highlight_edges: configuration?.modeling?.highlightEdges,
+        enable_ssao: configuration?.modeling?.enableSSAO,
+        show_scale_grid: configuration?.modeling?.showScaleGrid,
+        fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
+        snap_to_grid: configuration?.modeling?.snapToGrid,
+        major_grid_spacing: configuration?.modeling?.majorGridSpacing,
+        minor_grids_per_major: configuration?.modeling?.minorGridsPerMajor,
+        snaps_per_minor: configuration?.modeling?.snapsPerMinor,
+      },
+      text_editor: {
+        text_wrapping: configuration?.textEditor?.textWrapping,
+        blinking_cursor: configuration?.textEditor?.blinkingCursor,
+      },
+      project: {
+        directory: configuration?.app?.projectDirectory,
+        default_project_name: configuration?.projects?.defaultProjectName,
+      },
+      command_bar: {
+        include_settings: configuration?.commandBar?.includeSettings,
+      },
     },
   }
 }
@@ -126,12 +194,14 @@ function deepPartialNamedViewsToNamedViews(
 export function projectConfigurationToSettingsPayload(
   configuration: DeepPartial<ProjectConfiguration>
 ): DeepPartial<SaveSettingsPayload> {
+  const color = configuration?.settings?.app?.appearance?.color
   return {
+    meta: {
+      id: configuration?.settings?.meta?.id,
+    },
     app: {
       // do not read in `theme`, because it is blocked on the project level
-      themeColor: configuration?.settings?.app?.appearance?.color
-        ? configuration?.settings?.app?.appearance?.color.toString()
-        : undefined,
+      themeColor: color !== undefined ? color.toString() : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
       allowOrbitInSketchMode:
@@ -139,19 +209,81 @@ export function projectConfigurationToSettingsPayload(
       namedViews: deepPartialNamedViewsToNamedViews(
         configuration?.settings?.app?.named_views
       ),
-      showDebugPanel: configuration?.settings?.app?.show_debug_panel,
+      showDebugPanel:
+        configuration?.settings?.app?.show_debug_panel ?? undefined,
     },
     modeling: {
-      defaultUnit: configuration?.settings?.modeling?.base_unit,
+      defaultUnit: configuration?.settings?.modeling?.base_unit ?? undefined,
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+      fixedSizeGrid: toUndefinedIfNull(
+        configuration?.settings?.modeling?.fixed_size_grid
+      ),
+      snapToGrid: toUndefinedIfNull(
+        configuration?.settings?.modeling?.snap_to_grid
+      ),
+      majorGridSpacing: toUndefinedIfNull(
+        configuration?.settings?.modeling?.major_grid_spacing
+      ),
+      minorGridsPerMajor: toUndefinedIfNull(
+        configuration?.settings?.modeling?.minor_grids_per_major
+      ),
+      snapsPerMinor: toUndefinedIfNull(
+        configuration?.settings?.modeling?.snaps_per_minor
+      ),
     },
     textEditor: {
-      textWrapping: configuration?.settings?.text_editor?.text_wrapping,
-      blinkingCursor: configuration?.settings?.text_editor?.blinking_cursor,
+      textWrapping:
+        configuration?.settings?.text_editor?.text_wrapping ?? undefined,
+      blinkingCursor:
+        configuration?.settings?.text_editor?.blinking_cursor ?? undefined,
     },
     commandBar: {
-      includeSettings: configuration?.settings?.command_bar?.include_settings,
+      includeSettings:
+        configuration?.settings?.command_bar?.include_settings ?? undefined,
+    },
+  }
+}
+
+export function settingsPayloadToProjectConfiguration(
+  configuration: DeepPartial<SaveSettingsPayload>
+): DeepPartial<ProjectConfiguration> {
+  return {
+    settings: {
+      meta: {
+        id: configuration?.meta?.id,
+      },
+      app: {
+        appearance: {
+          color: configuration?.app?.themeColor
+            ? parseFloat(configuration.app.themeColor)
+            : undefined,
+        },
+        onboarding_status: configuration?.app?.onboardingStatus,
+        dismiss_web_banner: configuration?.app?.dismissWebBanner,
+        allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
+        show_debug_panel: configuration?.app?.showDebugPanel,
+        named_views: deepPartialNamedViewsToNamedViews(
+          configuration?.app?.namedViews
+        ),
+      },
+      modeling: {
+        base_unit: configuration?.modeling?.defaultUnit,
+        highlight_edges: configuration?.modeling?.highlightEdges,
+        enable_ssao: configuration?.modeling?.enableSSAO,
+        fixed_size_grid: configuration?.modeling?.fixedSizeGrid,
+        snap_to_grid: configuration?.modeling?.snapToGrid,
+        major_grid_spacing: configuration?.modeling?.majorGridSpacing,
+        minor_grids_per_major: configuration?.modeling?.minorGridsPerMajor,
+        snaps_per_minor: configuration?.modeling?.snapsPerMinor,
+      },
+      text_editor: {
+        text_wrapping: configuration?.textEditor?.textWrapping,
+        blinking_cursor: configuration?.textEditor?.blinkingCursor,
+      },
+      command_bar: {
+        include_settings: configuration?.commandBar?.includeSettings,
+      },
     },
   }
 }
@@ -191,7 +323,7 @@ export function readLocalStorageAppSettingsFile():
   }
 }
 
-function readLocalStorageProjectSettingsFile():
+export function readLocalStorageProjectSettingsFile():
   | DeepPartial<ProjectConfiguration>
   | Error {
   // TODO: Remove backwards compatibility after a few releases.
@@ -204,6 +336,7 @@ function readLocalStorageProjectSettingsFile():
   const projectSettings = parseProjectSettings(stored)
   if (err(projectSettings)) {
     const settings = defaultProjectSettings()
+    if (err(settings)) return settings
     const tomlStr = serializeProjectConfiguration(settings)
     if (err(tomlStr)) return tomlStr
 
@@ -225,11 +358,9 @@ export async function loadAndValidateSettings(
   // Make sure we have wasm initialized.
   await initPromise
 
-  const onDesktop = isDesktop()
-
   // Load the app settings from the file system or localStorage.
-  const appSettingsPayload = onDesktop
-    ? await readAppSettingsFile()
+  const appSettingsPayload = window.electron
+    ? await readAppSettingsFile(window.electron)
     : readLocalStorageAppSettingsFile()
 
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
@@ -237,8 +368,10 @@ export async function loadAndValidateSettings(
   let settingsNext = createSettings()
 
   // Because getting the default directory is async, we need to set it after
-  if (onDesktop) {
-    settings.app.projectDirectory.default = await getInitialDefaultDir()
+  if (isDesktop() && window.electron) {
+    settingsNext.app.projectDirectory.default = await getInitialDefaultDir(
+      window.electron
+    )
   }
 
   settingsNext = setSettingsAtLevel(
@@ -249,12 +382,116 @@ export async function loadAndValidateSettings(
 
   // Load the project settings if they exist
   if (projectPath) {
-    const projectSettings = onDesktop
-      ? await readProjectSettingsFile(projectPath)
+    let projectSettings = window.electron
+      ? await readProjectSettingsFile(window.electron, projectPath)
       : readLocalStorageProjectSettingsFile()
+
+    // An id was missing. Create one and write it to disk immediately.
+    if (!err(projectSettings) && !projectSettings.settings?.meta?.id) {
+      projectSettings = {
+        settings: {
+          meta: {
+            id: v4(),
+          },
+        },
+      }
+      // Duplicated from settingsUtils.ts
+      const projectTomlString = serializeProjectConfiguration(projectSettings)
+      if (err(projectTomlString))
+        return Promise.reject(new Error('Failed to serialize project settings'))
+      if (window.electron) {
+        await writeProjectSettingsFile(
+          window.electron,
+          projectPath,
+          projectTomlString
+        )
+      } else {
+        localStorage.setItem(
+          localStorageProjectSettingsPath(),
+          projectTomlString
+        )
+      }
+    }
 
     if (err(projectSettings))
       return Promise.reject(new Error('Invalid project settings'))
+
+    // An id was missing. Create one and write it to disk immediately.
+    if (
+      !projectSettings.settings?.meta?.id ||
+      projectSettings.settings.meta.id === uuidNIL
+    ) {
+      const projectSettingsNew = {
+        meta: {
+          id: v4(),
+        },
+      }
+
+      // Duplicated from settingsUtils.ts
+      const projectTomlString = serializeProjectConfiguration(
+        settingsPayloadToProjectConfiguration(projectSettingsNew)
+      )
+      if (err(projectTomlString))
+        return Promise.reject(
+          new Error('Could not serialize project configuration')
+        )
+      if (isDesktop() && window.electron) {
+        await writeProjectSettingsFile(
+          window.electron,
+          projectPath,
+          projectTomlString
+        )
+      } else {
+        localStorage.setItem(
+          localStorageProjectSettingsPath(),
+          projectTomlString
+        )
+      }
+
+      projectSettings = {
+        settings: projectSettingsNew,
+      }
+    }
+
+    // An id was missing. Create one and write it to disk immediately.
+    if (
+      !projectSettings.settings?.meta?.id ||
+      projectSettings.settings.meta.id === uuidNIL
+    ) {
+      const projectSettingsParsed =
+        projectConfigurationToSettingsPayload(projectSettings)
+      const projectSettingsNew = {
+        ...projectSettingsParsed,
+        meta: {
+          id: v4(),
+        },
+      }
+
+      // Duplicated from settingsUtils.ts
+      const projectTomlString = serializeProjectConfiguration(
+        settingsPayloadToProjectConfiguration(projectSettingsNew)
+      )
+
+      if (err(projectTomlString))
+        return Promise.reject(
+          new Error('Could not serialize project configuration')
+        )
+      if (window.electron) {
+        await writeProjectSettingsFile(
+          window.electron,
+          projectPath,
+          projectTomlString
+        )
+      } else {
+        localStorage.setItem(
+          localStorageProjectSettingsPath(),
+          projectTomlString
+        )
+      }
+
+      projectSettings =
+        settingsPayloadToProjectConfiguration(projectSettingsNew)
+    }
 
     const projectSettingsPayload = projectSettings
     settingsNext = setSettingsAtLevel(
@@ -277,16 +514,17 @@ export async function saveSettings(
 ) {
   // Make sure we have wasm initialized.
   await initPromise
-  const onDesktop = isDesktop()
 
   // Get the user settings.
   const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
-  const appTomlString = serializeConfiguration({ settings: jsAppSettings })
+  const appTomlString = serializeConfiguration(
+    settingsPayloadToConfiguration(jsAppSettings)
+  )
   if (err(appTomlString)) return
 
   // Write the app settings.
-  if (onDesktop) {
-    await writeAppSettingsFile(appTomlString)
+  if (window.electron) {
+    await writeAppSettingsFile(window.electron, appTomlString)
   } else {
     localStorage.setItem(localStorageAppSettingsPath(), appTomlString)
   }
@@ -298,14 +536,18 @@ export async function saveSettings(
 
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
-  const projectTomlString = serializeProjectConfiguration({
-    settings: jsProjectSettings,
-  })
+  const projectTomlString = serializeProjectConfiguration(
+    settingsPayloadToProjectConfiguration(jsProjectSettings)
+  )
   if (err(projectTomlString)) return
 
   // Write the project settings.
-  if (onDesktop) {
-    await writeProjectSettingsFile(projectPath, projectTomlString)
+  if (window.electron) {
+    await writeProjectSettingsFile(
+      window.electron,
+      projectPath,
+      projectTomlString
+    )
   } else {
     localStorage.setItem(localStorageProjectSettingsPath(), projectTomlString)
   }
@@ -370,7 +612,7 @@ export function clearSettingsAtLevel(
   allSettings: typeof settings,
   level: SettingsLevel
 ) {
-  Object.entries(allSettings).forEach(([category, settingsCategory]) => {
+  Object.entries(allSettings).forEach(([_category, settingsCategory]) => {
     Object.entries(settingsCategory).forEach(
       ([_, settingValue]: [string, Setting]) => {
         settingValue[level] = undefined
@@ -433,9 +675,11 @@ export function shouldShowSettingInput(
   return (
     !shouldHideSetting(setting, settingsLevel) &&
     (setting.Component ||
-      ['string', 'boolean'].some((t) => typeof setting.default === t) ||
+      ['string', 'boolean', 'number'].some(
+        (t) => typeof setting.default === t
+      ) ||
       (setting.commandConfig?.inputType &&
-        ['string', 'options', 'boolean'].some(
+        ['string', 'options', 'boolean', 'number'].some(
           (t) => setting.commandConfig?.inputType === t
         )))
   )
@@ -449,19 +693,22 @@ export function shouldShowSettingInput(
 export function getSettingInputType(setting: Setting) {
   if (setting.Component) return 'component'
   if (setting.commandConfig)
-    return setting.commandConfig.inputType as 'string' | 'options' | 'boolean'
-  return typeof setting.default as 'string' | 'boolean'
+    return setting.commandConfig.inputType as
+      | 'string'
+      | 'options'
+      | 'boolean'
+      | 'number'
+  return typeof setting.default as 'string' | 'boolean' | 'number'
 }
 
-export const jsAppSettings = async () => {
+export const jsAppSettings = async (): Promise<DeepPartial<Configuration>> => {
   let jsAppSettings = default_app_settings()
-  if (!TEST) {
-    const settings = await import('@src/machines/appMachine').then((module) =>
-      module.getSettings()
-    )
-    if (settings) {
-      jsAppSettings = getAllCurrentSettings(settings)
-    }
+  // TODO: https://github.com/KittyCAD/modeling-app/issues/6445
+  const settings = await import('@src/lib/singletons').then((module) =>
+    module.getSettings()
+  )
+  if (settings) {
+    jsAppSettings = getAllCurrentSettings(settings)
   }
-  return jsAppSettings
+  return settingsPayloadToConfiguration(jsAppSettings)
 }

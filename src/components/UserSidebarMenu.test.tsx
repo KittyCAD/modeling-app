@@ -1,4 +1,4 @@
-import type { Models } from '@kittycad/lib'
+import type { User } from '@kittycad/lib'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import {
   Route,
@@ -9,8 +9,6 @@ import {
 
 import UserSidebarMenu from '@src/components/UserSidebarMenu'
 
-type User = Models['User_type']
-
 describe('UserSidebarMenu tests', () => {
   test("Renders user's name and email if available", async () => {
     const userWellFormed: User = {
@@ -18,6 +16,7 @@ describe('UserSidebarMenu tests', () => {
       name: 'Test User',
       email: 'kittycad.sidebar.test@example.com',
       image: 'https://placekitten.com/200/200',
+      is_onboarded: false,
       created_at: 'yesteryear',
       updated_at: 'today',
       company: 'Test Company',
@@ -28,6 +27,7 @@ describe('UserSidebarMenu tests', () => {
       last_name: 'User',
       can_train_on_data: false,
       is_service_account: false,
+      deletion_scheduled: false,
     }
 
     render(
@@ -45,7 +45,7 @@ describe('UserSidebarMenu tests', () => {
     })
     await waitFor(() => {
       expect(screen.getByTestId('email')).toHaveTextContent(
-        userWellFormed.email
+        userWellFormed.email ?? ''
       )
     })
   })
@@ -56,6 +56,7 @@ describe('UserSidebarMenu tests', () => {
       email: 'kittycad.sidebar.test@example.com',
       image: 'https://placekitten.com/200/200',
       created_at: 'yesteryear',
+      is_onboarded: false,
       updated_at: 'today',
       company: 'Test Company',
       discord: 'Test User#1234',
@@ -66,6 +67,7 @@ describe('UserSidebarMenu tests', () => {
       name: '',
       can_train_on_data: false,
       is_service_account: false,
+      deletion_scheduled: false,
     }
 
     render(
@@ -77,7 +79,9 @@ describe('UserSidebarMenu tests', () => {
     fireEvent.click(screen.getByTestId('user-sidebar-toggle'))
 
     await waitFor(() => {
-      expect(screen.getByTestId('username')).toHaveTextContent(userNoName.email)
+      expect(screen.getByTestId('username')).toHaveTextContent(
+        userNoName.email ?? ''
+      )
     })
   })
 
@@ -88,6 +92,7 @@ describe('UserSidebarMenu tests', () => {
       email: 'kittycad.sidebar.test@example.com',
       created_at: 'yesteryear',
       updated_at: 'today',
+      is_onboarded: false,
       company: 'Test Company',
       discord: 'Test User#1234',
       github: 'testuser',
@@ -97,6 +102,7 @@ describe('UserSidebarMenu tests', () => {
       image: '',
       can_train_on_data: false,
       is_service_account: false,
+      deletion_scheduled: false,
     }
 
     render(
@@ -116,8 +122,7 @@ describe('UserSidebarMenu tests', () => {
 function TestWrap({ children }: { children: React.ReactNode }) {
   // wrap in router and xState context
   // We have to use a memory router in the testing environment,
-  // and we have to use the createMemoryRouter function instead of <MemoryRouter /> as of react-router v6.4:
-  // https://reactrouter.com/en/6.16.0/routers/picking-a-router#using-v64-data-apis
+  // and we have to use the createMemoryRouter function instead of <MemoryRouter /> as of react-router v6.4
   const router = createMemoryRouter(
     createRoutesFromElements(
       <Route path="/file/:id" element={<>{children}</>} />

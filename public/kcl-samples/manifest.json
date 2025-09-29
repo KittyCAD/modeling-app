@@ -1,282 +1,1268 @@
 [
   {
     "file": "main.kcl",
-    "pathFromProjectDirectoryToFirstFile": "80-20-rail/main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "angle-gauge/main.kcl",
     "multipleFiles": false,
-    "title": "80/20 Rail",
-    "description": "An 80/20 extruded aluminum linear rail. T-slot profile adjustable by profile height, rail length, and origin position"
+    "title": "Angle Gauge",
+    "description": "Simple angle gauge function to generate a gauge given an angle",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "axial-fan/main.kcl",
+    "multipleFiles": true,
+    "title": "PC Fan",
+    "description": "A small axial fan, used to push or draw airflow over components to remove excess heat",
+    "files": [
+      "fan-housing.kcl",
+      "fan.kcl",
+      "main.kcl",
+      "motor.kcl",
+      "parameters.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "ball-bearing/main.kcl",
     "multipleFiles": false,
     "title": "Ball Bearing",
-    "description": "A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads."
+    "description": "A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "battery-module-cooling-plate/main.kcl",
+    "multipleFiles": false,
+    "title": "Battery Module Cooling Plates",
+    "description": "A battery module cooling plate is a thermal management component used in battery packs—particularly in electric vehicles (EVs), energy storage systems, and other high-power applications—to regulate the temperature of individual battery cells or entire modules.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "bench/main.kcl",
     "multipleFiles": true,
     "title": "Bench",
-    "description": "This is a slight remix of Depep1's original 3D Boaty (https://www.printables.com/model/1141963-3d-boaty). This is a tool used for benchmarking 3D FDM printers for bed adhesion, overhangs, bridging and top surface quality. The name of this file is a bit of misnomer, the shape of the object is a typical park bench."
+    "description": "This is a slight remix of Depep1's original 3D Boaty (https://www.printables.com/model/1141963-3d-boaty). This is a tool used for benchmarking 3D FDM printers for bed adhesion, overhangs, bridging and top surface quality. The name of this file is a bit of misnomer, the shape of the object is a typical park bench.",
+    "files": [
+      "bench-parts.kcl",
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "bench-for-kids/main.kcl",
+    "multipleFiles": false,
+    "title": "Bench for kids.",
+    "description": "Shaped like a friendly animal and sturdy enough for climbing.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "bone-plate/main.kcl",
+    "multipleFiles": false,
+    "title": "Bone Plate",
+    "description": "A bone plate is a medical device used in orthopedics to stabilize and fix bone fractures during the healing process. They are typically made of stainless steel or titanium and are secured to the bone with screws. Bone plates come in various types, including locking, compression, and bridge plates, each with specific applications",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "bottle/main.kcl",
+    "multipleFiles": false,
+    "title": "Bottle",
+    "description": "A simple bottle with a hollow, watertight interior",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "box/main.kcl",
+    "multipleFiles": false,
+    "title": "Box",
+    "description": "A box is a rectangular prism defined by it's length, width, and height.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "bracket/main.kcl",
     "multipleFiles": false,
     "title": "Shelf Bracket",
-    "description": "This is a bracket that holds a shelf. It is made of aluminum and is designed to hold a force of 300 lbs. The bracket is 6 inches wide and the force is applied at the end of the shelf, 12 inches from the wall. The bracket has a factor of safety of 1.2. The legs of the bracket are 5 inches and 2 inches long. The thickness of the bracket is calculated from the constraints provided."
+    "description": "This is a bracket that holds a shelf. It is made of aluminum and is designed to hold a force of 300 lbs. The bracket is 6 inches wide and the force is applied at the end of the shelf, 12 inches from the wall. The bracket has a factor of safety of 1.2. The legs of the bracket are 5 inches and 2 inches long. The thickness of the bracket is calculated from the constraints provided.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "brake-rotor/main.kcl",
+    "multipleFiles": false,
+    "title": "Brake Rotor",
+    "description": "A 320mm vented brake disc (rotor), with straight vanes, 30mm thick. The disc bell should accommodate 5 M12 wheel studs on a 114.3mm pitch circle diameter.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "c-shape-solid/main.kcl",
+    "multipleFiles": false,
+    "title": "C-Shape Solid (Abstract Geometry Demo)",
+    "description": "This is a simplified geometry study that demonstrates how to create a \"C\" shape by subtracting a rectangular wedge from a circular ring. This base logic is foundational to models like split washers and other circular parts with a gap.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "car-wheel-assembly/main.kcl",
     "multipleFiles": true,
     "title": "Car Wheel Assembly",
-    "description": "A car wheel assembly with a rotor, tire, and lug nuts."
+    "description": "A car wheel assembly with a rotor, tire, and lug nuts.",
+    "files": [
+      "brake-caliper.kcl",
+      "car-rotor.kcl",
+      "car-tire.kcl",
+      "car-wheel.kcl",
+      "lug-nut.kcl",
+      "main.kcl",
+      "parameters.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "clock/main.kcl",
+    "multipleFiles": false,
+    "title": "Clock",
+    "description": "A clock with roman numerals",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "coilover-assembly/main.kcl",
+    "multipleFiles": true,
+    "title": "Coilover Assembly",
+    "description": "Consist of a lower and upper body combination with eye-end mounts at the top and bottom. 200 mm-long helical spring (44 mm OD, and wire diameter of 6 mm) captured between upper and lower seats; Internal piston rod running through the spring. Integrated bump-stop beneath the upper seat to limit compression stroke. The assembly provides adjustable ride height and damping when installed between chassis and wheel hub.",
+    "files": [
+      "coilover-bottom.kcl",
+      "coilover-top.kcl",
+      "main.kcl",
+      "parameters.kcl",
+      "spring.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "cold-plate/main.kcl",
+    "multipleFiles": false,
+    "title": "Cold Plate",
+    "description": "A cold plate is a thermal management device used to remove heat from a device or component, typically by transferring heat to a liquid coolant that flows through the plate. It's a conductive cooling solution, commonly made of materials like aluminum or copper, with internal channels or tubes for the coolant",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "color-cube/main.kcl",
     "multipleFiles": false,
     "title": "Color Cube",
-    "description": "This is a color cube centered about the origin. It is used to help determine orientation in the scene."
+    "description": "This is a color cube centered about the origin. It is used to help determine orientation in the scene.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "cone/main.kcl",
+    "multipleFiles": false,
+    "title": "Cone",
+    "description": "A cone is defined by it's diameter and height.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "counterdrilled-weldment/main.kcl",
+    "multipleFiles": false,
+    "title": "Counterdrilled Weldment",
+    "description": "A metal weldment consisting of a counterdrilled plate, a centrally mounted housing tube, and four structural support fins.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "countersunk-plate/main.kcl",
+    "multipleFiles": false,
+    "title": "Plate with countersunk holes",
+    "description": "A small mounting plate with a countersunk hole at each end",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "cpu-cooler/main.kcl",
+    "multipleFiles": true,
+    "title": "CPU Cooler",
+    "description": "A CPU cooler is a device designed to dissipate heat generated by the CPU of a computer. They consist of a brazed heat sink made from aluminum or copper alloys, and one or two axial fans to move airflow across the heat sink.",
+    "files": [
+      "fan-housing.kcl",
+      "fan.kcl",
+      "heat-sink.kcl",
+      "main.kcl",
+      "motor.kcl",
+      "mounting-wire.kcl",
+      "parameters.kcl",
+      "removable-sticker.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "curtain-wall-anchor-plate/main.kcl",
+    "multipleFiles": false,
+    "title": "Curtain Wall Anchor Plate",
+    "description": "A structural steel L-plate used to anchor curtain wall systems to concrete slabs, with elongated holes for adjustability and bolts with nuts and base plates for secure fastening",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "cycloidal-gear/main.kcl",
     "multipleFiles": false,
     "title": "Cycloidal Gear",
-    "description": "A cycloidal gear is a gear with a continuous, curved tooth profile. They are used in watchmaking and high precision robotics actuation"
+    "description": "A cycloidal gear is a gear with a continuous, curved tooth profile. They are used in watchmaking and high precision robotics actuation",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "cylinder/main.kcl",
+    "multipleFiles": false,
+    "title": "Cylinder",
+    "description": "A cylinder is a primitive shape defined by its diameter and length",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "desk-edge-stopper/main.kcl",
+    "multipleFiles": false,
+    "title": "Desk-Edge Stopper",
+    "description": "3-D–printable U-shaped guard that slides onto a desk edge and raises a vertical wall to keep pens, phones, cables, etc. from slipping off the tabletop.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "dining-table/main.kcl",
+    "multipleFiles": false,
+    "title": "Dining Table",
+    "description": "Simple dining table with rectangular tabletop, aprons and four legs with square section",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "dodecahedron/main.kcl",
     "multipleFiles": false,
-    "title": "Hollow Dodecahedron",
-    "description": "A regular dodecahedron or pentagonal dodecahedron is a dodecahedron composed of regular pentagonal faces, three meeting at each vertex. This example shows constructing the individual faces of the dodecahedron and extruding inwards."
-  },
-  {
-    "file": "main.kcl",
-    "pathFromProjectDirectoryToFirstFile": "dual-basin-utility-sink/main.kcl",
-    "multipleFiles": false,
-    "title": "Dual-Basin Utility Sink",
-    "description": "A stainless steel sink unit with dual rectangular basins and six under-counter storage compartments."
+    "title": "Dodecahedron",
+    "description": "A regular dodecahedron or pentagonal dodecahedron is a dodecahedron composed of regular pentagonal faces, three meeting at each vertex. This example shows constructing the a dodecahedron with a series of intersects.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "enclosure/main.kcl",
     "multipleFiles": false,
     "title": "Enclosure",
-    "description": "An enclosure body and sealing lid for storing items"
+    "description": "An enclosure body and sealing lid for storing items",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "end-effector-gripper-fingers/main.kcl",
+    "multipleFiles": false,
+    "title": "End Effector Grippers",
+    "description": "End effector grippers are devices attached to a robot's arm that allow it to interact with its environment and perform tasks like picking up, moving, and manipulating objects. They are essential for robots to perform useful work. Grippers are one type of end effector, but end effectors can also be tools like welding torches or cameras",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "engine-valve/main.kcl",
+    "multipleFiles": false,
+    "title": "Engine Valve",
+    "description": "A mechanical valve used in internal combustion engines to control intake or exhaust flow",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "exhaust-manifold/main.kcl",
     "multipleFiles": false,
     "title": "Exhaust Manifold",
-    "description": "A welded exhaust header for an inline 4-cylinder engine"
+    "description": "A welded exhaust header for an inline 4-cylinder engine",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "flange/main.kcl",
     "multipleFiles": false,
     "title": "Flange",
-    "description": "A flange is a flat rim, collar, or rib, typically forged or cast, that is used to strengthen an object, guide it, or attach it to another object. Flanges are known for their use in various applications, including piping, plumbing, and mechanical engineering, among others."
+    "description": "A flange is a flat rim, collar, or rib, typically forged or cast, that is used to strengthen an object, guide it, or attach it to another object. Flanges are known for their use in various applications, including piping, plumbing, and mechanical engineering, among others.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "flat-bladed-impeller/main.kcl",
+    "multipleFiles": false,
+    "title": "Impeller (Flat-bladed)",
+    "description": "A parametric impeller with straight, flat blades used in centrifugal fans or pumps. Moves air or fluid radially outward from the center. Useful for mechanical design and prototyping.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "focusrite-scarlett-mounting-bracket/main.kcl",
     "multipleFiles": false,
     "title": "A mounting bracket for the Focusrite Scarlett Solo audio interface",
-    "description": "This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material"
+    "description": "This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "food-service-spatula/main.kcl",
     "multipleFiles": false,
     "title": "Food Service Spatula",
-    "description": "Use these spatulas for mixing, flipping, and scraping."
+    "description": "Use these spatulas for mixing, flipping, and scraping.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "french-press/main.kcl",
     "multipleFiles": false,
     "title": "French Press",
-    "description": "A french press immersion coffee maker"
+    "description": "A french press immersion coffee maker",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
-    "pathFromProjectDirectoryToFirstFile": "gear/main.kcl",
-    "multipleFiles": false,
-    "title": "Spur Gear",
-    "description": "A rotating machine part having cut teeth or, in the case of a cogwheel, inserted teeth (called cogs), which mesh with another toothed part to transmit torque. Geared devices can change the speed, torque, and direction of a power source. The two elements that define a gear are its circular shape and the teeth that are integrated into its outer edge, which are designed to fit into the teeth of another gear."
+    "pathFromProjectDirectoryToFirstFile": "gallows-bracket/main.kcl",
+    "multipleFiles": true,
+    "title": "Gallows Bracket",
+    "description": "A gallows bracket is a metal bracket that is used to support a chimney breast after it has been removed. The bracket is typically made of steel or cast iron, and it is attached to the remaining chimney stack. The bracket provides support for the chimney breast, preventing it from collapsing.",
+    "files": [
+      "lib.kcl",
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "gear-rack/main.kcl",
     "multipleFiles": false,
     "title": "100mm Gear Rack",
-    "description": "A flat bar or rail that is engraved with teeth along its length. These teeth are designed to mesh with the teeth of a gear, known as a pinion. When the pinion, a small cylindrical gear, rotates, its teeth engage with the teeth on the rack, causing the rack to move linearly. Conversely, linear motion applied to the rack will cause the pinion to rotate."
+    "description": "A flat bar or rail that is engraved with teeth along its length. These teeth are designed to mesh with the teeth of a gear, known as a pinion. When the pinion, a small cylindrical gear, rotates, its teeth engage with the teeth on the rack, causing the rack to move linearly. Conversely, linear motion applied to the rack will cause the pinion to rotate.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "gingerbread-man/main.kcl",
+    "multipleFiles": false,
+    "title": "Gingerbread Man",
+    "description": "A gingerbread man is a classic holiday cookie shaped like a stylized human figure. Typically made from gingerbread dough - a sweet, spiced mixture containing ginger, cinnamon, nutmeg, cloves, molasses, and brown sugar - these charming cookies are flat with a distinctive form featuring a round head, torso, arms, and legs. The traditional gingerbread man is decorated with icing to create facial features (eyes, mouth, sometimes a nose) and details like buttons down the front, cuffs at the wrists and ankles, and sometimes a bow tie. Candies like raisins, chocolate chips, or colorful gumdrops might be used for embellishments.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "gingerbread-man-cookie-cutter/main.kcl",
+    "multipleFiles": false,
+    "title": "Gingerbread Man Cookie Cutter",
+    "description": "A gingerbread man cookie cutter is a charming kitchen tool designed in the iconic silhouette of a little person. Typically crafted from metal (often tin or stainless steel) or durable plastic, this cookie cutter features the distinctive outline of a stylized human figure with a round head, a simple torso, and extended arms and legs. The cutter's edges are sharp enough to cleanly slice through cookie dough but blunt enough to be handled safely.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "golf-tee/main.kcl",
+    "multipleFiles": false,
+    "title": "Golf Tee",
+    "description": "A parametric model of a golf tee with realistic proportions, including a pointed tip, cylindrical shaft, and flared cup to hold the ball. Designed for prototyping, printing, or sports equipment simulations.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "gridfinity-baseplate/main.kcl",
     "multipleFiles": false,
     "title": "Gridfinity Baseplate",
-    "description": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion"
+    "description": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "gridfinity-baseplate-magnets/main.kcl",
     "multipleFiles": false,
     "title": "Gridfinity Baseplate With Magnets",
-    "description": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion. This baseplate version includes holes for magnet placement"
+    "description": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion. This baseplate version includes holes for magnet placement",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "gridfinity-bins/main.kcl",
     "multipleFiles": false,
     "title": "Gridfinity Bins",
-    "description": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion"
+    "description": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "gridfinity-bins-stacking-lip/main.kcl",
     "multipleFiles": false,
     "title": "Gridfinity Bins With A Stacking Lip",
-    "description": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion. This Gridfinity bins version includes a lip to allowable stacking Gridfinity bins"
+    "description": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion. This Gridfinity bins version includes a lip to allowable stacking Gridfinity bins",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "hammer/main.kcl",
+    "multipleFiles": false,
+    "title": "Claw Hammer",
+    "description": "Often used in construction, a claw hammer is a levered metal hand tool that is used to strike and extract nails",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "helical-gear/main.kcl",
+    "multipleFiles": false,
+    "title": "Helical Gear",
+    "description": "A helical gear is a type of cylindrical gear where the teeth are slanted at an angle relative to the axis of rotation. This greatly reduces noise and wear when transmitting torque across meshed spinning gears",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "helical-planetary-gearset/main.kcl",
+    "multipleFiles": false,
+    "title": "Helical Planetary Gearset",
+    "description": "A helical planetary gearset is a type of planetary gear system where the teeth of the sun gear, planet gears, and/or ring gear are helical rather than straight. This design allows for smoother, quieter operation, greater load-carrying capacity, and more flexible shaft alignment.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "helium-tank/main.kcl",
+    "multipleFiles": false,
+    "title": "Helium Tank",
+    "description": "A helium tank is a portable pressure vessel used to store and dispense helium gas for a variety of commercial and entertainment purposes",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "herringbone-gear/main.kcl",
+    "multipleFiles": false,
+    "title": "Herringbone Gear",
+    "description": "A herringbone, or double-helical gear, is a cylindrical gear type with angled teeth in opposing directions. This allows the quietness and smoothness of a helical gear, without applying a directional load while turning",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "herringbone-planetary-gearset/main.kcl",
+    "multipleFiles": false,
+    "title": "Herringbone Planetary Gearset",
+    "description": "A herringbone planetary gearset is a type of planetary gear system where the teeth of the sun gear, planet gears, and/or ring gear are herringbone rather than straight. This design allows for smoother, quieter operation, greater load-carrying capacity, and more flexible shaft alignment.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "hex-nut/main.kcl",
     "multipleFiles": false,
     "title": "Hex Nut",
-    "description": "A hex nut is a type of fastener with a threaded hole and a hexagonal outer shape, used in a wide variety of applications to secure parts together. The hexagonal shape allows for a greater torque to be applied with wrenches or tools, making it one of the most common nut types in hardware."
+    "description": "A hex nut is a type of fastener with a threaded hole and a hexagonal outer shape, used in a wide variety of applications to secure parts together. The hexagonal shape allows for a greater torque to be applied with wrenches or tools, making it one of the most common nut types in hardware.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "holder-rod-angle/main.kcl",
+    "multipleFiles": false,
+    "title": "Holder for (shower) rod at a ~45° angle",
+    "description": "This is used to mount a rod to a 45° angled ceiling",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "i-beam/main.kcl",
     "multipleFiles": false,
     "title": "I-beam",
-    "description": "A structural metal beam with an I shaped cross section. Often used in construction and architecture"
+    "description": "A structural metal beam with an I shaped cross section. Often used in construction and architecture",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "keyboard/main.kcl",
     "multipleFiles": false,
     "title": "Zoo Keyboard",
-    "description": "A custom keyboard with Zoo brand lettering"
+    "description": "A custom keyboard with Zoo brand lettering",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "kitt/main.kcl",
     "multipleFiles": false,
     "title": "Kitt",
-    "description": "The beloved KittyCAD mascot in a voxelized style."
+    "description": "The beloved KittyCAD mascot in a voxelized style.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "lego/main.kcl",
     "multipleFiles": false,
     "title": "Lego Brick",
-    "description": "A standard Lego brick. This is a small, plastic construction block toy that can be interlocked with other blocks to build various structures, models, and figures. There are a lot of hacks used in this code."
+    "description": "A standard Lego brick. This is a small, plastic construction block toy that can be interlocked with other blocks to build various structures, models, and figures. There are a lot of hacks used in this code.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "linear-shelf-system/main.kcl",
+    "multipleFiles": false,
+    "title": "Linear Shelf System",
+    "description": "A parametric, horizontally stackable shelf system for furniture layout and prototyping.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "makeup-mirror/main.kcl",
     "multipleFiles": false,
     "title": "Makeup Mirror",
-    "description": "A circular vanity mirror mounted on a swiveling arm with pivot joints, used for personal grooming."
+    "description": "A circular vanity mirror mounted on a swiveling arm with pivot joints, used for personal grooming.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "manhole-cover/main.kcl",
+    "multipleFiles": false,
+    "title": "Vented Manhole Cover",
+    "description": "Made of cast iron, these covers are strong enough to handle high-volume foot and vehicle traffic. Use them to cover manholes on roads, parking lots, or walkways. ADA Compliant—Covers that are ADA Compliant prevent narrow wheels from getting stuck since they have 1/2\" wide slots.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "marine-ladder/main.kcl",
+    "multipleFiles": false,
+    "title": "Marine Ladder",
+    "description": "A parametric vertical or steep-access ladder commonly used on ships, in engine rooms, or in industrial environments. It features two bent side rails and evenly spaced cylindrical rungs for compact, reinforced access.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "modular-shelf-grid/main.kcl",
+    "multipleFiles": false,
+    "title": "Modular Shelf Grid",
+    "description": "A parametric, grid-based shelving system for layout prototyping and modular storage design.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "mounting-plate/main.kcl",
     "multipleFiles": false,
     "title": "Mounting Plate",
-    "description": "A flat piece of material, often metal or plastic, that serves as a support or base for attaching, securing, or mounting various types of equipment, devices, or components."
+    "description": "A flat piece of material, often metal or plastic, that serves as a support or base for attaching, securing, or mounting various types of equipment, devices, or components.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "mug/main.kcl",
+    "multipleFiles": false,
+    "title": "Mug",
+    "description": "A cup with straight sides and a handle, typically used for hot drinks",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "multi-axis-robot/main.kcl",
     "multipleFiles": true,
     "title": "Robot Arm",
-    "description": "A 4 axis robotic arm for industrial use. These machines can be used for assembly, packaging, organization of goods, and quality inspection processes"
+    "description": "A 4 axis robotic arm for industrial use. These machines can be used for assembly, packaging, organization of goods, and quality inspection processes",
+    "files": [
+      "globals.kcl",
+      "main.kcl",
+      "robot-arm-base.kcl",
+      "robot-arm-j2.kcl",
+      "robot-arm-j3.kcl",
+      "robot-rotating-base.kcl"
+    ]
   },
   {
     "file": "main.kcl",
-    "pathFromProjectDirectoryToFirstFile": "parametric-bearing-pillow-block/main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "parametric-shelf-unit/main.kcl",
     "multipleFiles": false,
-    "title": "Parametric Bearing Pillow Block",
-    "description": "A bearing pillow block, also known as a plummer block or pillow block bearing, is a pedestal used to provide support for a rotating shaft with the help of compatible bearings and various accessories. Housing a bearing, the pillow block provides a secure and stable foundation that allows the shaft to rotate smoothly within its machinery setup. These components are essential in a wide range of mechanical systems and machinery, playing a key role in reducing friction and supporting radial and axial loads."
+    "title": "Parametric Shelf Unit",
+    "description": "A modular and adjustable 3D shelf model designed for basic furniture design.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "pdu-faceplate/main.kcl",
+    "multipleFiles": false,
+    "title": "Power Distribution Unit (PDU) faceplate with European plug sockets and switch",
+    "description": "Designed for standard 19-inch rack systems with 1U height and 8 sockets",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "pergola/main.kcl",
+    "multipleFiles": false,
+    "title": "Stylized Pergola",
+    "description": "A parametric modern pergola with vertical posts, surrounding beams, and evenly spaced roof slats. Designed for garden, patio, or backyard use. Ideal for architectural visualization and parametric prototyping.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "pillow-block-bearing/main.kcl",
+    "multipleFiles": true,
+    "title": "Pillow Block Bearing",
+    "description": "A bearing pillow block, also known as a plummer block or pillow block bearing, is a pedestal used to provide support for a rotating shaft with the help of compatible bearings and various accessories. Housing a bearing, the pillow block provides a secure and stable foundation that allows the shaft to rotate smoothly within its machinery setup. These components are essential in a wide range of mechanical systems and machinery, playing a key role in reducing friction and supporting radial and axial loads.",
+    "files": [
+      "ball-bearing.kcl",
+      "block.kcl",
+      "main.kcl",
+      "parameters.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "pipe/main.kcl",
     "multipleFiles": false,
     "title": "Pipe",
-    "description": "Piping for the pipe flange assembly"
+    "description": "Piping for the pipe flange assembly",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "pipe-flange-assembly/main.kcl",
     "multipleFiles": true,
     "title": "Pipe and Flange Assembly",
-    "description": "A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint."
+    "description": "A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint.",
+    "files": [
+      "1120t74-pipe.kcl",
+      "68095k348-flange.kcl",
+      "91251a404-bolt.kcl",
+      "9472k188-gasket.kcl",
+      "95479a127-hex-nut.kcl",
+      "98017a257-washer.kcl",
+      "main.kcl",
+      "parameters.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "pipe-with-bend/main.kcl",
     "multipleFiles": false,
     "title": "Pipe with bend",
-    "description": "A tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey substances that can flow."
+    "description": "A tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey substances that can flow.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "poopy-shoe/main.kcl",
     "multipleFiles": false,
     "title": "Poopy Shoe",
-    "description": "poop shute for bambu labs printer - optimized for printing."
+    "description": "poop shute for bambu labs printer - optimized for printing.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "propellant-line-brackets/main.kcl",
+    "multipleFiles": false,
+    "title": "Propellant Line Bracket",
+    "description": "A propellant line bracket is a mechanical support structure used to secure and stabilize propellant lines in an aerospace vehicle — such as a rocket, spacecraft, or launch platform. These brackets ensure that the fluid lines remain safely in place throughout the vehicle's lifecycle: during assembly, launch, flight, and possibly reentry or landing. These typically come with p-clamps or other types of clamping to secure the tubes.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "propeller/main.kcl",
+    "multipleFiles": false,
+    "title": "Ceiling Propeller",
+    "description": "A twisted 3-blade ceiling fan geometry made using boolean cutouts",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "prosthetic-hip/main.kcl",
+    "multipleFiles": false,
+    "title": "Prosthetic Hip",
+    "description": "A prosthetic hip is a surgically implanted ball-and-socket intended to replace a damaged or worn hip joint",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "rack-blanking-panel/main.kcl",
+    "multipleFiles": false,
+    "title": "Rack Blanking Panel - 1U",
+    "description": "A rack blanking panel, also known as a filler panel or spacer blank, is a flat piece of material (usually metal or plastic) designed to fill empty spaces within a server rack. These panels are primarily used to improve airflow and cooling efficiency in server racks",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "radial-flow-centrifugal-impeller/main.kcl",
+    "multipleFiles": false,
+    "title": "Impeller (Radial-flow)",
+    "description": "Radial-flow impeller for centrifugal pumps—designed as a parametric base for blade and housing experiments.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "rectangle-table/main.kcl",
+    "multipleFiles": false,
+    "title": "Rectangle Table",
+    "description": "Simple metal table with rectangular tabletop and four legs with a square section",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "round-table/main.kcl",
+    "multipleFiles": false,
+    "title": "Round Table",
+    "description": "Simple round table with a base, single leg, and tabletop",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "router-template-cross-bar/main.kcl",
     "multipleFiles": false,
     "title": "Router template for a cross bar",
-    "description": "A guide for routing a notch into a cross bar."
+    "description": "A guide for routing a notch into a cross bar.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "router-template-slate/main.kcl",
     "multipleFiles": false,
     "title": "Router Template for a Slate",
-    "description": "A guide for routing a slate for a cross bar."
+    "description": "A guide for routing a slate for a cross bar.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "sash-window/main.kcl",
+    "multipleFiles": false,
+    "title": "Sash Window",
+    "description": "A traditional wooden sash window with two vertically sliding panels and a central locking mechanism",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "saturn-v/main.kcl",
+    "multipleFiles": false,
+    "title": "Saturn V Rocket",
+    "description": "Modular construction of the iconic multi-stage rocket using parametric and revolve-based shapes",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "scrub-daddy-holder/main.kcl",
+    "multipleFiles": false,
+    "title": "Scrub Daddy Sponge Holder",
+    "description": "A scrub daddy is a sponge with a course texture which has the shape of a smiling face. This holder attaches magnetically to the wall of your sink or other locations where a sponge may be needed. The holder is designed to fit through the eye openings on the sponge. This is designed to fit mangets with a diameter of 6mm and thickness of 3 mm.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "shaft-grommet/main.kcl",
+    "multipleFiles": false,
+    "title": "Shaft Grommet",
+    "description": "Made of slippery plastic, these grommets allow shafts and bearings to spin freely in metal panels. The split construction lets you snap them around shafts you’ve already installed.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "sheet-metal-bracket/main.kcl",
     "multipleFiles": false,
     "title": "Sheet Metal Bracket",
-    "description": "A component typically made from flat sheet metal through various manufacturing processes such as bending, punching, cutting, and forming. These brackets are used to support, attach, or mount other hardware components, often providing a structural or functional base for assembly."
+    "description": "A component typically made from flat sheet metal through various manufacturing processes such as bending, punching, cutting, and forming. These brackets are used to support, attach, or mount other hardware components, often providing a structural or functional base for assembly.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "shepherds-hook-bolt/main.kcl",
+    "multipleFiles": false,
+    "title": "Shepherd’s Hook Bolt",
+    "description": "A bent bolt with a curved hook, typically used for hanging or anchoring loads. The threaded end allows secure attachment to surfaces or materials, while the curved hook resists pull-out under tension.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "single-impeller-blade/main.kcl",
+    "multipleFiles": false,
+    "title": "Impeller Blade (Single)",
+    "description": "A solid impeller blade created by lofting a root and a twisted tip profile. Useful for analyzing blade geometry, airflow shaping, or preparing for radial array placement.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "sls/main.kcl",
+    "multipleFiles": false,
+    "title": "Artemis SLS Rocket",
+    "description": "Modular construction of the iconic multi-stage rocket using parametric and revolve-based shapes",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "socket-head-cap-screw/main.kcl",
     "multipleFiles": false,
     "title": "Socket Head Cap Screw",
-    "description": "This is for a #10-24 screw that is 1.00 inches long. A socket head cap screw is a type of fastener that is widely used in a variety of applications requiring a high strength fastening solution. It is characterized by its cylindrical head and internal hexagonal drive, which allows for tightening with an Allen wrench or hex key."
+    "description": "This is for a #10-24 screw that is 1.00 inches long. A socket head cap screw is a type of fastener that is widely used in a variety of applications requiring a high strength fastening solution. It is characterized by its cylindrical head and internal hexagonal drive, which allows for tightening with an Allen wrench or hex key.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "sphere/main.kcl",
+    "multipleFiles": false,
+    "title": "Sphere",
+    "description": "A sphere is a primitive shape defined by its diameter.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "spinning-highrise-tower/main.kcl",
+    "multipleFiles": false,
+    "title": "Spinning Highrise Tower",
+    "description": "A conceptual high-rise tower with a central core and rotating floor slabs, demonstrating dynamic form through vertical repetition and transformation",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "split-washer-flat-version/main.kcl",
+    "multipleFiles": false,
+    "title": "Split Washer (Flat Version)",
+    "description": "A flat split washer — also known as a spring lock washer — is a small metal ring with a gap in it. It's usually placed under a nut or bolt head to stop it from loosening when things vibrate. Normally, this washer is springy and twisted, but for simplicity, we’re making a flat version.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "split-washer-spring-version/main.kcl",
+    "multipleFiles": false,
+    "title": "Split Washer (Spring Version)",
+    "description": "A spring lock washer is a small metal ring with a gap. Unlike flat washers, this one is twisted into a spiral shape, like a slice of a spring. It’s designed to stay slightly compressed, which helps hold bolts and nuts in place — even when things vibrate. This version shows how to model that twist using a helical sweep.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "spool/main.kcl",
+    "multipleFiles": false,
+    "title": "Spool",
+    "description": "A spool is a winding device for storing large batches of filament, wire, tape, etc",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "spur-gear/main.kcl",
+    "multipleFiles": false,
+    "title": "Spur Gear",
+    "description": "A rotating machine part having cut teeth or, in the case of a cogwheel, inserted teeth (called cogs), which mesh with another toothed part to transmit torque. Geared devices can change the speed, torque, and direction of a power source. The two elements that define a gear are its circular shape and the teeth that are integrated into its outer edge, which are designed to fit into the teeth of another gear.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "spur-reduction-gearset/main.kcl",
+    "multipleFiles": false,
+    "title": "Spur Reduction Gearset",
+    "description": "A pair of spur gears meshed together, with an equal module and different number of teeth",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "starlink-mini-bracket/main.kcl",
+    "multipleFiles": false,
+    "title": "Starlink Mini Bracket",
+    "description": "Bracket for holding a starlink device",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "straight-rung-ladder/main.kcl",
+    "multipleFiles": false,
+    "title": "Straight Rung Ladder",
+    "description": "A basic parametric ladder model with two side rails and evenly spaced rungs. Designed for use in architectural layouts, equipment modeling, or marine/industrial planning.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "stylized-car/main.kcl",
+    "multipleFiles": false,
+    "title": "Stylized Car",
+    "description": "A simplified, parametric 3-D model of a small car intended for use as a low-poly prop in real-time engines, visualization scenes, or rapid prototyping.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "stylized-cybertruck/main.kcl",
+    "multipleFiles": false,
+    "title": "Stylized Cybertruck",
+    "description": "A simplified, parametric 3-D model of a low-poly cybertruck, intended for use as a game-ready asset, concept visualization, or real-time rendering demo.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "stylized-dump-truck/main.kcl",
+    "multipleFiles": false,
+    "title": "Stylized Dump Truck",
+    "description": "A simplified, parametric 3D toy dump truck with front cab, extended cargo bed, and four wheels.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "stylized-firetruck/main.kcl",
+    "multipleFiles": false,
+    "title": "Stylized Fire Truck",
+    "description": "A toy-like parametric fire truck with extended rear compartment and roof ladder.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "stylized-mini-bus/main.kcl",
+    "multipleFiles": false,
+    "title": "Stylized Mini-Bus",
+    "description": "A simplified, parametric 3-D model of a compact van or mini-bus, intended for use as a low-poly prop in real-time engines, visualization scenes, or rapid prototyping.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "stylized-pickup-truck/main.kcl",
+    "multipleFiles": false,
+    "title": "Stylized Pickup Truck",
+    "description": "A simplified, parametric 3-D model of a pickup truck intended for use as a low-poly prop in real-time engines, visualization scenes, or rapid prototyping.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "surgical-drill-guide/main.kcl",
+    "multipleFiles": false,
+    "title": "Surgical Drill Guide",
+    "description": "A surgical drill guide is a tool used in medical procedures to assist in drilling holes to a desired depth, ensuring proper orientation and minimizing intraosseal pressure",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "t-slot-rail/main.kcl",
+    "multipleFiles": false,
+    "title": "T-Slotted Framing Rail",
+    "description": "A T-slotted framing rail, or T-slot extrusion, is a rectangular or square aluminum profile with a \"T\" shaped slot along one or more sides. These slots allow for easy attachment of various hardware components like brackets, connectors, and fasteners, making it a versatile and customizable framing system.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "teapot/main.kcl",
+    "multipleFiles": false,
+    "title": "Teapot",
+    "description": "A vessel with a spout and a handle used for serving tea and boiling water on a stovetop",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "telemetry-antenna/main.kcl",
+    "multipleFiles": false,
+    "title": "Aircraft telemetry antenna plate",
+    "description": "Consists of a circular base plate 3 inches in diameter and 0.08 inches thick, with a tapered monopole antenna mounted at the top with a base diameter of 0.65 inches and height of 1.36 inches. Also consists of a mounting base and connector at the bottom of the plate. The plate also has 6 countersunk holes at a defined pitch circle diameter.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "thermal-block-insert/main.kcl",
+    "multipleFiles": false,
+    "title": "Thermal Block Insert",
+    "description": "Interlocking insulation insert for masonry walls, designed with a tongue-and-groove profile for modular alignment and thermal efficiency",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "tooling-nest-block/main.kcl",
+    "multipleFiles": false,
+    "title": "Tooling Nest Block",
+    "description": "A tooling nest block is a block-shaped tool made from high-carbon steel. It features an assortment of conical or hemispherical indentions, which are used to form or shape metal, particularly in crafting bells or jewelry",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "torus/main.kcl",
+    "multipleFiles": false,
+    "title": "Torus",
+    "description": "A torus is defined by it's diameter and height.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "truss-structure/main.kcl",
+    "multipleFiles": false,
+    "title": "Truss Structure",
+    "description": "A truss structure is a framework composed of triangular units made from straight members connected at joints, often called nodes. Trusses are widely used in architecture, civil engineering, and construction for their ability to support large loads with minimal material.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "utility-sink/main.kcl",
+    "multipleFiles": false,
+    "title": "Utility Sink",
+    "description": "A stainless steel sink unit with a configurable number of rectangular basins and under-counter storage compartments.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "v-block/main.kcl",
+    "multipleFiles": false,
+    "title": "V-Block",
+    "description": "Hold and support round workpieces.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "walkie-talkie/main.kcl",
     "multipleFiles": true,
     "title": "Walkie Talkie",
-    "description": "A portable, handheld two-way radio device that allows users to communicate wirelessly over short to medium distances. It operates on specific radio frequencies and features a push-to-talk button for transmitting messages, making it ideal for quick and reliable communication in outdoor, work, or emergency settings."
+    "description": "A portable, handheld two-way radio device that allows users to communicate wirelessly over short to medium distances. It operates on specific radio frequencies and features a push-to-talk button for transmitting messages, making it ideal for quick and reliable communication in outdoor, work, or emergency settings.",
+    "files": [
+      "antenna.kcl",
+      "body.kcl",
+      "button.kcl",
+      "case.kcl",
+      "knob.kcl",
+      "main.kcl",
+      "parameters.kcl",
+      "talk-button.kcl",
+      "zoo-logo.kcl"
+    ]
   },
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "washer/main.kcl",
     "multipleFiles": false,
     "title": "Washer",
-    "description": "A small, typically disk-shaped component with a hole in the middle, used in a wide range of applications, primarily in conjunction with fasteners like bolts and screws. Washers distribute the load of a fastener across a broader area. This is especially important when the fastening surface is soft or uneven, as it helps to prevent damage to the surface and ensures the load is evenly distributed, reducing the risk of the fastener becoming loose over time."
+    "description": "A small, typically disk-shaped component with a hole in the middle, used in a wide range of applications, primarily in conjunction with fasteners like bolts and screws. Washers distribute the load of a fastener across a broader area. This is especially important when the fastening surface is soft or uneven, as it helps to prevent damage to the surface and ensures the load is evenly distributed, reducing the risk of the fastener becoming loose over time.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "wedge/main.kcl",
+    "multipleFiles": false,
+    "title": "Wedge",
+    "description": "A wedge is a triangular prism defined by it's length, width, and height.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "wind-turbine-blade-root-inserts/main.kcl",
+    "multipleFiles": false,
+    "title": "Wind Turbine Blade",
+    "description": "A wind turbine blade is a curved airfoil-shaped propeller that captures wind energy and converts it into rotational motion, ultimately driving a generator to produce electricity. These blades are typically made of composite materials like fiberglass or carbon fiber for strength and durability, and are designed to maximize efficiency in capturing the wind's kinetic energy. Most modern wind turbines use root inserts or a T-bolt connection to join the blade to the pitch bearing. The root insert is a metal bushing imbedded within the laminate",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "wing-spar/main.kcl",
+    "multipleFiles": false,
+    "title": "Wing Spar",
+    "description": "In a fixed-wing aircraft, the spar is often the main structural member of the wing, running spanwise at right angles (or thereabouts depending on wing sweep) to the fuselage. The spar carries flight loads and the weight of the wings while on the ground. Other structural and forming members such as ribs may be attached to the spars",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "zoo-logo/main.kcl",
+    "multipleFiles": false,
+    "title": "Zoo Logo",
+    "description": "The logo for the Zoo Corporation",
+    "files": [
+      "main.kcl"
+    ]
   }
 ]

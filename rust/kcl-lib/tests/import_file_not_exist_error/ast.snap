@@ -8,6 +8,7 @@ description: Result of parsing import_file_not_exist_error.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "path": {
           "type": "Kcl",
           "filename": "not-exist.kcl"
@@ -19,9 +20,11 @@ description: Result of parsing import_file_not_exist_error.kcl
               "alias": null,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "hotdog",
                 "start": 0,
                 "type": "Identifier"
@@ -38,6 +41,7 @@ description: Result of parsing import_file_not_exist_error.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "start": 0
   }
 }

@@ -7,11 +7,11 @@ import type {
 } from '@playwright/test'
 import { _electron as electron } from '@playwright/test'
 
+import fs from 'node:fs'
+import path from 'path'
 import { SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { DeepPartial } from '@src/lib/types'
 import fsp from 'fs/promises'
-import fs from 'node:fs'
-import path from 'path'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
@@ -19,6 +19,7 @@ import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 
 import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
@@ -39,8 +40,7 @@ export class AuthenticatedApp {
   }
 
   async initialise(code = '') {
-    const testDir = this.testInfo.outputPath('electron-test-projects-dir')
-    await setup(this.context, this.page, testDir, this.testInfo)
+    await setup(this.context, this.page, this.testInfo)
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
@@ -66,6 +66,7 @@ export interface Fixtures {
   toolbar: ToolbarFixture
   scene: SceneFixture
   homePage: HomePageFixture
+  signInPage: SignInPageFixture
 }
 
 export class ElectronZoo {
@@ -132,7 +133,7 @@ export class ElectronZoo {
       args: ['.', '--no-sandbox'],
       env: {
         ...process.env,
-        IS_PLAYWRIGHT: 'true',
+        NODE_ENV: 'test',
       },
       ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
         ? {
@@ -206,7 +207,7 @@ export class ElectronZoo {
       app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
     }, this.projectDirName)
 
-    await setup(this.context, this.page, this.projectDirName, testInfo)
+    await setup(this.context, this.page, testInfo)
 
     await this.cleanProjectDir()
 
@@ -226,7 +227,10 @@ export class ElectronZoo {
       }, dims)
 
       return this.evaluate(async (dims: { width: number; height: number }) => {
-        await window.electron.resizeWindow(dims.width, dims.height)
+        if (!window.electron) {
+          throw new Error('Electron not defined')
+        }
+        await window.electron?.resizeWindow(dims.width, dims.height)
         window.document.body.style.width = dims.width + 'px'
         window.document.body.style.height = dims.height + 'px'
         window.document.documentElement.style.width = dims.width + 'px'
@@ -245,7 +249,7 @@ export class ElectronZoo {
     }
 
     if (!this.firstUrl) {
-      await this.page.getByText('Your Projects').count()
+      await this.page.getByRole('heading', { name: 'Projects' }).count()
       this.firstUrl = this.page.url()
     }
 
@@ -387,9 +391,12 @@ const fixturesBasedOnProcessEnvPlatform = {
   homePage: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new HomePageFixture(page))
   },
+  signInPage: async ({ page }: { page: Page }, use: FnUse) => {
+    await use(new SignInPageFixture(page))
+  },
 }
 
-if (process.env.PLATFORM === 'web') {
+if (process.env.TARGET === 'web') {
   Object.assign(fixturesBasedOnProcessEnvPlatform, fixturesForWeb)
 } else {
   Object.assign(fixturesBasedOnProcessEnvPlatform, fixturesForElectron)

@@ -1,0 +1,38 @@
+---
+title: "{{name}}"
+{{#if module}}
+subtitle: "Module in {{module}}"
+{{else}}
+subtitle: "Module"
+{{/if}}
+excerpt: "{{safe_yaml summary}}"
+layout: manual
+---
+
+{{{summary}}}
+
+{{{description}}}
+
+{{#if modules}}
+## Modules
+
+{{#each modules}}
+* [`{{name}}`](/docs/kcl-std/{{file_name}})
+{{/each}}
+{{/if}}
+
+{{#if functions}}
+## Functions and constants
+
+{{#each functions}}
+* [`{{name}}`](/docs/kcl-std/{{file_name}})
+{{/each}}
+{{/if}}
+
+{{#if types}}
+## Types
+
+{{#each types}}
+* [`{{name}}`](/docs/kcl-std/{{file_name}})
+{{/each}}
+{{/if}}

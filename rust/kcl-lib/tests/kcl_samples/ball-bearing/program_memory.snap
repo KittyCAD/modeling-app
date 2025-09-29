@@ -40,7 +40,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "from": [
                   0.475,
@@ -50,12 +50,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -64,7 +62,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "tag": null,
                 "to": [
@@ -72,38 +70,37 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.001
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
@@ -115,9 +112,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 0.475,
                 0.001
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -126,16 +121,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -172,7 +163,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "from": [
                   0.475,
@@ -182,12 +173,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -196,7 +185,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "tag": null,
                 "to": [
@@ -204,38 +193,37 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.001
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
@@ -247,9 +235,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 0.475,
                 0.001
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -258,16 +244,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -304,7 +286,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "from": [
                   0.475,
@@ -314,12 +296,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -328,7 +308,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "tag": null,
                 "to": [
@@ -336,38 +316,37 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.001
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
@@ -379,9 +358,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 0.475,
                 0.001
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -390,16 +367,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -436,7 +409,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "from": [
                   0.475,
@@ -446,12 +419,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -460,7 +431,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "tag": null,
                 "to": [
@@ -468,38 +439,37 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.001
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
@@ -511,9 +481,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 0.475,
                 0.001
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -522,16 +490,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -568,7 +532,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "from": [
                   0.475,
@@ -578,12 +542,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -592,7 +554,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "tag": null,
                 "to": [
@@ -600,38 +562,37 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.001
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
@@ -643,9 +604,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 0.475,
                 0.001
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -654,16 +613,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -700,7 +655,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "from": [
                   0.475,
@@ -710,12 +665,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -724,7 +677,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "tag": null,
                 "to": [
@@ -732,38 +685,37 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.001
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
@@ -775,9 +727,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 0.475,
                 0.001
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -786,16 +736,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -832,7 +778,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "from": [
                   0.475,
@@ -842,12 +788,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -856,7 +800,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "tag": null,
                 "to": [
@@ -864,38 +808,37 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.001
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
@@ -907,9 +850,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 0.475,
                 0.001
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -918,16 +859,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -964,7 +901,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "from": [
                   0.475,
@@ -974,12 +911,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -988,7 +923,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "tag": null,
                 "to": [
@@ -996,38 +931,37 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.001
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
@@ -1039,9 +973,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 0.475,
                 0.001
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1050,16 +982,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -1096,7 +1024,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "from": [
                   0.475,
@@ -1106,12 +1034,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1120,7 +1046,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "tag": null,
                 "to": [
@@ -1128,38 +1054,37 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.001
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
@@ -1171,9 +1096,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 0.475,
                 0.001
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1182,16 +1105,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -1228,7 +1147,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "from": [
                   0.475,
@@ -1238,12 +1157,10 @@ description: Variables in memory after executing ball-bearing.kcl
                 "tag": null,
                 "to": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1252,7 +1169,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.725,
-                  0.001
+                  0.0009999999999999846
                 ],
                 "tag": null,
                 "to": [
@@ -1260,38 +1177,37 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.001
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
@@ -1303,9 +1219,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 0.475,
                 0.001
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1314,16 +1228,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       }
     ]
@@ -1342,7 +1252,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "ccw": false,
           "center": [
             0.6,
-            0.001
+            0.0009999999999999846
           ],
           "from": [
             0.475,
@@ -1352,12 +1262,10 @@ description: Variables in memory after executing ball-bearing.kcl
           "tag": null,
           "to": [
             0.725,
-            0.001
+            0.0009999999999999846
           ],
           "type": "Arc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1366,7 +1274,7 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "from": [
             0.725,
-            0.001
+            0.0009999999999999846
           ],
           "tag": null,
           "to": [
@@ -1374,38 +1282,37 @@ description: Variables in memory after executing ball-bearing.kcl
             0.001
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "units": {
-          "type": "Inches"
+          "z": 1.0,
+          "units": null
         }
       },
       "start": {
@@ -1417,9 +1324,7 @@ description: Variables in memory after executing ball-bearing.kcl
           0.475,
           0.001
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1428,9 +1333,7 @@ description: Variables in memory after executing ball-bearing.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "chainHead": {
@@ -1484,22 +1387,20 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  -0.0
+                  -0.000000000000000013877787807814457
                 ],
                 "from": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "radius": 0.125,
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1508,17 +1409,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1527,17 +1426,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1546,60 +1443,57 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
               "from": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
               "to": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1608,16 +1502,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -1668,22 +1558,20 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  -0.0
+                  -0.000000000000000013877787807814457
                 ],
                 "from": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "radius": 0.125,
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1692,17 +1580,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1711,17 +1597,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1730,60 +1614,57 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
               "from": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
               "to": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1792,16 +1673,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -1852,22 +1729,20 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  -0.0
+                  -0.000000000000000013877787807814457
                 ],
                 "from": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "radius": 0.125,
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1876,17 +1751,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1895,17 +1768,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1914,60 +1785,57 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
               "from": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
               "to": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1976,16 +1844,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -2036,22 +1900,20 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  -0.0
+                  -0.000000000000000013877787807814457
                 ],
                 "from": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "radius": 0.125,
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2060,17 +1922,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2079,17 +1939,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2098,60 +1956,57 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
               "from": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
               "to": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2160,16 +2015,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -2220,22 +2071,20 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  -0.0
+                  -0.000000000000000013877787807814457
                 ],
                 "from": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "radius": 0.125,
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2244,17 +2093,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2263,17 +2110,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2282,60 +2127,57 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
               "from": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
               "to": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2344,16 +2186,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -2404,22 +2242,20 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  -0.0
+                  -0.000000000000000013877787807814457
                 ],
                 "from": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "radius": 0.125,
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2428,17 +2264,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2447,17 +2281,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2466,60 +2298,57 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
               "from": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
               "to": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2528,16 +2357,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -2588,22 +2413,20 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  -0.0
+                  -0.000000000000000013877787807814457
                 ],
                 "from": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "radius": 0.125,
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2612,17 +2435,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2631,17 +2452,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2650,60 +2469,57 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
               "from": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
               "to": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2712,16 +2528,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -2772,22 +2584,20 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  -0.0
+                  -0.000000000000000013877787807814457
                 ],
                 "from": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "radius": 0.125,
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2796,17 +2606,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2815,17 +2623,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2834,60 +2640,57 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
               "from": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
               "to": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2896,16 +2699,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -2956,22 +2755,20 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  -0.0
+                  -0.000000000000000013877787807814457
                 ],
                 "from": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "radius": 0.125,
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2980,17 +2777,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2999,17 +2794,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -3018,60 +2811,57 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
               "from": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
               "to": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3080,16 +2870,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -3140,22 +2926,20 @@ description: Variables in memory after executing ball-bearing.kcl
                 "ccw": false,
                 "center": [
                   0.6,
-                  -0.0
+                  -0.000000000000000013877787807814457
                 ],
                 "from": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "radius": 0.125,
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -3164,17 +2948,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1083
+                  0.10825317547305481
                 ],
                 "tag": null,
                 "to": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -3183,17 +2965,15 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.6625,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -3202,60 +2982,57 @@ description: Variables in memory after executing ball-bearing.kcl
                 },
                 "from": [
                   0.5375,
-                  0.1395
+                  0.1395031754730548
                 ],
                 "tag": null,
                 "to": [
                   0.5375,
-                  0.1083
+                  0.10825317547305482
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
               "from": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
               "to": [
                 0.5375,
-                0.1083
+                0.10825317547305482
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3264,16 +3041,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": null,
           "endCapId": null,
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       }
     ]
@@ -3292,22 +3065,20 @@ description: Variables in memory after executing ball-bearing.kcl
           "ccw": false,
           "center": [
             0.6,
-            -0.0
+            -0.000000000000000013877787807814457
           ],
           "from": [
             0.5375,
-            0.1083
+            0.10825317547305482
           ],
           "radius": 0.125,
           "tag": null,
           "to": [
             0.6625,
-            0.1083
+            0.10825317547305481
           ],
           "type": "Arc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3316,17 +3087,15 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "from": [
             0.6625,
-            0.1083
+            0.10825317547305481
           ],
           "tag": null,
           "to": [
             0.6625,
-            0.1395
+            0.1395031754730548
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3335,17 +3104,15 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "from": [
             0.6625,
-            0.1395
+            0.1395031754730548
           ],
           "tag": null,
           "to": [
             0.5375,
-            0.1395
+            0.1395031754730548
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -3354,60 +3121,57 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "from": [
             0.5375,
-            0.1395
+            0.1395031754730548
           ],
           "tag": null,
           "to": [
             0.5375,
-            0.1083
+            0.10825317547305482
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "units": {
-          "type": "Inches"
+          "z": 1.0,
+          "units": null
         }
       },
       "start": {
         "from": [
           0.5375,
-          0.1083
+          0.10825317547305482
         ],
         "to": [
           0.5375,
-          0.1083
+          0.10825317547305482
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3416,25 +3180,25 @@ description: Variables in memory after executing ball-bearing.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "chainThickness": {
     "type": "Number",
-    "value": 0.0313,
+    "value": 0.03125,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "chainWidth": {
     "type": "Number",
     "value": 0.125,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "insideWall": {
@@ -3444,6 +3208,13 @@ description: Variables in memory after executing ball-bearing.kcl
       "id": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
@@ -3477,38 +3248,62 @@ description: Variables in memory after executing ball-bearing.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.375,
+              0.0
+            ],
+            "radius": 0.375,
+            "tag": null,
+            "to": [
+              0.375,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": -0.1565
+            "z": -3.9751,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Inches"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -3520,9 +3315,7 @@ description: Variables in memory after executing ball-bearing.kcl
             0.475,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3531,16 +3324,12 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.313,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in",
+      "sectional": false
     }
   },
   "insideWallSketch": {
@@ -3570,38 +3359,62 @@ description: Variables in memory after executing ball-bearing.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
+        }
+      ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            0.0
+          ],
+          "from": [
+            0.375,
+            0.0
+          ],
+          "radius": 0.375,
+          "tag": null,
+          "to": [
+            0.375,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "Custom",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": -0.1565
+          "z": -3.9751,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "units": {
-          "type": "Inches"
+          "z": 1.0,
+          "units": null
         }
       },
       "start": {
@@ -3613,9 +3426,7 @@ description: Variables in memory after executing ball-bearing.kcl
           0.475,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3624,17 +3435,16 @@ description: Variables in memory after executing ball-bearing.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "linkDiameter": {
     "type": "Number",
     "value": 0.0625,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "linkRevolve": {
@@ -3670,62 +3480,59 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.0
                 ],
                 "from": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "radius": 0.03125,
                 "tag": null,
                 "to": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
               "from": [
-                0.6313,
+                0.63125,
                 0.0
               ],
               "to": [
-                0.6313,
+                0.63125,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3734,16 +3541,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -3776,62 +3579,59 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.0
                 ],
                 "from": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "radius": 0.03125,
                 "tag": null,
                 "to": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
               "from": [
-                0.6313,
+                0.63125,
                 0.0
               ],
               "to": [
-                0.6313,
+                0.63125,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3840,16 +3640,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -3882,62 +3678,59 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.0
                 ],
                 "from": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "radius": 0.03125,
                 "tag": null,
                 "to": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
               "from": [
-                0.6313,
+                0.63125,
                 0.0
               ],
               "to": [
-                0.6313,
+                0.63125,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3946,16 +3739,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -3988,62 +3777,59 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.0
                 ],
                 "from": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "radius": 0.03125,
                 "tag": null,
                 "to": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
               "from": [
-                0.6313,
+                0.63125,
                 0.0
               ],
               "to": [
-                0.6313,
+                0.63125,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4052,16 +3838,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -4094,62 +3876,59 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.0
                 ],
                 "from": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "radius": 0.03125,
                 "tag": null,
                 "to": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
               "from": [
-                0.6313,
+                0.63125,
                 0.0
               ],
               "to": [
-                0.6313,
+                0.63125,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4158,16 +3937,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -4200,62 +3975,59 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.0
                 ],
                 "from": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "radius": 0.03125,
                 "tag": null,
                 "to": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
               "from": [
-                0.6313,
+                0.63125,
                 0.0
               ],
               "to": [
-                0.6313,
+                0.63125,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4264,16 +4036,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -4306,62 +4074,59 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.0
                 ],
                 "from": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "radius": 0.03125,
                 "tag": null,
                 "to": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
               "from": [
-                0.6313,
+                0.63125,
                 0.0
               ],
               "to": [
-                0.6313,
+                0.63125,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4370,16 +4135,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -4412,62 +4173,59 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.0
                 ],
                 "from": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "radius": 0.03125,
                 "tag": null,
                 "to": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
               "from": [
-                0.6313,
+                0.63125,
                 0.0
               ],
               "to": [
-                0.6313,
+                0.63125,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4476,16 +4234,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -4518,62 +4272,59 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.0
                 ],
                 "from": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "radius": 0.03125,
                 "tag": null,
                 "to": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
               "from": [
-                0.6313,
+                0.63125,
                 0.0
               ],
               "to": [
-                0.6313,
+                0.63125,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4582,16 +4333,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       },
       {
@@ -4624,62 +4371,59 @@ description: Variables in memory after executing ball-bearing.kcl
                   0.0
                 ],
                 "from": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "radius": 0.03125,
                 "tag": null,
                 "to": [
-                  0.6313,
+                  0.63125,
                   0.0
                 ],
                 "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
               "from": [
-                0.6313,
+                0.63125,
                 0.0
               ],
               "to": [
-                0.6313,
+                0.63125,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4688,16 +4432,12 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 0.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         }
       }
     ]
@@ -4719,62 +4459,59 @@ description: Variables in memory after executing ball-bearing.kcl
             0.0
           ],
           "from": [
-            0.6313,
+            0.63125,
             0.0
           ],
           "radius": 0.03125,
           "tag": null,
           "to": [
-            0.6313,
+            0.63125,
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
-        },
-        "units": {
-          "type": "Inches"
+          "z": 0.0,
+          "units": null
         }
       },
       "start": {
         "from": [
-          0.6313,
+          0.63125,
           0.0
         ],
         "to": [
-          0.6313,
+          0.63125,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -4783,9 +4520,7 @@ description: Variables in memory after executing ball-bearing.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "nBalls": {
@@ -4793,12 +4528,8 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "outsideDiameter": {
@@ -4806,12 +4537,8 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 1.625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "outsideWall": {
@@ -4821,6 +4548,13 @@ description: Variables in memory after executing ball-bearing.kcl
       "id": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
@@ -4854,38 +4588,62 @@ description: Variables in memory after executing ball-bearing.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.725,
+              0.0
+            ],
+            "radius": 0.725,
+            "tag": null,
+            "to": [
+              0.725,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": -0.1565
+            "z": -3.9751,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Inches"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -4897,9 +4655,7 @@ description: Variables in memory after executing ball-bearing.kcl
             0.8125,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -4908,16 +4664,12 @@ description: Variables in memory after executing ball-bearing.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.313,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in",
+      "sectional": false
     }
   },
   "outsideWallSketch": {
@@ -4947,38 +4699,62 @@ description: Variables in memory after executing ball-bearing.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
+        }
+      ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            0.0
+          ],
+          "from": [
+            0.725,
+            0.0
+          ],
+          "radius": 0.725,
+          "tag": null,
+          "to": [
+            0.725,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "Custom",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": -0.1565
+          "z": -3.9751,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "units": {
-          "type": "Inches"
+          "z": 1.0,
+          "units": null
         }
       },
       "start": {
@@ -4990,9 +4766,7 @@ description: Variables in memory after executing ball-bearing.kcl
           0.8125,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -5001,9 +4775,7 @@ description: Variables in memory after executing ball-bearing.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "overHangLength": {
@@ -5011,12 +4783,8 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 0.3,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "overallThickness": {
@@ -5024,12 +4792,8 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 0.313,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "shaftDia": {
@@ -5037,12 +4801,8 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "sphereDia": {
@@ -5050,12 +4810,8 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "wallThickness": {
@@ -5063,12 +4819,8 @@ description: Variables in memory after executing ball-bearing.kcl
     "value": 0.1,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

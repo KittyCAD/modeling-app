@@ -2,8 +2,8 @@ pub(crate) mod digest;
 pub mod types;
 
 use crate::{
-    parsing::ast::types::{BinaryPart, BodyItem, Expr, LiteralIdentifier, MemberObject},
     ModuleId,
+    parsing::ast::types::{BinaryPart, BodyItem, Expr},
 };
 
 impl BodyItem {
@@ -26,7 +26,6 @@ impl Expr {
             Expr::TagDeclarator(tag) => tag.module_id,
             Expr::BinaryExpression(binary_expression) => binary_expression.module_id,
             Expr::FunctionExpression(function_expression) => function_expression.module_id,
-            Expr::CallExpression(call_expression) => call_expression.module_id,
             Expr::CallExpressionKw(call_expression) => call_expression.module_id,
             Expr::PipeExpression(pipe_expression) => pipe_expression.module_id,
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.module_id,
@@ -38,6 +37,8 @@ impl Expr {
             Expr::IfExpression(expr) => expr.module_id,
             Expr::LabelledExpression(expr) => expr.expr.module_id(),
             Expr::AscribedExpression(expr) => expr.expr.module_id(),
+            Expr::SketchBlock(expr) => expr.module_id,
+            Expr::SketchVar(expr) => expr.module_id,
             Expr::None(none) => none.module_id,
         }
     }
@@ -49,29 +50,15 @@ impl BinaryPart {
             BinaryPart::Literal(literal) => literal.module_id,
             BinaryPart::Name(identifier) => identifier.module_id,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.module_id,
-            BinaryPart::CallExpression(call_expression) => call_expression.module_id,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.module_id,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.module_id,
             BinaryPart::MemberExpression(member_expression) => member_expression.module_id,
+            BinaryPart::ArrayExpression(e) => e.module_id,
+            BinaryPart::ArrayRangeExpression(e) => e.module_id,
+            BinaryPart::ObjectExpression(e) => e.module_id,
             BinaryPart::IfExpression(e) => e.module_id,
-        }
-    }
-}
-
-impl MemberObject {
-    pub fn module_id(&self) -> ModuleId {
-        match self {
-            MemberObject::MemberExpression(member_expression) => member_expression.module_id,
-            MemberObject::Identifier(identifier) => identifier.module_id,
-        }
-    }
-}
-
-impl LiteralIdentifier {
-    pub fn module_id(&self) -> ModuleId {
-        match self {
-            LiteralIdentifier::Identifier(identifier) => identifier.module_id,
-            LiteralIdentifier::Literal(literal) => literal.module_id,
+            BinaryPart::AscribedExpression(e) => e.module_id,
+            BinaryPart::SketchVar(e) => e.module_id,
         }
     }
 }

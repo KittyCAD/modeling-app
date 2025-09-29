@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/import_whole_transitive_import/part.kcl
+---
+@settings(defaultLengthUnit = inch)
+
+import "bolt.kcl"
+
+export thickness = 4
+
+startSketchOn(XY)
+  |> circle(center = [5, 5], radius = 10)
+  |> extrude(length = 10)

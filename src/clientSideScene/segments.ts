@@ -1,4 +1,4 @@
-import type { NormalBufferAttributes, Texture } from 'three'
+import type { NormalBufferAttributes } from 'three'
 import {
   BoxGeometry,
   BufferGeometry,
@@ -14,8 +14,6 @@ import {
   LineDashedMaterial,
   Mesh,
   MeshBasicMaterial,
-  Points,
-  PointsMaterial,
   Shape,
   SphereGeometry,
   Vector2,
@@ -39,6 +37,7 @@ import {
   CIRCLE_SEGMENT,
   CIRCLE_SEGMENT_BODY,
   CIRCLE_SEGMENT_DASH,
+  CIRCLE_SEGMENT_RADIUS_BODY,
   CIRCLE_THREE_POINT_HANDLE1,
   CIRCLE_THREE_POINT_HANDLE2,
   CIRCLE_THREE_POINT_HANDLE3,
@@ -50,10 +49,12 @@ import {
   HIDE_HOVER_SEGMENT_LENGTH,
   HIDE_SEGMENT_LENGTH,
   PROFILE_START,
+  SEGMENT_BLUE,
   SEGMENT_WIDTH_PX,
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_BODY,
   STRAIGHT_SEGMENT_DASH,
+  STRAIGHT_SEGMENT_SNAP_LINE,
   TANGENTIAL_ARC_TO_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT_BODY,
   TANGENTIAL_ARC_TO__SEGMENT_DASH,
@@ -73,22 +74,23 @@ import {
   SEGMENT_LENGTH_LABEL_TEXT,
 } from '@src/clientSideScene/sceneUtils'
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
+import { ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import type { Coords2d } from '@src/lang/std/sketch'
 import type { SegmentInputs } from '@src/lang/std/stdTypes'
 import type { PathToNode } from '@src/lang/wasm'
 import { getTangentialArcToInfo } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
+import { commandBarActor } from '@src/lib/singletons'
 import type { Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { isClockwise, normaliseAngle, roundOff } from '@src/lib/utils'
 import { getTangentPointFromPreviousArc } from '@src/lib/utils2d'
-import { commandBarActor } from '@src/machines/commandBarMachine'
 import type {
   SegmentOverlay,
   SegmentOverlayPayload,
   SegmentOverlays,
-} from '@src/machines/modelingMachine'
+} from '@src/machines/modelingSharedTypes'
 import toast from 'react-hot-toast'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
@@ -100,7 +102,6 @@ interface CreateSegmentArgs {
   isDraftSegment?: boolean
   scale?: number
   callExpName: string
-  texture: Texture
   theme: Themes
   isSelected?: boolean
   sceneInfra: SceneInfra
@@ -149,7 +150,6 @@ class StraightSegment implements SegmentUtils {
     isDraftSegment,
     scale = 1,
     callExpName,
-    texture,
     theme,
     isSelected = false,
     sceneInfra,
@@ -161,7 +161,7 @@ class StraightSegment implements SegmentUtils {
     const { from, to } = input
     const baseColor =
       callExpName === 'close' ? 0x444444 : getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
     const meshType = isDraftSegment
       ? STRAIGHT_SEGMENT_DASH
       : STRAIGHT_SEGMENT_BODY
@@ -199,7 +199,8 @@ class StraightSegment implements SegmentUtils {
     // All segment types get an extra segment handle,
     // Which is a little plus sign that appears at the origin of the segment
     // and can be dragged to insert a new segment
-    const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
+    const extraSegmentGroup = createExtraSegmentHandle(scale, theme)
+    extraSegmentGroup.scale.set(scale, scale, scale)
 
     // Segment decorators that only apply to non-close segments
     if (callExpName !== 'close') {
@@ -216,7 +217,17 @@ class StraightSegment implements SegmentUtils {
       segmentGroup.add(lengthIndicatorGroup)
     }
 
+    if (isDraftSegment) {
+      const snapLine = createLine({
+        from: [0, 0],
+        to: [0, 0],
+        color: 0x555555,
+      })
+      snapLine.name = STRAIGHT_SEGMENT_SNAP_LINE
+      segmentGroup.add(snapLine)
+    }
     segmentGroup.add(mesh, extraSegmentGroup)
+
     let updateOverlaysCallback = this.update({
       prevSegment,
       input,
@@ -243,9 +254,7 @@ class StraightSegment implements SegmentUtils {
     const { from, to } = input
     group.userData.from = from
     group.userData.to = to
-    const shape = new Shape()
-    shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
-    shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
+    const shape = createLineShape(scale)
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
     const labelGroup = group.getObjectByName(SEGMENT_LENGTH_LABEL) as Group
 
@@ -265,23 +274,45 @@ class StraightSegment implements SegmentUtils {
       isHandlesVisible = !shouldHideHover
     }
 
+    const dir = new Vector3()
+      .subVectors(
+        new Vector3(to[0], to[1], 0),
+        new Vector3(from[0], from[1], 0)
+      )
+      .normalize()
+
     if (arrowGroup) {
       arrowGroup.position.set(to[0], to[1], 0)
-
-      const dir = new Vector3()
-        .subVectors(
-          new Vector3(to[0], to[1], 0),
-          new Vector3(from[0], from[1], 0)
-        )
-        .normalize()
       arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
       arrowGroup.scale.set(scale, scale, scale)
       arrowGroup.visible = isHandlesVisible
     }
 
+    const snapLine = group.getObjectByName(STRAIGHT_SEGMENT_SNAP_LINE) as Line
+    if (snapLine) {
+      snapLine.visible = !!input.snap
+      if (snapLine.visible) {
+        // Without this three.js incorrectly culls the line in some cases when zoomed in too much
+        snapLine.frustumCulled = false
+        const snapLineFrom = to
+        const snapLineTo = new Vector3(to[0], to[1], 0).addScaledVector(
+          dir,
+          // Draw a large enough line that reaches the screen edge
+          // Cleaner way would be to draw in screen space
+          9999999 * scale
+        )
+        updateLine(snapLine, {
+          from: snapLineFrom,
+          to: [snapLineTo.x, snapLineTo.y],
+        })
+      }
+    }
+
     const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
     if (extraSegmentGroup) {
-      const offsetFromBase = new Vector2(to[0] - from[0], to[1] - from[1])
+      const offset = new Vector2(to[0] - from[0], to[1] - from[1])
+      const offsetFromBase = offset
+        .clone()
         .normalize()
         .multiplyScalar(EXTRA_SEGMENT_OFFSET_PX * scale)
       extraSegmentGroup.position.set(
@@ -290,7 +321,10 @@ class StraightSegment implements SegmentUtils {
         0
       )
       extraSegmentGroup.scale.set(scale, scale, scale)
-      extraSegmentGroup.visible = isHandlesVisible
+
+      const segmentLengthInScreenSpace = offset.length() / scale
+      extraSegmentGroup.visible =
+        !sceneInfra.selected && segmentLengthInScreenSpace > 130
     }
 
     if (labelGroup) {
@@ -318,6 +352,7 @@ class StraightSegment implements SegmentUtils {
         new Vector3(from[0], from[1], 0),
         new Vector3(to[0], to[1], 0)
       )
+      straightSegmentBody.geometry?.dispose()
       straightSegmentBody.geometry = new ExtrudeGeometry(shape, {
         steps: 2,
         bevelEnabled: false,
@@ -355,7 +390,6 @@ class TangentialArcToSegment implements SegmentUtils {
     pathToNode,
     isDraftSegment,
     scale = 1,
-    texture,
     theme,
     isSelected,
     sceneInfra,
@@ -378,11 +412,11 @@ class TangentialArcToSegment implements SegmentUtils {
       scale,
     })
     const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
     const body = new MeshBasicMaterial({ color })
     const mesh = new Mesh(geometry, body)
     const arrowGroup = createArrowhead(scale, theme, color)
-    const extraSegmentGroup = createExtraSegmentHandle(scale, texture, theme)
+    const extraSegmentGroup = createExtraSegmentHandle(scale, theme)
 
     group.name = TANGENTIAL_ARC_TO_SEGMENT
     mesh.userData.type = meshName
@@ -431,33 +465,10 @@ class TangentialArcToSegment implements SegmentUtils {
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
     const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
 
-    let previousPoint = prevSegment.from
-    if (prevSegment?.type === 'TangentialArcTo') {
-      previousPoint = getTangentPointFromPreviousArc(
-        prevSegment.center,
-        prevSegment.ccw,
-        prevSegment.to
-      )
-    } else if (prevSegment?.type === 'ArcThreePoint') {
-      const arcDetails = calculate_circle_from_3_points(
-        prevSegment.p1[0],
-        prevSegment.p1[1],
-        prevSegment.p2[0],
-        prevSegment.p2[1],
-        prevSegment.p3[0],
-        prevSegment.p3[1]
-      )
-      previousPoint = getTangentPointFromPreviousArc(
-        [arcDetails.center_x, arcDetails.center_y],
-        !isClockwise([prevSegment.p1, prevSegment.p2, prevSegment.p3]),
-        prevSegment.p3
-      )
-    }
-
     const arcInfo = getTangentialArcToInfo({
       arcStartPoint: from,
       arcEndPoint: to,
-      tanPreviousPoint: previousPoint,
+      tanPreviousPoint: getTanPreviousPoint(prevSegment),
       obtuse: true,
     })
 
@@ -502,22 +513,25 @@ class TangentialArcToSegment implements SegmentUtils {
         0
       )
       extraSegmentGroup.scale.set(scale, scale, scale)
-      extraSegmentGroup.visible = isHandlesVisible
+
+      const segmentLengthInScreenSpace = arcInfo.arcLength / scale
+      extraSegmentGroup.visible =
+        !sceneInfra.selected && segmentLengthInScreenSpace > 70
     }
 
-    const tangentialArcToSegmentBody = group.children.find(
+    const tangentialArcSegmentBody = group.children.find(
       (child) => child.userData.type === TANGENTIAL_ARC_TO_SEGMENT_BODY
     ) as Mesh
 
-    if (tangentialArcToSegmentBody) {
+    if (tangentialArcSegmentBody) {
       const newGeo = createArcGeometry({ ...arcInfo, scale })
-      tangentialArcToSegmentBody.geometry = newGeo
+      tangentialArcSegmentBody.geometry = newGeo
     }
-    const tangentialArcToSegmentBodyDashed = group.getObjectByName(
+    const tangentialArcSegmentBodyDashed = group.getObjectByName(
       TANGENTIAL_ARC_TO__SEGMENT_DASH
     )
-    if (tangentialArcToSegmentBodyDashed instanceof Mesh) {
-      tangentialArcToSegmentBodyDashed.geometry = createArcGeometry({
+    if (tangentialArcSegmentBodyDashed instanceof Mesh) {
+      tangentialArcSegmentBodyDashed.geometry = createArcGeometry({
         ...arcInfo,
         isDashed: true,
         scale,
@@ -539,6 +553,35 @@ class TangentialArcToSegment implements SegmentUtils {
   }
 }
 
+export function getTanPreviousPoint(prevSegment: Sketch['paths'][number]) {
+  let previousPoint = prevSegment.from
+  if (
+    prevSegment.type === 'TangentialArcTo' ||
+    prevSegment.type === 'TangentialArc'
+  ) {
+    previousPoint = getTangentPointFromPreviousArc(
+      prevSegment.center,
+      prevSegment.ccw,
+      prevSegment.to
+    )
+  } else if (prevSegment.type === 'ArcThreePoint') {
+    const arcDetails = calculate_circle_from_3_points(
+      prevSegment.p1[0],
+      prevSegment.p1[1],
+      prevSegment.p2[0],
+      prevSegment.p2[1],
+      prevSegment.p3[0],
+      prevSegment.p3[1]
+    )
+    previousPoint = getTangentPointFromPreviousArc(
+      [arcDetails.center_x, arcDetails.center_y],
+      !isClockwise([prevSegment.p1, prevSegment.p2, prevSegment.p3]),
+      prevSegment.p3
+    )
+  }
+  return previousPoint
+}
+
 class CircleSegment implements SegmentUtils {
   init: SegmentUtils['init'] = ({
     prevSegment,
@@ -556,7 +599,7 @@ class CircleSegment implements SegmentUtils {
     }
     const { from, center, radius } = input
     const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
 
     const group = new Group()
     const geometry = createArcGeometry({
@@ -572,6 +615,21 @@ class CircleSegment implements SegmentUtils {
     const arcMesh = new Mesh(geometry, mat)
     const meshType = isDraftSegment ? CIRCLE_SEGMENT_DASH : CIRCLE_SEGMENT_BODY
     const arrowGroup = createArrowhead(scale, theme, color)
+
+    const shape = new Shape()
+    const line = new LineCurve3(
+      new Vector3(from[0], from[1], 0),
+      new Vector3(center[0], center[1], 0)
+    )
+    const arrowGeometry = new ExtrudeGeometry(shape, {
+      steps: 2,
+      bevelEnabled: false,
+      extrudePath: line,
+    })
+    const body = new MeshBasicMaterial({ color })
+    const arrowBody = new Mesh(arrowGeometry, body)
+    arrowBody.name = CIRCLE_SEGMENT_RADIUS_BODY
+
     const circleCenterGroup = createCircleCenterHandle(scale, theme, color)
     // A radius indicator that appears from the center to the perimeter
     const radiusIndicatorGroup = createLengthIndicator({
@@ -598,7 +656,13 @@ class CircleSegment implements SegmentUtils {
     }
     group.name = CIRCLE_SEGMENT
 
-    group.add(arcMesh, arrowGroup, circleCenterGroup, radiusIndicatorGroup)
+    group.add(
+      arcMesh,
+      arrowGroup,
+      arrowBody,
+      circleCenterGroup,
+      radiusIndicatorGroup
+    )
     const updateOverlaysCallback = this.update({
       prevSegment,
       input,
@@ -665,6 +729,25 @@ class CircleSegment implements SegmentUtils {
       )
       arrowGroup.scale.set(scale, scale, scale)
       arrowGroup.visible = isHandlesVisible
+
+      const straightSegmentBody = group.getObjectByName(
+        CIRCLE_SEGMENT_RADIUS_BODY
+      ) as Mesh
+      if (straightSegmentBody) {
+        const line = new LineCurve3(
+          new Vector3(center[0], center[1], 0),
+          new Vector3(arrowPoint.x, arrowPoint.y, 0)
+        )
+        straightSegmentBody.geometry?.dispose()
+        straightSegmentBody.geometry = new ExtrudeGeometry(
+          createLineShape(scale),
+          {
+            steps: 2,
+            bevelEnabled: false,
+            extrudePath: line,
+          }
+        )
+      }
     }
 
     if (radiusLengthIndicator) {
@@ -768,7 +851,7 @@ class CircleThreePointSegment implements SegmentUtils {
     )
     const center: [number, number] = [center_x, center_y]
     const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
 
     const group = new Group()
     const geometry = createArcGeometry({
@@ -976,7 +1059,7 @@ class ArcSegment implements SegmentUtils {
     }
     const { from, to, center, radius, ccw } = input
     const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
 
     // Calculate start and end angles
     const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
@@ -1018,21 +1101,18 @@ class ArcSegment implements SegmentUtils {
     const centerToFromLine = createLine({
       from: center,
       to: from,
-      scale,
       color: grey, // Light gray color for the line
     })
     centerToFromLine.name = ARC_CENTER_TO_FROM
     const centerToToLine = createLine({
       from: center,
       to,
-      scale,
       color: grey, // Light gray color for the line
     })
     centerToToLine.name = ARC_CENTER_TO_TO
     const angleReferenceLine = createLine({
       from: [center[0] + (ANGLE_INDICATOR_RADIUS - 2) * scale, center[1]],
       to: [center[0] + (ANGLE_INDICATOR_RADIUS + 2) * scale, center[1]],
-      scale,
       color: grey, // Light gray color for the line
     })
     angleReferenceLine.name = ARC_ANGLE_REFERENCE_LINE
@@ -1043,7 +1123,6 @@ class ArcSegment implements SegmentUtils {
       radius: ANGLE_INDICATOR_RADIUS, // Half the radius for the indicator
       startAngle: 0,
       endAngle,
-      scale,
       color: grey, // Red color for the angle indicator
     })
     angleIndicator.name = 'angleIndicator'
@@ -1054,7 +1133,6 @@ class ArcSegment implements SegmentUtils {
       radius: ANGLE_INDICATOR_RADIUS, // Half the radius for the indicator
       startAngle: 0,
       endAngle: (endAngle * Math.PI) / 180,
-      scale,
       color: grey, // Green color for the end angle indicator
     })
     endAngleIndicator.name = 'endAngleIndicator'
@@ -1242,12 +1320,12 @@ class ArcSegment implements SegmentUtils {
 
     const centerToFromLine = group.getObjectByName(ARC_CENTER_TO_FROM) as Line
     if (centerToFromLine) {
-      updateLine(centerToFromLine, { from: center, to: from, scale })
+      updateLine(centerToFromLine, { from: center, to: from })
       centerToFromLine.visible = isHandlesVisible
     }
     const centerToToLine = group.getObjectByName(ARC_CENTER_TO_TO) as Line
     if (centerToToLine) {
-      updateLine(centerToToLine, { from: center, to, scale })
+      updateLine(centerToToLine, { from: center, to })
       centerToToLine.visible = isHandlesVisible
     }
     const angleReferenceLine = group.getObjectByName(
@@ -1257,7 +1335,6 @@ class ArcSegment implements SegmentUtils {
       updateLine(angleReferenceLine, {
         from: center,
         to: [center[0] + 34 * scale, center[1]],
-        scale,
       })
       angleReferenceLine.visible = isHandlesVisible
     }
@@ -1346,7 +1423,7 @@ class ThreePointArcSegment implements SegmentUtils {
     )
     const center: [number, number] = [center_x, center_y]
     const baseColor = getThemeColorForThreeJs(theme)
-    const color = isSelected ? 0x0000ff : baseColor
+    const color = isSelected ? SEGMENT_BLUE : baseColor
 
     // Calculate start and end angles
     const startAngle = Math.atan2(p1[1] - center[1], p1[0] - center[0])
@@ -1398,7 +1475,7 @@ class ThreePointArcSegment implements SegmentUtils {
       p3,
       radius,
       center,
-      ccw: false,
+      ccw: !isClockwise([p1, p2, p3]),
       prevSegment,
       pathToNode,
       isSelected,
@@ -1503,7 +1580,7 @@ class ThreePointArcSegment implements SegmentUtils {
 
     return () => {
       const overlays: SegmentOverlays = {}
-      const overlayDetails = [p2Handle, p3Handle].map((handle, index) =>
+      const overlayDetails = [p2Handle, p3Handle].map((handle, _index) =>
         sceneInfra.updateOverlayDetails({
           handle: handle,
           group,
@@ -1519,10 +1596,10 @@ class ThreePointArcSegment implements SegmentUtils {
       overlayDetails.forEach((payload, index) => {
         if (payload?.type === 'set-one') {
           overlays[payload.pathToNodeString] = payload.seg
-          // Add filterValue: 'interior' for p2 and 'end' for p3
+          // Add filterValue: 'interiorAbsolute' for p2 and 'endAbsolute' for p3
           segmentOverlays.push({
             ...payload.seg[0],
-            filterValue: index === 0 ? 'interior' : 'end',
+            filterValue: index === 0 ? ARG_INTERIOR_ABSOLUTE : 'endAbsolute',
           })
         }
       })
@@ -1562,7 +1639,7 @@ export function createProfileStartHandle({
 
   const geometry = new BoxGeometry(size, size, size) // in pixels scaled later
   const baseColor = getThemeColorForThreeJs(theme)
-  const color = isSelected ? 0x0000ff : baseColor
+  const color = isSelected ? SEGMENT_BLUE : baseColor
   const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
 
@@ -1646,36 +1723,30 @@ function createCircleThreePointHandle(
   return circleCenterGroup
 }
 
-function createExtraSegmentHandle(
-  scale: number,
-  texture: Texture,
-  theme: Themes
-): Group {
-  const particleMaterial = new PointsMaterial({
-    size: 12, // in pixels
-    map: texture,
-    transparent: true,
-    opacity: 0,
-    depthTest: false,
-  })
+function createExtraSegmentHandle(scale: number, theme: Themes): Group {
+  const extraSegmentGroup = new Group()
+  extraSegmentGroup.userData.type = EXTRA_SEGMENT_HANDLE
+  extraSegmentGroup.name = EXTRA_SEGMENT_HANDLE
+
   const mat = new MeshBasicMaterial({
     transparent: true,
     color: getThemeColorForThreeJs(theme),
     opacity: 0,
   })
-  const particleGeometry = new BufferGeometry().setFromPoints([
-    new Vector3(0, 0, 0),
-  ])
   const sphereMesh = new Mesh(new SphereGeometry(6, 12, 12), mat) // sphere radius in pixels
-  const particle = new Points(particleGeometry, particleMaterial)
-  particle.userData.ignoreColorChange = true
-  particle.userData.type = EXTRA_SEGMENT_HANDLE
-
-  const extraSegmentGroup = new Group()
-  extraSegmentGroup.userData.type = EXTRA_SEGMENT_HANDLE
-  extraSegmentGroup.name = EXTRA_SEGMENT_HANDLE
   extraSegmentGroup.add(sphereMesh)
-  extraSegmentGroup.add(particle)
+
+  const handleDiv = document.createElement('div')
+  handleDiv.classList.add('extra-segment-handle')
+  handleDiv.style.color = `#${getThemeColorForThreeJs(theme).toString(16).padStart(6, '0')}`
+
+  const cssObject = new CSS2DObject(handleDiv)
+  cssObject.userData.ignoreColorChange = true
+  cssObject.userData.type = EXTRA_SEGMENT_HANDLE
+  cssObject.position.set(0, 0, 0)
+
+  extraSegmentGroup.add(cssObject)
+
   extraSegmentGroup.scale.set(scale, scale, scale)
   return extraSegmentGroup
 }
@@ -1809,10 +1880,8 @@ export function createArcGeometry({
     ccw,
     0
   )
-  const shape = new Shape()
-  shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale)
-  shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale) // The width of the line
 
+  const shape = createLineShape(scale)
   if (!isDashed) {
     const points = arcStart.getPoints(50)
     const path = new CurvePath<Vector3>()
@@ -1992,12 +2061,10 @@ export function dashedStraight(
 function createLine({
   from,
   to,
-  scale,
   color,
 }: {
   from: [number, number]
   to: [number, number]
-  scale: number
   color: number
 }): Line {
   // Implementation for creating a line
@@ -2011,11 +2078,7 @@ function createLine({
 
 function updateLine(
   line: Line,
-  {
-    from,
-    to,
-    scale,
-  }: { from: [number, number]; to: [number, number]; scale: number }
+  { from, to }: { from: [number, number]; to: [number, number] }
 ) {
   // Implementation for updating a line
   const points = [
@@ -2030,14 +2093,12 @@ function createAngleIndicator({
   radius,
   startAngle,
   endAngle,
-  scale,
   color,
 }: {
   center: [number, number]
   radius: number
   startAngle: number
   endAngle: number
-  scale: number
   color: number
 }): Line {
   // Implementation for creating an angle indicator
@@ -2089,9 +2150,17 @@ function updateAngleIndicator(
   angleIndicator.geometry.setFromPoints(points)
 }
 
+// Used to create a line with thickness
+export function createLineShape(scale: number) {
+  const shape = new Shape()
+  shape.moveTo(0, (-SEGMENT_WIDTH_PX / 2) * scale) // The width of the line in px (2.4px in this case)
+  shape.lineTo(0, (SEGMENT_WIDTH_PX / 2) * scale)
+  return shape
+}
+
 export const segmentUtils = {
   straight: new StraightSegment(),
-  tangentialArcTo: new TangentialArcToSegment(),
+  tangentialArc: new TangentialArcToSegment(),
   circle: new CircleSegment(),
   circleThreePoint: new CircleThreePointSegment(),
   arc: new ArcSegment(),

@@ -5,7 +5,6 @@ use std::{fmt, iter::Enumerate, num::NonZeroUsize, str::FromStr};
 
 use anyhow::Result;
 use parse_display::Display;
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tokeniser::Input;
 use tower_lsp::lsp_types::SemanticTokenType;
@@ -16,10 +15,9 @@ use winnow::{
 };
 
 use crate::{
+    CompilationError, ModuleId, SourceRange,
     errors::KclError,
     parsing::ast::types::{ItemVisibility, VariableKind},
-    source_range::SourceRange,
-    CompilationError, ModuleId,
 };
 
 mod tokeniser;
@@ -27,13 +25,15 @@ mod tokeniser;
 pub(crate) use tokeniser::RESERVED_WORDS;
 
 // Note the ordering, it's important that `m` comes after `mm` and `cm`.
-pub const NUM_SUFFIXES: [&str; 9] = ["mm", "cm", "m", "inch", "in", "ft", "yd", "deg", "rad"];
+pub const NUM_SUFFIXES: [&str; 10] = ["mm", "cm", "m", "inch", "in", "ft", "yd", "deg", "rad", "?"];
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
 #[repr(u32)]
 pub enum NumericSuffix {
     None,
     Count,
+    Length,
+    Angle,
     Mm,
     Cm,
     M,
@@ -42,6 +42,7 @@ pub enum NumericSuffix {
     Yd,
     Deg,
     Rad,
+    Unknown,
 }
 
 impl NumericSuffix {
@@ -58,6 +59,9 @@ impl NumericSuffix {
         match self {
             NumericSuffix::None => &[],
             NumericSuffix::Count => b"_",
+            NumericSuffix::Unknown => b"?",
+            NumericSuffix::Length => b"Length",
+            NumericSuffix::Angle => b"Angle",
             NumericSuffix::Mm => b"mm",
             NumericSuffix::Cm => b"cm",
             NumericSuffix::M => b"m",
@@ -75,7 +79,9 @@ impl FromStr for NumericSuffix {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "_" => Ok(NumericSuffix::Count),
+            "_" | "Count" => Ok(NumericSuffix::Count),
+            "Length" => Ok(NumericSuffix::Length),
+            "Angle" => Ok(NumericSuffix::Angle),
             "mm" | "millimeters" => Ok(NumericSuffix::Mm),
             "cm" | "centimeters" => Ok(NumericSuffix::Cm),
             "m" | "meters" => Ok(NumericSuffix::M),
@@ -84,6 +90,7 @@ impl FromStr for NumericSuffix {
             "yd" | "yards" => Ok(NumericSuffix::Yd),
             "deg" | "degrees" => Ok(NumericSuffix::Deg),
             "rad" | "radians" => Ok(NumericSuffix::Rad),
+            "?" => Ok(NumericSuffix::Unknown),
             _ => Err(CompilationError::err(SourceRange::default(), "invalid unit of measure")),
         }
     }
@@ -94,6 +101,9 @@ impl fmt::Display for NumericSuffix {
         match self {
             NumericSuffix::None => Ok(()),
             NumericSuffix::Count => write!(f, "_"),
+            NumericSuffix::Unknown => write!(f, "_?"),
+            NumericSuffix::Length => write!(f, "Length"),
+            NumericSuffix::Angle => write!(f, "Angle"),
             NumericSuffix::Mm => write!(f, "mm"),
             NumericSuffix::Cm => write!(f, "cm"),
             NumericSuffix::M => write!(f, "m"),
@@ -133,7 +143,7 @@ impl TokenStream {
         self.tokens.is_empty()
     }
 
-    pub fn as_slice(&self) -> TokenSlice {
+    pub fn as_slice(&self) -> TokenSlice<'_> {
         TokenSlice::from(self)
     }
 }
@@ -239,6 +249,11 @@ impl<'a> Stream for TokenSlice<'a> {
         Some(token)
     }
 
+    /// Split off the next token from the input
+    fn peek_token(&self) -> Option<Self::Token> {
+        Some(self.first()?.clone())
+    }
+
     fn offset_for<P>(&self, predicate: P) -> Option<usize>
     where
         P: Fn(Self::Token) -> bool,
@@ -264,6 +279,17 @@ impl<'a> Stream for TokenSlice<'a> {
         };
         self.start += offset;
         next
+    }
+
+    /// Split off a slice of tokens from the input
+    fn peek_slice(&self, offset: usize) -> Self::Slice {
+        assert!(self.start + offset <= self.end);
+
+        TokenSlice {
+            stream: self.stream,
+            start: self.start,
+            end: self.start + offset,
+        }
     }
 
     fn checkpoint(&self) -> Self::Checkpoint {
@@ -357,6 +383,8 @@ pub enum TokenType {
     Period,
     /// A double period: `..`.
     DoublePeriod,
+    /// A double period and a less than: `..<`.
+    DoublePeriodLessThan,
     /// A line comment.
     LineComment,
     /// A block comment.
@@ -398,6 +426,7 @@ impl TryFrom<TokenType> for SemanticTokenType {
             | TokenType::DoubleColon
             | TokenType::Period
             | TokenType::DoublePeriod
+            | TokenType::DoublePeriodLessThan
             | TokenType::Hash
             | TokenType::Dollar
             | TokenType::At
@@ -566,10 +595,10 @@ impl From<ParseError<Input<'_>, winnow::error::ContextError>> for KclError {
             // This is an offset, not an index, and may point to
             // the end of input (input.len()) on eof errors.
 
-            return KclError::Lexical(crate::errors::KclErrorDetails {
-                source_ranges: vec![SourceRange::new(offset, offset, module_id)],
-                message: "unexpected EOF while parsing".to_string(),
-            });
+            return KclError::new_lexical(crate::errors::KclErrorDetails::new(
+                "unexpected EOF while parsing".to_owned(),
+                vec![SourceRange::new(offset, offset, module_id)],
+            ));
         }
 
         // TODO: Add the Winnow tokenizer context to the error.
@@ -577,9 +606,9 @@ impl From<ParseError<Input<'_>, winnow::error::ContextError>> for KclError {
         let bad_token = &input[offset];
         // TODO: Add the Winnow parser context to the error.
         // See https://github.com/KittyCAD/modeling-app/issues/784
-        KclError::Lexical(crate::errors::KclErrorDetails {
-            source_ranges: vec![SourceRange::new(offset, offset + 1, module_id)],
-            message: format!("found unknown token '{}'", bad_token),
-        })
+        KclError::new_lexical(crate::errors::KclErrorDetails::new(
+            format!("found unknown token '{bad_token}'"),
+            vec![SourceRange::new(offset, offset + 1, module_id)],
+        ))
     }
 }

@@ -20,8 +20,9 @@ export class EditorFixture {
   private paneButtonTestId = 'code-pane-button'
   private diagnosticsTooltip!: Locator
   private diagnosticsGutterIcon!: Locator
-  private codeContent!: Locator
+  public codeContent!: Locator
   public activeLine!: Locator
+  public lines!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -29,12 +30,13 @@ export class EditorFixture {
     this.diagnosticsTooltip = page.locator('.cm-tooltip-lint')
     this.diagnosticsGutterIcon = page.locator('.cm-lint-marker-error')
     this.activeLine = this.page.locator('.cm-activeLine')
+    this.lines = this.page.locator('.cm-line')
   }
 
   private _expectEditorToContain =
     (not = false) =>
     async (
-      code: string,
+      code: string | RegExp,
       {
         shouldNormalise = false,
         timeout = 5_000,
@@ -49,16 +51,20 @@ export class EditorFixture {
           await this.closePane()
         }
       }
+
+      await this.scrollToBottom()
       if (!shouldNormalise) {
-        const expectStart = expect.poll(() => this.codeContent.textContent())
-        if (not) {
-          const result = await expectStart.not.toContain(code)
-          await resetPane()
-          return result
-        }
-        const result = await expectStart.toContain(code)
+        const result = not
+          ? await expect(this.codeContent).not.toContainText(code, { timeout })
+          : await expect(this.codeContent).toContainText(code, { timeout })
+
         await resetPane()
         return result
+      }
+      if (typeof code !== 'string') {
+        throw new Error(
+          'The `shouldNormalise` option does not work with a RegExp value for `code` argument'
+        )
       }
       const normalisedCode = code.replaceAll(/\s+/g, '').trim()
       const expectStart = expect.poll(
@@ -88,14 +94,24 @@ export class EditorFixture {
     },
   }
   getCurrentCode = async () => {
-    return await this.codeContent.innerText()
+    const isOpen = await this.checkIfPaneIsOpen()
+    if (isOpen) {
+      await this.scrollToBottom()
+      return await this.codeContent.innerText()
+    }
+
+    await this.openPane()
+    await this.scrollToBottom()
+    const code = await this.codeContent.innerText()
+    await this.closePane()
+    return code
   }
   snapshot = async (options?: { timeout?: number; name?: string }) => {
     const wasPaneOpen = await this.checkIfPaneIsOpen()
     if (!wasPaneOpen) {
       await this.openPane()
     }
-
+    await this.scrollToBottom()
     try {
       // Use expect.poll to implement retry logic
       await expect
@@ -180,17 +196,28 @@ export class EditorFixture {
   openPane() {
     return openPane(this.page, this.paneButtonTestId)
   }
+  async scrollToBottom() {
+    let nextLineCount = await this.lines.count()
+    let currLineCount: number
+    do {
+      currLineCount = nextLineCount
+      await this.lines.last().scrollIntoViewIfNeeded()
+      await this.page.waitForTimeout(50)
+      nextLineCount = await this.lines.count()
+    } while (nextLineCount !== currLineCount)
+  }
   scrollToText(text: string, placeCursor?: boolean) {
     return this.page.evaluate(
       (args: { text: string; placeCursor?: boolean }) => {
+        const editorView = window.editorManager.getEditorView()
         // error TS2339: Property 'docView' does not exist on type 'EditorView'.
         // Except it does so :shrug:
         // @ts-ignore
-        let index = window.editorManager._editorView?.docView.view.state.doc
+        const index = editorView?.docView.view.state.doc
           .toString()
           .indexOf(args.text)
-        window.editorManager._editorView?.focus()
-        window.editorManager._editorView?.dispatch({
+        editorView?.focus()
+        editorView?.dispatch({
           selection: window.EditorSelection.create([
             window.EditorSelection.cursor(index),
           ]),

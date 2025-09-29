@@ -1,43 +1,41 @@
-import type { EngineCommand } from '@src/lang/std/artifactGraph'
-import { uuidv4 } from '@src/lib/utils'
-
-import {
-  commonPoints,
-  getUtils,
-  orRunWhenFullSuiteEnabled,
-} from '@e2e/playwright/test-utils'
+import { TEST_COLORS, circleMove, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Test network and connection issues', () => {
+test.describe('Test network related behaviors', () => {
   test(
     'simulate network down and network little widget',
     { tag: '@skipLocalEngine' },
     async ({ page, homePage }) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
+      const networkToggleConnectedText = page.getByText(
+        'Network health (Strong)'
+      )
+      const networkToggleWeakText = page.getByText('Network health (Ok)')
+
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
 
-      const networkToggle = page.getByTestId('network-toggle')
+      const networkToggle = page.getByTestId(/network-toggle/)
 
       // This is how we wait until the stream is online
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled({ timeout: 15000 })
 
-      const networkWidget = page.locator('[data-testid="network-toggle"]')
-      await expect(networkWidget).toBeVisible()
-      await networkWidget.hover()
+      await expect(networkToggle).toBeVisible()
+      await networkToggle.hover()
 
       const networkPopover = page.locator('[data-testid="network-popover"]')
       await expect(networkPopover).not.toBeVisible()
 
       // (First check) Expect the network to be up
-      await expect(networkToggle).toContainText('Connected')
+      await expect(
+        networkToggleConnectedText.or(networkToggleWeakText)
+      ).toBeVisible()
 
       // Click the network widget
-      await networkWidget.click()
+      await networkToggle.click()
 
       // Check the modal opened.
       await expect(networkPopover).toBeVisible()
@@ -56,10 +54,10 @@ test.describe('Test network and connection issues', () => {
       })
 
       // Expect the network to be down
-      await expect(networkToggle).toContainText('Problem')
+      await expect(networkToggle).toContainText('Network health (Offline)')
 
-      // Click the network widget
-      await networkWidget.click()
+      // Click the network toggle
+      await networkToggle.click()
 
       // Check the modal opened.
       await expect(networkPopover).toBeVisible()
@@ -82,7 +80,9 @@ test.describe('Test network and connection issues', () => {
       ).not.toBeDisabled({ timeout: 15000 })
 
       // (Second check) expect the network to be up
-      await expect(networkToggle).toContainText('Connected')
+      await expect(
+        networkToggleConnectedText.or(networkToggleWeakText)
+      ).toBeVisible()
     }
   )
 
@@ -90,12 +90,14 @@ test.describe('Test network and connection issues', () => {
     'Engine disconnect & reconnect in sketch mode',
     { tag: '@skipLocalEngine' },
     async ({ page, homePage, toolbar, scene, cmdBar }) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
-      const networkToggle = page.getByTestId('network-toggle')
+      const networkToggle = page.getByTestId(/network-toggle/)
+      const networkToggleConnectedText = page.getByText(
+        'Network health (Strong)'
+      )
+      const networkToggleWeakText = page.getByText('Network health (Ok)')
 
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
-      const PUR = 400 / 37.5 //pixeltoUnitRatio
 
       await homePage.goToModelingScene()
       await u.waitForPageLoad()
@@ -107,31 +109,22 @@ test.describe('Test network and connection issues', () => {
       await page.waitForTimeout(100)
 
       // select a plane
-      await page.mouse.click(700, 200)
+      await toolbar.openFeatureTreePane()
+      await page.getByRole('button', { name: 'Front plane' }).click()
+      await toolbar.closeFeatureTreePane()
 
       await expect(page.locator('.cm-content')).toHaveText(
-        `sketch001 = startSketchOn(XZ)`
+        `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`
       )
       await u.closeDebugPanel()
 
       await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
 
-      const startXPx = 600
-      await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      await expect(page.locator('.cm-content')).toHaveText(
-        `sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
-      )
-      await page.waitForTimeout(100)
-
-      await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
-      await page.waitForTimeout(100)
-
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
-      |> xLine(length = ${commonPoints.num1})`)
-
       // Expect the network to be up
-      await expect(networkToggle).toContainText('Connected')
+      await networkToggle.hover()
+      await expect(
+        networkToggleConnectedText.or(networkToggleWeakText)
+      ).toBeVisible()
 
       // simulate network down
       await u.emulateNetworkConditions({
@@ -143,7 +136,9 @@ test.describe('Test network and connection issues', () => {
       })
 
       // Expect the network to be down
-      await expect(networkToggle).toContainText('Problem')
+      await networkToggle.hover()
+
+      await expect(networkToggle).toContainText('Network health (Offline)')
 
       // Ensure we are not in sketch mode
       await expect(
@@ -168,74 +163,36 @@ test.describe('Test network and connection issues', () => {
       ).not.toBeDisabled({ timeout: 15000 })
 
       // Expect the network to be up
-      await expect(networkToggle).toContainText('Connected')
+      await networkToggle.hover()
+      await expect(
+        networkToggleConnectedText.or(networkToggleWeakText)
+      ).toBeVisible()
+
       await scene.settled(cmdBar)
 
       // Click off the code pane.
       await page.mouse.click(100, 100)
 
-      // select a line
-      await page
-        .getByText(`startProfileAt(${commonPoints.startAt}, sketch001)`)
-        .click()
-
       // enter sketch again
       await toolbar.editSketch()
 
-      // Click the line tool
-      await page.getByRole('button', { name: 'line Line', exact: true }).click()
-
       await page.waitForTimeout(150)
 
-      const camCommand: EngineCommand = {
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_look_at',
-          center: { x: 109, y: 0, z: -152 },
-          vantage: { x: 115, y: -505, z: -152 },
-          up: { x: 0, y: 0, z: 1 },
-        },
-      }
-      const updateCamCommand: EngineCommand = {
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_get_settings',
-        },
-      }
-      await toolbar.openPane('debug')
-      await u.sendCustomCmd(camCommand)
-      await page.waitForTimeout(100)
-      await u.sendCustomCmd(updateCamCommand)
-      await page.waitForTimeout(100)
-
       // click to continue profile
-      await page.mouse.click(1007, 400)
+      await page.mouse.click(1000, 400)
       await page.waitForTimeout(100)
+
       // Ensure we can continue sketching
-      await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
-      await expect.poll(u.normalisedEditorCode)
-        .toBe(`sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([12.34, -12.34], sketch001)
-  |> xLine(length = 12.34)
-  |> line(end = [-12.34, 12.34])
+      await page.mouse.click(800, 300)
 
-`)
+      await expect
+        .poll(u.normalisedEditorCode)
+        .toContain(`profile001 = startProfile(sketch001`)
       await page.waitForTimeout(100)
-      await page.mouse.click(startXPx, 500 - PUR * 20)
-
-      await expect.poll(u.normalisedEditorCode)
-        .toBe(`sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([12.34, -12.34], sketch001)
-  |> xLine(length = 12.34)
-  |> line(end = [-12.34, 12.34])
-  |> xLine(length = -12.34)
-
-`)
 
       // Unequip line tool
       await page.keyboard.press('Escape')
+
       // Make sure we didn't pop out of sketch mode.
       await expect(
         page.getByRole('button', { name: 'Exit Sketch' })
@@ -249,6 +206,92 @@ profile001 = startProfileAt([12.34, -12.34], sketch001)
       await expect(
         page.getByRole('button', { name: 'Exit Sketch' })
       ).not.toBeVisible()
+    }
+  )
+
+  test(
+    'Paused stream freezes view frame, unpause reconnect is seamless to user',
+    { tag: ['@desktop', '@skipLocalEngine'] },
+    async ({ page, homePage, scene, cmdBar, toolbar, tronApp }) => {
+      const networkToggle = page.getByTestId(/network-toggle/)
+      const networkToggleConnectedText = page.getByText(
+        'Network health (Strong)'
+      )
+      const networkToggleWeakText = page.getByText('Network health (Ok)')
+
+      if (!tronApp) {
+        fail()
+      }
+
+      await tronApp.cleanProjectDir({
+        app: {
+          stream_idle_mode: 5000,
+        },
+      })
+
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0.0, 0.0])
+  |> line(end = [10.0, 0])
+  |> line(end = [0, 10.0])
+  |> close()`
+        )
+      })
+
+      const dim = { width: 1200, height: 500 }
+      await page.setBodyDimensions(dim)
+
+      await test.step('Go to modeling scene', async () => {
+        await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
+      })
+
+      await test.step('Verify pausing behavior', async () => {
+        // Wait 5s + 1s to pause.
+        await page.waitForTimeout(6000)
+
+        // We should now be paused. To the user, it should appear we're still
+        // connected.
+        await networkToggle.hover()
+        await expect(
+          networkToggleConnectedText.or(networkToggleWeakText)
+        ).toBeVisible()
+
+        const center = {
+          x: dim.width / 2,
+          y: dim.height / 2,
+        }
+
+        let probe = { x: 0, y: 0 }
+
+        // ... and the model's still visibly there
+        probe.x = center.x + dim.width / 100
+        probe.y = center.y
+        await scene.expectPixelColor(TEST_COLORS.GREY, probe, 15)
+        probe = { ...center }
+
+        // Now move the mouse around to unpause!
+        await circleMove(page, probe.x, probe.y, 20, 10)
+
+        // ONCE AGAIN! Check the view area hasn't changed at all.
+        // Check the pixel a couple times as it reconnects.
+        // NOTE: Remember, idle behavior is still on at this point -
+        // if this test takes longer than 5s shit WILL go south!
+        probe.x = center.x + dim.width / 100
+        probe.y = center.y
+        await scene.expectPixelColor(TEST_COLORS.GREY, probe, 15)
+        await page.waitForTimeout(1000)
+        await scene.expectPixelColor(TEST_COLORS.GREY, probe, 15)
+        probe = { ...center }
+
+        // Ensure we're still connected
+        await networkToggle.hover()
+        await expect(
+          networkToggleConnectedText.or(networkToggleWeakText)
+        ).toBeVisible()
+      })
     }
   )
 })

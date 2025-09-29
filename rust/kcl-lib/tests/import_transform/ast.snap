@@ -8,10 +8,12 @@ description: Result of parsing import_transform.kcl
       {
         "commentStart": 0,
         "end": 0,
+        "moduleId": 0,
         "outerAttrs": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": null,
             "properties": [
               {
@@ -20,19 +22,23 @@ description: Result of parsing import_transform.kcl
                 "key": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "lengthUnit",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "moduleId": 0,
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
                   "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "m",
                     "start": 0,
                     "type": "Identifier"
@@ -57,6 +63,7 @@ description: Result of parsing import_transform.kcl
           "alias": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "screw",
             "start": 0,
             "type": "Identifier"
@@ -75,9 +82,11 @@ description: Result of parsing import_transform.kcl
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "screw",
                 "start": 0,
                 "type": "Identifier"
@@ -94,6 +103,7 @@ description: Result of parsing import_transform.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "roll",
                     "start": 0,
                     "type": "Identifier"
@@ -101,6 +111,7 @@ description: Result of parsing import_transform.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "3.14",
                     "start": 0,
                     "type": "Literal",
@@ -116,6 +127,7 @@ description: Result of parsing import_transform.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "pitch",
                     "start": 0,
                     "type": "Identifier"
@@ -123,6 +135,7 @@ description: Result of parsing import_transform.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "3.14",
                     "start": 0,
                     "type": "Literal",
@@ -138,6 +151,7 @@ description: Result of parsing import_transform.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "yaw",
                     "start": 0,
                     "type": "Identifier"
@@ -145,6 +159,7 @@ description: Result of parsing import_transform.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "3.14",
                     "start": 0,
                     "type": "Literal",
@@ -160,9 +175,11 @@ description: Result of parsing import_transform.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "rotate",
                   "start": 0,
                   "type": "Identifier"
@@ -173,12 +190,14 @@ description: Result of parsing import_transform.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
                 "type": "PipeSubstitution"
@@ -191,6 +210,7 @@ description: Result of parsing import_transform.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
@@ -198,6 +218,7 @@ description: Result of parsing import_transform.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "3.14",
                     "start": 0,
                     "type": "Literal",
@@ -213,6 +234,7 @@ description: Result of parsing import_transform.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "y",
                     "start": 0,
                     "type": "Identifier"
@@ -220,6 +242,7 @@ description: Result of parsing import_transform.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "3.14",
                     "start": 0,
                     "type": "Literal",
@@ -235,6 +258,7 @@ description: Result of parsing import_transform.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "z",
                     "start": 0,
                     "type": "Identifier"
@@ -242,6 +266,7 @@ description: Result of parsing import_transform.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "3.14",
                     "start": 0,
                     "type": "Literal",
@@ -257,9 +282,11 @@ description: Result of parsing import_transform.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "translate",
                   "start": 0,
                   "type": "Identifier"
@@ -270,12 +297,14 @@ description: Result of parsing import_transform.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
                 "type": "PipeSubstitution"
@@ -288,6 +317,7 @@ description: Result of parsing import_transform.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "x",
                     "start": 0,
                     "type": "Identifier"
@@ -295,6 +325,7 @@ description: Result of parsing import_transform.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "3.14",
                     "start": 0,
                     "type": "Literal",
@@ -310,6 +341,7 @@ description: Result of parsing import_transform.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "y",
                     "start": 0,
                     "type": "Identifier"
@@ -317,6 +349,7 @@ description: Result of parsing import_transform.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "3.14",
                     "start": 0,
                     "type": "Literal",
@@ -332,6 +365,7 @@ description: Result of parsing import_transform.kcl
                   "label": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "name": "z",
                     "start": 0,
                     "type": "Identifier"
@@ -339,6 +373,7 @@ description: Result of parsing import_transform.kcl
                   "arg": {
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "raw": "3.14",
                     "start": 0,
                     "type": "Literal",
@@ -354,9 +389,11 @@ description: Result of parsing import_transform.kcl
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "scale",
                   "start": 0,
                   "type": "Identifier"
@@ -367,12 +404,14 @@ description: Result of parsing import_transform.kcl
               },
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
                 "type": "PipeSubstitution"
@@ -381,10 +420,12 @@ description: Result of parsing import_transform.kcl
           ],
           "commentStart": 0,
           "end": 0,
+          "moduleId": 0,
           "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -392,12 +433,14 @@ description: Result of parsing import_transform.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

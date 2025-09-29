@@ -1,0 +1,57 @@
+// Impeller (Flat-bladed)
+// A parametric impeller with straight, flat blades used in centrifugal fans or pumps. Moves air or fluid radially outward from the center. Useful for mechanical design and prototyping.
+
+
+
+
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+// parameters
+bladeCount = 4 // number of blades
+outerDiameter = 120 // total impeller diameter
+hubOutsideDiameter = 35 // outer diameter of the central hub
+boreDiameter = 25 // shaft bore diameter
+baseThickness = 5 // thickness of the back plate
+hubHeight = 35 // height of cylindrical hub
+bladeLength = 80 // radial length of blade (root to tip)
+bladeHeight = 40 // vertical height of each blade
+bladeThickness = 3 // width (thickness) of each blade
+
+
+// derived
+outerRadius = outerDiameter / 2
+bladeRootRadius = hubOutsideDiameter / 2 + (outerDiameter - hubOutsideDiameter) / 4
+bladeTipRadius = bladeRootRadius + bladeLength
+
+// blade profile (positioned mid-height)
+bladeSketch = startSketchOn(offsetPlane(XY, offset = -bladeHeight / 2))
+bladeProfile = startProfile(bladeSketch, at = [bladeRootRadius, 0])
+  |> xLine(length = bladeLength)
+  |> yLine(length = bladeThickness)
+  |> xLine(length = -bladeLength)
+  |> close()
+blade = extrude(bladeProfile, length = bladeHeight)
+
+// pattern blades around center
+blades = patternCircular3d(
+  blade,
+  axis = [0, 0, 1],
+  center = [0, 0, 0],
+  instances = bladeCount,
+  arcDegrees = 360,
+)
+
+// back plate (base disk)
+diskSketch = startSketchOn(offsetPlane(XY, offset = -baseThickness / 2))
+disk = circle(diskSketch, center = [0, 0], radius = outerRadius)
+backPlate = extrude(disk, length = baseThickness)
+
+// hub cylinder
+hubSketch = startSketchOn(backPlate, face = END)
+hubCircle = circle(hubSketch, center = [0, 0], radius = hubOutsideDiameter / 2)
+hub = extrude(hubCircle, length = hubHeight)
+
+// bore cutout
+boreSketch = startSketchOn(backPlate, face = START)
+boreCircle = circle(boreSketch, center = [0, 0], radius = boreDiameter / 2)
+boreCut = extrude(boreCircle, length = -(baseThickness + hubHeight))

@@ -35,13 +35,13 @@ Program(ExpressionStatement(String),
 
 # VariableDeclaration
 
-let a = 'abc'
-export const x = 0.2
+a = 'abc'
+export x = 0.2
 
 ==>
 
-Program(VariableDeclaration(let, VariableDefinition, Equals, String),
-        VariableDeclaration(export, const, VariableDefinition, Equals, Number))
+Program(VariableDeclaration(VariableDefinition, Equals, String),
+        VariableDeclaration(export, VariableDefinition, Equals, Number))
 
 # IfExpression
 

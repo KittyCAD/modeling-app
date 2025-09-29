@@ -21,9 +21,7 @@
 .toggle > span {
   @apply relative rounded border border-chalkboard-70 hover:border-chalkboard-80 cursor-pointer;
   border-width: var(--border);
-  width: calc(
-    2 * (var(--toggle-size) + var(--padding) * 2 - var(--border) * 2)
-  );
+  width: calc(2 * (var(--toggle-size) + var(--padding) * 2 - var(--border) * 2));
   height: calc(var(--toggle-size) + var(--padding) * 2 - var(--border) * 2);
 }
 
@@ -35,7 +33,7 @@
   width: var(--toggle-size);
   height: var(--toggle-size);
   border-radius: calc(var(--toggle-size) / 8);
-  content: '';
+  content: "";
   @apply absolute bg-chalkboard-70;
   top: 50%;
   left: 50%;

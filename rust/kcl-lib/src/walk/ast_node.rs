@@ -1,6 +1,6 @@
 use crate::{
+    SourceRange,
     parsing::ast::types::{self, NodeRef},
-    source_range::SourceRange,
 };
 
 /// The "Node" type wraps all the AST elements we're able to find in a KCL
@@ -17,13 +17,13 @@ pub enum Node<'a> {
 
     VariableDeclarator(NodeRef<'a, types::VariableDeclarator>),
 
+    NumericLiteral(NodeRef<'a, types::NumericLiteral>),
     Literal(NodeRef<'a, types::Literal>),
     TagDeclarator(NodeRef<'a, types::TagDeclarator>),
     Identifier(NodeRef<'a, types::Identifier>),
     Name(NodeRef<'a, types::Name>),
     BinaryExpression(NodeRef<'a, types::BinaryExpression>),
     FunctionExpression(NodeRef<'a, types::FunctionExpression>),
-    CallExpression(NodeRef<'a, types::CallExpression>),
     CallExpressionKw(NodeRef<'a, types::CallExpressionKw>),
     PipeExpression(NodeRef<'a, types::PipeExpression>),
     PipeSubstitution(NodeRef<'a, types::PipeSubstitution>),
@@ -35,7 +35,10 @@ pub enum Node<'a> {
     IfExpression(NodeRef<'a, types::IfExpression>),
     ElseIf(&'a types::ElseIf),
     LabelledExpression(NodeRef<'a, types::LabelledExpression>),
-    Ascription(NodeRef<'a, types::Ascription>),
+    AscribedExpression(NodeRef<'a, types::AscribedExpression>),
+    SketchBlock(NodeRef<'a, types::SketchBlock>),
+    Block(NodeRef<'a, types::Block>),
+    SketchVar(NodeRef<'a, types::SketchVar>),
 
     Parameter(&'a types::Parameter),
 
@@ -58,13 +61,13 @@ impl Node<'_> {
             Node::TypeDeclaration(n) => n.digest,
             Node::ReturnStatement(n) => n.digest,
             Node::VariableDeclarator(n) => n.digest,
+            Node::NumericLiteral(n) => n.digest,
             Node::Literal(n) => n.digest,
             Node::TagDeclarator(n) => n.digest,
             Node::Identifier(n) => n.digest,
             Node::Name(n) => n.digest,
             Node::BinaryExpression(n) => n.digest,
             Node::FunctionExpression(n) => n.digest,
-            Node::CallExpression(n) => n.digest,
             Node::CallExpressionKw(n) => n.digest,
             Node::PipeExpression(n) => n.digest,
             Node::PipeSubstitution(n) => n.digest,
@@ -79,7 +82,10 @@ impl Node<'_> {
             Node::ElseIf(n) => n.digest,
             Node::KclNone(n) => n.digest,
             Node::LabelledExpression(n) => n.digest,
-            Node::Ascription(n) => n.digest,
+            Node::AscribedExpression(n) => n.digest,
+            Node::SketchBlock(n) => n.digest,
+            Node::Block(n) => n.digest,
+            Node::SketchVar(n) => n.digest,
         }
     }
 
@@ -103,13 +109,13 @@ impl Node<'_> {
             Node::TypeDeclaration(n) => *n as *const _ as *const (),
             Node::ReturnStatement(n) => *n as *const _ as *const (),
             Node::VariableDeclarator(n) => *n as *const _ as *const (),
+            Node::NumericLiteral(n) => *n as *const _ as *const (),
             Node::Literal(n) => *n as *const _ as *const (),
             Node::TagDeclarator(n) => *n as *const _ as *const (),
             Node::Identifier(n) => *n as *const _ as *const (),
             Node::Name(n) => *n as *const _ as *const (),
             Node::BinaryExpression(n) => *n as *const _ as *const (),
             Node::FunctionExpression(n) => *n as *const _ as *const (),
-            Node::CallExpression(n) => *n as *const _ as *const (),
             Node::CallExpressionKw(n) => *n as *const _ as *const (),
             Node::PipeExpression(n) => *n as *const _ as *const (),
             Node::PipeSubstitution(n) => *n as *const _ as *const (),
@@ -124,7 +130,10 @@ impl Node<'_> {
             Node::ElseIf(n) => *n as *const _ as *const (),
             Node::KclNone(n) => *n as *const _ as *const (),
             Node::LabelledExpression(n) => *n as *const _ as *const (),
-            Node::Ascription(n) => *n as *const _ as *const (),
+            Node::AscribedExpression(n) => *n as *const _ as *const (),
+            Node::SketchBlock(n) => *n as *const _ as *const (),
+            Node::Block(n) => *n as *const _ as *const (),
+            Node::SketchVar(n) => *n as *const _ as *const (),
         }
     }
 }
@@ -148,13 +157,13 @@ impl TryFrom<&Node<'_>> for SourceRange {
             Node::TypeDeclaration(n) => SourceRange::from(*n),
             Node::ReturnStatement(n) => SourceRange::from(*n),
             Node::VariableDeclarator(n) => SourceRange::from(*n),
+            Node::NumericLiteral(n) => SourceRange::from(*n),
             Node::Literal(n) => SourceRange::from(*n),
             Node::TagDeclarator(n) => SourceRange::from(*n),
             Node::Identifier(n) => SourceRange::from(*n),
             Node::Name(n) => SourceRange::from(*n),
             Node::BinaryExpression(n) => SourceRange::from(*n),
             Node::FunctionExpression(n) => SourceRange::from(*n),
-            Node::CallExpression(n) => SourceRange::from(*n),
             Node::CallExpressionKw(n) => SourceRange::from(*n),
             Node::PipeExpression(n) => SourceRange::from(*n),
             Node::PipeSubstitution(n) => SourceRange::from(*n),
@@ -167,7 +176,10 @@ impl TryFrom<&Node<'_>> for SourceRange {
             Node::ObjectProperty(n) => SourceRange::from(*n),
             Node::IfExpression(n) => SourceRange::from(*n),
             Node::LabelledExpression(n) => SourceRange::from(*n),
-            Node::Ascription(n) => SourceRange::from(*n),
+            Node::AscribedExpression(n) => SourceRange::from(*n),
+            Node::SketchBlock(n) => SourceRange::from(*n),
+            Node::Block(n) => SourceRange::from(*n),
+            Node::SketchVar(n) => SourceRange::from(*n),
 
             // This is broken too
             Node::ElseIf(n) => SourceRange::new(n.cond.start(), n.cond.end(), n.cond.module_id()),
@@ -199,7 +211,6 @@ impl<'tree> From<&'tree types::Expr> for Node<'tree> {
             types::Expr::Name(id) => id.as_ref().into(),
             types::Expr::BinaryExpression(be) => be.as_ref().into(),
             types::Expr::FunctionExpression(fe) => fe.as_ref().into(),
-            types::Expr::CallExpression(ce) => ce.as_ref().into(),
             types::Expr::CallExpressionKw(ce) => ce.as_ref().into(),
             types::Expr::PipeExpression(pe) => pe.as_ref().into(),
             types::Expr::PipeSubstitution(ps) => ps.as_ref().into(),
@@ -211,6 +222,8 @@ impl<'tree> From<&'tree types::Expr> for Node<'tree> {
             types::Expr::IfExpression(e) => e.as_ref().into(),
             types::Expr::LabelledExpression(e) => e.as_ref().into(),
             types::Expr::AscribedExpression(e) => e.as_ref().into(),
+            types::Expr::SketchBlock(e) => e.as_ref().into(),
+            types::Expr::SketchVar(e) => e.as_ref().into(),
             types::Expr::None(n) => n.into(),
         }
     }
@@ -222,29 +235,15 @@ impl<'tree> From<&'tree types::BinaryPart> for Node<'tree> {
             types::BinaryPart::Literal(lit) => lit.as_ref().into(),
             types::BinaryPart::Name(id) => id.as_ref().into(),
             types::BinaryPart::BinaryExpression(be) => be.as_ref().into(),
-            types::BinaryPart::CallExpression(ce) => ce.as_ref().into(),
             types::BinaryPart::CallExpressionKw(ce) => ce.as_ref().into(),
             types::BinaryPart::UnaryExpression(ue) => ue.as_ref().into(),
             types::BinaryPart::MemberExpression(me) => me.as_ref().into(),
+            types::BinaryPart::ArrayExpression(e) => e.as_ref().into(),
+            types::BinaryPart::ArrayRangeExpression(e) => e.as_ref().into(),
+            types::BinaryPart::ObjectExpression(e) => e.as_ref().into(),
             types::BinaryPart::IfExpression(e) => e.as_ref().into(),
-        }
-    }
-}
-
-impl<'tree> From<&'tree types::MemberObject> for Node<'tree> {
-    fn from(node: &'tree types::MemberObject) -> Self {
-        match node {
-            types::MemberObject::MemberExpression(me) => me.as_ref().into(),
-            types::MemberObject::Identifier(id) => id.as_ref().into(),
-        }
-    }
-}
-
-impl<'tree> From<&'tree types::LiteralIdentifier> for Node<'tree> {
-    fn from(node: &'tree types::LiteralIdentifier) -> Self {
-        match node {
-            types::LiteralIdentifier::Identifier(id) => id.as_ref().into(),
-            types::LiteralIdentifier::Literal(lit) => lit.as_ref().into(),
+            types::BinaryPart::AscribedExpression(e) => e.as_ref().into(),
+            types::BinaryPart::SketchVar(e) => e.as_ref().into(),
         }
     }
 }
@@ -276,13 +275,13 @@ impl_from!(Node, VariableDeclaration);
 impl_from!(Node, TypeDeclaration);
 impl_from!(Node, ReturnStatement);
 impl_from!(Node, VariableDeclarator);
+impl_from!(Node, NumericLiteral);
 impl_from!(Node, Literal);
 impl_from!(Node, TagDeclarator);
 impl_from!(Node, Identifier);
 impl_from!(Node, Name);
 impl_from!(Node, BinaryExpression);
 impl_from!(Node, FunctionExpression);
-impl_from!(Node, CallExpression);
 impl_from!(Node, CallExpressionKw);
 impl_from!(Node, PipeExpression);
 impl_from!(Node, PipeSubstitution);
@@ -296,7 +295,10 @@ impl_from_ref!(Node, Parameter);
 impl_from!(Node, IfExpression);
 impl_from!(Node, ElseIf);
 impl_from!(Node, LabelledExpression);
-impl_from!(Node, Ascription);
+impl_from!(Node, AscribedExpression);
+impl_from!(Node, SketchBlock);
+impl_from!(Node, Block);
+impl_from!(Node, SketchVar);
 impl_from!(Node, KclNone);
 
 #[cfg(test)]
@@ -304,20 +306,18 @@ mod tests {
     use super::*;
 
     macro_rules! kcl {
-        ( $kcl:expr ) => {{
-            $crate::parsing::top_level_parse($kcl).unwrap()
-        }};
+        ( $kcl:expr_2021 ) => {{ $crate::parsing::top_level_parse($kcl).unwrap() }};
     }
 
     #[test]
     fn check_ptr_eq() {
         let program = kcl!(
             "
-const foo = 1
-const bar = foo + 1
+foo = 1
+bar = foo + 1
 
-fn myfn = () => {
-    const foo = 2
+fn myfn() {
+    foo = 2
     sin(foo)
 }
 "

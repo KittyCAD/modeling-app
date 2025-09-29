@@ -13,6 +13,7 @@ description: Result of parsing intersect_cubes.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "cube",
             "start": 0,
             "type": "Identifier"
@@ -24,31 +25,16 @@ description: Result of parsing intersect_cubes.kcl
                   "argument": {
                     "body": [
                       {
-                        "arguments": [
-                          {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "XY",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          }
-                        ],
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "startSketchOn",
                             "start": 0,
                             "type": "Identifier"
@@ -59,145 +45,28 @@ description: Result of parsing intersect_cubes.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "left": {
-                                  "commentStart": 0,
-                                  "computed": false,
-                                  "end": 0,
-                                  "object": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "center",
-                                    "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "property": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "raw": "0",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 0.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                },
-                                "operator": "-",
-                                "right": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "raw": "10",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 10.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "left": {
-                                  "commentStart": 0,
-                                  "computed": false,
-                                  "end": 0,
-                                  "object": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "center",
-                                    "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "property": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "raw": "1",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 1.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                },
-                                "operator": "-",
-                                "right": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "raw": "10",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 10.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              }
-                            ],
-                            "end": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          },
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "start": 0,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
-                        ],
-                        "callee": {
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": {
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
-                            "name": "startProfileAt",
+                            "moduleId": 0,
+                            "name": "XY",
                             "start": 0,
                             "type": "Identifier"
                           },
                           "path": [],
                           "start": 0,
+                          "type": "Name",
                           "type": "Name"
-                        },
-                        "commentStart": 0,
-                        "end": 0,
-                        "start": 0,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
+                        }
                       },
                       {
                         "arguments": [
@@ -206,7 +75,8 @@ description: Result of parsing intersect_cubes.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
-                              "name": "endAbsolute",
+                              "moduleId": 0,
+                              "name": "at",
                               "start": 0,
                               "type": "Identifier"
                             },
@@ -218,19 +88,31 @@ description: Result of parsing intersect_cubes.kcl
                                   "end": 0,
                                   "left": {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "center",
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "0",
                                       "start": 0,
                                       "type": "Literal",
@@ -244,18 +126,25 @@ description: Result of parsing intersect_cubes.kcl
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
-                                  "operator": "+",
+                                  "moduleId": 0,
+                                  "operator": "-",
                                   "right": {
+                                    "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
-                                    "raw": "10",
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "size",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 10.0,
-                                      "suffix": "None"
-                                    }
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "start": 0,
                                   "type": "BinaryExpression",
@@ -266,19 +155,31 @@ description: Result of parsing intersect_cubes.kcl
                                   "end": 0,
                                   "left": {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "center",
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "1",
                                       "start": 0,
                                       "type": "Literal",
@@ -292,18 +193,25 @@ description: Result of parsing intersect_cubes.kcl
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
+                                  "moduleId": 0,
                                   "operator": "-",
                                   "right": {
+                                    "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
-                                    "raw": "10",
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "size",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 10.0,
-                                      "suffix": "None"
-                                    }
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "start": 0,
                                   "type": "BinaryExpression",
@@ -311,6 +219,7 @@ description: Result of parsing intersect_cubes.kcl
                                 }
                               ],
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
@@ -321,10 +230,12 @@ description: Result of parsing intersect_cubes.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
-                            "name": "line",
+                            "moduleId": 0,
+                            "name": "startProfile",
                             "start": 0,
                             "type": "Identifier"
                           },
@@ -334,6 +245,7 @@ description: Result of parsing intersect_cubes.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -346,6 +258,7 @@ description: Result of parsing intersect_cubes.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
@@ -358,19 +271,31 @@ description: Result of parsing intersect_cubes.kcl
                                   "end": 0,
                                   "left": {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "center",
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "0",
                                       "start": 0,
                                       "type": "Literal",
@@ -384,18 +309,25 @@ description: Result of parsing intersect_cubes.kcl
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
+                                  "moduleId": 0,
                                   "operator": "+",
                                   "right": {
+                                    "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
-                                    "raw": "10",
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "size",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 10.0,
-                                      "suffix": "None"
-                                    }
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "start": 0,
                                   "type": "BinaryExpression",
@@ -406,19 +338,31 @@ description: Result of parsing intersect_cubes.kcl
                                   "end": 0,
                                   "left": {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "center",
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "1",
                                       "start": 0,
                                       "type": "Literal",
@@ -432,18 +376,25 @@ description: Result of parsing intersect_cubes.kcl
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
-                                  "operator": "+",
+                                  "moduleId": 0,
+                                  "operator": "-",
                                   "right": {
+                                    "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
-                                    "raw": "10",
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "size",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 10.0,
-                                      "suffix": "None"
-                                    }
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "start": 0,
                                   "type": "BinaryExpression",
@@ -451,6 +402,7 @@ description: Result of parsing intersect_cubes.kcl
                                 }
                               ],
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
@@ -461,9 +413,11 @@ description: Result of parsing intersect_cubes.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "line",
                             "start": 0,
                             "type": "Identifier"
@@ -474,6 +428,7 @@ description: Result of parsing intersect_cubes.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -486,6 +441,7 @@ description: Result of parsing intersect_cubes.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
@@ -498,19 +454,31 @@ description: Result of parsing intersect_cubes.kcl
                                   "end": 0,
                                   "left": {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "center",
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "0",
                                       "start": 0,
                                       "type": "Literal",
@@ -524,18 +492,25 @@ description: Result of parsing intersect_cubes.kcl
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
-                                  "operator": "-",
+                                  "moduleId": 0,
+                                  "operator": "+",
                                   "right": {
+                                    "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
-                                    "raw": "10",
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "size",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 10.0,
-                                      "suffix": "None"
-                                    }
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "start": 0,
                                   "type": "BinaryExpression",
@@ -546,19 +521,31 @@ description: Result of parsing intersect_cubes.kcl
                                   "end": 0,
                                   "left": {
                                     "commentStart": 0,
-                                    "computed": false,
+                                    "computed": true,
                                     "end": 0,
+                                    "moduleId": 0,
                                     "object": {
+                                      "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "center",
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "property": {
                                       "commentStart": 0,
                                       "end": 0,
+                                      "moduleId": 0,
                                       "raw": "1",
                                       "start": 0,
                                       "type": "Literal",
@@ -572,18 +559,25 @@ description: Result of parsing intersect_cubes.kcl
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
+                                  "moduleId": 0,
                                   "operator": "+",
                                   "right": {
+                                    "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
-                                    "raw": "10",
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "size",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 10.0,
-                                      "suffix": "None"
-                                    }
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "start": 0,
                                   "type": "BinaryExpression",
@@ -591,6 +585,7 @@ description: Result of parsing intersect_cubes.kcl
                                 }
                               ],
                               "end": 0,
+                              "moduleId": 0,
                               "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
@@ -601,9 +596,11 @@ description: Result of parsing intersect_cubes.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "line",
                             "start": 0,
                             "type": "Identifier"
@@ -614,6 +611,190 @@ description: Result of parsing intersect_cubes.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
+                        "start": 0,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "endAbsolute",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "commentStart": 0,
+                              "elements": [
+                                {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 0,
+                                    "computed": true,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "property": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "raw": "0",
+                                      "start": 0,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "moduleId": 0,
+                                  "operator": "-",
+                                  "right": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "size",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 0,
+                                    "computed": true,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "center",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "property": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "raw": "1",
+                                      "start": 0,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 1.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "moduleId": 0,
+                                  "operator": "+",
+                                  "right": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "size",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                }
+                              ],
+                              "end": 0,
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "line",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -625,9 +806,11 @@ description: Result of parsing intersect_cubes.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "close",
                             "start": 0,
                             "type": "Identifier"
@@ -638,9 +821,11 @@ description: Result of parsing intersect_cubes.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
                       },
                       {
                         "arguments": [
@@ -649,6 +834,7 @@ description: Result of parsing intersect_cubes.kcl
                             "label": {
                               "commentStart": 0,
                               "end": 0,
+                              "moduleId": 0,
                               "name": "length",
                               "start": 0,
                               "type": "Identifier"
@@ -656,14 +842,42 @@ description: Result of parsing intersect_cubes.kcl
                             "arg": {
                               "commentStart": 0,
                               "end": 0,
-                              "raw": "10",
+                              "left": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "raw": "2",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 2.0,
+                                  "suffix": "None"
+                                }
+                              },
+                              "moduleId": 0,
+                              "operator": "*",
+                              "right": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": "size",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              },
                               "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 10.0,
-                                "suffix": "None"
-                              }
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
                             }
                           }
                         ],
@@ -671,9 +885,11 @@ description: Result of parsing intersect_cubes.kcl
                           "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
+                          "moduleId": 0,
                           "name": {
                             "commentStart": 0,
                             "end": 0,
+                            "moduleId": 0,
                             "name": "extrude",
                             "start": 0,
                             "type": "Identifier"
@@ -684,6 +900,7 @@ description: Result of parsing intersect_cubes.kcl
                         },
                         "commentStart": 0,
                         "end": 0,
+                        "moduleId": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
@@ -692,12 +909,14 @@ description: Result of parsing intersect_cubes.kcl
                     ],
                     "commentStart": 0,
                     "end": 0,
+                    "moduleId": 0,
                     "start": 0,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -705,17 +924,31 @@ description: Result of parsing intersect_cubes.kcl
               ],
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "start": 0
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
+                  "moduleId": 0,
                   "name": "center",
+                  "start": 0,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "size",
                   "start": 0,
                   "type": "Identifier"
                 }
@@ -725,11 +958,13 @@ description: Result of parsing intersect_cubes.kcl
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "fn",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -742,6 +977,7 @@ description: Result of parsing intersect_cubes.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "part001",
             "start": 0,
             "type": "Identifier"
@@ -749,46 +985,86 @@ description: Result of parsing intersect_cubes.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 0,
-                "elements": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "center",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "elements": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "0",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
                     }
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
+                  ],
+                  "end": 0,
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "size",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "raw": "10",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 10.0,
+                    "suffix": "None"
                   }
-                ],
-                "end": 0,
-                "start": 0,
-                "type": "ArrayExpression",
-                "type": "ArrayExpression"
+                }
               }
             ],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "cube",
                 "start": 0,
                 "type": "Identifier"
@@ -799,15 +1075,19 @@ description: Result of parsing intersect_cubes.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": null
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -820,72 +1100,179 @@ description: Result of parsing intersect_cubes.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "part002",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "arguments": [
+            "body": [
               {
-                "commentStart": 0,
-                "elements": [
+                "arguments": [
                   {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "8",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 8.0,
-                      "suffix": "None"
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "center",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "raw": "7",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 7.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "raw": "3",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 3.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
                     }
                   },
                   {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "8",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 8.0,
-                      "suffix": "None"
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "size",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "5",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 5.0,
+                        "suffix": "None"
+                      }
                     }
                   }
                 ],
-                "end": 0,
-                "start": 0,
-                "type": "ArrayExpression",
-                "type": "ArrayExpression"
-              }
-            ],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "name": {
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "cube",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
                 "commentStart": 0,
                 "end": 0,
-                "name": "cube",
+                "moduleId": 0,
                 "start": 0,
-                "type": "Identifier"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "z",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "1",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "translate",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "PipeExpression",
+            "type": "PipeExpression"
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -898,61 +1285,22 @@ description: Result of parsing intersect_cubes.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "name": "fullPart",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "arguments": [
-              {
-                "commentStart": 0,
-                "elements": [
-                  {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "part001",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "part002",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  }
-                ],
-                "end": 0,
-                "start": 0,
-                "type": "ArrayExpression",
-                "type": "ArrayExpression"
-              }
-            ],
+            "arguments": [],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
+              "moduleId": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
+                "moduleId": 0,
                 "name": "intersect",
                 "start": 0,
                 "type": "Identifier"
@@ -963,15 +1311,64 @@ description: Result of parsing intersect_cubes.kcl
             },
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "commentStart": 0,
+              "elements": [
+                {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "part001",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                },
+                {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "part002",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              ],
+              "end": 0,
+              "moduleId": 0,
+              "start": 0,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            }
           },
+          "moduleId": 0,
           "start": 0,
           "type": "VariableDeclarator"
         },
         "end": 0,
         "kind": "const",
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
@@ -979,12 +1376,14 @@ description: Result of parsing intersect_cubes.kcl
     ],
     "commentStart": 0,
     "end": 0,
+    "moduleId": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
@@ -996,6 +1395,7 @@ description: Result of parsing intersect_cubes.kcl
           {
             "commentStart": 0,
             "end": 0,
+            "moduleId": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {

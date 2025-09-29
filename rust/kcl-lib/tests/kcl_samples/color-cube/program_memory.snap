@@ -6,31 +6,32 @@ description: Variables in memory after executing color-cube.kcl
   "bluePlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 50.0
+        "z": 50.0,
+        "units": "mm"
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
-      },
-      "units": {
-        "type": "Mm"
+        "z": 1.0,
+        "units": null
       }
     }
   },
@@ -39,42 +40,39 @@ description: Variables in memory after executing color-cube.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "greenPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 50.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": "mm"
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
+        "z": 1.0,
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
-        "z": 0.0
-      },
-      "units": {
-        "type": "Mm"
+        "z": 0.0,
+        "units": null
       }
     }
   },
@@ -82,8 +80,9 @@ description: Variables in memory after executing color-cube.kcl
     "type": "Number",
     "value": 50.0,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "metalConstant": {
@@ -91,73 +90,71 @@ description: Variables in memory after executing color-cube.kcl
     "value": 50.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "purplePlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": -50.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": "mm"
       },
+      "value": "Custom",
       "xAxis": {
-        "x": 1.0,
+        "x": -1.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
+        "z": 1.0,
+        "units": null
       },
       "zAxis": {
-        "x": -0.0,
-        "y": 1.0,
-        "z": -0.0
-      },
-      "units": {
-        "type": "Mm"
+        "x": 0.0,
+        "y": -1.0,
+        "z": 0.0,
+        "units": null
       }
     }
   },
   "redPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 49.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": "mm"
       },
+      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
+        "z": 1.0,
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
-        "z": 0.0
-      },
-      "units": {
-        "type": "Mm"
+        "z": 0.0,
+        "units": null
       }
     }
   },
@@ -166,12 +163,8 @@ description: Variables in memory after executing color-cube.kcl
     "value": 50.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "size": {
@@ -179,76 +172,75 @@ description: Variables in memory after executing color-cube.kcl
     "value": 100.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "sketchRectangle": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "tealPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": -50.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": "mm"
       },
+      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
+        "z": 1.0,
+        "units": null
       },
       "zAxis": {
         "x": 1.0,
         "y": 0.0,
-        "z": 0.0
-      },
-      "units": {
-        "type": "Mm"
+        "z": 0.0,
+        "units": null
       }
     }
   },
   "yellowPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": -50.0
+        "z": -50.0,
+        "units": "mm"
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
-      },
-      "units": {
-        "type": "Mm"
+        "z": 1.0,
+        "units": null
       }
     }
   }

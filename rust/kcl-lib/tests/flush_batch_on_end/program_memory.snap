@@ -18,12 +18,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
     "value": 0.364,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "innerProfile": {
@@ -48,9 +44,10 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           ],
           "radius": 0.182,
           "tag": {
-            "commentStart": 519,
-            "end": 526,
-            "start": 519,
+            "commentStart": 515,
+            "end": 522,
+            "moduleId": 0,
+            "start": 515,
             "type": "TagDeclarator",
             "value": "arc001"
           },
@@ -59,38 +56,37 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "units": {
-          "type": "Inches"
+          "z": 1.0,
+          "units": null
         }
       },
       "start": {
@@ -102,9 +98,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           0.182,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -119,25 +113,25 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "length": {
     "type": "Number",
     "value": 1.5,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "outerDiameter": {
     "type": "Number",
-    "value": 0.5469,
+    "value": 0.546875,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "outerProfile": {
@@ -157,68 +151,66 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             0.0
           ],
           "from": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "radius": 0.2734375,
           "tag": {
-            "commentStart": 364,
-            "end": 371,
-            "start": 364,
+            "commentStart": 360,
+            "end": 367,
+            "moduleId": 0,
+            "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
           },
           "to": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "units": {
-          "type": "Inches"
+          "z": 1.0,
+          "units": null
         }
       },
       "start": {
         "from": [
-          0.2734,
+          0.2734375,
           0.0
         ],
         "to": [
-          0.2734,
+          0.2734375,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -229,13 +221,15 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "arc000": {
           "type": "TagIdentifier",
           "value": "arc000"
+        },
+        "arc001": {
+          "type": "TagIdentifier",
+          "value": "arc001"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "pipe": {
@@ -250,11 +244,26 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 364,
-            "end": 371,
-            "start": 364,
+            "commentStart": 360,
+            "end": 367,
+            "moduleId": 0,
+            "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 515,
+            "end": 522,
+            "moduleId": 0,
+            "start": 515,
+            "type": "TagDeclarator",
+            "value": "arc001"
           },
           "type": "extrudeArc"
         }
@@ -274,68 +283,98 @@ description: Variables in memory after executing flush_batch_on_end.kcl
               0.0
             ],
             "from": [
-              0.2734,
+              0.2734375,
               0.0
             ],
             "radius": 0.2734375,
             "tag": {
-              "commentStart": 364,
-              "end": 371,
-              "start": 364,
+              "commentStart": 360,
+              "end": 367,
+              "moduleId": 0,
+              "start": 360,
               "type": "TagDeclarator",
               "value": "arc000"
             },
             "to": [
-              0.2734,
+              0.2734375,
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0,
+              0.0
+            ],
+            "from": [
+              0.182,
+              0.0
+            ],
+            "radius": 0.182,
+            "tag": {
+              "commentStart": 515,
+              "end": 522,
+              "moduleId": 0,
+              "start": 515,
+              "type": "TagDeclarator",
+              "value": "arc001"
+            },
+            "to": [
+              0.182,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Inches"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
           "from": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "to": [
-            0.2734,
+            0.2734375,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -346,20 +385,20 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "arc000": {
             "type": "TagIdentifier",
             "value": "arc000"
+          },
+          "arc001": {
+            "type": "TagIdentifier",
+            "value": "arc001"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 1.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in",
+      "sectional": false
     }
   },
   "pipeProfile": {
@@ -379,68 +418,98 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             0.0
           ],
           "from": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "radius": 0.2734375,
           "tag": {
-            "commentStart": 364,
-            "end": 371,
-            "start": 364,
+            "commentStart": 360,
+            "end": 367,
+            "moduleId": 0,
+            "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
           },
           "to": [
-            0.2734,
+            0.2734375,
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
+        }
+      ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0,
+            0.0
+          ],
+          "from": [
+            0.182,
+            0.0
+          ],
+          "radius": 0.182,
+          "tag": {
+            "commentStart": 515,
+            "end": 522,
+            "moduleId": 0,
+            "start": 515,
+            "type": "TagDeclarator",
+            "value": "arc001"
+          },
+          "to": [
+            0.182,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "units": {
-          "type": "Inches"
+          "z": 1.0,
+          "units": null
         }
       },
       "start": {
         "from": [
-          0.2734,
+          0.2734375,
           0.0
         ],
         "to": [
-          0.2734,
+          0.2734375,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -451,43 +520,46 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "arc000": {
           "type": "TagIdentifier",
           "value": "arc000"
+        },
+        "arc001": {
+          "type": "TagIdentifier",
+          "value": "arc001"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "sketch000": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "XY",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": "mm"
       },
+      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
-      },
-      "units": {
-        "type": "Inches"
+        "z": 1.0,
+        "units": null
       }
     }
   }

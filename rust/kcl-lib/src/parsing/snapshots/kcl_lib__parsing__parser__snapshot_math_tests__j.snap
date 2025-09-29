@@ -25,12 +25,14 @@ expression: actual
             "name": "distance",
             "start": 0,
             "end": 8,
+            "moduleId": 0,
             "commentStart": 0
           },
           "path": [],
           "abs_path": false,
           "start": 0,
           "end": 8,
+          "moduleId": 0,
           "commentStart": 0
         },
         "right": {
@@ -41,16 +43,19 @@ expression: actual
             "name": "p",
             "start": 11,
             "end": 12,
+            "moduleId": 0,
             "commentStart": 11
           },
           "path": [],
           "abs_path": false,
           "start": 11,
           "end": 12,
+          "moduleId": 0,
           "commentStart": 11
         },
         "start": 0,
         "end": 12,
+        "moduleId": 0,
         "commentStart": 0
       },
       "right": {
@@ -61,16 +66,19 @@ expression: actual
           "name": "FOS",
           "start": 15,
           "end": 18,
+          "moduleId": 0,
           "commentStart": 15
         },
         "path": [],
         "abs_path": false,
         "start": 15,
         "end": 18,
+        "moduleId": 0,
         "commentStart": 15
       },
       "start": 0,
       "end": 18,
+      "moduleId": 0,
       "commentStart": 0
     },
     "right": {
@@ -83,10 +91,12 @@ expression: actual
       "raw": "6",
       "start": 21,
       "end": 22,
+      "moduleId": 0,
       "commentStart": 21
     },
     "start": 0,
     "end": 22,
+    "moduleId": 0,
     "commentStart": 0
   },
   "right": {
@@ -101,12 +111,14 @@ expression: actual
         "name": "sigmaAllow",
         "start": 26,
         "end": 36,
+        "moduleId": 0,
         "commentStart": 26
       },
       "path": [],
       "abs_path": false,
       "start": 26,
       "end": 36,
+      "moduleId": 0,
       "commentStart": 26
     },
     "right": {
@@ -117,19 +129,23 @@ expression: actual
         "name": "width",
         "start": 39,
         "end": 44,
+        "moduleId": 0,
         "commentStart": 39
       },
       "path": [],
       "abs_path": false,
       "start": 39,
       "end": 44,
+      "moduleId": 0,
       "commentStart": 39
     },
     "start": 26,
     "end": 44,
+    "moduleId": 0,
     "commentStart": 26
   },
   "start": 0,
   "end": 44,
+  "moduleId": 0,
   "commentStart": 0
 }

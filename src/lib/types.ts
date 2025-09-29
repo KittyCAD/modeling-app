@@ -1,4 +1,16 @@
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type CodeManager from '@src/lang/codeManager'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type { FileEntry, Project } from '@src/lib/project'
+import type { authMachine } from '@src/machines/authMachine'
+import type { billingMachine } from '@src/machines/billingMachine'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { engineStreamMachine } from '@src/machines/engineStreamMachine'
+import type { settingsMachine } from '@src/machines/settingsMachine'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import type { ActorRefFrom } from 'xstate'
 
 export type IndexLoaderData = {
   code: string | null
@@ -111,3 +123,39 @@ export type AsyncFn<F extends (...args: any[]) => any> = WithReturnType<
   F,
   Promise<unknown>
 >
+
+export type AppMachineContext = {
+  codeManager: CodeManager
+  kclManager: KclManager
+  engineCommandManager: EngineCommandManager
+  sceneInfra: SceneInfra
+  sceneEntitiesManager: SceneEntities
+  authActor?: ActorRefFrom<typeof authMachine>
+  settingsActor?: ActorRefFrom<typeof settingsMachine>
+  systemIOActor?: ActorRefFrom<typeof systemIOMachine>
+  engineStreamActor?: ActorRefFrom<typeof engineStreamMachine>
+  commandBarActor?: ActorRefFrom<typeof commandBarMachine>
+  billingActor?: ActorRefFrom<typeof billingMachine>
+}
+
+export type FileMeta =
+  | {
+      type: 'kcl'
+      relPath: string
+      absPath: string
+      fileContents: string
+      execStateFileNamesIndex: number
+    }
+  | {
+      type: 'other'
+      relPath: string
+      data: Blob
+    }
+
+/** A union type for form submissions that fire on submit or blur */
+export type MaybePressOrBlur =
+  | React.FocusEvent<HTMLElement>
+  | React.KeyboardEvent<HTMLElement>
+  | null
+/** A form submission handler function that is triggered by submission or blurring focus */
+export type SubmitByPressOrBlur = (e: MaybePressOrBlur) => void

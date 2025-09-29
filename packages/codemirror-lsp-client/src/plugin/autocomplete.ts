@@ -9,6 +9,7 @@ import {
   prevSnippetField,
   startCompletion,
 } from '@codemirror/autocomplete'
+import type { CompletionContext } from '@codemirror/autocomplete'
 import { syntaxTree } from '@codemirror/language'
 import type { Extension } from '@codemirror/state'
 import { Prec } from '@codemirror/state'
@@ -66,7 +67,7 @@ export default function lspAutocompleteExt(
       defaultKeymap: false,
       override: [
         async (context) => {
-          const { state, pos, explicit, view } = context
+          const { state, pos, view } = context
           let value = view?.plugin(plugin)
           if (!value) return null
 
@@ -77,37 +78,55 @@ export default function lspAutocompleteExt(
           )
             return null
 
-          const line = state.doc.lineAt(pos)
-          let trigKind: CompletionTriggerKind = CompletionTriggerKind.Invoked
-          let trigChar: string | undefined
-          if (
-            !explicit &&
-            value.client
-              .getServerCapabilities()
-              .completionProvider?.triggerCharacters?.includes(
-                line.text[pos - line.from - 1]
-              )
-          ) {
-            trigKind = CompletionTriggerKind.TriggerCharacter
-            trigChar = line.text[pos - line.from - 1]
-          }
-          if (
-            trigKind === CompletionTriggerKind.Invoked &&
-            !context.matchBefore(/\w+$/)
-          ) {
-            return null
-          }
+          const cmpTriggers = getCompletionTriggerKind(
+            context,
+            value.client.getServerCapabilities().completionProvider
+              ?.triggerCharacters ?? []
+          )
+          if (!cmpTriggers) return null
 
           return await value.requestCompletion(
             context,
             offsetToPos(state.doc, pos),
-            {
-              triggerKind: trigKind,
-              triggerCharacter: trigChar,
-            }
+            cmpTriggers
           )
         },
       ],
     }),
   ]
+}
+
+export function getCompletionTriggerKind(
+  context: CompletionContext,
+  triggerCharacters: string[],
+  matchBeforePattern?: RegExp
+): {
+  triggerKind: CompletionTriggerKind
+  triggerCharacter?: string
+} | null {
+  const { state, pos, explicit } = context
+  const line = state.doc.lineAt(pos)
+
+  // Determine trigger kind and character
+  let triggerKind: CompletionTriggerKind = CompletionTriggerKind.Invoked
+  let triggerCharacter: string | undefined
+
+  // Check if completion was triggered by a special character
+  const prevChar = line.text[pos - line.from - 1] || ''
+  const isTriggerChar = triggerCharacters?.includes(prevChar)
+
+  if (!explicit && isTriggerChar) {
+    triggerKind = CompletionTriggerKind.TriggerCharacter
+    triggerCharacter = prevChar
+  }
+  // For manual invocation, only show completions when typing
+  // Use the provided pattern or default to words, dots, commas, or slashes
+  if (
+    triggerKind === CompletionTriggerKind.Invoked &&
+    !context.matchBefore(matchBeforePattern || /(\w+|\w+\.|\/|,)$/)
+  ) {
+    return null
+  }
+
+  return { triggerKind, triggerCharacter }
 }

@@ -1,5 +1,5 @@
-import type { BrowserWindow } from 'electron'
 import os from 'node:os'
+import type { BrowserWindow } from 'electron'
 
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
@@ -13,17 +13,17 @@ export const projectFileRole = (
     label: 'File',
     submenu: [
       {
-        label: 'New project',
-        id: 'File.New project',
+        label: 'Create Project',
+        id: 'File.Create project',
         accelerator: 'CommandOrControl+N',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.New project',
+            menuLabel: 'File.Create project',
           })
         },
       },
       {
-        label: 'Open project',
+        label: 'Open Project',
         id: 'File.Open project',
         accelerator: 'CommandOrControl+P',
         click: () => {
@@ -36,10 +36,29 @@ export const projectFileRole = (
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
+        label: 'Add File to Project',
+        id: 'File.Add file to project',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'File.Add file to project',
+          })
+        },
+      },
+      {
+        label: 'Create with Zoo Text-To-CAD',
+        id: 'Design.Create with Zoo Text-To-CAD',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'Design.Create with Zoo Text-To-CAD',
+          })
+        },
+      },
+      { type: 'separator' },
+      {
         label: 'Preferences',
         submenu: [
           {
-            label: 'User settings',
+            label: 'User Settings',
             id: 'File.Preferences.User settings',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -57,7 +76,7 @@ export const projectFileRole = (
             },
           },
           {
-            label: 'User default units',
+            label: 'User Default Units',
             id: 'File.Preferences.User default units',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -75,7 +94,7 @@ export const projectFileRole = (
             },
           },
           {
-            label: 'Theme color',
+            label: 'Theme Color',
             id: 'File.Preferences.Theme color',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -88,7 +107,7 @@ export const projectFileRole = (
       { type: 'separator' },
       // Last in list
       {
-        label: 'Sign out',
+        label: 'Sign Out',
         id: 'File.Sign out',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -109,7 +128,7 @@ export const modelingFileRole = (
     submenu: [
       // TODO: Once a safe command bar create new file and folder is implemented we can turn these on
       // {
-      //   label: 'Create new file',
+      //   label: 'Create New File',
       //   click: () => {
       //     typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
       //       menuLabel: 'File.Create new file',
@@ -117,7 +136,7 @@ export const modelingFileRole = (
       //   },
       // },
       // {
-      //   label: 'Create new folder',
+      //   label: 'Create New Folder',
       //   click: () => {
       //     typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
       //       menuLabel: 'File.Create new folder',
@@ -125,17 +144,17 @@ export const modelingFileRole = (
       //   },
       // },
       {
-        label: 'New project',
-        id: 'File.New project',
+        label: 'Create Project',
+        id: 'File.Create project',
         accelerator: 'CommandOrControl+N',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.New project',
+            menuLabel: 'File.Create project',
           })
         },
       },
       {
-        label: 'Open project',
+        label: 'Open Project',
         id: 'File.Open project',
         accelerator: 'CommandOrControl+P',
         click: () => {
@@ -148,39 +167,20 @@ export const modelingFileRole = (
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
-        label: 'Load a sample model',
-        id: 'File.Load a sample model',
+        label: 'Add File to Project',
+        id: 'File.Add file to project',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Load a sample model',
-          })
-        },
-      },
-      { type: 'separator' },
-      {
-        label: 'Insert from project file',
-        id: 'File.Insert from project file',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Insert from project file',
+            menuLabel: 'File.Add file to project',
           })
         },
       },
       {
-        label: 'Export current part',
+        label: 'Export Current Part',
         id: 'File.Export current part',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'File.Export current part',
-          })
-        },
-      },
-      {
-        label: 'Share current part (via Zoo link)',
-        id: 'File.Share current part (via Zoo link)',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Share current part (via Zoo link)',
           })
         },
       },
@@ -189,7 +189,7 @@ export const modelingFileRole = (
         label: 'Preferences',
         submenu: [
           {
-            label: 'Project settings',
+            label: 'Project Settings',
             id: 'File.Preferences.Project settings',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -198,7 +198,7 @@ export const modelingFileRole = (
             },
           },
           {
-            label: 'User settings',
+            label: 'User Settings',
             id: 'File.Preferences.User settings',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -216,7 +216,7 @@ export const modelingFileRole = (
             },
           },
           {
-            label: 'User default units',
+            label: 'User Default Units',
             id: 'File.Preferences.User default units',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -234,7 +234,7 @@ export const modelingFileRole = (
             },
           },
           {
-            label: 'Theme color',
+            label: 'Theme Color',
             id: 'File.Preferences.Theme color',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -247,7 +247,7 @@ export const modelingFileRole = (
       { type: 'separator' },
       // Last in list
       {
-        label: 'Sign out',
+        label: 'Sign Out',
         id: 'File.Sign out',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {

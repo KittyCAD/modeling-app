@@ -1,26 +1,27 @@
-use std::{ffi::OsStr, path::Path, str::FromStr};
+use std::str::FromStr;
 
 use anyhow::Result;
 use kcmc::{
-    coord::{System, KITTYCAD},
+    ImportFile, ModelingCmd,
+    coord::{KITTYCAD, System},
     each_cmd as mcmd,
     format::InputFormat3d,
-    ok_response::OkModelingCmdResponse,
     shared::FileImportFormat,
     units::UnitLength,
-    websocket::OkWebSocketResponseData,
-    ImportFile, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
-    execution::{annotations, types::UnitLen, ExecState, ExecutorContext, ImportedGeometry},
+    execution::{
+        ExecState, ExecutorContext, ImportedGeometry, ModelingCmdMeta, annotations, typed_path::TypedPath,
+        types::length_from_str,
+    },
     fs::FileSystem,
     parsing::ast::types::{Annotation, Node},
-    source_range::SourceRange,
 };
 
 // Zoo co-ordinate system.
@@ -31,7 +32,7 @@ use crate::{
 pub const ZOO_COORD_SYSTEM: System = *KITTYCAD;
 
 pub async fn import_foreign(
-    file_path: &Path,
+    file_path: &TypedPath,
     format: Option<InputFormat3d>,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
@@ -39,58 +40,44 @@ pub async fn import_foreign(
 ) -> Result<PreImportedGeometry, KclError> {
     // Make sure the file exists.
     if !ctxt.fs.exists(file_path, source_range).await? {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: format!("File `{}` does not exist.", file_path.display()),
-            source_ranges: vec![source_range],
-        }));
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("File `{}` does not exist.", file_path.display()),
+            vec![source_range],
+        )));
     }
 
-    let ext_format =
-        get_import_format_from_extension(file_path.extension().and_then(OsStr::to_str).ok_or_else(|| {
-            KclError::Semantic(KclErrorDetails {
-                message: format!("No file extension found for `{}`", file_path.display()),
-                source_ranges: vec![source_range],
-            })
-        })?)
-        .map_err(|e| {
-            KclError::Semantic(KclErrorDetails {
-                message: e.to_string(),
-                source_ranges: vec![source_range],
-            })
-        })?;
+    let ext_format = get_import_format_from_extension(file_path.extension().ok_or_else(|| {
+        KclError::new_semantic(KclErrorDetails::new(
+            format!("No file extension found for `{}`", file_path.display()),
+            vec![source_range],
+        ))
+    })?)
+    .map_err(|e| KclError::new_semantic(KclErrorDetails::new(e.to_string(), vec![source_range])))?;
 
     // Get the format type from the extension of the file.
     let format = if let Some(format) = format {
         // Validate the given format with the extension format.
-        validate_extension_format(ext_format, format.clone()).map_err(|e| {
-            KclError::Semantic(KclErrorDetails {
-                message: e.to_string(),
-                source_ranges: vec![source_range],
-            })
-        })?;
+        validate_extension_format(ext_format, format.clone())
+            .map_err(|e| KclError::new_semantic(KclErrorDetails::new(e.to_string(), vec![source_range])))?;
         format
     } else {
         ext_format
     };
 
     // Get the file contents for each file path.
-    let file_contents = ctxt.fs.read(file_path, source_range).await.map_err(|e| {
-        KclError::Semantic(KclErrorDetails {
-            message: e.to_string(),
-            source_ranges: vec![source_range],
-        })
-    })?;
+    let file_contents = ctxt
+        .fs
+        .read(file_path, source_range)
+        .await
+        .map_err(|e| KclError::new_semantic(KclErrorDetails::new(e.to_string(), vec![source_range])))?;
 
     // We want the file_path to be without the parent.
-    let file_name = std::path::Path::new(&file_path)
-        .file_name()
-        .map(|p| p.to_string_lossy().to_string())
-        .ok_or_else(|| {
-            KclError::Semantic(KclErrorDetails {
-                message: format!("Could not get the file name from the path `{}`", file_path.display()),
-                source_ranges: vec![source_range],
-            })
-        })?;
+    let file_name = file_path.file_name().map(|p| p.to_string()).ok_or_else(|| {
+        KclError::new_semantic(KclErrorDetails::new(
+            format!("Could not get the file name from the path `{}`", file_path.display()),
+            vec![source_range],
+        ))
+    })?;
     let mut import_files = vec![kcmc::ImportFile {
         path: file_name.to_string(),
         data: file_contents.clone(),
@@ -102,44 +89,31 @@ pub async fn import_foreign(
         // Check if the file is a binary gltf file, in that case we don't need to import the bin
         // file.
         if !file_contents.starts_with(b"glTF") {
-            let json = gltf_json::Root::from_slice(&file_contents).map_err(|e| {
-                KclError::Semantic(KclErrorDetails {
-                    message: e.to_string(),
-                    source_ranges: vec![source_range],
-                })
-            })?;
+            let json = gltf_json::Root::from_slice(&file_contents)
+                .map_err(|e| KclError::new_semantic(KclErrorDetails::new(e.to_string(), vec![source_range])))?;
 
             // Read the gltf file and check if there is a bin file.
             for buffer in json.buffers.iter() {
-                if let Some(uri) = &buffer.uri {
-                    if !uri.starts_with("data:") {
-                        // We want this path relative to the file_path given.
-                        let bin_path = std::path::Path::new(&file_path)
-                            .parent()
-                            .map(|p| p.join(uri))
-                            .map(|p| p.to_string_lossy().to_string())
-                            .ok_or_else(|| {
-                                KclError::Semantic(KclErrorDetails {
-                                    message: format!(
-                                        "Could not get the parent path of the file `{}`",
-                                        file_path.display()
-                                    ),
-                                    source_ranges: vec![source_range],
-                                })
-                            })?;
+                if let Some(uri) = &buffer.uri
+                    && !uri.starts_with("data:")
+                {
+                    // We want this path relative to the file_path given.
+                    let bin_path = file_path.parent().map(|p| p.join(uri)).ok_or_else(|| {
+                        KclError::new_semantic(KclErrorDetails::new(
+                            format!("Could not get the parent path of the file `{}`", file_path.display()),
+                            vec![source_range],
+                        ))
+                    })?;
 
-                        let bin_contents = ctxt.fs.read(&bin_path, source_range).await.map_err(|e| {
-                            KclError::Semantic(KclErrorDetails {
-                                message: e.to_string(),
-                                source_ranges: vec![source_range],
-                            })
+                    let bin_contents =
+                        ctxt.fs.read(&bin_path, source_range).await.map_err(|e| {
+                            KclError::new_semantic(KclErrorDetails::new(e.to_string(), vec![source_range]))
                         })?;
 
-                        import_files.push(ImportFile {
-                            path: uri.to_string(),
-                            data: bin_contents,
-                        });
-                    }
+                    import_files.push(ImportFile {
+                        path: uri.to_string(),
+                        data: bin_contents,
+                    });
                 }
             }
         }
@@ -156,7 +130,7 @@ pub async fn import_foreign(
 
 pub(super) fn format_from_annotations(
     annotations: &[Node<Annotation>],
-    path: &Path,
+    path: &TypedPath,
     import_source_range: SourceRange,
 ) -> Result<Option<InputFormat3d>, KclError> {
     if annotations.is_empty() {
@@ -170,13 +144,13 @@ pub(super) fn format_from_annotations(
         if p.key.name == annotations::IMPORT_FORMAT {
             result = Some(
                 get_import_format_from_extension(annotations::expect_ident(&p.value)?).map_err(|_| {
-                    KclError::Semantic(KclErrorDetails {
-                        message: format!(
+                    KclError::new_semantic(KclErrorDetails::new(
+                        format!(
                             "Unknown format for import, expected one of: {}",
-                            annotations::IMPORT_FORMAT_VALUES.join(", ")
+                            crate::IMPORT_FILE_EXTENSIONS.join(", ")
                         ),
-                        source_ranges: vec![p.as_source_range()],
-                    })
+                        vec![p.as_source_range()],
+                    ))
                 })?,
             );
             break;
@@ -186,13 +160,12 @@ pub(super) fn format_from_annotations(
     let mut result = result
         .or_else(|| {
             path.extension()
-                .and_then(OsStr::to_str)
                 .and_then(|ext| get_import_format_from_extension(ext).ok())
         })
-        .ok_or(KclError::Semantic(KclErrorDetails {
-            message: "Unknown or missing extension, and no specified format for imported file".to_owned(),
-            source_ranges: vec![import_source_range],
-        }))?;
+        .ok_or(KclError::new_semantic(KclErrorDetails::new(
+            "Unknown or missing extension, and no specified format for imported file".to_owned(),
+            vec![import_source_range],
+        )))?;
 
     for p in props {
         match p.key.name.as_str() {
@@ -204,15 +177,15 @@ pub(super) fn format_from_annotations(
             }
             annotations::IMPORT_FORMAT => {}
             _ => {
-                return Err(KclError::Semantic(KclErrorDetails {
-                    message: format!(
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
                         "Unexpected annotation for import, expected one of: {}, {}, {}",
                         annotations::IMPORT_FORMAT,
                         annotations::IMPORT_COORDS,
                         annotations::IMPORT_LENGTH_UNIT
                     ),
-                    source_ranges: vec![p.as_source_range()],
-                }))
+                    vec![p.as_source_range()],
+                )));
             }
         }
     }
@@ -229,8 +202,8 @@ fn set_coords(fmt: &mut InputFormat3d, coords_str: &str, source_range: SourceRan
     }
 
     let Some(coords) = coords else {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: format!(
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            format!(
                 "Unknown coordinate system: {coords_str}, expected one of: {}",
                 annotations::IMPORT_COORDS_VALUES
                     .iter()
@@ -238,8 +211,8 @@ fn set_coords(fmt: &mut InputFormat3d, coords_str: &str, source_range: SourceRan
                     .collect::<Vec<_>>()
                     .join(", ")
             ),
-            source_ranges: vec![source_range],
-        }));
+            vec![source_range],
+        )));
     };
 
     match fmt {
@@ -247,13 +220,13 @@ fn set_coords(fmt: &mut InputFormat3d, coords_str: &str, source_range: SourceRan
         InputFormat3d::Ply(opts) => opts.coords = coords,
         InputFormat3d::Stl(opts) => opts.coords = coords,
         _ => {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
                     "`{}` option cannot be applied to the specified format",
                     annotations::IMPORT_COORDS
                 ),
-                source_ranges: vec![source_range],
-            }))
+                vec![source_range],
+            )));
         }
     }
 
@@ -261,20 +234,20 @@ fn set_coords(fmt: &mut InputFormat3d, coords_str: &str, source_range: SourceRan
 }
 
 fn set_length_unit(fmt: &mut InputFormat3d, units_str: &str, source_range: SourceRange) -> Result<(), KclError> {
-    let units = UnitLen::from_str(units_str, source_range)?;
+    let units = length_from_str(units_str, source_range)?;
 
     match fmt {
-        InputFormat3d::Obj(opts) => opts.units = units.into(),
-        InputFormat3d::Ply(opts) => opts.units = units.into(),
-        InputFormat3d::Stl(opts) => opts.units = units.into(),
+        InputFormat3d::Obj(opts) => opts.units = units,
+        InputFormat3d::Ply(opts) => opts.units = units,
+        InputFormat3d::Stl(opts) => opts.units = units,
         _ => {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!(
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
                     "`{}` option cannot be applied to the specified format",
                     annotations::IMPORT_LENGTH_UNIT
                 ),
-                source_ranges: vec![source_range],
-            }))
+                vec![source_range],
+            )));
         }
     }
 
@@ -288,35 +261,25 @@ pub struct PreImportedGeometry {
     pub source_range: SourceRange,
 }
 
-pub async fn send_to_engine(pre: PreImportedGeometry, ctxt: &ExecutorContext) -> Result<ImportedGeometry, KclError> {
-    if ctxt.no_engine_commands().await {
-        return Ok(ImportedGeometry {
-            id: pre.id,
-            value: pre.command.files.iter().map(|f| f.path.to_string()).collect(),
-            meta: vec![pre.source_range.into()],
-        });
-    }
+pub async fn send_to_engine(
+    pre: PreImportedGeometry,
+    exec_state: &mut ExecState,
+    ctxt: &ExecutorContext,
+) -> Result<ImportedGeometry, KclError> {
+    let imported_geometry = ImportedGeometry::new(
+        pre.id,
+        pre.command.files.iter().map(|f| f.path.to_string()).collect(),
+        vec![pre.source_range.into()],
+    );
 
-    let resp = ctxt
-        .engine
-        .send_modeling_cmd(pre.id, pre.source_range, &ModelingCmd::from(pre.command.clone()))
+    exec_state
+        .async_modeling_cmd(
+            ModelingCmdMeta::with_id(ctxt, pre.source_range, pre.id),
+            &ModelingCmd::from(pre.command.clone()),
+        )
         .await?;
 
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::ImportFiles(imported_files),
-    } = &resp
-    else {
-        return Err(KclError::Engine(KclErrorDetails {
-            message: format!("ImportFiles response was not as expected: {:?}", resp),
-            source_ranges: vec![pre.source_range],
-        }));
-    };
-
-    Ok(ImportedGeometry {
-        id: imported_files.object_id,
-        value: pre.command.files.iter().map(|f| f.path.to_string()).collect(),
-        meta: vec![pre.source_range.into()],
-    })
+    Ok(imported_geometry)
 }
 
 /// Get the source format from the extension.
@@ -329,7 +292,9 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
             } else if ext == "glb" {
                 FileImportFormat::Gltf
             } else {
-                anyhow::bail!("unknown source format for file extension: {ext}. Try setting the `--src-format` flag explicitly or use a valid format.")
+                anyhow::bail!(
+                    "unknown source format for file extension: {ext}. Try setting the `--src-format` flag explicitly or use a valid format."
+                )
             }
         }
     };
@@ -367,22 +332,22 @@ fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
 }
 
 fn validate_extension_format(ext: InputFormat3d, given: InputFormat3d) -> Result<()> {
-    if let InputFormat3d::Stl(_) = ext {
-        if let InputFormat3d::Stl(_) = given {
-            return Ok(());
-        }
+    if let InputFormat3d::Stl(_) = ext
+        && let InputFormat3d::Stl(_) = given
+    {
+        return Ok(());
     }
 
-    if let InputFormat3d::Obj(_) = ext {
-        if let InputFormat3d::Obj(_) = given {
-            return Ok(());
-        }
+    if let InputFormat3d::Obj(_) = ext
+        && let InputFormat3d::Obj(_) = given
+    {
+        return Ok(());
     }
 
-    if let InputFormat3d::Ply(_) = ext {
-        if let InputFormat3d::Ply(_) = given {
-            return Ok(());
-        }
+    if let InputFormat3d::Ply(_) = ext
+        && let InputFormat3d::Ply(_) = given
+    {
+        return Ok(());
     }
 
     if ext == given {
@@ -416,7 +381,7 @@ mod test {
     fn annotations() {
         // no annotations
         assert!(
-            format_from_annotations(&[], Path::new("../foo.txt"), SourceRange::default(),)
+            format_from_annotations(&[], &TypedPath::from("../foo.txt"), SourceRange::default(),)
                 .unwrap()
                 .is_none()
         );
@@ -425,7 +390,7 @@ mod test {
         let text = "@()\nimport '../foo.gltf' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
         let attrs = parsed.body[0].get_attrs();
-        let fmt = format_from_annotations(attrs, Path::new("../foo.gltf"), SourceRange::default())
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.gltf"), SourceRange::default())
             .unwrap()
             .unwrap();
         assert_eq!(
@@ -437,7 +402,7 @@ mod test {
         let text = "@(format = gltf)\nimport '../foo.txt' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
         let attrs = parsed.body[0].get_attrs();
-        let fmt = format_from_annotations(attrs, Path::new("../foo.txt"), SourceRange::default())
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.txt"), SourceRange::default())
             .unwrap()
             .unwrap();
         assert_eq!(
@@ -446,7 +411,7 @@ mod test {
         );
 
         // format, no extension (wouldn't parse but might some day)
-        let fmt = format_from_annotations(attrs, Path::new("../foo"), SourceRange::default())
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo"), SourceRange::default())
             .unwrap()
             .unwrap();
         assert_eq!(
@@ -458,7 +423,7 @@ mod test {
         let text = "@(format = obj, coords = vulkan, lengthUnit = ft)\nimport '../foo.txt' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
         let attrs = parsed.body[0].get_attrs();
-        let fmt = format_from_annotations(attrs, Path::new("../foo.txt"), SourceRange::default())
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.txt"), SourceRange::default())
             .unwrap()
             .unwrap();
         assert_eq!(
@@ -473,7 +438,7 @@ mod test {
         let text = "@(coords = vulkan, lengthUnit = ft)\nimport '../foo.obj' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
         let attrs = parsed.body[0].get_attrs();
-        let fmt = format_from_annotations(attrs, Path::new("../foo.obj"), SourceRange::default())
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.obj"), SourceRange::default())
             .unwrap()
             .unwrap();
         assert_eq!(
@@ -526,7 +491,7 @@ mod test {
     fn assert_annotation_error(src: &str, path: &str, expected: &str) {
         let parsed = crate::Program::parse_no_errs(src).unwrap().ast;
         let attrs = parsed.body[0].get_attrs();
-        let err = format_from_annotations(attrs, Path::new(path), SourceRange::default()).unwrap_err();
+        let err = format_from_annotations(attrs, &TypedPath::from(path), SourceRange::default()).unwrap_err();
         assert!(
             err.message().contains(expected),
             "Expected: `{expected}`, found `{}`",

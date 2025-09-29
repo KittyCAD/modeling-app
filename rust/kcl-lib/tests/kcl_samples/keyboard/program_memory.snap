@@ -20,394 +20,294 @@ description: Variables in memory after executing keyboard.kcl
     "value": 0.1,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "keyFn": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "keyHeight": {
     "type": "Number",
     "value": 0.8,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "o": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "plane001": {
     "type": "Object",
     "value": {
-      "plane": {
-        "type": "Object",
-        "value": {
-          "origin": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.7,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
+      "origin": {
+        "type": "HomArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
           },
-          "xAxis": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
           },
-          "yAxis": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.1219,
-                "ty": {
-                  "type": "Known",
-                  "type": "Count"
-                }
-              }
-            ]
-          },
-          "zAxis": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
+          {
+            "type": "Number",
+            "value": 0.7,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
           }
-        }
+        ]
+      },
+      "xAxis": {
+        "type": "HomArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          }
+        ]
+      },
+      "yAxis": {
+        "type": "HomArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.12186934340514748,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          }
+        ]
+      },
+      "zAxis": {
+        "type": "HomArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          }
+        ]
       }
-    }
+    },
+    "constrainable": false
   },
   "plane002": {
     "type": "Object",
     "value": {
-      "plane": {
-        "type": "Object",
-        "value": {
-          "origin": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.81,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
+      "origin": {
+        "type": "HomArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
           },
-          "xAxis": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
           },
-          "yAxis": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.1219,
-                "ty": {
-                  "type": "Known",
-                  "type": "Count"
-                }
-              }
-            ]
-          },
-          "zAxis": {
-            "type": "MixedArray",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
+          {
+            "type": "Number",
+            "value": 0.81,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
           }
-        }
+        ]
+      },
+      "xAxis": {
+        "type": "HomArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          }
+        ]
+      },
+      "yAxis": {
+        "type": "HomArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.12186934340514748,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          }
+        ]
+      },
+      "zAxis": {
+        "type": "HomArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
+          {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          }
+        ]
       }
-    }
+    },
+    "constrainable": false
   },
   "profile001": {
     "type": "Sketch",
@@ -436,9 +336,7 @@ description: Variables in memory after executing keyboard.kcl
             0.75
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -449,17 +347,14 @@ description: Variables in memory after executing keyboard.kcl
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
+          "z": 1.0,
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -471,9 +366,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 618,
-                "end": 624,
-                "start": 618,
+                "commentStart": 636,
+                "end": 642,
+                "moduleId": 0,
+                "start": 636,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -484,9 +380,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 700,
-                "end": 706,
-                "start": 700,
+                "commentStart": 721,
+                "end": 727,
+                "moduleId": 0,
+                "start": 721,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -497,9 +394,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 749,
-                "end": 755,
-                "start": 749,
+                "commentStart": 770,
+                "end": 776,
+                "moduleId": 0,
+                "start": 770,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -510,9 +408,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 825,
-                "end": 831,
-                "start": 825,
+                "commentStart": 846,
+                "end": 852,
+                "moduleId": 0,
+                "start": 846,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -533,9 +432,10 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 618,
-                  "end": 624,
-                  "start": 618,
+                  "commentStart": 636,
+                  "end": 642,
+                  "moduleId": 0,
+                  "start": 636,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -544,9 +444,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -558,20 +456,19 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "tag": {
-                  "commentStart": 700,
-                  "end": 706,
-                  "start": 700,
+                  "commentStart": 721,
+                  "end": 727,
+                  "moduleId": 0,
+                  "start": 721,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
                 "to": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -579,13 +476,14 @@ description: Variables in memory after executing keyboard.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "tag": {
-                  "commentStart": 749,
-                  "end": 755,
-                  "start": 749,
+                  "commentStart": 770,
+                  "end": 776,
+                  "moduleId": 0,
+                  "start": 770,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -594,9 +492,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -608,9 +504,10 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 825,
-                  "end": 831,
-                  "start": 825,
+                  "commentStart": 846,
+                  "end": 852,
+                  "moduleId": 0,
+                  "start": 846,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -619,9 +516,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -638,38 +533,37 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "YZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -681,9 +575,7 @@ description: Variables in memory after executing keyboard.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -710,50 +602,72 @@ description: Variables in memory after executing keyboard.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 13.6,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
@@ -764,9 +678,7 @@ description: Variables in memory after executing keyboard.kcl
           1.15,
           0.75
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -775,9 +687,7 @@ description: Variables in memory after executing keyboard.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile003": {
@@ -797,19 +707,17 @@ description: Variables in memory after executing keyboard.kcl
             0.75
           ],
           "from": [
-            4.8,
+            4.800000000000001,
             0.75
           ],
           "radius": 0.4,
           "tag": null,
           "to": [
-            4.8,
+            4.800000000000001,
             0.75
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -820,17 +728,14 @@ description: Variables in memory after executing keyboard.kcl
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
+          "z": 1.0,
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -842,9 +747,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 618,
-                "end": 624,
-                "start": 618,
+                "commentStart": 636,
+                "end": 642,
+                "moduleId": 0,
+                "start": 636,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -855,9 +761,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 700,
-                "end": 706,
-                "start": 700,
+                "commentStart": 721,
+                "end": 727,
+                "moduleId": 0,
+                "start": 721,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -868,9 +775,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 749,
-                "end": 755,
-                "start": 749,
+                "commentStart": 770,
+                "end": 776,
+                "moduleId": 0,
+                "start": 770,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -881,9 +789,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 825,
-                "end": 831,
-                "start": 825,
+                "commentStart": 846,
+                "end": 852,
+                "moduleId": 0,
+                "start": 846,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -904,9 +813,10 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 618,
-                  "end": 624,
-                  "start": 618,
+                  "commentStart": 636,
+                  "end": 642,
+                  "moduleId": 0,
+                  "start": 636,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -915,9 +825,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -929,20 +837,19 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "tag": {
-                  "commentStart": 700,
-                  "end": 706,
-                  "start": 700,
+                  "commentStart": 721,
+                  "end": 727,
+                  "moduleId": 0,
+                  "start": 721,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
                 "to": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -950,13 +857,14 @@ description: Variables in memory after executing keyboard.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "tag": {
-                  "commentStart": 749,
-                  "end": 755,
-                  "start": 749,
+                  "commentStart": 770,
+                  "end": 776,
+                  "moduleId": 0,
+                  "start": 770,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -965,9 +873,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -979,9 +885,10 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 825,
-                  "end": 831,
-                  "start": 825,
+                  "commentStart": 846,
+                  "end": 852,
+                  "moduleId": 0,
+                  "start": 846,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -990,9 +897,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1009,38 +914,37 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "YZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -1052,9 +956,7 @@ description: Variables in memory after executing keyboard.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1081,63 +983,83 @@ description: Variables in memory after executing keyboard.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 13.6,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
-          4.8,
+          4.800000000000001,
           0.75
         ],
         "to": [
-          4.8,
+          4.800000000000001,
           0.75
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1146,9 +1068,7 @@ description: Variables in memory after executing keyboard.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile004": {
@@ -1178,9 +1098,7 @@ description: Variables in memory after executing keyboard.kcl
             12.85
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1191,17 +1109,14 @@ description: Variables in memory after executing keyboard.kcl
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
+          "z": 1.0,
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -1213,9 +1128,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 618,
-                "end": 624,
-                "start": 618,
+                "commentStart": 636,
+                "end": 642,
+                "moduleId": 0,
+                "start": 636,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1226,9 +1142,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 700,
-                "end": 706,
-                "start": 700,
+                "commentStart": 721,
+                "end": 727,
+                "moduleId": 0,
+                "start": 721,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1239,9 +1156,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 749,
-                "end": 755,
-                "start": 749,
+                "commentStart": 770,
+                "end": 776,
+                "moduleId": 0,
+                "start": 770,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -1252,9 +1170,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 825,
-                "end": 831,
-                "start": 825,
+                "commentStart": 846,
+                "end": 852,
+                "moduleId": 0,
+                "start": 846,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -1275,9 +1194,10 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 618,
-                  "end": 624,
-                  "start": 618,
+                  "commentStart": 636,
+                  "end": 642,
+                  "moduleId": 0,
+                  "start": 636,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1286,9 +1206,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1300,20 +1218,19 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "tag": {
-                  "commentStart": 700,
-                  "end": 706,
-                  "start": 700,
+                  "commentStart": 721,
+                  "end": 727,
+                  "moduleId": 0,
+                  "start": 721,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
                 "to": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1321,13 +1238,14 @@ description: Variables in memory after executing keyboard.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "tag": {
-                  "commentStart": 749,
-                  "end": 755,
-                  "start": 749,
+                  "commentStart": 770,
+                  "end": 776,
+                  "moduleId": 0,
+                  "start": 770,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -1336,9 +1254,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1350,9 +1266,10 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 825,
-                  "end": 831,
-                  "start": 825,
+                  "commentStart": 846,
+                  "end": 852,
+                  "moduleId": 0,
+                  "start": 846,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -1361,9 +1278,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1380,38 +1295,37 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "YZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -1423,9 +1337,7 @@ description: Variables in memory after executing keyboard.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1452,50 +1364,72 @@ description: Variables in memory after executing keyboard.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 13.6,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
@@ -1506,9 +1440,7 @@ description: Variables in memory after executing keyboard.kcl
           1.13,
           12.85
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1517,9 +1449,7 @@ description: Variables in memory after executing keyboard.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile005": {
@@ -1539,19 +1469,17 @@ description: Variables in memory after executing keyboard.kcl
             12.85
           ],
           "from": [
-            4.8,
+            4.800000000000001,
             12.85
           ],
           "radius": 0.4,
           "tag": null,
           "to": [
-            4.8,
+            4.800000000000001,
             12.85
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1562,17 +1490,14 @@ description: Variables in memory after executing keyboard.kcl
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
+          "z": 1.0,
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -1584,9 +1509,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 618,
-                "end": 624,
-                "start": 618,
+                "commentStart": 636,
+                "end": 642,
+                "moduleId": 0,
+                "start": 636,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1597,9 +1523,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 700,
-                "end": 706,
-                "start": 700,
+                "commentStart": 721,
+                "end": 727,
+                "moduleId": 0,
+                "start": 721,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1610,9 +1537,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 749,
-                "end": 755,
-                "start": 749,
+                "commentStart": 770,
+                "end": 776,
+                "moduleId": 0,
+                "start": 770,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -1623,9 +1551,10 @@ description: Variables in memory after executing keyboard.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 825,
-                "end": 831,
-                "start": 825,
+                "commentStart": 846,
+                "end": 852,
+                "moduleId": 0,
+                "start": 846,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -1646,9 +1575,10 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 618,
-                  "end": 624,
-                  "start": 618,
+                  "commentStart": 636,
+                  "end": 642,
+                  "moduleId": 0,
+                  "start": 636,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1657,9 +1587,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1671,20 +1599,19 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "tag": {
-                  "commentStart": 700,
-                  "end": 706,
-                  "start": 700,
+                  "commentStart": 721,
+                  "end": 727,
+                  "moduleId": 0,
+                  "start": 721,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
                 "to": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1692,13 +1619,14 @@ description: Variables in memory after executing keyboard.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  5.716,
-                  1.399
+                  5.716022294683801,
+                  1.3990291260903702
                 ],
                 "tag": {
-                  "commentStart": 749,
-                  "end": 755,
-                  "start": 749,
+                  "commentStart": 770,
+                  "end": 776,
+                  "moduleId": 0,
+                  "start": 770,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -1707,9 +1635,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1721,9 +1647,10 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 825,
-                  "end": 831,
-                  "start": 825,
+                  "commentStart": 846,
+                  "end": 852,
+                  "moduleId": 0,
+                  "start": 846,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -1732,9 +1659,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1751,38 +1676,37 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "YZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "YZ",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Inches"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -1794,9 +1718,7 @@ description: Variables in memory after executing keyboard.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1823,63 +1745,83 @@ description: Variables in memory after executing keyboard.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 13.6,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 0.6,
+              "radius": {
+                "n": 0.6,
+                "ty": {
+                  "type": "Default",
+                  "len": "in",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in",
+          "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
-          4.8,
+          4.800000000000001,
           12.85
         ],
         "to": [
-          4.8,
+          4.800000000000001,
           12.85
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1888,35 +1830,25 @@ description: Variables in memory after executing keyboard.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "row1": {
     "type": "Number",
-    "value": 0.3,
+    "value": 0.30000000000000004,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "row2": {
     "type": "Number",
-    "value": 1.2,
+    "value": 1.2000000000000002,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "row3": {
@@ -1924,51 +1856,35 @@ description: Variables in memory after executing keyboard.kcl
     "value": 2.1,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "row4": {
     "type": "Number",
-    "value": 3.0,
+    "value": 3.0000000000000004,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "row5": {
     "type": "Number",
-    "value": 3.9,
+    "value": 3.900000000000001,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "row6": {
     "type": "Number",
-    "value": 4.8,
+    "value": 4.800000000000001,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "seg01": {
@@ -2003,9 +1919,10 @@ description: Variables in memory after executing keyboard.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 618,
-            "end": 624,
-            "start": 618,
+            "commentStart": 636,
+            "end": 642,
+            "moduleId": 0,
+            "start": 636,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -2016,9 +1933,10 @@ description: Variables in memory after executing keyboard.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 700,
-            "end": 706,
-            "start": 700,
+            "commentStart": 721,
+            "end": 727,
+            "moduleId": 0,
+            "start": 721,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -2029,9 +1947,10 @@ description: Variables in memory after executing keyboard.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 749,
-            "end": 755,
-            "start": 749,
+            "commentStart": 770,
+            "end": 776,
+            "moduleId": 0,
+            "start": 770,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2042,9 +1961,10 @@ description: Variables in memory after executing keyboard.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 825,
-            "end": 831,
-            "start": 825,
+            "commentStart": 846,
+            "end": 852,
+            "moduleId": 0,
+            "start": 846,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2065,9 +1985,10 @@ description: Variables in memory after executing keyboard.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 618,
-              "end": 624,
-              "start": 618,
+              "commentStart": 636,
+              "end": 642,
+              "moduleId": 0,
+              "start": 636,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -2076,9 +1997,7 @@ description: Variables in memory after executing keyboard.kcl
               0.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2090,20 +2009,19 @@ description: Variables in memory after executing keyboard.kcl
               0.68
             ],
             "tag": {
-              "commentStart": 700,
-              "end": 706,
-              "start": 700,
+              "commentStart": 721,
+              "end": 727,
+              "moduleId": 0,
+              "start": 721,
               "type": "TagDeclarator",
               "value": "seg02"
             },
             "to": [
-              5.716,
-              1.399
+              5.716022294683801,
+              1.3990291260903702
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2111,13 +2029,14 @@ description: Variables in memory after executing keyboard.kcl
               "sourceRange": []
             },
             "from": [
-              5.716,
-              1.399
+              5.716022294683801,
+              1.3990291260903702
             ],
             "tag": {
-              "commentStart": 749,
-              "end": 755,
-              "start": 749,
+              "commentStart": 770,
+              "end": 776,
+              "moduleId": 0,
+              "start": 770,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -2126,9 +2045,7 @@ description: Variables in memory after executing keyboard.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2140,9 +2057,10 @@ description: Variables in memory after executing keyboard.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 825,
-              "end": 831,
-              "start": 825,
+              "commentStart": 846,
+              "end": 852,
+              "moduleId": 0,
+              "start": 846,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -2151,9 +2069,7 @@ description: Variables in memory after executing keyboard.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2170,38 +2086,37 @@ description: Variables in memory after executing keyboard.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "YZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
-          },
-          "units": {
-            "type": "Inches"
+            "z": 0.0,
+            "units": null
           }
         },
         "start": {
@@ -2213,9 +2128,7 @@ description: Variables in memory after executing keyboard.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2242,46 +2155,70 @@ description: Variables in memory after executing keyboard.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 13.6,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.6,
+          "radius": {
+            "n": 0.6,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.6,
+          "radius": {
+            "n": 0.6,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.6,
+          "radius": {
+            "n": 0.6,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 0.6,
+          "radius": {
+            "n": 0.6,
+            "ty": {
+              "type": "Default",
+              "len": "in",
+              "angle": "degrees"
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in",
+      "sectional": false
     }
   },
   "sketch003": {
@@ -2293,17 +2230,14 @@ description: Variables in memory after executing keyboard.kcl
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
-      },
-      "zAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
+        "z": 1.0,
+        "units": null
       },
       "solid": {
         "type": "Solid",
@@ -2315,9 +2249,10 @@ description: Variables in memory after executing keyboard.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 618,
-              "end": 624,
-              "start": 618,
+              "commentStart": 636,
+              "end": 642,
+              "moduleId": 0,
+              "start": 636,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -2328,9 +2263,10 @@ description: Variables in memory after executing keyboard.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 700,
-              "end": 706,
-              "start": 700,
+              "commentStart": 721,
+              "end": 727,
+              "moduleId": 0,
+              "start": 721,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -2341,9 +2277,10 @@ description: Variables in memory after executing keyboard.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 749,
-              "end": 755,
-              "start": 749,
+              "commentStart": 770,
+              "end": 776,
+              "moduleId": 0,
+              "start": 770,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -2354,9 +2291,10 @@ description: Variables in memory after executing keyboard.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 825,
-              "end": 831,
-              "start": 825,
+              "commentStart": 846,
+              "end": 852,
+              "moduleId": 0,
+              "start": 846,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -2377,9 +2315,10 @@ description: Variables in memory after executing keyboard.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 618,
-                "end": 624,
-                "start": 618,
+                "commentStart": 636,
+                "end": 642,
+                "moduleId": 0,
+                "start": 636,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -2388,9 +2327,7 @@ description: Variables in memory after executing keyboard.kcl
                 0.68
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -2402,20 +2339,19 @@ description: Variables in memory after executing keyboard.kcl
                 0.68
               ],
               "tag": {
-                "commentStart": 700,
-                "end": 706,
-                "start": 700,
+                "commentStart": 721,
+                "end": 727,
+                "moduleId": 0,
+                "start": 721,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
               "to": [
-                5.716,
-                1.399
+                5.716022294683801,
+                1.3990291260903702
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -2423,13 +2359,14 @@ description: Variables in memory after executing keyboard.kcl
                 "sourceRange": []
               },
               "from": [
-                5.716,
-                1.399
+                5.716022294683801,
+                1.3990291260903702
               ],
               "tag": {
-                "commentStart": 749,
-                "end": 755,
-                "start": 749,
+                "commentStart": 770,
+                "end": 776,
+                "moduleId": 0,
+                "start": 770,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -2438,9 +2375,7 @@ description: Variables in memory after executing keyboard.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -2452,9 +2387,10 @@ description: Variables in memory after executing keyboard.kcl
                 0.0
               ],
               "tag": {
-                "commentStart": 825,
-                "end": 831,
-                "start": 825,
+                "commentStart": 846,
+                "end": 852,
+                "moduleId": 0,
+                "start": 846,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -2463,9 +2399,7 @@ description: Variables in memory after executing keyboard.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -2482,38 +2416,37 @@ description: Variables in memory after executing keyboard.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             }
           ],
           "on": {
-            "type": "plane",
-            "id": "[uuid]",
             "artifactId": "[uuid]",
-            "value": "YZ",
+            "id": "[uuid]",
             "origin": {
               "x": 0.0,
               "y": 0.0,
-              "z": 0.0
+              "z": 0.0,
+              "units": "mm"
             },
+            "type": "plane",
+            "value": "YZ",
             "xAxis": {
               "x": 0.0,
               "y": 1.0,
-              "z": 0.0
+              "z": 0.0,
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
-              "z": 1.0
+              "z": 1.0,
+              "units": null
             },
             "zAxis": {
               "x": 1.0,
               "y": 0.0,
-              "z": 0.0
-            },
-            "units": {
-              "type": "Inches"
+              "z": 0.0,
+              "units": null
             }
           },
           "start": {
@@ -2525,9 +2458,7 @@ description: Variables in memory after executing keyboard.kcl
               0.0,
               0.0
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -2554,50 +2485,72 @@ description: Variables in memory after executing keyboard.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
-        "height": 13.6,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [
           {
             "type": "fillet",
             "id": "[uuid]",
-            "radius": 0.6,
+            "radius": {
+              "n": 0.6,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
             "edgeId": "[uuid]",
             "tag": null
           },
           {
             "type": "fillet",
             "id": "[uuid]",
-            "radius": 0.6,
+            "radius": {
+              "n": 0.6,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
             "edgeId": "[uuid]",
             "tag": null
           },
           {
             "type": "fillet",
             "id": "[uuid]",
-            "radius": 0.6,
+            "radius": {
+              "n": 0.6,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
             "edgeId": "[uuid]",
             "tag": null
           },
           {
             "type": "fillet",
             "id": "[uuid]",
-            "radius": 0.6,
+            "radius": {
+              "n": 0.6,
+              "ty": {
+                "type": "Default",
+                "len": "in",
+                "angle": "degrees"
+              }
+            },
             "edgeId": "[uuid]",
             "tag": null
           }
         ],
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in",
+        "sectional": false
       },
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "spacing": {
@@ -2605,15 +2558,12 @@ description: Variables in memory after executing keyboard.kcl
     "value": 0.1,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "z": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   }
 }

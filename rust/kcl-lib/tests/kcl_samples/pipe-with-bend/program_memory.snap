@@ -8,12 +8,8 @@ description: Variables in memory after executing pipe-with-bend.kcl
     "value": 90.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "bendRadius": {
@@ -21,12 +17,8 @@ description: Variables in memory after executing pipe-with-bend.kcl
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "innerDiameter": {
@@ -34,12 +26,8 @@ description: Variables in memory after executing pipe-with-bend.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "innerProfile": {
@@ -69,38 +57,37 @@ description: Variables in memory after executing pipe-with-bend.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
-        },
-        "units": {
-          "type": "Inches"
+          "z": 0.0,
+          "units": null
         }
       },
       "start": {
@@ -112,9 +99,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
           35.0,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -123,9 +108,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "outerDiameter": {
@@ -133,12 +116,8 @@ description: Variables in memory after executing pipe-with-bend.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "outerProfile": {
@@ -168,38 +147,37 @@ description: Variables in memory after executing pipe-with-bend.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
-        },
-        "units": {
-          "type": "Inches"
+          "z": 0.0,
+          "units": null
         }
       },
       "start": {
@@ -211,9 +189,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
           40.0,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -222,9 +198,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "pipe": {
@@ -234,6 +208,13 @@ description: Variables in memory after executing pipe-with-bend.kcl
       "id": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudeArc"
+        },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
@@ -267,38 +248,62 @@ description: Variables in memory after executing pipe-with-bend.kcl
               0.0
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
+          }
+        ],
+        "innerPaths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              30.0,
+              0.0
+            ],
+            "from": [
+              35.0,
+              0.0
+            ],
+            "radius": 5.0,
+            "tag": null,
+            "to": [
+              35.0,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
-          },
-          "units": {
-            "type": "Inches"
+            "z": 0.0,
+            "units": null
           }
         },
         "start": {
@@ -310,9 +315,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
             40.0,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -321,16 +324,12 @@ description: Variables in memory after executing pipe-with-bend.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in",
+      "sectional": false
     }
   },
   "pipeProfile": {
@@ -360,38 +359,62 @@ description: Variables in memory after executing pipe-with-bend.kcl
             0.0
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
+        }
+      ],
+      "innerPaths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            30.0,
+            0.0
+          ],
+          "from": [
+            35.0,
+            0.0
+          ],
+          "radius": 5.0,
+          "tag": null,
+          "to": [
+            35.0,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
-        },
-        "units": {
-          "type": "Inches"
+          "z": 0.0,
+          "units": null
         }
       },
       "start": {
@@ -403,9 +426,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
           40.0,
           0.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -414,39 +435,38 @@ description: Variables in memory after executing pipe-with-bend.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "sketch000": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "XZ",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": "mm"
       },
+      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
+        "z": 1.0,
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
-        "z": 0.0
-      },
-      "units": {
-        "type": "Inches"
+        "z": 0.0,
+        "units": null
       }
     }
   }

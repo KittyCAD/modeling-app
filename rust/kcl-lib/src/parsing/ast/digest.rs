@@ -1,12 +1,12 @@
 use sha2::{Digest as DigestTrait, Sha256};
 
 use crate::parsing::ast::types::{
-    Annotation, ArrayExpression, ArrayRangeExpression, Ascription, BinaryExpression, BinaryPart, BodyItem,
-    CallExpression, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression,
+    Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, Block,
+    BodyItem, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, FunctionType,
     Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression,
-    Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, ObjectExpression, ObjectProperty,
-    Parameter, PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, TagDeclarator, Type,
-    TypeDeclaration, UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
+    Literal, LiteralValue, MemberExpression, Name, NumericLiteral, ObjectExpression, ObjectProperty, Parameter,
+    PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, SketchBlock, SketchVar, TagDeclarator,
+    Type, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
 };
 
 /// Position-independent digest of the AST node.
@@ -132,7 +132,6 @@ impl Expr {
             Expr::TagDeclarator(tag) => tag.compute_digest(),
             Expr::BinaryExpression(be) => be.compute_digest(),
             Expr::FunctionExpression(fe) => fe.compute_digest(),
-            Expr::CallExpression(ce) => ce.compute_digest(),
             Expr::CallExpressionKw(ce) => ce.compute_digest(),
             Expr::PipeExpression(pe) => pe.compute_digest(),
             Expr::PipeSubstitution(ps) => ps.compute_digest(),
@@ -144,6 +143,8 @@ impl Expr {
             Expr::IfExpression(e) => e.compute_digest(),
             Expr::LabelledExpression(e) => e.compute_digest(),
             Expr::AscribedExpression(e) => e.compute_digest(),
+            Expr::SketchBlock(e) => e.compute_digest(),
+            Expr::SketchVar(e) => e.compute_digest(),
             Expr::None(_) => {
                 let mut hasher = Sha256::new();
                 hasher.update(b"Value::None");
@@ -159,32 +160,19 @@ impl BinaryPart {
             BinaryPart::Literal(lit) => lit.compute_digest(),
             BinaryPart::Name(id) => id.compute_digest(),
             BinaryPart::BinaryExpression(be) => be.compute_digest(),
-            BinaryPart::CallExpression(ce) => ce.compute_digest(),
             BinaryPart::CallExpressionKw(ce) => ce.compute_digest(),
             BinaryPart::UnaryExpression(ue) => ue.compute_digest(),
             BinaryPart::MemberExpression(me) => me.compute_digest(),
+            BinaryPart::ArrayExpression(e) => e.compute_digest(),
+            BinaryPart::ArrayRangeExpression(e) => e.compute_digest(),
+            BinaryPart::ObjectExpression(e) => e.compute_digest(),
             BinaryPart::IfExpression(e) => e.compute_digest(),
+            BinaryPart::AscribedExpression(e) => e.compute_digest(),
+            BinaryPart::SketchVar(e) => e.compute_digest(),
         }
     }
 }
 
-impl MemberObject {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            MemberObject::MemberExpression(me) => me.compute_digest(),
-            MemberObject::Identifier(id) => id.compute_digest(),
-        }
-    }
-}
-
-impl LiteralIdentifier {
-    pub fn compute_digest(&mut self) -> Digest {
-        match self {
-            LiteralIdentifier::Identifier(id) => id.compute_digest(),
-            LiteralIdentifier::Literal(lit) => lit.compute_digest(),
-        }
-    }
-}
 impl Type {
     pub fn compute_digest(&mut self) -> Digest {
         let mut hasher = Sha256::new();
@@ -199,7 +187,7 @@ impl Type {
                 hasher.update(ty.compute_digest());
                 match len {
                     crate::execution::types::ArrayLen::None => {}
-                    crate::execution::types::ArrayLen::NonEmpty => hasher.update(usize::MAX.to_ne_bytes()),
+                    crate::execution::types::ArrayLen::Minimum(n) => hasher.update((-(*n as isize)).to_ne_bytes()),
                     crate::execution::types::ArrayLen::Known(n) => hasher.update(n.to_ne_bytes()),
                 }
             }
@@ -213,8 +201,9 @@ impl Type {
             Type::Object { properties } => {
                 hasher.update(b"FnArgType::Object");
                 hasher.update(properties.len().to_ne_bytes());
-                for prop in properties.iter_mut() {
-                    hasher.update(prop.compute_digest());
+                for (id, ty) in properties.iter_mut() {
+                    hasher.update(id.compute_digest());
+                    hasher.update(ty.compute_digest());
                 }
             }
         }
@@ -227,21 +216,40 @@ impl PrimitiveType {
     pub fn compute_digest(&mut self) -> Digest {
         let mut hasher = Sha256::new();
         match self {
-            PrimitiveType::Named(id) => hasher.update(id.compute_digest()),
+            PrimitiveType::Any => hasher.update(b"any"),
+            PrimitiveType::None => hasher.update(b"none"),
+            PrimitiveType::Named { id } => hasher.update(id.compute_digest()),
             PrimitiveType::String => hasher.update(b"string"),
             PrimitiveType::Number(suffix) => hasher.update(suffix.digestable_id()),
             PrimitiveType::Boolean => hasher.update(b"bool"),
-            PrimitiveType::Tag => hasher.update(b"tag"),
+            PrimitiveType::TagDecl => hasher.update(b"TagDecl"),
+            PrimitiveType::ImportedGeometry => hasher.update(b"ImportedGeometry"),
+            PrimitiveType::Function(f) => hasher.update(f.compute_digest()),
         }
 
         hasher.finalize().into()
     }
 }
 
+impl FunctionType {
+    compute_digest!(|slf, hasher| {
+        if let Some(u) = &mut slf.unnamed_arg {
+            hasher.update(u.compute_digest());
+        }
+        slf.named_args.iter_mut().for_each(|(a, t)| {
+            a.compute_digest();
+            t.compute_digest();
+        });
+        if let Some(r) = &mut slf.return_type {
+            hasher.update(r.compute_digest());
+        }
+    });
+}
+
 impl Parameter {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.identifier.compute_digest());
-        match &mut slf.type_ {
+        match &mut slf.param_type {
             Some(arg) => {
                 hasher.update(b"Parameter::type_::Some");
                 hasher.update(arg.compute_digest())
@@ -343,6 +351,14 @@ impl VariableDeclarator {
     });
 }
 
+impl NumericLiteral {
+    fn digestable_id(&self) -> Vec<u8> {
+        let mut result: Vec<u8> = self.value.to_ne_bytes().into();
+        result.extend((self.suffix as u32).to_ne_bytes());
+        result
+    }
+}
+
 impl Literal {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.value.digestable_id());
@@ -415,6 +431,7 @@ impl ArrayRangeExpression {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.start_element.compute_digest());
         hasher.update(slf.end_element.compute_digest());
+        hasher.update(if slf.end_inclusive { [1] } else { [0] });
     });
 }
 
@@ -464,7 +481,7 @@ impl LabelledExpression {
     });
 }
 
-impl Ascription {
+impl AscribedExpression {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.expr.compute_digest());
         hasher.update(slf.ty.compute_digest());
@@ -480,16 +497,6 @@ impl PipeExpression {
     });
 }
 
-impl CallExpression {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.callee.compute_digest());
-        hasher.update(slf.arguments.len().to_ne_bytes());
-        for argument in slf.arguments.iter_mut() {
-            hasher.update(argument.compute_digest());
-        }
-    });
-}
-
 impl CallExpressionKw {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.callee.compute_digest());
@@ -500,7 +507,9 @@ impl CallExpressionKw {
         }
         hasher.update(slf.arguments.len().to_ne_bytes());
         for argument in slf.arguments.iter_mut() {
-            hasher.update(argument.label.compute_digest());
+            if let Some(l) = &mut argument.label {
+                hasher.update(l.compute_digest());
+            }
             hasher.update(argument.arg.compute_digest());
         }
     });
@@ -523,27 +532,57 @@ impl ElseIf {
     });
 }
 
+impl SketchBlock {
+    compute_digest!(|slf, hasher| {
+        for argument in &mut slf.arguments {
+            if let Some(l) = &mut argument.label {
+                hasher.update(l.compute_digest());
+            }
+            hasher.update(argument.arg.compute_digest());
+        }
+        hasher.update(slf.body.compute_digest());
+    });
+}
+
+impl Block {
+    compute_digest!(|slf, hasher| {
+        for item in &mut slf.items {
+            hasher.update(item.compute_digest());
+        }
+    });
+}
+
+impl SketchVar {
+    compute_digest!(|slf, hasher| {
+        if let Some(initial) = &slf.initial {
+            hasher.update(initial.digestable_id());
+        } else {
+            hasher.update("no_initial");
+        }
+    });
+}
+
 #[cfg(test)]
 mod test {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_digest() {
-        let prog1_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line([5, 5], %)
+        let prog1_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line([5, 5])
 "#;
         let prog1_digest = crate::parsing::top_level_parse(prog1_string).unwrap().compute_digest();
 
-        let prog2_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 2], %)
-    |> line([5, 5], %)
+        let prog2_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 2])
+    |> line([5, 5])
 "#;
         let prog2_digest = crate::parsing::top_level_parse(prog2_string).unwrap().compute_digest();
 
         assert!(prog1_digest != prog2_digest);
 
-        let prog3_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line([5, 5], %)
+        let prog3_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line([5, 5])
 "#;
         let prog3_digest = crate::parsing::top_level_parse(prog3_string).unwrap().compute_digest();
 
@@ -554,12 +593,12 @@ mod test {
     async fn test_annotations_digest() {
         // Settings annotations should be included in the digest.
         let prog1_string = r#"@settings(defaultLengthUnit = in)
-startSketchOn('XY')
+startSketchOn(XY)
 "#;
         let prog1_digest = crate::parsing::top_level_parse(prog1_string).unwrap().compute_digest();
 
         let prog2_string = r#"@settings(defaultLengthUnit = mm)
-startSketchOn('XY')
+startSketchOn(XY)
 "#;
         let prog2_digest = crate::parsing::top_level_parse(prog2_string).unwrap().compute_digest();
 

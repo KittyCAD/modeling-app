@@ -4,10 +4,12 @@ description: Variables in memory after executing sketch_in_object.kcl
 ---
 {
   "test": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "test2": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "x": {
     "type": "Sketch",
@@ -30,9 +32,7 @@ description: Variables in memory after executing sketch_in_object.kcl
             1.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -49,9 +49,7 @@ description: Variables in memory after executing sketch_in_object.kcl
             1.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -68,9 +66,7 @@ description: Variables in memory after executing sketch_in_object.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -87,38 +83,37 @@ description: Variables in memory after executing sketch_in_object.kcl
             0.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 1.0,
+          "units": null
         }
       },
       "start": {
@@ -130,9 +125,7 @@ description: Variables in memory after executing sketch_in_object.kcl
           0.0,
           0.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -141,9 +134,7 @@ description: Variables in memory after executing sketch_in_object.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "x2": {
@@ -173,9 +164,7 @@ description: Variables in memory after executing sketch_in_object.kcl
                     1.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -192,9 +181,7 @@ description: Variables in memory after executing sketch_in_object.kcl
                     1.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -211,9 +198,7 @@ description: Variables in memory after executing sketch_in_object.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -230,38 +215,37 @@ description: Variables in memory after executing sketch_in_object.kcl
                     0.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
-                "type": "plane",
-                "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "value": "XY",
+                "id": "[uuid]",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": "mm"
                 },
+                "type": "plane",
+                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
-                },
-                "units": {
-                  "type": "Mm"
+                  "z": 1.0,
+                  "units": null
                 }
               },
               "start": {
@@ -273,9 +257,7 @@ description: Variables in memory after executing sketch_in_object.kcl
                   0.0,
                   0.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -284,13 +266,13 @@ description: Variables in memory after executing sketch_in_object.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             }
           }
-        }
+        },
+        "constrainable": false
       }
-    }
+    },
+    "constrainable": false
   }
 }

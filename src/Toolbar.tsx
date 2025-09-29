@@ -13,9 +13,11 @@ import { useKclContext } from '@src/lang/KclProvider'
 import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
+import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { editorManager, kclManager } from '@src/lib/singletons'
+import { codeManager, commandBarActor } from '@src/lib/singletons'
 import type {
   ToolbarDropdown,
   ToolbarItem,
@@ -25,8 +27,6 @@ import type {
   ToolbarModeName,
 } from '@src/lib/toolbar'
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
-import { isArray } from '@src/lib/utils'
-import { commandBarActor } from '@src/machines/commandBarMachine'
 
 export function Toolbar({
   className = '',
@@ -40,6 +40,12 @@ export function Toolbar({
     'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10'
   const buttonBorderClassName = '!border-transparent'
 
+  const isInTemporaryWorkspace = codeManager.isBufferMode
+
+  const onClickSave = () => {
+    codeManager.exitFromTemporaryWorkspaceMode()
+  }
+
   const sketchPathId = useMemo(() => {
     if (
       isCursorInFunctionDefinition(
@@ -52,6 +58,7 @@ export function Toolbar({
       kclManager.artifactGraph,
       context.selectionRanges
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.artifactGraph, context.selectionRanges])
 
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
@@ -82,20 +89,22 @@ export function Toolbar({
       modelingState: state,
       modelingSend: send,
       sketchPathId,
-      editorHasFocus: editorManager.editorView?.hasFocus,
+      editorHasFocus: editorManager.getEditorView()?.hasFocus,
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [
       state,
       send,
       commandBarActor.send,
       sketchPathId,
-      editorManager.editorView?.hasFocus,
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+      editorManager.getEditorView()?.hasFocus,
     ]
   )
 
   const tooltipContentClassName = !showRichContent
     ? ''
-    : '!text-left text-wrap !text-xs !p-0 !pb-2 flex gap-2 !max-w-none !w-72 flex-col items-stretch'
+    : '!text-left text-wrap !text-xs !p-0 !pb-2 flex !max-w-none !w-72 flex-col items-stretch'
   const richContentTimeout = useRef<number | null>(null)
   const richContentClearTimeout = useRef<number | null>(null)
   // On mouse enter, show rich content after a 1s delay
@@ -142,9 +151,7 @@ export function Toolbar({
       } else if (isToolbarDropdown(maybeIconConfig)) {
         return {
           id: maybeIconConfig.id,
-          array: maybeIconConfig.array.map((item) =>
-            resolveItemConfig(item, maybeIconConfig.id)
-          ),
+          array: maybeIconConfig.array.map((item) => resolveItemConfig(item)),
         }
       } else {
         return resolveItemConfig(maybeIconConfig)
@@ -152,13 +159,16 @@ export function Toolbar({
     })
 
     function resolveItemConfig(
-      maybeIconConfig: ToolbarItem,
-      dropdownId?: string
+      maybeIconConfig: ToolbarItem
     ): ToolbarItemResolved {
+      const isConfiguredAvailable = ['available', 'experimental'].includes(
+        maybeIconConfig.status
+      )
       const isDisabled =
         disableAllButtons ||
-        maybeIconConfig.status !== 'available' ||
-        maybeIconConfig.disabled?.(state) === true
+        !isConfiguredAvailable ||
+        maybeIconConfig.disabled?.(state) === true ||
+        kclManager.hasErrors()
 
       return {
         ...maybeIconConfig,
@@ -182,6 +192,7 @@ export function Toolbar({
         status: maybeIconConfig.status,
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [currentMode, disableAllButtons, configCallbackProps])
 
   // To remember the last selected item in an ActionButtonDropdown
@@ -195,7 +206,8 @@ export function Toolbar({
   return (
     <menu
       data-current-mode={currentMode}
-      className="max-w-full whitespace-nowrap rounded-b px-2 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
+      data-onboarding-id="toolbar"
+      className="z-[19] max-w-full whitespace-nowrap rounded-b px-2 py-1 mx-auto bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
     >
       <ul
         {...props}
@@ -231,6 +243,7 @@ export function Toolbar({
                 Element="button"
                 key={selectedIcon.id}
                 data-testid={selectedIcon.id + '-dropdown'}
+                data-onboarding-id={selectedIcon.id + '-dropdown'}
                 id={selectedIcon.id + '-dropdown'}
                 name={maybeIconConfig.id}
                 className={
@@ -248,8 +261,11 @@ export function Toolbar({
                   onClick: () => itemConfig.onClick(configCallbackProps),
                   disabled:
                     disableAllButtons ||
-                    itemConfig.status !== 'available' ||
-                    itemConfig.disabled === true,
+                    !['available', 'experimental'].includes(
+                      itemConfig.status
+                    ) ||
+                    itemConfig.disabled === true ||
+                    itemConfig.disableHotkey === true,
                   status: itemConfig.status,
                 }))}
               >
@@ -263,6 +279,7 @@ export function Toolbar({
                     Element="button"
                     id={selectedIcon.id}
                     data-testid={selectedIcon.id}
+                    data-onboarding-id={selectedIcon.id}
                     iconStart={{
                       icon: selectedIcon.icon,
                       iconColor: selectedIcon.iconColor,
@@ -276,7 +293,9 @@ export function Toolbar({
                     aria-pressed={selectedIcon.isActive}
                     disabled={
                       disableAllButtons ||
-                      selectedIcon.status !== 'available' ||
+                      !['available', 'experimental'].includes(
+                        selectedIcon.status
+                      ) ||
                       selectedIcon.disabled
                     }
                     name={selectedIcon.title}
@@ -316,7 +335,7 @@ export function Toolbar({
           // A single button
           return (
             <div
-              className="relative"
+              className={`relative ${itemConfig.alwaysDark ? ' dark bg-chalkboard-90 ' : ''}`}
               key={itemConfig.id}
               // Mouse events do not fire on disabled buttons
               onMouseEnter={handleMouseEnter}
@@ -327,6 +346,7 @@ export function Toolbar({
                 key={itemConfig.id}
                 id={itemConfig.id}
                 data-testid={itemConfig.id}
+                data-onboarding-id={itemConfig.id}
                 iconStart={{
                   icon: itemConfig.icon,
                   iconColor: itemConfig.iconColor,
@@ -347,7 +367,7 @@ export function Toolbar({
                 aria-pressed={itemConfig.isActive}
                 disabled={
                   disableAllButtons ||
-                  itemConfig.status !== 'available' ||
+                  !['available', 'experimental'].includes(itemConfig.status) ||
                   itemConfig.disabled
                 }
                 onClick={() => itemConfig.onClick(configCallbackProps)}
@@ -375,11 +395,35 @@ export function Toolbar({
           )
         })}
       </ul>
-      {state.matches('Sketch no face') && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
-          <p className="text-xs">Select a plane or face to start sketching</p>
-        </div>
-      )}
+      <div className="flex flex-col items-center absolute top-full left-1/2 -translate-x-1/2">
+        {isInTemporaryWorkspace && (
+          <div className="flex flex-row gap-2 justify-center">
+            <div className="mt-2 animate-pulse w-fit uppercase text-xs rounded-full ml-2 px-2 py-1 border border-chalkboard-40 dark:text-chalkboard-40 bg-chalkboard-10 dark:bg-chalkboard-90 shadow-lg flex items-center">
+              Temporary workspace
+            </div>
+            <button
+              data-testid="tws-save"
+              onClick={onClickSave}
+              className="mt-2 py-1 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10 bg-chalkboard-10 dark:bg-chalkboard-90 px-2"
+            >
+              Save
+            </button>
+          </div>
+        )}
+        {state.matches('Sketch no face') && (
+          <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
+            <p className="text-xs">Select a plane or face to start sketching</p>
+          </div>
+        )}
+        {state.matches('sketchSolveMode') && (
+          <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
+            <p className="text-xs">
+              Sketch mode revamp, expect bugs, disable again in settings if you
+              want normal sketch mode
+            </p>
+          </div>
+        )}
+      </div>
     </menu>
   )
 }
@@ -402,6 +446,10 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
   contentClassName = '',
   children,
 }: ToolbarItemContentsProps) {
+  /**
+   * GOTCHA: `useHotkeys` can only register one hotkey listener per component.
+   * TODO: make a global hotkey registration system. make them editable.
+   */
   useHotkeys(
     itemConfig.hotkey || '',
     () => {
@@ -409,7 +457,7 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
     },
     {
       enabled:
-        itemConfig.status === 'available' &&
+        ['available', 'experimental'].includes(itemConfig.status) &&
         !!itemConfig.hotkey &&
         !itemConfig.disabled &&
         !itemConfig.disableHotkey,
@@ -431,6 +479,15 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
       contentClassName={contentClassName}
     >
       {children}
+      {kclManager.hasErrors() && (
+        <p className="text-xs p-1 text-chalkboard-70 dark:text-chalkboard-40">
+          <CustomIcon
+            name="exclamationMark"
+            className="w-4 h-4 inline-block mr-1 text-destroy-80 bg-destroy-10"
+          />
+          Fix KCL errors to enable tools
+        </p>
+      )}
     </Tooltip>
   )
 })
@@ -444,18 +501,28 @@ const ToolbarItemTooltipShortContent = ({
   title: string
   hotkey?: string | string[]
 }) => (
-  <span
-    className={`text-sm ${
-      status !== 'available' ? 'text-chalkboard-70 dark:text-chalkboard-40' : ''
+  <div
+    className={`text-sm flex flex-col ${
+      !['available', 'experimental'].includes(status)
+        ? 'text-chalkboard-70 dark:text-chalkboard-40'
+        : ''
     }`}
   >
-    {title}
-    {hotkey && (
-      <kbd className="inline-block ml-2 flex-none hotkey">
-        {displayHotkeys(hotkey)}
-      </kbd>
+    {status === 'experimental' && (
+      <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
+        <CustomIcon name="beaker" className="w-4 h-4" />
+        <span>Experimental</span>
+      </div>
     )}
-  </span>
+    <div className={`flex gap-4 ${status === 'experimental' ? 'pt-1' : 'p-0'}`}>
+      {title}
+      {hotkey && (
+        <kbd className="inline-block ml-2 flex-none hotkey">
+          {filterEscHotkey(hotkey)}
+        </kbd>
+      )}
+    </div>
+  </div>
 )
 
 const ToolbarItemTooltipRichContent = ({
@@ -463,9 +530,18 @@ const ToolbarItemTooltipRichContent = ({
 }: {
   itemConfig: ToolbarItemResolved
 }) => {
+  const shouldBeEnabled = ['available', 'experimental'].includes(
+    itemConfig.status
+  )
   const { state } = useModelingContext()
   return (
     <>
+      {itemConfig.status === 'experimental' && (
+        <div className="text-xs flex items-center justify-center self-stretch gap-1 p-1 border-b">
+          <CustomIcon name="beaker" className="w-4 h-4" />
+          <span className="block">Experimental</span>
+        </div>
+      )}
       <div className="rounded-top flex items-center gap-2 pt-3 pb-2 px-2 bg-chalkboard-20/50 dark:bg-chalkboard-80/50">
         {itemConfig.icon && (
           <CustomIcon
@@ -474,18 +550,16 @@ const ToolbarItemTooltipRichContent = ({
             name={itemConfig.icon}
           />
         )}
-        <span
-          className={`text-sm flex-1 ${
-            itemConfig.status !== 'available'
-              ? 'text-chalkboard-70 dark:text-chalkboard-40'
-              : ''
+        <div
+          className={`text-sm flex-1 flex flex-col gap-1 ${
+            !shouldBeEnabled ? 'text-chalkboard-70 dark:text-chalkboard-40' : ''
           }`}
         >
           {itemConfig.title}
-        </span>
-        {itemConfig.status === 'available' && itemConfig.hotkey ? (
+        </div>
+        {shouldBeEnabled && itemConfig.hotkey ? (
           <kbd className="flex-none hotkey">
-            {displayHotkeys(itemConfig.hotkey)}
+            {filterEscHotkey(itemConfig.hotkey)}
           </kbd>
         ) : itemConfig.status === 'kcl-only' ? (
           <>
@@ -511,12 +585,18 @@ const ToolbarItemTooltipRichContent = ({
           )
         )}
       </div>
-      <p className="px-2 text-ch font-sans">{itemConfig.description}</p>
+      <p className="px-2 my-2 text-ch font-sans">{itemConfig.description}</p>
+      {itemConfig.extraNote && (
+        <p className="px-2 my-2 text-ch font-sans">
+          <span className="font-semibold">Note: </span>
+          {itemConfig.extraNote}
+        </p>
+      )}
       {/* Add disabled reason if item is disabled */}
       {itemConfig.disabled && itemConfig.disabledReason && (
         <>
           <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
-          <p className="px-2 text-ch font-sans text-chalkboard-70 dark:text-chalkboard-40">
+          <p className="px-2 my-2 text-ch font-sans text-chalkboard-70 dark:text-chalkboard-40">
             {typeof itemConfig.disabledReason === 'function'
               ? itemConfig.disabledReason(state)
               : itemConfig.disabledReason}
@@ -546,11 +626,6 @@ const ToolbarItemTooltipRichContent = ({
       )}
     </>
   )
-}
-
-// We don't want to display Esc hotkeys to avoid confusion in the Toolbar UI (eg. "EscR")
-function displayHotkeys(hotkey: string | string[]) {
-  return (isArray(hotkey) ? hotkey : [hotkey]).filter((h) => h !== 'Esc')
 }
 
 function isToolbarDropdown(

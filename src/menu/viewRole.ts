@@ -1,5 +1,5 @@
-import type { BrowserWindow } from 'electron'
 import os from 'node:os'
+import type { BrowserWindow } from 'electron'
 
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
@@ -43,6 +43,7 @@ export const projectViewRole = (
       { type: 'separator' },
       { role: 'minimize' },
       { role: 'zoom' },
+      { role: 'toggleDevTools' },
       ...extraBits,
     ],
   }
@@ -74,7 +75,7 @@ export const modelingViewRole = (
       },
       { type: 'separator' },
       {
-        label: 'Orthographic view',
+        label: 'Orthographic View',
         id: 'View.Orthographic view',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -83,7 +84,7 @@ export const modelingViewRole = (
         },
       },
       {
-        label: 'Perspective view',
+        label: 'Perspective View',
         id: 'View.Perspective view',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -93,11 +94,11 @@ export const modelingViewRole = (
       },
       { type: 'separator' },
       {
-        label: 'Standard views',
+        label: 'Standard Views',
         id: 'View.Standard views',
         submenu: [
           {
-            label: 'Right view',
+            label: 'Right View',
             id: 'View.Standard views.Right view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -106,7 +107,7 @@ export const modelingViewRole = (
             },
           },
           {
-            label: 'Back view',
+            label: 'Back View',
             id: 'View.Standard views.Back view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -114,9 +115,8 @@ export const modelingViewRole = (
               })
             },
           },
-
           {
-            label: 'Top view',
+            label: 'Top View',
             id: 'View.Standard views.Top view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -124,9 +124,8 @@ export const modelingViewRole = (
               })
             },
           },
-
           {
-            label: 'Left view',
+            label: 'Left View',
             id: 'View.Standard views.Left view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -134,9 +133,8 @@ export const modelingViewRole = (
               })
             },
           },
-
           {
-            label: 'Front view',
+            label: 'Front View',
             id: 'View.Standard views.Front view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -144,9 +142,8 @@ export const modelingViewRole = (
               })
             },
           },
-
           {
-            label: 'Bottom view',
+            label: 'Bottom View',
             id: 'View.Standard views.Bottom view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -156,7 +153,7 @@ export const modelingViewRole = (
           },
           { type: 'separator' },
           {
-            label: 'Reset view',
+            label: 'Reset View',
             id: 'View.Standard views.Reset view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -164,9 +161,8 @@ export const modelingViewRole = (
               })
             },
           },
-
           {
-            label: 'Center view on selection',
+            label: 'Center View on Selection',
             id: 'View.Standard views.Center view on selection',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -174,23 +170,14 @@ export const modelingViewRole = (
               })
             },
           },
-          {
-            label: 'Refresh',
-            id: 'View.Standard views.Refresh',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'View.Standard views.Refresh',
-              })
-            },
-          },
         ],
       },
       {
-        label: 'Named views',
+        label: 'Named Views',
         id: 'View.Named views',
         submenu: [
           {
-            label: 'Create named view',
+            label: 'Create Named View',
             id: 'View.Named views.Create named view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -198,9 +185,8 @@ export const modelingViewRole = (
               })
             },
           },
-
           {
-            label: 'Load named view',
+            label: 'Load Named View',
             id: 'View.Named views.Load named view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -208,9 +194,8 @@ export const modelingViewRole = (
               })
             },
           },
-
           {
-            label: 'Delete named view',
+            label: 'Delete Named View',
             id: 'View.Named views.Delete named view',
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
@@ -284,6 +269,7 @@ export const modelingViewRole = (
       { type: 'separator' },
       { role: 'minimize' },
       { role: 'zoom' },
+      { role: 'toggleDevTools' },
       ...extraBits,
     ],
   }

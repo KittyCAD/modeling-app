@@ -48,7 +48,8 @@ export function useNetworkStatus() {
   const [overallState, setOverallState] = useState<NetworkHealthState>(
     NetworkHealthState.Disconnected
   )
-  const [ping, setPing] = useState<undefined | number>(undefined)
+  const [pingRaw, setPingRaw] = useState<undefined | number>(undefined)
+  const [pingEMA, setPingEMA] = useState<undefined | number>(undefined)
   const [hasCopied, setHasCopied] = useState<boolean>(false)
 
   const [error, setError] = useState<ErrorType | undefined>(undefined)
@@ -66,30 +67,70 @@ export function useNetworkStatus() {
 
   const [hasIssues, setHasIssues] = useState<boolean | undefined>(undefined)
   useEffect(() => {
-    setOverallState(
-      !internetConnected
-        ? NetworkHealthState.Disconnected
-        : hasIssues || hasIssues === undefined
-          ? NetworkHealthState.Issue
-          : (ping ?? 0) > 16.6 * 3 // we consider ping longer than 3 frames as weak
-            ? NetworkHealthState.Weak
-            : NetworkHealthState.Ok
-    )
-  }, [hasIssues, internetConnected, ping])
+    if (immediateState.type === EngineConnectionStateType.Disconnecting) {
+      // Reset our running average.
+      setPingRaw(undefined)
+      setPingEMA(undefined)
+    }
+  }, [immediateState])
 
   useEffect(() => {
-    const onlineCallback = () => {
-      setInternetConnected(true)
+    if (!pingRaw) return
+
+    // We use an exponential running average to smooth out ping values.
+    const pingDataPointsToConsider = 10
+    const multiplier = 2 / (pingDataPointsToConsider + 1)
+    let pingEMANext = ((pingEMA ?? 0) + pingRaw) / 2
+    pingEMANext = pingEMANext * multiplier + (pingEMA ?? 0) * (1 - multiplier)
+    setPingEMA(pingEMANext)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [pingRaw])
+
+  useEffect(() => {
+    // We consider ping longer than 3 frames as weak
+    const WEAK_PING = 16.6 * 3
+    const OK_PING = 16.6 * 2
+
+    // A is used in the literature to specify the "window" of switching
+    const A = 1.25
+
+    const CENTER = (WEAK_PING + OK_PING) / 2
+    const THRESHOLD_GOOD = CENTER / A // Lower bound
+    const THRESHOLD_WEAK = CENTER * A // Upper bound
+
+    let nextOverallState = overallState
+
+    if (!internetConnected) {
+      nextOverallState = NetworkHealthState.Disconnected
+    } else if (hasIssues || hasIssues === undefined) {
+      nextOverallState = NetworkHealthState.Issue
+    } else if (pingEMA && pingEMA < THRESHOLD_GOOD) {
+      nextOverallState = NetworkHealthState.Ok
+    } else if (pingEMA && pingEMA > THRESHOLD_WEAK) {
+      nextOverallState = NetworkHealthState.Weak
+    } else {
+      nextOverallState = NetworkHealthState.Ok
     }
+
+    if (nextOverallState === overallState) return
+
+    setOverallState(nextOverallState)
+  }, [hasIssues, internetConnected, pingEMA, overallState])
+
+  useEffect(() => {
     const offlineCallback = () => {
       setInternetConnected(false)
       setSteps(structuredClone(initialConnectingTypeGroupState))
     }
-    window.addEventListener('online', onlineCallback)
-    window.addEventListener('offline', offlineCallback)
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.Offline,
+      offlineCallback
+    )
     return () => {
-      window.removeEventListener('online', onlineCallback)
-      window.removeEventListener('offline', offlineCallback)
+      engineCommandManager.removeEventListener(
+        EngineCommandManagerEvents.Offline,
+        offlineCallback
+      )
     }
   }, [])
 
@@ -126,7 +167,7 @@ export function useNetworkStatus() {
 
   useEffect(() => {
     const onPingPongChange = ({ detail: state }: CustomEvent) => {
-      setPing(state)
+      setPingRaw(state)
     }
 
     const onConnectionStateChange = ({
@@ -139,6 +180,8 @@ export function useNetworkStatus() {
         if (
           engineConnectionState.type === EngineConnectionStateType.Connecting
         ) {
+          setInternetConnected(true)
+
           const groups = Object.values(nextSteps)
           for (let group of groups) {
             for (let step of group) {
@@ -168,6 +211,10 @@ export function useNetworkStatus() {
 
             if (engineConnectionState.value.type === DisconnectingType.Error) {
               setError(engineConnectionState.value.value)
+            } else if (
+              engineConnectionState.value.type === DisconnectingType.Quit
+            ) {
+              return structuredClone(initialConnectingTypeGroupState)
             }
           }
         }
@@ -210,11 +257,11 @@ export function useNetworkStatus() {
 
       // When the component is unmounted these should be assigned, but it's possible
       // the component mounts and unmounts before engine is available.
-      engineCommandManager.engineConnection?.addEventListener(
+      engineCommandManager.engineConnection?.removeEventListener(
         EngineConnectionEvents.PingPongChanged,
         onPingPongChange as EventListener
       )
-      engineCommandManager.engineConnection?.addEventListener(
+      engineCommandManager.engineConnection?.removeEventListener(
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChange as EventListener
       )
@@ -231,6 +278,6 @@ export function useNetworkStatus() {
     error,
     setHasCopied,
     hasCopied,
-    ping,
+    ping: pingEMA !== undefined ? Math.trunc(pingEMA) : pingEMA,
   }
 }

@@ -22,9 +22,10 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 124,
-            "end": 130,
-            "start": 124,
+            "commentStart": 122,
+            "end": 128,
+            "moduleId": 0,
+            "start": 122,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -35,9 +36,10 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 164,
-            "end": 170,
-            "start": 164,
+            "commentStart": 162,
+            "end": 168,
+            "moduleId": 0,
+            "start": 162,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -70,9 +72,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -84,20 +84,19 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               5.0
             ],
             "tag": {
-              "commentStart": 124,
-              "end": 130,
-              "start": 124,
+              "commentStart": 122,
+              "end": 128,
+              "moduleId": 0,
+              "start": 122,
               "type": "TagDeclarator",
               "value": "seg01"
             },
             "to": [
-              5.55,
+              5.550000000000001,
               5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -105,24 +104,23 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "sourceRange": []
             },
             "from": [
-              5.55,
+              5.550000000000001,
               5.0
             ],
             "tag": {
-              "commentStart": 164,
-              "end": 170,
-              "start": 164,
+              "commentStart": 162,
+              "end": 168,
+              "moduleId": 0,
+              "start": 162,
               "type": "TagDeclarator",
               "value": "seg02"
             },
             "to": [
-              5.55,
+              5.550000000000001,
               -5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -130,7 +128,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "sourceRange": []
             },
             "from": [
-              5.55,
+              5.550000000000001,
               -5.0
             ],
             "tag": null,
@@ -139,9 +137,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               -5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -158,38 +154,37 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               -5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -201,9 +196,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             -5.0,
             -5.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -222,25 +215,28 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": -10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 5.0,
+          "radius": {
+            "n": 5.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "extrude002": {
@@ -291,9 +287,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               -3.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -310,9 +304,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               -6.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -329,9 +321,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               -6.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -348,9 +338,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               -6.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -361,17 +349,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
+            "z": 0.0,
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -390,9 +375,10 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 124,
-                  "end": 130,
-                  "start": 124,
+                  "commentStart": 122,
+                  "end": 128,
+                  "moduleId": 0,
+                  "start": 122,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -403,9 +389,10 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 164,
-                  "end": 170,
-                  "start": 164,
+                  "commentStart": 162,
+                  "end": 168,
+                  "moduleId": 0,
+                  "start": 162,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -438,9 +425,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                     5.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -452,20 +437,19 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                     5.0
                   ],
                   "tag": {
-                    "commentStart": 124,
-                    "end": 130,
-                    "start": 124,
+                    "commentStart": 122,
+                    "end": 128,
+                    "moduleId": 0,
+                    "start": 122,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
                   "to": [
-                    5.55,
+                    5.550000000000001,
                     5.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -473,24 +457,23 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                     "sourceRange": []
                   },
                   "from": [
-                    5.55,
+                    5.550000000000001,
                     5.0
                   ],
                   "tag": {
-                    "commentStart": 164,
-                    "end": 170,
-                    "start": 164,
+                    "commentStart": 162,
+                    "end": 168,
+                    "moduleId": 0,
+                    "start": 162,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
                   "to": [
-                    5.55,
+                    5.550000000000001,
                     -5.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -498,7 +481,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                     "sourceRange": []
                   },
                   "from": [
-                    5.55,
+                    5.550000000000001,
                     -5.0
                   ],
                   "tag": null,
@@ -507,9 +490,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                     -5.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -526,38 +507,37 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                     -5.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
-                "type": "plane",
-                "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "value": "XY",
+                "id": "[uuid]",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": "mm"
                 },
+                "type": "plane",
+                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
-                },
-                "units": {
-                  "type": "Mm"
+                  "z": 1.0,
+                  "units": null
                 }
               },
               "start": {
@@ -569,9 +549,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   -5.0,
                   -5.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -590,29 +568,30 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": -10.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "edgeCuts": [
               {
                 "type": "fillet",
                 "id": "[uuid]",
-                "radius": 5.0,
+                "radius": {
+                  "n": 5.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": "mm",
+                    "angle": "degrees"
+                  }
+                },
                 "edgeId": "[uuid]",
                 "tag": null
               }
             ],
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm",
+            "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -623,9 +602,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             -2.0,
             -6.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -634,16 +611,12 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 5.0,
       "startCapId": null,
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "seg01": {
@@ -677,9 +650,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -691,20 +662,19 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             5.0
           ],
           "tag": {
-            "commentStart": 124,
-            "end": 130,
-            "start": 124,
+            "commentStart": 122,
+            "end": 128,
+            "moduleId": 0,
+            "start": 122,
             "type": "TagDeclarator",
             "value": "seg01"
           },
           "to": [
-            5.55,
+            5.550000000000001,
             5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -712,24 +682,23 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "sourceRange": []
           },
           "from": [
-            5.55,
+            5.550000000000001,
             5.0
           ],
           "tag": {
-            "commentStart": 164,
-            "end": 170,
-            "start": 164,
+            "commentStart": 162,
+            "end": 168,
+            "moduleId": 0,
+            "start": 162,
             "type": "TagDeclarator",
             "value": "seg02"
           },
           "to": [
-            5.55,
+            5.550000000000001,
             -5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -737,7 +706,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "sourceRange": []
           },
           "from": [
-            5.55,
+            5.550000000000001,
             -5.0
           ],
           "tag": null,
@@ -746,9 +715,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             -5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -765,38 +732,37 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             -5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 1.0,
+          "units": null
         }
       },
       "start": {
@@ -808,9 +774,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           -5.0,
           -5.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -829,9 +793,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sketch002": {
@@ -855,9 +817,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             -3.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -874,9 +834,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             -6.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -893,9 +851,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             -6.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -912,9 +868,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             -6.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -925,17 +879,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
+          "z": 0.0,
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -954,9 +905,10 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 124,
-                "end": 130,
-                "start": 124,
+                "commentStart": 122,
+                "end": 128,
+                "moduleId": 0,
+                "start": 122,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -967,9 +919,10 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 164,
-                "end": 170,
-                "start": 164,
+                "commentStart": 162,
+                "end": 168,
+                "moduleId": 0,
+                "start": 162,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1002,9 +955,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   5.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1016,20 +967,19 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   5.0
                 ],
                 "tag": {
-                  "commentStart": 124,
-                  "end": 130,
-                  "start": 124,
+                  "commentStart": 122,
+                  "end": 128,
+                  "moduleId": 0,
+                  "start": 122,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
                 "to": [
-                  5.55,
+                  5.550000000000001,
                   5.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1037,24 +987,23 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   "sourceRange": []
                 },
                 "from": [
-                  5.55,
+                  5.550000000000001,
                   5.0
                 ],
                 "tag": {
-                  "commentStart": 164,
-                  "end": 170,
-                  "start": 164,
+                  "commentStart": 162,
+                  "end": 168,
+                  "moduleId": 0,
+                  "start": 162,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
                 "to": [
-                  5.55,
+                  5.550000000000001,
                   -5.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1062,7 +1011,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   "sourceRange": []
                 },
                 "from": [
-                  5.55,
+                  5.550000000000001,
                   -5.0
                 ],
                 "tag": null,
@@ -1071,9 +1020,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   -5.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1090,38 +1037,37 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   -5.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
@@ -1133,9 +1079,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 -5.0,
                 -5.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1154,29 +1098,30 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": -10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 5.0,
+              "radius": {
+                "n": 5.0,
+                "ty": {
+                  "type": "Default",
+                  "len": "mm",
+                  "angle": "degrees"
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -1187,9 +1132,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           -2.0,
           -6.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1198,9 +1141,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   }
 }

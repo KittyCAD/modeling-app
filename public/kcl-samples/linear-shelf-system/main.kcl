@@ -1,0 +1,111 @@
+// Linear Shelf System
+// A parametric, horizontally stackable shelf system for furniture layout and prototyping.
+
+
+// This model generates a configurable number of narrow shelf units arranged side-by-side.
+// Each unit includes:
+// - Two vertical side panels
+// - A floor plinth with toe kick
+// - Multiple evenly spaced shelves (with optional top cover)
+// All geometric parameters (unit width, height, depth, shelf count, spacing, and material thickness)
+// are customizable, allowing for rapid iteration of layout concepts such as storage walls,
+// room dividers, or library-style shelving.
+// Designed for clean stacking, clarity in construction, and modular expansion.
+
+
+
+
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
+
+unitCount = 5 // number of shelf units arranged side-by-side (horizontal repeat)
+
+
+// --- Global Dimensions ---
+unitWidth = 0.4 // overall external width of the shelf
+unitHeight = 2 // total height including top and base
+unitDepth = 0.4 // depth from front to back
+
+
+shelfBoardCount = 5 // number of usable shelf boards (excludes top cover)
+
+
+// --- Panel & Shelf Geometry ---
+panelThickness = 0.02 // thickness of side panels and shelf boards
+sidePanelOffset = unitWidth - panelThickness // distance between origin points of left and right panel
+
+
+// --- Base Spacer (Plinth) ---
+baseHeight = 0.05 // elevation of bottom plinth from ground
+baseInset = 0.03 // inward offset at the front (toe kick for foot clearance)
+baseWidth = unitWidth - (panelThickness * 2) // internal width of base element
+baseDepth = unitDepth - baseInset // shallower depth than full unit
+
+
+// --- Shelf Placement ---
+shelfStartZ = baseHeight // Z elevation of the first shelf board
+shelfThickness = panelThickness // shelf board thickness
+shelfWidth = baseWidth // width same as base
+shelfDepth = unitDepth // full shelf depth
+
+
+totalShelfBoards = shelfBoardCount + 1 // includes top cover board
+availableVerticalSpace = unitHeight - baseHeight - shelfThickness
+shelfSpacing = availableVerticalSpace / shelfBoardCount // vertical distance between shelf boards
+
+
+// --- Reference Plane ---
+basePlane = startSketchOn(XY)
+
+// --- Side Panels ---
+// Left and right vertical structural walls.
+sidePanelProfile = startProfile(basePlane, at = [-unitWidth / 2, 0])
+  |> yLine(length = -unitDepth)
+  |> xLine(length = panelThickness)
+  |> yLine(length = unitDepth)
+  |> close()
+  |> patternLinear2d(
+       %,
+       instances = 2,
+       distance = sidePanelOffset,
+       axis = [1, 0],
+     )
+sidePanels = extrude(sidePanelProfile, length = unitHeight)
+
+// --- Floor Base / Plinth ---
+// Supporting base element between side panels.
+baseProfile = startProfile(basePlane, at = [-baseWidth / 2, 0])
+  |> yLine(length = -baseDepth)
+  |> xLine(length = baseWidth)
+  |> yLine(length = baseDepth)
+  |> close()
+baseBlock = extrude(baseProfile, length = baseHeight)
+
+// --- First Shelf Board ---
+firstShelfPlane = offsetPlane(XY, offset = shelfStartZ)
+firstShelfSketch = startSketchOn(firstShelfPlane)
+firstShelfProfile = startProfile(firstShelfSketch, at = [-shelfWidth / 2, 0])
+  |> yLine(length = -shelfDepth)
+  |> xLine(length = shelfWidth)
+  |> yLine(length = shelfDepth)
+  |> close()
+firstShelf = extrude(firstShelfProfile, length = shelfThickness)
+
+// --- Shelf Stack ---
+shelves = patternLinear3d(
+  firstShelf,
+  instances = totalShelfBoards,
+  distance = shelfSpacing,
+  axis = [0, 0, 1],
+)
+
+// --- Modular Shelf Wall ---
+// Repeats the complete shelf unit horizontally to create a wall of shelving.
+// Includes side panels, base block, and shelf stack in each instance.
+
+
+modularShelfArray = patternLinear3d(
+  [sidePanels, baseBlock, shelves],
+  instances = unitCount,
+  distance = unitWidth,
+  axis = [1, 0, 0],
+)

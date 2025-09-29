@@ -28,7 +28,7 @@ description: Variables in memory after executing circle_three_point.kcl
               "sourceRange": []
             },
             "from": [
-              30.0059,
+              30.00594901040716,
               19.75
             ],
             "p1": [
@@ -45,56 +45,53 @@ description: Variables in memory after executing circle_three_point.kcl
             ],
             "tag": null,
             "to": [
-              30.0059,
+              30.00594901040716,
               19.75
             ],
             "type": "CircleThreePoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
           "from": [
-            30.0059,
+            30.00594901040716,
             19.75
           ],
           "to": [
-            30.0059,
+            30.00594901040716,
             19.75
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -103,16 +100,12 @@ description: Variables in memory after executing circle_three_point.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   }
 }

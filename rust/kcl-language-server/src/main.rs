@@ -85,12 +85,12 @@ async fn main() -> Result<()> {
     };
 
     // Format fields using the provided closure.
-    // We want to make this very consise otherwise the logs are not able to be read by humans.
+    // We want to make this very concise otherwise the logs are not able to be read by humans.
     let format = tracing_subscriber::fmt::format::debug_fn(|writer, field, value| {
-        if format!("{}", field) == "message" {
-            write!(writer, "{}: {:?}", field, value)
+        if format!("{field}") == "message" {
+            write!(writer, "{field}: {value:?}")
         } else {
-            write!(writer, "{}", field)
+            write!(writer, "{field}")
         }
     })
     // Separate each field with a comma.
@@ -151,7 +151,7 @@ async fn run_cmd(opts: &Opts) -> Result<()> {
 
                 tokio::spawn(async move {
                     if let Some(sig) = signals.forever().next() {
-                        log::info!("received signal: {:?}", sig);
+                        log::info!("received signal: {sig:?}");
                         log::info!("triggering cleanup...");
 
                         // Exit the process.

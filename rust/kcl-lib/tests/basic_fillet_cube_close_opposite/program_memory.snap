@@ -15,9 +15,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 92,
-            "end": 98,
-            "start": 92,
+            "commentStart": 90,
+            "end": 96,
+            "moduleId": 0,
+            "start": 90,
             "type": "TagDeclarator",
             "value": "thing"
           },
@@ -35,9 +36,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 157,
-            "end": 164,
-            "start": 157,
+            "commentStart": 155,
+            "end": 162,
+            "moduleId": 0,
+            "start": 155,
             "type": "TagDeclarator",
             "value": "thing2"
           },
@@ -48,9 +50,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 183,
-            "end": 190,
-            "start": 183,
+            "commentStart": 181,
+            "end": 188,
+            "moduleId": 0,
+            "start": 181,
             "type": "TagDeclarator",
             "value": "thing3"
           },
@@ -71,9 +74,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               0.0
             ],
             "tag": {
-              "commentStart": 92,
-              "end": 98,
-              "start": 92,
+              "commentStart": 90,
+              "end": 96,
+              "moduleId": 0,
+              "start": 90,
               "type": "TagDeclarator",
               "value": "thing"
             },
@@ -82,9 +86,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -101,9 +103,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -115,9 +115,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               10.0
             ],
             "tag": {
-              "commentStart": 157,
-              "end": 164,
-              "start": 157,
+              "commentStart": 155,
+              "end": 162,
+              "moduleId": 0,
+              "start": 155,
               "type": "TagDeclarator",
               "value": "thing2"
             },
@@ -126,9 +127,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -140,9 +139,10 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               0.0
             ],
             "tag": {
-              "commentStart": 183,
-              "end": 190,
-              "start": 183,
+              "commentStart": 181,
+              "end": 188,
+              "moduleId": 0,
+              "start": 181,
               "type": "TagDeclarator",
               "value": "thing3"
             },
@@ -151,38 +151,37 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -194,9 +193,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -219,32 +216,42 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 2.0,
+          "radius": {
+            "n": 2.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 2.0,
+          "radius": {
+            "n": 2.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "thing": {

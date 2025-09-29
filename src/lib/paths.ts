@@ -1,34 +1,16 @@
 import type { PlatformPath } from 'path'
-
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
-import { IS_PLAYWRIGHT_KEY } from '@e2e/playwright/storageStates'
-
+import type { IElectronAPI } from '@root/interface'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 import {
   BROWSER_FILE_NAME,
   BROWSER_PROJECT_NAME,
   FILE_EXT,
 } from '@src/lib/constants'
-import { readAppSettingsFile } from '@src/lib/desktop'
-import { isDesktop } from '@src/lib/isDesktop'
-import { readLocalStorageAppSettingsFile } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
-
-const prependRoutes =
-  (routesObject: Record<string, string>) => (prepend: string) => {
-    return Object.fromEntries(
-      Object.entries(routesObject).map(([constName, path]) => [
-        constName,
-        prepend + path,
-      ])
-    )
-  }
-
-type OnboardingPaths = {
-  [K in keyof typeof onboardingPaths]: `/onboarding${(typeof onboardingPaths)[K]}`
-}
 
 const SETTINGS = '/settings'
 
@@ -48,23 +30,26 @@ export const PATHS = {
   SETTINGS_PROJECT: `${SETTINGS}?tab=project` as const,
   SETTINGS_KEYBINDINGS: `${SETTINGS}?tab=keybindings` as const,
   SIGN_IN: '/signin',
-  ONBOARDING: prependRoutes(onboardingPaths)('/onboarding') as OnboardingPaths,
+  ONBOARDING: '/onboarding',
   TELEMETRY: '/telemetry',
 } as const
 export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
 
 export async function getProjectMetaByRouteId(
+  readAppSettingsFile: (
+    electron: IElectronAPI
+  ) => Promise<DeepPartial<Configuration>>,
+  readLocalStorageAppSettingsFile: () => DeepPartial<Configuration> | Error,
   id?: string,
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<ProjectRoute | undefined> {
   if (!id) return undefined
 
-  const onDesktop = isDesktop()
   const isPlaywright = localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
   if (configuration === undefined || isPlaywright) {
-    configuration = onDesktop
-      ? await readAppSettingsFile()
+    configuration = window.electron
+      ? await readAppSettingsFile(window.electron)
       : readLocalStorageAppSettingsFile()
   }
 
@@ -135,4 +120,162 @@ export function parseProjectRoute(
     currentFileName: currentFileName,
     currentFilePath: currentFilePath,
   }
+}
+
+/**
+ * Joins any number of arguments of strings to create a Router level path that is safe
+ * A path will be created of the format /value/value1/value2
+ * Filters out '/', ''
+ * Removes all leading and ending slashes, this allows you to pass '//dog//','//cat//' it will resolve to
+ * /dog/cat
+ */
+export function joinRouterPaths(...parts: string[]): string {
+  const cleanedUpPath = webSafeJoin(
+    parts
+      .map((part) => part.replace(/^\/+|\/+$/g, '')) // Remove leading/trailing slashes
+      .filter((part) => part.length > 0)
+  ) // Remove empty segments
+  return `/${cleanedUpPath}`
+}
+
+/**
+ * Joins any number of arguments of strings to create a OS level path that is safe
+ * A path will be created of the format /value/value1/value2
+ * or \value\value1\value2 for POSIX OSes like Windows
+ * Filters out the separator slashes
+ * Removes all leading and ending slashes, this allows you to pass '//dog//','//cat//' it will resolve to
+ * /dog/cat
+ * or \dog\cat on POSIX
+ */
+export function joinOSPaths(...parts: string[]): string {
+  const sep = window.electron?.sep || '/'
+  const regexSep = sep === '/' ? '/' : '\\'
+  return (
+    (sep === '\\' ? '' : sep) + // Windows absolute paths should not be prepended with a separator, they start with the drive name
+    parts
+      .map((part) =>
+        part.replace(new RegExp(`^${regexSep}+|${regexSep}+$`, 'g'), '')
+      ) // Remove leading/trailing slashes
+      .filter((part) => part.length > 0) // Remove empty segments
+      .join(sep)
+  )
+}
+
+export function safeEncodeForRouterPaths(dynamicValue: string): string {
+  return `${encodeURIComponent(dynamicValue)}`
+}
+
+/**
+ * /dog/cat/house.kcl gives you house.kcl
+ * \dog\cat\house.kcl gives you house.kcl
+ * Works on all OS!
+ */
+export function getStringAfterLastSeparator(path: string): string {
+  return path.split(fsManager.path.sep).pop() || ''
+}
+
+/**
+ * When you have '/home/kevin-nadro/Documents/zoo-modeling-app-projects/bracket-1/bracket.kcl'
+ * and you need to get the projectDirectory from this string above.
+ *
+ * We replace the leading prefix which is the application project directory with
+ * the empty string. Then it becomes //bracket-1/bracket.kcl
+ * The first part of the path after the blank / will be the root project directory
+ *
+ */
+export function getProjectDirectoryFromKCLFilePath(
+  path: string,
+  applicationProjectDirectory: string
+): string {
+  const replacedPath = path.replace(applicationProjectDirectory, '')
+  const [iAmABlankString, projectDirectory] = desktopSafePathSplit(replacedPath)
+  if (iAmABlankString === '') {
+    return projectDirectory
+  }
+  return ''
+}
+
+export function parentPathRelativeToProject(
+  absoluteFilePath: string,
+  applicationProjectDirectory: string
+): string {
+  const replacedPath = absoluteFilePath.replace(applicationProjectDirectory, '')
+  const [iAmABlankString, _projectDirectory, ...rest] =
+    desktopSafePathSplit(replacedPath)
+  if (iAmABlankString === '') {
+    return desktopSafePathJoin(rest)
+  }
+  return ''
+}
+
+export function parentPathRelativeToApplicationDirectory(
+  absoluteFilePath: string,
+  applicationProjectDirectory: string
+): string {
+  const replacedPath = absoluteFilePath.replace(applicationProjectDirectory, '')
+  const [iAmABlankString, ...rest] = desktopSafePathSplit(replacedPath)
+  if (iAmABlankString === '') {
+    return desktopSafePathJoin(rest)
+  }
+  return ''
+}
+
+/**
+ * Use this for only web related paths not paths in OS or on disk
+ * e.g. document.location.pathname
+ */
+export function webSafePathSplit(path: string): string[] {
+  const webSafeSep = '/'
+  return path.split(webSafeSep)
+}
+
+export function webSafeJoin(paths: string[]): string {
+  const webSafeSep = '/'
+  return paths.join(webSafeSep)
+}
+
+/**
+ * Splits any paths safely based on the runtime
+ */
+export function desktopSafePathSplit(path: string): string[] {
+  return window.electron
+    ? path.split(window.electron.sep)
+    : webSafePathSplit(path)
+}
+
+export function desktopSafePathJoin(paths: string[]): string {
+  return window.electron ? paths.join(window.electron.sep) : webSafeJoin(paths)
+}
+
+/**
+ * Don't pass a folder path, only files with extensions for best results.
+ */
+export const enforceFileEXT = (
+  filePath: string,
+  ext: string | null
+): string | null => {
+  if (ext === null) {
+    return null
+  }
+  return filePath ? (filePath.endsWith(ext) ? filePath : filePath + ext) : null
+}
+
+export const getEXTNoPeriod = (filePath: string) => {
+  const extension = filePath.split('.').pop() || null
+  return extension
+}
+
+export const getEXTWithPeriod = (filePath: string) => {
+  let extension = getEXTNoPeriod(filePath)
+  if (extension) {
+    extension = '.' + extension
+  }
+  return extension
+}
+
+export const getParentAbsolutePath = (absolutePath: string) => {
+  const split = desktopSafePathSplit(absolutePath)
+  split.pop()
+  const joined = desktopSafePathJoin(split)
+  return joined
 }

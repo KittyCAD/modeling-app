@@ -2,31 +2,20 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands array_index_oob.kcl
 ---
-[
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "edge_lines_visible",
-      "hidden": false
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  }
-]
+{
+  "rust/kcl-lib/tests/array_index_oob/input.kcl": [],
+  "std::appearance": [],
+  "std::array": [],
+  "std::gdt": [],
+  "std::math": [],
+  "std::prelude": [],
+  "std::sketch": [],
+  "std::sketch2": [],
+  "std::solid": [],
+  "std::sweep": [],
+  "std::transform": [],
+  "std::turns": [],
+  "std::types": [],
+  "std::units": [],
+  "std::vector": []
+}

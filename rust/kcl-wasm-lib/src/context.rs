@@ -3,37 +3,43 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{wasm_engine::FileManager, EngineManager, Program};
+use kcl_lib::{
+    wasm_engine::FileManager, EngineManager, ExecOutcome, KclError, KclErrorWithOutputs, Program, ProjectManager,
+};
 use wasm_bindgen::prelude::*;
+
+const TRUE_BUG: &str = "This is a bug in KCL and not in your code, please report this to Zoo.";
 
 #[wasm_bindgen]
 pub struct Context {
     engine: Arc<Box<dyn EngineManager>>,
+    response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
     fs: Arc<FileManager>,
     mock_engine: Arc<Box<dyn EngineManager>>,
+    pub(crate) project_manager: ProjectManager,
 }
 
 #[wasm_bindgen]
 impl Context {
     #[wasm_bindgen(constructor)]
-    pub async fn new(
+    pub fn new(
         engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
         fs_manager: kcl_lib::wasm_engine::FileSystemManager,
     ) -> Result<Self, JsValue> {
         console_error_panic_hook::set_once();
 
+        let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
         Ok(Self {
             engine: Arc::new(Box::new(
-                kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
-                    .await
+                kcl_lib::wasm_engine::EngineConnection::new(engine_manager, response_context.clone())
                     .map_err(|e| format!("{:?}", e))?,
             )),
             fs: Arc::new(FileManager::new(fs_manager)),
             mock_engine: Arc::new(Box::new(
-                kcl_lib::mock_engine::EngineConnection::new()
-                    .await
-                    .map_err(|e| format!("{:?}", e))?,
+                kcl_lib::mock_engine::EngineConnection::new().map_err(|e| format!("{:?}", e))?,
             )),
+            response_context,
+            project_manager: ProjectManager,
         })
     }
 
@@ -45,15 +51,15 @@ impl Context {
     ) -> Result<kcl_lib::ExecutorContext, String> {
         let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
         let mut settings: kcl_lib::ExecutorSettings = config.into();
-        if let Some(path) = path {
-            settings.with_current_file(std::path::PathBuf::from(path));
+        if let Some(path_src) = path {
+            settings.with_current_file(kcl_lib::TypedPath::from(&path_src));
         }
 
         if is_mock {
             return Ok(kcl_lib::ExecutorContext::new_mock(
                 self.mock_engine.clone(),
                 self.fs.clone(),
-                settings.into(),
+                settings,
             ));
         }
 
@@ -71,18 +77,39 @@ impl Context {
         program_ast_json: &str,
         path: Option<String>,
         settings: &str,
-    ) -> Result<JsValue, String> {
+    ) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
 
-        let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
+        self.execute_typed(program_ast_json, path, settings)
+            .await
+            .and_then(|outcome| {
+                JsValue::from_serde(&outcome).map_err(|e| {
+                    // The serde-wasm-bindgen does not work here because of weird HashMap issues.
+                    // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
+                    KclErrorWithOutputs::no_outputs(KclError::internal(format!(
+                        "Could not serialize successful KCL result. {TRUE_BUG} Details: {e}"
+                    )))
+                })
+            })
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())
+    }
 
-        let ctx = self.create_executor_ctx(settings, path, false)?;
-        match ctx.run_with_caching(program).await {
-            // The serde-wasm-bindgen does not work here because of weird HashMap issues.
-            // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
-            Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
-            Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
-        }
+    async fn execute_typed(
+        &self,
+        program_ast_json: &str,
+        path: Option<String>,
+        settings: &str,
+    ) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        let program: Program = serde_json::from_str(program_ast_json).map_err(|e| {
+            let err = KclError::internal(format!("Could not deserialize KCL AST. {TRUE_BUG} Details: {e}"));
+            KclErrorWithOutputs::no_outputs(err)
+        })?;
+        let ctx = self.create_executor_ctx(settings, path, false).map_err(|e| {
+            KclErrorWithOutputs::no_outputs(KclError::internal(format!(
+                "Could not create KCL executor context. {TRUE_BUG} Details: {e}"
+            )))
+        })?;
+        ctx.run_with_caching(program).await
     }
 
     /// Reset the scene and bust the cache.
@@ -100,6 +127,12 @@ impl Context {
         }
     }
 
+    /// Send a response to kcl lib's engine.
+    #[wasm_bindgen(js_name = sendResponse)]
+    pub async fn send_response(&self, data: js_sys::Uint8Array) {
+        self.response_context.send_response(data).await
+    }
+
     /// Execute a program in mock mode.
     #[wasm_bindgen(js_name = executeMock)]
     pub async fn execute_mock(
@@ -108,18 +141,40 @@ impl Context {
         path: Option<String>,
         settings: &str,
         use_prev_memory: bool,
-    ) -> Result<JsValue, String> {
+    ) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
 
-        let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
+        self.execute_mock_typed(program_ast_json, path, settings, use_prev_memory)
+            .await
+            .and_then(|outcome| {
+                JsValue::from_serde(&outcome).map_err(|e| {
+                    // The serde-wasm-bindgen does not work here because of weird HashMap issues.
+                    // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
+                    KclErrorWithOutputs::no_outputs(KclError::internal(format!(
+                        "Could not serialize successful KCL result. {TRUE_BUG} Details: {e}"
+                    )))
+                })
+            })
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())
+    }
 
-        let ctx = self.create_executor_ctx(settings, path, true)?;
-        match ctx.run_mock(program, use_prev_memory).await {
-            // The serde-wasm-bindgen does not work here because of weird HashMap issues.
-            // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
-            Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
-            Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
-        }
+    async fn execute_mock_typed(
+        &self,
+        program_ast_json: &str,
+        path: Option<String>,
+        settings: &str,
+        use_prev_memory: bool,
+    ) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        let program: Program = serde_json::from_str(program_ast_json).map_err(|e| {
+            let err = KclError::internal(format!("Could not deserialize KCL AST. {TRUE_BUG} Details: {e}"));
+            KclErrorWithOutputs::no_outputs(err)
+        })?;
+        let ctx = self.create_executor_ctx(settings, path, true).map_err(|e| {
+            KclErrorWithOutputs::no_outputs(KclError::internal(format!(
+                "Could not create KCL executor context. {TRUE_BUG} Details: {e}"
+            )))
+        })?;
+        ctx.run_mock(&program, use_prev_memory).await
     }
 
     /// Export a scene to a file.

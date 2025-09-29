@@ -1,209 +1,61 @@
 //! Standard library shells.
 
 use anyhow::Result;
-use kcl_derive_docs::stdlib;
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit};
 use kittycad_modeling_cmds as kcmc;
 
+use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ExecState, KclValue, Solid},
-    std::{sketch::FaceTag, Args},
+    execution::{
+        ExecState, KclValue, Solid,
+        types::{ArrayLen, RuntimeType},
+    },
+    std::{Args, sketch::FaceTag},
 };
 
 /// Create a shell.
 pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
-    let thickness = args.get_kw_arg("thickness")?;
-    let faces = args.get_kw_arg("faces")?;
+    let solids = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
+    let thickness: TyF64 = args.get_kw_arg("thickness", &RuntimeType::length(), exec_state)?;
+    let faces = args.get_kw_arg(
+        "faces",
+        &RuntimeType::Array(Box::new(RuntimeType::tagged_face()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
 
     let result = inner_shell(solids, thickness, faces, exec_state, args).await?;
     Ok(result.into())
 }
 
-/// Remove volume from a 3-dimensional shape such that a wall of the
-/// provided thickness remains, taking volume starting at the provided
-/// face, leaving it open in that direction.
-///
-/// ```no_run
-/// // Remove the end face for the extrusion.
-/// firstSketch = startSketchOn('XY')
-///     |> startProfileAt([-12, 12], %)
-///     |> line(end = [24, 0])
-///     |> line(end = [0, -24])
-///     |> line(end = [-24, 0])
-///     |> close()
-///     |> extrude(length = 6)
-///
-/// // Remove the end face for the extrusion.
-/// shell(
-///     firstSketch,
-///     faces = ['end'],
-///     thickness = 0.25,
-/// )
-/// ```
-///
-/// ```no_run
-/// // Remove the start face for the extrusion.
-/// firstSketch = startSketchOn('-XZ')
-///     |> startProfileAt([-12, 12], %)
-///     |> line(end = [24, 0])
-///     |> line(end = [0, -24])
-///     |> line(end = [-24, 0])
-///     |> close()
-///     |> extrude(length = 6)
-///
-/// // Remove the start face for the extrusion.
-/// shell(
-///     firstSketch,
-///     faces = ['start'],
-///     thickness = 0.25,
-/// )
-/// ```
-///
-/// ```no_run
-/// // Remove a tagged face and the end face for the extrusion.
-/// firstSketch = startSketchOn('XY')
-///     |> startProfileAt([-12, 12], %)
-///     |> line(end = [24, 0])
-///     |> line(end = [0, -24])
-///     |> line(end = [-24, 0], tag = $myTag)
-///     |> close()
-///     |> extrude(length = 6)
-///
-/// // Remove a tagged face for the extrusion.
-/// shell(
-///     firstSketch,
-///     faces = [myTag],
-///     thickness = 0.25,
-/// )
-/// ```
-///
-/// ```no_run
-/// // Remove multiple faces at once.
-/// firstSketch = startSketchOn('XY')
-///     |> startProfileAt([-12, 12], %)
-///     |> line(end = [24, 0])
-///     |> line(end = [0, -24])
-///     |> line(end = [-24, 0], tag = $myTag)
-///     |> close()
-///     |> extrude(length = 6)
-///
-/// // Remove a tagged face and the end face for the extrusion.
-/// shell(
-///     firstSketch,
-///     faces = [myTag, 'end'],
-///     thickness = 0.25,
-/// )
-/// ```
-///
-/// ```no_run
-/// // Shell a sketch on face.
-/// size = 100
-/// case = startSketchOn('-XZ')
-///     |> startProfileAt([-size, -size], %)
-///     |> line(end = [2 * size, 0])
-///     |> line(end = [0, 2 * size])
-///     |> tangentialArcTo([-size, size], %)
-///     |> close()
-///     |> extrude(length = 65)
-///
-/// thing1 = startSketchOn(case, 'end')
-///     |> circle( center = [-size / 2, -size / 2], radius = 25 )
-///     |> extrude(length = 50)
-///
-/// thing2 = startSketchOn(case, 'end')
-///     |> circle( center = [size / 2, -size / 2], radius = 25 )
-///     |> extrude(length = 50)
-///
-/// // We put "case" in the shell function to shell the entire object.
-/// shell(case, faces = ['start'], thickness = 5)
-/// ```
-///
-/// ```no_run
-/// // Shell a sketch on face object on the end face.
-/// size = 100
-/// case = startSketchOn('XY')
-///     |> startProfileAt([-size, -size], %)
-///     |> line(end = [2 * size, 0])
-///     |> line(end = [0, 2 * size])
-///     |> tangentialArcTo([-size, size], %)
-///     |> close()
-///     |> extrude(length = 65)
-///
-/// thing1 = startSketchOn(case, 'end')
-///     |> circle( center = [-size / 2, -size / 2], radius = 25 )
-///     |> extrude(length = 50)
-///
-/// thing2 = startSketchOn(case, 'end')
-///     |> circle( center = [size / 2, -size / 2], radius = 25 )
-///     |> extrude(length = 50)
-///
-/// // We put "thing1" in the shell function to shell the end face of the object.
-/// shell(thing1, faces = ['end'], thickness = 5)
-/// ```
-///
-/// ```no_run
-/// // Shell sketched on face objects on the end face, include all sketches to shell
-/// // the entire object.
-///
-/// size = 100
-/// case = startSketchOn('XY')
-///     |> startProfileAt([-size, -size], %)
-///     |> line(end = [2 * size, 0])
-///     |> line(end = [0, 2 * size])
-///     |> tangentialArcTo([-size, size], %)
-///     |> close()
-///     |> extrude(length = 65)
-///
-/// thing1 = startSketchOn(case, 'end')
-///     |> circle( center = [-size / 2, -size / 2], radius = 25 )
-///     |> extrude(length = 50)
-///
-/// thing2 = startSketchOn(case, 'end')
-///     |> circle( center = [size / 2, -size / 2], radius = 25)
-///     |> extrude(length = 50)
-///
-/// // We put "thing1" and "thing2" in the shell function to shell the end face of the object.
-/// shell([thing1, thing2], faces = ['end'], thickness = 5)
-/// ```
-#[stdlib {
-    name = "shell",
-    feature_tree_operation = true,
-    keywords = true,
-    unlabeled_first = true,
-    args = {
-        solids = { docs = "Which solid (or solids) to shell out"},
-        thickness = {docs = "The thickness of the shell"},
-        faces = {docs = "The faces you want removed"},
-    }
-}]
 async fn inner_shell(
     solids: Vec<Solid>,
-    thickness: f64,
+    thickness: TyF64,
     faces: Vec<FaceTag>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     if faces.is_empty() {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "You must shell at least one face".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::new_type(KclErrorDetails::new(
+            "You must shell at least one face".to_owned(),
+            vec![args.source_range],
+        )));
     }
 
     if solids.is_empty() {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "You must shell at least one solid".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::new_type(KclErrorDetails::new(
+            "You must shell at least one solid".to_owned(),
+            vec![args.source_range],
+        )));
     }
 
     let mut face_ids = Vec::new();
     for solid in &solids {
         // Flush the batch for our fillets/chamfers if there are any.
         // If we do not do these for sketch on face, things will fail with face does not exist.
-        args.flush_batch_for_solids(exec_state, &[solid.clone()]).await?;
+        exec_state
+            .flush_batch_for_solids((&args).into(), std::slice::from_ref(solid))
+            .await?;
 
         for tag in &faces {
             let extrude_plane_id = tag.get_face_id(solid, exec_state, &args, false).await?;
@@ -213,118 +65,68 @@ async fn inner_shell(
     }
 
     if face_ids.is_empty() {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "Expected at least one valid face".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::new_type(KclErrorDetails::new(
+            "Expected at least one valid face".to_owned(),
+            vec![args.source_range],
+        )));
     }
 
     // Make sure all the solids have the same id, as we are going to shell them all at
     // once.
     if !solids.iter().all(|eg| eg.id == solids[0].id) {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "All solids stem from the same root object, like multiple sketch on face extrusions, etc."
-                .to_string(),
-            source_ranges: vec![args.source_range],
-        }));
+        return Err(KclError::new_type(KclErrorDetails::new(
+            "All solids stem from the same root object, like multiple sketch on face extrusions, etc.".to_owned(),
+            vec![args.source_range],
+        )));
     }
 
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::Solid3dShellFace {
-            hollow: false,
-            face_ids,
-            object_id: solids[0].id,
-            shell_thickness: LengthUnit(thickness),
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            (&args).into(),
+            ModelingCmd::from(mcmd::Solid3dShellFace {
+                hollow: false,
+                face_ids,
+                object_id: solids[0].id,
+                shell_thickness: LengthUnit(thickness.to_mm()),
+            }),
+        )
+        .await?;
 
     Ok(solids)
 }
 
 /// Make the inside of a 3D object hollow.
 pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (thickness, solid): (f64, Box<Solid>) = args.get_data_and_solid(exec_state)?;
+    let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let thickness: TyF64 = args.get_kw_arg("thickness", &RuntimeType::length(), exec_state)?;
 
-    let value = inner_hollow(thickness, solid, exec_state, args).await?;
+    let value = inner_hollow(solid, thickness, exec_state, args).await?;
     Ok(KclValue::Solid { value })
 }
 
-/// Make the inside of a 3D object hollow.
-///
-/// Remove volume from a 3-dimensional shape such that a wall of the
-/// provided thickness remains around the exterior of the shape.
-///
-/// ```no_run
-/// // Hollow a basic sketch.
-/// firstSketch = startSketchOn('XY')
-///     |> startProfileAt([-12, 12], %)
-///     |> line(end = [24, 0])
-///     |> line(end = [0, -24])
-///     |> line(end = [-24, 0])
-///     |> close()
-///     |> extrude(length = 6)
-///     |> hollow (0.25, %)
-/// ```
-///
-/// ```no_run
-/// // Hollow a basic sketch.
-/// firstSketch = startSketchOn('-XZ')
-///     |> startProfileAt([-12, 12], %)
-///     |> line(end = [24, 0])
-///     |> line(end = [0, -24])
-///     |> line(end = [-24, 0])
-///     |> close()
-///     |> extrude(length = 6)
-///     |> hollow (0.5, %)
-/// ```
-///
-/// ```no_run
-/// // Hollow a sketch on face object.
-/// size = 100
-/// case = startSketchOn('-XZ')
-///     |> startProfileAt([-size, -size], %)
-///     |> line(end = [2 * size, 0])
-///     |> line(end = [0, 2 * size])
-///     |> tangentialArcTo([-size, size], %)
-///     |> close()
-///     |> extrude(length = 65)
-///
-/// thing1 = startSketchOn(case, 'end')
-///     |> circle( center = [-size / 2, -size / 2], radius = 25 )
-///     |> extrude(length = 50)
-///
-/// thing2 = startSketchOn(case, 'end')
-///     |> circle( center = [size / 2, -size / 2], radius = 25 )
-///     |> extrude(length = 50)
-///
-/// hollow(0.5, case)
-/// ```
-#[stdlib {
-    name = "hollow",
-    feature_tree_operation = true,
-}]
 async fn inner_hollow(
-    thickness: f64,
     solid: Box<Solid>,
+    thickness: TyF64,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not do these for sketch on face, things will fail with face does not exist.
-    args.flush_batch_for_solids(exec_state, &[(*solid).clone()]).await?;
+    exec_state
+        .flush_batch_for_solids((&args).into(), &[(*solid).clone()])
+        .await?;
 
-    args.batch_modeling_cmd(
-        exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::Solid3dShellFace {
-            hollow: true,
-            face_ids: Vec::new(), // This is empty because we want to hollow the entire object.
-            object_id: solid.id,
-            shell_thickness: LengthUnit(thickness),
-        }),
-    )
-    .await?;
+    exec_state
+        .batch_modeling_cmd(
+            (&args).into(),
+            ModelingCmd::from(mcmd::Solid3dShellFace {
+                hollow: true,
+                face_ids: Vec::new(), // This is empty because we want to hollow the entire object.
+                object_id: solid.id,
+                shell_thickness: LengthUnit(thickness.to_mm()),
+            }),
+        )
+        .await?;
 
     Ok(solid)
 }

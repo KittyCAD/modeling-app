@@ -11,32 +11,27 @@ import type {
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
-import type { authMachine } from '@src/machines/authMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
-import type { modelingMachine } from '@src/machines/modelingMachine'
-import type { projectsMachine } from '@src/machines/projectsMachine'
-import type { settingsMachine } from '@src/machines/settingsMachine'
-
-// This might not be necessary, AnyStateMachine from xstate is working
-export type AllMachines =
-  | typeof modelingMachine
-  | typeof settingsMachine
-  | typeof authMachine
-  | typeof projectsMachine
+import { commandBarActor } from '@src/lib/singletons'
 
 interface UseStateMachineCommandsArgs<
-  T extends AllMachines,
+  T extends AnyStateMachine,
   S extends StateMachineCommandSetSchema<T>,
 > {
   machineId: T['id']
   state: StateFrom<T>
-  send: Function
+  send: (event: EventFrom<T>) => void
   actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
-  allCommandsRequireNetwork?: boolean
   onCancel?: () => void
 }
 
+/**
+ * @deprecated the type plumbing required for this function is way over-complicated.
+ * Instead, opt to create `Commands` directly.
+ *
+ * This is only used for modelingMachine commands now, and once that is decoupled from React,
+ * TODO: Delete this function and other state machine helper functions.
+ */
 export default function useStateMachineCommands<
   T extends AnyStateMachine,
   S extends StateMachineCommandSetSchema<T>,
@@ -46,21 +41,19 @@ export default function useStateMachineCommands<
   send,
   actor,
   commandBarConfig,
-  allCommandsRequireNetwork = false,
   onCancel,
 }: UseStateMachineCommandsArgs<T, S>) {
   const { overallState } = useNetworkContext()
   const { isExecuting } = useKclContext()
   const { isStreamReady } = useAppState()
+  const shouldDisableEngineCommands =
+    (overallState !== NetworkHealthState.Ok &&
+      overallState !== NetworkHealthState.Weak) ||
+    isExecuting ||
+    !isStreamReady
 
   useEffect(() => {
-    const disableAllButtons =
-      (overallState !== NetworkHealthState.Ok &&
-        overallState !== NetworkHealthState.Weak) ||
-      isExecuting ||
-      !isStreamReady
     const newCommands = Object.keys(commandBarConfig || {})
-      .filter((_) => !allCommandsRequireNetwork || !disableAllButtons)
       .flatMap((type) => {
         const typeWithProperType = type as EventFrom<T>['type']
         return createMachineCommand<T, S>({
@@ -72,6 +65,7 @@ export default function useStateMachineCommands<
           actor,
           commandBarConfig,
           onCancel,
+          forceDisable: shouldDisableEngineCommands,
         })
       })
       .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
@@ -87,5 +81,6 @@ export default function useStateMachineCommands<
         data: { commands: newCommands },
       })
     }
-  }, [overallState, isExecuting, isStreamReady])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [shouldDisableEngineCommands, commandBarConfig])
 }

@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing error_with_point_shows_numeric_units.kcl
+---
+startSketchOn(XZ)
+  |> circle(center = [sin(66.6deg), cos(66.6deg)], radius = 1)

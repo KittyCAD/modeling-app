@@ -25,14 +25,11 @@ export function isNotErr<T>(
   return !(value instanceof Error)
 }
 
-/**
- * This is intentionally *not* exported due to misuse.  We'd like to add a lint.
- */
-function isErr<T>(value: ExcludeErr<T> | Error): value is Error {
+export function isErr<T>(value: ExcludeErr<T> | Error): value is Error {
   return value instanceof Error
 }
 
-// Used to bubble errors up
+/** Used to bubble errors up */
 export function err<T>(value: ExcludeErr<T> | Error): value is Error {
   if (!isErr(value)) {
     return false

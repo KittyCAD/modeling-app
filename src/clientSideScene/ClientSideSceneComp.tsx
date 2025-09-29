@@ -4,6 +4,10 @@ import toast from 'react-hot-toast'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
+// Helper function to check if overlays should always be shown
+const shouldAlwaysShowOverlays = () =>
+  localStorage.getItem('showAllOverlays') === 'true'
+
 import type { ReactCameraProperties } from '@src/clientSideScene/CameraControls'
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -19,16 +23,12 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
-import { getConstraintInfo, getConstraintInfoKw } from '@src/lang/std/sketch'
+import { defaultSourceRange } from '@src/lang/sourceRange'
+import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import type { ConstrainInfo } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
-import type {
-  CallExpression,
-  CallExpressionKw,
-  Expr,
-  PathToNode,
-} from '@src/lang/wasm'
-import { defaultSourceRange, parse, recast, resultIsOk } from '@src/lang/wasm'
+import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
+import { parse, recast, resultIsOk } from '@src/lang/wasm'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import {
   codeManager,
@@ -38,11 +38,11 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
+import type { useSettings } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { throttle, toSync } from '@src/lib/utils'
-import type { useSettings } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
-import type { SegmentOverlay } from '@src/machines/modelingMachine'
+import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -69,12 +69,15 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
 
 export const ClientSideScene = ({
   cameraControls,
+  enableTouchControls,
 }: {
   cameraControls: ReturnType<
     typeof useSettings
   >['modeling']['mouseControls']['current']
+  enableTouchControls: ReturnType<
+    typeof useSettings
+  >['modeling']['enableTouchControls']['current']
 }) => {
-  const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
 
@@ -85,42 +88,69 @@ export const ClientSideScene = ({
       cameraMouseDragGuards[cameraControls]
   }, [cameraControls])
   useEffect(() => {
+    sceneInfra.camControls.initTouchControls(enableTouchControls)
+  }, [enableTouchControls])
+  useEffect(() => {
     sceneInfra.updateOtherSelectionColors(
       state?.context?.selectionRanges?.otherSelections || []
     )
   }, [state?.context?.selectionRanges?.otherSelections])
 
+  const containerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    if (!canvasRef.current) return
-    const canvas = canvasRef.current
-    canvas.appendChild(sceneInfra.renderer.domElement)
-    canvas.appendChild(sceneInfra.labelRenderer.domElement)
+    const container = containerRef.current
+    if (!container) {
+      return
+    }
+    const canvas = sceneInfra.renderer.domElement
+    container.appendChild(canvas)
+    container.appendChild(sceneInfra.labelRenderer.domElement)
+
     sceneInfra.animate()
-    canvas.addEventListener(
-      'mousemove',
-      toSync(sceneInfra.onMouseMove, reportRejection),
-      false
+
+    const onMouseMove = toSync(sceneInfra.onMouseMove, reportRejection)
+    container.addEventListener('mousemove', onMouseMove)
+    container.addEventListener('mousedown', sceneInfra.onMouseDown)
+    const onMouseUp = toSync(sceneInfra.onMouseUp, reportRejection)
+    container.addEventListener('mouseup', onMouseUp)
+
+    // Detect canvas size changes
+    const observer = new ResizeObserver(() => {
+      // This is called initially too, not just on resize
+      sceneInfra.onCanvasResized()
+      sceneInfra.camControls.onWindowResize()
+      sceneEntitiesManager.onCamChange()
+    })
+    observer.observe(container)
+
+    // Detect dpr changes
+    let media = window.matchMedia(
+      `(resolution: ${window.devicePixelRatio}dppx)`
     )
-    canvas.addEventListener('mousedown', sceneInfra.onMouseDown, false)
-    canvas.addEventListener(
-      'mouseup',
-      toSync(sceneInfra.onMouseUp, reportRejection),
-      false
-    )
+    function handleChange() {
+      media.removeEventListener('change', handleChange)
+      media = window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`)
+      media.addEventListener('change', handleChange)
+
+      sceneInfra.onCanvasResized()
+      sceneInfra.camControls.onWindowResize()
+    }
+    media.addEventListener('change', handleChange)
+
+    // send
     sceneInfra.setSend(send)
     engineCommandManager.modelingSend = send
+
     return () => {
-      canvas?.removeEventListener(
-        'mousemove',
-        toSync(sceneInfra.onMouseMove, reportRejection)
-      )
-      canvas?.removeEventListener('mousedown', sceneInfra.onMouseDown)
-      canvas?.removeEventListener(
-        'mouseup',
-        toSync(sceneInfra.onMouseUp, reportRejection)
-      )
+      container.removeEventListener('mousemove', onMouseMove)
+      container.removeEventListener('mousedown', sceneInfra.onMouseDown)
+      container.removeEventListener('mouseup', onMouseUp)
       sceneEntitiesManager.tearDownSketch({ removeAxis: true })
+
+      observer.disconnect()
+      media.removeEventListener('change', handleChange)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   let cursor = 'default'
@@ -153,7 +183,7 @@ export const ClientSideScene = ({
   return (
     <>
       <div
-        ref={canvasRef}
+        ref={containerRef}
         style={{ cursor: cursor }}
         data-testid="client-side-scene"
         className={`absolute inset-0 h-full w-full transition-all duration-300 ${
@@ -172,19 +202,28 @@ export const ClientSideScene = ({
 const Overlays = () => {
   const { context } = useModelingContext()
   if (context.mouseState.type === 'isDragging') return null
+
+  // Simple check directly from localStorage
+  const alwaysShowOverlays = shouldAlwaysShowOverlays()
+
   // Set a large zIndex, the overlay for hover dropdown menu on line segments needs to render
   // over the length labels on the line segments
   return (
     <div className="absolute inset-0 pointer-events-none z-sketchOverlayDropdown">
       {Object.entries(context.segmentOverlays)
-        .flatMap((a) =>
-          a[1].map((b) => ({ pathToNodeString: a[0], overlay: b }))
+        .flatMap(([pathToNodeString, overlays]) =>
+          overlays.map((b) => ({ pathToNodeString, overlay: b }))
         )
-        .filter((a) => a.overlay.visible)
+        .filter((a) => alwaysShowOverlays || a.overlay.visible)
         .map(({ pathToNodeString, overlay }, index) => {
+          // Force visibility if alwaysShowOverlays is true
+          const modifiedOverlay = alwaysShowOverlays
+            ? { ...overlay, visible: true }
+            : overlay
+
           return (
             <Overlay
-              overlay={overlay}
+              overlay={modifiedOverlay}
               key={pathToNodeString + String(index)}
               pathToNodeString={pathToNodeString}
               overlayIndex={index}
@@ -205,16 +244,20 @@ const Overlay = ({
   pathToNodeString: string
 }) => {
   const { context, send, state } = useModelingContext()
+
+  // Simple check directly from localStorage
+  const alwaysShowOverlays = shouldAlwaysShowOverlays()
+
   let xAlignment = overlay.angle < 0 ? '0%' : '-100%'
   let yAlignment = overlay.angle < -90 || overlay.angle >= 90 ? '0%' : '-100%'
 
   // It's possible for the pathToNode to request a newer AST node
   // than what's available in the AST at the moment of query.
   // It eventually settles on being updated.
-  const _node1 = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
+  const _node1 = getNodeFromPath<Node<CallExpressionKw>>(
     kclManager.ast,
     overlay.pathToNode,
-    ['CallExpression', 'CallExpressionKw']
+    ['CallExpressionKw']
   )
 
   // For that reason, to prevent console noise, we do not use err here.
@@ -224,20 +267,12 @@ const Overlay = ({
   }
   const callExpression = _node1.node
 
-  const constraints =
-    callExpression.type === 'CallExpression'
-      ? getConstraintInfo(
-          callExpression,
-          codeManager.code,
-          overlay.pathToNode,
-          overlay.filterValue
-        )
-      : getConstraintInfoKw(
-          callExpression,
-          codeManager.code,
-          overlay.pathToNode,
-          overlay.filterValue
-        )
+  const constraints = getConstraintInfoKw(
+    callExpression,
+    codeManager.code,
+    overlay.pathToNode,
+    overlay.filterValue
+  )
 
   const offset = 20 // px
   // We could put a boolean in settings that
@@ -249,8 +284,9 @@ const Overlay = ({
     Math.sin(((overlay.angle + offsetAngle) * Math.PI) / 180) * offset
 
   const shouldShow =
-    overlay.visible &&
-    typeof context?.segmentHoverMap?.[pathToNodeString] === 'number' &&
+    (overlay.visible || alwaysShowOverlays) &&
+    (alwaysShowOverlays ||
+      typeof context?.segmentHoverMap?.[pathToNodeString] === 'number') &&
     !(
       state.matches({ Sketch: 'Line tool' }) ||
       state.matches({ Sketch: 'Tangential arc to' }) ||
@@ -313,18 +349,19 @@ const Overlay = ({
           this will likely change soon when we implement multi-profile so we'll leave it for now
           issue: https://github.com/KittyCAD/modeling-app/issues/3910
           */}
-          {callExpression?.callee?.name.name !== 'circle' &&
-            callExpression?.callee?.name.name !== 'circleThreePoint' && (
-              <SegmentMenu
-                verticalPosition={
-                  overlay.windowCoords[1] > window.innerHeight / 2
-                    ? 'top'
-                    : 'bottom'
-                }
-                pathToNode={overlay.pathToNode}
-                stdLibFnName={constraints[0]?.stdLibFnName}
-              />
-            )}
+          {!['circleThreePoint', 'circle', 'startProfile'].includes(
+            callExpression?.callee?.name.name
+          ) && (
+            <SegmentMenu
+              verticalPosition={
+                overlay.windowCoords[1] > window.innerHeight / 2
+                  ? 'top'
+                  : 'bottom'
+              }
+              pathToNode={overlay.pathToNode}
+              stdLibFnName={constraints[0]?.stdLibFnName}
+            />
+          )}
         </div>
       )}
     </div>
@@ -483,6 +520,7 @@ const ConstraintSymbol = ({
 
   const _node = useMemo(
     () => getNodeFromPath<Expr>(kclManager.ast, pathToNode),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [kclManager.ast, pathToNode]
   )
   if (err(_node)) return
@@ -538,10 +576,10 @@ const ConstraintSymbol = ({
               if (trap(pResult) || !resultIsOk(pResult))
                 return Promise.reject(pResult)
 
-              const _node1 = getNodeFromPath<CallExpression | CallExpressionKw>(
+              const _node1 = getNodeFromPath<CallExpressionKw>(
                 pResult.program,
                 pathToNode,
-                ['CallExpression', 'CallExpressionKw'],
+                ['CallExpressionKw'],
                 true
               )
               if (trap(_node1)) return Promise.reject(_node1)
@@ -563,7 +601,7 @@ const ConstraintSymbol = ({
               // Code editor will be updated in the modelingMachine.
               const newCode = recast(modifiedAst)
               if (err(newCode)) return
-              await codeManager.updateCodeEditor(newCode)
+              codeManager.updateCodeEditor(newCode)
             } catch (e) {
               console.log('error', e)
             }
@@ -647,11 +685,13 @@ export const CamDebugSettings = () => {
 
   useEffect(() => {
     sceneInfra.camControls.setReactCameraPropertiesCallback(setCamSettings)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [sceneInfra])
   useEffect(() => {
     if (camSettings.type === 'perspective' && camSettings.fov) {
       setFov(camSettings.fov)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [(camSettings as any)?.fov])
 
   return (

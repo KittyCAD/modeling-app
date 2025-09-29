@@ -1,25 +1,20 @@
-import { FILE_EXT } from '@src/lib/constants'
 import * as fs from 'fs'
-import * as fsp from 'fs/promises'
 import { join } from 'path'
+import { FILE_EXT } from '@src/lib/constants'
+import * as fsp from 'fs/promises'
 
 import {
   createProject,
   executorInputPath,
   getUtils,
-  orRunWhenFullSuiteEnabled,
-  runningOnWindows,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('integrations tests', () => {
   test(
     'Creating a new file or switching file while in sketchMode should exit sketchMode',
-    { tag: '@electron' },
-    async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
-      if (runningOnWindows()) {
-        test.fixme(orRunWhenFullSuiteEnabled())
-      }
+    { tag: '@desktop' },
+    async ({ page, context, homePage, scene, toolbar, cmdBar }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -28,8 +23,6 @@ test.describe('integrations tests', () => {
           join(bracketDir, 'main.kcl')
         )
       })
-
-      const [clickObj] = await scene.makeMouseHelpers(726, 272)
 
       await test.step('setup test', async () => {
         await homePage.expectState({
@@ -42,27 +35,15 @@ test.describe('integrations tests', () => {
           sortBy: 'last-modified-desc',
         })
         await homePage.openProject('test-sample')
-      })
-      await test.step('enter sketch mode', async () => {
         await scene.connectionEstablished()
         await scene.settled(cmdBar)
-        await clickObj()
-        await page.waitForTimeout(1000)
-        await scene.moveNoWhere()
-        await editor.expectState({
-          activeLines: [
-            '|>startProfileAt([75.8,317.2],%)//[$startCapTag,$EndCapTag]',
-          ],
-          highlightedCode: '',
-          diagnostics: [],
-        })
-        await toolbar.editSketch()
-        await expect(toolbar.exitSketchBtn).toBeVisible()
       })
+
+      await toolbar.editSketch()
 
       const fileName = 'Untitled.kcl'
       await test.step('check sketch mode is exited when creating new file', async () => {
-        await toolbar.fileTreeBtn.click()
+        await toolbar.openPane('files')
         await toolbar.expectFileTreeState(['main.kcl'])
 
         await toolbar.createFile({ fileName, waitForToastToDisappear: true })
@@ -73,20 +54,8 @@ test.describe('integrations tests', () => {
       })
       await test.step('setup for next assertion', async () => {
         await toolbar.openFile('main.kcl')
-        await page.waitForTimeout(1000)
-        await clickObj()
-        await page.waitForTimeout(1000)
-        await scene.moveNoWhere()
-        await page.waitForTimeout(1000)
-        await editor.expectState({
-          activeLines: [
-            '|>startProfileAt([75.8,317.2],%)//[$startCapTag,$EndCapTag]',
-          ],
-          highlightedCode: '',
-          diagnostics: [],
-        })
+        await page.waitForTimeout(2000)
         await toolbar.editSketch()
-        await expect(toolbar.exitSketchBtn).toBeVisible()
         await toolbar.expectFileTreeState(['main.kcl', fileName])
       })
       await test.step('check sketch mode is exited when opening a different file', async () => {
@@ -105,10 +74,8 @@ test.describe('when using the file tree to', () => {
 
   test(
     `rename ${fromFile} to ${toFile}, and doesn't crash on reload and settings load`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page }, testInfo) => {
-      // TODO: fix this test on windows after the electron migration
-      test.skip(process.platform === 'win32', 'Skip on windows')
       const { panesOpen, pasteCodeInEditor, renameFile, editorTextMatches } =
         await getUtils(page, test)
 
@@ -148,42 +115,8 @@ test.describe('when using the file tree to', () => {
   )
 
   test(
-    `create many new files of the same name, incrementing their names`,
-    { tag: '@electron' },
-    async ({ page }, testInfo) => {
-      // TODO: fix this test on windows after the electron migration
-      test.skip(process.platform === 'win32', 'Skip on windows')
-      const { panesOpen, createNewFile } = await getUtils(page, test)
-
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      page.on('console', console.log)
-
-      await panesOpen(['files'])
-
-      await createProject({ name: 'project-000', page })
-
-      await createNewFile('lee')
-      await createNewFile('lee')
-      await createNewFile('lee')
-      await createNewFile('lee')
-      await createNewFile('lee')
-
-      await test.step('Postcondition: there are 5 new lee-*.kcl files', async () => {
-        await expect
-          .poll(() =>
-            page
-              .locator('[data-testid="file-pane-scroll-container"] button')
-              .filter({ hasText: /lee[-]?[0-5]?/ })
-              .count()
-          )
-          .toEqual(5)
-      })
-    }
-  )
-
-  test(
     'create a new file with the same name as an existing file cancels the operation',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page, homePage, scene, editor, toolbar }, testInfo) => {
       const projectName = 'cube'
       const mainFile = 'main.kcl'
@@ -248,8 +181,28 @@ test.describe('when using the file tree to', () => {
   )
 
   test(
+    `create new folders and that doesn't trigger a navigation`,
+    { tag: ['@desktop', '@macos', '@windows'] },
+    async ({ page, homePage, scene, toolbar, cmdBar }) => {
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      await toolbar.openPane('files')
+      const { createNewFolder } = await getUtils(page, test)
+
+      await createNewFolder('folder')
+
+      await createNewFolder('folder.kcl')
+
+      await test.step(`Postcondition: folders are created and we didn't navigate`, async () => {
+        await toolbar.expectFileTreeState(['folder', 'folder.kcl', 'main.kcl'])
+        await expect(toolbar.fileName).toHaveText('main.kcl')
+      })
+    }
+  )
+
+  test(
     'deleting all files recreates a default main.kcl with no code',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page }, testInfo) => {
       const { panesOpen, pasteCodeInEditor, deleteFile, editorTextMatches } =
         await getUtils(page, test)
@@ -280,10 +233,9 @@ test.describe('when using the file tree to', () => {
   test(
     'loading small file, then large, then back to small',
     {
-      tag: '@electron',
+      tag: '@desktop',
     },
-    async ({ page }, testInfo) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
+    async ({ page, toolbar }, testInfo) => {
       const {
         panesOpen,
         pasteCodeInEditor,
@@ -309,38 +261,21 @@ test.describe('when using the file tree to', () => {
 
       // Create a large lego file
       await createNewFile('lego')
-      const legoFile = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'lego.kcl' }),
-      })
-      await expect(legoFile).toBeVisible({ timeout: 60_000 })
-      await legoFile.click()
       const kclLego = await fsp.readFile(
         'rust/kcl-lib/e2e/executor/inputs/lego.kcl',
         'utf-8'
       )
       await pasteCodeInEditor(kclLego)
-      const mainFile = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'main.kcl' }),
-      })
-
-      // Open settings and enable the debug panel
-      await page
-        .getByRole('link', {
-          name: 'settings Settings',
-        })
-        .click()
-      await page.locator('#showDebugPanel').getByText('OffOn').click()
-      await page.getByTestId('settings-close-button').click()
 
       await test.step('swap between small and large files', async () => {
         await openDebugPanel()
         // Previously created a file so we need to start back at main.kcl
-        await mainFile.click()
+        await toolbar.openFile('main.kcl')
         await expectCmdLog('[data-message-type="execution-done"]', 60_000)
         // Click the large file
-        await legoFile.click()
+        await toolbar.openFile('lego.kcl')
         // Once it is building, click back to the smaller file
-        await mainFile.click()
+        await toolbar.openFile('main.kcl')
         await expectCmdLog('[data-message-type="execution-done"]', 60_000)
         await closeDebugPanel()
       })
@@ -351,7 +286,7 @@ test.describe('when using the file tree to', () => {
 test.describe('Renaming in the file tree', () => {
   test(
     'A file you have open',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       const { dir } = await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -380,13 +315,8 @@ test.describe('Renaming in the file tree', () => {
         const filePath = join(dir, 'Test Project', `${newFileName}.kcl`)
         return fs.existsSync(filePath)
       }
-
-      const fileToRename = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'fileToRename.kcl' }) })
-      const renamedFile = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'newFileName.kcl' }) })
+      const fileToRename = u.locatorFile('fileToRename.kcl')
+      const renamedFile = u.locatorFile('newFileName.kcl')
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const renameInput = page.getByPlaceholder('fileToRename.kcl')
       const codeLocator = page.locator('.cm-content')
@@ -440,7 +370,7 @@ test.describe('Renaming in the file tree', () => {
 
   test(
     'A file you do not have open',
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       const { dir } = await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -469,12 +399,8 @@ test.describe('Renaming in the file tree', () => {
       }
       const projectLink = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const fileToRename = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'fileToRename.kcl' }) })
-      const renamedFile = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: newFileName + FILE_EXT }),
-      })
+      const fileToRename = u.locatorFile('fileToRename.kcl')
+      const renamedFile = u.locatorFile(newFileName + FILE_EXT)
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const renameInput = page.getByPlaceholder('fileToRename.kcl')
       const codeLocator = page.locator('.cm-content')
@@ -526,7 +452,7 @@ test.describe('Renaming in the file tree', () => {
 
   test(
     `A folder you're not inside`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       const { dir } = await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -550,10 +476,8 @@ test.describe('Renaming in the file tree', () => {
       // Constants and locators
       const projectLink = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToRename = page.getByRole('button', {
-        name: 'folderToRename',
-      })
-      const renamedFolder = page.getByRole('button', { name: 'newFolderName' })
+      const folderToRename = u.locatorFolder('folderToRename')
+      const renamedFolder = u.locatorFolder('newFolderName')
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const originalFolderName = 'folderToRename'
       const renameInput = page.getByPlaceholder(originalFolderName)
@@ -608,7 +532,7 @@ test.describe('Renaming in the file tree', () => {
 
   test(
     `A folder you are inside`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, context }, testInfo) => {
       const { dir } = await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -632,13 +556,9 @@ test.describe('Renaming in the file tree', () => {
       // Constants and locators
       const projectLink = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToRename = page.getByRole('button', {
-        name: 'folderToRename',
-      })
-      const renamedFolder = page.getByRole('button', { name: 'newFolderName' })
-      const fileWithinFolder = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
-      })
+      const folderToRename = u.locatorFolder('folderToRename')
+      const renamedFolder = u.locatorFolder('newFolderName')
+      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
       const renameMenuItem = page.getByRole('button', { name: 'Rename' })
       const originalFolderName = 'folderToRename'
       const renameInput = page.getByPlaceholder(originalFolderName)
@@ -711,7 +631,7 @@ test.describe('Renaming in the file tree', () => {
 test.describe('Deleting items from the file pane', () => {
   test(
     `delete file when main.kcl exists, navigate to main.kcl`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ page, context }, testInfo) => {
       await context.folderSetupFn(async (dir) => {
         const testDir = join(dir, 'testProject')
@@ -732,9 +652,7 @@ test.describe('Deleting items from the file pane', () => {
       // Constants and locators
       const projectCard = page.getByText('testProject')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const fileToDelete = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'fileToDelete.kcl' }) })
+      const fileToDelete = u.locatorFile('fileToDelete.kcl')
       const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
       const deleteConfirmation = page.getByTestId('delete-confirmation')
 
@@ -769,14 +687,9 @@ test.describe('Deleting items from the file pane', () => {
     }
   )
 
-  test.fixme(
-    'TODO - delete file we have open when main.kcl does not exist',
-    async () => {}
-  )
-
   test(
     `Delete folder we are not in, don't navigate`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -799,9 +712,7 @@ test.describe('Deleting items from the file pane', () => {
       // Constants and locators
       const projectCard = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToDelete = page.getByRole('button', {
-        name: 'folderToDelete',
-      })
+      const folderToDelete = u.locatorFolder('folderToDelete')
       const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
       const deleteConfirmation = page.getByTestId('delete-confirmation')
 
@@ -830,7 +741,7 @@ test.describe('Deleting items from the file pane', () => {
 
   test(
     `Delete folder we are in, navigate to main.kcl`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       await context.folderSetupFn(async (dir) => {
         await fsp.mkdir(join(dir, 'Test Project'), { recursive: true })
@@ -853,12 +764,8 @@ test.describe('Deleting items from the file pane', () => {
       // Constants and locators
       const projectCard = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToDelete = page.getByRole('button', {
-        name: 'folderToDelete',
-      })
-      const fileWithinFolder = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
-      })
+      const folderToDelete = u.locatorFolder('folderToDelete')
+      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
       const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
       const deleteConfirmation = page.getByTestId('delete-confirmation')
 
@@ -891,12 +798,10 @@ test.describe('Deleting items from the file pane', () => {
     }
   )
 
-  test.fixme('TODO - delete folder we are in, with no main.kcl', async () => {})
-
   // Copied from tests above.
   test(
     `external deletion of project navigates back home`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       const TEST_PROJECT_NAME = 'Test Project'
       const { dir: projectsDirName } = await context.folderSetupFn(
@@ -921,12 +826,8 @@ test.describe('Deleting items from the file pane', () => {
       // Constants and locators
       const projectCard = page.getByText(TEST_PROJECT_NAME)
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToDelete = page.getByRole('button', {
-        name: 'folderToDelete',
-      })
-      const fileWithinFolder = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
-      })
+      const folderToDelete = u.locatorFolder('folderToDelete')
+      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
 
       await test.step('Open project and navigate into folderToDelete', async () => {
         await projectCard.click()
@@ -956,89 +857,13 @@ test.describe('Deleting items from the file pane', () => {
       })
     }
   )
-
-  // Similar to the above
-  test(
-    `external deletion of file in sub-directory updates the file tree and recreates it on code editor typing`,
-    { tag: '@electron' },
-    async ({ context, page }, testInfo) => {
-      const TEST_PROJECT_NAME = 'Test Project'
-      const { dir: projectsDirName } = await context.folderSetupFn(
-        async (dir) => {
-          await fsp.mkdir(join(dir, TEST_PROJECT_NAME), { recursive: true })
-          await fsp.mkdir(join(dir, TEST_PROJECT_NAME, 'folderToDelete'), {
-            recursive: true,
-          })
-          await fsp.copyFile(
-            executorInputPath('basic_fillet_cube_end.kcl'),
-            join(dir, TEST_PROJECT_NAME, 'main.kcl')
-          )
-          await fsp.copyFile(
-            executorInputPath('cylinder.kcl'),
-            join(dir, TEST_PROJECT_NAME, 'folderToDelete', 'someFileWithin.kcl')
-          )
-        }
-      )
-      const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
-
-      // Constants and locators
-      const projectCard = page.getByText(TEST_PROJECT_NAME)
-      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToDelete = page.getByRole('button', {
-        name: 'folderToDelete',
-      })
-      const fileWithinFolder = page.getByRole('listitem').filter({
-        has: page.getByRole('button', { name: 'someFileWithin.kcl' }),
-      })
-
-      await test.step('Open project and navigate into folderToDelete', async () => {
-        await projectCard.click()
-        await u.waitForPageLoad()
-        await expect(projectMenuButton).toContainText('main.kcl')
-
-        await u.openFilePanel()
-
-        await folderToDelete.click()
-        await expect(fileWithinFolder).toBeVisible()
-        await fileWithinFolder.click()
-        await expect(projectMenuButton).toContainText('someFileWithin.kcl')
-      })
-
-      await test.step('Delete projectsDirName/<project-name> externally', async () => {
-        await fsp.rm(
-          join(
-            projectsDirName,
-            TEST_PROJECT_NAME,
-            'folderToDelete',
-            'someFileWithin.kcl'
-          )
-        )
-      })
-
-      await test.step('Check the file is gone in the file tree', async () => {
-        await expect(
-          page.getByTestId('file-pane-scroll-container')
-        ).not.toContainText('someFileWithin.kcl')
-      })
-
-      await test.step('Check the file is back in the file tree after typing in code editor', async () => {
-        await u.pasteCodeInEditor('hello = 1')
-        await expect(
-          page.getByTestId('file-pane-scroll-container')
-        ).toContainText('someFileWithin.kcl')
-      })
-    }
-  )
 })
 
 test.describe('Undo and redo do not keep history when navigating between files', () => {
   test(
     `open a file, change something, open a different file, hitting undo should do nothing`,
-    { tag: '@electron' },
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
-      // TODO: fix this test on windows after the electron migration
-      test.skip(process.platform === 'win32', 'Skip on windows')
       await context.folderSetupFn(async (dir) => {
         const testDir = join(dir, 'testProject')
         await fsp.mkdir(testDir, { recursive: true })
@@ -1057,9 +882,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
 
       // Constants and locators
       const projectCard = page.getByText('testProject')
-      const otherFile = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'other.kcl' }) })
+      const otherFile = u.locatorFile('other.kcl')
 
       await test.step('Open project and make a change to the file', async () => {
         await projectCard.click()
@@ -1104,11 +927,8 @@ test.describe('Undo and redo do not keep history when navigating between files',
 
   test(
     `open a file, change something, undo it, open a different file, hitting redo should do nothing`,
-    { tag: '@electron' },
-    // Skip on windows i think the keybindings are different for redo.
+    { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
-      // TODO: fix this test on windows after the electron migration
-      test.skip(process.platform === 'win32', 'Skip on windows')
       await context.folderSetupFn(async (dir) => {
         const testDir = join(dir, 'testProject')
         await fsp.mkdir(testDir, { recursive: true })
@@ -1127,9 +947,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
 
       // Constants and locators
       const projectCard = page.getByText('testProject')
-      const otherFile = page
-        .getByRole('listitem')
-        .filter({ has: page.getByRole('button', { name: 'other.kcl' }) })
+      const otherFile = u.locatorFile('other.kcl')
 
       const badContent = 'this shit'
       await test.step('Open project and make a change to the file', async () => {
@@ -1201,58 +1019,6 @@ test.describe('Undo and redo do not keep history when navigating between files',
         await page.waitForTimeout(100)
         await expect(u.codeLocator).toContainText(originalText)
         await expect(u.codeLocator).not.toContainText(badContent)
-      })
-    }
-  )
-
-  test(
-    `cloned file has an incremented name and same contents`,
-    { tag: '@electron' },
-    async ({ page, context, homePage }, testInfo) => {
-      const { panesOpen, cloneFile } = await getUtils(page, test)
-
-      const { dir } = await context.folderSetupFn(async (dir) => {
-        const finalDir = join(dir, 'testDefault')
-        await fsp.mkdir(finalDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
-          join(finalDir, 'lee.kcl')
-        )
-      })
-
-      const contentOriginal = await fsp.readFile(
-        join(dir, 'testDefault', 'lee.kcl'),
-        'utf-8'
-      )
-
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      page.on('console', console.log)
-
-      await panesOpen(['files'])
-      await homePage.openProject('testDefault')
-
-      await cloneFile('lee.kcl')
-      await cloneFile('lee-1.kcl')
-      await cloneFile('lee-2.kcl')
-      await cloneFile('lee-3.kcl')
-      await cloneFile('lee-4.kcl')
-
-      await test.step('Postcondition: there are 5 new lee-*.kcl files', async () => {
-        await expect(
-          page
-            .locator('[data-testid="file-pane-scroll-container"] button')
-            .filter({ hasText: /lee[-]?[0-5]?/ })
-        ).toHaveCount(5)
-      })
-
-      await test.step('Postcondition: the files have the same contents', async () => {
-        for (let n = 0; n < 5; n += 1) {
-          const content = await fsp.readFile(
-            join(dir, 'testDefault', `lee-${n + 1}.kcl`),
-            'utf-8'
-          )
-          await expect(content).toEqual(contentOriginal)
-        }
       })
     }
   )

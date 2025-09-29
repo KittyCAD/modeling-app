@@ -1,13 +1,14 @@
 import type { Diagnostic } from '@codemirror/lint'
-
+import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import { KCLError } from '@src/lang/errors'
+import { KCLError, toUtf16 } from '@src/lang/errors'
 import type { ExecState, Program } from '@src/lang/wasm'
 import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import type { EditorView } from 'codemirror'
 
 export type ToolTip =
   | 'lineTo'
@@ -22,11 +23,13 @@ export type ToolTip =
   | 'xLineTo'
   | 'yLineTo'
   | 'angledLineThatIntersects'
+  | 'tangentialArc'
   | 'tangentialArcTo'
   | 'circle'
   | 'circleThreePoint'
   | 'arcTo'
   | 'arc'
+  | 'startProfile'
 
 export const toolTips: Array<ToolTip> = [
   'line',
@@ -41,10 +44,12 @@ export const toolTips: Array<ToolTip> = [
   'xLineTo',
   'yLineTo',
   'angledLineThatIntersects',
+  'tangentialArc',
   'tangentialArcTo',
   'circleThreePoint',
   'arc',
   'arcTo',
+  'startProfile',
 ]
 
 interface ExecutionResult {
@@ -64,7 +69,7 @@ export async function executeAst({
   path?: string
 }): Promise<ExecutionResult> {
   try {
-    const settings = { settings: await jsAppSettings() }
+    const settings = await jsAppSettings()
     const execState = await rustContext.execute(ast, settings, path)
 
     await rustContext.waitForAllEngineCommands()
@@ -91,7 +96,7 @@ export async function executeAstMock({
   usePrevMemory?: boolean
 }): Promise<ExecutionResult> {
   try {
-    const settings = { settings: await jsAppSettings() }
+    const settings = await jsAppSettings()
     const execState = await rustContext.executeMock(
       ast,
       settings,
@@ -118,10 +123,12 @@ function handleExecuteError(e: any): ExecutionResult {
     if (e.msg.includes(EXECUTE_AST_INTERRUPT_ERROR_STRING)) {
       isInterrupted = true
     }
+    const execState = emptyExecState()
+    execState.variables = e.variables
     return {
       errors: [e],
       logs: [],
-      execState: emptyExecState(),
+      execState,
       isInterrupted,
     }
   } else {
@@ -137,17 +144,39 @@ function handleExecuteError(e: any): ExecutionResult {
 
 export async function lintAst({
   ast,
+  sourceCode,
 }: {
   ast: Program
+  sourceCode: string
 }): Promise<Array<Diagnostic>> {
   try {
     const discovered_findings = await kclLint(ast)
     return discovered_findings.map((lint) => {
+      let actions
+      const suggestion = lint.suggestion
+      if (suggestion) {
+        actions = [
+          {
+            name: suggestion.title,
+            apply: (view: EditorView, from: number, to: number) => {
+              view.dispatch({
+                changes: {
+                  from: toUtf16(suggestion.source_range[0], sourceCode),
+                  to: toUtf16(suggestion.source_range[1], sourceCode),
+                  insert: suggestion.insert,
+                },
+                annotations: [lspCodeActionEvent],
+              })
+            },
+          },
+        ]
+      }
       return {
+        from: toUtf16(lint.pos[0], sourceCode),
+        to: toUtf16(lint.pos[1], sourceCode),
         message: lint.finding.title,
         severity: 'info',
-        from: lint.pos[0],
-        to: lint.pos[1],
+        actions,
       }
     })
   } catch (e: any) {

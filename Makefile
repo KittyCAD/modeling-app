@@ -1,5 +1,5 @@
 .PHONY: all
-all: install build check
+all: install check build
 
 ###############################################################################
 # INSTALL
@@ -12,69 +12,72 @@ endif
 endif
 
 ifdef WINDOWS
+PLATFORM := Windows
+else
+PLATFORM := $(shell uname -s)
+ifeq ($(PLATFORM),Linux)
+export LINUX := true
+endif
+endif
+
+ifdef WINDOWS
 CARGO ?= $(USERPROFILE)/.cargo/bin/cargo.exe
 WASM_PACK ?= $(USERPROFILE)/.cargo/bin/wasm-pack.exe
 else
-CARGO ?= ~/.cargo/bin/cargo
-WASM_PACK ?= ~/.cargo/bin/wasm-pack
-endif 
+CARGO ?= $(shell which cargo || echo ~/.cargo/bin/cargo)
+WASM_PACK ?= $(shell which wasm-pack || echo ~/.cargo/bin/wasm-pack)
+endif
 
 .PHONY: install
-install: node_modules/.yarn-integrity $(CARGO) $(WASM_PACK) ## Install dependencies
+install: node_modules/.package-lock.json $(CARGO) $(WASM_PACK) ## Install dependencies
 
-node_modules/.yarn-integrity: package.json yarn.lock
-	yarn install
-ifdef POWERSHELL
-	@ type nul > $@
-else
-	@ touch $@
-endif
+node_modules/.package-lock.json: package.json package-lock.json
+	npm prune
+	npm install
 
 $(CARGO):
 ifdef WINDOWS
-	yarn install:rust:windows
+	npm run install:rust:windows
 else
-	yarn install:rust
+	npm run install:rust
 endif
 
 $(WASM_PACK):
 ifdef WINDOWS
-	yarn install:wasm-pack:cargo
+	npm run install:wasm-pack:cargo
 else
-	yarn install:wasm-pack:sh
+	npm run install:wasm-pack:sh
 endif
 
 ###############################################################################
 # BUILD
 
-CARGO_SOURCES := rust/.cargo/config.toml $(wildcard rust/Cargo.*) $(wildcard rust/**/Cargo.*)
-RUST_SOURCES := $(wildcard rust/**/*.rs)
+CARGO_SOURCES := rust/.cargo/config.toml $(wildcard rust/Cargo.*) $(wildcard rust/*/Cargo.*)
+KCL_SOURCES := $(wildcard public/kcl-samples/*/*.kcl)
+RUST_SOURCES := $(wildcard rust/*.rs rust/*/*.rs rust/*/*/*.rs rust/*/*/*/*.rs rust/*/*/*/*/*.rs)
 
-REACT_SOURCES := $(wildcard src/*.tsx) $(wildcard src/**/*.tsx)
-TYPESCRIPT_SOURCES := tsconfig.* $(wildcard src/*.ts) $(wildcard src/**/*.ts)
-VITE_SOURCES := $(wildcard vite.*) $(wildcard vite/**/*.tsx)
+REACT_SOURCES := $(wildcard src/*.tsx src/*/*.tsx src/*/*/*.tsx src/*/*/*/*.tsx)
+TYPESCRIPT_SOURCES := tsconfig.* $(wildcard src/*.ts src/*/*.ts src/*/*/*.ts src/*/*/*/*.ts)
+VITE_SOURCES := .env* $(wildcard vite.*)
 
 .PHONY: build
-build: build-web build-desktop
-
-.PHONY: build-web
-build-web: install public/kcl_wasm_lib_bg.wasm build/index.html
-
-.PHONY: build-desktop
-build-desktop: install public/kcl_wasm_lib_bg.wasm .vite/build/main.js
+build: install public/kcl_wasm_lib_bg.wasm public/kcl-samples/manifest.json .vite/build/main.js
 
 public/kcl_wasm_lib_bg.wasm: $(CARGO_SOURCES) $(RUST_SOURCES)
 ifdef WINDOWS
-	yarn build:wasm:dev:windows
+	npm run build:wasm:dev:windows
 else
-	yarn build:wasm:dev
+	npm run build:wasm:dev
 endif
 
-build/index.html: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
-	yarn build:local
+public/kcl-samples/manifest.json: $(KCL_SOURCES)
+ifndef WINDOWS
+	cd rust/kcl-lib && EXPECTORATE=overwrite cargo test generate_manifest
+	@ touch $@
+endif
 
 .vite/build/main.js: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
-	yarn tronb:vite:dev
+	npm run tronb:vite:dev
 
 ###############################################################################
 # CHECK
@@ -84,12 +87,12 @@ check: format lint
 
 .PHONY: format
 format: install ## Format the code
-	yarn fmt
+	npm run fmt
 
 .PHONY: lint
 lint: install ## Lint the code
-	yarn tsc
-	yarn lint
+	npm run tsc
+	npm run lint
 
 ###############################################################################
 # RUN
@@ -100,46 +103,65 @@ TARGET ?= desktop
 run: run-$(TARGET)
 
 .PHONY: run-web
-run-web: install build-web ## Start the web app
-	yarn start
+run-web: install build ## Start the web app
+	npm run start
 
 .PHONY: run-desktop
-run-desktop: install build-desktop ## Start the desktop app
-	yarn tron:start
+run-desktop: install build ## Start the desktop app
+	npm run tron:start
 
 ###############################################################################
 # TEST
 
+PW_ARGS ?=
+
 E2E_GREP ?=
 E2E_WORKERS ?=
 E2E_FAILURES ?= 1
+
+ifdef LINUX
+E2E_MODE ?= changed
+else
+E2E_MODE ?= none
+endif
 
 .PHONY: test
 test: test-unit test-e2e
 
 .PHONY: test-unit
 test-unit: install ## Run the unit tests
+	npm run test:rust
 	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
-	yarn test:unit
+	npm run test:unit
 
 .PHONY: test-e2e
 test-e2e: test-e2e-$(TARGET)
 
 .PHONY: test-e2e-web
-test-e2e-web: install build-web ## Run the web e2e tests
-	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
+test-e2e-web: install build ## Run the web e2e tests
 ifdef E2E_GREP
-	yarn chrome:test --headed --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES)
+	npm run test:e2e:web -- --headed --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES) "$(PW_ARGS)"
 else
-	yarn chrome:test --headed --workers='100%'
+	npm run test:e2e:web -- --headed --workers='100%' "$(PW_ARGS)"
 endif
 
 .PHONY: test-e2e-desktop
-test-e2e-desktop: install build-desktop ## Run the desktop e2e tests
+test-e2e-desktop: install build ## Run the desktop e2e tests
 ifdef E2E_GREP
-	yarn test:playwright:electron --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES)
+	npm run test:e2e:desktop -- --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES) "$(PW_ARGS)"
 else
-	yarn test:playwright:electron --workers='100%'
+	npm run test:e2e:desktop -- --workers='100%' "$(PW_ARGS)"
+endif
+
+.PHONY: test-snapshots
+test-snapshots: install build ## Run the snapshot tests
+ifndef LINUX
+	@ echo "NOTE: Snapshots cannot be updated on $(PLATFORM)"
+endif
+ifdef E2E_GREP
+	npm run test:snapshots -- --headed --update-snapshots=$(E2E_MODE) --grep="$(E2E_GREP)"
+else
+	npm run test:snapshots -- --headed --update-snapshots=$(E2E_MODE)
 endif
 
 ###############################################################################
@@ -150,11 +172,11 @@ clean: ## Delete all artifacts
 ifdef POWERSHELL
 	git clean --force -d -x --exclude=.env* --exclude=**/*.env
 else
-	rm -rf .vite/ build/
-	rm -rf trace.zip playwright-report/ test-results/
+	rm -rf .vite/ build/ out/
+	rm -rf trace.zip playwright-report/ test-results/ e2e/playwright/temp*.png
 	rm -rf public/kcl_wasm_lib_bg.wasm
 	rm -rf rust/*/bindings/ rust/*/pkg/ rust/target/
-	rm -rf node_modules/ rust/*/node_modules/
+	rm -rf node_modules/ packages/*/node_modules/ rust/*/node_modules/
 endif
 
 .PHONY: help
@@ -174,5 +196,5 @@ endif
 # It should work for you other Linux users.
 lee-electron-test:
 	Xephyr -br -ac -noreset -screen 1200x500 :2 &
-	DISPLAY=:2 NODE_ENV=development PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ yarn tron:test -g "when using the file tree"
+	DISPLAY=:2 NODE_ENV=development PW_TEST_CONNECT_WS_ENDPOINT=ws://127.0.0.1:4444/ npm run tron:test -g "when using the file tree"
 	killall Xephyr

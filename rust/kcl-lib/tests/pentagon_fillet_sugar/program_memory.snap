@@ -45,20 +45,19 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           ],
           "radius": 80.0,
           "tag": {
-            "commentStart": 541,
-            "end": 549,
-            "start": 541,
+            "commentStart": 564,
+            "end": 572,
+            "moduleId": 0,
+            "start": 564,
             "type": "TagDeclarator",
             "value": "arc_tag"
           },
           "to": [
             -120.0,
-            100.0
+            99.99999999999999
           ],
           "type": "Arc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -67,7 +66,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           },
           "from": [
             -120.0,
-            100.0
+            99.99999999999999
           ],
           "tag": null,
           "to": [
@@ -75,9 +74,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             100.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -88,17 +85,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
+          "z": 0.0,
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -110,9 +104,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 245,
-                "end": 247,
-                "start": 245,
+                "commentStart": 178,
+                "end": 180,
+                "moduleId": 0,
+                "start": 178,
                 "type": "TagDeclarator",
                 "value": "a"
               },
@@ -123,9 +118,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 306,
-                "end": 308,
-                "start": 306,
+                "commentStart": 239,
+                "end": 241,
+                "moduleId": 0,
+                "start": 239,
                 "type": "TagDeclarator",
                 "value": "b"
               },
@@ -136,9 +132,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 367,
-                "end": 369,
-                "start": 367,
+                "commentStart": 300,
+                "end": 302,
+                "moduleId": 0,
+                "start": 300,
                 "type": "TagDeclarator",
                 "value": "c"
               },
@@ -159,20 +156,19 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 245,
-                  "end": 247,
-                  "start": 245,
+                  "commentStart": 178,
+                  "end": 180,
+                  "moduleId": 0,
+                  "start": 178,
                   "type": "TagDeclarator",
                   "value": "a"
                 },
                 "to": [
-                  250.0,
-                  433.0127
+                  250.00000000000006,
+                  433.0127018922193
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -180,24 +176,23 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  250.0,
-                  433.0127
+                  250.00000000000006,
+                  433.0127018922193
                 ],
                 "tag": {
-                  "commentStart": 306,
-                  "end": 308,
-                  "start": 306,
+                  "commentStart": 239,
+                  "end": 241,
+                  "moduleId": 0,
+                  "start": 239,
                   "type": "TagDeclarator",
                   "value": "b"
                 },
                 "to": [
-                  -250.0,
-                  433.0127
+                  -249.99999999999994,
+                  433.01270189221935
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -205,53 +200,53 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -250.0,
-                  433.0127
+                  -249.99999999999994,
+                  433.01270189221935
                 ],
                 "tag": {
-                  "commentStart": 367,
-                  "end": 369,
-                  "start": 367,
+                  "commentStart": 300,
+                  "end": 302,
+                  "moduleId": 0,
+                  "start": 300,
                   "type": "TagDeclarator",
                   "value": "c"
                 },
                 "to": [
-                  0.0,
-                  0.0
+                  0.00000000000011368683772161603,
+                  0.00000000000005684341886080802
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
@@ -263,9 +258,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -288,20 +281,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 200.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -312,9 +299,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           -120.0,
           100.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -329,9 +314,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "c2": {
@@ -356,20 +339,19 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           ],
           "radius": 80.0,
           "tag": {
-            "commentStart": 541,
-            "end": 549,
-            "start": 541,
+            "commentStart": 564,
+            "end": 572,
+            "moduleId": 0,
+            "start": 564,
             "type": "TagDeclarator",
             "value": "arc_tag"
           },
           "to": [
             280.0,
-            100.0
+            99.99999999999999
           ],
           "type": "Arc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -378,7 +360,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           },
           "from": [
             280.0,
-            100.0
+            99.99999999999999
           ],
           "tag": null,
           "to": [
@@ -386,9 +368,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             100.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -399,17 +379,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
+          "z": 0.0,
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -421,9 +398,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 245,
-                "end": 247,
-                "start": 245,
+                "commentStart": 178,
+                "end": 180,
+                "moduleId": 0,
+                "start": 178,
                 "type": "TagDeclarator",
                 "value": "a"
               },
@@ -434,9 +412,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 306,
-                "end": 308,
-                "start": 306,
+                "commentStart": 239,
+                "end": 241,
+                "moduleId": 0,
+                "start": 239,
                 "type": "TagDeclarator",
                 "value": "b"
               },
@@ -447,9 +426,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 367,
-                "end": 369,
-                "start": 367,
+                "commentStart": 300,
+                "end": 302,
+                "moduleId": 0,
+                "start": 300,
                 "type": "TagDeclarator",
                 "value": "c"
               },
@@ -470,20 +450,19 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 245,
-                  "end": 247,
-                  "start": 245,
+                  "commentStart": 178,
+                  "end": 180,
+                  "moduleId": 0,
+                  "start": 178,
                   "type": "TagDeclarator",
                   "value": "a"
                 },
                 "to": [
-                  250.0,
-                  433.0127
+                  250.00000000000006,
+                  433.0127018922193
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -491,24 +470,23 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  250.0,
-                  433.0127
+                  250.00000000000006,
+                  433.0127018922193
                 ],
                 "tag": {
-                  "commentStart": 306,
-                  "end": 308,
-                  "start": 306,
+                  "commentStart": 239,
+                  "end": 241,
+                  "moduleId": 0,
+                  "start": 239,
                   "type": "TagDeclarator",
                   "value": "b"
                 },
                 "to": [
-                  -250.0,
-                  433.0127
+                  -249.99999999999994,
+                  433.01270189221935
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -516,53 +494,53 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -250.0,
-                  433.0127
+                  -249.99999999999994,
+                  433.01270189221935
                 ],
                 "tag": {
-                  "commentStart": 367,
-                  "end": 369,
-                  "start": 367,
+                  "commentStart": 300,
+                  "end": 302,
+                  "moduleId": 0,
+                  "start": 300,
                   "type": "TagDeclarator",
                   "value": "c"
                 },
                 "to": [
-                  0.0,
-                  0.0
+                  0.00000000000011368683772161603,
+                  0.00000000000005684341886080802
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 1.0,
+                "units": null
               }
             },
             "start": {
@@ -574,9 +552,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -599,20 +575,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 200.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -623,9 +593,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           280.0,
           100.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -640,57 +608,12 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
-    }
-  },
-  "circ": {
-    "type": "Object",
-    "value": {
-      "angleEnd": {
-        "type": "Number",
-        "value": 360.0,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "angleStart": {
-        "type": "Number",
-        "value": 0.0,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      },
-      "radius": {
-        "type": "Number",
-        "value": 80.0,
-        "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
-        }
-      }
+      "units": "mm"
     }
   },
   "circl": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "p": {
     "type": "Solid",
@@ -704,9 +627,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 245,
-            "end": 247,
-            "start": 245,
+            "commentStart": 178,
+            "end": 180,
+            "moduleId": 0,
+            "start": 178,
             "type": "TagDeclarator",
             "value": "a"
           },
@@ -717,9 +641,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 306,
-            "end": 308,
-            "start": 306,
+            "commentStart": 239,
+            "end": 241,
+            "moduleId": 0,
+            "start": 239,
             "type": "TagDeclarator",
             "value": "b"
           },
@@ -730,9 +655,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 367,
-            "end": 369,
-            "start": 367,
+            "commentStart": 300,
+            "end": 302,
+            "moduleId": 0,
+            "start": 300,
             "type": "TagDeclarator",
             "value": "c"
           },
@@ -753,20 +679,19 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 245,
-              "end": 247,
-              "start": 245,
+              "commentStart": 178,
+              "end": 180,
+              "moduleId": 0,
+              "start": 178,
               "type": "TagDeclarator",
               "value": "a"
             },
             "to": [
-              250.0,
-              433.0127
+              250.00000000000006,
+              433.0127018922193
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -774,24 +699,23 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "sourceRange": []
             },
             "from": [
-              250.0,
-              433.0127
+              250.00000000000006,
+              433.0127018922193
             ],
             "tag": {
-              "commentStart": 306,
-              "end": 308,
-              "start": 306,
+              "commentStart": 239,
+              "end": 241,
+              "moduleId": 0,
+              "start": 239,
               "type": "TagDeclarator",
               "value": "b"
             },
             "to": [
-              -250.0,
-              433.0127
+              -249.99999999999994,
+              433.01270189221935
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -799,53 +723,53 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "sourceRange": []
             },
             "from": [
-              -250.0,
-              433.0127
+              -249.99999999999994,
+              433.01270189221935
             ],
             "tag": {
-              "commentStart": 367,
-              "end": 369,
-              "start": 367,
+              "commentStart": 300,
+              "end": 302,
+              "moduleId": 0,
+              "start": 300,
               "type": "TagDeclarator",
               "value": "c"
             },
             "to": [
-              0.0,
-              0.0
+              0.00000000000011368683772161603,
+              0.00000000000005684341886080802
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -857,9 +781,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -882,16 +804,12 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 200.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "plumbus0": {
@@ -906,9 +824,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 541,
-            "end": 549,
-            "start": 541,
+            "commentStart": 564,
+            "end": 572,
+            "moduleId": 0,
+            "start": 564,
             "type": "TagDeclarator",
             "value": "arc_tag"
           },
@@ -935,20 +854,19 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             ],
             "radius": 80.0,
             "tag": {
-              "commentStart": 541,
-              "end": 549,
-              "start": 541,
+              "commentStart": 564,
+              "end": 572,
+              "moduleId": 0,
+              "start": 564,
               "type": "TagDeclarator",
               "value": "arc_tag"
             },
             "to": [
               280.0,
-              100.0
+              99.99999999999999
             ],
             "type": "Arc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -957,7 +875,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             },
             "from": [
               280.0,
-              100.0
+              99.99999999999999
             ],
             "tag": null,
             "to": [
@@ -965,9 +883,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               100.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -978,17 +894,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
+            "z": 0.0,
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -1000,9 +913,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 245,
-                  "end": 247,
-                  "start": 245,
+                  "commentStart": 178,
+                  "end": 180,
+                  "moduleId": 0,
+                  "start": 178,
                   "type": "TagDeclarator",
                   "value": "a"
                 },
@@ -1013,9 +927,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 306,
-                  "end": 308,
-                  "start": 306,
+                  "commentStart": 239,
+                  "end": 241,
+                  "moduleId": 0,
+                  "start": 239,
                   "type": "TagDeclarator",
                   "value": "b"
                 },
@@ -1026,9 +941,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 367,
-                  "end": 369,
-                  "start": 367,
+                  "commentStart": 300,
+                  "end": 302,
+                  "moduleId": 0,
+                  "start": 300,
                   "type": "TagDeclarator",
                   "value": "c"
                 },
@@ -1049,20 +965,19 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 245,
-                    "end": 247,
-                    "start": 245,
+                    "commentStart": 178,
+                    "end": 180,
+                    "moduleId": 0,
+                    "start": 178,
                     "type": "TagDeclarator",
                     "value": "a"
                   },
                   "to": [
-                    250.0,
-                    433.0127
+                    250.00000000000006,
+                    433.0127018922193
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1070,24 +985,23 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    250.0,
-                    433.0127
+                    250.00000000000006,
+                    433.0127018922193
                   ],
                   "tag": {
-                    "commentStart": 306,
-                    "end": 308,
-                    "start": 306,
+                    "commentStart": 239,
+                    "end": 241,
+                    "moduleId": 0,
+                    "start": 239,
                     "type": "TagDeclarator",
                     "value": "b"
                   },
                   "to": [
-                    -250.0,
-                    433.0127
+                    -249.99999999999994,
+                    433.01270189221935
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1095,53 +1009,53 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -250.0,
-                    433.0127
+                    -249.99999999999994,
+                    433.01270189221935
                   ],
                   "tag": {
-                    "commentStart": 367,
-                    "end": 369,
-                    "start": 367,
+                    "commentStart": 300,
+                    "end": 302,
+                    "moduleId": 0,
+                    "start": 300,
                     "type": "TagDeclarator",
                     "value": "c"
                   },
                   "to": [
-                    0.0,
-                    0.0
+                    0.00000000000011368683772161603,
+                    0.00000000000005684341886080802
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
-                "type": "plane",
-                "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "value": "XY",
+                "id": "[uuid]",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": "mm"
                 },
+                "type": "plane",
+                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
-                },
-                "units": {
-                  "type": "Mm"
+                  "z": 1.0,
+                  "units": null
                 }
               },
               "start": {
@@ -1153,9 +1067,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   0.0,
                   0.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -1178,20 +1090,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": 200.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm",
+            "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -1202,9 +1108,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             280.0,
             100.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1219,32 +1123,42 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 100.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 5.0,
+          "radius": {
+            "n": 5.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 5.0,
+          "radius": {
+            "n": 5.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "plumbus1": {
@@ -1259,9 +1173,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 541,
-            "end": 549,
-            "start": 541,
+            "commentStart": 564,
+            "end": 572,
+            "moduleId": 0,
+            "start": 564,
             "type": "TagDeclarator",
             "value": "arc_tag"
           },
@@ -1288,20 +1203,19 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             ],
             "radius": 80.0,
             "tag": {
-              "commentStart": 541,
-              "end": 549,
-              "start": 541,
+              "commentStart": 564,
+              "end": 572,
+              "moduleId": 0,
+              "start": 564,
               "type": "TagDeclarator",
               "value": "arc_tag"
             },
             "to": [
               -120.0,
-              100.0
+              99.99999999999999
             ],
             "type": "Arc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1310,7 +1224,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             },
             "from": [
               -120.0,
-              100.0
+              99.99999999999999
             ],
             "tag": null,
             "to": [
@@ -1318,9 +1232,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               100.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1331,17 +1243,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
+            "z": 0.0,
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -1353,9 +1262,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 245,
-                  "end": 247,
-                  "start": 245,
+                  "commentStart": 178,
+                  "end": 180,
+                  "moduleId": 0,
+                  "start": 178,
                   "type": "TagDeclarator",
                   "value": "a"
                 },
@@ -1366,9 +1276,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 306,
-                  "end": 308,
-                  "start": 306,
+                  "commentStart": 239,
+                  "end": 241,
+                  "moduleId": 0,
+                  "start": 239,
                   "type": "TagDeclarator",
                   "value": "b"
                 },
@@ -1379,9 +1290,10 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 367,
-                  "end": 369,
-                  "start": 367,
+                  "commentStart": 300,
+                  "end": 302,
+                  "moduleId": 0,
+                  "start": 300,
                   "type": "TagDeclarator",
                   "value": "c"
                 },
@@ -1402,20 +1314,19 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 245,
-                    "end": 247,
-                    "start": 245,
+                    "commentStart": 178,
+                    "end": 180,
+                    "moduleId": 0,
+                    "start": 178,
                     "type": "TagDeclarator",
                     "value": "a"
                   },
                   "to": [
-                    250.0,
-                    433.0127
+                    250.00000000000006,
+                    433.0127018922193
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1423,24 +1334,23 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    250.0,
-                    433.0127
+                    250.00000000000006,
+                    433.0127018922193
                   ],
                   "tag": {
-                    "commentStart": 306,
-                    "end": 308,
-                    "start": 306,
+                    "commentStart": 239,
+                    "end": 241,
+                    "moduleId": 0,
+                    "start": 239,
                     "type": "TagDeclarator",
                     "value": "b"
                   },
                   "to": [
-                    -250.0,
-                    433.0127
+                    -249.99999999999994,
+                    433.01270189221935
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -1448,53 +1358,53 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -250.0,
-                    433.0127
+                    -249.99999999999994,
+                    433.01270189221935
                   ],
                   "tag": {
-                    "commentStart": 367,
-                    "end": 369,
-                    "start": 367,
+                    "commentStart": 300,
+                    "end": 302,
+                    "moduleId": 0,
+                    "start": 300,
                     "type": "TagDeclarator",
                     "value": "c"
                   },
                   "to": [
-                    0.0,
-                    0.0
+                    0.00000000000011368683772161603,
+                    0.00000000000005684341886080802
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
-                "type": "plane",
-                "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "value": "XY",
+                "id": "[uuid]",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": "mm"
                 },
+                "type": "plane",
+                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
-                },
-                "units": {
-                  "type": "Mm"
+                  "z": 1.0,
+                  "units": null
                 }
               },
               "start": {
@@ -1506,9 +1416,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   0.0,
                   0.0
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -1531,20 +1439,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": 200.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm",
+            "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -1555,9 +1457,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             -120.0,
             100.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1572,32 +1472,42 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 100.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "edgeCuts": [
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 5.0,
+          "radius": {
+            "n": 5.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 5.0,
+          "radius": {
+            "n": 5.0,
+            "ty": {
+              "type": "Default",
+              "len": "mm",
+              "angle": "degrees"
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "plumbusLen": {
@@ -1605,12 +1515,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
     "value": 100.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "radius": {
@@ -1618,12 +1524,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
     "value": 80.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "triangleHeight": {
@@ -1631,12 +1533,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
     "value": 200.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "triangleLen": {
@@ -1644,12 +1542,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
     "value": 500.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

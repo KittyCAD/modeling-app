@@ -6,15 +6,11 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 
 import { ActionButton } from '@src/components/ActionButton'
-import { useLspContext } from '@src/components/LspProvider'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
-import { useDotDotSlash } from '@src/hooks/useDotDotSlash'
-import {
-  createAndOpenNewTutorialProject,
-  getSettingsFolderPaths,
-} from '@src/lib/desktopFS'
+import { getSettingsFolderPaths } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
+import { onboardingStartPath } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import type { Setting } from '@src/lib/settings/initialSettings'
@@ -26,11 +22,19 @@ import {
   shouldHideSetting,
   shouldShowSettingInput,
 } from '@src/lib/settings/settingsUtils'
+import {
+  codeManager,
+  kclManager,
+  settingsActor,
+  useSettings,
+} from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import { settingsActor, useSettings } from '@src/machines/appMachine'
-import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from '@src/routes/utils'
-import { waitFor } from 'xstate'
+import {
+  acceptOnboarding,
+  catchOnboardingWarnError,
+} from '@src/routes/Onboarding/utils'
+import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -44,8 +48,6 @@ export const AllSettingsFields = forwardRef(
   ) => {
     const location = useLocation()
     const navigate = useNavigate()
-    const { onProjectOpen } = useLspContext()
-    const dotDotSlash = useDotDotSlash()
     const context = useSettings()
 
     const projectPath = useMemo(() => {
@@ -63,26 +65,23 @@ export const AllSettingsFields = forwardRef(
           : undefined
 
       return projectPath
-    }, [location.pathname])
+    }, [location.pathname, isFileSettings])
 
     async function restartOnboarding() {
-      settingsActor.send({
-        type: `set.app.onboardingStatus`,
-        data: { level: 'user', value: '' },
-      })
-      await waitFor(settingsActor, (s) => s.matches('idle'), {
-        timeout: 10_000,
-      }).catch(reportRejection)
-
-      if (isFileSettings) {
-        // If we're in a project, first navigate to the onboarding start here
-        // so we can trigger the warning screen if necessary
-        navigate(dotDotSlash(1) + PATHS.ONBOARDING.INDEX)
-      } else {
-        // If we're in the global settings, create a new project and navigate
-        // to the onboarding start in that project
-        await createAndOpenNewTutorialProject({ onProjectOpen, navigate })
+      const props = {
+        onboardingStatus: onboardingStartPath,
+        navigate,
+        codeManager,
+        kclManager,
       }
+      // We need to navigate out of settings before accepting onboarding
+      // in the web
+      if (!isDesktop()) {
+        navigate('..')
+      }
+      acceptOnboarding(props).catch((reason) =>
+        catchOnboardingWarnError(reason, props)
+      )
     }
 
     return (
@@ -198,7 +197,7 @@ export const AllSettingsFields = forwardRef(
                     if (!finalPath) {
                       return new Error('finalPath undefined')
                     }
-                    window.electron.showInFolder(finalPath)
+                    window.electron?.showInFolder(finalPath)
                   }, reportRejection)}
                   iconStart={{
                     icon: 'folder',
@@ -251,7 +250,7 @@ export const AllSettingsFields = forwardRef(
               <ActionButton
                 Element="button"
                 onClick={() => {
-                  window.electron.appCheckForUpdates().catch(reportRejection)
+                  window.electron?.appCheckForUpdates().catch(reportRejection)
                 }}
                 iconStart={{
                   icon: 'refresh',
@@ -277,25 +276,6 @@ export const AllSettingsFields = forwardRef(
               , and start a discussion if you don't see it! Your feedback will
               help us prioritize what to build next.
             </p>
-            {!IS_NIGHTLY && (
-              <p className="max-w-2xl mt-6">
-                Want to experience the latest and (hopefully) greatest from our
-                main development branch?{' '}
-                <a
-                  onClick={openExternalBrowserIfDesktop(
-                    'https://zoo.dev/modeling-app/download/nightly'
-                  )}
-                  href="https://zoo.dev/modeling-app/download/nightly"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Click here to grab Zoo Design Studio (Nightly)
-                </a>
-                . It can be installed side-by-side with the stable version
-                you're running now. But careful there, a lot less testing is
-                involved in their release 🤖.
-              </p>
-            )}
           </div>
         </div>
       </div>

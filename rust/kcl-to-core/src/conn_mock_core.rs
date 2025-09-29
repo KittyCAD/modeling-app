@@ -3,8 +3,8 @@ use std::{collections::HashMap, sync::Arc};
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_lib::{
-    exec::{ArtifactCommand, DefaultPlanes, IdGenerator},
-    EngineStats, ExecutionKind, KclError,
+    exec::{DefaultPlanes, IdGenerator},
+    AsyncTasks, EngineStats, KclError,
 };
 use kittycad_modeling_cmds::{
     self as kcmc,
@@ -23,10 +23,11 @@ pub struct EngineConnection {
     batch: Arc<RwLock<Vec<(WebSocketRequest, kcl_lib::SourceRange)>>>,
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>>,
     core_test: Arc<RwLock<String>>,
-    execution_kind: Arc<RwLock<ExecutionKind>>,
+    ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, kcl_lib::SourceRange>>>,
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     stats: EngineStats,
+    async_tasks: AsyncTasks,
 }
 
 impl EngineConnection {
@@ -37,15 +38,16 @@ impl EngineConnection {
             batch: Arc::new(RwLock::new(Vec::new())),
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
             core_test: result,
-            execution_kind: Default::default(),
             default_planes: Default::default(),
+            ids_of_async_commands: Arc::new(RwLock::new(IndexMap::new())),
             stats: Default::default(),
+            async_tasks: AsyncTasks::new(),
         })
     }
 
     fn handle_command(&self, cmd_id: &ModelingCmdId, cmd: &kcmc::ModelingCmd) -> (String, OkModelingCmdResponse) {
         let cpp_id = id_to_cpp(cmd_id);
-        let cmd_id = format!("{}", cmd_id);
+        let cmd_id = format!("{cmd_id}");
         let mut this_response = OkModelingCmdResponse::Empty {};
 
         let new_code = match cmd {
@@ -84,7 +86,7 @@ impl EngineConnection {
                 size,
                 ..
             }) => {
-                let plane_id = format!("plane_{}", cpp_id);
+                let plane_id = format!("plane_{cpp_id}");
                 format!(
                     r#"
                     auto {plane_id} = make_shared<Object>("plane", glm::dvec3 {{ 0, 0, 0 }});
@@ -106,8 +108,8 @@ impl EngineConnection {
                 )
             }
             kcmc::ModelingCmd::StartPath(kcmc::StartPath { .. }) => {
-                let sketch_id = format!("sketch_{}", cpp_id);
-                let path_id = format!("path_{}", cpp_id);
+                let sketch_id = format!("sketch_{cpp_id}");
+                let path_id = format!("path_{cpp_id}");
                 format!(
                     r#"
                     auto {sketch_id} = make_shared<Object>("sketch", glm::dvec3 {{ 0, 0, 0 }});
@@ -128,7 +130,7 @@ impl EngineConnection {
                     to.y.0
                 )
             }
-            kcmc::ModelingCmd::ExtendPath(kcmc::ExtendPath { path, segment }) => match segment {
+            kcmc::ModelingCmd::ExtendPath(kcmc::ExtendPath { path, segment, .. }) => match segment {
                 Line { end, relative } => {
                     format!(
                         r#"
@@ -176,7 +178,7 @@ impl EngineConnection {
                     )
                 }
                 _ => {
-                    format!("//{:?}", cmd)
+                    format!("//{cmd:?}")
                 }
             },
             kcmc::ModelingCmd::ClosePath(kcmc::ClosePath { path_id }) => {
@@ -194,6 +196,7 @@ impl EngineConnection {
                 target,
                 faces: _, // Engine team: start using this once the frontend and engine both use it.
                 opposite: _,
+                extrude_method: _,
             }) => {
                 format!(
                     r#"
@@ -238,9 +241,8 @@ impl EngineConnection {
             }) => {
                 format!(
                     r#"
-                    //face info get {} {}
-                "#,
-                    object_id, edge_id
+                    //face info get {object_id} {edge_id}
+                "#
                 )
             }
             kcmc::ModelingCmd::EntityCircularPattern(kcmc::EntityCircularPattern {
@@ -254,7 +256,7 @@ impl EngineConnection {
                 let entity_ids = generate_repl_uuids(*num_repetitions as usize);
 
                 this_response = OkModelingCmdResponse::EntityCircularPattern(kcmc::output::EntityCircularPattern {
-                    entity_ids: entity_ids.clone(),
+                    entity_face_edge_ids: vec![],
                 });
 
                 let mut base_code: String = format!(
@@ -311,11 +313,11 @@ impl EngineConnection {
                 // base_code.push_str(&repl_uuid_fix_code);
 
                 // base_code
-                format!("//{:?}", cmd)
+                format!("//{cmd:?}")
             }
             _ => {
                 //helps us follow along with the currently unhandled engine commands
-                format!("//{:?}", cmd)
+                format!("//{cmd:?}")
             }
         };
 
@@ -328,7 +330,7 @@ fn id_to_cpp(id: &ModelingCmdId) -> String {
 }
 
 fn uuid_to_cpp(id: &uuid::Uuid) -> String {
-    let str = format!("{}", id);
+    let str = format!("{id}");
     str::replace(&str, "-", "_")
 }
 
@@ -377,20 +379,12 @@ impl kcl_lib::EngineManager for EngineConnection {
         &self.stats
     }
 
-    fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
-        Arc::new(RwLock::new(Vec::new()))
+    fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, kcl_lib::SourceRange>>> {
+        self.ids_of_async_commands.clone()
     }
 
-    async fn execution_kind(&self) -> ExecutionKind {
-        let guard = self.execution_kind.read().await;
-        *guard
-    }
-
-    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
-        let mut guard = self.execution_kind.write().await;
-        let original = *guard;
-        *guard = execution_kind;
-        original
+    fn async_tasks(&self) -> AsyncTasks {
+        self.async_tasks.clone()
     }
 
     fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {
@@ -402,6 +396,33 @@ impl kcl_lib::EngineManager for EngineConnection {
         _id_generator: &mut IdGenerator,
         _source_range: kcl_lib::SourceRange,
     ) -> Result<(), KclError> {
+        Ok(())
+    }
+
+    async fn get_debug(&self) -> Option<OkWebSocketResponseData> {
+        None
+    }
+
+    async fn fetch_debug(&self) -> Result<(), KclError> {
+        unimplemented!();
+    }
+
+    async fn inner_fire_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: kcl_lib::SourceRange,
+        cmd: WebSocketRequest,
+        id_to_source_range: HashMap<Uuid, kcl_lib::SourceRange>,
+    ) -> Result<(), KclError> {
+        // Pop off the id we care about.
+        self.ids_of_async_commands.write().await.swap_remove(&id);
+
+        // Add the response to our responses.
+        let response = self
+            .inner_send_modeling_cmd(id, source_range, cmd, id_to_source_range)
+            .await?;
+        self.responses().write().await.insert(id, response);
+
         Ok(())
     }
 

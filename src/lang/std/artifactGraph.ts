@@ -1,4 +1,4 @@
-import type { Models } from '@kittycad/lib'
+import type { OkWebSocketResponseData, WebSocketRequest } from '@kittycad/lib'
 
 import type {
   Cap,
@@ -6,6 +6,7 @@ import type {
   Plane,
   StartSketchOnFace,
   StartSketchOnPlane,
+  SweepSubType,
   Wall,
 } from '@rust/kcl-lib/bindings/Artifact'
 
@@ -92,16 +93,14 @@ interface SegmentArtifactRich extends BaseArtifact {
 
 interface SweepArtifactRich extends BaseArtifact {
   type: 'sweep'
-  subType: 'extrusion' | 'revolve' | 'revolveAboutEdge' | 'loft' | 'sweep'
+  subType: SweepSubType
   path: PathArtifact
   surfaces: Array<WallArtifact | CapArtifact>
   edges: Array<SweepEdge>
   codeRef: CodeRef
 }
 
-export type EngineCommand = Models['WebSocketRequest_type']
-
-type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
+export type EngineCommand = WebSocketRequest
 
 export interface ResponseMap {
   [commandId: string]: OkWebSocketResponseData
@@ -468,6 +467,19 @@ export function getSweepFromSuspectedPath(
   )
 }
 
+export function getCommonFacesForEdge(
+  artifact: SweepEdge | SegmentArtifact,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'wall' | 'cap' }>[] | Error {
+  const faces = getArtifactsOfTypes(
+    { keys: artifact.commonSurfaceIds, types: ['wall', 'cap'] },
+    artifactGraph
+  )
+  if (err(faces)) return faces
+  if (faces.size === 0) return new Error('No common face found')
+  return [...faces.values()]
+}
+
 export function getSweepArtifactFromSelection(
   selection: Selection,
   artifactGraph: ArtifactGraph
@@ -514,7 +526,9 @@ export function getCodeRefsByArtifactId(
   artifactGraph: ArtifactGraph
 ): Array<CodeRef> | null {
   const artifact = artifactGraph.get(id)
-  if (artifact?.type === 'solid2d') {
+  if (artifact?.type === 'compositeSolid') {
+    return [artifact.codeRef]
+  } else if (artifact?.type === 'solid2d') {
     const codeRef = getSolid2dCodeRef(artifact, artifactGraph)
     if (err(codeRef)) return null
     return [codeRef]
@@ -675,6 +689,9 @@ const onlyConsecutivePaths = (
   originalPath: PathToNode,
   ast: Program
 ): PathToNode[] => {
+  if (!orderedNodePaths.length) {
+    return []
+  }
   const isExprSafe = (index: number, ast: Program): boolean => {
     // we allow expressions between profiles, but only basic math expressions 5 + 6 etc
     // because 5 + doSomeMath() might be okay, but we can't know if it's an abstraction on a stdlib
@@ -689,7 +706,7 @@ const onlyConsecutivePaths = (
     if (expr.type === 'VariableDeclaration') {
       const init = expr.declaration?.init
       if (!init) return false
-      if (init.type === 'CallExpression') {
+      if (init.type === 'CallExpressionKw') {
         return false
       }
       if (init.type === 'BinaryExpression' && isNodeSafe(init)) {
@@ -736,7 +753,7 @@ const onlyConsecutivePaths = (
 }
 
 export function getPathsFromPlaneArtifact(
-  planeArtifact: PlaneArtifact,
+  planeArtifact: PlaneArtifact | WallArtifact | CapArtifact,
   artifactGraph: ArtifactGraph,
   ast: Program
 ): PathToNode[] {

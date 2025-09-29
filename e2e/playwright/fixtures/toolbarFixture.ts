@@ -1,5 +1,5 @@
 import { type Locator, type Page, test } from '@playwright/test'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 
@@ -17,6 +17,8 @@ type LengthUnitLabel = (typeof baseUnitLabels)[keyof typeof baseUnitLabels]
 export class ToolbarFixture {
   public page: Page
 
+  projectName!: Locator
+  fileName!: Locator
   extrudeButton!: Locator
   loftButton!: Locator
   sweepButton!: Locator
@@ -26,7 +28,9 @@ export class ToolbarFixture {
   revolveButton!: Locator
   offsetPlaneButton!: Locator
   helixButton!: Locator
+  patternCircularButton!: Locator
   startSketchBtn!: Locator
+  insertButton!: Locator
   lineBtn!: Locator
   tangentialArcBtn!: Locator
   circleBtn!: Locator
@@ -44,11 +48,20 @@ export class ToolbarFixture {
   featureTreePane!: Locator
   gizmo!: Locator
   gizmoDisabled!: Locator
-  insertButton!: Locator
+  loadButton!: Locator
+  /** User button for the user sidebar menu */
+  userSidebarButton!: Locator
+  /** Project button for the project's settings */
+  projectSidebarToggle!: Locator
+  signOutButton!: Locator
+  /** Selection indicator text in the status bar */
+  selectionStatus!: Locator
 
   constructor(page: Page) {
     this.page = page
 
+    this.projectName = page.getByTestId('app-header-project-name')
+    this.fileName = page.getByTestId('app-header-file-name')
     this.extrudeButton = page.getByTestId('extrude')
     this.loftButton = page.getByTestId('loft')
     this.sweepButton = page.getByTestId('sweep')
@@ -58,7 +71,9 @@ export class ToolbarFixture {
     this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.helixButton = page.getByTestId('helix')
+    this.patternCircularButton = page.getByTestId('pattern-circular-3d')
     this.startSketchBtn = page.getByTestId('sketch')
+    this.insertButton = page.getByTestId('insert')
     this.lineBtn = page.getByTestId('line')
     this.tangentialArcBtn = page.getByTestId('tangential-arc')
     this.circleBtn = page.getByTestId('circle-center')
@@ -67,7 +82,8 @@ export class ToolbarFixture {
     this.exitSketchBtn = page.getByTestId('sketch-exit')
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')
     this.createFileBtn = page.getByTestId('create-file-button')
-    this.treeInputField = page.getByTestId('tree-input-field')
+    this.treeInputField = page.getByTestId('file-rename-field')
+    this.loadButton = page.getByTestId('add-file-to-project-pane-button')
 
     this.filePane = page.locator('#files-pane')
     this.featureTreePane = page.locator('#feature-tree-pane')
@@ -80,7 +96,11 @@ export class ToolbarFixture {
     this.gizmo = page.getByTestId('gizmo')
     this.gizmoDisabled = page.getByTestId('gizmo-disabled')
 
-    this.insertButton = page.getByTestId('insert-pane-button')
+    this.userSidebarButton = page.getByTestId('user-sidebar-toggle')
+    this.projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
+    this.signOutButton = page.getByTestId('user-sidebar-sign-out')
+
+    this.selectionStatus = page.getByTestId('selection-status')
   }
 
   get logoLink() {
@@ -167,6 +187,13 @@ export class ToolbarFixture {
   openFile = async (fileName: string) => {
     await this.filePane.getByText(fileName).click()
   }
+  selectTangentialArc = async () => {
+    await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
+    await expect(
+      this.page.getByTestId('dropdown-three-point-arc')
+    ).toBeVisible()
+    await this.page.getByTestId('dropdown-tangential-arc').click()
+  }
   selectCenterRectangle = async () => {
     await this.page
       .getByRole('button', { name: 'caret down rectangles:' })
@@ -194,8 +221,8 @@ export class ToolbarFixture {
   }
   selectArc = async () => {
     await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
-    await expect(this.page.getByTestId('dropdown-arc')).toBeVisible()
-    await this.page.getByTestId('dropdown-arc').click()
+    await expect(this.page.getByTestId('dropdown-tangential-arc')).toBeVisible()
+    await this.page.getByTestId('dropdown-tangential-arc').click()
   }
   selectThreePointArc = async () => {
     await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
@@ -204,19 +231,30 @@ export class ToolbarFixture {
     ).toBeVisible()
     await this.page.getByTestId('dropdown-three-point-arc').click()
   }
+  selectLine = async () => {
+    await this.page
+      .getByRole('button', { name: 'line Line', exact: true })
+      .click()
+  }
 
-  async closePane(paneId: SidebarType) {
+  async closePane(paneId: SidebarId) {
     return closePane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
-  async openPane(paneId: SidebarType) {
+  async openPane(paneId: SidebarId) {
     return openPane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
-  async checkIfPaneIsOpen(paneId: SidebarType) {
+  async checkIfPaneIsOpen(paneId: SidebarId) {
     return checkIfPaneIsOpen(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
 
   async openFeatureTreePane() {
     return this.openPane(this.featureTreeId)
+  }
+
+  async waitForFeatureTreeToBeBuilt() {
+    await this.openFeatureTreePane()
+    await expect(this.page.getByText('Building feature tree')).not.toBeVisible()
+    await this.closeFeatureTreePane()
   }
   async closeFeatureTreePane() {
     await this.closePane(this.featureTreeId)
@@ -243,6 +281,13 @@ export class ToolbarFixture {
         name: operationName,
       })
       .nth(operationIndex)
+  }
+
+  getDefaultPlaneVisibilityButton(plane: 'XY' | 'XZ' | 'YZ' = 'XY') {
+    const index = plane === 'XZ' ? 0 : plane === 'XY' ? 1 : 2
+    return this.featureTreePane
+      .getByTestId('feature-tree-visibility-toggle')
+      .nth(index)
   }
 
   /**
@@ -282,5 +327,14 @@ export class ToolbarFixture {
     await operationButton.click({ button: 'right' })
     await expect(goToDefinitionMenuButton).toBeVisible()
     await goToDefinitionMenuButton.click()
+  }
+
+  async fireTtcPrompt(prompt: string) {
+    await this.openPane('text-to-cad')
+    await expect(
+      this.page.getByTestId('ml-ephant-conversation-input')
+    ).toBeVisible()
+    await this.page.getByTestId('ml-ephant-conversation-input').fill(prompt)
+    await this.page.getByTestId('ml-ephant-conversation-input-button').click()
   }
 }

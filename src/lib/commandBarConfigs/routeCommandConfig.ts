@@ -15,7 +15,7 @@ export function createRouteCommands(
     groupId: 'routes',
     icon: 'settings',
     needsReview: false,
-    onSubmit: (data) => {
+    onSubmit: (_data) => {
       const path = location.pathname.includes(PATHS.FILE)
         ? filePath + PATHS.TELEMETRY + '?tab=project'
         : PATHS.HOME + PATHS.TELEMETRY
@@ -30,7 +30,7 @@ export function createRouteCommands(
     groupId: 'routes',
     icon: 'settings',
     needsReview: false,
-    onSubmit: (data) => {
+    onSubmit: (_data) => {
       navigate(PATHS.HOME)
     },
   }
@@ -42,7 +42,7 @@ export function createRouteCommands(
     groupId: 'routes',
     icon: 'settings',
     needsReview: false,
-    onSubmit: (data) => {
+    onSubmit: (_data) => {
       const path = location.pathname.includes(PATHS.FILE)
         ? filePath + PATHS.SETTINGS + '?tab=project'
         : PATHS.HOME + PATHS.SETTINGS

@@ -3,16 +3,22 @@ import { assign, fromPromise, setup } from 'xstate'
 import type { FileEntry, Project } from '@src/lib/project'
 
 type FileMachineContext = {
-  project: Project
+  project: Project // this is also the root directory
   selectedDirectory: FileEntry
   itemsBeingRenamed: (FileEntry | string)[]
 }
 
 type FileMachineEvents =
   | { type: 'Open file'; data: { name: string } }
+  | { type: 'Open file in new window'; data: { name: string } }
   | {
       type: 'Rename file'
-      data: { oldName: string; newName: string; isDir: boolean }
+      data: {
+        oldName: string
+        newName: string
+        isDir: boolean
+        parentDirectory: FileEntry
+      }
     }
   | {
       type: 'Create file'
@@ -62,6 +68,7 @@ type FileMachineEvents =
     }
   | { type: 'assign'; data: { [key: string]: any } }
   | { type: 'Refresh' }
+  | { type: 'Refresh with new project'; data: { project: Project } }
 
 export const fileMachine = setup({
   types: {} as {
@@ -94,7 +101,12 @@ export const fileMachine = setup({
         )
       },
     }),
+    setProject: assign(({ event }) => {
+      if (event.type !== 'Refresh with new project') return {}
+      return { project: event.data.project }
+    }),
     navigateToFile: () => {},
+    openFileInNewWindow: () => {},
     renameToastSuccess: () => {},
     createToastSuccess: () => {},
     toastSuccess: () => {},
@@ -138,7 +150,7 @@ export const fileMachine = setup({
           oldName: string
           newName: string
           isDir: boolean
-          selectedDirectory: FileEntry
+          parentDirectory: FileEntry
         }
       }) => Promise.resolve({ message: '', newPath: '', oldPath: '' })
     ),
@@ -181,6 +193,10 @@ export const fileMachine = setup({
     },
 
     Refresh: '.Reading files',
+    'Refresh with new project': {
+      actions: ['setProject'],
+      target: '.Reading files',
+    },
   },
   states: {
     'Has no files': {
@@ -211,6 +227,10 @@ export const fileMachine = setup({
 
         'Open file': {
           target: 'Opening file',
+        },
+
+        'Open file in new window': {
+          target: 'Opening file in new window',
         },
 
         'Set selected directory': {
@@ -309,14 +329,14 @@ export const fileMachine = setup({
               oldName: '',
               newName: '',
               isDir: false,
-              selectedDirectory: {} as FileEntry,
+              parentDirectory: {} as FileEntry,
             }
           }
           return {
             oldName: event.data.oldName,
             newName: event.data.newName,
             isDir: event.data.isDir,
-            selectedDirectory: context.selectedDirectory,
+            parentDirectory: event.data.parentDirectory,
           }
         },
 
@@ -398,6 +418,10 @@ export const fileMachine = setup({
 
     'Opening file': {
       entry: ['navigateToFile'],
+    },
+
+    'Opening file in new window': {
+      entry: ['openFileInNewWindow'],
     },
 
     'Creating file': {

@@ -1,13 +1,14 @@
 //! Run all the KCL samples in the `kcl_samples` directory.
 use std::{
     fs,
-    panic::{catch_unwind, AssertUnwindSafe},
+    panic::{AssertUnwindSafe, catch_unwind},
     path::{Path, PathBuf},
 };
 
 use anyhow::Result;
 use fnv::FnvHashSet;
 use serde::{Deserialize, Serialize};
+use walkdir::WalkDir;
 
 use super::Test;
 
@@ -22,7 +23,7 @@ lazy_static::lazy_static! {
 
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
 fn parse(dir_name: &str, dir_path: &Path) {
-    let t = test(dir_name, dir_path.join("main.kcl").to_str().unwrap().to_owned());
+    let t = test(dir_name, dir_path.join("main.kcl"));
     let write_new = matches!(
         std::env::var("INSTA_UPDATE").as_deref(),
         Ok("auto" | "always" | "new" | "unseen")
@@ -36,7 +37,7 @@ fn parse(dir_name: &str, dir_path: &Path) {
 
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
 async fn unparse(dir_name: &str, dir_path: &Path) {
-    let t = test(dir_name, dir_path.join("main.kcl").to_str().unwrap().to_owned());
+    let t = test(dir_name, dir_path.join("main.kcl"));
     unparse_test(&t).await;
 }
 
@@ -51,6 +52,7 @@ async fn unparse_test(test: &Test) {
         .map(|file| {
             tokio::spawn(async move {
                 let contents = tokio::fs::read_to_string(&file).await.unwrap();
+                eprintln!("{}", file.display());
                 let program = crate::Program::parse_no_errs(&contents).unwrap();
                 let recast = program.recast_with_options(&Default::default());
 
@@ -69,7 +71,7 @@ async fn unparse_test(test: &Test) {
 
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
 async fn kcl_test_execute(dir_name: &str, dir_path: &Path) {
-    let t = test(dir_name, dir_path.join("main.kcl").to_str().unwrap().to_owned());
+    let t = test(dir_name, dir_path.join("main.kcl"));
     super::execute_test(&t, true, true).await;
 }
 
@@ -84,7 +86,11 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
         .into_iter()
         .filter(|name| !input_names.contains(name))
         .collect::<Vec<_>>();
-    assert!(missing.is_empty(), "Expected input kcl-samples for the following. If these are no longer tests, delete the expected output directories for them in {}: {missing:?}", OUTPUTS_DIR.to_string_lossy());
+    assert!(
+        missing.is_empty(),
+        "Expected input kcl-samples for the following. If these are no longer tests, delete the expected output directories for them in {}: {missing:?}",
+        OUTPUTS_DIR.to_string_lossy()
+    );
 
     // We want to move the screenshot for the inputs to the public/kcl-samples
     // directory so that they can be used as inputs for the next run.
@@ -127,12 +133,24 @@ fn test_after_engine_generate_manifest() {
     generate_kcl_manifest(&INPUTS_DIR).unwrap();
 }
 
-fn test(test_name: &str, entry_point: String) -> Test {
+fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
+    let parent = std::fs::canonicalize(entry_point.parent().unwrap()).unwrap();
+    let inputs_dir = std::fs::canonicalize(INPUTS_DIR.as_path()).unwrap();
+    let relative_path = parent.strip_prefix(inputs_dir).unwrap();
+    let output_dir = std::fs::canonicalize(OUTPUTS_DIR.as_path()).unwrap();
+    let relative_output_dir = output_dir.join(relative_path);
+
+    // Ensure the output directory exists.
+    if !relative_output_dir.exists() {
+        std::fs::create_dir_all(&relative_output_dir).unwrap();
+    }
     Test {
         name: test_name.to_owned(),
-        entry_point,
-        input_dir: INPUTS_DIR.join(test_name),
-        output_dir: OUTPUTS_DIR.join(test_name),
+        entry_point: entry_point.clone(),
+        input_dir: parent.to_path_buf(),
+        output_dir: relative_output_dir,
+        // Skip is temporary while we have non-deterministic output.
+        skip_assert_artifact_graph: true,
     }
 }
 
@@ -171,10 +189,11 @@ fn kcl_samples_inputs() -> Vec<Test> {
         eprintln!("Found KCL sample: {:?}", dir_name.to_string_lossy());
         // Look for the entry point inside the directory.
         let sub_dir = INPUTS_DIR.join(dir_name);
-        let entry_point = if sub_dir.join("main.kcl").exists() {
-            "main.kcl".to_owned()
+        let main_kcl_path = sub_dir.join("main.kcl");
+        let entry_point = if main_kcl_path.exists() {
+            main_kcl_path
         } else {
-            panic!("No main.kcl found in {:?}", sub_dir);
+            panic!("No main.kcl found in {sub_dir:?}");
         };
         tests.push(test(&dir_name_str, entry_point));
     }
@@ -219,6 +238,7 @@ struct KclMetadata {
     multiple_files: bool,
     title: String,
     description: String,
+    files: Vec<String>,
 }
 
 // Function to read and parse .kcl files
@@ -248,19 +268,15 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
     let title = lines[0].trim_start_matches(COMMENT_PREFIX).trim().to_string();
     let description = lines[1].trim_start_matches(COMMENT_PREFIX).trim().to_string();
 
-    // Get the path components
-    let path_components: Vec<String> = full_path_to_primary_kcl
-        .components()
-        .map(|comp| comp.as_os_str().to_string_lossy().to_string())
-        .collect();
+    // Get the relative path from the project directory to the primary KCL file
+    let path_from_project_dir = full_path_to_primary_kcl
+        .strip_prefix(INPUTS_DIR.as_path())
+        .unwrap_or(&full_path_to_primary_kcl)
+        .to_string_lossy()
+        .to_string();
 
-    // Get the last two path components
-    let len = path_components.len();
-    let path_from_project_dir = if len >= 2 {
-        format!("{}/{}", path_components[len - 2], path_components[len - 1])
-    } else {
-        primary_kcl_file.clone()
-    };
+    let mut files = files.to_vec();
+    files.sort();
 
     Some(KclMetadata {
         file: primary_kcl_file,
@@ -268,6 +284,7 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
         multiple_files: files.len() > 1,
         title,
         description,
+        files,
     })
 }
 
@@ -275,21 +292,23 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
 fn generate_kcl_manifest(dir: &Path) -> Result<()> {
     let mut manifest = Vec::new();
 
-    // Collect all directory entries first and sort them by name for consistent ordering
-    let mut entries: Vec<_> = fs::read_dir(dir)?
-        .filter_map(Result::ok)
-        .filter(|e| e.path().is_dir())
+    // Collect all directory entries first
+    let mut entries: Vec<_> = WalkDir::new(dir)
+        .follow_links(true)
+        .into_iter()
+        .filter_map(|e| e.ok())
         .collect();
 
     // Sort directories by name for consistent ordering
-    entries.sort_by_key(|a| a.file_name());
+    entries.sort_by_key(|a| a.file_name().to_string_lossy().to_string());
 
+    // Loop through all directories and add to manifest if KCL sample
     for entry in entries {
-        let project_path = entry.path();
+        let path = entry.path();
 
-        if project_path.is_dir() {
+        if path.is_dir() {
             // Get all .kcl files in the directory
-            let files: Vec<String> = fs::read_dir(&project_path)?
+            let files: Vec<String> = fs::read_dir(path)?
                 .filter_map(Result::ok)
                 .filter(|e| {
                     if let Some(ext) = e.path().extension() {
@@ -305,7 +324,7 @@ fn generate_kcl_manifest(dir: &Path) -> Result<()> {
                 continue;
             }
 
-            if let Some(metadata) = get_kcl_metadata(&project_path, &files) {
+            if let Some(metadata) = get_kcl_metadata(path, &files) {
                 manifest.push(metadata);
             }
         }

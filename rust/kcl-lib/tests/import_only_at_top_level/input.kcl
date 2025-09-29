@@ -1,0 +1,6 @@
+fn main() {
+  import "empty.kcl"
+  return 0
+}
+
+main()

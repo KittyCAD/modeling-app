@@ -1,14 +1,7 @@
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
-import {
-  changeKclSettings,
-  unitAngleToUnitAng,
-  unitLengthToUnitLen,
-} from '@src/lang/wasm'
-import {
-  DEFAULT_DEFAULT_ANGLE_UNIT,
-  DEFAULT_DEFAULT_LENGTH_UNIT,
-} from '@src/lib/constants'
+import { changeDefaultUnits } from '@src/lang/wasm'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 
 /**
  * Create a new KCL file with the given initial content and default length unit.
@@ -29,8 +22,5 @@ export function newKclFile(
     return ''
   }
 
-  return changeKclSettings('', {
-    defaultLengthUnits: unitLengthToUnitLen(defaultLengthUnit),
-    defaultAngleUnits: unitAngleToUnitAng(DEFAULT_DEFAULT_ANGLE_UNIT),
-  })
+  return changeDefaultUnits('', defaultLengthUnit)
 }

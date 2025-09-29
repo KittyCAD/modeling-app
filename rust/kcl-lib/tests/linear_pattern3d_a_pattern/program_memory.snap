@@ -58,9 +58,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               2.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -77,9 +75,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               3.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -96,9 +92,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               -1.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -115,38 +109,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
+            "z": 1.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 0.0,
+            "units": null
           }
         },
         "start": {
@@ -158,9 +151,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -169,16 +160,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "pattn1": {
@@ -239,9 +226,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -258,9 +243,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -277,9 +260,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -296,38 +277,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -339,9 +319,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -350,16 +328,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -417,9 +391,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -436,9 +408,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -455,9 +425,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -474,38 +442,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -517,9 +484,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -528,16 +493,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -595,9 +556,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -614,9 +573,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -633,9 +590,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -652,38 +607,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -695,9 +649,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -706,16 +658,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -773,9 +721,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -792,9 +738,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -811,9 +755,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -830,38 +772,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -873,9 +814,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -884,16 +823,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -951,9 +886,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -970,9 +903,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -989,9 +920,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1008,38 +937,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -1051,9 +979,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1062,16 +988,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -1129,9 +1051,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1148,9 +1068,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1167,9 +1085,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1186,38 +1102,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -1229,9 +1144,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1240,16 +1153,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -1307,9 +1216,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1326,9 +1233,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1345,9 +1250,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1364,38 +1267,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -1407,9 +1309,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1418,16 +1318,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       }
     ]
@@ -1490,9 +1386,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1509,9 +1403,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1528,9 +1420,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1547,38 +1437,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -1590,9 +1479,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1601,16 +1488,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -1668,9 +1551,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1687,9 +1568,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1706,9 +1585,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1725,38 +1602,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -1768,9 +1644,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1779,16 +1653,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -1846,9 +1716,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1865,9 +1733,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1884,9 +1750,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1903,38 +1767,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -1946,9 +1809,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1957,16 +1818,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -2024,9 +1881,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2043,9 +1898,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2062,9 +1915,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2081,38 +1932,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -2124,9 +1974,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2135,16 +1983,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -2202,9 +2046,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2221,9 +2063,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2240,9 +2080,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2259,38 +2097,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -2302,9 +2139,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2313,16 +2148,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -2380,9 +2211,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2399,9 +2228,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2418,9 +2245,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2437,38 +2262,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -2480,9 +2304,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2491,16 +2313,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -2558,9 +2376,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2577,9 +2393,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2596,9 +2410,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2615,38 +2427,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -2658,9 +2469,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2669,16 +2478,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -2736,9 +2541,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2755,9 +2558,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2774,9 +2575,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2793,38 +2592,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -2836,9 +2634,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2847,16 +2643,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -2914,9 +2706,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2933,9 +2723,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2952,9 +2740,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2971,38 +2757,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -3014,9 +2799,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3025,16 +2808,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -3092,9 +2871,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3111,9 +2888,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3130,9 +2905,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3149,38 +2922,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -3192,9 +2964,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3203,16 +2973,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -3270,9 +3036,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3289,9 +3053,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3308,9 +3070,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3327,38 +3087,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -3370,9 +3129,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3381,16 +3138,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -3448,9 +3201,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3467,9 +3218,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3486,9 +3235,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3505,38 +3252,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -3548,9 +3294,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3559,16 +3303,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -3626,9 +3366,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3645,9 +3383,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3664,9 +3400,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3683,38 +3417,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -3726,9 +3459,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3737,16 +3468,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -3804,9 +3531,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3823,9 +3548,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3842,9 +3565,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -3861,38 +3582,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -3904,9 +3624,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -3915,16 +3633,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -3982,9 +3696,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4001,9 +3713,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4020,9 +3730,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4039,38 +3747,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -4082,9 +3789,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4093,16 +3798,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -4160,9 +3861,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4179,9 +3878,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4198,9 +3895,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4217,38 +3912,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -4260,9 +3954,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4271,16 +3963,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -4338,9 +4026,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4357,9 +4043,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4376,9 +4060,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4395,38 +4077,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -4438,9 +4119,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4449,16 +4128,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -4516,9 +4191,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4535,9 +4208,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4554,9 +4225,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4573,38 +4242,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -4616,9 +4284,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4627,16 +4293,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -4694,9 +4356,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4713,9 +4373,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4732,9 +4390,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4751,38 +4407,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -4794,9 +4449,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4805,16 +4458,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -4872,9 +4521,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4891,9 +4538,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4910,9 +4555,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -4929,38 +4572,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -4972,9 +4614,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -4983,16 +4623,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -5050,9 +4686,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5069,9 +4703,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5088,9 +4720,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5107,38 +4737,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -5150,9 +4779,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -5161,16 +4788,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -5228,9 +4851,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5247,9 +4868,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5266,9 +4885,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5285,38 +4902,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -5328,9 +4944,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -5339,16 +4953,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -5406,9 +5016,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5425,9 +5033,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5444,9 +5050,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5463,38 +5067,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -5506,9 +5109,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -5517,16 +5118,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -5584,9 +5181,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5603,9 +5198,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5622,9 +5215,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5641,38 +5232,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -5684,9 +5274,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -5695,16 +5283,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -5762,9 +5346,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5781,9 +5363,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5800,9 +5380,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5819,38 +5397,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -5862,9 +5439,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -5873,16 +5448,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -5940,9 +5511,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5959,9 +5528,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5978,9 +5545,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -5997,38 +5562,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -6040,9 +5604,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -6051,16 +5613,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -6118,9 +5676,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6137,9 +5693,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6156,9 +5710,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6175,38 +5727,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -6218,9 +5769,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -6229,16 +5778,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -6296,9 +5841,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6315,9 +5858,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6334,9 +5875,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6353,38 +5892,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -6396,9 +5934,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -6407,16 +5943,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -6474,9 +6006,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6493,9 +6023,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6512,9 +6040,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6531,38 +6057,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -6574,9 +6099,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -6585,16 +6108,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -6652,9 +6171,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6671,9 +6188,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6690,9 +6205,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6709,38 +6222,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -6752,9 +6264,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -6763,16 +6273,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -6830,9 +6336,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6849,9 +6353,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6868,9 +6370,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -6887,38 +6387,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -6930,9 +6429,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -6941,16 +6438,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -7008,9 +6501,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7027,9 +6518,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7046,9 +6535,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7065,38 +6552,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -7108,9 +6594,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -7119,16 +6603,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -7186,9 +6666,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7205,9 +6683,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7224,9 +6700,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7243,38 +6717,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -7286,9 +6759,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -7297,16 +6768,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -7364,9 +6831,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7383,9 +6848,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7402,9 +6865,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7421,38 +6882,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -7464,9 +6924,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -7475,16 +6933,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -7542,9 +6996,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7561,9 +7013,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7580,9 +7030,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7599,38 +7047,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -7642,9 +7089,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -7653,16 +7098,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -7720,9 +7161,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7739,9 +7178,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7758,9 +7195,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7777,38 +7212,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -7820,9 +7254,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -7831,16 +7263,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -7898,9 +7326,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7917,9 +7343,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7936,9 +7360,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -7955,38 +7377,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -7998,9 +7419,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -8009,16 +7428,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -8076,9 +7491,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8095,9 +7508,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8114,9 +7525,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8133,38 +7542,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -8176,9 +7584,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -8187,16 +7593,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -8254,9 +7656,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8273,9 +7673,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8292,9 +7690,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8311,38 +7707,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -8354,9 +7749,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -8365,16 +7758,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -8432,9 +7821,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8451,9 +7838,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8470,9 +7855,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8489,38 +7872,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -8532,9 +7914,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -8543,16 +7923,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -8610,9 +7986,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8629,9 +8003,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8648,9 +8020,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8667,38 +8037,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -8710,9 +8079,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -8721,16 +8088,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -8788,9 +8151,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8807,9 +8168,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8826,9 +8185,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8845,38 +8202,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -8888,9 +8244,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -8899,16 +8253,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -8966,9 +8316,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -8985,9 +8333,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9004,9 +8350,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9023,38 +8367,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -9066,9 +8409,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -9077,16 +8418,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -9144,9 +8481,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9163,9 +8498,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9182,9 +8515,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9201,38 +8532,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -9244,9 +8574,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -9255,16 +8583,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -9322,9 +8646,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9341,9 +8663,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9360,9 +8680,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9379,38 +8697,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -9422,9 +8739,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -9433,16 +8748,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -9500,9 +8811,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9519,9 +8828,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9538,9 +8845,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9557,38 +8862,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -9600,9 +8904,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -9611,16 +8913,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -9678,9 +8976,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9697,9 +8993,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9716,9 +9010,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9735,38 +9027,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -9778,9 +9069,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -9789,16 +9078,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -9856,9 +9141,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9875,9 +9158,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9894,9 +9175,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -9913,38 +9192,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -9956,9 +9234,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -9967,16 +9243,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       },
       {
@@ -10034,9 +9306,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   2.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -10053,9 +9323,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   3.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -10072,9 +9340,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   -1.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -10091,38 +9357,37 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": "mm"
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
+                "z": 1.0,
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": null
               }
             },
             "start": {
@@ -10134,9 +9399,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -10145,16 +9408,12 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 1.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm",
+          "sectional": false
         }
       }
     ]

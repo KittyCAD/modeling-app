@@ -5,7 +5,12 @@ import type {
   LanguageServerClient,
   LanguageServerOptions,
 } from '@kittycad/codemirror-lsp-client'
-import { lspFormatCodeEvent, lspPlugin } from '@kittycad/codemirror-lsp-client'
+import {
+  lspCodeActionEvent,
+  lspFormatCodeEvent,
+  lspPlugin,
+  lspRenameEvent,
+} from '@kittycad/codemirror-lsp-client'
 import { updateOutsideEditorEvent } from '@src/editor/manager'
 import { codeManagerUpdateEvent } from '@src/lang/codeManager'
 import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
@@ -74,6 +79,14 @@ export class KclPlugin implements PluginValue {
       } else if (tr.isUserEvent('move')) {
         isRelevant = true
       } else if (tr.annotation(lspFormatCodeEvent.type)) {
+        isRelevant = true
+      }
+      // This is ON because the artifact graph and ast will be stale if we
+      // don't update the world.
+      // Also, then the file won't be saved.
+      else if (tr.annotation(lspRenameEvent.type)) {
+        isRelevant = true
+      } else if (tr.annotation(lspCodeActionEvent.type)) {
         isRelevant = true
       }
 

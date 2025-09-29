@@ -3,20 +3,21 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing pipe-flange-assembly.kcl
 ---
 {
+  "__mod_gasket": {
+    "type": "Module",
+    "value": 2
+  },
   "bolt": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "boltDiameter": {
     "type": "Number",
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltHeadDiameter": {
@@ -24,12 +25,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 0.938,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltHeadLength": {
@@ -37,28 +34,26 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltHexDrive": {
     "type": "Number",
     "value": 0.5,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltHexFlatLength": {
     "type": "Number",
-    "value": 0.2887,
+    "value": 0.28867513459481287,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltLength": {
@@ -66,12 +61,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 2.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "boltThreadLength": {
@@ -79,12 +70,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 1.75,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "filletEdge": {
@@ -93,19 +80,16 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": "filletEdge"
   },
   "flange": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "flangeBackDiameter": {
     "type": "Number",
     "value": 3.62,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "flangeBackHeight": {
@@ -113,12 +97,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 0.06,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "flangeBaseThickness": {
@@ -126,12 +106,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 0.69,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "flangeDiameter": {
@@ -139,12 +115,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "flangeFrontDiameter": {
@@ -152,12 +124,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 3.06,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "flangeFrontHeight": {
@@ -165,12 +133,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 0.25,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "flangeTotalThickness": {
@@ -178,29 +142,17 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
-  },
-  "gasket": {
-    "type": "Module",
-    "value": 6
   },
   "gasketInnerDiameter": {
     "type": "Number",
     "value": 2.375,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "gasketOutsideDiameter": {
@@ -208,12 +160,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 4.125,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "gasketThickness": {
@@ -221,47 +169,48 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 0.031,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "hexNut": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "hexNutDiameter": {
     "type": "Number",
     "value": 0.625,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "hexNutFlatLength": {
     "type": "Number",
-    "value": 0.5413,
+    "value": 0.5412658773652741,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "hexNutFlatToFlat": {
     "type": "Number",
     "value": 0.9375,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "hexNutThickness": {
     "type": "Number",
-    "value": 0.5469,
+    "value": 0.546875,
     "ty": {
-      "type": "Known",
-      "type": "Count"
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "mountingHoleDiameter": {
@@ -269,12 +218,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "mountingHolePlacementDiameter": {
@@ -282,28 +227,21 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 4.75,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "pipe": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "pipeDiameter": {
     "type": "Number",
     "value": 2.44,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "pipeInnerDiameter": {
@@ -311,12 +249,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 2.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "pipeLength": {
@@ -324,12 +258,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 6.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "pipeOuterDiameter": {
@@ -337,28 +267,21 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 2.375,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "washer": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "washerInnerDia": {
     "type": "Number",
     "value": 0.64,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "washerOuterDia": {
@@ -366,12 +289,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 1.188,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "washerThickness": {
@@ -379,12 +298,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
     "value": 0.032,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

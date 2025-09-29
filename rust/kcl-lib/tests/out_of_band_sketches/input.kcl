@@ -1,11 +1,11 @@
-sketch001 = startSketchOn('XZ')
-profile001 = startProfileAt([27.67, 239.34], sketch001)
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [27.67, 239.34])
   // enter sketch mode, start path, move path pen, disable sketch mode
   |> line(end = [414.61, 0]) // extend path
   |> line(end = [33.98, -389.36]) // extend path
 
-sketch002 = startSketchOn('XY')
-profile002 = startProfileAt([67.04, -63.5], sketch002)
+sketch002 = startSketchOn(XY)
+profile002 = startProfile(sketch002, at = [67.04, -63.5])
   // enter sketch mode, start path, move path pen, disable sketch mode
   |> line(end = [282.37, 0]) // extend path
   |> line(end = [-12.77, -178.07]) // extend path

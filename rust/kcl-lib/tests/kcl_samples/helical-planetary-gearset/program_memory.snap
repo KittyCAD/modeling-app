@@ -1,0 +1,28 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing helical-planetary-gearset.kcl
+---
+{
+  "helicalGear": {
+    "type": "Function",
+    "value": null
+  },
+  "numPlanetGears": {
+    "type": "Number",
+    "value": 3.0,
+    "ty": {
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
+    }
+  },
+  "ringGear": {
+    "type": "Function",
+    "value": null
+  },
+  "seg01": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "seg01"
+  }
+}

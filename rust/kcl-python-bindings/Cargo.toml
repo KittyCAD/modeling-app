@@ -1,6 +1,6 @@
 [package]
 name = "kcl-python-bindings"
-version = "0.3.58"
+version = "0.3.100"
 edition = "2021"
 repository = "https://github.com/kittycad/modeling-app"
 exclude = ["tests/*", "files/*", "venv/*"]
@@ -8,20 +8,21 @@ exclude = ["tests/*", "files/*", "venv/*"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
 name = "kcl"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 bench = false
 
 [dependencies]
 anyhow = { workspace = true }
 kcl-lib = { path = "../kcl-lib", features = [
-    "pyo3",
-    "engine",
-    "disable-println",
+  "pyo3",
+  "engine",
+  "disable-println",
 ] }
 #kcl-lib = { path = "../modeling-app/src/wasm-lib/kcl", default-features = false, features = ["pyo3", "engine", "disable-println"] }
-kittycad-modeling-cmds = { workspace = true }
+kittycad-modeling-cmds = { workspace = true, features = ["python"] }
 miette = { workspace = true, features = ["fancy"] }
 pyo3 = { workspace = true, features = ["serde", "experimental-async"] }
+pyo3-stub-gen = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true }

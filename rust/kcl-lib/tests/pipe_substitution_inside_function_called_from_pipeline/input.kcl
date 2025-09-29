@@ -1,5 +1,5 @@
 // Make sure pipe value doesn't leak into the function call.
-fn f(ignored) {
+fn f(@ignored) {
   return %
 }
 

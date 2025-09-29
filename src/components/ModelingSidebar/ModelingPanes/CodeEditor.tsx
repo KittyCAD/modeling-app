@@ -65,7 +65,7 @@ const CodeEditor = forwardRef<CodeEditorRef, CodeEditorProps>((props, ref) => {
   } = props
   const editor = useRef<HTMLDivElement>(null)
 
-  const { view, state, container } = useCodeMirror({
+  const { view, container } = useCodeMirror({
     container: editor.current,
     onCreateEditor,
     extensions,
@@ -77,8 +77,9 @@ const CodeEditor = forwardRef<CodeEditorRef, CodeEditorProps>((props, ref) => {
 
   useImperativeHandle(
     ref,
-    () => ({ editor: editor.current, view: view, state: state }),
-    [editor, container, view, state]
+    () => ({ editor: editor.current, view: view, state: view?.state }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    [editor, container, view]
   )
 
   return <div ref={editor}></div>
@@ -138,7 +139,7 @@ export function useCodeMirror(props: UseCodeMirror) {
           parent: container,
         })
         setView(viewCurrent)
-        onCreateEditor && onCreateEditor(viewCurrent)
+        onCreateEditor?.(viewCurrent)
       }
     }
     return () => {
@@ -147,6 +148,7 @@ export function useCodeMirror(props: UseCodeMirror) {
         setView(undefined)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [container, state])
 
   useEffect(() => setContainer(props.container), [props.container])
@@ -156,8 +158,10 @@ export function useCodeMirror(props: UseCodeMirror) {
       if (view) {
         view.destroy()
         setView(undefined)
+        onCreateEditor?.(null)
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [view]
   )
 
@@ -175,7 +179,7 @@ export function useCodeMirror(props: UseCodeMirror) {
     }
   }, [targetExtensions, view, isFirstRender])
 
-  return { view, setView, container, setContainer, state, setState }
+  return { view, container, setContainer, state }
 }
 
 export default CodeEditor

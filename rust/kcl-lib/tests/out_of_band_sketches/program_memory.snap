@@ -20,13 +20,11 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           ],
           "tag": null,
           "to": [
-            442.28,
+            442.28000000000003,
             239.34
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -34,47 +32,46 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             "sourceRange": []
           },
           "from": [
-            442.28,
+            442.28000000000003,
             239.34
           ],
           "tag": null,
           "to": [
-            476.26,
+            476.26000000000005,
             -150.02
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 0.0,
+          "units": null
         }
       },
       "start": {
@@ -86,9 +83,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           27.67,
           239.34
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -97,9 +92,8 @@ description: Variables in memory after executing out_of_band_sketches.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "isClosed": false
     }
   },
   "profile001extended": {
@@ -119,13 +113,11 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           ],
           "tag": null,
           "to": [
-            442.28,
+            442.28000000000003,
             239.34
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -133,18 +125,16 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             "sourceRange": []
           },
           "from": [
-            442.28,
+            442.28000000000003,
             239.34
           ],
           "tag": null,
           "to": [
-            476.26,
+            476.26000000000005,
             -150.02
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -152,18 +142,16 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             "sourceRange": []
           },
           "from": [
-            476.26,
+            476.26000000000005,
             -150.02
           ],
           "tag": null,
           "to": [
-            20.88,
+            20.880000000000052,
             -150.02
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -171,7 +159,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             "sourceRange": []
           },
           "from": [
-            20.88,
+            20.880000000000052,
             -150.02
           ],
           "tag": null,
@@ -180,38 +168,37 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             239.34
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
+          "z": 1.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
-          "z": 0.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 0.0,
+          "units": null
         }
       },
       "start": {
@@ -223,9 +210,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           27.67,
           239.34
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -234,9 +219,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "profile002": {
@@ -260,9 +243,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             -63.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -275,42 +256,41 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           ],
           "tag": null,
           "to": [
-            336.64,
+            336.64000000000004,
             -241.57
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 1.0,
+          "units": null
         }
       },
       "start": {
@@ -322,9 +302,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           67.04,
           -63.5
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -333,9 +311,8 @@ description: Variables in memory after executing out_of_band_sketches.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "isClosed": false
     }
   },
   "profile002extended": {
@@ -359,9 +336,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             -63.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -374,13 +349,11 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           ],
           "tag": null,
           "to": [
-            336.64,
+            336.64000000000004,
             -241.57
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -388,18 +361,16 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             "sourceRange": []
           },
           "from": [
-            336.64,
+            336.64000000000004,
             -241.57
           ],
           "tag": null,
           "to": [
-            37.25,
+            37.25000000000006,
             -220.29
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -407,7 +378,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             "sourceRange": []
           },
           "from": [
-            37.25,
+            37.25000000000006,
             -220.29
           ],
           "tag": null,
@@ -416,38 +387,37 @@ description: Variables in memory after executing out_of_band_sketches.kcl
             -63.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": "mm"
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 1.0,
+          "units": null
         }
       },
       "start": {
@@ -459,9 +429,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           67.04,
           -63.5
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -470,70 +438,70 @@ description: Variables in memory after executing out_of_band_sketches.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sketch001": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "XZ",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": "mm"
       },
+      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
+        "z": 1.0,
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
-        "z": 0.0
-      },
-      "units": {
-        "type": "Mm"
+        "z": 0.0,
+        "units": null
       }
     }
   },
   "sketch002": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "XY",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": "mm"
       },
+      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
-      },
-      "units": {
-        "type": "Mm"
+        "z": 1.0,
+        "units": null
       }
     }
   }

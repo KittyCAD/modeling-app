@@ -11,7 +11,7 @@ innerDiameter = 0.364
 outerDiameter = 35 / 64
 length = 1 + 1 / 2
 
-// create a sketch on the 'XY' plane
+// create a sketch on the XY plane
 sketch000 = startSketchOn(XY)
 
 // create a profile of the outside of the pipe
@@ -32,7 +32,7 @@ innerProfile = circle(
 
 // create a profile with holes sketch000Profile000Holes
 pipeProfile = outerProfile
-  |> hole(innerProfile, %)
+  |> subtract2d(tool = innerProfile)
 
 // extrude the pipe profile to create the pipe
 pipe = extrude(pipeProfile, length = length)

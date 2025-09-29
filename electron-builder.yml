@@ -36,8 +36,8 @@ win:
     certificateSha1: F4C9A52FF7BC26EE5E054946F6B11DEEA94C748D
     signingHashAlgorithms:
       - sha256
-    publisherName: "KittyCAD Inc"
-    certificateSubjectName: "KittyCAD Inc"
+    publisherName: "ZOO CORPORATION"
+    certificateSubjectName: "ZOO CORPORATION"
     rfc3161TimeStampServer: http://timestamp.digicert.com
   icon: "assets/icon.ico"
   fileAssociations:
@@ -67,7 +67,7 @@ linux:
       role: Editor
 publish:
   - provider: generic
-    url: https://dl.zoo.dev/releases/modeling-app
+    url: https://dl.zoo.dev/releases/design-studio
     channel: latest
 releaseInfo:
   releaseNotesFile: release-notes.md

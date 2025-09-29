@@ -1,45 +1,95 @@
 import type { CSSProperties } from 'react'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 
+import type { IElectronAPI } from '@root/interface'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import { VITE_KC_API_BASE_URL, VITE_KC_SITE_BASE_URL } from '@src/env'
+import { updateEnvironment, updateEnvironmentPool } from '@src/env'
+import env from '@src/env'
 import { APP_NAME } from '@src/lib/constants'
+import {
+  readEnvironmentConfigurationPool,
+  readEnvironmentFile,
+  writeEnvironmentConfigurationPool,
+  writeEnvironmentFile,
+} from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS } from '@src/lib/paths'
+import { authActor, useSettings } from '@src/lib/singletons'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { toSync } from '@src/lib/utils'
-import { authActor, useSettings } from '@src/machines/appMachine'
-import { APP_VERSION, IS_NIGHTLY } from '@src/routes/utils'
+import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
+import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
+import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
+import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
 const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:text-chalkboard-30`
 
+let didReadFromDiskCacheForEnvironment = false
+
 const SignIn = () => {
   // Only create the native file menus on desktop
-  if (isDesktop()) {
+  if (window.electron) {
     window.electron.createFallbackMenu().catch(reportRejection)
     // Disable these since they cannot be accessed within the sign in page.
-    window.electron.disableMenu('Help.Reset onboarding').catch(reportRejection)
+    window.electron
+      .disableMenu('Help.Replay onboarding tutorial')
+      .catch(reportRejection)
     window.electron.disableMenu('Help.Show all commands').catch(reportRejection)
   }
-
   const [userCode, setUserCode] = useState('')
+
+  // Last saved environment
+  // TODO: Reduce this logic
+  const lastSelectedEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN || ''
+  const [selectedEnvironment, setSelectedEnvironment] = useState(
+    lastSelectedEnvironmentName
+  )
+  const [pool, setPool] = useState(env().POOL || '')
+
+  // See if the user added a real URL if they did, auto take the hostname!
+  const setSelectedEnvironmentFormatter = (requestedEnvironment: string) => {
+    const requestedEnvironmentFormatted =
+      returnSelfOrGetHostNameFromURL(requestedEnvironment)
+    setSelectedEnvironment(requestedEnvironmentFormatted)
+  }
+
+  useEffect(() => {
+    if (window.electron && !didReadFromDiskCacheForEnvironment) {
+      const electron = window.electron
+      didReadFromDiskCacheForEnvironment = true
+      readEnvironmentFile(electron)
+        .then((environment) => {
+          if (environment) {
+            setSelectedEnvironmentFormatter(environment)
+            return environment
+          }
+        })
+        .then((environment) => {
+          const defaultOrDiskEnvironment = environment || selectedEnvironment
+          if (defaultOrDiskEnvironment) {
+            readEnvironmentConfigurationPool(electron, defaultOrDiskEnvironment)
+              .then((pool) => {
+                setPool(pool)
+              })
+              .catch(reportRejection)
+          }
+        })
+        .catch(reportRejection)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [])
+
   const {
     app: { theme },
   } = useSettings()
-  const signInUrl = `${VITE_KC_SITE_BASE_URL}${
-    PATHS.SIGN_IN
-  }?callbackUrl=${encodeURIComponent(
-    typeof window !== 'undefined' && window.location.href.replace('signin', '')
-  )}`
-  const kclSampleUrl = `${VITE_KC_SITE_BASE_URL}/docs/kcl-samples/car-wheel-assembly`
+  const signInUrl = generateSignInUrl()
+  const kclSampleUrl = withSiteBaseURL('/docs/kcl-samples/car-wheel-assembly')
 
   const getThemeText = useCallback(
     (shouldContrast = true) =>
@@ -51,13 +101,17 @@ const SignIn = () => {
         : shouldContrast
           ? ''
           : '-dark',
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [theme.current]
   )
 
-  const signInDesktop = async () => {
+  const signInDesktop = async (electron: IElectronAPI) => {
+    updateEnvironment(selectedEnvironment)
+    updateEnvironmentPool(selectedEnvironment, pool)
+
     // We want to invoke our command to login via device auth.
-    const userCodeToDisplay = await window.electron
-      .startDeviceFlow(VITE_KC_API_BASE_URL)
+    const userCodeToDisplay = await electron
+      .startDeviceFlow(withAPIBaseURL(location.search))
       .catch(reportError)
     if (!userCodeToDisplay) {
       console.error('No user code received while trying to log in')
@@ -67,13 +121,26 @@ const SignIn = () => {
     setUserCode(userCodeToDisplay)
 
     // Now that we have the user code, we can kick off the final login step.
-    const token = await window.electron.loginWithDeviceFlow().catch(reportError)
+    const token = await electron.loginWithDeviceFlow().catch(reportError)
     if (!token) {
       console.error('No token received while trying to log in')
       toast.error('Error while trying to log in')
+      await writeEnvironmentFile(electron, '')
       return
     }
+
+    writeEnvironmentFile(electron, selectedEnvironment).catch(reportRejection)
+    writeEnvironmentConfigurationPool(
+      electron,
+      selectedEnvironment,
+      pool
+    ).catch(reportRejection)
     authActor.send({ type: 'Log in', token })
+  }
+
+  const cancelSignIn = async () => {
+    authActor.send({ type: 'Log out' })
+    setUserCode('')
   }
 
   return (
@@ -82,27 +149,29 @@ const SignIn = () => {
       style={
         isDesktop()
           ? ({
-              '-webkit-app-region': 'drag',
+              WebkitAppRegion: 'drag',
             } as CSSProperties)
           : {}
       }
     >
       <div
         style={
-          isDesktop()
-            ? ({ '-webkit-app-region': 'no-drag' } as CSSProperties)
-            : {}
+          isDesktop() ? ({ WebkitAppRegion: 'no-drag' } as CSSProperties) : {}
         }
-        className="body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto"
+        className="body-bg py-16 md:py-5 px-4 md:px-12 rounded-lg grid place-items-center overflow-y-auto"
       >
-        <div className="max-w-7xl grid gap-5 grid-cols-3 xl:grid-cols-4 xl:grid-rows-5">
-          <div className="col-span-2 xl:col-span-3 xl:row-span-3 max-w-3xl mr-8 mb-8">
-            <div className="flex items-baseline mb-8">
-              <Logo className="text-primary h-10 lg:h-12 xl:h-16 relative translate-y-1 mr-4 lg:mr-6 xl:mr-8" />
-              <h1 className="text-3xl lg:text-4xl xl:text-5xl">{APP_NAME}</h1>
-              <span className="px-3 py-1 text-base rounded-full bg-primary/10 text-primary self-start">
-                {IS_NIGHTLY ? 'nightly' : ''} v{APP_VERSION}
-              </span>
+        <div className="max-w-7xl flex flex-col md:grid gap-5 grid-cols-3 xl:grid-cols-4 xl:grid-rows-5">
+          <div className="md:col-span-2 xl:col-span-3 xl:row-span-3 max-w-3xl mr-8 mb-8">
+            <div className="flex flex-row items-baseline mb-8">
+              <Logo className="text-primary h-8 md:h-10 lg:h-12 xl:h-16 relative translate-y-1 mr-4 lg:mr-6 xl:mr-8" />
+              <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl">
+                {APP_NAME}
+              </h1>
+              {isDesktop() && (
+                <span className="px-2 md:px-3 py-1 text-xs md:text-base rounded-full bg-primary/10 text-primary self-start">
+                  v{APP_VERSION}
+                </span>
+              )}
             </div>
             <p className="my-4 text-lg xl:text-xl">
               Thank you for using our CAD application. It is built on a novel
@@ -111,26 +180,46 @@ const SignIn = () => {
               collaborate with ML tools like Zoo Text-To-CAD to design parts and
               libraries fast.
             </p>
-            {isDesktop() ? (
+            {window.electron ? (
               <div className="flex flex-col gap-2">
                 {!userCode ? (
-                  <button
-                    onClick={toSync(signInDesktop, reportRejection)}
-                    className={
-                      'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
-                      '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
-                    }
-                    data-testid="sign-in-button"
-                  >
-                    Sign in to get started
-                    <CustomIcon name="arrowRight" className="w-6 h-6" />
-                  </button>
+                  <>
+                    <button
+                      onClick={() => {
+                        const electron = window.electron
+                        if (electron) {
+                          ;(async () => {
+                            await signInDesktop(electron)
+                          })().catch(reportRejection)
+                        }
+                      }}
+                      className={
+                        'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
+                        '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                      }
+                      data-testid="sign-in-button"
+                    >
+                      Sign in to get started
+                      <CustomIcon name="arrowRight" className="w-6 h-6" />
+                    </button>
+                    {isDesktop() && (
+                      <AdvancedSignInOptions
+                        pool={pool}
+                        setPool={setPool}
+                        selectedEnvironment={selectedEnvironment}
+                        setSelectedEnvironment={setSelectedEnvironmentFormatter}
+                      />
+                    )}
+                  </>
                 ) : (
                   <>
                     <p className="text-xs">
                       You should see the following code in your browser
                     </p>
-                    <p className="text-lg font-bold inline-flex gap-1">
+                    <p
+                      className="text-lg font-bold inline-flex gap-1"
+                      data-testid="sign-in-user-code"
+                    >
                       {userCode.split('').map((char, i) => (
                         <span
                           key={i}
@@ -143,26 +232,46 @@ const SignIn = () => {
                         </span>
                       ))}
                     </p>
+                    <button
+                      onClick={toSync(cancelSignIn, reportRejection)}
+                      className={
+                        'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
+                        '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                      }
+                      data-testid="cancel-sign-in-button"
+                    >
+                      <CustomIcon name="arrowLeft" className="w-6 h-6" />
+                      Cancel
+                    </button>
                   </>
                 )}
               </div>
             ) : (
-              <Link
-                onClick={openExternalBrowserIfDesktop(signInUrl)}
-                to={signInUrl}
-                className={
-                  'w-fit m-0 mt-8 flex gap-4 items-center px-3 py-1 ' +
-                  '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
-                }
-                data-testid="sign-in-button"
-              >
-                Sign in to get started
-                <CustomIcon name="arrowRight" className="w-6 h-6" />
-              </Link>
+              <>
+                <div className="flex md:hidden flex-col gap-2">
+                  <p className="text-base text-primary">
+                    This app is really best used on a desktop. We're working on
+                    simple touch controls for mobile, but in the meantime please
+                    visit using a larger device.
+                  </p>
+                </div>
+                <Link
+                  onClick={openExternalBrowserIfDesktop(signInUrl)}
+                  to={signInUrl}
+                  className={
+                    'w-fit m-0 mt-8 hidden md:flex gap-4 items-center px-3 py-1 ' +
+                    '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                  }
+                  data-testid="sign-in-button"
+                >
+                  Sign in to get started
+                  <CustomIcon name="arrowRight" className="w-6 h-6" />
+                </Link>
+              </>
             )}
           </div>
           <Link
-            className={`group relative xl:h-full xl:row-span-full col-start--1 xl:col-start-4 rounded-lg overflow-hidden grid place-items-center ${subtleBorder}`}
+            className={`group relative xl:h-full xl:row-span-full md:col-start--1 xl:col-start-4 rounded-lg overflow-hidden grid place-items-center ${subtleBorder}`}
             to={kclSampleUrl}
             onClick={openExternalBrowserIfDesktop(kclSampleUrl)}
             target="_blank"
@@ -189,13 +298,13 @@ const SignIn = () => {
                 'm-0 mt-8 flex gap-4 items-center px-3 py-1 ' +
                 '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
               }
-              data-testid="sign-in-button"
+              data-testid="view-sample-button"
             >
               View this sample
               <CustomIcon name="arrowRight" className="w-6 h-6" />
             </div>
           </Link>
-          <div className="self-end h-min col-span-3 xl:row-span-2 grid grid-cols-2 gap-5">
+          <div className="self-end h-min md:col-span-3 xl:row-span-2 flex flex-col md:grid grid-cols-2 gap-5">
             <div className={cardArea}>
               <h2 className="text-xl xl:text-2xl">Built in the open</h2>
               <p className="text-xs my-4">
@@ -233,7 +342,7 @@ const SignIn = () => {
               <div className="flex gap-4 flex-wrap items-center">
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/docs/kcl-samples/parametric-bearing-pillow-block"
+                  to={withSiteBaseURL('/docs/kcl-samples/pillow-block-bearing')}
                   iconStart={{
                     icon: 'settings',
                     bgClassName: '!bg-transparent',
@@ -246,14 +355,14 @@ const SignIn = () => {
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/docs/tutorials/text-to-cad"
+                  to={withSiteBaseURL('/docs/zoo-design-studio/text-to-cad')}
                   iconStart={{
                     icon: 'sparkles',
                     bgClassName: '!bg-transparent',
                   }}
                   className="!bg-primary !text-chalkboard-10 !border-transarent"
                 >
-                  <span className="py-2 lg:py-0">AI-unlocked CAD</span>
+                  <span className="py-2 lg:py-0">ML-unlocked CAD</span>
                 </ActionButton>
               </div>
             </div>
@@ -269,7 +378,7 @@ const SignIn = () => {
               <div className="flex gap-4 flex-wrap items-center">
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/design-api"
+                  to={withSiteBaseURL('/design-api')}
                   iconStart={{ icon: 'sketch', bgClassName: '!bg-transparent' }}
                   className="!bg-primary !text-chalkboard-10 !border-transarent"
                 >
@@ -277,7 +386,7 @@ const SignIn = () => {
                 </ActionButton>
                 <ActionButton
                   Element="externalLink"
-                  to="https://zoo.dev/machine-learning-api"
+                  to={withSiteBaseURL('/machine-learning-api')}
                   iconStart={{
                     icon: 'elephant',
                     bgClassName: '!bg-transparent',

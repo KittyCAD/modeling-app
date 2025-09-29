@@ -16,9 +16,9 @@ name: cargo check
 jobs:
   cargocheck:
     name: cargo check
-    runs-on: ubuntu-latest
+    runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Use correct Rust toolchain
         shell: bash
         run: |

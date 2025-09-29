@@ -1,18 +1,55 @@
+import type { CallExpressionKw, ExecState, SourceRange } from '@src/lang/wasm'
+import type { AsyncFn } from '@src/lib/types'
 import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
-
-import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
-import { isDesktop } from '@src/lib/isDesktop'
-import type { AsyncFn } from '@src/lib/types'
+import * as THREE from 'three'
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 
 export const uuidv4 = v4
+
+/**
+ * Refresh the browser page after reporting to Plausible.
+ */
+export async function refreshPage(method = 'UI button') {
+  if (window && 'plausible' in window) {
+    const p = window.plausible as (
+      event: string,
+      options?: { props: Record<string, string> }
+    ) => Promise<void>
+    // Send a refresh event to Plausible so we can track how often users get stuck
+    await p('Refresh', {
+      props: {
+        method,
+        // optionally add more data here
+      },
+    })
+  }
+
+  // Window may not be available in some environments
+  window?.location.reload()
+}
+
+export function activeFocusIsInput() {
+  return document.activeElement && isInputElement(document.activeElement)
+}
+
+function isInputElement(
+  element: EventTarget
+): element is HTMLInputElement | HTMLTextAreaElement {
+  return (
+    element instanceof HTMLInputElement ||
+    element instanceof HTMLTextAreaElement
+  )
+}
 
 /**
  * Get all labels for a keyword call expression.
  */
 export function allLabels(callExpression: CallExpressionKw): string[] {
-  return callExpression.arguments.map((a) => a.label.name)
+  return callExpression.arguments
+    .map((a) => a.label?.name)
+    .filter((a) => a !== undefined)
 }
 
 /**
@@ -21,6 +58,16 @@ export function allLabels(callExpression: CallExpressionKw): string[] {
 export function isArray(val: any): val is unknown[] {
   // eslint-disable-next-line no-restricted-syntax
   return Array.isArray(val)
+}
+
+export function areArraysEqual<T>(a: T[], b: T[]): boolean {
+  if (a.length !== b.length) return false
+  const set1 = new Set(a)
+  return b.every((element) => set1.has(element))
+}
+
+export type SafeArray<T> = Omit<Array<T>, number> & {
+  [index: number]: T | undefined
 }
 
 /**
@@ -190,7 +237,7 @@ export function getNormalisedCoordinates(
 export type Platform = 'macos' | 'windows' | 'linux' | ''
 
 export function platform(): Platform {
-  if (isDesktop()) {
+  if (window.electron) {
     const platform = window.electron.platform ?? ''
     // https://nodejs.org/api/process.html#processplatform
     switch (platform) {
@@ -224,6 +271,9 @@ export function platform(): Platform {
   }
   if (navigator.platform === 'Windows' || navigator.platform === 'Win32') {
     return 'windows'
+  }
+  if (navigator.platform?.indexOf('Linux') === 0) {
+    return 'linux'
   }
 
   // Chrome only, but more accurate than userAgent.
@@ -281,6 +331,32 @@ export function simulateOnMouseDragMatch(text: string) {
 export function roundOff(num: number, precision: number = 2): number {
   const x = Math.pow(10, precision)
   return Math.round(num * x) / x
+}
+
+export function roundOffWithUnits(
+  numWithUnits: string,
+  precision: number = 2
+): string {
+  const match = numWithUnits.match(
+    /^([+-]?[\d.]+(?:[eE][+-]?\d+)?)([a-zA-Z_?]+)$/
+  )
+  let num: string
+  let suffix: string
+  if (match) {
+    num = match[1]
+    suffix = match[2] ?? ''
+  } else {
+    // If no match, assume it's just a number with no units.
+    num = numWithUnits
+    suffix = ''
+  }
+  const parsedNum = parseFloat(num)
+  if (Number.isNaN(parsedNum)) {
+    // If parsing fails, return the original string.
+    return numWithUnits
+  }
+  const roundedNum = roundOff(parsedNum, precision)
+  return `${roundedNum}${suffix}`
 }
 
 /**
@@ -415,6 +491,11 @@ export function isClockwise(points: [number, number][]): boolean {
   return sum > 0
 }
 
+/** Capitalise a string's first character */
+export function capitaliseFC(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
 /**
  * Converts a binary buffer to a UUID string.
  *
@@ -481,6 +562,20 @@ export function getModuleId(sourceRange: SourceRange) {
   return sourceRange[2]
 }
 
+export function getModuleIdByFileName(
+  fileName: string,
+  fileNames: ExecState['filenames']
+) {
+  const module = Object.entries(fileNames).find(
+    ([, moduleInfo]) =>
+      moduleInfo?.type === 'Local' && moduleInfo.value === fileName
+  )
+  if (module) {
+    return Number(module[0]) // Return the module ID
+  }
+  return -1
+}
+
 export function getInVariableCase(name: string, prefixIfDigit = 'm') {
   // As of 2025-04-08, standard case for KCL variables is camelCase
   const startsWithANumber = !Number.isNaN(Number(name.charAt(0)))
@@ -501,4 +596,102 @@ export function getInVariableCase(name: string, prefixIfDigit = 'm') {
   }
 
   return likelyPascalCase.slice(0, 1).toLowerCase() + likelyPascalCase.slice(1)
+}
+
+export function computeIsometricQuaternionForEmptyScene() {
+  // Create the direction vector you want to look from
+  const isoDir = new THREE.Vector3(1, 1, 1).normalize() // isometric look direction
+
+  // Target is the point you want to look at (e.g., origin)
+  const target = new THREE.Vector3(0, 0, 0)
+
+  // Compute quaternion for isometric view
+  const up = new THREE.Vector3(0, 0, 1) // default up direction
+  const quaternion = new THREE.Quaternion()
+  quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), isoDir) // align -Z with isoDir
+
+  // Align up vector using a lookAt matrix
+  const m = new THREE.Matrix4()
+  m.lookAt(new THREE.Vector3().addVectors(target, isoDir), target, up)
+  quaternion.setFromRotationMatrix(m)
+  return quaternion
+}
+
+export async function engineStreamZoomToFit({
+  engineCommandManager,
+  padding,
+}: {
+  engineCommandManager: EngineCommandManager
+  padding: number
+}) {
+  // It makes sense to also call zoom to fit here, when a new file is
+  // loaded for the first time, but not overtaking the work kevin did
+  // so the camera isn't moving all the time.
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'zoom_to_fit',
+      object_ids: [], // leave empty to zoom to all objects
+      padding, // padding around the objects
+      animated: false, // don't animate the zoom for now
+    },
+  })
+}
+
+export async function engineViewIsometric({
+  engineCommandManager,
+  padding,
+}: {
+  engineCommandManager: EngineCommandManager
+  padding: number
+}) {
+  /**
+   * Default all users to view_isometric when loading into the engine.
+   * This works for perspective projection and orthographic projection
+   * This does not change the projection of the camera only the view direction which makes
+   * it safe to use with either projection defaulted
+   */
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'view_isometric',
+      padding, // padding around the objects
+    },
+  })
+
+  /**
+   * HACK: We need to update the gizmo, the command above doesn't trigger gizmo
+   * to render which makes the axis point in an old direction.
+   */
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+}
+
+export function returnSelfOrGetHostNameFromURL(requestedEnvironment: string) {
+  let environment = requestedEnvironment.trim()
+  try {
+    const tryToMakeAURL = new URL(requestedEnvironment)
+    environment = tryToMakeAURL.hostname
+  } catch (e) {
+    // it is fine if it isn't a URL
+    console.log('string is not a url, is that your intention?', e)
+  }
+  return environment
+}
+
+export function promiseFactory<T = void>() {
+  let resolve: (value: T | PromiseLike<T>) => void = () => {}
+  let reject: (value: T | PromiseLike<T>) => void = () => {}
+  const promise = new Promise<T>((_resolve, _reject) => {
+    resolve = _resolve
+    reject = _reject
+  })
+  return { promise, resolve, reject }
 }

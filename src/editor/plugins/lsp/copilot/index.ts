@@ -323,6 +323,7 @@ export class CompletionRequester implements PluginValue {
         tabSize: state.facet(EditorState.tabSize),
         indentSize: 1,
         insertSpaces: true,
+        // eslint-disable-next-line
         path: dUri.split('/').pop()!,
         uri: dUri,
         relativePath: dUri.replace('file://', ''),

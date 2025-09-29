@@ -20,9 +20,10 @@ description: Variables in memory after executing sketch_on_face.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 108,
-            "end": 113,
-            "start": 108,
+            "commentStart": 106,
+            "end": 111,
+            "moduleId": 0,
+            "start": 106,
             "type": "TagDeclarator",
             "value": "here"
           },
@@ -64,20 +65,19 @@ description: Variables in memory after executing sketch_on_face.kcl
               28.35
             ],
             "tag": {
-              "commentStart": 108,
-              "end": 113,
-              "start": 108,
+              "commentStart": 106,
+              "end": 111,
+              "moduleId": 0,
+              "start": 106,
               "type": "TagDeclarator",
               "value": "here"
             },
             "to": [
               39.86,
-              15.1
+              15.100000000000001
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -86,17 +86,15 @@ description: Variables in memory after executing sketch_on_face.kcl
             },
             "from": [
               39.86,
-              15.1
+              15.100000000000001
             ],
             "tag": null,
             "to": [
               35.74,
-              -7.71
+              -7.709999999999997
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -105,17 +103,15 @@ description: Variables in memory after executing sketch_on_face.kcl
             },
             "from": [
               35.74,
-              -7.71
+              -7.709999999999997
             ],
             "tag": null,
             "to": [
               2.5,
-              6.84
+              6.840000000000003
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -124,7 +120,7 @@ description: Variables in memory after executing sketch_on_face.kcl
             },
             "from": [
               2.5,
-              6.84
+              6.840000000000003
             ],
             "tag": null,
             "to": [
@@ -132,38 +128,37 @@ description: Variables in memory after executing sketch_on_face.kcl
               28.35
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": "mm"
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": null
           }
         },
         "start": {
@@ -175,9 +170,7 @@ description: Variables in memory after executing sketch_on_face.kcl
             11.19,
             28.35
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -192,16 +185,12 @@ description: Variables in memory after executing sketch_on_face.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   },
   "part002": {
@@ -259,9 +248,7 @@ description: Variables in memory after executing sketch_on_face.kcl
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -278,9 +265,7 @@ description: Variables in memory after executing sketch_on_face.kcl
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -297,9 +282,7 @@ description: Variables in memory after executing sketch_on_face.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -316,9 +299,7 @@ description: Variables in memory after executing sketch_on_face.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -329,17 +310,14 @@ description: Variables in memory after executing sketch_on_face.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
+            "z": 0.0,
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -351,9 +329,10 @@ description: Variables in memory after executing sketch_on_face.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 108,
-                  "end": 113,
-                  "start": 108,
+                  "commentStart": 106,
+                  "end": 111,
+                  "moduleId": 0,
+                  "start": 106,
                   "type": "TagDeclarator",
                   "value": "here"
                 },
@@ -395,20 +374,19 @@ description: Variables in memory after executing sketch_on_face.kcl
                     28.35
                   ],
                   "tag": {
-                    "commentStart": 108,
-                    "end": 113,
-                    "start": 108,
+                    "commentStart": 106,
+                    "end": 111,
+                    "moduleId": 0,
+                    "start": 106,
                     "type": "TagDeclarator",
                     "value": "here"
                   },
                   "to": [
                     39.86,
-                    15.1
+                    15.100000000000001
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -417,17 +395,15 @@ description: Variables in memory after executing sketch_on_face.kcl
                   },
                   "from": [
                     39.86,
-                    15.1
+                    15.100000000000001
                   ],
                   "tag": null,
                   "to": [
                     35.74,
-                    -7.71
+                    -7.709999999999997
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -436,17 +412,15 @@ description: Variables in memory after executing sketch_on_face.kcl
                   },
                   "from": [
                     35.74,
-                    -7.71
+                    -7.709999999999997
                   ],
                   "tag": null,
                   "to": [
                     2.5,
-                    6.84
+                    6.840000000000003
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -455,7 +429,7 @@ description: Variables in memory after executing sketch_on_face.kcl
                   },
                   "from": [
                     2.5,
-                    6.84
+                    6.840000000000003
                   ],
                   "tag": null,
                   "to": [
@@ -463,38 +437,37 @@ description: Variables in memory after executing sketch_on_face.kcl
                     28.35
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
-                "type": "plane",
-                "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "value": "XY",
+                "id": "[uuid]",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": "mm"
                 },
+                "type": "plane",
+                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
-                },
-                "units": {
-                  "type": "Mm"
+                  "z": 1.0,
+                  "units": null
                 }
               },
               "start": {
@@ -506,9 +479,7 @@ description: Variables in memory after executing sketch_on_face.kcl
                   11.19,
                   28.35
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -523,20 +494,14 @@ description: Variables in memory after executing sketch_on_face.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm",
+            "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -547,9 +512,7 @@ description: Variables in memory after executing sketch_on_face.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -558,16 +521,12 @@ description: Variables in memory after executing sketch_on_face.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm",
+      "sectional": false
     }
   }
 }

@@ -78,19 +78,17 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
                 children.push((&n.body).into());
                 children
             }
-            Node::CallExpression(n) => {
-                let mut children = n.arguments.iter().map(|v| v.into()).collect::<Vec<Node>>();
-                children.insert(0, (&n.callee).into());
-                children
-            }
             Node::CallExpressionKw(n) => {
-                let mut children = n.unlabeled.iter().map(|v| v.into()).collect::<Vec<Node>>();
+                let mut children: Vec<Node<'_>> =
+                    Vec::with_capacity(1 + if n.unlabeled.is_some() { 1 } else { 0 } + n.arguments.len());
+                children.push((&n.callee).into());
+                children.extend(n.unlabeled.iter().map(Node::from));
 
                 // TODO: this is wrong but it's what the old walk code was doing.
                 // We likely need a real LabeledArg AST node, but I don't
                 // want to tango with it since it's a lot deeper than
                 // adding it to the enum.
-                children.extend(n.arguments.iter().map(|v| (&v.arg).into()).collect::<Vec<Node>>());
+                children.extend(n.arguments.iter().map(|v| Node::from(&v.arg)));
                 children
             }
             Node::PipeExpression(n) => n.body.iter().map(|v| v.into()).collect(),
@@ -131,18 +129,35 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
             Node::LabelledExpression(e) => {
                 vec![(&e.expr).into(), (&e.label).into()]
             }
-            Node::Ascription(e) => {
+            Node::AscribedExpression(e) => {
                 vec![(&e.expr).into()]
             }
             Node::Name(n) => Some((&n.name).into())
                 .into_iter()
                 .chain(n.path.iter().map(|n| n.into()))
                 .collect(),
+            Node::SketchBlock(n) => {
+                let mut children: Vec<Node<'_>> = Vec::with_capacity(n.arguments.len() + 1);
+
+                // TODO: The label. See CallExpressionKw.
+                children.extend(n.arguments.iter().map(|a| Node::from(&a.arg)));
+                children.push((&n.body).into());
+                children
+            }
+            Node::SketchVar(n) => {
+                if let Some(initial) = &n.initial {
+                    vec![initial.as_ref().into()]
+                } else {
+                    vec![]
+                }
+            }
+            Node::Block(n) => n.items.iter().map(|node| node.into()).collect(),
             Node::PipeSubstitution(_)
             | Node::TagDeclarator(_)
             | Node::Identifier(_)
             | Node::ImportStatement(_)
             | Node::KclNone(_)
+            | Node::NumericLiteral(_)
             | Node::Literal(_) => vec![],
         }
     }
@@ -155,9 +170,7 @@ mod tests {
     use super::*;
 
     macro_rules! kcl {
-        ( $kcl:expr ) => {{
-            $crate::parsing::top_level_parse($kcl).unwrap()
-        }};
+        ( $kcl:expr_2021 ) => {{ $crate::parsing::top_level_parse($kcl).unwrap() }};
     }
 
     #[test]
@@ -183,10 +196,10 @@ fn crow3() {
             type Error = ();
 
             fn visit_node(&self, node: Node<'tree>) -> Result<bool, Self::Error> {
-                if let Node::VariableDeclarator(vd) = node {
-                    if vd.id.name.starts_with("crow") {
-                        *self.n.lock().unwrap() += 1;
-                    }
+                if let Node::VariableDeclarator(vd) = node
+                    && vd.id.name.starts_with("crow")
+                {
+                    *self.n.lock().unwrap() += 1;
                 }
 
                 for child in node.children().iter() {

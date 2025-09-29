@@ -61,55 +61,67 @@ mod docs;
 mod engine;
 mod errors;
 mod execution;
+mod fmt;
 mod fs;
 pub mod lint;
 mod log;
 mod lsp;
 mod modules;
 mod parsing;
+mod project;
 mod settings;
 #[cfg(test)]
 mod simulation_tests;
-mod source_range;
 pub mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;
 mod thread;
 mod unparser;
-mod walk;
+#[cfg(test)]
+mod variant_name;
+pub mod walk;
 #[cfg(target_arch = "wasm32")]
 mod wasm;
 
 pub use coredump::CoreDump;
-pub use engine::{EngineManager, EngineStats, ExecutionKind};
+pub use engine::{AsyncTasks, EngineManager, EngineStats};
 pub use errors::{
-    CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report, ReportWithOutputs,
+    BacktraceItem, CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report,
+    ReportWithOutputs,
 };
 pub use execution::{
-    bust_cache, clear_mem_cache, ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d,
+    ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d, bust_cache, clear_mem_cache,
+    typed_path::TypedPath,
 };
+pub use kcl_error::SourceRange;
 pub use lsp::{
+    ToLspRange,
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
 pub use modules::ModuleId;
-pub use parsing::ast::types::FormatOptions;
-pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
-pub use source_range::SourceRange;
+pub use parsing::ast::types::{FormatOptions, NodePath, Step as NodePathStep};
+pub use project::ProjectManager;
+pub use settings::types::{Configuration, project::ProjectConfiguration};
 #[cfg(not(target_arch = "wasm32"))]
 pub use unparser::{recast_dir, walk_dir};
 
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
 pub mod exec {
-    pub use crate::execution::{ArtifactCommand, DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch};
+    #[cfg(feature = "artifact-graph")]
+    pub use crate::execution::{ArtifactCommand, Operation};
+    pub use crate::execution::{
+        DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
+        types::{NumericType, UnitType},
+    };
 }
 
 #[cfg(target_arch = "wasm32")]
 pub mod wasm_engine {
     pub use crate::{
         coredump::wasm::{CoreDumpManager, CoreDumper},
-        engine::conn_wasm::{EngineCommandManager, EngineConnection},
+        engine::conn_wasm::{EngineCommandManager, EngineConnection, ResponseContext},
         fs::wasm::{FileManager, FileSystemManager},
     };
 }
@@ -124,17 +136,45 @@ pub mod native_engine {
 }
 
 pub mod std_utils {
-    pub use crate::std::utils::{get_tangential_arc_to_info, is_points_ccw_wasm, TangentialArcInfoInput};
+    pub use crate::std::utils::{TangentialArcInfoInput, get_tangential_arc_to_info, is_points_ccw_wasm};
 }
 
 pub mod pretty {
-    pub use crate::{parsing::token::NumericSuffix, unparser::format_number};
+    pub use crate::{
+        fmt::{format_number_literal, format_number_value, human_display_number},
+        parsing::token::NumericSuffix,
+    };
 }
 
+#[cfg(feature = "cli")]
+use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
 #[allow(unused_imports)]
 use crate::log::{log, logln};
+
+lazy_static::lazy_static! {
+
+    pub static ref IMPORT_FILE_EXTENSIONS: Vec<String> = {
+        let mut import_file_extensions = vec!["stp".to_string(), "glb".to_string(), "fbxb".to_string()];
+        #[cfg(feature = "cli")]
+        let named_extensions = kittycad::types::FileImportFormat::value_variants()
+            .iter()
+            .map(|x| format!("{x}"))
+            .collect::<Vec<String>>();
+        #[cfg(not(feature = "cli"))]
+        let named_extensions = vec![]; // We don't really need this outside of the CLI.
+        // Add all the default import formats.
+        import_file_extensions.extend_from_slice(&named_extensions);
+        import_file_extensions
+    };
+
+    pub static ref RELEVANT_FILE_EXTENSIONS: Vec<String> = {
+        let mut relevant_extensions = IMPORT_FILE_EXTENSIONS.clone();
+        relevant_extensions.push("kcl".to_string());
+        relevant_extensions
+    };
+}
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Program {
@@ -155,8 +195,7 @@ pub use lsp::test_util::kcl_lsp_server;
 impl Program {
     pub fn parse(input: &str) -> Result<(Option<Program>, Vec<CompilationError>), KclError> {
         let module_id = ModuleId::default();
-        let tokens = parsing::token::lex(input, module_id)?;
-        let (ast, errs) = parsing::parse_tokens(tokens).0?;
+        let (ast, errs) = parsing::parse_str(input, module_id).0?;
 
         Ok((
             ast.map(|ast| Program {
@@ -169,8 +208,7 @@ impl Program {
 
     pub fn parse_no_errs(input: &str) -> Result<Program, KclError> {
         let module_id = ModuleId::default();
-        let tokens = parsing::token::lex(input, module_id)?;
-        let ast = parsing::parse_tokens(tokens).parse_errs_as_err()?;
+        let ast = parsing::parse_str(input, module_id).parse_errs_as_err()?;
 
         Ok(Program {
             ast,
@@ -188,9 +226,12 @@ impl Program {
     }
 
     /// Change the meta settings for the kcl file.
-    pub fn change_meta_settings(&self, settings: crate::MetaSettings) -> Result<Self, KclError> {
+    pub fn change_default_units(
+        &self,
+        length_units: Option<kittycad_modeling_cmds::units::UnitLength>,
+    ) -> Result<Self, KclError> {
         Ok(Self {
-            ast: self.ast.change_meta_settings(settings)?,
+            ast: self.ast.change_default_units(length_units)?,
             original_file_contents: self.original_file_contents.clone(),
         })
     }
@@ -207,13 +248,17 @@ impl Program {
         self.ast.lint(rule)
     }
 
+    pub fn node_path_from_range(&self, cached_body_items: usize, range: SourceRange) -> Option<NodePath> {
+        NodePath::from_range(&self.ast, cached_body_items, range)
+    }
+
     pub fn recast(&self) -> String {
         // Use the default options until we integrate into the UI the ability to change them.
-        self.ast.recast(&Default::default(), 0)
+        self.ast.recast_top(&Default::default(), 0)
     }
 
     pub fn recast_with_options(&self, options: &FormatOptions) -> String {
-        self.ast.recast(options, 0)
+        self.ast.recast_top(options, 0)
     }
 
     /// Create an empty program.
@@ -228,41 +273,25 @@ impl Program {
 #[inline]
 fn try_f64_to_usize(f: f64) -> Option<usize> {
     let i = f as usize;
-    if i as f64 == f {
-        Some(i)
-    } else {
-        None
-    }
+    if i as f64 == f { Some(i) } else { None }
 }
 
 #[inline]
 fn try_f64_to_u32(f: f64) -> Option<u32> {
     let i = f as u32;
-    if i as f64 == f {
-        Some(i)
-    } else {
-        None
-    }
+    if i as f64 == f { Some(i) } else { None }
 }
 
 #[inline]
 fn try_f64_to_u64(f: f64) -> Option<u64> {
     let i = f as u64;
-    if i as f64 == f {
-        Some(i)
-    } else {
-        None
-    }
+    if i as f64 == f { Some(i) } else { None }
 }
 
 #[inline]
 fn try_f64_to_i64(f: f64) -> Option<i64> {
     let i = f as i64;
-    if i as f64 == f {
-        Some(i)
-    } else {
-        None
-    }
+    if i as f64 == f { Some(i) } else { None }
 }
 
 /// Get the version of the KCL library.

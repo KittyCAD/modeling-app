@@ -12,6 +12,7 @@ expression: actual
         "id": {
           "commentStart": 0,
           "end": 2,
+          "moduleId": 0,
           "name": "sg",
           "start": 0,
           "type": "Identifier"
@@ -21,9 +22,11 @@ expression: actual
             "abs_path": false,
             "commentStart": 6,
             "end": 11,
+            "moduleId": 0,
             "name": {
               "commentStart": 6,
               "end": 11,
+              "moduleId": 0,
               "name": "scale",
               "start": 6,
               "type": "Identifier"
@@ -35,16 +38,19 @@ expression: actual
           },
           "commentStart": 5,
           "end": 11,
+          "moduleId": 0,
           "operator": "-",
           "start": 5,
           "type": "UnaryExpression",
           "type": "UnaryExpression"
         },
+        "moduleId": 0,
         "start": 0,
         "type": "VariableDeclarator"
       },
       "end": 11,
       "kind": "const",
+      "moduleId": 0,
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
@@ -52,5 +58,6 @@ expression: actual
   ],
   "commentStart": 0,
   "end": 11,
+  "moduleId": 0,
   "start": 0
 }

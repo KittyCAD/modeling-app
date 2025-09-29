@@ -65,7 +65,7 @@ export function horzVertDistanceInfo({
   )
   const isAllTooltips = nodes.every(
     (node) =>
-      (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
+      node?.type === 'CallExpressionKw' &&
       [...toolTips].includes(node.callee.name.name as any)
   )
 
@@ -123,11 +123,12 @@ export async function applyConstraintHorzVertDistance({
     isSegNameEditable: !tagInfo?.isTagExisting,
     value: valueUsedInTransform,
     initialVariableName: constraint === 'setHorzDistance' ? 'xDis' : 'yDis',
-  } as any)
+    selectionRanges,
+  })
   if (
     !variableName &&
     segName === tagInfo?.tag &&
-    Number(value) === valueUsedInTransform
+    value === valueUsedInTransform
   ) {
     return {
       modifiedAst,

@@ -5,6 +5,6 @@ command = "vscode-eslint-language-server"
 [[language]]
 name = "typescript"
 auto-format = true
-formatter = { command = "node_modules/.bin/prettier", args = ["--parser", "typescript"] }
-language-servers = [ { name = "eslint", only-features = [ "diagnostics" ] }, "typescript-language-server" ]
+formatter = { command = "./node_modules/@biomejs/biome/bin/biome", args = ["format", "--write", "--stdin-file-path=foo.ts"] }
+# language-servers = [ { name = "eslint", only-features = [ "diagnostics" ] }, "typescript-language-server" ]
 

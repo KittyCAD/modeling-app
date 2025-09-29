@@ -1,8 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
-import type {
-  EntityType_type,
-  ModelingCmdReq_type,
-} from '@kittycad/lib/dist/types/src/models'
+import type { EntityType, ModelingCmdReq } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type EditorManager from '@src/editor/manager'
 import type CodeManager from '@src/lang/codeManager'
@@ -19,24 +16,18 @@ import {
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
+import { CommandLogType } from '@src/lang/std/commandLog'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import { CommandLogType } from '@src/lang/std/engineConnection'
 import { topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
   ExecState,
   PathToNode,
   Program,
-  SourceRange,
   VariableMap,
 } from '@src/lang/wasm'
-import {
-  emptyExecState,
-  getKclVersion,
-  initPromise,
-  parse,
-  recast,
-} from '@src/lang/wasm'
+import { emptyExecState, getKclVersion, parse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
@@ -53,7 +44,9 @@ import type {
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
-import { deferExecution, isOverlap, uuidv4 } from '@src/lib/utils'
+import { deferExecution, uuidv4 } from '@src/lib/utils'
+import { kclEditorActor } from '@src/machines/kclEditorMachine'
+import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -69,16 +62,34 @@ interface Singletons {
   sceneInfra: SceneInfra
 }
 
-export class KclManager {
+export enum KclManagerEvents {
+  LongExecution = 'long-execution',
+}
+
+export class KclManager extends EventTarget {
   /**
    * The artifactGraph is a client-side representation of the commands that have been sent
    * see: src/lang/std/artifactGraph-README.md for a full explanation.
    */
   artifactGraph: ArtifactGraph = new Map()
   artifactIndex: ArtifactIndex = []
-  defaultPlanesShown: boolean = false
 
   private _ast: Node<Program> = {
+    body: [],
+    shebang: null,
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    nonCodeMeta: {
+      nonCodeNodes: {},
+      startNodes: [],
+    },
+    innerAttrs: [],
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+  }
+  _lastAst: Node<Program> = {
     body: [],
     shebang: null,
     start: 0,
@@ -97,6 +108,11 @@ export class KclManager {
   private _variables: VariableMap = {}
   lastSuccessfulVariables: VariableMap = {}
   lastSuccessfulOperations: Operation[] = []
+  /**
+   * Since the operations reference the code, we need to store the code that the
+   * operations were executed on.
+   */
+  lastSuccessfulCode: string = ''
   private _logs: string[] = []
   private _errors: KCLError[] = []
   private _diagnostics: Diagnostic[] = []
@@ -108,31 +124,49 @@ export class KclManager {
   private _fileSettings: KclSettingsAnnotation = {}
   private _kclVersion: string | undefined = undefined
   private singletons: Singletons
+  private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
+    undefined
+  // In the future this could be a setting.
+  public longExecutionTimeMs = 1000 * 60 * 5
 
   engineCommandManager: EngineCommandManager
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
   private _astCallBack: (arg: Node<Program>) => void = () => {}
-  private _variablesCallBack: (arg: {
-    [key in string]?: KclValue | undefined
-  }) => void = () => {}
+  private _variablesCallBack: (
+    arg: {
+      [key in string]?: KclValue | undefined
+    }
+  ) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
   private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
   private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
-  private _executeCallback: () => void = () => {}
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
 
   get ast() {
     return this._ast
   }
   set ast(ast) {
+    if (this._ast.body.length !== 0) {
+      // last intact ast, if the user makes a typo with a syntax error, we want to keep the one before they made that mistake
+      this._lastAst = structuredClone(this._ast)
+    }
     this._ast = ast
     this._astCallBack(ast)
   }
 
   set switchedFiles(switchedFiles: boolean) {
     this._switchedFiles = switchedFiles
+
+    // These belonged to the previous file
+    this.lastSuccessfulOperations = []
+    this.lastSuccessfulCode = ''
+    this.lastSuccessfulVariables = {}
+
+    // Without this, when leaving a project which has errors and opening another project which doesn't,
+    // you'd see the errors from the previous project for a short time until the new code is executed.
+    this._errors = []
   }
 
   get variables() {
@@ -239,6 +273,7 @@ export class KclManager {
     engineCommandManager: EngineCommandManager,
     singletons: Singletons
   ) {
+    super()
     this.engineCommandManager = engineCommandManager
     this.singletons = singletons
 
@@ -247,6 +282,8 @@ export class KclManager {
       await this.safeParse(this.singletons.codeManager.code).then((ast) => {
         if (ast) {
           this.ast = ast
+          // on setup, set _lastAst so it's populated.
+          this._lastAst = ast
         }
       })
     })
@@ -276,9 +313,6 @@ export class KclManager {
     this._diagnosticsCallback = setDiagnostics
     this._isExecutingCallback = setIsExecuting
     this._wasmInitFailedCallback = setWasmInitFailed
-  }
-  registerExecuteCallback(callback: () => void) {
-    this._executeCallback = callback
   }
 
   clearAst() {
@@ -311,7 +345,7 @@ export class KclManager {
     // the cache and clear the scene.
     if (this._astParseFailed && this._switchedFiles) {
       await this.singletons.rustContext.clearSceneAndBustCache(
-        { settings: await jsAppSettings() },
+        await jsAppSettings(),
         this.singletons.codeManager.currentFilePath || undefined
       )
     } else if (this._switchedFiles) {
@@ -341,24 +375,15 @@ export class KclManager {
         })
       }, 200)(null)
     }
-  }
 
-  // Some "objects" have the same source range, such as sketch_mode_start and start_path.
-  // So when passing a range, we need to also specify the command type
-  private mapRangeToObjectId(
-    range: SourceRange,
-    commandTypeToTarget: string
-  ): string | undefined {
-    for (const [artifactId, artifact] of this.artifactGraph) {
-      if (
-        'codeRef' in artifact &&
-        artifact.codeRef &&
-        isOverlap(range, artifact.codeRef.range)
-      ) {
-        if (commandTypeToTarget === artifact.type) return artifactId
+    // Send the 'artifact graph initialized' event for modelingMachine, only once, when default planes are also initialized.
+    deferExecution((a?: null) => {
+      if (this.defaultPlanes) {
+        this.engineCommandManager.modelingSend({
+          type: 'Artifact graph initialized',
+        })
       }
-    }
-    return undefined
+    }, 200)(null)
   }
 
   async safeParse(code: string): Promise<Node<Program> | null> {
@@ -368,7 +393,7 @@ export class KclManager {
 
     if (err(result)) {
       const kclError: KCLError = result as KCLError
-      this.diagnostics = kclErrorsToDiagnostics([kclError])
+      this.diagnostics = kclErrorsToDiagnostics([kclError], code)
       this._astParseFailed = true
 
       await this.checkIfSwitchedFilesShouldClear()
@@ -382,8 +407,8 @@ export class KclManager {
     this._kclErrorsCallBack([])
     this._logsCallBack([])
 
-    this.addDiagnostics(compilationErrorsToDiagnostics(result.errors))
-    this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings))
+    this.addDiagnostics(compilationErrorsToDiagnostics(result.errors, code))
+    this.addDiagnostics(compilationErrorsToDiagnostics(result.warnings, code))
     if (result.errors.length > 0) {
       this._astParseFailed = true
 
@@ -422,6 +447,7 @@ export class KclManager {
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
       )
       // Exit early if we are already executing.
+
       return
     }
 
@@ -433,16 +459,32 @@ export class KclManager {
 
     this.isExecuting = true
     await this.ensureWasmInit()
+
+    const codeThatExecuted = this.singletons.codeManager.code
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: this.singletons.codeManager.currentFilePath || undefined,
       rustContext: this.singletons.rustContext,
     })
 
+    const livePathsToWatch = Object.values(execState.filenames)
+      .filter((file) => {
+        return file?.type === 'Local'
+      })
+      .map((file) => {
+        return file.value
+      })
+    kclEditorActor.send({ type: 'setLivePathsToWatch', data: livePathsToWatch })
+
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
     if (!isInterrupted) {
-      this.addDiagnostics(await lintAst({ ast: ast }))
+      this.addDiagnostics(
+        await lintAst({
+          ast,
+          sourceCode: this.singletons.codeManager.code,
+        })
+      )
       await setSelectionFilterToDefault(this.engineCommandManager)
     }
 
@@ -454,11 +496,6 @@ export class KclManager {
       return
     }
 
-    // Exit sketch mode if the AST is empty
-    if (this._isAstEmpty(ast)) {
-      await this.disableSketchMode()
-    }
-
     let fileSettings = getSettingsAnnotation(ast)
     if (err(fileSettings)) {
       console.error(fileSettings)
@@ -468,21 +505,26 @@ export class KclManager {
 
     this.logs = logs
     this.errors = errors
+    const code = this.singletons.codeManager.code
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
-    this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
+    this.addDiagnostics(
+      isInterrupted ? [] : kclErrorsToDiagnostics(errors, code)
+    )
     // Add warnings and non-fatal errors
     this.addDiagnostics(
-      isInterrupted ? [] : compilationErrorsToDiagnostics(execState.errors)
+      isInterrupted
+        ? []
+        : compilationErrorsToDiagnostics(execState.errors, code)
     )
     this.execState = execState
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
+      this.lastSuccessfulCode = codeThatExecuted
     }
-    this.ast = { ...ast }
+    this.ast = structuredClone(ast)
     // updateArtifactGraph relies on updated executeState/variables
     await this.updateArtifactGraph(execState.artifactGraph)
-    this._executeCallback()
     if (!isInterrupted) {
       this.singletons.sceneInfra.modelingSend({
         type: 'code edit during sketch',
@@ -515,23 +557,25 @@ export class KclManager {
   }
 
   // DO NOT CALL THIS from codemirror ever.
-  async executeAstMock(ast: Program) {
+  async executeAstMock(ast: Program): Promise<null | Error> {
     await this.ensureWasmInit()
 
     const newCode = recast(ast)
     if (err(newCode)) {
       console.error(newCode)
-      return
+      return newCode
     }
     const newAst = await this.safeParse(newCode)
+
     if (!newAst) {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
       // the pre-execution state should be restored.
       this.clearAst()
-      return
+      return new Error('failed to re-parse')
     }
     this._ast = { ...newAst }
 
+    const codeThatExecuted = this.singletons.codeManager.code
     const { logs, errors, execState } = await executeAstMock({
       ast: newAst,
       rustContext: this.singletons.rustContext,
@@ -543,7 +587,10 @@ export class KclManager {
     if (!errors.length) {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
+      this.lastSuccessfulCode = codeThatExecuted
     }
+    await this.updateArtifactGraph(execState.artifactGraph)
+    return null
   }
   cancelAllExecutions() {
     this._cancelTokens.forEach((_, key) => {
@@ -560,8 +607,19 @@ export class KclManager {
       return
     }
 
-    this.ast = { ...ast }
-    return this.executeAst()
+    clearTimeout(this.executionTimeoutId)
+
+    // We consider anything taking longer than 5 minutes a long execution.
+    this.executionTimeoutId = setTimeout(() => {
+      if (!this.isExecuting) {
+        clearTimeout(this.executionTimeoutId)
+        return
+      }
+
+      this.dispatchEvent(new CustomEvent(KclManagerEvents.LongExecution, {}))
+    }, this.longExecutionTimeMs)
+
+    return this.executeAst({ ast })
   }
 
   async format() {
@@ -651,7 +709,8 @@ export class KclManager {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
       // instead..
-      await this.executeAstMock(astWithUpdatedSource)
+      const didReParse = await this.executeAstMock(astWithUpdatedSource)
+      if (err(didReParse)) return Promise.reject(didReParse)
     }
 
     return { selections: returnVal, newAst: astWithUpdatedSource }
@@ -711,31 +770,43 @@ export class KclManager {
     }
     return Promise.all(thePromises)
   }
+
+  setPlaneVisibilityByKey(
+    planeKey: keyof PlaneVisibilityMap,
+    visible: boolean
+  ) {
+    const planeId = this.defaultPlanes?.[planeKey]
+    if (!planeId) {
+      console.warn(`Plane ${planeKey} not found`)
+      return
+    }
+    return this.engineCommandManager.setPlaneHidden(planeId, !visible)
+  }
+
   /** TODO: this function is hiding unawaited asynchronous work */
   defaultSelectionFilter(selectionsToRestore?: Selections) {
     setSelectionFilterToDefault(this.engineCommandManager, selectionsToRestore)
   }
   /** TODO: this function is hiding unawaited asynchronous work */
-  setSelectionFilter(filter: EntityType_type[]) {
+  setSelectionFilter(filter: EntityType[]) {
     setSelectionFilter(filter, this.engineCommandManager)
-  }
-
-  /**
-   * We can send a single command of 'enable_sketch_mode' or send this in a batched request.
-   * When there is no code in the KCL editor we should be sending 'sketch_mode_disable' since any previous half finished
-   * code could leave the state of the application in sketch mode on the engine side.
-   */
-  async disableSketchMode() {
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: { type: 'sketch_mode_disable' },
-    })
   }
 
   // Determines if there is no KCL code which means it is executing a blank KCL file
   _isAstEmpty(ast: Node<Program>) {
     return ast.start === 0 && ast.end === 0 && ast.body.length === 0
+  }
+
+  /**
+   * Determines if there is no code to execute. If there is a @settings annotation
+   * that adds to the overall ast.start and ast.end but not the body which is the program
+   *
+   *
+   * If you need to know if there is any program code or not, use this function otherwise
+   * use _isAstEmpty
+   */
+  isAstBodyEmpty(ast: Node<Program>) {
+    return ast.body.length === 0
   }
 
   get fileSettings() {
@@ -750,7 +821,7 @@ export class KclManager {
   }
 }
 
-const defaultSelectionFilter: EntityType_type[] = [
+const defaultSelectionFilter: EntityType[] = [
   'face',
   'edge',
   'solid2d',
@@ -773,7 +844,7 @@ function setSelectionFilterToDefault(
 
 /** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilter(
-  filter: EntityType_type[],
+  filter: EntityType[],
   engineCommandManager: EngineCommandManager,
   selectionsToRestore?: Selections
 ) {
@@ -794,7 +865,7 @@ function setSelectionFilter(
     })
     return
   }
-  const modelingCmd: ModelingCmdReq_type[] = []
+  const modelingCmd: ModelingCmdReq[] = []
   engineEvents.forEach((event) => {
     if (event.type === 'modeling_cmd_req') {
       modelingCmd.push({

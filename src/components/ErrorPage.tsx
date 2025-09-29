@@ -24,10 +24,18 @@ function errorMessage(error: unknown): string {
   }
 }
 
+function stackTraceMessage(error: unknown): string {
+  if (error !== undefined && error instanceof Error) {
+    return error.stack || ''
+  }
+  return ''
+}
+
 /** Generate a GitHub issue URL from the error */
 function generateToUrl(error: unknown) {
   const title: string = 'An unexpected error occurred'
-  const body = errorMessage(error)
+  const newLine = '%0A'
+  const body = `${errorMessage(error)} ${newLine} >${stackTraceMessage(error)} ${newLine}`
   const result = `https://github.com/KittyCAD/modeling-app/issues/new?title=${title}&body=${body}`
   return result
 }
@@ -43,8 +51,11 @@ export const ErrorPage = () => {
         <h1 className="text-4xl mb-8 font-bold" data-testid="unexpected-error">
           An unexpected error occurred
         </h1>
-        <p className="mb-8 w-full overflow-aut">
+        <p className="mb-8 w-full overflow-auto">
           <>{errorMessage(error)}</>
+        </p>
+        <p className="mb-8 w-full overflow-auto">
+          <>{stackTraceMessage(error)}</>
         </p>
         <div className="flex justify-between gap-2 mt-6">
           {isDesktop() && (
