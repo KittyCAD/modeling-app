@@ -114,7 +114,7 @@ async fn inner_flatness(
         in_plane.id
     };
     for face in &faces {
-        let face_id = args.get_adjacent_face_to_tag(exec_state, face, true).await?;
+        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
         exec_state
             .batch_modeling_cmd(
                 args.into(),
