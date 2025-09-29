@@ -32,7 +32,7 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let name: String = args.get_kw_arg("name", &RuntimeType::string(), exec_state)?;
     let frame_position: Option<[TyF64; 2]> =
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
-    let in_plane: Option<Plane> = args.get_kw_arg_opt("inPlane", &RuntimeType::plane(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
     let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
 
@@ -40,7 +40,7 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         face,
         name,
         frame_position,
-        in_plane,
+        frame_plane,
         AnnotationStyle {
             font_point_size,
             font_scale,
@@ -56,7 +56,7 @@ async fn inner_datum(
     face: TagIdentifier,
     name: String,
     frame_position: Option<[TyF64; 2]>,
-    in_plane: Option<Plane>,
+    frame_plane: Option<Plane>,
     style: AnnotationStyle,
     exec_state: &mut ExecState,
     args: &Args,
@@ -74,7 +74,7 @@ async fn inner_datum(
             vec![args.source_range],
         ))
     })?;
-    let in_plane = if let Some(plane) = in_plane {
+    let frame_plane = if let Some(plane) = frame_plane {
         plane
     } else {
         // No plane given. Use one of the default planes by evaluating the `XY`
@@ -96,13 +96,13 @@ async fn inner_datum(
             })?
             .clone()
     };
-    let in_plane_id = if in_plane.value == crate::exec::PlaneType::Uninit {
+    let frame_plane_id = if frame_plane.value == crate::exec::PlaneType::Uninit {
         // Create it in the engine.
         let engine_plane =
-            make_sketch_plane_from_orientation(in_plane.info.into_plane_data(), exec_state, args).await?;
+            make_sketch_plane_from_orientation(frame_plane.info.into_plane_data(), exec_state, args).await?;
         engine_plane.id
     } else {
-        in_plane.id
+        frame_plane.id
     };
     let face_id = args.get_adjacent_face_to_tag(exec_state, &face, false).await?;
     exec_state
@@ -126,7 +126,7 @@ async fn inner_datum(
                         defined_datum: Some(name_char),
                         prefix: None,
                         suffix: None,
-                        plane_id: in_plane_id,
+                        plane_id: frame_plane_id,
                         offset: if let Some(offset) = &frame_position {
                             KPoint2d {
                                 x: offset[0].to_mm(),
@@ -159,7 +159,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
     let frame_position: Option<[TyF64; 2]> =
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
-    let in_plane: Option<Plane> = args.get_kw_arg_opt("inPlane", &RuntimeType::plane(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
     let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
 
@@ -168,7 +168,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         tolerance,
         precision,
         frame_position,
-        in_plane,
+        frame_plane,
         AnnotationStyle {
             font_point_size,
             font_scale,
@@ -186,12 +186,12 @@ async fn inner_flatness(
     tolerance: TyF64,
     precision: Option<TyF64>,
     frame_position: Option<[TyF64; 2]>,
-    in_plane: Option<Plane>,
+    frame_plane: Option<Plane>,
     style: AnnotationStyle,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<(), KclError> {
-    let in_plane = if let Some(plane) = in_plane {
+    let frame_plane = if let Some(plane) = frame_plane {
         plane
     } else {
         // No plane given. Use one of the default planes by evaluating the `XY`
@@ -213,13 +213,13 @@ async fn inner_flatness(
             })?
             .clone()
     };
-    let in_plane_id = if in_plane.value == crate::exec::PlaneType::Uninit {
+    let frame_plane_id = if frame_plane.value == crate::exec::PlaneType::Uninit {
         // Create it in the engine.
         let engine_plane =
-            make_sketch_plane_from_orientation(in_plane.info.into_plane_data(), exec_state, args).await?;
+            make_sketch_plane_from_orientation(frame_plane.info.into_plane_data(), exec_state, args).await?;
         engine_plane.id
     } else {
-        in_plane.id
+        frame_plane.id
     };
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, true).await?;
@@ -252,7 +252,7 @@ async fn inner_flatness(
                             defined_datum: None,
                             prefix: None,
                             suffix: None,
-                            plane_id: in_plane_id,
+                            plane_id: frame_plane_id,
                             offset: if let Some(offset) = &frame_position {
                                 KPoint2d {
                                     x: offset[0].to_mm(),
