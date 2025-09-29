@@ -1702,6 +1702,7 @@ description: Operations executed holder-rod-angle.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

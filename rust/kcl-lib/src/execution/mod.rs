@@ -60,7 +60,7 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
-enum StatementKind<'a> {
+pub(crate) enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,
 }
@@ -430,9 +430,7 @@ impl ExecutorContext {
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
-            engine: Arc::new(Box::new(
-                crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
-            )),
+            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
@@ -1399,14 +1397,14 @@ pub(crate) async fn parse_execute_with_project_dir(
     let program = crate::Program::parse_no_errs(code)?;
 
     let exec_ctxt = ExecutorContext {
-        engine: Arc::new(Box::new(
-            crate::engine::conn_mock::EngineConnection::new().await.map_err(|err| {
+        engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().map_err(
+            |err| {
                 KclError::new_internal(crate::errors::KclErrorDetails::new(
                     format!("Failed to create mock engine connection: {err}"),
                     vec![SourceRange::default()],
                 ))
-            })?,
-        )),
+            },
+        )?)),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings {
             project_directory,

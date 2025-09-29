@@ -8081,6 +8081,7 @@ description: Operations executed helical-planetary-gearset.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

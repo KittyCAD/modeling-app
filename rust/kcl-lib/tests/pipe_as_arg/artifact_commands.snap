@@ -6,6 +6,7 @@ description: Artifact commands pipe_as_arg.kcl
   "rust/kcl-lib/tests/pipe_as_arg/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

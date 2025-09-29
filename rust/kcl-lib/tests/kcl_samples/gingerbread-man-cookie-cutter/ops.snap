@@ -355,6 +355,7 @@ description: Operations executed gingerbread-man-cookie-cutter.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

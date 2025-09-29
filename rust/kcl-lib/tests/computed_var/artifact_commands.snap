@@ -6,6 +6,7 @@ description: Artifact commands computed_var.kcl
   "rust/kcl-lib/tests/computed_var/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

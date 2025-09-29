@@ -712,7 +712,7 @@ impl ExecutorContext {
     }
 
     #[async_recursion]
-    pub(super) async fn execute_expr<'a: 'async_recursion>(
+    pub(crate) async fn execute_expr<'a: 'async_recursion>(
         &self,
         init: &Expr,
         exec_state: &mut ExecState,
@@ -2105,7 +2105,6 @@ d = b + c
         let exec_ctxt = ExecutorContext {
             engine: Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
-                    .await
                     .map_err(|err| {
                         KclError::new_internal(KclErrorDetails::new(
                             format!("Failed to create mock engine connection: {err}"),

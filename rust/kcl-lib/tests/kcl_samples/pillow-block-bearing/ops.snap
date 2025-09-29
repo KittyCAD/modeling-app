@@ -2037,6 +2037,7 @@ description: Operations executed pillow-block-bearing.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

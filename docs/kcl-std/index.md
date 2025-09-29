@@ -23,6 +23,8 @@ layout: manual
   * [`pop`](/docs/kcl-std/functions/std-array-pop)
   * [`push`](/docs/kcl-std/functions/std-array-push)
   * [`reduce`](/docs/kcl-std/functions/std-array-reduce)
+* [**std::gdt**](/docs/kcl-std/modules/std-gdt)
+  * [`gdt::flatness`](/docs/kcl-std/functions/std-gdt-flatness)
 * [**std::math**](/docs/kcl-std/modules/std-math)
   * [`abs`](/docs/kcl-std/functions/std-math-abs)
   * [`acos`](/docs/kcl-std/functions/std-math-acos)

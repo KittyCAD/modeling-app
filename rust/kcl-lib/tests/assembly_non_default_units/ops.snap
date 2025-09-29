@@ -103,6 +103,7 @@ description: Operations executed assembly_non_default_units.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

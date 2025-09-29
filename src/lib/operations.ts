@@ -228,11 +228,13 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     'twistCenter' in operation.labeledArgs &&
     operation.labeledArgs.twistCenter
   ) {
+    const allowArrays = true
     const result = await stringToKclExpression(
       codeManager.code.slice(
         operation.labeledArgs.twistCenter.sourceRange[0],
         operation.labeledArgs.twistCenter.sourceRange[1]
-      )
+      ),
+      allowArrays
     )
     if (err(result) || 'errors' in result) {
       return { reason: "Couldn't retrieve twistCenter argument" }
@@ -1000,6 +1002,140 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
 }
 
 /**
+ * Gather up the argument values for the Pattern Circular 3D command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
+  operation,
+}) => {
+  const baseCommand = {
+    name: 'Pattern Circular 3D',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  // 1. Map the unlabeled arguments to solid selections
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const solids = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
+    kclManager.artifactGraph
+  )
+  if (err(solids)) {
+    return { reason: "Couldn't retrieve solids" }
+  }
+
+  // 2. Convert the instances argument from a string to a KCL expression
+  const instancesArg = operation.labeledArgs?.['instances']
+  if (!instancesArg || !instancesArg.sourceRange) {
+    return { reason: 'Missing or invalid instances argument' }
+  }
+
+  const instances = await stringToKclExpression(
+    codeManager.code.slice(
+      instancesArg.sourceRange[0],
+      instancesArg.sourceRange[1]
+    )
+  )
+  if (err(instances) || 'errors' in instances) {
+    return { reason: "Couldn't retrieve instances argument" }
+  }
+
+  // 3. Convert the axis argument from a string to a string value
+  // Axis is configured as 'options' inputType, so it should be a string, not a KCL expression
+  const axisArg = operation.labeledArgs?.['axis']
+  if (!axisArg || !axisArg.sourceRange) {
+    return { reason: 'Missing or invalid axis argument' }
+  }
+
+  const axisString = codeManager.code.slice(
+    axisArg.sourceRange[0],
+    axisArg.sourceRange[1]
+  )
+  if (!axisString) {
+    return { reason: "Couldn't retrieve axis argument" }
+  }
+
+  // 4. Convert the center argument from a string to a KCL expression
+  const centerArg = operation.labeledArgs?.['center']
+  if (!centerArg || !centerArg.sourceRange) {
+    return { reason: 'Missing or invalid center argument' }
+  }
+
+  const center = await stringToKclExpression(
+    codeManager.code.slice(centerArg.sourceRange[0], centerArg.sourceRange[1]),
+    true
+  )
+  if (err(center) || 'errors' in center) {
+    return { reason: "Couldn't retrieve center argument" }
+  }
+
+  // 5. Convert optional arguments
+  let arcDegrees: KclCommandValue | undefined
+  if (
+    'arcDegrees' in operation.labeledArgs &&
+    operation.labeledArgs.arcDegrees
+  ) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs.arcDegrees.sourceRange[0],
+        operation.labeledArgs.arcDegrees.sourceRange[1]
+      )
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve arcDegrees argument" }
+    }
+    arcDegrees = result
+  }
+
+  let rotateDuplicates: boolean | undefined
+  if (
+    'rotateDuplicates' in operation.labeledArgs &&
+    operation.labeledArgs.rotateDuplicates
+  ) {
+    rotateDuplicates =
+      codeManager.code.slice(
+        operation.labeledArgs.rotateDuplicates.sourceRange[0],
+        operation.labeledArgs.rotateDuplicates.sourceRange[1]
+      ) === 'true'
+  }
+
+  let useOriginal: boolean | undefined
+  if (
+    'useOriginal' in operation.labeledArgs &&
+    operation.labeledArgs.useOriginal
+  ) {
+    useOriginal =
+      codeManager.code.slice(
+        operation.labeledArgs.useOriginal.sourceRange[0],
+        operation.labeledArgs.useOriginal.sourceRange[1]
+      ) === 'true'
+  }
+
+  // 6. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Pattern Circular 3D'] = {
+    solids,
+    instances,
+    axis: axisString,
+    center,
+    arcDegrees,
+    rotateDuplicates,
+    useOriginal,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
  */
@@ -1038,6 +1174,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Fillet',
     icon: 'fillet3d',
     prepareToEdit: prepareToEditEdgeTreatment,
+  },
+  'gdt::flatness': {
+    label: 'Flatness',
+    icon: 'gdtFlatness',
   },
   helix: {
     label: 'Helix',
@@ -1093,6 +1233,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   patternCircular3d: {
     label: 'Circular Pattern',
     icon: 'patternCircular3d',
+    prepareToEdit: prepareToEditPatternCircular3d,
     supportsAppearance: true,
     supportsTransform: true,
   },

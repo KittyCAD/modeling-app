@@ -104,6 +104,7 @@ async fn inner_rectangle(
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args_id(&args, id),
                 ModelingCmd::from(mcmd::ExtendPath {
+                    label: Default::default(),
                     path: sketch.id.into(),
                     segment: PathSegment::Line {
                         end: KPoint2d::from(untyped_point_to_mm(delta, units))
@@ -197,6 +198,7 @@ async fn inner_circle(
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
             ModelingCmd::from(mcmd::ExtendPath {
+                label: Default::default(),
                 path: sketch.id.into(),
                 segment: PathSegment::Arc {
                     start: angle_start,
@@ -298,6 +300,7 @@ async fn inner_circle_three_point(
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
             ModelingCmd::from(mcmd::ExtendPath {
+                label: Default::default(),
                 path: sketch.id.into(),
                 segment: PathSegment::Arc {
                     start: angle_start,
@@ -450,6 +453,7 @@ async fn inner_polygon(
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args_id(&args, id),
                 ModelingCmd::from(mcmd::ExtendPath {
+                    label: Default::default(),
                     path: sketch.id.into(),
                     segment: PathSegment::Line {
                         end: KPoint2d::from(untyped_point_to_mm(*vertex, units))
@@ -485,6 +489,7 @@ async fn inner_polygon(
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, close_id),
             ModelingCmd::from(mcmd::ExtendPath {
+                label: Default::default(),
                 path: sketch.id.into(),
                 segment: PathSegment::Line {
                     end: KPoint2d::from(untyped_point_to_mm(vertices[0], units))
@@ -601,6 +606,7 @@ async fn inner_ellipse(
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
             ModelingCmd::from(mcmd::ExtendPath {
+                label: Default::default(),
                 path: sketch.id.into(),
                 segment: PathSegment::Ellipse {
                     center: KPoint2d::from(point_to_mm(center)).map(LengthUnit),
