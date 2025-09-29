@@ -177,12 +177,8 @@ function TextToCad() {
           improving it every day.
         </p>
         <p className="my-4">
-          <strong>One</strong> Text-to-CAD generation costs{' '}
-          <strong>one credit per minute</strong>, rounded up to the nearest
-          minute. A large majority of Text-to-CAD generations take under a
-          minute. If you are on the free plan, you get 20 free credits per
-          month. With any of our paid plans, you get unlimited Text-to-CAD
-          generations.
+          If you are on the free plan, you get 20 free credits per month. With
+          any of our paid plans, you get unlimited Text-to-CAD generations.
         </p>
         <p className="my-4">
           Let’s walk through an example of how to use Text-to-CAD.
