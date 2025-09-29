@@ -1,5 +1,9 @@
 import type { Diagnostic } from '@codemirror/lint'
-import type { EntityType, ModelingCmdReq } from '@kittycad/lib'
+import type {
+  EntityType,
+  ModelingCmdReq,
+  WebSocketRequest,
+} from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type EditorManager from '@src/editor/manager'
 import type CodeManager from '@src/lang/codeManager'
@@ -35,7 +39,6 @@ import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
 import { markOnce } from '@src/lib/performance'
-import { handleSelectionBatch } from '@src/lib/selections'
 import type {
   BaseUnit,
   KclSettingsAnnotation,
@@ -49,6 +52,7 @@ import type {
   PlaneVisibilityMap,
   Selections,
 } from '@src/machines/modelingSharedTypes'
+import type { EditorSelection } from '@codemirror/state'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -834,13 +838,23 @@ const defaultSelectionFilter: EntityType[] = [
 /** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilterToDefault(
   engineCommandManager: EngineCommandManager,
-  selectionsToRestore?: Selections
+  selectionsToRestore?: Selections,
+  handleSelectionBatch?: ({
+    selections,
+  }: {
+    selections: Selections
+  }) => {
+    engineEvents: WebSocketRequest[]
+    codeMirrorSelection: EditorSelection
+    updateSceneObjectColors: () => void
+  }
 ) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   setSelectionFilter(
     defaultSelectionFilter,
     engineCommandManager,
-    selectionsToRestore
+    selectionsToRestore,
+    handleSelectionBatch
   )
 }
 
@@ -848,13 +862,23 @@ function setSelectionFilterToDefault(
 function setSelectionFilter(
   filter: EntityType[],
   engineCommandManager: EngineCommandManager,
-  selectionsToRestore?: Selections
+  selectionsToRestore?: Selections,
+  handleSelectionBatch?: ({
+    selections,
+  }: {
+    selections: Selections
+  }) => {
+    engineEvents: WebSocketRequest[]
+    codeMirrorSelection: EditorSelection
+    updateSceneObjectColors: () => void
+  }
 ) {
-  const { engineEvents } = selectionsToRestore
-    ? handleSelectionBatch({
-        selections: selectionsToRestore,
-      })
-    : { engineEvents: undefined }
+  const { engineEvents } =
+    selectionsToRestore && handleSelectionBatch
+      ? handleSelectionBatch({
+          selections: selectionsToRestore,
+        })
+      : { engineEvents: undefined }
   if (!selectionsToRestore || !engineEvents) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     engineCommandManager.sendSceneCommand({

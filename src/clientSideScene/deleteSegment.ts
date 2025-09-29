@@ -21,6 +21,10 @@ import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
+import {
+  getEventForSegmentSelection,
+  updateExtraSegments,
+} from '@src/lib/selections'
 
 export async function deleteSegment({
   pathToNode,
@@ -76,7 +80,9 @@ export async function deleteSegment({
     modifiedAst,
     sketchDetails.zAxis,
     sketchDetails.yAxis,
-    sketchDetails.origin
+    sketchDetails.origin,
+    getEventForSegmentSelection,
+    updateExtraSegments
   )
 
   // Now 'Set sketchDetails' is called with the modified pathToNode

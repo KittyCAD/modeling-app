@@ -58,8 +58,8 @@ import {
   rustContext,
   sceneEntitiesManager,
   sceneInfra,
+  engineStreamActor,
 } from '@src/lib/singletons'
-import { engineStreamActor } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import {
   getModuleId,

@@ -135,7 +135,12 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { EXECUTION_TYPE_REAL, VALID_PANE_IDS } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { handleSelectionBatch, updateSelections } from '@src/lib/selections'
+import {
+  getEventForSegmentSelection,
+  handleSelectionBatch,
+  updateExtraSegments,
+  updateSelections,
+} from '@src/lib/selections'
 import {
   codeManager,
   editorManager,
@@ -1516,7 +1521,9 @@ export const modelingMachine = setup({
           constraint.modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1555,7 +1562,9 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1592,7 +1601,9 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1627,7 +1638,9 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1663,7 +1676,9 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1699,7 +1714,9 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1735,7 +1752,9 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1778,7 +1797,9 @@ export const modelingMachine = setup({
           recastAst.program,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1814,7 +1835,9 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1940,6 +1963,8 @@ export const modelingMachine = setup({
           planeNodePath: sketchDetails.planeNodePath,
           // We will want to pass sketchTools here
           // to add their interactions
+          getEventForSegmentSelection,
+          updateExtraSegments,
         })
 
         // We will want to update the context with sketchTools.
@@ -2172,7 +2197,9 @@ export const modelingMachine = setup({
           parsed,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 

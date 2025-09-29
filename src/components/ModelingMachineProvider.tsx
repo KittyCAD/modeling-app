@@ -93,6 +93,8 @@ import {
   selectionBodyFace,
   getOffsetSketchPlaneData,
   updateSelections,
+  getEventForSegmentSelection,
+  updateExtraSegments,
 } from '@src/lib/selections'
 import {
   codeManager,
@@ -668,7 +670,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -724,7 +728,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -790,7 +796,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -851,7 +859,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -905,7 +915,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -960,7 +972,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -1015,7 +1029,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 

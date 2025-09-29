@@ -159,9 +159,7 @@ import {
   updateRectangleSketch,
 } from '@src/lib/rectangleTool'
 import type RustContext from '@src/lib/rustContext'
-import { updateExtraSegments } from '@src/lib/selections'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { getEventForSegmentSelection } from '@src/lib/selections'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { Themes, getResolvedTheme } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
@@ -182,6 +180,7 @@ import type {
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { ActorRefFrom } from 'xstate'
+import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -1049,7 +1048,15 @@ export class SceneEntities {
     modifiedAst: Node<Program> | Error,
     forward: [number, number, number],
     up: [number, number, number],
-    origin: [number, number, number]
+    origin: [number, number, number],
+    getEventForSegmentSelection: (
+      obj: Object3D<Object3DEventMap>
+    ) => ModelingMachineEvent | null,
+    updateExtraSegments: (
+      parent: Object3D<Object3DEventMap> | null,
+      className: string,
+      value: boolean
+    ) => void
   ) => {
     if (trap(modifiedAst)) return Promise.reject(modifiedAst)
     const nextAst = await this.kclManager.updateAst(modifiedAst, false)
@@ -1069,6 +1076,8 @@ export class SceneEntities {
       sketchEntryNodePath,
       sketchNodePaths,
       planeNodePath,
+      getEventForSegmentSelection,
+      updateExtraSegments,
     })
     return nextAst
   }
@@ -2622,6 +2631,8 @@ export class SceneEntities {
     up,
     forward,
     position,
+    getEventForSegmentSelection,
+    updateExtraSegments,
   }: {
     sketchEntryNodePath: PathToNode
     sketchNodePaths: PathToNode[]
@@ -2629,6 +2640,14 @@ export class SceneEntities {
     forward: [number, number, number]
     up: [number, number, number]
     position?: [number, number, number]
+    getEventForSegmentSelection: (
+      obj: Object3D<Object3DEventMap>
+    ) => ModelingMachineEvent | null
+    updateExtraSegments: (
+      parent: Object3D<Object3DEventMap> | null,
+      className: string,
+      value: boolean
+    ) => void
   }) => {
     let addingNewSegmentStatus: 'nothing' | 'pending' | 'added' = 'nothing'
     this.sceneInfra.setCallbacks({
@@ -2651,6 +2670,8 @@ export class SceneEntities {
             up,
             forward,
             position,
+            getEventForSegmentSelection,
+            updateExtraSegments,
           })
         }
         await this.codeManager.writeToFile()
@@ -2763,7 +2784,7 @@ export class SceneEntities {
         if (!event) return
         this.sceneInfra.modelingSend(event)
       },
-      ...this.mouseEnterLeaveCallbacks(),
+      ...this.mouseEnterLeaveCallbacks(updateExtraSegments),
     })
   }
   prepareTruncatedAst = (
@@ -3466,7 +3487,13 @@ export class SceneEntities {
     this.activeSegments = {}
   }
 
-  mouseEnterLeaveCallbacks() {
+  mouseEnterLeaveCallbacks(
+    updateExtraSegments: (
+      parent: Object3D<Object3DEventMap> | null,
+      className: string,
+      value: boolean
+    ) => void
+  ) {
     return {
       onMouseEnter: ({ selected }: OnMouseEnterLeaveArgs) => {
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
