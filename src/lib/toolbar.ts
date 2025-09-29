@@ -30,6 +30,7 @@ export interface ToolbarItemCallbackProps {
   sketchPathId: string | false
   editorHasFocus: boolean | undefined
   sketchSolveState?: StateFrom<typeof sketchSolveMachine>
+  isActive: boolean
 }
 
 export type ToolbarItem = {
@@ -67,6 +68,7 @@ export type ToolbarItemResolved = Omit<
   disableHotkey?: boolean
   hotkey?: string | string[]
   isActive?: boolean
+  callbackProps: ToolbarItemCallbackProps
 }
 
 export type ToolbarItemResolvedDropdown = {
@@ -1071,11 +1073,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'point',
-        onClick: ({ modelingSend }) =>
+        onClick: ({ modelingSend }) => {
           modelingSend({
             type: 'equip tool',
             data: { tool: 'pointTool' },
-          }),
+          })
+        },
         icon: 'arrowDown',
         status: 'available',
         title: 'Point',
