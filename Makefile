@@ -141,17 +141,17 @@ test-e2e: test-e2e-$(TARGET)
 .PHONY: test-e2e-web
 test-e2e-web: install build ## Run the web e2e tests
 ifdef E2E_GREP
-	npm run test:e2e:web -- --headed --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES) $(PW_ARGS)
+	npm run test:e2e:web -- --headed --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES) "$(PW_ARGS)"
 else
-	npm run test:e2e:web -- --headed --workers='100%' $(PW_ARGS)
+	npm run test:e2e:web -- --headed --workers='100%' "$(PW_ARGS)"
 endif
 
 .PHONY: test-e2e-desktop
 test-e2e-desktop: install build ## Run the desktop e2e tests
 ifdef E2E_GREP
-	npm run test:e2e:desktop -- --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES) $(PW_ARGS)
+	npm run test:e2e:desktop -- --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES) "$(PW_ARGS)"
 else
-	npm run test:e2e:desktop -- --workers='100%' $(PW_ARGS)
+	npm run test:e2e:desktop -- --workers='100%' "$(PW_ARGS)"
 endif
 
 .PHONY: test-snapshots

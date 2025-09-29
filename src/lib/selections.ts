@@ -17,19 +17,14 @@ import { AXIS_GROUP, X_AXIS } from '@src/clientSideScene/sceneUtils'
 import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 import {
   findAllChildrenAndOrderByPlaceInCode,
+  getEdgeCutMeta,
   getNodeFromPath,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange } from '@src/lang/sourceRange'
-import type {
-  Artifact,
-  ArtifactId,
-  CodeRef,
-  SegmentArtifact,
-} from '@src/lang/std/artifactGraph'
+import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
 import {
-  getArtifactOfTypes,
   getCapCodeRef,
   getCodeRefsByArtifactId,
   getSweepFromSuspectedSweepSurface,
@@ -72,7 +67,6 @@ import {
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
   DefaultPlane,
-  EdgeCutInfo,
   ExtrudeFacePlane,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
@@ -1089,59 +1083,11 @@ export async function selectionBodyFace(
   const { z_axis, y_axis, origin } = faceInfo
   const sketchPathToNode = err(codeRef) ? [] : codeRef.pathToNode
 
-  const getEdgeCutMeta = (): null | EdgeCutInfo => {
-    let chamferInfo: {
-      segment: SegmentArtifact
-      type: EdgeCutInfo['subType']
-    } | null = null
-    if (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer') {
-      const consumedArtifact = getArtifactOfTypes(
-        {
-          key: artifact.consumedEdgeId,
-          types: ['segment', 'sweepEdge'],
-        },
-        kclManager.artifactGraph
-      )
-      if (err(consumedArtifact)) return null
-      if (consumedArtifact.type === 'segment') {
-        chamferInfo = {
-          type: 'base',
-          segment: consumedArtifact,
-        }
-      } else {
-        const segment = getArtifactOfTypes(
-          { key: consumedArtifact.segId, types: ['segment'] },
-          kclManager.artifactGraph
-        )
-        if (err(segment)) return null
-        chamferInfo = {
-          type: consumedArtifact.subType,
-          segment,
-        }
-      }
-    }
-    if (!chamferInfo) return null
-    const segmentCallExpr = getNodeFromPath<CallExpressionKw>(
-      kclManager.ast,
-      chamferInfo?.segment.codeRef.pathToNode || [],
-      ['CallExpressionKw']
-    )
-    if (err(segmentCallExpr)) return null
-    if (segmentCallExpr.node.type !== 'CallExpressionKw') return null
-    const sketchNodeArgs = segmentCallExpr.node.arguments.map((la) => la.arg)
-    const tagDeclarator = sketchNodeArgs.find(
-      ({ type }) => type === 'TagDeclarator'
-    )
-    if (!tagDeclarator || tagDeclarator.type !== 'TagDeclarator') return null
-
-    return {
-      type: 'edgeCut',
-      subType: chamferInfo.type,
-      tagName: tagDeclarator.value,
-    }
-  }
-  const edgeCutMeta = getEdgeCutMeta()
-
+  const edgeCutMeta = getEdgeCutMeta(
+    artifact,
+    kclManager.ast,
+    kclManager.artifactGraph
+  )
   const _faceInfo: ExtrudeFacePlane['faceInfo'] = edgeCutMeta
     ? edgeCutMeta
     : artifact.type === 'cap'

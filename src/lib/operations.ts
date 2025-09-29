@@ -228,11 +228,13 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
     'twistCenter' in operation.labeledArgs &&
     operation.labeledArgs.twistCenter
   ) {
+    const allowArrays = true
     const result = await stringToKclExpression(
       codeManager.code.slice(
         operation.labeledArgs.twistCenter.sourceRange[0],
         operation.labeledArgs.twistCenter.sourceRange[1]
-      )
+      ),
+      allowArrays
     )
     if (err(result) || 'errors' in result) {
       return { reason: "Couldn't retrieve twistCenter argument" }

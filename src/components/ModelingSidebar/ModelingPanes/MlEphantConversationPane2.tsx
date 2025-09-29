@@ -16,9 +16,9 @@ import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { ModelingMachineContext } from '@src/machines/modelingMachine'
 import type { FileEntry, Project } from '@src/lib/project'
-import type { User, MlCopilotServerMessage } from '@kittycad/lib'
 import type { BillingActor } from '@src/machines/billingMachine'
 import { useSelector } from '@xstate/react'
+import type { User, MlCopilotServerMessage, MlCopilotTool } from '@kittycad/lib'
 
 export const MlEphantConversationPane2 = (props: {
   mlEphantManagerActor: MlEphantManagerActor2
@@ -40,7 +40,10 @@ export const MlEphantConversationPane2 = (props: {
     return actor.context
   })
 
-  const onProcess = async (request: string) => {
+  const onProcess = async (
+    request: string,
+    forcedTools: Set<MlCopilotTool>
+  ) => {
     if (props.theProject === undefined) {
       console.warn('theProject is `undefined` - should not be possible')
       return
@@ -71,6 +74,7 @@ export const MlEphantConversationPane2 = (props: {
       projectFiles,
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
+      forcedTools,
     })
   }
 
@@ -177,10 +181,13 @@ export const MlEphantConversationPane2 = (props: {
   return (
     <MlEphantConversation2
       isLoading={conversation === undefined}
+      contexts={[
+        { type: 'selections', data: props.contextModeling.selectionRanges },
+      ]}
       conversation={conversation}
       billingContext={billingContext}
-      onProcess={(request: string) => {
-        onProcess(request).catch(reportRejection)
+      onProcess={(request: string, forcedTools: Set<MlCopilotTool>) => {
+        onProcess(request, forcedTools).catch(reportRejection)
       }}
       disabled={isProcessing}
       hasPromptCompleted={isProcessing}

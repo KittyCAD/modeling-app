@@ -47,7 +47,10 @@ import {
   retrieveAxisOrEdgeSelectionsFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import { addPatternCircular3D } from '@src/lang/modifyAst/pattern3D'
+import {
+  addPatternCircular3D,
+  addPatternLinear3D,
+} from '@src/lang/modifyAst/pattern3D'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
@@ -76,7 +79,7 @@ import {
   hasValidEdgeTreatmentSelection,
   modifyAstWithEdgeTreatmentAndTag,
 } from '@src/lang/modifyAst/addEdgeTreatment'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import { getEdgeCutMeta, getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
@@ -1553,6 +1556,30 @@ helix001 = helix(
 })
 
 describe('pattern3D.test.ts', () => {
+  async function getAstAndArtifactGraph(code: string) {
+    const ast = assertParse(code)
+    if (err(ast)) throw ast
+
+    const { artifactGraph } = await enginelessExecutor(ast)
+    return { ast, artifactGraph }
+  }
+
+  function createSelectionFromPathArtifact(
+    artifacts: (Artifact & { codeRef: CodeRef })[]
+  ): Selections {
+    const graphSelections = artifacts.map(
+      (artifact) =>
+        ({
+          codeRef: artifact.codeRef,
+          artifact,
+        }) as Selection
+    )
+    return {
+      graphSelections,
+      otherSelections: [],
+    }
+  }
+
   async function getAstAndSolidSelections(code: string) {
     const { ast, artifactGraph } = await getAstAndArtifactGraph(code)
     // Filter for sweep artifacts that represent 3D solids
@@ -1565,6 +1592,15 @@ describe('pattern3D.test.ts', () => {
     const selections = createSelectionFromPathArtifact(artifacts)
     return { ast, selections, artifactGraph }
   }
+
+  async function getKclCommandValue(value: string) {
+    const result = await stringToKclExpression(value)
+    if (err(result) || 'errors' in result) {
+      throw new Error('Failed to create KCL expression')
+    }
+    return result
+  }
+
   describe('Testing addPatternCircular3D', () => {
     it('should add patternCircular3d with named axis', async () => {
       const code = `
@@ -1678,6 +1714,45 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).not.toContain('useOriginal')
     })
 
+    it('should handle all optional parameters', async () => {
+      const code = `
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+
+example = extrude(exampleSketch, length = -5)
+`
+
+      const { ast, selections, artifactGraph } =
+        await getAstAndSolidSelections(code)
+
+      const result = addPatternCircular3D({
+        ast,
+        artifactGraph,
+        solids: selections,
+        instances: await getKclCommandValue('6'),
+        axis: 'Y',
+        center: await getKclCommandValue('[0, 0, 0]'),
+        arcDegrees: await getKclCommandValue('180'),
+        rotateDuplicates: true,
+        useOriginal: false,
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const { modifiedAst } = result
+      const newCode = recast(modifiedAst)
+
+      expect(newCode).toContain('patternCircular3d(')
+      expect(newCode).toContain('instances = 6')
+      expect(newCode).toContain('axis = Y')
+      expect(newCode).toContain('center = [0, 0, 0]')
+      expect(newCode).toContain('arcDegrees = 180')
+      expect(newCode).toContain('rotateDuplicates = true')
+      expect(newCode).toContain('useOriginal = false')
+    })
+
     it('should handle variable references for parameters', async () => {
       const code = `
 myInstances = 8
@@ -1713,6 +1788,81 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('instances = myInstances')
       expect(newCode).toContain('axis = myAxis')
       expect(newCode).toContain('center = myCenter')
+    })
+
+    it('should handle decimal values for all parameters', async () => {
+      const code = `
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+
+example = extrude(exampleSketch, length = -5)
+`
+
+      const { ast, selections, artifactGraph } =
+        await getAstAndSolidSelections(code)
+
+      const result = addPatternCircular3D({
+        ast,
+        artifactGraph,
+        solids: selections,
+        instances: await getKclCommandValue('2.5'),
+        axis: await getKclCommandValue('[1, -1, 0.5]'),
+        center: await getKclCommandValue('[7.5, 3.2, 0]'),
+        arcDegrees: await getKclCommandValue('180.5'),
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const { modifiedAst } = result
+      const newCode = recast(modifiedAst)
+
+      expect(newCode).toContain('patternCircular3d(')
+      expect(newCode).toContain('instances = 2.5')
+      expect(newCode).toContain('axis = [1, -1, 0.5]')
+      expect(newCode).toContain('center = [7.5, 3.2, 0]')
+      expect(newCode).toContain('arcDegrees = 180.5')
+    })
+
+    it('should handle mathematical expressions for parameters', async () => {
+      const code = `
+myCount = 10
+mySpacing = 5
+myOffset = 3
+myAngle = 90
+
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+
+example = extrude(exampleSketch, length = -5)
+`
+
+      const { ast, selections, artifactGraph } =
+        await getAstAndSolidSelections(code)
+
+      const result = addPatternCircular3D({
+        ast,
+        artifactGraph,
+        solids: selections,
+        instances: await getKclCommandValue('myCount - myOffset'),
+        axis: await getKclCommandValue('[mySpacing * 2, 0, 1]'),
+        center: await getKclCommandValue('[mySpacing + myOffset, 0, 0]'),
+        arcDegrees: await getKclCommandValue('myAngle * 2'),
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const { modifiedAst } = result
+      const newCode = recast(modifiedAst)
+
+      expect(newCode).toContain('patternCircular3d(')
+      expect(newCode).toContain('instances = myCount - myOffset')
+      expect(newCode).toContain('axis = [mySpacing * 2, 0, 1]')
+      expect(newCode).toContain('center = [mySpacing + myOffset, 0, 0]')
+      expect(newCode).toContain('arcDegrees = myAngle * 2')
     })
 
     it('should prioritize array values over variable names when both exist', async () => {
@@ -1804,7 +1954,6 @@ exampleSketch = startSketchOn(XZ)
     it('should extend pipeline when selection is from unnamed pipeline', async () => {
       const code = `
 sketch001 = startSketchOn(XZ)
-profile001 = circle(sketch001, center = [0, 0], radius = 1)
 
 startSketchOn(XY)
   |> circle(center = [1, 1], radius = 0.5)
@@ -1875,6 +2024,112 @@ extrude(exampleSketch, length = -5)
       expect(newCode).toContain('extrude(exampleSketch, length = -5)')
       expect(newCode).toContain('|> patternCircular3d(')
     })
+  })
+
+  describe('Testing addPatternLinear3D', () => {
+    it('should add patternLinear3d with named axis', async () => {
+      const code = `
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+
+example = extrude(exampleSketch, length = -5)
+`
+
+      const { ast, selections, artifactGraph } =
+        await getAstAndSolidSelections(code)
+
+      const result = addPatternLinear3D({
+        ast,
+        artifactGraph,
+        solids: selections,
+        instances: await getKclCommandValue('7'),
+        distance: await getKclCommandValue('6'),
+        axis: 'X',
+        useOriginal: false,
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const { modifiedAst } = result
+      const newCode = recast(modifiedAst)
+
+      expect(newCode).toContain('patternLinear3d(')
+      expect(newCode).toContain('instances = 7')
+      expect(newCode).toContain('axis = X')
+      expect(newCode).toContain('distance = 6')
+      expect(newCode).toContain('useOriginal = false')
+    })
+
+    it('should add patternLinear3d with array axis', async () => {
+      const code = `
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+
+example = extrude(exampleSketch, length = -5)
+`
+
+      const { ast, selections, artifactGraph } =
+        await getAstAndSolidSelections(code)
+
+      const result = addPatternLinear3D({
+        ast,
+        artifactGraph,
+        solids: selections,
+        instances: await getKclCommandValue('5'),
+        distance: await getKclCommandValue('10'),
+        axis: await getKclCommandValue('[1, 0, 1]'),
+        useOriginal: true,
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const { modifiedAst } = result
+      const newCode = recast(modifiedAst)
+
+      expect(newCode).toContain('patternLinear3d(')
+      expect(newCode).toContain('instances = 5')
+      expect(newCode).toContain('axis = [1, 0, 1]')
+      expect(newCode).toContain('distance = 10')
+      expect(newCode).toContain('useOriginal = true')
+    })
+
+    it('should add patternLinear3d with minimal required parameters', async () => {
+      const code = `
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+
+example = extrude(exampleSketch, length = -5)
+`
+
+      const { ast, selections, artifactGraph } =
+        await getAstAndSolidSelections(code)
+
+      const result = addPatternLinear3D({
+        ast,
+        artifactGraph,
+        solids: selections,
+        instances: await getKclCommandValue('3'),
+        distance: await getKclCommandValue('4'),
+        axis: 'Y',
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const { modifiedAst } = result
+      const newCode = recast(modifiedAst)
+
+      expect(newCode).toContain('patternLinear3d(')
+      expect(newCode).toContain('instances = 3')
+      expect(newCode).toContain('axis = Y')
+      expect(newCode).toContain('distance = 4')
+      expect(newCode).not.toContain('useOriginal')
+    })
 
     it('should handle all optional parameters', async () => {
       const code = `
@@ -1887,16 +2142,14 @@ example = extrude(exampleSketch, length = -5)
       const { ast, selections, artifactGraph } =
         await getAstAndSolidSelections(code)
 
-      const result = addPatternCircular3D({
+      const result = addPatternLinear3D({
         ast,
         artifactGraph,
         solids: selections,
         instances: await getKclCommandValue('6'),
+        distance: await getKclCommandValue('8'),
         axis: 'Y',
-        center: await getKclCommandValue('[0, 0, 0]'),
-        arcDegrees: await getKclCommandValue('180'),
-        rotateDuplicates: true,
-        useOriginal: false,
+        useOriginal: true,
       })
 
       if (err(result)) {
@@ -1906,13 +2159,278 @@ example = extrude(exampleSketch, length = -5)
       const { modifiedAst } = result
       const newCode = recast(modifiedAst)
 
-      expect(newCode).toContain('patternCircular3d(')
+      expect(newCode).toContain('patternLinear3d(')
       expect(newCode).toContain('instances = 6')
       expect(newCode).toContain('axis = Y')
-      expect(newCode).toContain('center = [0, 0, 0]')
-      expect(newCode).toContain('arcDegrees = 180')
-      expect(newCode).toContain('rotateDuplicates = true')
-      expect(newCode).toContain('useOriginal = false')
+      expect(newCode).toContain('distance = 8')
+      expect(newCode).toContain('useOriginal = true')
+    })
+
+    it('should handle variable references for parameters', async () => {
+      const code = `
+myInstances = 8
+myAxis = [0, 0, 1]
+myDistance = 12
+
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+
+example = extrude(exampleSketch, length = -5)
+`
+
+      const { ast, selections, artifactGraph } =
+        await getAstAndSolidSelections(code)
+
+      const result = addPatternLinear3D({
+        ast,
+        artifactGraph,
+        solids: selections,
+        instances: await getKclCommandValue('myInstances'),
+        distance: await getKclCommandValue('myDistance'),
+        axis: await getKclCommandValue('myAxis'),
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const { modifiedAst } = result
+      const newCode = recast(modifiedAst)
+
+      expect(newCode).toContain('patternLinear3d(')
+      expect(newCode).toContain('instances = myInstances')
+      expect(newCode).toContain('axis = myAxis')
+      expect(newCode).toContain('distance = myDistance')
+    })
+
+    it('should handle decimal values for all parameters', async () => {
+      const code = `
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+
+example = extrude(exampleSketch, length = -5)
+`
+
+      const { ast, selections, artifactGraph } =
+        await getAstAndSolidSelections(code)
+
+      const result = addPatternLinear3D({
+        ast,
+        artifactGraph,
+        solids: selections,
+        instances: await getKclCommandValue('2.5'),
+        distance: await getKclCommandValue('7.5'),
+        axis: await getKclCommandValue('[1, -1, 0.5]'),
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const { modifiedAst } = result
+      const newCode = recast(modifiedAst)
+
+      expect(newCode).toContain('patternLinear3d(')
+      expect(newCode).toContain('instances = 2.5')
+      expect(newCode).toContain('axis = [1, -1, 0.5]')
+      expect(newCode).toContain('distance = 7.5')
+    })
+
+    it('should handle mathematical expressions for parameters', async () => {
+      const code = `
+myCount = 10
+mySpacing = 5
+myOffset = 3
+
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+
+example = extrude(exampleSketch, length = -5)
+`
+
+      const { ast, selections, artifactGraph } =
+        await getAstAndSolidSelections(code)
+
+      const result = addPatternLinear3D({
+        ast,
+        artifactGraph,
+        solids: selections,
+        instances: await getKclCommandValue('myCount - myOffset'),
+        distance: await getKclCommandValue('mySpacing + myOffset'),
+        axis: await getKclCommandValue('[mySpacing * 2, 0, 1]'),
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const { modifiedAst } = result
+      const newCode = recast(modifiedAst)
+
+      expect(newCode).toContain('patternLinear3d(')
+      expect(newCode).toContain('instances = myCount - myOffset')
+      expect(newCode).toContain('axis = [mySpacing * 2, 0, 1]')
+      expect(newCode).toContain('distance = mySpacing + myOffset')
+    })
+
+    it('should prioritize array values over variable names when both exist', async () => {
+      const code = `
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+
+example = extrude(exampleSketch, length = -5)
+`
+
+      const { ast, selections, artifactGraph } =
+        await getAstAndSolidSelections(code)
+
+      // Test the precedence by creating a mock axis that simulates the edge case
+      const baseExpression = await getKclCommandValue('[1, 0, 0]')
+      const mockAxisWithBothProperties = {
+        ...baseExpression,
+        variableName: 'someVariable', // This exists but should be ignored
+        variableDeclarationAst: { type: 'VariableDeclaration' } as any,
+        variableIdentifierAst: {
+          type: 'Identifier',
+          name: 'someVariable',
+        } as any,
+        insertIndex: 0,
+        value: [1, 0, 0], // This should take precedence
+      }
+
+      const result = addPatternLinear3D({
+        ast,
+        artifactGraph,
+        solids: selections,
+        instances: await getKclCommandValue('5'),
+        distance: await getKclCommandValue('8'),
+        axis: mockAxisWithBothProperties,
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const { modifiedAst } = result
+      const newCode = recast(modifiedAst)
+
+      expect(newCode).toContain('patternLinear3d(')
+      expect(newCode).toContain('instances = 5')
+      // Should use the array value, not the variable name
+      expect(newCode).toContain('axis = [1, 0, 0]')
+      expect(newCode).not.toContain('axis = someVariable')
+      expect(newCode).toContain('distance = 8')
+    })
+
+    it('should create new pattern variable when selection is piped into named variable', async () => {
+      const code = `
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+  |> extrude(length = 5)
+`
+
+      const { ast, selections, artifactGraph } =
+        await getAstAndSolidSelections(code)
+
+      const result = addPatternLinear3D({
+        ast,
+        artifactGraph,
+        solids: selections,
+        instances: await getKclCommandValue('6'),
+        distance: await getKclCommandValue('3'),
+        axis: 'Y',
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const { modifiedAst } = result
+      const newCode = recast(modifiedAst)
+
+      expect(newCode).toContain('patternLinear3d(')
+      expect(newCode).toContain('instances = 6')
+      expect(newCode).toContain('axis = Y')
+      expect(newCode).toContain('distance = 3')
+      // Should create new pattern variable referencing the named variable
+      expect(newCode).toContain('exampleSketch = startSketchOn(XZ)')
+      expect(newCode).toContain('|> extrude(length = 5)')
+      expect(newCode).toContain('pattern001 = patternLinear3d(')
+      expect(newCode).toContain('exampleSketch,') // References the original variable
+    })
+
+    it('should extend pipeline when selection is from unnamed pipeline', async () => {
+      const code = `
+sketch001 = startSketchOn(XZ)
+
+startSketchOn(XY)
+  |> circle(center = [1, 1], radius = 0.5)
+  |> extrude(length = 3)
+`
+
+      const { ast, selections, artifactGraph } =
+        await getAstAndSolidSelections(code)
+
+      const result = addPatternLinear3D({
+        ast,
+        artifactGraph,
+        solids: selections,
+        instances: await getKclCommandValue('4'),
+        distance: await getKclCommandValue('2'),
+        axis: 'Z',
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const { modifiedAst } = result
+      const newCode = recast(modifiedAst)
+
+      expect(newCode).toContain('patternLinear3d(')
+      expect(newCode).toContain('instances = 4')
+      expect(newCode).toContain('axis = Z')
+      expect(newCode).toContain('distance = 2')
+      // Should extend the unnamed pipeline
+      expect(newCode).toContain('startSketchOn(XY)')
+      expect(newCode).toContain('|> extrude(length = 3)')
+      expect(newCode).toContain('|> patternLinear3d(')
+    })
+
+    it('should pipe pattern when selection is from unnamed standalone expression', async () => {
+      const code = `
+exampleSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 1)
+
+extrude(exampleSketch, length = -5)
+`
+
+      const { ast, selections, artifactGraph } =
+        await getAstAndSolidSelections(code)
+
+      const result = addPatternLinear3D({
+        ast,
+        artifactGraph,
+        solids: selections,
+        instances: await getKclCommandValue('3'),
+        distance: await getKclCommandValue('5'),
+        axis: await getKclCommandValue('[0, 1, 0]'),
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const { modifiedAst } = result
+      const newCode = recast(modifiedAst)
+
+      expect(newCode).toContain('patternLinear3d(')
+      expect(newCode).toContain('instances = 3')
+      expect(newCode).toContain('axis = [0, 1, 0]')
+      expect(newCode).toContain('distance = 5')
+      // Should pipe directly onto the unnamed expression
+      expect(newCode).toContain('extrude(exampleSketch, length = -5)')
+      expect(newCode).toContain('|> patternLinear3d(')
     })
   })
 })
@@ -2164,6 +2682,18 @@ helix001 = helix(
 })
 
 describe('faces.test.ts', () => {
+  async function getAstAndArtifactGraph(code: string) {
+    const ast = assertParse(code)
+    await kclManager.executeAst({ ast })
+    const {
+      artifactGraph,
+      execState: { operations },
+      variables,
+    } = kclManager
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    return { ast, artifactGraph, operations, variables }
+  }
+
   function createSelectionFromArtifacts(
     artifacts: Artifact[],
     artifactGraph: ArtifactGraph
@@ -2184,6 +2714,7 @@ describe('faces.test.ts', () => {
       otherSelections: [],
     }
   }
+
   // More complex shell case
   const multiSolids = `size = 100
 case = startSketchOn(XY)
@@ -2227,6 +2758,38 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> close()
 extrude001 = extrude(profile001, length = 10)`
 
+  const boxWithOneTagAndChamfer = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10, tag = $seg01)
+  |> yLine(length = 10)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 1,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )`
+
+  const boxWithOneTagAndChamferAndPlane = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10, tag = $seg01)
+  |> yLine(length = 10)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 1,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+       tag = $seg02,
+     )
+plane001 = offsetPlane(planeOf(extrude001, face = seg02), offset = 1)`
+
   const boxWithTwoTags = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 10, tag = $seg01)
@@ -2235,6 +2798,21 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = 10)`
+
+  const boxWithTwoTagsAndChamfer = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10, tag = $seg01)
+  |> yLine(length = 10, tag = $seg02)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 1,
+       tags = [
+         getCommonEdge(faces = [seg01, seg02])
+       ],
+     )`
 
   function getCapFromCylinder(artifactGraph: ArtifactGraph) {
     const endFace = [...artifactGraph.values()].find(
@@ -2502,6 +3080,23 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
       )
       expect(selections.graphSelections[0].artifact!.id).toEqual(cap!.id)
     })
+
+    it('should find an offset plane on a chamfer face', async () => {
+      const { artifactGraph, operations } = await getAstAndArtifactGraph(
+        boxWithOneTagAndChamferAndPlane
+      )
+      const op = operations.find(
+        (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
+      ) as StdLibCallOp
+      const selections = retrieveNonDefaultPlaneSelectionFromOpArg(
+        op.unlabeledArg!,
+        artifactGraph
+      )
+      if (err(selections)) throw selections
+
+      expect(selections.graphSelections).toHaveLength(1)
+      expect(selections.graphSelections[0].artifact!.type).toEqual('edgeCut')
+    })
   })
 
   describe('Testing addOffsetPlane', () => {
@@ -2689,6 +3284,79 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 10)`)
       expect(newCode2).toContain(`${boxWithOneTag}
 plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       await enginelessExecutor(result2.modifiedAst)
+    })
+
+    it('should add an offset plane call on chamfer face and allow edits', async () => {
+      const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
+        boxWithOneTagAndChamfer
+      )
+      const chamfer = [...artifactGraph.values()].find(
+        (a) => a.type === 'edgeCut'
+      )
+      const plane = createSelectionFromArtifacts([chamfer!], artifactGraph)
+      const offset = (await stringToKclExpression('1')) as KclCommandValue
+      const result = addOffsetPlane({
+        ast,
+        artifactGraph,
+        variables,
+        plane,
+        offset,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst)
+      expect(newCode).toContain(boxWithOneTagAndChamferAndPlane)
+      await enginelessExecutor(ast)
+
+      const newOffset = (await stringToKclExpression('2')) as KclCommandValue
+      const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
+      const result2 = addOffsetPlane({
+        ast: result.modifiedAst,
+        artifactGraph,
+        variables,
+        plane,
+        offset: newOffset,
+        nodeToEdit,
+      })
+      if (err(result2)) {
+        throw result2
+      }
+      const newCode2 = recast(result2.modifiedAst)
+      expect(newCode2).not.toContain(`offset = 1`)
+      expect(newCode2).toContain(
+        `plane001 = offsetPlane(planeOf(extrude001, face = seg02), offset = 2)`
+      )
+      await enginelessExecutor(result2.modifiedAst)
+    })
+  })
+
+  describe('Testing getEdgeCutMeta', () => {
+    it('should find the edge cut meta info on a wall-cap chamfer', async () => {
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        boxWithOneTagAndChamfer
+      )
+      const artifact = [...artifactGraph.values()].find(
+        (a) => a.type === 'edgeCut'
+      )
+      const result = getEdgeCutMeta(artifact!, ast, artifactGraph)
+      expect(result?.type).toEqual('edgeCut')
+      expect(result?.subType).toEqual('opposite')
+      expect(result?.tagName).toEqual('seg01')
+    })
+
+    it('should find the edge cut meta info on a wall-wall chamfer', async () => {
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        boxWithTwoTagsAndChamfer
+      )
+      const artifact = [...artifactGraph.values()].find(
+        (a) => a.type === 'edgeCut'
+      )
+      const result = getEdgeCutMeta(artifact!, ast, artifactGraph)
+      expect(result?.type).toEqual('edgeCut')
+      expect(result?.subType).toEqual('adjacent')
+      expect(result?.tagName).toEqual('seg01')
     })
   })
 })

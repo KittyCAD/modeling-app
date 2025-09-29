@@ -3844,6 +3844,13 @@ function prepareTruncatedAst(
     ast.body.length
   const _ast = structuredClone(ast)
 
+  if (!sketchNodePaths.length) {
+    return {
+      truncatedAst: _ast,
+      variableDeclarationName: '',
+    }
+  }
+
   const _node = getNodeFromPath<Node<VariableDeclaration>>(
     _ast,
     sketchNodePaths[0] || [],
