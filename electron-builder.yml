@@ -33,7 +33,7 @@ win:
         - x64
         - arm64
   signtoolOptions:
-    certificateSha1: F4C9A52FF7BC26EE5E054946F6B11DEEA94C748D
+    certificateSha1: A2AF62757465C573F04D62C0CE58D6BA07ED42A7
     signingHashAlgorithms:
       - sha256
     publisherName: "ZOO CORPORATION"
