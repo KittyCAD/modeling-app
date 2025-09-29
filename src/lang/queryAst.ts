@@ -12,6 +12,7 @@ import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   codeRefFromRange,
+  getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
 } from '@src/lang/std/artifactGraph'
@@ -38,6 +39,7 @@ import type {
   PipeExpression,
   Program,
   ReturnStatement,
+  SegmentArtifact,
   SourceRange,
   SyntaxType,
   VariableDeclaration,
@@ -55,7 +57,11 @@ import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  Selection,
+  Selections,
+  EdgeCutInfo,
+} from '@src/machines/modelingSharedTypes'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1499,4 +1505,61 @@ export function getLastVariable(
     }
   }
   return null
+}
+
+export function getEdgeCutMeta(
+  artifact: Artifact,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph
+): null | EdgeCutInfo {
+  let chamferInfo: {
+    segment: SegmentArtifact
+    type: EdgeCutInfo['subType']
+  } | null = null
+  if (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer') {
+    const consumedArtifact = getArtifactOfTypes(
+      {
+        key: artifact.consumedEdgeId,
+        types: ['segment', 'sweepEdge'],
+      },
+      artifactGraph
+    )
+    console.log('consumedArtifact', consumedArtifact)
+    if (err(consumedArtifact)) return null
+    if (consumedArtifact.type === 'segment') {
+      chamferInfo = {
+        type: 'base',
+        segment: consumedArtifact,
+      }
+    } else {
+      const segment = getArtifactOfTypes(
+        { key: consumedArtifact.segId, types: ['segment'] },
+        artifactGraph
+      )
+      if (err(segment)) return null
+      chamferInfo = {
+        type: consumedArtifact.subType,
+        segment,
+      }
+    }
+  }
+  if (!chamferInfo) return null
+  const segmentCallExpr = getNodeFromPath<CallExpressionKw>(
+    ast,
+    chamferInfo?.segment.codeRef.pathToNode || [],
+    ['CallExpressionKw']
+  )
+  if (err(segmentCallExpr)) return null
+  if (segmentCallExpr.node.type !== 'CallExpressionKw') return null
+  const sketchNodeArgs = segmentCallExpr.node.arguments.map((la) => la.arg)
+  const tagDeclarator = sketchNodeArgs.find(
+    ({ type }) => type === 'TagDeclarator'
+  )
+  if (!tagDeclarator || tagDeclarator.type !== 'TagDeclarator') return null
+
+  return {
+    type: 'edgeCut',
+    subType: chamferInfo.type,
+    tagName: tagDeclarator.value,
+  }
 }
