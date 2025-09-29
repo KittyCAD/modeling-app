@@ -33,12 +33,10 @@ win:
         - x64
         - arm64
   signtoolOptions:
-    certificateSha1: A2AF62757465C573F04D62C0CE58D6BA07ED42A7
     signingHashAlgorithms:
       - sha256
-    publisherName: "ZOO CORPORATION"
-    certificateSubjectName: "ZOO CORPORATION"
-    rfc3161TimeStampServer: http://timestamp.digicert.com
+    publisherName: "ZOO CORPORATION" # needs to be exactly like on Digicert
+    certificateSubjectName: "ZOO CORPORATION" # needs to be exactly like on Digicert
   icon: "assets/icon.ico"
   fileAssociations:
     - ext: kcl

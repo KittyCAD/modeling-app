@@ -93,18 +93,24 @@ jobs:
 
       - name: Set staging version, product name, release notes, and icons
         if: ${{ env.IS_STAGING == 'true' }}
+        env:
+          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_ZOO_THUMBPRINT }}
         run: |
           COMMIT=$(git rev-parse --short HEAD)
           DATE=$(date +'%-y.%-m.%-d')
           export VERSION=$DATE-main.$COMMIT
           npm run files:set-version
           npm run files:flip-to-staging
+          npm run files:set-windows-cert-thumbprint
 
       - name: Set release version
         if: ${{ env.IS_RELEASE == 'true' }}
+        env:
+          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_ZOO_THUMBPRINT }}
         run: |
           export VERSION=${GITHUB_REF_NAME#v}
           npm run files:set-version
+          npm run files:set-windows-cert-thumbprint
 
       - uses: actions/upload-artifact@v4
         with:

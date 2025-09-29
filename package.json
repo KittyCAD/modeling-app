@@ -121,6 +121,7 @@
     "circular-deps:diff": "./scripts/diff-circular-deps.sh",
     "circular-deps:diff:nodejs": "npm run circular-deps:diff || node ./scripts/diff.js",
     "files:set-version": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json",
+    "files:set-windows-cert-thumbprint": "yq -i '.win.signtoolOptions.certificateSha1 = env(WINDOWS_CERTIFICATE_THUMBPRINT)' electron-builder.yml",
     "files:set-notes": "./scripts/set-files-notes.sh",
     "files:flip-to-staging": "./scripts/flip-files-to-staging.sh",
     "files:flip-to-staging:windows": "powershell -ExecutionPolicy Bypass -File ./scripts/flip-files-to-staging.ps1",
