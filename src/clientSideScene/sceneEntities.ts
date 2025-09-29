@@ -180,6 +180,8 @@ import type {
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { ActorRefFrom } from 'xstate'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -195,6 +197,7 @@ export class SceneEntities {
   readonly codeManager: CodeManager
   readonly kclManager: KclManager
   readonly rustContext: RustContext
+  commandBarActor?: ActorRefFrom<typeof commandBarMachine>
   activeSegments: { [key: string]: Group } = {}
   readonly intersectionPlane: Mesh
   axisGroup: Group | null = null
@@ -981,6 +984,10 @@ export class SceneEntities {
           maybeModdedAst,
           this.kclManager
         )
+        if (!this.commandBarActor) {
+          console.error('command bar actor not found.')
+          return
+        }
         const result = initSegment({
           prevSegment: sketch.paths[index - 1],
           callExpName,
@@ -993,6 +1000,7 @@ export class SceneEntities {
           isSelected,
           sceneInfra: this.sceneInfra,
           selection,
+          commandBarActor: this.commandBarActor,
         })
         if (err(result)) return
         const { group: _group, updateOverlaysCallback } = result

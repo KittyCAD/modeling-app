@@ -265,6 +265,9 @@ export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
   (typeof appMachineActors)[typeof COMMAND_BAR]
 >
 
+// TODO: proper dependency management
+sceneEntitiesManager.commandBarActor = commandBarActor
+
 export const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
   (typeof appMachineActors)[typeof BILLING]
 >
