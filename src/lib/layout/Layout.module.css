@@ -1,0 +1,7 @@
+.layout {
+  @apply border b-3;
+
+  .splitLayout {
+    @apply flex;
+  }
+}
