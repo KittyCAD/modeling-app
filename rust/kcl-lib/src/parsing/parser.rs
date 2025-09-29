@@ -908,8 +908,8 @@ pub enum NonCodeOr<T> {
 fn array(i: &mut TokenSlice) -> ModalResult<Expr> {
     alt((
         array_empty.map(Box::new).map(Expr::ArrayExpression),
-        array_end_start.map(Box::new).map(Expr::ArrayRangeExpression),
         array_elem_by_elem.map(Box::new).map(Expr::ArrayExpression),
+        array_end_start.map(Box::new).map(Expr::ArrayRangeExpression),
     ))
     .parse_next(i)
 }
