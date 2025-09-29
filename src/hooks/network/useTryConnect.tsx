@@ -12,8 +12,7 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { getDimensions } from '@src/network/utils'
 import { useRef } from 'react'
-
-const NumberOfEngineRetries = 5
+import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 
 /**
  * Helper function, do not call this directly. Use tryConnecting instead.
@@ -202,8 +201,8 @@ async function tryConnecting({
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: false })
           engineCommandManager.tearDown()
-          // Fail after NumberOfEngineRetries
-          if (numberOfConnectionAtttempts.current >= NumberOfEngineRetries) {
+          // Fail after NUMBER_OF_ENGINE_RETRIES
+          if (numberOfConnectionAtttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
             numberOfConnectionAtttempts.current = 0
             // Clear if we are going to exit all the attempts
             clearInterval(cancelTimeout)

@@ -38,7 +38,7 @@ import type {
 // An interface for a promise that needs to be awaited and pass the resolve reject to
 // other dependencies. We do not need to pass values between these. It is mainly
 // to know did it pass or fail, not what the result is?
-// A specific case from the promiseFactor<T>() call
+// A specific case from the promiseFactoy<T>() call
 interface IDeferredPromise {
   promise: Promise<any>
   resolve: (value: any) => void
