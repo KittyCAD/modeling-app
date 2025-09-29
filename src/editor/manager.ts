@@ -30,12 +30,14 @@ import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { isTopLevelModule } from '@src/lang/util'
 import { markOnce } from '@src/lib/performance'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import { processCodeMirrorRanges } from '@src/lib/selections'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import type {
   ModelingMachineEvent,
   modelingMachine,
 } from '@src/machines/modelingMachine'
+import type { SelectionRange } from '@codemirror/state'
+import type { ArtifactGraph, Program } from '@src/lang/wasm'
+import type { WebSocketRequest } from '@kittycad/lib'
 
 declare global {
   interface Window {
@@ -431,7 +433,25 @@ export default class EditorManager {
   // This is handled by the code mirror kcl plugin.
   // If you call this function from somewhere else, you best know wtf you are
   // doing. (jess)
-  handleOnViewUpdate(viewUpdate: ViewUpdate): void {
+  handleOnViewUpdate(
+    viewUpdate: ViewUpdate,
+    processCodeMirrorRanges: ({
+      codeMirrorRanges,
+      selectionRanges,
+      isShiftDown,
+      ast,
+      artifactGraph,
+    }: {
+      codeMirrorRanges: readonly SelectionRange[]
+      selectionRanges: Selections
+      isShiftDown: boolean
+      ast: Program
+      artifactGraph: ArtifactGraph
+    }) => null | {
+      modelingEvent: ModelingMachineEvent
+      engineEvents: WebSocketRequest[]
+    }
+  ): void {
     if (!this._editorView) {
       this.setEditorView(viewUpdate.view)
     }
