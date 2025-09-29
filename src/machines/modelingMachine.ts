@@ -328,6 +328,7 @@ export type ModelingMachineEvent =
       type: 'equip tool'
       data: { tool: EquipTool }
     }
+  | { type: 'unequip tool' }
 
 // export type MoveDesc = { line: number; snippet: string }
 
@@ -4464,6 +4465,9 @@ export const modelingMachine = setup({
       },
       on: {
         'equip tool': {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        'unequip tool': {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
       },
