@@ -23,8 +23,6 @@ export const useOnPageResize = ({
   const timeoutStart = useRef<number | null>(null)
   const { isStreamAcceptingInput } = useAppState()
   useEffect(() => {
-    // But if the user resizes, and we're stopped or paused, then we want
-    // to try to restart the stream!
     if (!videoWrapperRef.current) return
     if (!videoRef.current) return
     if (!canvasRef.current) return
