@@ -16,6 +16,10 @@ export default defineConfig({
     ],
     deps: {
       external: [/playwright/],
+      // force transpilation of code in e2e
+      inline: [
+        /e2e/,
+      ],
     },
     reporters: ['default', 'junit'],
     outputFile: {
