@@ -26,16 +26,20 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'unit',
-          include: ['src/**/*.unit.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-        }
+          include: [
+            'src/**/*.unit.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+          ],
+        },
       },
       {
         extends: true,
         test: {
           name: 'integration',
-          include: ['src/**/*.integration.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-        }
-      }
-    ]
+          include: [
+            'src/**/*.integration.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+          ],
+        },
+      },
+    ],
   },
 })
