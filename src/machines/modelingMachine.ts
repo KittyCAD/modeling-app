@@ -1,6 +1,6 @@
 import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
-import { assign, fromPromise, setup } from 'xstate'
+import { assign, fromPromise, sendTo, setup } from 'xstate'
 
 import type {
   SetSelections,
@@ -336,6 +336,10 @@ export type ModelingMachineEvent =
     }
   | {
       type: 'Restore default plane visibility'
+    }
+  | {
+      type: 'equip tool'
+      data: { tool: 'center rectangle' | 'dimension' }
     }
 
 // export type MoveDesc = { line: number; snippet: string }
@@ -1466,6 +1470,7 @@ export const modelingMachine = setup({
   },
   // end actions
   actors: {
+    sketchSolveMachine,
     sketchExit: fromPromise(
       async (args: { input: { context: { store: Store } } }) => {
         const store = args.input.context.store
@@ -4543,7 +4548,8 @@ export const modelingMachine = setup({
 
     sketchSolveMode: {
       invoke: {
-        src: sketchSolveMachine,
+        id: 'sketchSolveMachine',
+        src: 'sketchSolveMachine',
         input: ({ context }) => ({
           parentContext: context,
           initialSketchDetails: context.sketchDetails,
@@ -4553,6 +4559,11 @@ export const modelingMachine = setup({
         },
         onError: {
           target: 'idle',
+        },
+      },
+      on: {
+        'equip tool': {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
       },
       description: `Actor defined in separate file`,
