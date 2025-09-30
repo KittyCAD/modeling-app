@@ -1,9 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
-import type {
-  EntityType,
-  ModelingCmdReq,
-  WebSocketRequest,
-} from '@kittycad/lib'
+import type { EntityType, ModelingCmdReq } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type EditorManager from '@src/editor/manager'
 import type CodeManager from '@src/lang/codeManager'
@@ -52,7 +48,7 @@ import type {
   PlaneVisibilityMap,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import type { EditorSelection } from '@codemirror/state'
+import { type handleSelectionBatch as handleSelectionBatchFn } from '@src/lib/selections'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -839,15 +835,7 @@ const defaultSelectionFilter: EntityType[] = [
 function setSelectionFilterToDefault(
   engineCommandManager: EngineCommandManager,
   selectionsToRestore?: Selections,
-  handleSelectionBatch?: ({
-    selections,
-  }: {
-    selections: Selections
-  }) => {
-    engineEvents: WebSocketRequest[]
-    codeMirrorSelection: EditorSelection
-    updateSceneObjectColors: () => void
-  }
+  handleSelectionBatch?: typeof handleSelectionBatchFn
 ) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   setSelectionFilter(
@@ -863,15 +851,7 @@ function setSelectionFilter(
   filter: EntityType[],
   engineCommandManager: EngineCommandManager,
   selectionsToRestore?: Selections,
-  handleSelectionBatch?: ({
-    selections,
-  }: {
-    selections: Selections
-  }) => {
-    engineEvents: WebSocketRequest[]
-    codeMirrorSelection: EditorSelection
-    updateSceneObjectColors: () => void
-  }
+  handleSelectionBatch?: typeof handleSelectionBatchFn
 ) {
   const { engineEvents } =
     selectionsToRestore && handleSelectionBatch
