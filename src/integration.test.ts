@@ -4657,6 +4657,32 @@ describe('operations.test.ts', () => {
       const variableName = getOperationVariableName(op, program)
       expect(variableName).toBe('myVar')
     })
+    it('finds the alias name from a module instance', async () => {
+      const op = moduleBegin('foo.kcl')
+      if (op.type !== 'GroupBegin') {
+        throw new Error('Expected operation to be a GroupBegin')
+      }
+      const code = `import "foo.kcl" as bar`
+      // Make the path match the code.
+      op.nodePath = await buildNodePath(code, code)
+
+      const program = assertParse(code)
+      const variableName = getOperationVariableName(op, program)
+      expect(variableName).toBe('bar')
+    })
+    it('fails to find the alias name from a module instance without alias', async () => {
+      const op = moduleBegin('foo.kcl')
+      if (op.type !== 'GroupBegin') {
+        throw new Error('Expected operation to be a GroupBegin')
+      }
+      const code = `import "foo.kcl"`
+      // Make the path match the code.
+      op.nodePath = await buildNodePath(code, code)
+
+      const program = assertParse(code)
+      const variableName = getOperationVariableName(op, program)
+      expect(variableName).toBeUndefined()
+    })
     it('finds the variable name inside a function with simple assignment', async () => {
       const op = stdlib('stdLibFn')
       if (op.type !== 'StdLibCall') {
