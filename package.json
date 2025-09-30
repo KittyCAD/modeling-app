@@ -121,6 +121,7 @@
     "circular-deps:diff": "./scripts/diff-circular-deps.sh",
     "circular-deps:diff:nodejs": "npm run circular-deps:diff || node ./scripts/diff.js",
     "files:set-version": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json",
+    "files:set-windows-codesign-config": "./scripts/set-windows-codesign-config.sh",
     "files:set-notes": "./scripts/set-files-notes.sh",
     "files:flip-to-staging": "./scripts/flip-files-to-staging.sh",
     "files:flip-to-staging:windows": "powershell -ExecutionPolicy Bypass -File ./scripts/flip-files-to-staging.ps1",
