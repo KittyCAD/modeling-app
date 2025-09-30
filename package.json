@@ -121,6 +121,7 @@
     "circular-deps:diff": "./scripts/diff-circular-deps.sh",
     "circular-deps:diff:nodejs": "npm run circular-deps:diff || node ./scripts/diff.js",
     "files:set-version": "echo \"$(jq --arg v \"$VERSION\" '.version=$v' package.json --indent 2)\" > package.json",
+    "files:set-windows-codesign-config": "./scripts/set-windows-codesign-config.sh",
     "files:set-notes": "./scripts/set-files-notes.sh",
     "files:flip-to-staging": "./scripts/flip-files-to-staging.sh",
     "files:flip-to-staging:windows": "powershell -ExecutionPolicy Bypass -File ./scripts/flip-files-to-staging.ps1",
@@ -234,7 +235,7 @@
     "vite-plugin-package-version": "^1.1.0",
     "vite-plugin-top-level-await": "^1.5.0",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^3.1.2",
+    "vitest": "^3.2.4",
     "vitest-webgl-canvas-mock": "^1.1.0",
     "ws": "^8.18.3"
   }
