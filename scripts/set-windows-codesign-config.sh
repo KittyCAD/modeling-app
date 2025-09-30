@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euo pipefail
+
 if [ -z "$WINDOWS_CERTIFICATE_THUMBPRINT" ]; then
   echo "Error: Please set WINDOWS_CERTIFICATE_THUMBPRINT."
   exit 1
