@@ -78,6 +78,14 @@ async fn inner_chamfer(
 
     let second_distance = second_length.clone().map(|x| LengthUnit(x.to_mm()));
     let angle = angle.map(|x| Angle::from_degrees(x.to_degrees(exec_state, args.source_range)));
+    if let Some(angle) = angle {
+        if angle.gt(&Angle::quarter_circle()) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "The angle of a chamfer cannot exceed 90 degrees.".to_string(),
+                vec![args.source_range],
+            )));
+        }
+    }
 
     let strategy = if second_length.is_some() || angle.is_some() || custom_profile.is_some() {
         CutStrategy::Csg
