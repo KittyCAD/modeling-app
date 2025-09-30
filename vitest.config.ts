@@ -8,7 +8,6 @@ export default defineConfig({
     globalSetup: './src/test-setup/global-setup.ts',
     environment: 'happy-dom',
     setupFiles: ['./src/setupTests.ts'],
-    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
@@ -22,5 +21,21 @@ export default defineConfig({
     outputFile: {
       junit: 'test-results/junit.xml',
     },
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: 'unit',
+          include: ['src/**/*.unit.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+        }
+      },
+      {
+        extends: true,
+        test: {
+          name: 'integration',
+          include: ['src/**/*.integration.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+        }
+      }
+    ]
   },
 })
