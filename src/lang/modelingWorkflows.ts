@@ -17,7 +17,7 @@ import {
   EXECUTION_TYPE_NONE,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err, reject } from '@src/lib/trap'
 
 /**

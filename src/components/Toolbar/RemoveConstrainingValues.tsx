@@ -3,7 +3,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import {
   getRemoveConstraintsTransforms,
   transformAstSketchLines,
@@ -11,7 +11,7 @@ import {
 import type { TransformInfo } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type { Expr, PathToNode, Program } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/lib/selections'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 

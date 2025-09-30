@@ -37,7 +37,6 @@ import { ConnectionManager } from '@src/network/connectionManager'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 
-export const codeManager = new CodeManager()
 export const engineCommandManager = new ConnectionManager()
 export const rustContext = new RustContext(engineCommandManager)
 
@@ -56,6 +55,7 @@ export const sceneInfra = new SceneInfra(engineCommandManager)
 
 // This needs to be after sceneInfra and engineCommandManager are is created.
 export const editorManager = new EditorManager(engineCommandManager)
+export const codeManager = new CodeManager({ editorManager })
 
 // This needs to be after codeManager is created.
 // (lee: what??? why?)
@@ -248,6 +248,9 @@ export const mlEphantManagerActor = appActor.system.get(
 export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
   (typeof appMachineActors)[typeof COMMAND_BAR]
 >
+
+// TODO: proper dependency management
+sceneEntitiesManager.commandBarActor = commandBarActor
 
 export const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
   (typeof appMachineActors)[typeof BILLING]
