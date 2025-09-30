@@ -133,7 +133,6 @@ import {
   codeRefFromRange,
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type { Coords2d } from '@src/lang/std/sketch'
 import {
   addCallExpressionsToPipe,
@@ -180,6 +179,7 @@ import type {
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -189,7 +189,7 @@ type Vec3Array = [number, number, number]
 // That mostly mean sketch elements.
 // Cameras, controls, raycasters, etc are handled by sceneInfra
 export class SceneEntities {
-  readonly engineCommandManager: EngineCommandManager
+  readonly engineCommandManager: ConnectionManager
   readonly sceneInfra: SceneInfra
   readonly editorManager: EditorManager
   readonly codeManager: CodeManager
@@ -204,7 +204,7 @@ export class SceneEntities {
   getSettings: (() => SettingsType) | null = null
 
   constructor(
-    engineCommandManager: EngineCommandManager,
+    engineCommandManager: ConnectionManager,
     sceneInfra: SceneInfra,
     editorManager: EditorManager,
     codeManager: CodeManager,
@@ -408,7 +408,6 @@ export class SceneEntities {
     // This makes sure axis lines are picked after segment lines in case of overlapping
     xAxisMesh.position.z = -0.1
     yAxisMesh.position.z = -0.1
-
     xAxisMesh.userData = {
       type: X_AXIS,
       baseColor: baseXColor,
@@ -3844,6 +3843,13 @@ function prepareTruncatedAst(
     Number(sketchNodePaths[sketchNodePaths.length - 1]?.[1]?.[0]) ||
     ast.body.length
   const _ast = structuredClone(ast)
+
+  if (!sketchNodePaths.length) {
+    return {
+      truncatedAst: _ast,
+      variableDeclarationName: '',
+    }
+  }
 
   const _node = getNodeFromPath<Node<VariableDeclaration>>(
     _ast,

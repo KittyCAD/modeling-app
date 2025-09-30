@@ -31,7 +31,7 @@ jobs:
           cache: 'npm'
 
       - run: npm install
-      - uses: taiki-e/install-action@c07504cae06f832dc8de08911c9a9c5cddb0d2d3
+      - uses: taiki-e/install-action@5ab30948b991e8d6aa5a6c1e33c6aea130c6de65
         with:
           tool: wasm-pack
 
@@ -78,7 +78,7 @@ jobs:
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         uses: KittyCAD/gha-actions-public/pr-commit@main
         with:
-          app-id: ${{ secrets.GH_ORG_APP_ID }}
-          private-key: ${{ secrets.GH_ORG_APP_PRIVATE_KEY }}
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           commit-message: "Look at this (photo)Graph *in the voice of Nickelback*"
 
