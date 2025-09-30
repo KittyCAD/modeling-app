@@ -675,9 +675,9 @@ export function deleteSegmentOrProfileFromPipeExpression(
   memVars: VariableMap,
   code: string,
   pathToNode: PathToNode,
-  getConstraintInfoKw: typeof getConstraintInfoKwFn,
-  removeSingleConstraint: typeof removeSingleConstraintFn,
-  transformAstSketchLines: typeof transformAstSketchLinesFn
+  getConstraintInfoKw: typeof GetConstraintInfoKwFn,
+  removeSingleConstraint: typeof RemoveSingleConstraintFn,
+  transformAstSketchLines: typeof TransformAstSketchLinesFn
 ): Node<Program> | Error {
   let _modifiedAst = structuredClone(modifiedAst)
 
@@ -765,8 +765,8 @@ export function removeSingleConstraintInfo(
   argDetails: SimplifiedArgDetails,
   ast: Node<Program>,
   memVars: VariableMap,
-  removeSingleConstraint: typeof removeSingleConstraintFn,
-  transformAstSketchLines: typeof transformAstSketchLinesFn
+  removeSingleConstraint: typeof RemoveSingleConstraintFn,
+  transformAstSketchLines: typeof TransformAstSketchLinesFn
 ):
   | {
       modifiedAst: Node<Program>
