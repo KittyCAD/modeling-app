@@ -93,7 +93,10 @@ import {
   addRevolve,
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
-import { addPatternCircular3D } from '@src/lang/modifyAst/pattern3D'
+import {
+  addPatternCircular3D,
+  addPatternLinear3D,
+} from '@src/lang/modifyAst/pattern3D'
 import {
   addAppearance,
   addClone,
@@ -224,6 +227,10 @@ export type ModelingMachineEvent =
   | {
       type: 'Pattern Circular 3D'
       data: ModelingCommandSchema['Pattern Circular 3D']
+    }
+  | {
+      type: 'Pattern Linear 3D'
+      data: ModelingCommandSchema['Pattern Linear 3D']
     }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
@@ -3082,6 +3089,42 @@ export const modelingMachine = setup({
       }
     ),
 
+    patternLinear3dAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Pattern Linear 3D'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addPatternLinear3D({
+          ...input,
+          ast,
+          artifactGraph,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+
     /* Pierre: looks like somewhat of a one-off */
     'reeval-node-paths': fromPromise(
       async ({
@@ -3311,6 +3354,10 @@ export const modelingMachine = setup({
         },
         'Pattern Circular 3D': {
           target: 'Pattern Circular 3D',
+          guard: 'no kcl errors',
+        },
+        'Pattern Linear 3D': {
+          target: 'Pattern Linear 3D',
           guard: 'no kcl errors',
         },
       },
@@ -4878,6 +4925,20 @@ export const modelingMachine = setup({
         id: 'patternCircular3dAstMod',
         input: ({ event }) =>
           event.type !== 'Pattern Circular 3D' ? undefined : event.data,
+        onDone: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Pattern Linear 3D': {
+      invoke: {
+        src: 'patternLinear3dAstMod',
+        id: 'patternLinear3dAstMod',
+        input: ({ event }) =>
+          event.type !== 'Pattern Linear 3D' ? undefined : event.data,
         onDone: 'idle',
         onError: {
           target: 'idle',

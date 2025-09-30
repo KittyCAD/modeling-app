@@ -243,6 +243,14 @@ export type ModelingCommandSchema = {
     rotateDuplicates?: boolean
     useOriginal?: boolean
   }
+  'Pattern Linear 3D': {
+    nodeToEdit?: PathToNode
+    solids: Selections
+    instances: KclCommandValue
+    distance: KclCommandValue
+    axis: string
+    useOriginal?: boolean
+  }
   'Boolean Subtract': {
     solids: Selections
     tools: Selections
@@ -1195,6 +1203,47 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  'Pattern Linear 3D': {
+    description: 'Create a linear pattern of 3D solids along an axis.',
+    icon: 'patternLinear3d',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      solids: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      instances: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: KCL_DEFAULT_INSTANCES,
+      },
+      distance: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: KCL_DEFAULT_LENGTH,
+      },
+      axis: {
+        inputType: 'options',
+        required: true,
+        defaultValue: KCL_AXIS_X,
+        options: [
+          { name: 'X-axis', isCurrent: true, value: KCL_AXIS_X },
+          { name: 'Y-axis', value: KCL_AXIS_Y },
+          { name: 'Z-axis', value: KCL_AXIS_Z },
+        ],
+      },
+      useOriginal: {
+        inputType: 'boolean',
+        required: false,
+      },
+    },
+  },
 }
 
-modelingMachineCommandConfig
+modelingMachineCommandConfig // TODO: update with satisfies?
