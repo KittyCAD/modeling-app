@@ -35,9 +35,7 @@ import type {
   ModelingMachineEvent,
   modelingMachine,
 } from '@src/machines/modelingMachine'
-import type { SelectionRange } from '@codemirror/state'
-import type { ArtifactGraph, Program } from '@src/lang/wasm'
-import type { WebSocketRequest } from '@kittycad/lib'
+import { type processCodeMirrorRanges as processCodeMirrorRangesFn } from '@src/lib/selections'
 
 declare global {
   interface Window {
@@ -435,22 +433,7 @@ export default class EditorManager {
   // doing. (jess)
   handleOnViewUpdate(
     viewUpdate: ViewUpdate,
-    processCodeMirrorRanges: ({
-      codeMirrorRanges,
-      selectionRanges,
-      isShiftDown,
-      ast,
-      artifactGraph,
-    }: {
-      codeMirrorRanges: readonly SelectionRange[]
-      selectionRanges: Selections
-      isShiftDown: boolean
-      ast: Program
-      artifactGraph: ArtifactGraph
-    }) => null | {
-      modelingEvent: ModelingMachineEvent
-      engineEvents: WebSocketRequest[]
-    }
+    processCodeMirrorRanges: typeof processCodeMirrorRangesFn
   ): void {
     if (!this._editorView) {
       this.setEditorView(viewUpdate.view)

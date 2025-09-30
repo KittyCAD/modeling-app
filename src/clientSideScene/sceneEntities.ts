@@ -949,35 +949,35 @@ export class SceneEntities {
         const input: SegmentInputs =
           segment.type === 'Circle'
             ? {
-              type: 'arc-segment',
-              from: segment.from,
-              to: segment.from,
-              ccw: true,
-              center: segment.center,
-              radius: segment.radius,
-            }
-            : segment.type === 'CircleThreePoint' ||
-              segment.type === 'ArcThreePoint'
-              ? {
-                type: 'circle-three-point-segment',
-                p1: segment.p1,
-                p2: segment.p2,
-                p3: segment.p3,
+                type: 'arc-segment',
+                from: segment.from,
+                to: segment.from,
+                ccw: true,
+                center: segment.center,
+                radius: segment.radius,
               }
+            : segment.type === 'CircleThreePoint' ||
+                segment.type === 'ArcThreePoint'
+              ? {
+                  type: 'circle-three-point-segment',
+                  p1: segment.p1,
+                  p2: segment.p2,
+                  p3: segment.p3,
+                }
               : segment.type === 'Arc'
                 ? {
-                  type: 'arc-segment',
-                  from: segment.from,
-                  center: segment.center,
-                  to: segment.to,
-                  ccw: segment.ccw,
-                  radius: segment.radius,
-                }
+                    type: 'arc-segment',
+                    from: segment.from,
+                    center: segment.center,
+                    to: segment.to,
+                    ccw: segment.ccw,
+                    radius: segment.radius,
+                  }
                 : {
-                  type: 'straight-segment',
-                  from: segment.from,
-                  to: segment.to,
-                }
+                    type: 'straight-segment',
+                    from: segment.from,
+                    to: segment.to,
+                  }
         const startRange = _node1.node.start
         const endRange = _node1.node.end
         const sourceRange: SourceRange = [startRange, endRange, 0]
@@ -1195,11 +1195,11 @@ export class SceneEntities {
             expressions: [
               segmentName === 'tangentialArc'
                 ? createCallExpressionStdLibKw('tangentialArc', null, [
-                  createLabeledArg(ARG_END_ABSOLUTE, originCoords),
-                ])
+                    createLabeledArg(ARG_END_ABSOLUTE, originCoords),
+                  ])
                 : createCallExpressionStdLibKw('line', null, [
-                  createLabeledArg(ARG_END_ABSOLUTE, originCoords),
-                ]),
+                    createLabeledArg(ARG_END_ABSOLUTE, originCoords),
+                  ]),
             ],
           })
           if (trap(modifiedAst)) return Promise.reject(modifiedAst)
@@ -1234,7 +1234,7 @@ export class SceneEntities {
           const isHorizontal =
             radToDeg(Math.abs(angle)) < ANGLE_SNAP_THRESHOLD_DEGREES ||
             Math.abs(radToDeg(Math.abs(angle) - Math.PI)) <
-            ANGLE_SNAP_THRESHOLD_DEGREES
+              ANGLE_SNAP_THRESHOLD_DEGREES
           const isVertical =
             Math.abs(radToDeg(Math.abs(angle) - Math.PI / 2)) <
             ANGLE_SNAP_THRESHOLD_DEGREES
@@ -1336,7 +1336,7 @@ export class SceneEntities {
         })
         const object =
           activeSegmentsInCorrectExpression[
-          activeSegmentsInCorrectExpression.length - 1
+            activeSegmentsInCorrectExpression.length - 1
           ]
         await this.onDragSegment({
           intersection2d: args.intersectionPoint.twoD,
@@ -2272,10 +2272,10 @@ export class SceneEntities {
         const maybeSnapToProfileStart = doNotSnapAsThreePointArcIsTheOnlySegment
           ? new Vector2(...maybeSnapToAxis)
           : this.maybeSnapProfileStartIntersect2d({
-            sketchEntryNodePath,
-            intersects: args.intersects,
-            intersection2d: new Vector2(...maybeSnapToAxis),
-          })
+              sketchEntryNodePath,
+              intersects: args.intersects,
+              intersection2d: new Vector2(...maybeSnapToAxis),
+            })
 
         if (sketchInit.type === 'PipeExpression') {
           const moddedResult = changeSketchArguments(
@@ -2753,7 +2753,7 @@ export class SceneEntities {
           mouseEvent: mouseEvent,
         })
       },
-      onMove: () => { },
+      onMove: () => {},
       onClick: (args) => {
         // If there is a valid camera interaction that matches, do that instead
         const interaction = this.sceneInfra.camControls.getInteractionType(
@@ -2845,13 +2845,13 @@ export class SceneEntities {
                 // Intersects only one axis
                 const axisLine: [Coords2d, Coords2d] = intersectsXAxis
                   ? [
-                    [0, 0],
-                    [1, 0],
-                  ]
+                      [0, 0],
+                      [1, 0],
+                    ]
                   : [
-                    [0, 0],
-                    [0, 1],
-                  ]
+                      [0, 0],
+                      [0, 1],
+                    ]
                 // See if that axis line intersects with the tangent direction
                 // Note: this includes both positive and negative tangent directions as it just checks 2 lines.
                 intersectionPoint = calculateIntersectionOfTwoLines({
@@ -2865,7 +2865,7 @@ export class SceneEntities {
               if (
                 intersectionPoint &&
                 getLength(intersectionPoint, snappedPoint) / orthoFactor <
-                SNAP_TOLERANCE_PIXELS
+                  SNAP_TOLERANCE_PIXELS
               ) {
                 snappedPoint = intersectionPoint
                 snappedToTangent = true
@@ -2910,7 +2910,7 @@ export class SceneEntities {
       ] as const
 
       if (!intersectsXAxis && !intersectsYAxis) {
-        ; ({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
+        ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
           snappedPoint,
           mouseEvent
         ))
@@ -2970,9 +2970,9 @@ export class SceneEntities {
       .find(isGroupStartProfileForCurrentProfile(sketchEntryNodePath))
     const intersection2d = intersectsProfileStart
       ? new Vector2(
-        intersectsProfileStart.position.x,
-        intersectsProfileStart.position.y
-      )
+          intersectsProfileStart.position.x,
+          intersectsProfileStart.position.y
+        )
       : _intersection2d
     return intersection2d
   }
@@ -3053,9 +3053,9 @@ export class SceneEntities {
 
     let modded:
       | {
-        modifiedAst: Node<Program>
-        pathToNode: PathToNode
-      }
+          modifiedAst: Node<Program>
+          pathToNode: PathToNode
+        }
       | Error
 
     const getChangeSketchInput = (): SegmentInputs => {
@@ -3073,7 +3073,7 @@ export class SceneEntities {
           // distance between the center and the drag point
           radius: Math.sqrt(
             (group.userData.center[0] - dragTo[0]) ** 2 +
-            (group.userData.center[1] - dragTo[1]) ** 2
+              (group.userData.center[1] - dragTo[1]) ** 2
           ),
           ccw: true,
         }
@@ -3100,7 +3100,7 @@ export class SceneEntities {
         const newCenter = dragTo
         const radius = Math.sqrt(
           (newCenter[0] - group.userData.from[0]) ** 2 +
-          (newCenter[1] - group.userData.from[1]) ** 2
+            (newCenter[1] - group.userData.from[1]) ** 2
         )
         const endAngle = Math.atan2(
           group.userData.to[1] - group.userData.center[1],
@@ -3661,7 +3661,7 @@ export class SceneEntities {
           isSelected
             ? SEGMENT_BLUE
             : parent?.userData?.baseColor ||
-            getThemeColorForThreeJs(this.sceneInfra.theme)
+                getThemeColorForThreeJs(this.sceneInfra.theme)
         )
         updateExtraSegments(parent, 'hoveringLine', false)
         updateExtraSegments(parent, 'selected', isSelected)
@@ -3855,10 +3855,10 @@ function prepareTruncatedAst(
   draftSegment?: DraftSegment
 ):
   | {
-    truncatedAst: Node<Program>
-    // can I remove the below?
-    variableDeclarationName: string
-  }
+      truncatedAst: Node<Program>
+      // can I remove the below?
+      variableDeclarationName: string
+    }
   | Error {
   const bodyStartIndex = Number(sketchNodePaths?.[0]?.[1]?.[0]) || 0
   const bodyEndIndex =
@@ -3907,7 +3907,7 @@ function prepareTruncatedAst(
         ),
       ])
     }
-    ; (
+    ;(
       (_ast.body[bodyStartIndex] as VariableDeclaration).declaration
         .init as PipeExpression
     ).body.push(newSegment)
@@ -3922,10 +3922,10 @@ function prepareTruncatedAst(
       (updatedSrcRangeAst.body[bodyStartIndex] as VariableDeclaration)
         .declaration.init as PipeExpression
     ).body.slice(-1)[0]
-      ; (
-        (_ast.body[bodyStartIndex] as VariableDeclaration).declaration
-          .init as PipeExpression
-      ).body.slice(-1)[0].start = lastPipeItem.start
+    ;(
+      (_ast.body[bodyStartIndex] as VariableDeclaration).declaration
+        .init as PipeExpression
+    ).body.slice(-1)[0].start = lastPipeItem.start
 
     _ast.end = lastPipeItem.end
     const varDec = _ast.body[bodyStartIndex] as Node<VariableDeclaration>
