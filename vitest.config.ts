@@ -27,7 +27,7 @@ export default defineConfig({
         test: {
           name: 'unit',
           include: [
-            'src/**/*.unit.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+            'src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
           ],
         },
       },
@@ -36,7 +36,7 @@ export default defineConfig({
         test: {
           name: 'integration',
           include: [
-            'src/**/*.integration.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+            'src/**/*.spec.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
           ],
         },
       },
