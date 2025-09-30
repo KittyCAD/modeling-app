@@ -15,7 +15,7 @@ import {
   nodePathFromRange,
   type ParseResult,
 } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/lib/selections'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err, reportRejection } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
@@ -94,7 +94,7 @@ import {
   getStringValue,
 } from '@src/lib/kclHelpers'
 import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
 import { isPointsCCW } from '@src/lang/wasm'
 import { closestPointOnRay } from '@src/lib/utils2d'
 import { expect } from 'vitest'
@@ -112,6 +112,10 @@ import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import { getTagDeclaratorsInProgram } from '@src/lang/queryAst/getTagDeclaratorsInProgram'
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+import {
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
 
 // Unfortunately, we need the real engine here it seems to get sweep faces populated
 beforeAll(async () => {
@@ -6794,7 +6798,9 @@ p3 = [342.51, 216.38],
               constraint.pathToNode,
               constraint.argPosition,
               ast,
-              kclManager.variables
+              kclManager.variables,
+              removeSingleConstraint,
+              transformAstSketchLines
             )
             if (!mod) {
               throw new Error('Failed to remove constraint info')
