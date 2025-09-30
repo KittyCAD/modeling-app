@@ -1,15 +1,15 @@
-import ms from 'ms'
+import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
-import type { Prompt } from '@src/lib/prompt'
-import type { IResponseMlConversation } from '@src/lib/textToCad'
-import { useState } from 'react'
-import type { Models } from '@kittycad/lib'
 import { Thinking } from '@src/components/Thinking'
+import type { Prompt } from '@src/lib/prompt'
+import type { Conversation } from '@kittycad/lib'
+import ms from 'ms'
+import { useState } from 'react'
 
 // In the future we can split this out but the code is 99% the same as
 // the PromptCard, which came first.
-export interface ConvoCardProps extends IResponseMlConversation {
-  onAction?: (prompt: IResponseMlConversation['first_prompt']) => void
+export interface ConvoCardProps extends Conversation {
+  onAction?: (prompt: Conversation['first_prompt']) => void
 }
 
 export const ConvoCard = (props: ConvoCardProps) => {
@@ -39,9 +39,9 @@ export const ConvoCard = (props: ConvoCardProps) => {
   )
 }
 
-export interface PromptCardProps extends Prompt {
+export type PromptCardProps = Prompt & {
   disabled?: boolean
-  thoughts?: Models['MlCopilotServerMessage_type'][]
+  thoughts?: MlCopilotServerMessage[]
   userAvatar?: string
   onSeeReasoning: (id: Prompt['id']) => void
   onAction?: (id: Prompt['id'], prompt: Prompt['prompt']) => void
@@ -112,7 +112,7 @@ export const PromptCardActionButton = (props: {
 
 export const PromptCardStatus = (props: {
   id: Prompt['id']
-  thoughts?: Models['MlCopilotServerMessage_type'][]
+  thoughts?: MlCopilotServerMessage[]
   status: Prompt['status']
   onlyShowImmediateThought: boolean
   startedAt: Prompt['started_at']
@@ -122,6 +122,7 @@ export const PromptCardStatus = (props: {
   const thinker = (
     <Thinking
       thoughts={props.thoughts}
+      isDone={props.thoughts?.some((t) => 'end_of_stream' in t) || false}
       onlyShowImmediateThought={props.onlyShowImmediateThought}
     />
   )
@@ -195,8 +196,8 @@ export const PromptCard = (props: PromptCardProps) => {
 
   const cssPrompt =
     props.status !== 'failed'
-      ? 'select-text break-all shadow-sm bg-2 text-default border b-4 rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
-      : 'select-text break-all shadow-sm bg-2 text-2 border b-4 rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
+      ? 'select-text whitespace-pre-line hyphens-auto shadow-sm bg-2 text-default border b-4 rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
+      : 'select-text whitespace-pre-line hyphens-auto shadow-sm bg-2 text-2 border b-4 rounded-t-md rounded-bl-md pl-4 pr-4 pt-2 pb-2'
 
   return (
     <div className={cssCard}>
@@ -208,7 +209,9 @@ export const PromptCard = (props: PromptCardProps) => {
             disabled={props.disabled}
             onFeedback={(...args) => props.onFeedback?.(...args)}
           />
-          <div className={cssPrompt}>{props.prompt}</div>
+          <div style={{ wordBreak: 'break-word' }} className={cssPrompt}>
+            {props.prompt}
+          </div>
         </div>
         <div className="w-fit-content">
           <AvatarUser src={props.userAvatar} />

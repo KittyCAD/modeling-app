@@ -8,21 +8,17 @@ description: Variables in memory after executing i-beam.kcl
     "value": 4.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "beamLength": {
     "type": "Number",
     "value": 6.0,
     "ty": {
+      "ft": null,
       "type": "Known",
-      "type": "Length",
-      "type": "Feet"
+      "type": "Length"
     }
   },
   "flangeThickness": {
@@ -30,12 +26,8 @@ description: Variables in memory after executing i-beam.kcl
     "value": 0.293,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "flangeWidth": {
@@ -43,12 +35,8 @@ description: Variables in memory after executing i-beam.kcl
     "value": 2.663,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "iBeam": {
@@ -113,9 +101,7 @@ description: Variables in memory after executing i-beam.kcl
               2.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -132,9 +118,7 @@ description: Variables in memory after executing i-beam.kcl
               1.707
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -151,9 +135,7 @@ description: Variables in memory after executing i-beam.kcl
               1.707
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -175,9 +157,7 @@ description: Variables in memory after executing i-beam.kcl
               1.25
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -194,9 +174,7 @@ description: Variables in memory after executing i-beam.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -206,9 +184,7 @@ description: Variables in memory after executing i-beam.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -216,25 +192,19 @@ description: Variables in memory after executing i-beam.kcl
             "x": -1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -246,9 +216,7 @@ description: Variables in memory after executing i-beam.kcl
             0.0,
             2.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -257,16 +225,11 @@ description: Variables in memory after executing i-beam.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 72.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -275,12 +238,8 @@ description: Variables in memory after executing i-beam.kcl
     "value": 0.457,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "webThickness": {
@@ -288,12 +247,8 @@ description: Variables in memory after executing i-beam.kcl
     "value": 0.193,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

@@ -1,31 +1,31 @@
-import {
-  type DesktopOnboardingPath,
-  desktopOnboardingPaths,
-} from '@src/lib/onboardingPaths'
-import { useRouteLoaderData, type RouteObject } from 'react-router-dom'
-import {
-  isModelingCmdGroupReady,
-  OnboardingButtons,
-  OnboardingCard,
-  useAdvanceOnboardingOnFormSubmit,
-  useOnboardingHighlight,
-  useOnboardingPanes,
-  useOnModelingCmdGroupReadyOnce,
-} from '@src/routes/Onboarding/utils'
-import { useEffect, useState } from 'react'
-import { commandBarActor, systemIOActor } from '@src/lib/singletons'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { joinRouterPaths, PATHS } from '@src/lib/paths'
-import { ONBOARDING_PROJECT_NAME } from '@src/lib/constants'
-import type { IndexLoaderData } from '@src/lib/types'
-import type { Selections } from '@src/lib/selections'
 import { Spinner } from '@src/components/Spinner'
+import { ONBOARDING_PROJECT_NAME } from '@src/lib/constants'
 import {
   modifiedFanHousingBrowser,
   modifiedParametersDesktop,
 } from '@src/lib/exampleKcl'
+import {
+  type DesktopOnboardingPath,
+  desktopOnboardingPaths,
+} from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS, joinRouterPaths } from '@src/lib/paths'
+import type { Selections } from '@src/lib/selections'
+import { commandBarActor, systemIOActor } from '@src/lib/singletons'
+import type { IndexLoaderData } from '@src/lib/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  OnboardingButtons,
+  OnboardingCard,
+  isModelingCmdGroupReady,
+  useAdvanceOnboardingOnFormSubmit,
+  useOnModelingCmdGroupReadyOnce,
+  useOnboardingHighlight,
+  useOnboardingPanes,
+} from '@src/routes/Onboarding/utils'
+import { useEffect, useState } from 'react'
+import { type RouteObject, useRouteLoaderData } from 'react-router-dom'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -173,12 +173,9 @@ function TextToCad() {
           improving it every day.
         </p>
         <p className="my-4">
-          <strong>One</strong> Text-to-CAD generation costs{' '}
-          <strong>one credit per minute</strong>, rounded up to the nearest
-          minute. A large majority of Text-to-CAD generations take under a
-          minute. If you are on the free plan, you get 20 free credits per
-          month. With any of our paid plans, you get unlimited Text-to-CAD
-          generations.
+          Our free plan includes a limited number of Text-to-CAD generations
+          each month. Upgrade to a paid plan for additional credits. Pro and Org
+          plans come with unlimited Text-to-CAD generations.
         </p>
         <p className="my-4">
           Let’s walk through an example of how to use Text-to-CAD.

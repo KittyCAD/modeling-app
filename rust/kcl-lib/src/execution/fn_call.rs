@@ -5,15 +5,14 @@ use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo,
-        TagIdentifier, annotations,
+        BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier,
+        annotations,
         cad_op::{Group, OpArg, OpKclValue, Operation},
-        kcl_value::FunctionSource,
+        kcl_value::{FunctionBody, FunctionSource},
         memory,
         types::RuntimeType,
     },
-    parsing::ast::types::{CallExpressionKw, DefaultParamVal, FunctionExpression, Node, Program, Type},
-    std::StdFn,
+    parsing::ast::types::{CallExpressionKw, Node, Type},
 };
 
 #[derive(Debug, Clone)]
@@ -122,91 +121,6 @@ impl Arg {
     }
 }
 
-#[derive(Debug)]
-struct FunctionDefinition<'a> {
-    input_arg: Option<(String, Option<Type>)>,
-    named_args: IndexMap<String, (Option<DefaultParamVal>, Option<Type>)>,
-    return_type: Option<Node<Type>>,
-    deprecated: bool,
-    experimental: bool,
-    include_in_feature_tree: bool,
-    is_std: bool,
-    body: FunctionBody<'a>,
-}
-
-#[derive(Debug)]
-enum FunctionBody<'a> {
-    Rust(StdFn),
-    Kcl(&'a Node<Program>, EnvironmentRef),
-}
-
-impl<'a> From<&'a FunctionSource> for FunctionDefinition<'a> {
-    fn from(value: &'a FunctionSource) -> Self {
-        #[allow(clippy::type_complexity)]
-        fn args_from_ast(
-            ast: &FunctionExpression,
-        ) -> (
-            Option<(String, Option<Type>)>,
-            IndexMap<String, (Option<DefaultParamVal>, Option<Type>)>,
-        ) {
-            let mut input_arg = None;
-            let mut named_args = IndexMap::new();
-            for p in &ast.params {
-                if !p.labeled {
-                    input_arg = Some((
-                        p.identifier.name.clone(),
-                        p.param_type.as_ref().map(|t| t.inner.clone()),
-                    ));
-                    continue;
-                }
-
-                named_args.insert(
-                    p.identifier.name.clone(),
-                    (p.default_value.clone(), p.param_type.as_ref().map(|t| t.inner.clone())),
-                );
-            }
-
-            (input_arg, named_args)
-        }
-
-        match value {
-            FunctionSource::Std {
-                func,
-                ast,
-                props,
-                attrs,
-            } => {
-                let (input_arg, named_args) = args_from_ast(ast);
-                FunctionDefinition {
-                    input_arg,
-                    named_args,
-                    return_type: ast.return_type.clone(),
-                    deprecated: attrs.deprecated,
-                    experimental: attrs.experimental,
-                    include_in_feature_tree: props.include_in_feature_tree,
-                    is_std: true,
-                    body: FunctionBody::Rust(*func),
-                }
-            }
-            FunctionSource::User { ast, memory, .. } => {
-                let (input_arg, named_args) = args_from_ast(ast);
-                FunctionDefinition {
-                    input_arg,
-                    named_args,
-                    return_type: ast.return_type.clone(),
-                    deprecated: false,
-                    experimental: false,
-                    include_in_feature_tree: true,
-                    // TODO I think this might be wrong for pure Rust std functions
-                    is_std: false,
-                    body: FunctionBody::Kcl(&ast.body, *memory),
-                }
-            }
-            FunctionSource::None => unreachable!(),
-        }
-    }
-}
-
 impl Node<CallExpressionKw> {
     #[async_recursion]
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
@@ -290,7 +204,7 @@ impl Node<CallExpressionKw> {
     }
 }
 
-impl FunctionDefinition<'_> {
+impl FunctionSource {
     pub async fn call_kw(
         &self,
         fn_name: Option<String>,
@@ -351,7 +265,7 @@ impl FunctionDefinition<'_> {
                 exec_state.push_op(Operation::GroupBegin {
                     group: Group::FunctionCall {
                         name: fn_name.clone(),
-                        function_source_range: self.as_source_range().unwrap(),
+                        function_source_range: self.ast.as_source_range(),
                         unlabeled_arg: args
                             .unlabeled_kw_arg_unconverted()
                             .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
@@ -369,19 +283,21 @@ impl FunctionDefinition<'_> {
 
         let mut result = match &self.body {
             FunctionBody::Rust(f) => f(exec_state, args).await.map(Some),
-            FunctionBody::Kcl(f, _) => {
+            FunctionBody::Kcl(_) => {
                 if let Err(e) = assign_args_to_params_kw(self, args, exec_state) {
                     exec_state.mut_stack().pop_env();
                     return Err(e);
                 }
 
-                ctx.exec_block(f, exec_state, BodyType::Block).await.map(|_| {
-                    exec_state
-                        .stack()
-                        .get(memory::RETURN_NAME, f.as_source_range())
-                        .ok()
-                        .cloned()
-                })
+                ctx.exec_block(&self.ast.body, exec_state, BodyType::Block)
+                    .await
+                    .map(|_| {
+                        exec_state
+                            .stack()
+                            .get(memory::RETURN_NAME, self.ast.as_source_range())
+                            .ok()
+                            .cloned()
+                    })
             }
         };
 
@@ -407,36 +323,14 @@ impl FunctionDefinition<'_> {
 
         coerce_result_type(result, self, exec_state)
     }
-
-    // Postcondition: result.is_some() if function is not in the standard library.
-    fn as_source_range(&self) -> Option<SourceRange> {
-        match &self.body {
-            FunctionBody::Rust(_) => None,
-            FunctionBody::Kcl(p, _) => Some(p.as_source_range()),
-        }
-    }
 }
 
-impl FunctionBody<'_> {
+impl FunctionBody {
     fn prep_mem(&self, exec_state: &mut ExecState) {
         match self {
             FunctionBody::Rust(_) => exec_state.mut_stack().push_new_root_env(true),
-            FunctionBody::Kcl(_, memory) => exec_state.mut_stack().push_new_env_for_call(*memory),
+            FunctionBody::Kcl(memory) => exec_state.mut_stack().push_new_env_for_call(*memory),
         }
-    }
-}
-
-impl FunctionSource {
-    pub async fn call_kw(
-        &self,
-        fn_name: Option<String>,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-        args: Args<Sugary>,
-        callsite: SourceRange,
-    ) -> Result<Option<KclValue>, KclError> {
-        let def: FunctionDefinition = self.into();
-        def.call_kw(fn_name, exec_state, ctx, args, callsite).await
     }
 }
 
@@ -591,7 +485,7 @@ fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, e
 
 fn type_check_params_kw(
     fn_name: Option<&str>,
-    fn_def: &FunctionDefinition<'_>,
+    fn_def: &FunctionSource,
     mut args: Args<Sugary>,
     exec_state: &mut ExecState,
 ) -> Result<Args<Desugared>, KclError> {
@@ -651,13 +545,13 @@ fn type_check_params_kw(
                 // Just missing
                 return Err(KclError::new_argument(KclErrorDetails::new(
                     "This function expects an unlabeled first parameter, but you haven't passed it one.".to_owned(),
-                    fn_def.as_source_range().into_iter().collect(),
+                    fn_def.ast.as_source_ranges(),
                 )));
             }
         } else if args.unlabeled.len() == 1 {
             let mut arg = args.unlabeled.pop().unwrap().1;
             if let Some(ty) = ty {
-                let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range)
+                let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false)
                     .map_err(|e| KclError::new_semantic(e.into()))?;
                 arg.value = arg.value.coerce(&rty, true, exec_state).map_err(|_| {
                     KclError::new_argument(KclErrorDetails::new(
@@ -748,7 +642,7 @@ fn type_check_params_kw(
                 // For optional args, passing None should be the same as not passing an arg.
                 if !(def.is_some() && matches!(arg.value, KclValue::KclNone { .. })) {
                     if let Some(ty) = ty {
-                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range)
+                        let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false)
                             .map_err(|e| KclError::new_semantic(e.into()))?;
                         arg.value = arg
                                 .value
@@ -793,13 +687,13 @@ fn type_check_params_kw(
 }
 
 fn assign_args_to_params_kw(
-    fn_def: &FunctionDefinition<'_>,
+    fn_def: &FunctionSource,
     args: Args<Desugared>,
     exec_state: &mut ExecState,
 ) -> Result<(), KclError> {
     // Add the arguments to the memory.  A new call frame should have already
     // been created.
-    let source_ranges = fn_def.as_source_range().into_iter().collect();
+    let source_ranges = fn_def.ast.as_source_ranges();
 
     for (name, (default, _)) in fn_def.named_args.iter() {
         let arg = args.labeled.get(name);
@@ -848,12 +742,12 @@ fn assign_args_to_params_kw(
 
 fn coerce_result_type(
     result: Result<Option<KclValue>, KclError>,
-    fn_def: &FunctionDefinition<'_>,
+    fn_def: &FunctionSource,
     exec_state: &mut ExecState,
 ) -> Result<Option<KclValue>, KclError> {
     if let Ok(Some(val)) = result {
         if let Some(ret_ty) = &fn_def.return_type {
-            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range())
+            let ty = RuntimeType::from_parsed(ret_ty.inner.clone(), exec_state, ret_ty.as_source_range(), false)
                 .map_err(|e| KclError::new_semantic(e.into()))?;
             let val = val.coerce(&ty, true, exec_state).map_err(|_| {
                 KclError::new_type(KclErrorDetails::new(
@@ -879,8 +773,8 @@ mod test {
 
     use super::*;
     use crate::{
-        execution::{ContextType, memory::Stack, parse_execute, types::NumericType},
-        parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
+        execution::{ContextType, EnvironmentRef, memory::Stack, parse_execute, types::NumericType},
+        parsing::ast::types::{DefaultParamVal, FunctionExpression, Identifier, Parameter, Program},
     };
 
     #[tokio::test(flavor = "multi_thread")]
@@ -985,11 +879,7 @@ mod test {
                 return_type: None,
                 digest: None,
             });
-            let func_src = FunctionSource::User {
-                ast: Box::new(func_expr),
-                settings: Default::default(),
-                memory: EnvironmentRef::dummy(),
-            };
+            let func_src = FunctionSource::kcl(Box::new(func_expr), EnvironmentRef::dummy(), false);
             let labeled = args
                 .iter()
                 .map(|(name, value)| {
@@ -998,9 +888,7 @@ mod test {
                 })
                 .collect::<IndexMap<_, _>>();
             let exec_ctxt = ExecutorContext {
-                engine: Arc::new(Box::new(
-                    crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
-                )),
+                engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
                 fs: Arc::new(crate::fs::FileManager::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,
@@ -1017,8 +905,7 @@ mod test {
                 _status: std::marker::PhantomData,
             };
 
-            let actual = assign_args_to_params_kw(&(&func_src).into(), args, &mut exec_state)
-                .map(|_| exec_state.mod_local.stack);
+            let actual = assign_args_to_params_kw(&func_src, args, &mut exec_state).map(|_| exec_state.mod_local.stack);
             assert_eq!(
                 actual, expected,
                 "failed test '{test_name}':\ngot {actual:?}\nbut expected\n{expected:?}"

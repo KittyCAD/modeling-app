@@ -75,7 +75,6 @@ type ViewRoleLabel =
   | 'Bottom View'
   | 'Reset View'
   | 'Center View on Selection'
-  | 'Refresh'
   | 'Named Views'
   | 'Create Named View'
   | 'Load Named View'

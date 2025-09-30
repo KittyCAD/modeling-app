@@ -1,11 +1,3 @@
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useEffect, useCallback } from 'react'
-import {
-  useClearURLParams,
-  useWatchForNewFileRequestsFromMlEphant,
-  useProjectIdToConversationId,
-} from '@src/machines/systemIO/hooks'
-import { useSearchParams } from 'react-router-dom'
 import {
   CREATE_FILE_URL_PARAM,
   DEFAULT_PROJECT_KCL_FILE,
@@ -17,6 +9,15 @@ import {
   useSettings,
   useToken,
 } from '@src/lib/singletons'
+import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
+import {
+  useClearURLParams,
+  useProjectIdToConversationId,
+  useWatchForNewFileRequestsFromMlEphant,
+} from '@src/machines/systemIO/hooks'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { useCallback, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 export function SystemIOMachineLogicListenerWeb() {
   const clearURLParams = useClearURLParams()
@@ -44,8 +45,11 @@ export function SystemIOMachineLogicListenerWeb() {
 
   useClearQueryParams()
 
+  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
+
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
+    mlEphantManagerActor2,
     billingActor,
     token,
     (prompt, promptMeta) => {
@@ -53,14 +57,36 @@ export function SystemIOMachineLogicListenerWeb() {
         type: SystemIOMachineEvents.createKCLFile,
         data: {
           requestedProjectName: promptMeta.project.name,
-          requestedCode: prompt.outputs['main.kcl'] ?? prompt.code ?? '',
+          requestedCode: prompt.outputs?.['main.kcl'] ?? prompt.code ?? '',
           requestedFileNameWithExtension:
             promptMeta.targetFile?.name ?? DEFAULT_PROJECT_KCL_FILE,
         },
       })
+    },
+    (toolOutput, projectNameCurrentlyOpened) => {
+      if (
+        toolOutput.type !== 'text_to_cad' &&
+        toolOutput.type !== 'edit_kcl_code'
+      ) {
+        return
+      }
+      systemIOActor.send({
+        type: SystemIOMachineEvents.createKCLFile,
+        data: {
+          requestedProjectName: projectNameCurrentlyOpened,
+          requestedCode: toolOutput.outputs?.[DEFAULT_PROJECT_KCL_FILE] ?? '',
+          requestedFileNameWithExtension: DEFAULT_PROJECT_KCL_FILE,
+        },
+      })
     }
   )
-  useProjectIdToConversationId(mlEphantManagerActor, systemIOActor, settings)
+
+  useProjectIdToConversationId(
+    mlEphantManagerActor,
+    mlEphantManagerActor2,
+    systemIOActor,
+    settings
+  )
 
   return null
 }

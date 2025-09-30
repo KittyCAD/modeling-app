@@ -49,9 +49,9 @@ description: Operations executed elliptic_curve_inches_regression.kcl
             "type": "Number",
             "value": 180.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -61,9 +61,9 @@ description: Operations executed elliptic_curve_inches_regression.kcl
             "type": "Number",
             "value": 0.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -77,12 +77,8 @@ description: Operations executed elliptic_curve_inches_regression.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -90,12 +86,8 @@ description: Operations executed elliptic_curve_inches_regression.kcl
                 "value": 60.855171,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -111,12 +103,8 @@ description: Operations executed elliptic_curve_inches_regression.kcl
                 "value": 90.658755,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               {
@@ -124,12 +112,8 @@ description: Operations executed elliptic_curve_inches_regression.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -142,12 +126,8 @@ description: Operations executed elliptic_curve_inches_regression.kcl
             "value": 16.805477,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -176,6 +156,7 @@ description: Operations executed elliptic_curve_inches_regression.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -283,6 +264,7 @@ description: Operations executed elliptic_curve_inches_regression.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -8,22 +8,22 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   ARG_ANGLE,
   ARG_ANGLE_END,
-  ARG_AT,
   ARG_ANGLE_START,
+  ARG_AT,
   ARG_CIRCLE_CENTER,
-  ARG_RADIUS,
   ARG_END,
   ARG_END_ABSOLUTE,
   ARG_END_ABSOLUTE_X,
   ARG_END_ABSOLUTE_Y,
+  ARG_INTERIOR_ABSOLUTE,
   ARG_INTERSECT_TAG,
   ARG_LENGTH,
   ARG_LENGTH_X,
   ARG_LENGTH_Y,
   ARG_OFFSET,
+  ARG_RADIUS,
   ARG_TAG,
   DETERMINING_ARGS,
-  ARG_INTERIOR_ABSOLUTE,
 } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -93,8 +93,8 @@ import {
   getLength,
   roundOff,
 } from '@src/lib/utils'
-import type { EdgeCutInfo } from '@src/machines/modelingMachine'
 import { cross2d, distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
+import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 
 const STRAIGHT_SEGMENT_ERR = () =>
   new Error('Invalid input, expected "straight-segment"')
@@ -3365,28 +3365,16 @@ export function getConstraintInfoKw(
   )
 }
 
-export function compareVec2Epsilon(
-  vec1: [number, number],
-  vec2: [number, number],
-  compareEpsilon = 0.015625 // or 2^-6
+// Compare if the distance between 2 points is within a threshold
+export function vec2WithinDistance(
+  a: Coords2d,
+  b: Coords2d,
+  threshold = 0.015625 // or 2^-6
 ) {
-  const xDifference = Math.abs(vec1[0] - vec2[0])
-  const yDifference = Math.abs(vec1[1] - vec2[1])
-  return xDifference < compareEpsilon && yDifference < compareEpsilon
-}
-
-// this version uses this distance of the two points instead of comparing x and y separately
-export function compareVec2Epsilon2(
-  vec1: [number, number],
-  vec2: [number, number],
-  compareEpsilon = 0.015625 // or 2^-6
-) {
-  const xDifference = Math.abs(vec1[0] - vec2[0])
-  const yDifference = Math.abs(vec1[1] - vec2[1])
-  const distance = Math.sqrt(
-    xDifference * xDifference + yDifference * yDifference
-  )
-  return distance < compareEpsilon
+  const x = a[0] - b[0]
+  const y = a[1] - b[1]
+  const distanceSquared = x * x + y * y
+  return distanceSquared < threshold * threshold
 }
 
 interface CreateLineFnCallArgs {

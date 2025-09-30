@@ -1,7 +1,7 @@
 //! Standard library chamfers.
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::CutStrategy, shared::CutType};
+use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::CutStrategy, shared::CutTypeV2};
 use kittycad_modeling_cmds::{self as kcmc, shared::Angle};
 
 use super::args::TyF64;
@@ -76,8 +76,8 @@ async fn inner_chamfer(
         )));
     }
 
-    let second_length = second_length.map(|x| LengthUnit(x.to_mm()));
-    let angle = angle.map(|x| Angle::from_degrees(x.to_degrees()));
+    let second_distance = second_length.clone().map(|x| LengthUnit(x.to_mm()));
+    let angle = angle.map(|x| Angle::from_degrees(x.to_degrees(exec_state, args.source_range)));
 
     let strategy = if second_length.is_some() || angle.is_some() || custom_profile.is_some() {
         CutStrategy::Csg
@@ -96,12 +96,13 @@ async fn inner_chamfer(
                 }),
             )
             .await?;
-        CutType::Custom {
+        CutTypeV2::Custom {
             path: custom_profile.id,
         }
     } else {
-        CutType::Chamfer {
-            second_length,
+        CutTypeV2::Chamfer {
+            distance: LengthUnit(length.to_mm()),
+            second_distance,
             angle,
             swap: swap.unwrap_or_default(),
         }
@@ -118,13 +119,11 @@ async fn inner_chamfer(
         exec_state
             .batch_end_cmd(
                 ModelingCmdMeta::from_args_id(&args, id),
-                ModelingCmd::from(mcmd::Solid3dFilletEdge {
-                    edge_id: None,
+                ModelingCmd::from(mcmd::Solid3dCutEdges {
                     edge_ids: vec![edge_id],
                     extra_face_ids: vec![],
                     strategy: strategy,
                     object_id: solid.id,
-                    radius: LengthUnit(length.to_mm()),
                     tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
                     cut_type,
                 }),

@@ -13,8 +13,8 @@ import type {
 import type { Selections } from '@src/lib/selections'
 import { isArray, isOverlap } from '@src/lib/utils'
 
-import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 
 /**
  * Create a SourceRange for the top-level module.

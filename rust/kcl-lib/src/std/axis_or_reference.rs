@@ -1,7 +1,10 @@
 //! Types for referencing an axis or edge.
 
 use super::args::TyF64;
-use crate::std::fillet::EdgeReference;
+use crate::{
+    execution::{Plane, Sketch, Solid, TagIdentifier},
+    std::{fillet::EdgeReference, sketch::FaceTag},
+};
 
 /// A 2D axis or tagged edge.
 #[derive(Debug, Clone, PartialEq)]
@@ -65,4 +68,26 @@ impl Axis3dOrPoint3d {
             Axis3dOrPoint3d::Point(..) => None,
         }
     }
+}
+
+/// A raw point3d, 3D axis, Edge, Face, Solid or Tag.
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Clone, PartialEq)]
+pub enum Point3dAxis3dOrGeometryReference {
+    /// Raw point3d.
+    Point([TyF64; 3]),
+    /// 3D axis and origin.
+    Axis { direction: [TyF64; 3], origin: [TyF64; 3] },
+    /// Plane.
+    Plane(Box<Plane>),
+    /// Edge Reference.
+    Edge(EdgeReference),
+    /// Face.
+    Face(FaceTag),
+    /// Sketch.
+    Sketch(Box<Sketch>),
+    /// Solid.
+    Solid(Box<Solid>),
+    /// Tagged edge or face.
+    TaggedEdgeOrFace(TagIdentifier),
 }

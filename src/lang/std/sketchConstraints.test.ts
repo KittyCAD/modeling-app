@@ -353,7 +353,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
         callToSwap: 'angledLine(angle = 217deg, endAbsoluteY = angledLineToYy)',
         constraintType: 'horizontal',
       })
-    await expect(illegalConvert).rejects.toThrowError('no callback helper')
+    await expect(illegalConvert).rejects.toThrow('no callback helper')
   })
 })
 
@@ -382,7 +382,7 @@ part001 = startSketchOn(XY)
       type: 'ToPoint',
       to: [5.62, 1.79],
       from: [3.48, 0.44],
-      units: { type: 'Mm' },
+      units: 'mm',
       tag: null,
     })
   })
@@ -398,7 +398,7 @@ part001 = startSketchOn(XY)
     expect(segment).toEqual({
       to: [0, 0.04],
       from: [0, 0.04],
-      units: { type: 'Mm' },
+      units: 'mm',
       tag: null,
       type: 'Base',
     })

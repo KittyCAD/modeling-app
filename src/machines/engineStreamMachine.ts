@@ -1,8 +1,8 @@
+import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
+import type { AppMachineContext } from '@src/lib/types'
 import type { MutableRefObject } from 'react'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
-import type { AppMachineContext } from '@src/lib/types'
-import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 
 export enum EngineStreamState {
   WaitingForDependencies = 'waiting-for-dependencies',

@@ -3,10 +3,10 @@ import ms from 'ms'
 import { SafeRenderer } from '@src/lib/markdown'
 import { Marked, escape, unescape } from '@ts-stack/markdown'
 
+import type { MlCopilotServerMessage } from '@kittycad/lib'
+import type { PlanStep } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { useEffect, useState, useRef, type ReactNode } from 'react'
-import type { Models } from '@kittycad/lib'
-import type { PlanStep_type } from '@kittycad/lib/dist/types/src/models'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 
 export const Generic = (props: {
   content: string
@@ -140,7 +140,7 @@ export const FeatureTreeOutline = (props: { content: string }) => {
   )
 }
 
-export const DesignPlan = (props: { steps: PlanStep_type[] }) => {
+export const DesignPlan = (props: { steps: PlanStep[] }) => {
   return (
     <ThoughtContainer
       heading={
@@ -153,7 +153,7 @@ export const DesignPlan = (props: { steps: PlanStep_type[] }) => {
     >
       <ThoughtContent>
         <ul>
-          {props.steps.map((step: PlanStep_type) => (
+          {props.steps.map((step: PlanStep) => (
             <li>
               {step.filepath_to_edit}: {step.edit_instructions}
             </li>
@@ -274,6 +274,36 @@ export const Text = (props: { content: string }) => {
   )
 }
 
+export const NothingInParticular = (props: { content: string }) => {
+  const options = {
+    gfm: true,
+    breaks: true,
+    sanitize: true,
+    escape,
+    unescape,
+  }
+  return (
+    <ThoughtContainer
+      heading={
+        <ThoughtHeader icon={<CustomIcon name="brain" className="w-6 h-6" />}>
+          <span className="animate-shimmer">Thinking</span>
+        </ThoughtHeader>
+      }
+    >
+      <ThoughtContent>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: Marked.parse(props.content, {
+              renderer: new SafeRenderer(options),
+              ...options,
+            }),
+          }}
+        ></div>
+      </ThoughtContent>
+    </ThoughtContainer>
+  )
+}
+
 export const End = () => {
   return (
     <ThoughtContainer>
@@ -302,13 +332,9 @@ interface Range {
 }
 
 const fromDataToComponent = (
-  thought: Models['MlCopilotServerMessage_type'],
+  thought: MlCopilotServerMessage,
   options: { key?: string | number }
 ) => {
-  if ('end_of_stream' in thought) {
-    return <End />
-  }
-
   if ('reasoning' in thought) {
     const type = thought.reasoning.type
     switch (type) {
@@ -317,6 +343,16 @@ const fromDataToComponent = (
           <>
             <Text key={options.key} content={thought.reasoning.content} />
             <Spacer />
+          </>
+        )
+      }
+      case 'markdown': {
+        return (
+          <>
+            <NothingInParticular
+              key={options.key}
+              content={(thought.reasoning as { content: string }).content}
+            />
           </>
         )
       }
@@ -396,18 +432,20 @@ const fromDataToComponent = (
     }
   }
 
-  if ('error' in thought) {
-    return <ErroneousThing key={options.key} content={thought.error.detail} />
-  }
-
   return null
 }
 
 export const Thinking = (props: {
-  thoughts?: Models['MlCopilotServerMessage_type'][]
+  thoughts?: MlCopilotServerMessage[]
+  isDone: boolean
   onlyShowImmediateThought: boolean
 }) => {
   const refViewFull = useRef<HTMLDivElement>(null)
+
+  const reasoningThoughts =
+    props.thoughts?.filter((x: MlCopilotServerMessage) => {
+      return 'reasoning' in x
+    }) ?? []
 
   useEffect(() => {
     if (props.onlyShowImmediateThought === true) {
@@ -420,30 +458,43 @@ export const Thinking = (props: {
     if (c.length === 0) {
       return
     }
-    c[c.length - 1].scrollIntoView({ behavior: 'smooth' })
-  }, [props.thoughts?.length, props.onlyShowImmediateThought])
+
+    setTimeout(() => {
+      c[c.length - 1].scrollIntoView({ behavior: 'smooth' })
+      setTimeout(() => {
+        if (refViewFull.current === null) return
+        refViewFull.current.scrollIntoView({ behavior: 'smooth' })
+      })
+    })
+  }, [reasoningThoughts.length, props.onlyShowImmediateThought])
 
   if (props.thoughts === undefined) {
     return (
       <div className="animate-shimmer p-2">
-        <Text content={'Processing...'} />
+        <Generic content={'Thinking...'} />
       </div>
     )
   }
 
-  const componentThoughts = props.thoughts.map((thought, index: number) => {
+  const componentThoughts = reasoningThoughts.map((thought, index: number) => {
     return fromDataToComponent(thought, { key: index })
   })
+
+  if (props.isDone) {
+    componentThoughts.push(<End />)
+  }
+
+  const lastTextualThought = reasoningThoughts.findLast(
+    (thought) => thought.reasoning.type === 'text'
+  )
 
   const componentLastGenericThought = (
     <Generic
       content={
-        props.thoughts.findLast(
-          (thought) =>
-            'reasoning' in thought && thought.reasoning?.type === 'text'
-          // Typescript can't figure out only a `text` type or undefined is found
-          // @ts-expect-error
-        )?.reasoning?.content ?? 'Processing...'
+        lastTextualThought !== undefined &&
+        lastTextualThought.reasoning.type === 'text'
+          ? lastTextualThought.reasoning.content
+          : ''
       }
     />
   )
@@ -451,12 +502,13 @@ export const Thinking = (props: {
   const ViewFull = (
     <div
       ref={refViewFull}
-      className="text-2 bg-2 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
+      style={{ maxHeight: '20lh' }}
+      className="overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
     >
       {componentThoughts.length > 0 ? (
         componentThoughts
       ) : (
-        <Text content={'Processing...'} />
+        <div className="animate-pulse animate-shimmer h-4 w-full p-1 bg-chalkboard-80 rounded"></div>
       )}
     </div>
   )

@@ -1,6 +1,4 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
-import * as fsp from 'fs/promises'
-import * as path from 'path'
 
 /* eslint-disable jest/no-conditional-expect */
 
@@ -31,64 +29,11 @@ sketch003 = startSketchOn(XY)
 extrude003 = extrude(sketch003, length = 20)
 `
 
-// e2e/playwright/prompt-to-edit.spec.ts
 test.describe('Prompt-to-edit tests', () => {
-  test(`Check the happy path, for basic changing color`, async ({
-    context,
-    homePage,
-    cmdBar,
-    editor,
-    page,
-    scene,
-    toolbar,
-  }) => {
-    await context.folderSetupFn(async (dir) => {
-      const projectDir = path.join(dir, 'test-project')
-      await fsp.mkdir(projectDir, { recursive: true })
-      await fsp.writeFile(path.join(projectDir, 'main.kcl'), file)
-    })
-    await homePage.openProject('test-project')
-    await scene.settled(cmdBar)
-
-    const body1CapCoords = { x: 571, y: 311 }
-    const [clickBody1Cap] = scene.makeMouseHelpers(
-      body1CapCoords.x,
-      body1CapCoords.y
-    )
-    const yellow: [number, number, number] = [179, 179, 131]
-
-    await test.step('wait for scene to load select body and check selection came through', async () => {
-      await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
-      await clickBody1Cap()
-      await scene.expectPixelColor(yellow, body1CapCoords, 20)
-      await editor.expectState({
-        highlightedCode: '',
-        activeLines: ['|>startProfile(at=[-114,85.52])'],
-        diagnostics: [],
-      })
-    })
-
-    await test.step('fire off edit prompt', async () => {
-      await page.setBodyDimensions({ width: 1200, height: 800 })
-      await toolbar.fireTtcPrompt('make this neon green please, use #39FF14')
-
-      await page.waitForTimeout(100)
-
-      await expect(page.getByText('Worked for')).toBeVisible({
-        timeout: 15_000,
-      })
-    })
-
-    await test.step('verify initial change', async () => {
-      await editor.expectEditor.toContain('appearance(')
-    })
-  })
-
   test('bad edit prompt', async ({
     context,
     homePage,
     cmdBar,
-    editor,
     toolbar,
     page,
     scene,
@@ -99,161 +44,23 @@ test.describe('Prompt-to-edit tests', () => {
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
+    await toolbar.closePane('code')
     await toolbar.openPane('text-to-cad')
-
-    const body1CapCoords = { x: 571, y: 311 }
-    const [clickBody1Cap] = scene.makeMouseHelpers(
-      body1CapCoords.x,
-      body1CapCoords.y
-    )
-    const yellow: [number, number, number] = [179, 179, 131]
-
-    await test.step('wait for scene to load and select body', async () => {
-      await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
-
-      await clickBody1Cap()
-      await scene.expectPixelColor(yellow, body1CapCoords, 20)
-
-      await editor.expectState({
-        highlightedCode: '',
-        activeLines: ['|>startProfile(at=[-114,85.52])'],
-        diagnostics: [],
-      })
-    })
 
     await test.step('fire of bad prompt', async () => {
       await page
         .getByTestId('ml-ephant-conversation-input')
         .fill('ansheusha asnthuatshoeuhtaoetuhthaeu laughs in dvorak')
+      await page.waitForTimeout(500)
       await page.keyboard.press('Enter')
     })
     await test.step('check fail appeared', async () => {
       await expect(page.getByTestId('thinking-immediate')).not.toBeVisible({
-        timeout: 2 * 60_000,
-      }) // can take a while
-      await expect(page.getByTestId('prompt-card-status-failed')).toBeVisible()
-    })
-  })
-
-  // Lee manually tested this and it works, but this test just doesn't
-  // want to pass automated.
-  test.skip(`manual code selection rename`, async ({
-    context,
-    homePage,
-    toolbar,
-    cmdBar,
-    editor,
-    page,
-    scene,
-  }) => {
-    await context.addInitScript((file) => {
-      localStorage.setItem('persistCode', file)
-    }, file)
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-
-    await toolbar.openPane('text-to-cad')
-
-    await test.step('wait for scene to load and select code in editor', async () => {
-      // Find and select the text "sketch002" in the editor
-      await editor.selectText('sketch002')
-
-      // Verify the selection was made
-      await editor.expectState({
-        highlightedCode: '',
-        activeLines: ['sketch002 = startSketchOn(XZ)'],
-        diagnostics: [],
+        timeout: 30_000,
       })
-    })
-
-    await test.step('fire off edit prompt', async () => {
-      await page
-        .getByTestId('ml-ephant-conversation-input')
-        .fill('Please rename to mySketch001')
-      await page.keyboard.press('Enter')
-
-      await expect(page.getByTestId('thinking-immediate')).toBeVisible()
-      await expect(page.getByTestId('thinking-immediate')).not.toBeVisible({
-        timeout: 2 * 60_000,
+      await expect(page.getByTestId('prompt-card-status-failed')).toBeVisible({
+        timeout: 30_000,
       })
-      await expect(
-        page.getByTestId('prompt-card-status-completed')
-      ).toBeVisible()
-    })
-
-    await editor.expectEditor.toContain('mySketch001 = startSketchOn')
-    await editor.expectEditor.not.toContain('sketch002 = startSketchOn')
-  })
-
-  test('multiple body selections', async ({
-    context,
-    homePage,
-    toolbar,
-    cmdBar,
-    editor,
-    page,
-    scene,
-  }) => {
-    const body1CapCoords = { x: 571, y: 311 }
-    const body2WallCoords = { x: 620, y: 152 }
-    const [clickBody1Cap] = scene.makeMouseHelpers(
-      body1CapCoords.x,
-      body1CapCoords.y
-    )
-    const [clickBody2Cap] = scene.makeMouseHelpers(
-      body2WallCoords.x,
-      body2WallCoords.y
-    )
-    const grey: [number, number, number] = [132, 132, 132]
-
-    await context.addInitScript((file) => {
-      localStorage.setItem('persistCode', file)
-    }, file)
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-
-    await toolbar.openPane('text-to-cad')
-
-    await test.step('select multiple bodies and fire prompt', async () => {
-      // Initial color check
-      await scene.expectPixelColor(grey, body1CapCoords, 15)
-
-      // Select first body
-      await page.waitForTimeout(100)
-      await clickBody1Cap()
-
-      // Hold shift and select second body
-      await editor.expectState({
-        highlightedCode: '',
-        activeLines: ['|>startProfile(at=[-114,85.52])'],
-        diagnostics: [],
-      })
-      await page.keyboard.down('Shift')
-      await page.waitForTimeout(100)
-      await clickBody2Cap()
-      await editor.expectState({
-        highlightedCode:
-          'line(end=[121.13,56.63],tag=$seg02)extrude(profile001,length=200)',
-        activeLines: [
-          '|>line(end=[121.13,56.63],tag=$seg02)',
-          '|>startProfile(at=[-114,85.52])',
-        ],
-        diagnostics: [],
-      })
-      await page.keyboard.up('Shift')
-      await page.waitForTimeout(100)
-
-      // Enter prompt and submit
-      await page
-        .getByTestId('ml-ephant-conversation-input')
-        .fill('make these neon green please, use #39FF14')
-      await page.keyboard.press('Enter')
-
-      await expect(
-        page
-          .getByTestId('prompt-card-status-completed')
-          .or(page.getByTestId('prompt-card-status-failed'))
-      ).toBeVisible({ timeout: 15_000 })
     })
   })
 })

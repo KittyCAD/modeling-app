@@ -1,0 +1,34 @@
+// Round Table
+// Simple round table with a base, single leg, and tabletop
+
+
+
+
+@settings(defaultLengthUnit = mm)
+
+// Parameters
+tableTopHeight = 750
+tableTopRadius = 350
+tableTopThickness = 20
+
+baseRadius = 150
+baseThickness = 30
+legRadius = 40
+
+// Tabletop
+tableTopPlane = offsetPlane(XY, offset = tableTopHeight)
+tableTopSketch = startSketchOn(tableTopPlane)
+tableTopProfile = circle(tableTopSketch, center = [0, 0], radius = tableTopRadius)
+tableTopExtrude = extrude(tableTopProfile, length = -tableTopThickness)
+
+// Base
+baseSketch = startSketchOn(XY)
+baseProfile = circle(baseSketch, center = [0, 0], radius = baseRadius)
+baseExtrude = extrude(baseProfile, length = baseThickness)
+
+// Leg
+legHeight = tableTopHeight - baseThickness - tableTopThickness
+legPlane = offsetPlane(XY, offset = baseThickness)
+legSketch = startSketchOn(legPlane)
+legProfile = circle(legSketch, center = [0, 0], radius = legRadius)
+legExtrude = extrude(legProfile, length = legHeight)

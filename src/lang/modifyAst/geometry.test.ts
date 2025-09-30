@@ -1,11 +1,11 @@
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import { assertParse, recast } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
-import { enginelessExecutor } from '@src/lib/testHelpers'
-import type { Selections } from '@src/lib/selections'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type { Selections } from '@src/lib/selections'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
 
 async function getAstAndArtifactGraph(code: string) {
   const ast = assertParse(code)

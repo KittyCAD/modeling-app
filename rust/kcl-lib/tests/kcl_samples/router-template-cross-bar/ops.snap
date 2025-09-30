@@ -12,12 +12,8 @@ description: Operations executed router-template-cross-bar.kcl
         "value": 12.7,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -44,9 +40,9 @@ description: Operations executed router-template-cross-bar.kcl
         "type": "Number",
         "value": 0.6875,
         "ty": {
+          "in": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Inches"
+          "type": "Length"
         }
       },
       "visibility": "default",
@@ -74,12 +70,8 @@ description: Operations executed router-template-cross-bar.kcl
         "value": 20.75,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -107,12 +99,8 @@ description: Operations executed router-template-cross-bar.kcl
         "value": 80.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -140,12 +128,8 @@ description: Operations executed router-template-cross-bar.kcl
         "value": 10.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -173,12 +157,8 @@ description: Operations executed router-template-cross-bar.kcl
         "value": 10.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -206,12 +186,8 @@ description: Operations executed router-template-cross-bar.kcl
         "value": 30.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -238,9 +214,9 @@ description: Operations executed router-template-cross-bar.kcl
         "type": "Number",
         "value": 0.07406496062992127,
         "ty": {
+          "in": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Inches"
+          "type": "Length"
         }
       },
       "visibility": "default",
@@ -267,9 +243,9 @@ description: Operations executed router-template-cross-bar.kcl
         "type": "Number",
         "value": 1.2846948818897639,
         "ty": {
+          "in": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Inches"
+          "type": "Length"
         }
       },
       "visibility": "default",
@@ -339,12 +315,8 @@ description: Operations executed router-template-cross-bar.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -426,12 +398,8 @@ description: Operations executed router-template-cross-bar.kcl
             "value": 13.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -513,12 +481,8 @@ description: Operations executed router-template-cross-bar.kcl
             "value": 13.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -600,12 +564,8 @@ description: Operations executed router-template-cross-bar.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -630,6 +590,7 @@ description: Operations executed router-template-cross-bar.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -737,6 +698,7 @@ description: Operations executed router-template-cross-bar.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

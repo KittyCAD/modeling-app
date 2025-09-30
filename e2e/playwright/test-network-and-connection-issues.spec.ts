@@ -1,4 +1,4 @@
-import { getUtils, TEST_COLORS, circleMove } from '@e2e/playwright/test-utils'
+import { TEST_COLORS, circleMove, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Test network related behaviors', () => {
@@ -109,7 +109,9 @@ test.describe('Test network related behaviors', () => {
       await page.waitForTimeout(100)
 
       // select a plane
-      await page.mouse.click(700, 200)
+      await toolbar.openFeatureTreePane()
+      await page.getByRole('button', { name: 'Front plane' }).click()
+      await toolbar.closeFeatureTreePane()
 
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`

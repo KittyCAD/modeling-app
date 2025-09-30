@@ -1,18 +1,20 @@
-import type { Models } from '@kittycad/lib'
-import type { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
+import type {
+  SourceRange as ApiSourceRange,
+  SourceRangePrompt,
+  TextToCadMultiFileIteration,
+} from '@kittycad/lib'
+import { ml } from '@kittycad/lib'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
-import crossPlatformFetch from '@src/lib/crossPlatformFetch'
-import { err } from '@src/lib/trap'
-import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/models'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
+import { parentPathRelativeToProject } from '@src/lib/paths'
+import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
 import type {
   ConstructRequestArgs,
   KclFileMetaMap,
   PromptToEditRequest,
-  TextToCadErrorResponse,
 } from '@src/lib/promptToEditTypes'
-import { parentPathRelativeToProject } from '@src/lib/paths'
+import { err } from '@src/lib/trap'
 
 function sourceIndexToLineColumn(
   code: string,
@@ -28,7 +30,7 @@ function sourceIndexToLineColumn(
 function convertAppRangeToApiRange(
   range: SourceRange,
   code: string
-): Models['SourceRange_type'] {
+): ApiSourceRange {
   return {
     start: sourceIndexToLineColumn(code, range[0]),
     end: sourceIndexToLineColumn(code, range[1]),
@@ -38,43 +40,16 @@ function convertAppRangeToApiRange(
 export async function submitTextToCadMultiFileIterationRequest(
   request: PromptToEditRequest,
   token: string
-): Promise<TextToCadMultiFileIteration_type | Error> {
-  const formData = new FormData()
-  formData.append('body', JSON.stringify(request.body))
-
-  request.files.forEach((file) => {
-    formData.append('files', file.data, file.name)
-  })
-
-  const response = await fetch(
-    withAPIBaseURL('/ml/text-to-cad/multi-file/iteration'),
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    }
+): Promise<TextToCadMultiFileIteration | Error> {
+  const client = createKCClient(token)
+  const data = await kcCall(() =>
+    ml.create_text_to_cad_multi_file_iteration({
+      client,
+      files: request.files,
+      body: request.body,
+    })
   )
-
-  if (!response.ok) {
-    const errorBody = await response.json()
-    if ('message' in errorBody) {
-      return new Error(errorBody.message)
-    }
-
-    return new Error(
-      `HTTP error! status: ${response.status}, error: ${JSON.stringify(errorBody)}`
-    )
-  }
-
-  const data = await response.json()
-  if ('error_code' in data) {
-    const errorData = data as TextToCadErrorResponse
-    return new Error(errorData.message || 'Unknown error')
-  }
-
-  return data as TextToCadMultiFileIteration_type
+  return data
 }
 
 // The ML service should know enough about caps, edges, faces, etc when doing
@@ -111,24 +86,23 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
 
   // Way to patch in supplying the currently-opened file without updating the API.
   // TODO: update the API to support currently-opened files as other parts of the payload
-  const currentFilePrompt: Models['SourceRangePrompt_type'] | null =
-    currentFile.entry
-      ? {
-          prompt: 'This is the active file',
-          range: convertAppRangeToApiRange(
-            [0, currentFile.content.length, 0],
-            currentFile.content
-          ),
-          file: parentPathRelativeToProject(
-            currentFile.entry?.path,
-            applicationProjectDirectory
-          ),
-        }
-      : null
+  const currentFilePrompt: SourceRangePrompt | null = currentFile.entry
+    ? {
+        prompt: 'This is the active file',
+        range: convertAppRangeToApiRange(
+          [0, currentFile.content.length, 0],
+          currentFile.content
+        ),
+        file: parentPathRelativeToProject(
+          currentFile.entry?.path,
+          applicationProjectDirectory
+        ),
+      }
+    : null
 
   // If no selection, use whole file
   if (selections === null) {
-    const rangePrompts: Models['SourceRangePrompt_type'][] = []
+    const rangePrompts: SourceRangePrompt[] = []
     if (currentFilePrompt !== null) {
       rangePrompts.push(currentFilePrompt)
     }
@@ -147,8 +121,8 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
   }
 
   // Handle manual code selections and artifact selections differently
-  const ranges: Models['SourceRangePrompt_type'][] =
-    selections.graphSelections.flatMap((selection) => {
+  const ranges: SourceRangePrompt[] = selections.graphSelections.flatMap(
+    (selection) => {
       const artifact = selection.artifact
       const execStateFileNamesIndex = selection?.codeRef?.range?.[2]
       const file = kclFilesMap?.[execStateFileNamesIndex]
@@ -156,7 +130,7 @@ export function constructMultiFileIterationRequestWithPromptHelpers({
       const filePath = file?.relPath || ''
 
       // For artifact selections, add context
-      const prompts: Models['SourceRangePrompt_type'][] = []
+      const prompts: SourceRangePrompt[] = []
 
       if (artifact?.type === 'cap') {
         prompts.push({
@@ -276,7 +250,8 @@ See later source ranges for more context. about the sweep`,
         })
       }
       return prompts
-    })
+    }
+  )
   // Push the current file prompt alongside the selection-based prompts
   if (currentFilePrompt !== null) {
     ranges.push(currentFilePrompt)
@@ -305,16 +280,10 @@ See later source ranges for more context. about the sweep`,
 export async function getPromptToEditResult(
   id: string,
   token?: string
-): Promise<Models['TextToCadMultiFileIteration_type'] | Error> {
-  const url = withAPIBaseURL(`/user/text-to-cad/${id}`)
-  const data: Models['TextToCadMultiFileIteration_type'] | Error =
-    await crossPlatformFetch(
-      url,
-      {
-        method: 'GET',
-      },
-      token
-    )
-
-  return data
+): Promise<TextToCadMultiFileIteration | Error> {
+  const client = createKCClient(token)
+  const data = await kcCall(() =>
+    ml.get_text_to_cad_part_for_user({ client, id })
+  )
+  return data as TextToCadMultiFileIteration | Error
 }

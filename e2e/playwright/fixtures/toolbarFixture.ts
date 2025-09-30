@@ -1,5 +1,5 @@
 import { type Locator, type Page, test } from '@playwright/test'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 
@@ -28,6 +28,8 @@ export class ToolbarFixture {
   revolveButton!: Locator
   offsetPlaneButton!: Locator
   helixButton!: Locator
+  patternCircularButton!: Locator
+  patternLinearButton!: Locator
   startSketchBtn!: Locator
   insertButton!: Locator
   lineBtn!: Locator
@@ -70,6 +72,8 @@ export class ToolbarFixture {
     this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.helixButton = page.getByTestId('helix')
+    this.patternCircularButton = page.getByTestId('pattern-circular-3d')
+    this.patternLinearButton = page.getByTestId('pattern-linear-3d')
     this.startSketchBtn = page.getByTestId('sketch')
     this.insertButton = page.getByTestId('insert')
     this.lineBtn = page.getByTestId('line')
@@ -235,13 +239,13 @@ export class ToolbarFixture {
       .click()
   }
 
-  async closePane(paneId: SidebarType) {
+  async closePane(paneId: SidebarId) {
     return closePane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
-  async openPane(paneId: SidebarType) {
+  async openPane(paneId: SidebarId) {
     return openPane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
-  async checkIfPaneIsOpen(paneId: SidebarType) {
+  async checkIfPaneIsOpen(paneId: SidebarId) {
     return checkIfPaneIsOpen(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
 

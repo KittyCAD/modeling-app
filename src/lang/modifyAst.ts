@@ -61,10 +61,11 @@ import type {
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
+import { ARG_AT } from '@src/lang/constants'
+import type { Coords2d } from '@src/lang/std/sketch'
 import { err, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
-import type { ExtrudeFacePlane } from '@src/machines/modelingMachine'
-import { ARG_AT } from '@src/lang/constants'
+import type { ExtrudeFacePlane } from '@src/machines/modelingSharedTypes'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -103,7 +104,7 @@ export function insertNewStartProfileAt(
   node: Node<Program>,
   sketchNodePaths: PathToNode[],
   planeNodePath: PathToNode,
-  at: [number, number],
+  at: Coords2d,
   insertType: 'start' | 'end' = 'end'
 ):
   | {
@@ -668,7 +669,7 @@ export function moveValueIntoNewVariable(
  * Deletes a segment from a pipe expression, if the segment has a tag that other segments use, it will remove that value and replace it with the equivalent literal
  * @param dependentRanges - The ranges of the segments that are dependent on the segment being deleted, this is usually the output of `findUsesOfTagInPipe`
  */
-export function deleteSegmentFromPipeExpression(
+export function deleteSegmentOrProfileFromPipeExpression(
   dependentRanges: SourceRange[],
   modifiedAst: Node<Program>,
   memVars: VariableMap,
@@ -704,13 +705,23 @@ export function deleteSegmentFromPipeExpression(
     _modifiedAst = transform.modifiedAst
   })
 
-  const pipeExpression = getNodeFromPath<PipeExpression>(
+  const pipeExpression = getNodeFromPath<PipeExpression | CallExpressionKw>(
     _modifiedAst,
     pathToNode,
     'PipeExpression'
   )
   if (err(pipeExpression)) return pipeExpression
 
+  if (pipeExpression.node.type === 'CallExpressionKw') {
+    const topLevelDeleteResult = deleteTopLevelStatement(
+      _modifiedAst,
+      pathToNode
+    )
+    if (topLevelDeleteResult instanceof Error) {
+      return topLevelDeleteResult
+    }
+    return _modifiedAst
+  }
   const pipeInPathIndex = pathToNode.findIndex(
     ([_, desc]) => desc === 'PipeExpression'
   )

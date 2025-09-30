@@ -13,9 +13,11 @@ import { useKclContext } from '@src/lang/KclProvider'
 import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
+import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { editorManager, kclManager } from '@src/lib/singletons'
+import { codeManager, commandBarActor } from '@src/lib/singletons'
 import type {
   ToolbarDropdown,
   ToolbarItem,
@@ -25,8 +27,6 @@ import type {
   ToolbarModeName,
 } from '@src/lib/toolbar'
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
-import { codeManager, commandBarActor } from '@src/lib/singletons'
-import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 
 export function Toolbar({
   className = '',
@@ -413,6 +413,14 @@ export function Toolbar({
         {state.matches('Sketch no face') && (
           <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
             <p className="text-xs">Select a plane or face to start sketching</p>
+          </div>
+        )}
+        {state.matches('sketchSolveMode') && (
+          <div className="mt-2 py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg">
+            <p className="text-xs">
+              Sketch mode revamp, expect bugs, disable again in settings if you
+              want normal sketch mode
+            </p>
           </div>
         )}
       </div>

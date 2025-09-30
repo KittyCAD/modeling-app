@@ -2,6 +2,7 @@ use std::{str::FromStr, sync::Arc};
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -12,11 +13,11 @@ use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     exec::DefaultPlanes,
     execution::{
-        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, UnitAngle, UnitLen, annotations,
+        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, annotations,
         cad_op::Operation,
         id_generator::IdGenerator,
         memory::{ProgramMemory, Stack},
-        types::{self, NumericType},
+        types::NumericType,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
@@ -297,7 +298,7 @@ impl ExecState {
         }
     }
 
-    pub fn length_unit(&self) -> UnitLen {
+    pub fn length_unit(&self) -> UnitLength {
         self.mod_local.settings.default_length_units
     }
 
@@ -532,8 +533,8 @@ impl ModuleState {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MetaSettings {
-    pub default_length_units: types::UnitLen,
-    pub default_angle_units: types::UnitAngle,
+    pub default_length_units: UnitLength,
+    pub default_angle_units: UnitAngle,
     pub experimental_features: annotations::WarningLevel,
     pub kcl_version: String,
 }
@@ -541,8 +542,8 @@ pub struct MetaSettings {
 impl Default for MetaSettings {
     fn default() -> Self {
         MetaSettings {
-            default_length_units: Default::default(),
-            default_angle_units: Default::default(),
+            default_length_units: UnitLength::Millimeters,
+            default_angle_units: UnitAngle::Degrees,
             experimental_features: annotations::WarningLevel::Deny,
             kcl_version: "1.0".to_owned(),
         }
@@ -553,22 +554,24 @@ impl MetaSettings {
     pub(crate) fn update_from_annotation(
         &mut self,
         annotation: &crate::parsing::ast::types::Node<Annotation>,
-    ) -> Result<bool, KclError> {
+    ) -> Result<(bool, bool), KclError> {
         let properties = annotations::expect_properties(annotations::SETTINGS, annotation)?;
 
         let mut updated_len = false;
+        let mut updated_angle = false;
         for p in properties {
             match &*p.inner.key.name {
                 annotations::SETTINGS_UNIT_LENGTH => {
                     let value = annotations::expect_ident(&p.inner.value)?;
-                    let value = types::UnitLen::from_str(value, annotation.as_source_range())?;
+                    let value = super::types::length_from_str(value, annotation.as_source_range())?;
                     self.default_length_units = value;
                     updated_len = true;
                 }
                 annotations::SETTINGS_UNIT_ANGLE => {
                     let value = annotations::expect_ident(&p.inner.value)?;
-                    let value = types::UnitAngle::from_str(value, annotation.as_source_range())?;
+                    let value = super::types::angle_from_str(value, annotation.as_source_range())?;
                     self.default_angle_units = value;
+                    updated_angle = true;
                 }
                 annotations::SETTINGS_VERSION => {
                     let value = annotations::expect_number(&p.inner.value)?;
@@ -601,6 +604,6 @@ impl MetaSettings {
             }
         }
 
-        Ok(updated_len)
+        Ok((updated_len, updated_angle))
     }
 }

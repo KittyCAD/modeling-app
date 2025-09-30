@@ -36,7 +36,6 @@ use crate::{
         cache::{CacheInformation, CacheResult},
         import_graph::{Universe, UniverseMap},
         typed_path::TypedPath,
-        types::{UnitAngle, UnitLen},
     },
     fs::FileManager,
     modules::{ModuleId, ModulePath, ModuleRepr},
@@ -61,7 +60,7 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
-enum StatementKind<'a> {
+pub(crate) enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,
 }
@@ -325,7 +324,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             replay: None,
             project_directory: None,
             current_file: None,
-            fixed_size_grid: settings.app.fixed_size_grid,
+            fixed_size_grid: settings.modeling.fixed_size_grid,
         }
     }
 }
@@ -431,9 +430,7 @@ impl ExecutorContext {
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
-            engine: Arc::new(Box::new(
-                crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
-            )),
+            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
@@ -600,14 +597,7 @@ impl ExecutorContext {
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
         let grid_scale = if self.settings.fixed_size_grid {
-            GridScaleBehavior::Fixed(
-                program
-                    .meta_settings()
-                    .ok()
-                    .flatten()
-                    .map(|s| s.default_length_units)
-                    .map(kcmc::units::UnitLength::from),
-            )
+            GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
         } else {
             GridScaleBehavior::ScaleWithZoom
         };
@@ -1100,14 +1090,7 @@ impl ExecutorContext {
 
         // Re-apply the settings, in case the cache was busted.
         let grid_scale = if self.settings.fixed_size_grid {
-            GridScaleBehavior::Fixed(
-                program
-                    .meta_settings()
-                    .ok()
-                    .flatten()
-                    .map(|s| s.default_length_units)
-                    .map(kcmc::units::UnitLength::from),
-            )
+            GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
         } else {
             GridScaleBehavior::ScaleWithZoom
         };
@@ -1414,14 +1397,14 @@ pub(crate) async fn parse_execute_with_project_dir(
     let program = crate::Program::parse_no_errs(code)?;
 
     let exec_ctxt = ExecutorContext {
-        engine: Arc::new(Box::new(
-            crate::engine::conn_mock::EngineConnection::new().await.map_err(|err| {
+        engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().map_err(
+            |err| {
                 KclError::new_internal(crate::errors::KclErrorDetails::new(
                     format!("Failed to create mock engine connection: {err}"),
                     vec![SourceRange::default()],
                 ))
-            })?,
-        )),
+            },
+        )?)),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings {
             project_directory,

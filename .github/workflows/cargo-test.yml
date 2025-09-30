@@ -29,7 +29,7 @@ jobs:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
           private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           token: ${{ steps.app-token.outputs.token }}
       - name: Use correct Rust toolchain
@@ -153,7 +153,7 @@ jobs:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
           private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           token: ${{ steps.app-token.outputs.token }}
       - name: Use correct Rust toolchain
@@ -205,7 +205,7 @@ jobs:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
           private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           token: ${{ steps.app-token.outputs.token }}
       - name: Use correct Rust toolchain
@@ -240,7 +240,6 @@ jobs:
           EXPECTORATE: overwrite
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
           ZOO_HOST: https://api.dev.zoo.dev
-          MODELING_APP_INTERNAL_SAMPLES_SECRET: ${{secrets.MODELING_APP_INTERNAL_SAMPLES_SECRET}}
           RUST_MIN_STACK: 10485760000
           TAB_API_URL: ${{ secrets.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
@@ -252,12 +251,12 @@ jobs:
     strategy:
       matrix:
         os:
-          - namespace-profile-ubuntu-2-cores
+          - namespace-profile-ubuntu-8-cores
           - namespace-profile-macos-6-cores
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Use correct Rust toolchain
         shell: bash
         run: |
@@ -266,7 +265,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # Configured below.
-      - uses: taiki-e/install-action@c07504cae06f832dc8de08911c9a9c5cddb0d2d3
+      - uses: taiki-e/install-action@5ab30948b991e8d6aa5a6c1e33c6aea130c6de65
         with:
           tool: wasm-pack
       - name: Rust Cache

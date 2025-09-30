@@ -17,12 +17,14 @@ import {
   addSketchTo,
   createPathToNodeForLastVariable,
   createVariableExpressionsArray,
-  deleteSegmentFromPipeExpression,
+  deleteSegmentOrProfileFromPipeExpression,
   moveValueIntoNewVariable,
   setCallInAst,
   sketchOnExtrudedFace,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
+import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
+import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 import {
   findUsesOfTagInPipe,
   getNodeFromPath,
@@ -35,11 +37,9 @@ import { topLevelRange } from '@src/lang/util'
 import type { Identifier, Literal } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
+import type { Selections } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
-import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
-import type { Selections } from '@src/lib/selections'
-import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 
 beforeAll(async () => {
   await initPromise
@@ -571,7 +571,7 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
       code.indexOf(lineOfInterest) + lineOfInterest.length
     )
     const pathToNode = getNodePathFromSourceRange(ast, range)
-    const modifiedAst = deleteSegmentFromPipeExpression(
+    const modifiedAst = deleteSegmentOrProfileFromPipeExpression(
       [],
       ast,
       execState.variables,
@@ -656,7 +656,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65deg, length = ${
       const range = topLevelRange(start, start + lineOfInterest.length)
       const pathToNode = getNodePathFromSourceRange(ast, range)
       const dependentSegments = findUsesOfTagInPipe(ast, pathToNode)
-      const modifiedAst = deleteSegmentFromPipeExpression(
+      const modifiedAst = deleteSegmentOrProfileFromPipeExpression(
         dependentSegments,
         ast,
         execState.variables,

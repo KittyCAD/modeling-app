@@ -19,13 +19,13 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import {
-  applyConstraintAngleLength,
-  applyConstraintLength,
-} from '@src/components/Toolbar/setAngleLength'
-import {
   SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
+import {
+  applyConstraintAngleLength,
+  applyConstraintLength,
+} from '@src/components/Toolbar/setAngleLength'
 import {
   useMenuListener,
   useSketchModeMenuEnableDisable,
@@ -45,28 +45,55 @@ import {
   traverse,
 } from '@src/lang/queryAst'
 import {
-  EngineConnectionStateType,
   EngineConnectionEvents,
+  EngineConnectionStateType,
 } from '@src/lang/std/engineConnection'
-import { err, reportRejection, trap, reject } from '@src/lib/trap'
-import { platform, uuidv4 } from '@src/lib/utils'
-import { commandBarActor } from '@src/lib/singletons'
+import { err, reject, reportRejection, trap } from '@src/lib/trap'
+
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
+
+import { commandBarActor, settingsActor } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
-import type { IndexLoaderData } from '@src/lib/types'
+import { platform, uuidv4 } from '@src/lib/utils'
+
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
+import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
+import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
 import {
+  angleBetweenInfo,
+  applyConstraintAngleBetween,
+} from '@src/components/Toolbar/SetAngleBetween'
+import { applyConstraintHorzVertDistance } from '@src/components/Toolbar/SetHorzVertDistance'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { updateSketchDetailsNodePaths } from '@src/lang/util'
+import type {
+  PipeExpression,
+  Program,
+  VariableDeclaration,
+} from '@src/lang/wasm'
+import { parse, recast, resultIsOk } from '@src/lang/wasm'
+import {
+  type ModelingCommandSchema,
+  modelingMachineCommandConfig,
+} from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import {
+  EXECUTION_TYPE_MOCK,
   EXPORT_TOAST_MESSAGES,
   MAKE_TOAST_MESSAGES,
-  EXECUTION_TYPE_MOCK,
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
 import type { Project } from '@src/lib/project'
-import type { WebContentSendPayload } from '@src/menu/channels'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import {
-  getPersistedContext,
-  modelingMachine,
-  modelingMachineDefaultContext,
-} from '@src/machines/modelingMachine'
+  getDefaultSketchPlaneData,
+  selectionBodyFace,
+  getOffsetSketchPlaneData,
+  updateSelections,
+} from '@src/lib/selections'
 import {
   codeManager,
   editorManager,
@@ -76,31 +103,19 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import type { MachineManager } from '@src/components/MachineManagerProvider'
-import { MachineManagerContext } from '@src/components/MachineManagerProvider'
-import { updateSelections } from '@src/lib/selections'
-import { updateSketchDetailsNodePaths } from '@src/lang/util'
-import {
-  modelingMachineCommandConfig,
-  type ModelingCommandSchema,
-} from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type { IndexLoaderData } from '@src/lib/types'
 import type {
-  PipeExpression,
-  Program,
-  VariableDeclaration,
-} from '@src/lang/wasm'
-import { parse, recast, resultIsOk } from '@src/lang/wasm'
-import { applyConstraintHorzVertDistance } from '@src/components/Toolbar/SetHorzVertDistance'
+  DefaultPlane,
+  ExtrudeFacePlane,
+  OffsetPlane,
+} from '@src/machines/modelingSharedTypes'
 import {
-  angleBetweenInfo,
-  applyConstraintAngleBetween,
-} from '@src/components/Toolbar/SetAngleBetween'
-import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
-import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+  getPersistedContext,
+  modelingMachine,
+} from '@src/machines/modelingMachine'
+import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import { useFolders } from '@src/machines/systemIO/hooks'
+import type { WebContentSendPayload } from '@src/menu/channels'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -124,7 +139,13 @@ export const ModelingMachineProvider = ({
 }) => {
   const {
     app: { allowOrbitInSketchMode },
-    modeling: { defaultUnit, cameraProjection, cameraOrbit, useNewSketchMode },
+    modeling: {
+      defaultUnit,
+      cameraProjection,
+      cameraOrbit,
+      useNewSketchMode,
+      snapToGrid,
+    },
   } = useSettings()
   const loaderData = useLoaderData() as IndexLoaderData
   const projects = useFolders()
@@ -271,14 +292,16 @@ export const ModelingMachineProvider = ({
             .catch(reportRejection)
         },
         'Set sketchDetails': assign(({ context: { sketchDetails }, event }) => {
-          if (event.type !== 'Delete segment') return {}
           if (!sketchDetails) return {}
-          return {
-            sketchDetails: {
-              ...sketchDetails,
-              sketchEntryNodePath: event.data,
-            },
+          if (event.type === 'Update sketch details') {
+            return {
+              sketchDetails: {
+                ...sketchDetails,
+                ...event.data,
+              },
+            }
           }
+          return {}
         }),
       },
       guards: {
@@ -490,6 +513,54 @@ export const ModelingMachineProvider = ({
               onDrag: () => {},
             })
             return undefined
+          }
+        ),
+        'animate-to-sketch-solve': fromPromise(
+          async ({
+            input: artifactOrPlaneId,
+          }): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane> => {
+            if (!artifactOrPlaneId) {
+              const errorMessage = 'No artifact or plane ID provided'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+            let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null =
+              null
+
+            const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId)
+            if (!err(defaultResult) && defaultResult) {
+              result = defaultResult
+            }
+            console.log('result', result)
+
+            // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
+            if (!result) {
+              const artifact = kclManager.artifactGraph.get(artifactOrPlaneId)
+              const offsetResult = await getOffsetSketchPlaneData(artifact)
+              if (!err(offsetResult) && offsetResult) {
+                result = offsetResult
+              }
+            }
+            console.log('result', result)
+            if (!result) {
+              const sweepFaceSelected =
+                await selectionBodyFace(artifactOrPlaneId)
+              if (sweepFaceSelected) {
+                result = sweepFaceSelected
+              }
+            }
+            if (!result) {
+              const errorMessage = 'Please select a valid sketch plane'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            const id =
+              result.type === 'extrudeFace' ? result.faceId : result.planeId
+            await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
+            console.log('result', result)
+            return result
           }
         ),
         'animate-to-face': fromPromise(async ({ input }) => {
@@ -1202,8 +1273,8 @@ export const ModelingMachineProvider = ({
   const cb = (data: WebContentSendPayload) => {
     const openPanes = modelingActor.getSnapshot().context.store.openPanes
     if (data.menuLabel === 'View.Panes.Feature tree') {
-      const featureTree: SidebarType = 'feature-tree'
-      const alwaysAddFeatureTree: SidebarType[] = [
+      const featureTree: SidebarId = 'feature-tree'
+      const alwaysAddFeatureTree: SidebarId[] = [
         ...new Set([...openPanes, featureTree]),
       ]
       modelingSend({
@@ -1213,8 +1284,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.KCL code') {
-      const code: SidebarType = 'code'
-      const alwaysAddCode: SidebarType[] = [...new Set([...openPanes, code])]
+      const code: SidebarId = 'code'
+      const alwaysAddCode: SidebarId[] = [...new Set([...openPanes, code])]
       modelingSend({
         type: 'Set context',
         data: {
@@ -1222,8 +1293,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.Project files') {
-      const projectFiles: SidebarType = 'files'
-      const alwaysAddProjectFiles: SidebarType[] = [
+      const projectFiles: SidebarId = 'files'
+      const alwaysAddProjectFiles: SidebarId[] = [
         ...new Set([...openPanes, projectFiles]),
       ]
       modelingSend({
@@ -1233,8 +1304,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.Variables') {
-      const variables: SidebarType = 'variables'
-      const alwaysAddVariables: SidebarType[] = [
+      const variables: SidebarId = 'variables'
+      const alwaysAddVariables: SidebarId[] = [
         ...new Set([...openPanes, variables]),
       ]
       modelingSend({
@@ -1244,8 +1315,8 @@ export const ModelingMachineProvider = ({
         },
       })
     } else if (data.menuLabel === 'View.Panes.Logs') {
-      const logs: SidebarType = 'logs'
-      const alwaysAddLogs: SidebarType[] = [...new Set([...openPanes, logs])]
+      const logs: SidebarId = 'logs'
+      const alwaysAddLogs: SidebarId[] = [...new Set([...openPanes, logs])]
       modelingSend({
         type: 'Set context',
         data: {
@@ -1443,6 +1514,14 @@ export const ModelingMachineProvider = ({
   })
   useHotkeys(['mod + alt + x'], () => {
     resetCameraPosition().catch(reportRejection)
+  })
+
+  // Toggle Snap to grid
+  useHotkeyWrapper([SNAP_TO_GRID_HOTKEY], () => {
+    settingsActor.send({
+      type: 'set.modeling.snapToGrid',
+      data: { level: 'project', value: !snapToGrid.current },
+    })
   })
 
   useModelingMachineCommands({

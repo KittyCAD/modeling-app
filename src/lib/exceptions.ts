@@ -1,9 +1,9 @@
 import toast from 'react-hot-toast'
 
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { kclManager, rustContext } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { getModule, reloadModule } from '@src/lib/wasm_lib_wrapper'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 let initialized = false
 

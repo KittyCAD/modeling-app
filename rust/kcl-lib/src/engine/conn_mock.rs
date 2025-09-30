@@ -37,7 +37,7 @@ pub struct EngineConnection {
 }
 
 impl EngineConnection {
-    pub async fn new() -> Result<EngineConnection> {
+    pub fn new() -> Result<EngineConnection> {
         Ok(EngineConnection {
             batch: Arc::new(RwLock::new(Vec::new())),
             batch_end: Arc::new(RwLock::new(IndexMap::new())),

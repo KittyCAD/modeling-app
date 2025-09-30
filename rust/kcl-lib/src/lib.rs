@@ -92,10 +92,10 @@ pub use errors::{
 pub use execution::{
     ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d, bust_cache, clear_mem_cache,
     typed_path::TypedPath,
-    types::{UnitAngle, UnitLen},
 };
 pub use kcl_error::SourceRange;
 pub use lsp::{
+    ToLspRange,
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
@@ -113,7 +113,7 @@ pub mod exec {
     pub use crate::execution::{ArtifactCommand, Operation};
     pub use crate::execution::{
         DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
-        types::{NumericType, UnitAngle, UnitLen, UnitType},
+        types::{NumericType, UnitType},
     };
 }
 
@@ -226,7 +226,10 @@ impl Program {
     }
 
     /// Change the meta settings for the kcl file.
-    pub fn change_default_units(&self, length_units: Option<execution::types::UnitLen>) -> Result<Self, KclError> {
+    pub fn change_default_units(
+        &self,
+        length_units: Option<kittycad_modeling_cmds::units::UnitLength>,
+    ) -> Result<Self, KclError> {
         Ok(Self {
             ast: self.ast.change_default_units(length_units)?,
             original_file_contents: self.original_file_contents.clone(),

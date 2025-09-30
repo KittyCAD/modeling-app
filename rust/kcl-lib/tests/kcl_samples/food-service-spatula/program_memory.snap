@@ -161,9 +161,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -30.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -187,9 +185,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               30.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -206,9 +202,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               32.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -231,9 +225,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -32.00000072214637
             ],
             "type": "Arc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -250,9 +242,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -32.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "innerPaths": [
@@ -271,9 +261,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               5.0000000000000036
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -295,9 +283,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -4.9999999999999964
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -314,9 +300,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -338,9 +322,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               5.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -357,9 +339,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               5.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -376,9 +356,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               23.99722453489576
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -400,9 +378,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               14.002775465104218
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -419,9 +395,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               13.002775465104227
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -443,9 +417,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               22.99722453489577
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -462,9 +434,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               22.99722453489577
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -481,9 +451,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -14.002775465104225
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -505,9 +473,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -23.997224534895768
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -524,9 +490,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -22.99722453489577
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -548,9 +512,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -13.002775465104229
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -567,9 +529,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -13.002775465104229
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -579,9 +539,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -589,25 +547,19 @@ description: Variables in memory after executing food-service-spatula.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -619,9 +571,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -70.0,
             -32.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -636,16 +586,11 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 3.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -654,12 +599,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "flipperLength": {
@@ -667,12 +608,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": 70.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "flipperProfile": {
@@ -696,9 +633,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -30.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -722,9 +657,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             30.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -741,9 +674,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             32.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -766,9 +697,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -32.00000072214637
           ],
           "type": "Arc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -785,9 +714,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -32.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -797,9 +724,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -807,25 +732,19 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -837,9 +756,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           -70.0,
           -32.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -854,9 +771,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "flipperSketch": {
@@ -868,34 +783,26 @@ description: Variables in memory after executing food-service-spatula.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -904,12 +811,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "flipperThickness": {
@@ -917,12 +820,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": 3.5,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "grip": {
@@ -1015,9 +914,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1040,9 +937,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -7.0
             ],
             "type": "Arc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1059,9 +954,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               7.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1084,9 +977,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               10.0
             ],
             "type": "Arc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1103,9 +994,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1128,9 +1017,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               7.0
             ],
             "type": "Arc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1154,9 +1041,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -7.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1179,9 +1064,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -10.0
             ],
             "type": "Arc",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1198,9 +1081,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -10.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1210,9 +1091,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "x": 208.593833,
             "y": 0.0,
             "z": 75.921946,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1220,25 +1099,19 @@ description: Variables in memory after executing food-service-spatula.kcl
             "x": 0.342019894888923,
             "y": -0.0,
             "z": -0.9396927112094517,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.9396927112094517,
             "y": -0.0,
             "z": 0.342019894888923,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1250,9 +1123,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -26.806746,
             -10.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1267,16 +1138,11 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": -150.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1290,12 +1156,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "gripHeight": {
@@ -1303,12 +1165,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "gripHoleProfile": {
@@ -1332,9 +1190,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             210.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1356,9 +1212,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             210.0
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1375,9 +1229,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             200.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1399,9 +1251,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             200.0
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1418,9 +1268,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             200.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1432,17 +1280,13 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 0.342019894888923,
           "y": -0.0,
           "z": -0.9396927112094517,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -1532,9 +1376,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   -10.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1557,9 +1399,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   -7.0
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1576,9 +1416,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   7.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1601,9 +1439,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   10.0
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1620,9 +1456,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   10.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1645,9 +1479,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   7.0
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1671,9 +1503,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   -7.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1696,9 +1526,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   -10.0
                 ],
                 "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1715,9 +1543,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   -10.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1727,9 +1553,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "x": 208.593833,
                 "y": 0.0,
                 "z": 75.921946,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "Custom",
@@ -1737,25 +1561,19 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "x": 0.342019894888923,
                 "y": -0.0,
                 "z": -0.9396927112094517,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.9396927112094517,
                 "y": -0.0,
                 "z": 0.342019894888923,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1767,9 +1585,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 -26.806746,
                 -10.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1784,21 +1600,14 @@ description: Variables in memory after executing food-service-spatula.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": -150.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -1809,9 +1618,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           4.0,
           200.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1820,9 +1627,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "gripLength": {
@@ -1830,12 +1635,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": 150.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "gripProfile": {
@@ -1859,9 +1660,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1884,9 +1683,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -7.0
           ],
           "type": "Arc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1903,9 +1700,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             7.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1928,9 +1723,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             10.0
           ],
           "type": "Arc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1947,9 +1740,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1972,9 +1763,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             7.0
           ],
           "type": "Arc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1998,9 +1787,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -7.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2023,9 +1810,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -10.0
           ],
           "type": "Arc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2042,9 +1827,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -10.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2054,9 +1837,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 208.593833,
           "y": 0.0,
           "z": 75.921946,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -2064,25 +1845,19 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 0.342019894888923,
           "y": -0.0,
           "z": -0.9396927112094517,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.9396927112094517,
           "y": -0.0,
           "z": 0.342019894888923,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2094,9 +1869,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           -26.806746,
           -10.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2111,9 +1884,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "gripSketch": {
@@ -2125,34 +1896,26 @@ description: Variables in memory after executing food-service-spatula.kcl
         "x": 208.593833,
         "y": 0.0,
         "z": 75.921946,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 0.342019894888923,
         "y": -0.0,
         "z": -0.9396927112094517,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.9396927112094517,
         "y": -0.0,
         "z": 0.342019894888923,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2161,12 +1924,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": 8.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "gripWidth": {
@@ -2174,12 +1933,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "handle": {
@@ -2279,9 +2034,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               35.319805
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2298,9 +2051,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               86.622826
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2317,9 +2068,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               91.32128900000001
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2343,9 +2092,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               39.63914700000001
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2362,9 +2109,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               3.4999990000000096
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2381,9 +2126,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               3.4999990000000096
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2400,9 +2143,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               3.5
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -2412,9 +2153,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "x": 0.0,
             "y": 7.5,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -2422,25 +2161,19 @@ description: Variables in memory after executing food-service-spatula.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2452,9 +2185,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             0.0,
             3.5
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2473,16 +2204,11 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 15.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -2502,12 +2228,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": 208.593833,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           {
@@ -2515,12 +2237,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           {
@@ -2528,12 +2246,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": 75.921946,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         ]
@@ -2546,12 +2260,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": 0.34202,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           {
@@ -2559,12 +2269,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": -0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           {
@@ -2572,12 +2278,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": -0.939693,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         ]
@@ -2590,12 +2292,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           {
@@ -2603,12 +2301,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           {
@@ -2616,12 +2310,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         ]
@@ -2634,12 +2324,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": 0.939693,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           {
@@ -2647,12 +2333,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": -0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           {
@@ -2660,17 +2342,14 @@ description: Variables in memory after executing food-service-spatula.kcl
             "value": 0.34202,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "handleProfile": {
     "type": "Sketch",
@@ -2700,9 +2379,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             35.319805
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2719,9 +2396,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             86.622826
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2738,9 +2413,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             91.32128900000001
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2764,9 +2437,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             39.63914700000001
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2783,9 +2454,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             3.4999990000000096
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2802,9 +2471,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             3.4999990000000096
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2821,9 +2488,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             3.5
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2833,9 +2498,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 0.0,
           "y": 7.5,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -2843,25 +2506,19 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2873,9 +2530,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           0.0,
           3.5
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2894,9 +2549,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "handleSketch": {
@@ -2908,34 +2561,26 @@ description: Variables in memory after executing food-service-spatula.kcl
         "x": 0.0,
         "y": 7.5,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2949,12 +2594,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     "value": 15.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "holeSketch": {
@@ -2967,17 +2608,13 @@ description: Variables in memory after executing food-service-spatula.kcl
         "x": 0.342019894888923,
         "y": -0.0,
         "z": -0.9396927112094517,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "solid": {
         "type": "Solid",
@@ -3067,9 +2704,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 -10.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -3092,9 +2727,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 -7.0
               ],
               "type": "Arc",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -3111,9 +2744,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 7.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -3136,9 +2767,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 10.0
               ],
               "type": "Arc",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -3155,9 +2784,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 10.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -3180,9 +2807,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 7.0
               ],
               "type": "Arc",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -3206,9 +2831,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 -7.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -3231,9 +2854,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 -10.0
               ],
               "type": "Arc",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -3250,9 +2871,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 -10.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             }
           ],
           "on": {
@@ -3262,9 +2881,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               "x": 208.593833,
               "y": 0.0,
               "z": 75.921946,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "Custom",
@@ -3272,25 +2889,19 @@ description: Variables in memory after executing food-service-spatula.kcl
               "x": 0.342019894888923,
               "y": -0.0,
               "z": -0.9396927112094517,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 0.9396927112094517,
               "y": -0.0,
               "z": 0.342019894888923,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -3302,9 +2913,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               -26.806746,
               -10.0
             ],
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -3319,21 +2928,14 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
-        "height": -150.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "sectional": false
       },
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "slot": {
@@ -3361,9 +2963,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             5.0000000000000036
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3385,9 +2985,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -4.9999999999999964
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3404,9 +3002,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3428,9 +3024,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             5.0
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3447,9 +3041,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -3459,9 +3051,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -3469,25 +3059,19 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3499,9 +3083,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           -25.0,
           5.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3510,9 +3092,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "slotProfile001": {
@@ -3536,9 +3116,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             23.99722453489576
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3560,9 +3138,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             14.002775465104218
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3579,9 +3155,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             13.002775465104227
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3603,9 +3177,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             22.99722453489577
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3622,9 +3194,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             22.99722453489577
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -3634,9 +3204,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -3644,25 +3212,19 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3674,9 +3236,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           -24.833425848836807,
           22.99722453489577
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3685,9 +3245,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "slotProfile002": {
@@ -3711,9 +3269,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -14.002775465104225
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3735,9 +3291,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -23.997224534895768
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3754,9 +3308,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -22.99722453489577
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3778,9 +3330,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -13.002775465104229
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3797,9 +3347,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -13.002775465104229
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -3809,9 +3357,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -3819,25 +3365,19 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3849,9 +3389,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           -25.16657415116319,
           -13.002775465104229
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3860,9 +3398,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "spatulaProfile": {
@@ -3886,9 +3422,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -30.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3912,9 +3446,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             30.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3931,9 +3463,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             32.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3956,9 +3486,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -32.00000072214637
           ],
           "type": "Arc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3975,9 +3503,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -32.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "innerPaths": [
@@ -3996,9 +3522,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             5.0000000000000036
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4020,9 +3544,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -4.9999999999999964
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4039,9 +3561,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4063,9 +3583,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             5.0
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4082,9 +3600,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             5.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4101,9 +3617,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             23.99722453489576
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4125,9 +3639,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             14.002775465104218
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4144,9 +3656,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             13.002775465104227
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4168,9 +3678,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             22.99722453489577
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4187,9 +3695,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             22.99722453489577
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4206,9 +3712,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -14.002775465104225
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4230,9 +3734,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -23.997224534895768
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4249,9 +3751,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -22.99722453489577
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4273,9 +3773,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -13.002775465104229
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -4292,9 +3790,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             -13.002775465104229
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -4304,9 +3800,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -4314,25 +3808,19 @@ description: Variables in memory after executing food-service-spatula.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -4344,9 +3832,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           -70.0,
           -32.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -4361,9 +3847,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   }
 }

@@ -20,12 +20,8 @@ description: Variables in memory after executing dodecahedron.kcl
     "value": 116.565,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "dodecFaces": {
@@ -86,9 +82,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -105,9 +99,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -124,9 +116,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -143,9 +133,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -155,9 +143,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -165,25 +151,19 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -195,9 +175,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 -1000.0,
                 -1000.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -206,16 +184,11 @@ description: Variables in memory after executing dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 2000.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -274,9 +247,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.1
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -293,9 +264,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.1
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -312,9 +281,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.1
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -331,9 +298,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.1
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -343,9 +308,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -353,25 +316,19 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -383,9 +340,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 -1000.1,
                 -1000.1
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -394,16 +349,11 @@ description: Variables in memory after executing dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 2000.1,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -462,9 +412,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.2
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -481,9 +429,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.2
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -500,9 +446,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.2
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -519,9 +463,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.2
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -531,9 +473,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -541,25 +481,19 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -571,9 +505,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 -1000.2,
                 -1000.2
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -582,16 +514,11 @@ description: Variables in memory after executing dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 2000.2,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -650,9 +577,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.3
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -669,9 +594,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.3
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -688,9 +611,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.3
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -707,9 +628,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.3
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -719,9 +638,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -729,25 +646,19 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -759,9 +670,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 -1000.3,
                 -1000.3
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -770,16 +679,11 @@ description: Variables in memory after executing dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 2000.3,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -838,9 +742,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.4
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -857,9 +759,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.4
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -876,9 +776,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.4
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -895,9 +793,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.4
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -907,9 +803,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -917,25 +811,19 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -947,9 +835,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 -1000.4,
                 -1000.4
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -958,16 +844,11 @@ description: Variables in memory after executing dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 2000.4,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -1026,9 +907,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1045,9 +924,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1064,9 +941,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1083,9 +958,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.5
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -1095,9 +968,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -1105,25 +976,19 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1135,9 +1000,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 -1000.5,
                 -1000.5
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1146,16 +1009,11 @@ description: Variables in memory after executing dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 2000.5,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -1214,9 +1072,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.6
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1233,9 +1089,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.6
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1252,9 +1106,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.6
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1271,9 +1123,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.6
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -1283,9 +1133,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -1293,25 +1141,19 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1323,9 +1165,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 -1000.6,
                 -1000.6
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1334,16 +1174,11 @@ description: Variables in memory after executing dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 2000.6,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -1402,9 +1237,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.7
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1421,9 +1254,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.7
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1440,9 +1271,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.7
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1459,9 +1288,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.7
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -1471,9 +1298,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -1481,25 +1306,19 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1511,9 +1330,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 -1000.7,
                 -1000.7
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1522,16 +1339,11 @@ description: Variables in memory after executing dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 2000.7,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -1590,9 +1402,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.8
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1609,9 +1419,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.8
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1628,9 +1436,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.8
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1647,9 +1453,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.8
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -1659,9 +1463,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -1669,25 +1471,19 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1699,9 +1495,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 -1000.8,
                 -1000.8
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1710,16 +1504,11 @@ description: Variables in memory after executing dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 2000.8,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -1778,9 +1567,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.9
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1797,9 +1584,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.9
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1816,9 +1601,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.9
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1835,9 +1618,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.9
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -1847,9 +1628,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -1857,25 +1636,19 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1887,9 +1660,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 -1000.9,
                 -1000.9
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1898,16 +1669,11 @@ description: Variables in memory after executing dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 2000.9,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -1966,9 +1732,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.11
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1985,9 +1749,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.11
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2004,9 +1766,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.11
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2023,9 +1783,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.11
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -2035,9 +1793,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -2045,25 +1801,19 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2075,9 +1825,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 -1000.11,
                 -1000.11
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2086,16 +1834,11 @@ description: Variables in memory after executing dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 2000.1100000000001,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -2154,9 +1897,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.12
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2173,9 +1914,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.12
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2192,9 +1931,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   1000.12
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -2211,9 +1948,7 @@ description: Variables in memory after executing dodecahedron.kcl
                   -1000.12
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -2223,9 +1958,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XY",
@@ -2233,25 +1966,19 @@ description: Variables in memory after executing dodecahedron.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2263,9 +1990,7 @@ description: Variables in memory after executing dodecahedron.kcl
                 -1000.12,
                 -1000.12
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2274,16 +1999,11 @@ description: Variables in memory after executing dodecahedron.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 2000.12,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       }
@@ -2300,12 +2020,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2313,12 +2029,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2326,12 +2038,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2339,12 +2047,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -2357,12 +2061,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 116.565,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2370,12 +2070,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2383,12 +2079,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2396,12 +2088,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.1,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -2414,12 +2102,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 116.565,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2427,12 +2111,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2440,12 +2120,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 72.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2453,12 +2129,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.2,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -2471,12 +2143,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 116.565,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2484,12 +2152,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2497,12 +2161,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 144.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2510,12 +2170,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.3,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -2528,12 +2184,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 116.565,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2541,12 +2193,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2554,12 +2202,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 216.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2567,12 +2211,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.4,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -2585,12 +2225,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 116.565,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2598,12 +2234,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2611,12 +2243,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 288.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2624,12 +2252,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -2642,12 +2266,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2655,12 +2275,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2668,12 +2284,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2681,12 +2293,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.6,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -2699,12 +2307,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 63.435,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2712,12 +2316,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2725,12 +2325,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 36.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2738,12 +2334,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.7,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -2756,12 +2348,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 63.435,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2769,12 +2357,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2782,12 +2366,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 108.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2795,12 +2375,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.8,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -2813,12 +2389,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 63.435,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2826,12 +2398,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2839,12 +2407,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 180.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2852,12 +2416,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.9,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -2870,12 +2430,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 63.435,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2883,12 +2439,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2896,12 +2448,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 252.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2909,12 +2457,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.11,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -2927,12 +2471,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 63.435,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2940,12 +2480,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2953,12 +2489,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 324.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -2966,12 +2498,8 @@ description: Variables in memory after executing dodecahedron.kcl
             "value": 0.12,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]

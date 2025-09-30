@@ -130,6 +130,7 @@ impl Expr {
                 .get_hover_value_for_position(pos, code, opts)
                 .or_else(|| expr.expr.get_hover_value_for_position(pos, code, opts)),
             Expr::SketchBlock(expr) => expr.get_hover_value_for_position(pos, code, opts),
+            Expr::SketchVar(_) => None,
             // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
             Expr::PipeSubstitution(_) => None,
         }
@@ -158,6 +159,7 @@ impl BinaryPart {
             BinaryPart::MemberExpression(member_expression) => {
                 member_expression.get_hover_value_for_position(pos, code, opts)
             }
+            BinaryPart::SketchVar(_) => None,
         }
     }
 }

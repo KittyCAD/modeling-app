@@ -1,8 +1,9 @@
 [package]
 name = "kcl-error"
-version = "0.1.0"
+version = "0.1.8"
 edition = "2024"
 description = "KCL error definitions"
+license = "MIT"
 
 [dependencies]
 miette = { workspace = true }

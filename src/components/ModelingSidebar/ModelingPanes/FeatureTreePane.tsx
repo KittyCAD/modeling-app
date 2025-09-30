@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type { Actor, Prop } from 'xstate'
 
-import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -12,11 +12,12 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useKclContext } from '@src/lang/KclProvider'
+import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
+import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   codeRefFromRange,
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
-import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import {
   filterOperations,
   getOperationIcon,
@@ -24,14 +25,22 @@ import {
   getOperationVariableName,
   stdLibMap,
 } from '@src/lib/operations'
+import { uuidv4 } from '@src/lib/utils'
+import type { DefaultPlaneStr } from '@src/lib/planes'
+import {
+  selectDefaultSketchPlane,
+  selectOffsetSketchPlane,
+} from '@src/lib/selections'
 import {
   codeManager,
   commandBarActor,
   editorManager,
+  engineCommandManager,
   kclManager,
   rustContext,
   sceneInfra,
 } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 import {
   featureTreeMachine,
   featureTreeMachineDefaultContext,
@@ -41,13 +50,10 @@ import {
   kclEditorActor,
   selectionEventSelector,
 } from '@src/machines/kclEditorMachine'
-import {
-  selectDefaultSketchPlane,
-  selectOffsetSketchPlane,
-} from '@src/lib/selections'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
-import { err } from '@src/lib/trap'
+import toast from 'react-hot-toast'
+import { base64Decode } from '@src/lang/wasm'
+import { browserSaveFile } from '@src/lib/browserSaveFile'
+import { exportSketchToDxf } from '@src/lib/exportDxf'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -587,6 +593,38 @@ const OperationItem = (props: {
         ? [
             <ContextMenuItem onClick={startSketchOnOffsetPlane}>
               Start Sketch
+            </ContextMenuItem>,
+          ]
+        : []),
+      ...(props.item.type === 'StdLibCall' &&
+      props.item.name === 'startSketchOn'
+        ? [
+            <ContextMenuItem
+              onClick={() => {
+                const exportDxf = async () => {
+                  if (props.item.type !== 'StdLibCall') return
+                  const result = await exportSketchToDxf(props.item, {
+                    engineCommandManager,
+                    kclManager,
+                    toast,
+                    uuidv4,
+                    base64Decode,
+                    browserSaveFile,
+                  })
+
+                  if (err(result)) {
+                    // Additional error logging for debugging purposes
+                    // Main error handling (toasts) is already done in exportSketchToDxf
+                    console.error('DXF export failed:', result.message)
+                  } else {
+                    console.log('DXF export completed successfully')
+                  }
+                }
+                void exportDxf()
+              }}
+              data-testid="context-menu-export-dxf"
+            >
+              Export to DXF
             </ContextMenuItem>,
           ]
         : []),

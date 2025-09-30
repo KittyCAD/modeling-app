@@ -4,6 +4,7 @@ import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { KclManagerEvents } from '@src/lang/KclSingleton'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import {
   EngineCommandManagerEvents,
@@ -17,25 +18,24 @@ import {
   kclManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import { KclManagerEvents } from '@src/lang/KclSingleton'
+import { engineStreamActor, useSettings } from '@src/lib/singletons'
 import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
-import { engineStreamActor, useSettings } from '@src/lib/singletons'
 import {
   EngineStreamState,
   EngineStreamTransition,
 } from '@src/machines/engineStreamMachine'
 
 import Loading from '@src/components/Loading'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { useSelector } from '@xstate/react'
 import type { MouseEventHandler } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useRouteLoaderData } from 'react-router-dom'
-import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
-import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 const TIME_1_SECOND = 1000
 
@@ -582,7 +582,7 @@ export const EngineStream = (props: {
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       ref={videoWrapperRef}
-      className="absolute inset-[-4px] z-0"
+      className="absolute inset-[-4px] z-0" // negative inset to hide SSAO border artifacts
       id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}

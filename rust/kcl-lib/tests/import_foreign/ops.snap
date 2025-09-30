@@ -28,6 +28,7 @@ description: Operations executed import_foreign.kcl
   "rust/kcl-lib/tests/inputs/cube.gltf": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -135,6 +136,7 @@ description: Operations executed import_foreign.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

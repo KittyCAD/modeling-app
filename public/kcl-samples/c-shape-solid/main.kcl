@@ -1,0 +1,73 @@
+// C-Shape Solid (Abstract Geometry Demo)
+// This is a simplified geometry study that demonstrates how to create a "C" shape by subtracting a rectangular wedge from a circular ring. This base logic is foundational to models like split washers and other circular parts with a gap.
+
+
+
+
+@settings(defaultLengthUnit = mm)
+
+// ──────────
+// PARAMETERS
+// ──────────
+
+// Outer diameter of the ring
+ringOuterDiameter = 20
+
+// Inner diameter — defines the hole in the middle of the ring
+ringInnerDiameter = 10
+
+// Thickness of the ring (height in Z direction)
+ringThickness = 2
+
+// Width of the wedge we will use to cut the split
+cutGapWidth = 2
+
+// ───────────────────────
+// STEP 1: CREATE THE RING
+// ───────────────────────
+
+// We begin by sketching two concentric circles: the outer boundary and the hole. Then we subtract the inner one to get a donut-like profile.
+ringSketch = startSketchOn(XY)
+ringProfile = circle(ringSketch, center = [0, 0], diameter = ringOuterDiameter)
+  |> subtract2d(tool = [
+       circle(center = [0, 0], diameter = ringInnerDiameter)
+     ])
+
+// We extrude this sketch into a 3D solid. This is the full ring, with no gap yet.
+solidRing = extrude(ringProfile, length = ringThickness)
+
+// ───────────────────────────────
+// STEP 2: CREATE THE WEDGE CUTTER
+// ───────────────────────────────
+
+// We now create a thin rectangular wedge that will be used to cut the split. This wedge starts from the center and extends past the outer radius.
+
+// First, define a little clearance so that the wedge cuts fully through the body
+cutClearance = ringThickness * 0.5
+
+// Compute wedge dimensions
+ringOuterRadius = ringOuterDiameter / 2
+wedgeLength = ringOuterRadius + cutClearance
+wedgeHeight = ringThickness + cutClearance * 2
+
+// Draw the wedge on a plane slightly below the ring
+wedgePlane = offsetPlane(XY, offset = -cutClearance)
+wedgeSketch = startSketchOn(wedgePlane)
+wedgeProfile = startProfile(wedgeSketch, at = [0, -cutGapWidth / 2])
+  |> yLine(length = cutGapWidth)
+  |> xLine(length = wedgeLength)
+  |> yLine(length = -cutGapWidth)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+wedgeBody = extrude(wedgeProfile, length = wedgeHeight)
+
+// ──────────────────────
+// STEP 3: SUBTRACT WEDGE
+// ──────────────────────
+
+
+// Finally, we subtract the wedge body from the solid ring. The result is a simple C-shape: a ring with a single clean gap.
+
+
+cShape = subtract([solidRing], tools = [wedgeBody])

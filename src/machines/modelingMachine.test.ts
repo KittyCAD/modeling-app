@@ -1,28 +1,26 @@
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import env from '@src/env'
+import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import {
-  modelingMachine,
-  modelingMachineDefaultContext,
-} from '@src/machines/modelingMachine'
-import { createActor } from 'xstate'
-import { vi } from 'vitest'
-import { assertParse, recast, type CallExpressionKw } from '@src/lang/wasm'
+  createIdentifier,
+  createLiteral,
+  createVariableDeclaration,
+} from '@src/lang/create'
+import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getConstraintInfoKw } from '@src/lang/std/sketch'
+import { type CallExpressionKw, assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import {
   codeManager,
   engineCommandManager,
   kclManager,
 } from '@src/lib/singletons'
-import env from '@src/env'
-import { getConstraintInfoKw } from '@src/lang/std/sketch'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { err } from '@src/lib/trap'
-import {
-  createIdentifier,
-  createLiteral,
-  createVariableDeclaration,
-} from '@src/lang/create'
-import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
-import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
+import { modelingMachine } from '@src/machines/modelingMachine'
+import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+import { vi } from 'vitest'
+import { createActor } from 'xstate'
 
 // Store original method to restore in afterAll
 

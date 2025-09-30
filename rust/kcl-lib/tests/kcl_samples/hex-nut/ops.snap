@@ -12,12 +12,8 @@ description: Operations executed hex-nut.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed hex-nut.kcl
         "value": 0.266,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed hex-nut.kcl
         "value": 0.3125,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -117,12 +105,8 @@ description: Operations executed hex-nut.kcl
               "value": 0.3125,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -136,12 +120,8 @@ description: Operations executed hex-nut.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 },
                 {
@@ -149,12 +129,8 @@ description: Operations executed hex-nut.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": {
-                      "type": "Inches"
-                    },
-                    "angle": {
-                      "type": "Degrees"
-                    }
+                    "len": "in",
+                    "angle": "degrees"
                   }
                 }
               ]
@@ -167,12 +143,8 @@ description: Operations executed hex-nut.kcl
               "value": 0.266,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -311,12 +283,8 @@ description: Operations executed hex-nut.kcl
             "value": 0.266,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -361,6 +329,7 @@ description: Operations executed hex-nut.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -468,6 +437,7 @@ description: Operations executed hex-nut.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

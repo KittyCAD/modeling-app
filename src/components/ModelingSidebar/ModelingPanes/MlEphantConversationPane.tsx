@@ -1,33 +1,37 @@
-import { reportRejection } from '@src/lib/trap'
-import { NIL as uuidNIL } from 'uuid'
-import { type settings } from '@src/lib/settings/initialSettings'
-import type CodeManager from '@src/lang/codeManager'
-import type { KclManager } from '@src/lang/KclSingleton'
-import type { SystemIOActor } from '@src/lib/singletons'
-import { useEffect } from 'react'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useSelector } from '@xstate/react'
+import type { User } from '@kittycad/lib'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type CodeManager from '@src/lang/codeManager'
+import type { FileEntry, Project } from '@src/lib/project'
+import type { Prompt } from '@src/lib/prompt'
+import { type settings } from '@src/lib/settings/initialSettings'
+import type { SystemIOActor } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
-import type { Prompt } from '@src/lib/prompt'
+import type { ModelingMachineContext } from '@src/machines/modelingMachine'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
-import type { ModelingMachineContext } from '@src/machines/modelingMachine'
-import type { FileEntry, Project } from '@src/lib/project'
-import type { Models } from '@kittycad/lib'
+import { useSelector } from '@xstate/react'
+import { useEffect } from 'react'
+import { NIL as uuidNIL } from 'uuid'
+import type { BillingActor } from '@src/machines/billingMachine'
 
 const hasPromptsPending = (promptsPool: Prompt[]) => {
   return (
-    promptsPool.filter((prompt) => prompt.status === 'in_progress').length > 0
+    promptsPool.filter((prompt) =>
+      ['queued', 'uploaded', 'in_progress'].includes(prompt.status)
+    ).length > 0
   )
 }
 
 export const MlEphantConversationPane = (props: {
   mlEphantManagerActor: MlEphantManagerActor
+  billingActor: BillingActor
   systemIOActor: SystemIOActor
   kclManager: KclManager
   codeManager: CodeManager
@@ -35,7 +39,7 @@ export const MlEphantConversationPane = (props: {
   contextModeling: ModelingMachineContext
   loaderFile: FileEntry | undefined
   settings: typeof settings
-  user?: Models['User_type']
+  user?: User
 }) => {
   const mlEphantManagerActorSnapshot = props.mlEphantManagerActor.getSnapshot()
   const promptsBelongingToConversation = useSelector(
@@ -44,6 +48,10 @@ export const MlEphantConversationPane = (props: {
       return mlEphantManagerActorSnapshot.context.promptsBelongingToConversation
     }
   )
+  const billingContext = useSelector(props.billingActor, (actor) => {
+    return actor.context
+  })
+
   const prompts = Array.from(
     promptsBelongingToConversation
       ?.map((promptId) =>
@@ -101,8 +109,13 @@ export const MlEphantConversationPane = (props: {
       console.warn('Unexpected conversationId is undefined!')
     }
 
+    if (props.theProject === undefined) {
+      return
+    }
+
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
+      project: props.theProject,
       conversationId,
       nextPage:
         mlEphantManagerActorSnapshot.context
@@ -163,10 +176,12 @@ export const MlEphantConversationPane = (props: {
     // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
     if (
       props.mlEphantManagerActor.getSnapshot().context
-        .promptsBelongingToConversation === undefined
+        .promptsBelongingToConversation === undefined &&
+      props.theProject !== undefined
     ) {
       props.mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.GetPromptsBelongingToConversation,
+        project: props.theProject,
         conversationId,
       })
     }
@@ -226,6 +241,7 @@ export const MlEphantConversationPane = (props: {
       isLoading={promptsBelongingToConversation === undefined || isProcessing}
       prompts={prompts}
       promptsThoughts={promptsThoughts}
+      billingContext={billingContext}
       onProcess={(requestedPrompt: string) => {
         onProcess(requestedPrompt).catch(reportRejection)
       }}

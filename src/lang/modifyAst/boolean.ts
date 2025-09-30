@@ -4,15 +4,15 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
 } from '@src/lang/create'
-import { getVariableExprsFromSelection } from '@src/lang/queryAst'
-import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
-import { err } from '@src/lib/trap'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import {
   createVariableExpressionsArray,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { getVariableExprsFromSelection } from '@src/lang/queryAst'
+import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import type { Selections } from '@src/lib/selections'
+import { err } from '@src/lib/trap'
 
 export function addUnion({
   ast,

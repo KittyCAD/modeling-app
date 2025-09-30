@@ -178,15 +178,17 @@ description: Artifact commands helix_ccw.kcl
           "value": 0.0
         },
         "is_clockwise": false,
-        "length": 10.0
+        "length": null
       }
     }
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

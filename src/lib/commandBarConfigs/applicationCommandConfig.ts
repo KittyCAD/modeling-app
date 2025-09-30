@@ -1,38 +1,38 @@
-import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import type { ActorRefFrom } from 'xstate'
-import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
-import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
+import env from '@src/env'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
-import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
-import { waitForIdleState } from '@src/machines/systemIO/utils'
+import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
 import {
-  SystemIOMachineEvents,
-  determineProjectFilePathFromPrompt,
-} from '@src/machines/systemIO/utils'
+  writeEnvironmentConfigurationPool,
+  writeEnvironmentFile,
+} from '@src/lib/desktop'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   everyKclSample,
   findKclSample,
   kclSamplesManifestWithNoMultipleFiles,
 } from '@src/lib/kclSamples'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
-import toast from 'react-hot-toast'
-import { reportRejection } from '@src/lib/trap'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
   getStringAfterLastSeparator,
   joinOSPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
-import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
-import {
-  writeEnvironmentConfigurationPool,
-  writeEnvironmentFile,
-} from '@src/lib/desktop'
-import env from '@src/env'
+import { reportRejection } from '@src/lib/trap'
 import { returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
+import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
+import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
+import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
+import { waitForIdleState } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  determineProjectFilePathFromPrompt,
+} from '@src/machines/systemIO/utils'
+import toast from 'react-hot-toast'
+import type { ActorRefFrom } from 'xstate'
 
 function onSubmitKCLSampleCreation({
   sample,
