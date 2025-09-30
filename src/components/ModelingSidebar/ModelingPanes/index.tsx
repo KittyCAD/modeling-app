@@ -140,6 +140,7 @@ const textToCadPane: SidebarPane = {
           {...{
             mlEphantManagerActor,
             systemIOActor,
+            billingActor,
             kclManager,
             codeManager,
             contextModeling,
