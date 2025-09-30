@@ -8,6 +8,7 @@ import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjecti
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { isDesktop } from '@src/lib/isDesktop'
+import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveMode'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -235,6 +236,7 @@ export interface ModelingMachineContext {
   defaultPlaneVisibility: PlaneVisibilityMap
   savedDefaultPlaneVisibility: PlaneVisibilityMap
   planesInitialized: boolean
+  sketchSolveTool: EquipTool | null
 }
 
 export type PlaneVisibilityMap = {

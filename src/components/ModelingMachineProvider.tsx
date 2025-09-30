@@ -116,7 +116,6 @@ import {
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import { useFolders } from '@src/machines/systemIO/hooks'
 import type { WebContentSendPayload } from '@src/menu/channels'
-import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveMode'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -125,7 +124,6 @@ export const ModelingMachineContext = createContext(
     state: StateFrom<typeof modelingMachine>
     context: ContextFrom<typeof modelingMachine>
     send: Prop<Actor<typeof modelingMachine>, 'send'>
-    sketchSolveState?: StateFrom<typeof sketchSolveMachine>
     theProject: MutableRefObject<Project | undefined>
   }
 )
@@ -1264,6 +1262,7 @@ export const ModelingMachineProvider = ({
           useNewSketchMode,
         },
         machineManager,
+        sketchSolveTool: null,
       },
       // devTools: true,
     }
@@ -1537,24 +1536,12 @@ export const ModelingMachineProvider = ({
     onCancel: () => modelingSend({ type: 'Cancel' }),
   })
 
-  const sketchRef = useSelector(
-    modelingActor,
-    (s) => s.children.sketchSolveMachine
-  )
-  const _sketchSolveState = useSelector(sketchRef, (s) => s)
-  // types shit the bed without this check
-  let sketchSolveState
-  if (_sketchSolveState && 'context' in _sketchSolveState) {
-    sketchSolveState = _sketchSolveState
-  }
-
   return (
     <ModelingMachineContext.Provider
       value={{
         state: modelingState,
         context: modelingState.context,
         send: modelingSend,
-        sketchSolveState,
         theProject,
       }}
     >

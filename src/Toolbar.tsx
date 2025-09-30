@@ -32,7 +32,7 @@ export function Toolbar({
   className = '',
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
-  const { state, send, context, sketchSolveState } = useModelingContext()
+  const { state, send, context } = useModelingContext()
 
   const iconClassName =
     'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
@@ -91,7 +91,7 @@ export function Toolbar({
       modelingSend: send,
       sketchPathId,
       editorHasFocus: editorManager.getEditorView()?.hasFocus,
-      sketchSolveState,
+      sketchSolveTool: context.sketchSolveTool,
       isActive: false, // Default value - individual items will override this
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -100,7 +100,7 @@ export function Toolbar({
       send,
       commandBarActor.send,
       sketchPathId,
-      sketchSolveState,
+      context.sketchSolveTool,
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       editorManager.getEditorView()?.hasFocus,
     ]
@@ -175,11 +175,7 @@ export function Toolbar({
         kclManager.hasErrors()
 
       // Calculate the isActive state for this specific item
-      const itemIsActive =
-        maybeIconConfig.isActive?.({
-          modelingState: state,
-          sketchSolveState,
-        }) || false
+      const itemIsActive = maybeIconConfig.isActive?.(state) || false
 
       // Create item-specific callback props with the correct isActive value
       const itemCallbackProps = {
