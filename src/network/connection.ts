@@ -5,8 +5,7 @@ import {
   DATACHANNEL_NAME_UMC,
   EngineConnectionEvents,
   EngineConnectionStateType,
-  pingIntervalMs,
-  promiseFactory,
+  PING_INTERVAL_MS,
   WebSocketStatusCodes,
 } from '@src/network/utils'
 import {
@@ -27,7 +26,7 @@ import {
   createOnWebSocketOpen,
 } from '@src/network/websocketConnection'
 import { EngineDebugger } from '@src/lib/debugger'
-import { uuidv4 } from '@src/lib/utils'
+import { promiseFactory, uuidv4 } from '@src/lib/utils'
 import { withWebSocketURL } from '@src/lib/withBaseURL'
 import type {
   WebSocketRequest,
@@ -232,7 +231,7 @@ export class Connection extends EventTarget {
         ping: Date.now(),
         pong: undefined,
       }
-    }, pingIntervalMs)
+    }, PING_INTERVAL_MS)
   }
 
   stopPingPong() {

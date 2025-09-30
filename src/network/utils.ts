@@ -9,7 +9,7 @@ import type {
 } from '@kittycad/lib/dist/types/src'
 
 // Ping/Pong every 1 second
-export const pingIntervalMs = 1_000
+export const PING_INTERVAL_MS = 1_000
 
 export type ModelTypes = OkModelingCmdResponse['type']
 // TODO: Should eventually be replaced with native EventTarget event system,
@@ -303,16 +303,6 @@ export interface IEventListenerTracked {
   event: string
   callback: any
   type: EventSource
-}
-
-export function promiseFactory<T>() {
-  let resolve: (value: T | PromiseLike<T>) => void = () => {}
-  let reject: (value: T | PromiseLike<T>) => void = () => {}
-  const promise = new Promise<T>((_resolve, _reject) => {
-    resolve = _resolve
-    reject = _reject
-  })
-  return { promise, resolve, reject }
 }
 
 export function getDimensions(streamWidth: number, streamHeight: number) {

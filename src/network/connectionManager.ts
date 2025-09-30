@@ -21,7 +21,6 @@ import {
   EngineCommandManagerEvents,
   EngineConnectionEvents,
   EngineConnectionStateType,
-  promiseFactory,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
 } from '@src/network/utils'
 import {
@@ -33,7 +32,7 @@ import {
   createOnEngineOffline,
 } from '@src/network/connectionManagerEvents'
 import type RustContext from '@src/lib/rustContext'
-import { binaryToUuid, isArray, uuidv4 } from '@src/lib/utils'
+import { binaryToUuid, isArray, promiseFactory, uuidv4 } from '@src/lib/utils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type CodeManager from '@src/lang/codeManager'
