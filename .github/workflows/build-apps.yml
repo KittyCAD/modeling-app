@@ -101,7 +101,7 @@ jobs:
           export VERSION=$DATE-main.$COMMIT
           npm run files:set-version
           npm run files:flip-to-staging
-          npm run files:set-windows-cert-thumbprint
+          npm run files:set-windows-codesign-config
 
       - name: Set release version
         if: ${{ env.IS_RELEASE == 'true' }}
@@ -110,7 +110,7 @@ jobs:
         run: |
           export VERSION=${GITHUB_REF_NAME#v}
           npm run files:set-version
-          npm run files:set-windows-cert-thumbprint
+          npm run files:set-windows-codesign-config
 
       - uses: actions/upload-artifact@v4
         with:
@@ -221,6 +221,7 @@ jobs:
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          # Windows codesign config is part of electron-builder.yml and handled in prepare-files
         run: npm run tronb:package:${{ env.IS_STAGING == 'true' && 'dev' || 'prod' }}
 
       - name: List artifacts in out/
