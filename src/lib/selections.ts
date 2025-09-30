@@ -55,7 +55,6 @@ import {
   rustContext,
   sceneEntitiesManager,
   sceneInfra,
-  engineStreamActor,
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import {
@@ -418,7 +417,7 @@ export function updateExtraSegments(
 function resetAndSetEngineEntitySelectionCmds(
   selections: SelectionToEngine[]
 ): WebSocketRequest[] {
-  if (!engineCommandManager.engineConnection?.isReady()) {
+  if (engineCommandManager.connection?.pingIntervalId === undefined) {
     return []
   }
   return [
@@ -715,16 +714,12 @@ export function codeToIdSelections(
 }
 
 export async function sendSelectEventToEngine(
-  e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  videoRef: HTMLVideoElement
 ) {
-  // No video stream to normalise against, return immediately
-  const engineStreamState = engineStreamActor.getSnapshot().context
-  if (!engineStreamState.videoRef.current)
-    return Promise.reject('video element not ready')
-
   const { x, y } = getNormalisedCoordinates(
     e,
-    engineStreamState.videoRef.current,
+    videoRef,
     engineCommandManager.streamDimensions
   )
   let res = await engineCommandManager.sendSceneCommand({

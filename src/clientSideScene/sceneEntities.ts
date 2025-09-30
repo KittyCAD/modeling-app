@@ -133,8 +133,8 @@ import {
   codeRefFromRange,
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type { Coords2d } from '@src/lang/util'
+
 import {
   addCallExpressionsToPipe,
   addCloseToPipe,
@@ -185,6 +185,8 @@ import {
   type getEventForSegmentSelection as getEventForSegmentSelectionFn,
 } from '@src/lib/selections'
 
+import type { ConnectionManager } from '@src/network/connectionManager'
+
 type DraftSegment = 'line' | 'tangentialArc'
 
 type Vec3Array = [number, number, number]
@@ -193,7 +195,7 @@ type Vec3Array = [number, number, number]
 // That mostly mean sketch elements.
 // Cameras, controls, raycasters, etc are handled by sceneInfra
 export class SceneEntities {
-  readonly engineCommandManager: EngineCommandManager
+  readonly engineCommandManager: ConnectionManager
   readonly sceneInfra: SceneInfra
   readonly editorManager: EditorManager
   readonly codeManager: CodeManager
@@ -209,7 +211,7 @@ export class SceneEntities {
   getSettings: (() => SettingsType) | null = null
 
   constructor(
-    engineCommandManager: EngineCommandManager,
+    engineCommandManager: ConnectionManager,
     sceneInfra: SceneInfra,
     editorManager: EditorManager,
     codeManager: CodeManager,
@@ -413,7 +415,6 @@ export class SceneEntities {
     // This makes sure axis lines are picked after segment lines in case of overlapping
     xAxisMesh.position.z = -0.1
     yAxisMesh.position.z = -0.1
-
     xAxisMesh.userData = {
       type: X_AXIS,
       baseColor: baseXColor,
