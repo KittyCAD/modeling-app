@@ -1,8 +1,10 @@
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig } from 'vitest/config'
+// @ts-ignore: No types available
+import { lezer } from '@lezer/generator/rollup'
 
 export default defineConfig({
-  plugins: [tsconfigPaths()],
+  plugins: [tsconfigPaths(), lezer()],
   test: {
     globals: true,
     globalSetup: './src/test-setup/global-setup.ts',
@@ -16,10 +18,7 @@ export default defineConfig({
     ],
     deps: {
       external: [/playwright/],
-      // force transpilation of code in e2e
-      inline: [
-        /e2e/,
-      ],
+      inline: [/e2e/, /packages/],
     },
     reporters: ['default', 'junit'],
     outputFile: {
