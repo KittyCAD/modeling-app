@@ -9,8 +9,7 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+'
 
 env:
-  # IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
-  IS_RELEASE: true
+  IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
   IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
 concurrency:
@@ -109,8 +108,8 @@ jobs:
         env:
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_ZOO_THUMBPRINT }}
         run: |
-          # export VERSION=${GITHUB_REF_NAME#v}
-          # npm run files:set-version
+          export VERSION=${GITHUB_REF_NAME#v}
+          npm run files:set-version
           npm run files:set-windows-codesign-config
 
       - uses: actions/upload-artifact@v4
