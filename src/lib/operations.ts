@@ -1136,6 +1136,109 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
 }
 
 /**
+ * Gather up the argument values for the Pattern Linear 3D command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
+  operation,
+}) => {
+  const baseCommand = {
+    name: 'Pattern Linear 3D',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  // 1. Map the unlabeled arguments to solid selections
+  if (!operation.unlabeledArg) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const solids = retrieveSelectionsFromOpArg(
+    operation.unlabeledArg,
+    kclManager.artifactGraph
+  )
+  if (err(solids)) {
+    return { reason: "Couldn't retrieve solids" }
+  }
+
+  // 2. Convert the instances argument from a string to a KCL expression
+  const instancesArg = operation.labeledArgs?.['instances']
+  if (!instancesArg || !instancesArg.sourceRange) {
+    return { reason: 'Missing or invalid instances argument' }
+  }
+
+  const instances = await stringToKclExpression(
+    codeManager.code.slice(
+      instancesArg.sourceRange[0],
+      instancesArg.sourceRange[1]
+    )
+  )
+  if (err(instances) || 'errors' in instances) {
+    return { reason: "Couldn't retrieve instances argument" }
+  }
+
+  // 3. Convert the distance argument from a string to a KCL expression
+  const distanceArg = operation.labeledArgs?.['distance']
+  if (!distanceArg || !distanceArg.sourceRange) {
+    return { reason: 'Missing or invalid distance argument' }
+  }
+
+  const distance = await stringToKclExpression(
+    codeManager.code.slice(
+      distanceArg.sourceRange[0],
+      distanceArg.sourceRange[1]
+    )
+  )
+  if (err(distance) || 'errors' in distance) {
+    return { reason: "Couldn't retrieve distance argument" }
+  }
+
+  // 4. Convert the axis argument from a string to a string value
+  // Axis is configured as 'options' inputType, so it should be a string, not a KCL expression
+  const axisArg = operation.labeledArgs?.['axis']
+  if (!axisArg || !axisArg.sourceRange) {
+    return { reason: 'Missing or invalid axis argument' }
+  }
+
+  const axisString = codeManager.code.slice(
+    axisArg.sourceRange[0],
+    axisArg.sourceRange[1]
+  )
+  if (!axisString) {
+    return { reason: "Couldn't retrieve axis argument" }
+  }
+
+  // 5. Convert the useOriginal argument from a string to a boolean
+  const useOriginalArg = operation.labeledArgs?.['useOriginal']
+  let useOriginal: boolean | undefined
+  if (useOriginalArg && useOriginalArg.sourceRange) {
+    const useOriginalString = codeManager.code.slice(
+      useOriginalArg.sourceRange[0],
+      useOriginalArg.sourceRange[1]
+    )
+    useOriginal = useOriginalString === 'true'
+  }
+
+  // 6. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Pattern Linear 3D'] = {
+    solids,
+    instances,
+    distance,
+    axis: axisString,
+    useOriginal,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
  */
@@ -1248,6 +1351,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   patternLinear3d: {
     label: 'Linear Pattern',
     icon: 'patternLinear3d',
+    prepareToEdit: prepareToEditPatternLinear3d,
     supportsAppearance: true,
     supportsTransform: true,
   },

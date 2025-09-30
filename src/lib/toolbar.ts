@@ -525,13 +525,23 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
           {
             id: 'pattern-linear-3d',
-            onClick: () => console.error('Linear Pattern not yet implemented'),
-            status: 'unavailable',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Pattern Linear 3D', groupId: 'modeling' },
+              }),
+            status: 'available',
             title: 'Linear Pattern',
             icon: 'patternLinear3d',
-            description:
-              'Create a linear pattern of 3D solids along an axis. This feature is under development.',
-            links: [],
+            description: 'Create a linear pattern of 3D solids along an axis.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-solid-patternLinear3d'
+                ),
+              },
+            ],
           },
         ],
       },
