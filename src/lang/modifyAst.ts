@@ -30,7 +30,6 @@ import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { PathToNodeMap } from '@src/lang/util'
 import type {
-  AddTagInfo,
   ConstrainInfo,
   SimplifiedArgDetails,
   TransformInfo,
@@ -63,10 +62,10 @@ import { isLiteralArrayOrStatic, type Coords2d } from '@src/lang/util'
 import { err, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import type {
-  EdgeCutInfo,
   ExtrudeFacePlane,
   Selections,
 } from '@src/machines/modelingSharedTypes'
+import { type addTagForSketchOnFace as AddTagForSketchOnFaceFn } from '@src/lang/std/sketch'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -340,16 +339,7 @@ export function sketchOnExtrudedFace(
   node: Node<Program>,
   sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
-  addTagForSketchOnFace: (
-    tagInfo: AddTagInfo,
-    expressionName: string,
-    edgeCutMeta: EdgeCutInfo | null
-  ) =>
-    | {
-        modifiedAst: Node<Program>
-        tag: string
-      }
-    | Error,
+  addTagForSketchOnFace: typeof AddTagForSketchOnFaceFn,
   info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   let _node = { ...node }

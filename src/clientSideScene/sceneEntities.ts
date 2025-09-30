@@ -181,6 +181,7 @@ import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { ActorRefFrom } from 'xstate'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
+import { type updateExtraSegments as updateExtraSegmentsFn } from '@src/lib/selections'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -1052,11 +1053,7 @@ export class SceneEntities {
     getEventForSegmentSelection: (
       obj: Object3D<Object3DEventMap>
     ) => ModelingMachineEvent | null,
-    updateExtraSegments: (
-      parent: Object3D<Object3DEventMap> | null,
-      className: string,
-      value: boolean
-    ) => void
+    updateExtraSegments: typeof updateExtraSegmentsFn
   ) => {
     if (trap(modifiedAst)) return Promise.reject(modifiedAst)
     const nextAst = await this.kclManager.updateAst(modifiedAst, false)
@@ -2643,11 +2640,7 @@ export class SceneEntities {
     getEventForSegmentSelection: (
       obj: Object3D<Object3DEventMap>
     ) => ModelingMachineEvent | null
-    updateExtraSegments: (
-      parent: Object3D<Object3DEventMap> | null,
-      className: string,
-      value: boolean
-    ) => void
+    updateExtraSegments: typeof updateExtraSegmentsFn
   }) => {
     let addingNewSegmentStatus: 'nothing' | 'pending' | 'added' = 'nothing'
     this.sceneInfra.setCallbacks({
@@ -3487,13 +3480,7 @@ export class SceneEntities {
     this.activeSegments = {}
   }
 
-  mouseEnterLeaveCallbacks(
-    updateExtraSegments: (
-      parent: Object3D<Object3DEventMap> | null,
-      className: string,
-      value: boolean
-    ) => void
-  ) {
+  mouseEnterLeaveCallbacks(updateExtraSegments: typeof updateExtraSegmentsFn) {
     return {
       onMouseEnter: ({ selected }: OnMouseEnterLeaveArgs) => {
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
