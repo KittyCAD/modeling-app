@@ -59,11 +59,11 @@ import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import type { ExtrudeFacePlane } from '@src/machines/modelingSharedTypes'
 import {
   type addTagForSketchOnFace as AddTagForSketchOnFaceFn,
-  type getConstraintInfoKw as getConstraintInfoKwFn,
+  type getConstraintInfoKw as GetConstraintInfoKwFn,
 } from '@src/lang/std/sketch'
 import {
-  type removeSingleConstraint as removeSingleConstraintFn,
-  type transformAstSketchLines as transformAstSketchLinesFn,
+  type removeSingleConstraint as RemoveSingleConstraintFn,
+  type transformAstSketchLines as TransformAstSketchLinesFn,
 } from '@src/lang/std/sketchcombos'
 
 export function startSketchOnDefault(
