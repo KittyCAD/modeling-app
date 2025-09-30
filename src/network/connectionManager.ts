@@ -45,7 +45,10 @@ import { CommandLogType } from '@src/lang/std/commandLog'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { SourceRange } from '@src/lang/wasm'
 import type { KclManager } from '@src/lang/KclSingleton'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import {
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+  PENDING_COMMAND_TIMEOUT,
+} from '@src/lib/constants'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import { reportRejection } from '@src/lib/trap'
 import type { WebSocketRequest, WebSocketResponse } from '@kittycad/lib'
@@ -55,9 +58,6 @@ import {
   isModelingResponse,
 } from '@src/lib/kcSdkGuards'
 import toast from 'react-hot-toast'
-
-// Global timeout on pending commands, it will be bad if we hit this case.
-const PENDING_COMMAND_TIMEOUT = 60_000
 
 export class ConnectionManager extends EventTarget {
   started: boolean
