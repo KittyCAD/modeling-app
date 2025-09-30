@@ -11,7 +11,6 @@ import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { useKclContext } from '@src/lang/KclProvider'
 import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
-import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -27,6 +26,7 @@ import type {
   ToolbarModeName,
 } from '@src/lib/toolbar'
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
+import { EngineConnectionStateType } from '@src/network/utils'
 
 export function Toolbar({
   className = '',
@@ -65,7 +65,7 @@ export function Toolbar({
   const toolbarButtonsRef = useRef<HTMLUListElement>(null)
   const { overallState, immediateState } = useNetworkContext()
   const { isExecuting } = useKclContext()
-  const { isStreamReady } = useAppState()
+  const { isStreamReady, isStreamAcceptingInput } = useAppState()
   const [showRichContent, setShowRichContent] = useState(false)
 
   const disableAllButtons =
@@ -73,7 +73,8 @@ export function Toolbar({
       overallState !== NetworkHealthState.Weak) ||
     isExecuting ||
     immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
-    !isStreamReady
+    !isStreamReady ||
+    !isStreamAcceptingInput
 
   const currentMode =
     (Object.entries(toolbarConfig).find(([_, mode]) =>

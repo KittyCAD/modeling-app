@@ -57,6 +57,7 @@ KCL_SOURCES := $(wildcard public/kcl-samples/*/*.kcl)
 RUST_SOURCES := $(wildcard rust/*.rs rust/*/*.rs rust/*/*/*.rs rust/*/*/*/*.rs rust/*/*/*/*/*.rs)
 
 REACT_SOURCES := $(wildcard src/*.tsx src/*/*.tsx src/*/*/*.tsx src/*/*/*/*.tsx)
+E2E_SOURCES := $(wildcard e2e/*.spec.ts e2e/*/*.spec.ts e2e/*/*/*.spec.ts e2e/*/*/*/*.spec.ts)
 TYPESCRIPT_SOURCES := tsconfig.* $(wildcard src/*.ts src/*/*.ts src/*/*/*.ts src/*/*/*/*.ts)
 VITE_SOURCES := .env* $(wildcard vite.*)
 
@@ -76,7 +77,7 @@ ifndef WINDOWS
 	@ touch $@
 endif
 
-.vite/build/main.js: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
+.vite/build/main.js: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES) $(E2E_SOURCES)
 	npm run tronb:vite:dev
 
 ###############################################################################
@@ -140,17 +141,17 @@ test-e2e: test-e2e-$(TARGET)
 .PHONY: test-e2e-web
 test-e2e-web: install build ## Run the web e2e tests
 ifdef E2E_GREP
-	npm run test:e2e:web -- --headed --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES) $(PW_ARGS)
+	npm run test:e2e:web -- --headed --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES) "$(PW_ARGS)"
 else
-	npm run test:e2e:web -- --headed --workers='100%' $(PW_ARGS)
+	npm run test:e2e:web -- --headed --workers='100%' "$(PW_ARGS)"
 endif
 
 .PHONY: test-e2e-desktop
 test-e2e-desktop: install build ## Run the desktop e2e tests
 ifdef E2E_GREP
-	npm run test:e2e:desktop -- --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES) $(PW_ARGS)
+	npm run test:e2e:desktop -- --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES) "$(PW_ARGS)"
 else
-	npm run test:e2e:desktop -- --workers='100%' $(PW_ARGS)
+	npm run test:e2e:desktop -- --workers='100%' "$(PW_ARGS)"
 endif
 
 .PHONY: test-snapshots

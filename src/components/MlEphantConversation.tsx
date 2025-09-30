@@ -1,15 +1,25 @@
-import { Popover, Transition } from '@headlessui/react'
-import { CustomIcon } from '@src/components/CustomIcon'
-import { PromptCard } from '@src/components/PromptCard'
-import type { Prompt } from '@src/lib/prompt'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { MlEphantManagerContext } from '@src/machines/mlEphantManagerMachine'
 import type { ReactNode } from 'react'
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { useRef, useEffect, useState, Fragment } from 'react'
+import type { Prompt } from '@src/lib/prompt'
+import { PromptCard } from '@src/components/PromptCard'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { Popover, Transition } from '@headlessui/react'
+import Tooltip from '@src/components/Tooltip'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import {
+  BillingDialog,
+  BillingRemaining,
+  BillingRemainingMode,
+} from '@kittycad/react-shared'
+import { type BillingContext } from '@src/machines/billingMachine'
 
 export interface MlEphantConversationProps {
   isLoading: boolean
   prompts: Prompt[]
   promptsThoughts: MlEphantManagerContext['promptsThoughts']
+  billingContext: BillingContext
   onProcess: (requestedPrompt: string) => void
   onFeedback: (id: Prompt['id'], feedback: Prompt['feedback']) => void
   onSeeReasoning: (id: Prompt['id']) => void
@@ -21,8 +31,46 @@ export interface MlEphantConversationProps {
 }
 
 interface MlEphantConversationInputProps {
+  billingContext: BillingContext
   onProcess: MlEphantConversationProps['onProcess']
   disabled?: boolean
+}
+
+function BillingStatusBarItem(props: { billingContext: BillingContext }) {
+  return (
+    <Popover className="relative flex items-stretch">
+      <Popover.Button
+        className="m-0 p-0 border-0 flex items-stretch"
+        data-testid="billing-remaining-bar"
+      >
+        <BillingRemaining
+          mode={BillingRemainingMode.ProgressBarFixed}
+          error={props.billingContext.error}
+          credits={props.billingContext.credits}
+          allowance={props.billingContext.allowance}
+        />
+        {!props.billingContext.error && (
+          <Tooltip
+            position="left"
+            contentClassName="text-xs"
+            hoverOnly
+            wrapperClassName="ui-open:!hidden"
+          >
+            Text-to-CAD credits
+          </Tooltip>
+        )}
+      </Popover.Button>
+      <Popover.Panel className="absolute right-0 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
+        <BillingDialog
+          upgradeHref={withSiteBaseURL('/design-studio-pricing')}
+          upgradeClick={openExternalBrowserIfDesktop()}
+          error={props.billingContext.error}
+          credits={props.billingContext.credits}
+          allowance={props.billingContext.allowance}
+        />
+      </Popover.Panel>
+    </Popover>
+  )
 }
 
 const ANIMATION_TIME = 2000
@@ -74,7 +122,10 @@ export const MlEphantConversationInput = (
 
   return (
     <div className="flex flex-col p-4 gap-2">
-      <div className="text-sm text-chalkboard-60">Enter a prompt</div>
+      <div className="flex flex-row justify-between">
+        <div className="text-sm text-3">Enter a prompt</div>
+        <BillingStatusBarItem billingContext={props.billingContext} />
+      </div>
       <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div
@@ -238,6 +289,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
           </div>
           <div className="border-t b-4">
             <MlEphantConversationInput
+              billingContext={props.billingContext}
               disabled={props.disabled || props.isLoading}
               onProcess={onProcess}
             />
