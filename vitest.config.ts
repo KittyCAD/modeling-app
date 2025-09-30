@@ -26,7 +26,7 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'unit',
-          include: ['src/**/*.test.{ts,tsx}'],
+          include: ['src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
         },
       },
       {
