@@ -786,7 +786,7 @@ export function lsp_run_copilot(config, token, baseurl) {
   return ret
 }
 
-function __wbg_adapter_8(arg0, arg1, arg2) {
+function __wbg_adapter_6(arg0, arg1, arg2) {
   wasm.closure5685_externref_shim(arg0, arg1, arg2)
 }
 
@@ -794,7 +794,7 @@ function __wbg_adapter_11(arg0, arg1) {
   wasm.wasm_bindgen__convert__closures_____invoke__h36d243168db652d1(arg0, arg1)
 }
 
-function __wbg_adapter_16(arg0, arg1) {
+function __wbg_adapter_14(arg0, arg1) {
   wasm.wasm_bindgen__convert__closures_____invoke__h5607f6709c600671(arg0, arg1)
 }
 
@@ -2425,7 +2425,7 @@ function __wbg_get_imports() {
   }
   imports.wbg.__wbindgen_cast_21b0dc5e617e0ef2 = function (arg0, arg1) {
     // Cast intrinsic for `Closure(Closure { dtor_idx: 5603, function: Function { arguments: [], shim_idx: 5604, ret: Unit, inner_ret: Some(Unit) }, mutable: true }) -> Externref`.
-    const ret = makeMutClosure(arg0, arg1, 5603, __wbg_adapter_16)
+    const ret = makeMutClosure(arg0, arg1, 5603, __wbg_adapter_14)
     return ret
   }
   imports.wbg.__wbindgen_cast_2241b6af4c4b2941 = function (arg0, arg1) {
@@ -2440,7 +2440,7 @@ function __wbg_get_imports() {
   }
   imports.wbg.__wbindgen_cast_5dbfd119defee0ff = function (arg0, arg1) {
     // Cast intrinsic for `Closure(Closure { dtor_idx: 5684, function: Function { arguments: [Externref], shim_idx: 5685, ret: Unit, inner_ret: Some(Unit) }, mutable: true }) -> Externref`.
-    const ret = makeMutClosure(arg0, arg1, 5684, __wbg_adapter_8)
+    const ret = makeMutClosure(arg0, arg1, 5684, __wbg_adapter_6)
     return ret
   }
   imports.wbg.__wbindgen_cast_cb9088102bce6b30 = function (arg0, arg1) {
