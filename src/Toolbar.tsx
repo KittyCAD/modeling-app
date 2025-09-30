@@ -91,7 +91,6 @@ export function Toolbar({
       modelingSend: send,
       sketchPathId,
       editorHasFocus: editorManager.getEditorView()?.hasFocus,
-      sketchSolveTool: context.sketchSolveTool,
       isActive: false, // Default value - individual items will override this
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -100,7 +99,6 @@ export function Toolbar({
       send,
       commandBarActor.send,
       sketchPathId,
-      context.sketchSolveTool,
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       editorManager.getEditorView()?.hasFocus,
     ]
