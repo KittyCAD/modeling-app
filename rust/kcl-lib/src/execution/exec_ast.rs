@@ -881,15 +881,14 @@ impl Node<SketchBlock> {
 
 impl Node<SketchVar> {
     pub async fn get_result(&self, exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        // TODO: sketch-api: Implement sketch variable execution
         if let Some(initial) = &self.initial {
-            Ok(KclValue::from_numeric_literal(initial, exec_state))
+            Ok(KclValue::from_sketch_var_literal(initial, exec_state))
         } else {
             let metadata = Metadata {
                 source_range: SourceRange::from(self),
             };
 
-            Ok(KclValue::Number {
+            Ok(KclValue::SketchVar {
                 value: 0.0,
                 ty: NumericType::default(),
                 meta: vec![metadata],
