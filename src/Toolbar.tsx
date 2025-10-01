@@ -93,6 +93,7 @@ export function Toolbar({
       sketchPathId,
       editorHasFocus: editorManager.getEditorView()?.hasFocus,
       sketchSolveState,
+      isActive: false, // Default value - individual items will override this
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [
@@ -174,18 +175,28 @@ export function Toolbar({
         maybeIconConfig.disabled?.(state) === true ||
         kclManager.hasErrors()
 
+      // Calculate the isActive state for this specific item
+      const itemIsActive =
+        maybeIconConfig.isActive?.({
+          modelingState: state,
+          sketchSolveState,
+        }) || false
+
+      // Create item-specific callback props with the correct isActive value
+      const itemCallbackProps = {
+        ...configCallbackProps,
+        isActive: itemIsActive,
+      }
+
       return {
         ...maybeIconConfig,
         title:
           typeof maybeIconConfig.title === 'string'
             ? maybeIconConfig.title
-            : maybeIconConfig.title(configCallbackProps),
+            : maybeIconConfig.title(itemCallbackProps),
         description: maybeIconConfig.description,
         links: maybeIconConfig.links || [],
-        isActive: maybeIconConfig.isActive?.({
-          modelingState: state,
-          sketchSolveState,
-        }),
+        isActive: itemIsActive,
         hotkey:
           typeof maybeIconConfig.hotkey === 'string'
             ? maybeIconConfig.hotkey
@@ -197,6 +208,8 @@ export function Toolbar({
             : maybeIconConfig.disabledReason,
         disableHotkey: maybeIconConfig.disableHotkey?.(state),
         status: maybeIconConfig.status,
+        // Store the item-specific callback props for use in onClick handlers
+        callbackProps: itemCallbackProps,
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -265,7 +278,7 @@ export function Toolbar({
                   id: itemConfig.id,
                   label: itemConfig.title,
                   hotkey: itemConfig.hotkey,
-                  onClick: () => itemConfig.onClick(configCallbackProps),
+                  onClick: () => itemConfig.onClick(itemConfig.callbackProps),
                   disabled:
                     disableAllButtons ||
                     !['available', 'experimental'].includes(
@@ -309,7 +322,9 @@ export function Toolbar({
                     // aria-description is still in ARIA 1.3 draft.
                     // eslint-disable-next-line jsx-a11y/aria-props
                     aria-description={selectedIcon.description}
-                    onClick={() => selectedIcon.onClick(configCallbackProps)}
+                    onClick={() =>
+                      selectedIcon.onClick(selectedIcon.callbackProps)
+                    }
                   >
                     <span className={!selectedIcon.showTitle ? 'sr-only' : ''}>
                       {selectedIcon.title}
@@ -377,7 +392,7 @@ export function Toolbar({
                   !['available', 'experimental'].includes(itemConfig.status) ||
                   itemConfig.disabled
                 }
-                onClick={() => itemConfig.onClick(configCallbackProps)}
+                onClick={() => itemConfig.onClick(itemConfig.callbackProps)}
               >
                 <span className={!itemConfig.showTitle ? 'sr-only' : ''}>
                   {itemConfig.title}
@@ -460,7 +475,7 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
   useHotkeys(
     itemConfig.hotkey || '',
     () => {
-      itemConfig.onClick(configCallbackProps)
+      itemConfig.onClick(itemConfig.callbackProps)
     },
     {
       enabled:
