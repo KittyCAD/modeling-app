@@ -15,6 +15,10 @@ use crate::{
 
 mod traverse;
 
+const LINE_FN: &str = "line";
+const LINE_START_PARAM: &str = "start";
+const LINE_END_PARAM: &str = "end";
+
 #[derive(Debug, Clone)]
 pub(crate) struct FrontendState {
     id_generator: IncIdGenerator<usize>,
@@ -143,15 +147,15 @@ impl FrontendState {
         let start_ast = to_ast_point2d(&start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&end).map_err(|err| Error { msg: err.to_string() })?;
         let line_ast = ast::Expr::CallExpressionKw(Box::new(ast::CallExpressionKw::new(
-            "line",
+            LINE_FN,
             None,
             vec![
                 ast::LabeledArg {
-                    label: Some(ast::Identifier::new("from")),
+                    label: Some(ast::Identifier::new(LINE_START_PARAM)),
                     arg: start_ast,
                 },
                 ast::LabeledArg {
-                    label: Some(ast::Identifier::new("to")),
+                    label: Some(ast::Identifier::new(LINE_END_PARAM)),
                     arg: end_ast,
                 },
             ],
@@ -169,7 +173,7 @@ impl FrontendState {
         };
         // Add the line to the AST of the sketch block.
         let mut new_ast = self.program.ast.clone();
-        self.sketch_ast_from_id_mut(&mut new_ast, sketch_id, |node| {
+        self.ast_from_object_id_mut(&mut new_ast, sketch_id, |node| {
             if let NodeMut::SketchBlock(sketch_block) = node {
                 sketch_block
                     .body
@@ -311,8 +315,12 @@ impl FrontendState {
         line: ObjectId,
         start: Point2d<Expr>,
     ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta)> {
+        // Create updated KCL source from args.
+        let new_start_ast = to_ast_point2d(&start).map_err(|err| Error { msg: err.to_string() })?;
+
         // Look up existing sketch.
-        let sketch_object = self.scene_graph.objects.get_mut(sketch.0).ok_or_else(|| Error {
+        let sketch_id = sketch;
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
             msg: format!("Sketch not found: {sketch:?}"),
         })?;
         let ObjectKind::Sketch(sketch) = &sketch_object.kind else {
@@ -324,44 +332,55 @@ impl FrontendState {
             msg: format!("Line not found in sketch: line={line:?}, sketch={sketch:?}"),
         })?;
         // Look up existing line.
-        let line_object = self.scene_graph.objects.get(line.0).ok_or_else(|| Error {
+        let line_id = line;
+        let line_object = self.scene_graph.objects.get(line_id.0).ok_or_else(|| Error {
             msg: format!("Line not found in scene graph: line={line:?}"),
         })?;
-        let ObjectKind::Segment(segment) = &line_object.kind else {
+        let ObjectKind::Segment(_) = &line_object.kind else {
             return Err(Error {
                 msg: format!("Object is not a segment: {line_object:?}"),
             });
         };
 
-        // Get the start point of the line segment.
-        let start_point_id = match segment {
-            Segment::Line(line) => line.start,
-            Segment::Point(_) | Segment::Arc(_) | Segment::Circle(_) => {
-                return Err(Error {
-                    msg: format!("Segment is not a line: {segment:?}"),
-                });
+        // Modify the line AST.
+        let mut new_ast = self.program.ast.clone();
+        self.ast_from_object_id_mut(&mut new_ast, line_id, |node| {
+            if let NodeMut::CallExpressionKw(call) = node {
+                if call.callee.name.name != LINE_FN {
+                    return ControlFlow::Continue(());
+                }
+                for labeled_arg in &mut call.arguments {
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(LINE_START_PARAM) {
+                        labeled_arg.arg = new_start_ast.clone();
+                        break;
+                    }
+                }
+                return ControlFlow::Break(());
             }
-        };
-
-        // Evaluate the new start position.
-        let new_start_position = self.position_from_expr(&start)?;
-
-        // Modify the point to be initialized to the new position.
-        let start_point_object = self
-            .scene_graph
-            .objects
-            .get_mut(start_point_id.0)
-            .ok_or_else(|| Error {
-                msg: format!("Start point not found: {start_point_id:?}"),
-            })?;
-        let ObjectKind::Segment(Segment::Point(start_point)) = &mut start_point_object.kind else {
+            ControlFlow::Continue(())
+        })
+        .map_err(|err| Error { msg: err.to_string() })?;
+        // Convert to string source to create real source ranges.
+        //
+        // TODO: Don't duplicate this from lib.rs Program.
+        let new_source = new_ast.recast_top(&Default::default(), 0);
+        // Parse the new KCL source.
+        let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
+        if !errors.is_empty() {
             return Err(Error {
-                msg: format!("Object is not a point: {start_point_object:?}"),
+                msg: format!("Error parsing KCL source after adding line: {errors:?}"),
+            });
+        }
+        let Some(new_program) = new_program else {
+            return Err(Error {
+                msg: "No AST produced after adding line".to_string(),
             });
         };
-        start_point.position = new_start_position;
+        // TODO: sketch-api: make sure to only set this if there are no errors.
+        self.program = new_program;
 
-        // TODO: sketch-api: do we need to update the source range of the line?
+        // TODO: sketch-api: execute.
+
         let src_delta = SourceDelta {};
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
@@ -402,10 +421,10 @@ impl FrontendState {
         }
     }
 
-    fn sketch_ast_from_id_mut<B, F>(
+    fn ast_from_object_id_mut<B, F>(
         &mut self,
         ast: &mut ast::Node<ast::Program>,
-        sketch_id: ObjectId,
+        object_id: ObjectId,
         f: F,
     ) -> anyhow::Result<B>
     where
@@ -414,11 +433,8 @@ impl FrontendState {
         let sketch_object = self
             .scene_graph
             .objects
-            .get(sketch_id.0)
-            .ok_or_else(|| anyhow!("Sketch not found: {sketch_id:?}"))?;
-        let ObjectKind::Sketch(_) = &sketch_object.kind else {
-            bail!("Object is not a sketch: {sketch_object:?}");
-        };
+            .get(object_id.0)
+            .ok_or_else(|| anyhow!("Object not found: {object_id:?}"))?;
         match &sketch_object.source {
             SourceRef::Simple(range) => ast_node_from_source_range_mut(ast, *range, f),
             SourceRef::BackTrace(_) => bail!("BackTrace source refs not supported yet"),
