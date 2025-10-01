@@ -40,6 +40,7 @@ import openWindow from '@src/lib/openWindow'
 import { Reason, err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   base64_decode,
   change_default_units,
@@ -209,11 +210,16 @@ export function resultIsOk(result: ParseResult): result is SuccessParseResult {
   return !!result.program && result.errors.length === 0
 }
 
-export const parse = (code: string | Error): ParseResult | Error => {
+export const parse = (
+  code: string | Error,
+  instance?: ModuleType
+): ParseResult | Error => {
   if (err(code)) return code
 
   try {
-    const parsed: [Node<Program>, CompilationError[]] = parse_wasm(code)
+    const parsed: [Node<Program>, CompilationError[]] = instance
+      ? instance.parse_wasm(code)
+      : parse_wasm(code)
     let errs = splitErrors(parsed[1])
     return new ParseResult(parsed[0], errs.errors, errs.warnings)
   } catch (e: any) {
@@ -238,8 +244,11 @@ export const parse = (code: string | Error): ParseResult | Error => {
 /**
  * Parse and throw an exception if there are any errors (probably not suitable for use outside of testing).
  */
-export function assertParse(code: string): Node<Program> {
-  const result = parse(code)
+export function assertParse(
+  code: string,
+  instance?: ModuleType
+): Node<Program> {
+  const result = parse(code, instance)
   // eslint-disable-next-line suggest-no-throw/suggest-no-throw
   if (err(result)) throw result
   if (!resultIsOk(result)) {
@@ -424,8 +433,10 @@ export async function nodePathFromRange(
   }
 }
 
-export const recast = (ast: Program): string | Error => {
-  return recast_wasm(JSON.stringify(ast))
+export const recast = (ast: Program, instance?: ModuleType): string | Error => {
+  return instance
+    ? instance.recast_wasm(JSON.stringify(ast))
+    : recast_wasm(JSON.stringify(ast))
 }
 
 /**
