@@ -1,6 +1,5 @@
 import { isArray } from '@src/lib/utils'
 import { getOperationVariableName } from '@src/lib/operations'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type { KclManager } from '@src/lang/KclSingleton'
 import {
   findOperationPlaneArtifact,
@@ -9,12 +8,13 @@ import {
 import type { WebSocketResponse } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { ToastOptions } from 'react-hot-toast'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 // Exports a sketch operation to DXF format
 export async function exportSketchToDxf(
   operation: StdLibCallOp,
   dependencies: {
-    engineCommandManager: EngineCommandManager
+    engineCommandManager: ConnectionManager
     kclManager: KclManager
     toast: {
       error: (message: string, options?: ToastOptions) => void

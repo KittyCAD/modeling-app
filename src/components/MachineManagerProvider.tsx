@@ -1,8 +1,9 @@
 import { createContext, useEffect, useState } from 'react'
 
 import type { components } from '@src/lib/machine-api'
-import { engineCommandManager } from '@src/lib/singletons'
+
 import { commandBarActor } from '@src/lib/singletons'
+
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 
@@ -95,8 +96,6 @@ export const MachineManagerProvider = ({
       noMachinesReason,
       setCurrentMachine,
     }
-
-    engineCommandManager.machineManager = machineManagerNext
 
     commandBarActor.send({
       type: 'Set machine manager',
