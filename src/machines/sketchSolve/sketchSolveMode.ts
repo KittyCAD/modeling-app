@@ -121,7 +121,7 @@ export const sketchSolveMachine = setup({
     ...equipTools,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6UNEwAEdQ5j48DEISNIks4VyM-O1FFRqB2Sd6jlk1BstEVo1pZQ1e+Rt5eWlB0u0vH3RxgEpsFaMoALaEIKRUQQPBxBJJOgQMRgZTMUSkQjocGQsAAFU2xG2GV2OXEBxkfRUbU67k0dhuakaMkcqgMalkNk5Gnsxg0w3+fgmgWmIRxUJhcPiiQwDAATnLCHLlHxiNEAGZKsHi-GE4n8QR7cmgfLSAzGAzKexVV6c7TaTrMhBm7RsyqGB32i3yAWjAH+SZBGaoiES2HwmUMZardZ67g7Q1kvKUjhWwqKYw+6pFY7yJ0GdyqQbGOqVNqKdl-P1CoFBsWhISiKCxkhzBbRtYbLbxkmJlLJhAVYzKBQmMoKezSYy3JqPDRW+pyY6KEyVKtjAMikGohvo5td4hRladuPpA3ZfsUwcaYqdGpFIz35xOxQcV0aNq1TTdQqyX0b4VgWDZRYAAd1YXA9xbQ9GFgDBolRZEFmUSIkiVZQD31TI+32E0ZB5ZQKg-RROXOUoOCZO4EG0LpnmqD8bzUZx5GMMovBGUQQngDIANrUVaATC9cMkRA1EtK5jAzLMWJsQYnWaM1nmMIpCjNAspPXf1ALrUFQwoaFw2lJJBKNAcb1vC1ZHUtQHAGJ07EtBRzQcHlX1kTSa0Dfid0bfdCRMpMr1qVMXisjgdDsFcbCdR5h0GTQ-35VjNCMDzAS87cQPA8YoIPALLzwhBzVdDN2XKdwkukPMqLE4p7Teep6gMK4xLSzcgLFJhhCbfLhNNXQ1GUGiOW0ExpyYoonWUt19Bo45p0ceR2I8IA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6UNEwAEdQ5j48DEISNIks4VyM-O1FFRqB2Sd6jlk1BstEVo1pZQ1e+Rt5eWlB0u0vH3RxgEpsFaMoALaEIKRUQQPBxBJJOgQMRgZTMUSkQjocGQsAAFU2xG2GV2OXEBxkfRUbU67k0dhuakaMkcqgMalkNk5Gnsxg0w3+fgmgWmIRxUJhcPiiQwDAATnLCHLlHxiNEAGZKsHi-GE4n8QR7cmgfLSAzGAzKexVV6c7TaTrMhBm7RsyqGB32i3yAWjAH+SZBGaoiES2HwmUMZardZ67g7Q1kvKUjhWwqKYw+6pFY7yJ0GdyqQbGOqVNqKdl-P1CoFBsWhISiKCxkhzBbRtYbLbxkmJlLJhBFDSqDjaYx8mo+jjSW5NF6WirqBTObQ2K5qKtjAMikGohvo5td4hRladuPpA3ZfsUwcaYqdGpFIyP5xOxSj55tWqabqFWS+rdhWBYNlFgAB3VhcAPFtj0YWAMGiVFkQWZRIiSJVlCPfVMj7fYTRkR5lAzO9FGud9BnUJ1V1TFd7W0EwDFHflN39IC61BeYllPaCjzoOCEJiZRkNRNCNmVLCe0vI0BwqJ5FBMfkNCUDh3zeJ1pCUZRKjUbNpyOcpOi8EZRBCeAMkA2tRVoBMrzwyREB0tNjAzLN5BzQYnWaM1nnHO1rh-UiNJYmtAyskNcTwaFw2lJIbOkm873vC1ZALFwHAGdTDGUBRzQcHl31kYLAVC3dlH3JsYLipMb1qVMXhSlTtDseSbCdR5jCI9Q70U4wyg0Iwiu3YCxXAyCcB4wkquvfCEHNV0M3Zcp3H5Xq8zuBAdOKe03nqepGOuAxBrYsLlCYYQmymuzTV0NRlFXDl6PHJxylkJ1xzdfRV2OYxPXkI7LNKziOwmkhLuNezB1qLTGO23r+v6gx8wrDo6kWuRMx+jgNyMoA */
   context: ({ input }): SketchSolveContext => ({
     ...modelingMachineDefaultContext,
     sketchSolveTool: null,
@@ -174,14 +174,15 @@ export const sketchSolveMachine = setup({
     'using tool': {
       on: {
         'unequip tool': {
-          target: 'move and select',
-          actions: ['send unequip to tool', 'send tool unequipped to parent'],
+          target: "unequiping tool",
+          actions: ['send unequip to tool'],
+          reenter: true
         },
 
         'equip tool': {
           target: 'switching tool',
           actions: ['send unequip to tool', 'store pending tool'],
-        },
+        }
       },
 
       description:
@@ -210,5 +211,13 @@ export const sketchSolveMachine = setup({
       type: 'final',
       description: 'Place any teardown code here.',
     },
+
+    "unequiping tool": {
+      exit: "send tool unequipped to parent",
+
+      on: {
+        "xstate.done.actor.tool": "move and select"
+      }
+    }
   },
 })
