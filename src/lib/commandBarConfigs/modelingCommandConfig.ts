@@ -24,11 +24,11 @@ import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
+import type { modelingMachine } from '@src/machines/modelingMachine'
 import type {
   ModelingMachineContext,
-  modelingMachine,
-} from '@src/machines/modelingMachine'
-import type { SketchTool } from '@src/machines/modelingSharedTypes'
+  SketchTool,
+} from '@src/machines/modelingSharedTypes'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']

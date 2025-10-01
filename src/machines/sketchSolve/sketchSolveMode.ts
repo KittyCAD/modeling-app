@@ -1,4 +1,11 @@
-import { assertEvent, assign, createMachine, sendTo, setup } from 'xstate'
+import {
+  assertEvent,
+  assign,
+  createMachine,
+  sendParent,
+  sendTo,
+  setup,
+} from 'xstate'
 import type { ActorRefFrom } from 'xstate'
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import type {
@@ -31,7 +38,7 @@ type ToolActorRef =
 
 type SketchSolveContext = ModelingMachineContext & {
   toolActor?: ToolActorRef
-  sketchSolveTool: EquipTool | 'moveTool'
+  sketchSolveTool: EquipTool | null
   pendingTool?: EquipTool
 }
 
@@ -59,6 +66,14 @@ export const sketchSolveMachine = setup({
     'store pending tool': assign(({ event }) => {
       assertEvent(event, 'equip tool')
       return { pendingTool: event.data.tool }
+    }),
+    'send tool equipped to parent': sendParent(({ context }) => ({
+      type: 'sketch solve tool changed',
+      data: { tool: context.sketchSolveTool },
+    })),
+    'send tool unequipped to parent': sendParent({
+      type: 'sketch solve tool changed',
+      data: { tool: null },
     }),
     'spawn tool': assign(({ event, spawn, context }) => {
       // Determine which tool to spawn based on event type
@@ -106,17 +121,17 @@ export const sketchSolveMachine = setup({
     ...equipTools,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6UNEwAEdQ5j48DEISNIks4VyM-O1FFRqB2Sd6jlk1BstEVo1pZQ1e+Rt5eWlB0u0vH3RxgEpsFaMoALaEIKRUQQPBxBJJOgQMRgZTMUSkQjocGQsAAFU2xG2GV2OXEBxkfRUbU67k0dhuakaMkcqgMalkNk5Gnsxg0w3+fgmgWmIRxUJhcPiiQwDAATnLCHLlHxiNEAGZKsHi-GE4n8QR7cmgfLSAzGAzKexVV6c7TaTrMhBm7RsyqGB32i3yAWjAH+SZBGaoiES2HwmUMZardZ67g7Q1kvKUjhWwqKYw+6pFY7yJ0GdyqQbGOqVNqKdl-P1CoFBsWhISiKCxkhzBbRtYbLbxkmJlLJhAVYzKBQmMoKezSYy3JqPDRW+pyY6KEyVKtjAMikGohvo5td4hRladuPpA3ZfsUwcaYqdGpFIz35xOxQcV0aNq1TTdQqyX0b4VgWDZRYAAd1YXA9xbQ9GFgDBolRZEFmUSIkiVZQD31TI+32E0ZB5ZQKg-RROXOUoOCZO4EG0LpnmqD8bzUZx5GMMovBGUQQngDIANrUVaATC9cMkRA1EtK5jAzLMWJsQYnWaM1nmMIpCjNAspPXf1ALrUFQwoaFw2lJJBKNAcb1vC1ZHUtQHAGJ07EtBRzQcHlX1kTSa0Dfid0bfdCRMpMr1qVMXisjgdDsFcbCdR5h0GTQ-35VjNCMDzAS87cQPA8YoIPALLzwhBzVdDN2XKdwkukPMqLE4p7Teep6gMK4xLSzcgLFJhhCbfLhNNXQ1GUGiOW0ExpyYoonWUt19Bo45p0ceR2I8IA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6UNEwAEdQ5j48DEISNIks4VyM-O1FFRqB2Sd6jlk1BstEVo1pZQ1e+Rt5eWlB0u0vH3RxgEpsFaMoALaEIKRUQQPBxBJJOgQMRgZTMUSkQjocGQsAAFU2xG2GV2OXEBxkBmMTw0L06ig42jkZjuBTUykGBjUN0G3Q0jL+owB-kmQRmqIhUJhcPiiQwDAATgrCArlHxiNEAGYqsE48gErbcHaCPbk0D5aRUgzKexVV6yc7aAaNSnaVRcz7lakuDiWwVjEWBaYhPUUaGw+FyhjLVbrQnE-gmsl5GR2G2FRTGeQaapFY7yF0IAzuVSDYx1SptRRc-3CiZBkGo0JCURQOMkOYLGNrDaG9KJ7IpFMIOzcm19NTFqnSYwaT6FjTnZS6XqyAxXLpz5y1vz14Hi5TN9Ft3vEaMrHvxo0kpNDikIWfFTo1IpGF-OQsMt05xwcTTdQpZGGf5dyBMUQ1gAB3VhcGPdsz0YWAMGiVFkQWZRIiSFVlFPBNMlvfZzRkR4OUfRRrgZQZ1ELbQumUZxtEY7QTHXZjgKFUDRWDUF5iWC84NPOhEOQmJlDQ1FMI2VVcOvAdTWHOwmRtQYmX5IwgKAws5Dda5LV0P9pB6LQvBGUQQngDIAz3cDaGNQdCMkRBJ3TYxM2zXMbEGQtmktZ5jCKB0uRcAYqR3QEuMbUM8HDGUEQwOz5PvRcn2MTpix9NpnVZOxrQUKkHH5BlZDCwN9xDI9W3ghLk3vWoOGeNQ1w4HQ7EURdFAXGcOXURdaRMMoc3YqywO41EoJgnABMJaq7yIotjDdTMuXKdxaWpAtWUnYpGLeep6nXa4DBK6zRuUJhhFbGaHItFdl2uc4TAW7kikLfz3UqRlPIWxx5GOkbIt47sppIK6zUch8BmUQpqkeaQnRUjamk6J56Q+c4QocEyPCAA */
   context: ({ input }): SketchSolveContext => ({
     ...modelingMachineDefaultContext,
-    sketchSolveTool: 'moveTool',
+    sketchSolveTool: null,
   }),
   id: 'Sketch Solve Mode',
   initial: 'move and select',
   on: {
     exit: {
       target: '#Sketch Solve Mode.exiting',
-      actions: 'send unequip to tool',
+      actions: ['send unequip to tool', 'send tool unequipped to parent'],
       description:
         'the outside world can request that sketch mode exit, but it needs to handle its own teardown first.',
     },
@@ -134,7 +149,7 @@ export const sketchSolveMachine = setup({
   },
   states: {
     'move and select': {
-      entry: () => console.log('entered sketch mode'),
+      entry: [() => console.log('entered sketch mode')],
       on: {
         'equip tool': {
           target: 'using tool',
@@ -159,8 +174,9 @@ export const sketchSolveMachine = setup({
     'using tool': {
       on: {
         'unequip tool': {
-          target: 'move and select',
-          actions: 'send unequip to tool',
+          target: 'unequipping tool',
+          actions: ['send unequip to tool'],
+          reenter: true,
         },
 
         'equip tool': {
@@ -172,7 +188,7 @@ export const sketchSolveMachine = setup({
       description:
         'Tools are workflows that create or modify geometry in the sketch scene after conditions are met. Some, like the Dimension, Center Rectangle, and Tangent tools, are finite, which they signal by reaching a final state. Some, like the Spline tool, appear to be infinite. In these cases, it is up to the tool Actor to receive whatever signal (such as the Esc key for Spline) necessary to reach a final state and unequip itself.\n\nTools can request to be unequipped from the outside by a "unequip tool" event sent to the sketch machine. This will sendTo the toolInvoker actor.',
 
-      entry: 'spawn tool',
+      entry: ['spawn tool', 'send tool equipped to parent'],
     },
 
     'switching tool': {
@@ -194,6 +210,17 @@ export const sketchSolveMachine = setup({
     exiting: {
       type: 'final',
       description: 'Place any teardown code here.',
+    },
+
+    'unequipping tool': {
+      on: {
+        'xstate.done.actor.tool': {
+          target: 'move and select',
+          actions: ['send tool unequipped to parent'],
+        },
+      },
+
+      description: `Intermediate state, same as the "switching tool" state, but for unequip`,
     },
   },
 })

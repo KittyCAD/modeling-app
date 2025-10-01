@@ -12,7 +12,7 @@ import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
 } from '@src/machines/mlEphantManagerMachine'
-import type { ModelingMachineContext } from '@src/machines/modelingMachine'
+import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
