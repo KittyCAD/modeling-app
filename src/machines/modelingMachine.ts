@@ -309,6 +309,10 @@ export type ModelingMachineEvent =
       data: PathToNode
     }
   | {
+      type: 'Delete segments'
+      data: PathToNode[]
+    }
+  | {
       type: 'code edit during sketch'
     }
   | {
@@ -1080,6 +1084,20 @@ export const modelingMachine = setup({
       }).then(() => {
         return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
       })
+    },
+    'Delete segments': ({ context: { sketchDetails }, event }) => {
+      if (event.type !== 'Delete segments') return
+      if (!sketchDetails || !event.data) return
+
+      void (async function () {
+        for (const pathToNode of event.data) {
+          await deleteSegmentOrProfile({
+            pathToNode,
+            sketchDetails,
+          })
+          await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        }
+      })()
     },
     'Set context': assign({
       store: ({ context: { store }, event }) => {
@@ -4492,6 +4510,10 @@ export const modelingMachine = setup({
         'Delete segment': {
           reenter: false,
           actions: ['Delete segment', 'reset selections'],
+        },
+        'Delete segments': {
+          reenter: false,
+          actions: ['Delete segments', 'reset selections'],
         },
         'code edit during sketch': '.clean slate',
         'Constrain with named value': {

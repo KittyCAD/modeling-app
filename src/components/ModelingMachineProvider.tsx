@@ -1529,11 +1529,15 @@ export const ModelingMachineProvider = ({
       modelingState.context.selectionRanges.graphSelections.filter((sel) =>
         segmentNodePaths.includes(JSON.stringify(sel.codeRef.pathToNode))
       )
-    selections.forEach((selection) => {
-      modelingSend({
-        type: 'Delete segment',
-        data: selection.codeRef.pathToNode,
-      })
+    // Delete dependents before their dependencies by prioritizing later-in-code items
+    const orderedSelections = selections.slice().sort((a, b) => {
+      const aStart = a.codeRef.range?.[0] ?? 0
+      const bStart = b.codeRef.range?.[0] ?? 0
+      return bStart - aStart
+    })
+    modelingSend({
+      type: 'Delete segments',
+      data: orderedSelections.map((selection) => selection.codeRef.pathToNode),
     })
     if (
       modelingState.context.selectionRanges.graphSelections.length >
