@@ -7,7 +7,7 @@ import {
   getSelectionCountByType,
   getSelectionTypeDisplayText,
 } from '@src/lib/selections'
-import { kclManager } from '@src/lib/singletons'
+import { kclManager, engineCommandManager } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
@@ -26,6 +26,7 @@ export default function CommandBarSelectionMixedInput({
   const commandBarState = useCommandBarState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const [hasAutoSkipped, setHasAutoSkipped] = useState(false)
+  const [hasClearedSelection, setHasClearedSelection] = useState(false)
   const selection: Selections = useSelector(arg.machineActor, selectionSelector)
 
   const selectionsByType = useMemo(() => {
@@ -51,6 +52,18 @@ export default function CommandBarSelectionMixedInput({
   useEffect(() => {
     inputRef.current?.focus()
   }, [selection, inputRef])
+
+  // Clear selection in UI if needed
+  useEffect(() => {
+    arg.clearSelectionFirst &&
+      engineCommandManager.modelingSend({
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+        },
+      }) &&
+      setHasClearedSelection(true)
+  }, [arg])
 
   // Only auto-skip on initial mount if we have a valid selection
   // different from the component CommandBarSelectionInput in the the dependency array
@@ -85,12 +98,16 @@ export default function CommandBarSelectionMixedInput({
             otherSelections: [],
           }
 
-      if (canSubmitSelection && resolvedSelection) {
+      if (
+        !(arg.clearSelectionFirst && !hasClearedSelection) &&
+        canSubmitSelection &&
+        resolvedSelection
+      ) {
         onSubmit(resolvedSelection)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [])
+  }, [hasClearedSelection])
 
   function handleChange() {
     inputRef.current?.focus()
