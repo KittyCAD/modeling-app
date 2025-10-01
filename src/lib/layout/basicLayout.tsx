@@ -54,10 +54,25 @@ export const basicLayout: Layout = {
       ],
     },
     {
-      id: 'f',
-      label: 'modeling-scene',
-      type: 'simple',
-      component: <p>Hi I'm the modeling scene!</p>,
+      id: 'i',
+      label: 'middle-split',
+      type: 'splits',
+      sizes: [50, 50],
+      orientation: 'block',
+      children: [
+        {
+          id: 'f',
+          label: 'modeling-scene',
+          type: 'simple',
+          component: <p>Hi I'm the modeling scene!</p>,
+        },
+        {
+          id: 'j',
+          label: 'modeling-scene',
+          type: 'simple',
+          component: <p>Hi I'm the modeling scene, but again!</p>,
+        },
+      ],
     },
     {
       id: 'g',
