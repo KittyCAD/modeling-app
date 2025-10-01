@@ -12,6 +12,9 @@ chamfer(
   @solid: Solid,
   length: number(Length),
   tags: [Edge; 1+],
+  secondLength?: number,
+  angle?: number(Angle),
+  swap?: bool,
   tag?: TagDecl,
 ): Solid
 ```
@@ -27,6 +30,9 @@ a sharp, straight transitional edge.
 | `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose edges should be chamfered | Yes |
 | `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The length of the chamfer | Yes |
 | `tags` | [`[Edge; 1+]`](/docs/kcl-std/types/std-types-Edge) | The paths you want to chamfer | Yes |
+| `secondLength` | [`number`](/docs/kcl-std/types/std-types-number) | Use a second length for the second face. Incompatible with `angle` | No |
+| `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The angle between the edges. Incompatible with `secondLength` | No |
+| `swap` | [`bool`](/docs/kcl-std/types/std-types-bool) | Swap the `secondLength` or `angle` to be relative to the second face | No |
 | `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this chamfer | No |
 
 ### Returns

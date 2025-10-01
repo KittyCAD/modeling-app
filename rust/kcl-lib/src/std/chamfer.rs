@@ -1,7 +1,11 @@
 //! Standard library chamfers.
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::CutStrategy, shared::CutTypeV2};
+use kcmc::{
+    ModelingCmd, each_cmd as mcmd,
+    length_unit::LengthUnit,
+    shared::{CutStrategy, CutTypeV2},
+};
 use kittycad_modeling_cmds::{self as kcmc, shared::Angle};
 
 use super::args::TyF64;
