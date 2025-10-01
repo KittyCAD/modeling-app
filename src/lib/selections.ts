@@ -23,7 +23,7 @@ import {
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange } from '@src/lang/sourceRange'
-import type {Artifact, ArtifactId, CodeRef} from '@src/lang/std/artifactGraph'
+import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
 import {
   getCapCodeRef,
   getCodeRefsByArtifactId,
@@ -1138,8 +1138,13 @@ export function selectAllInCurrentSketch(): Selections {
   const graphSelections: Selection[] = []
 
   const artifactGraph = kclManager.artifactGraph
-  Object.keys(sceneEntitiesManager.activeSegments).forEach(pathToNode => {
-    const artifact = artifactGraph.values().find(g => 'codeRef' in g && JSON.stringify(g.codeRef.pathToNode) === pathToNode)
+  Object.keys(sceneEntitiesManager.activeSegments).forEach((pathToNode) => {
+    const artifact = artifactGraph
+      .values()
+      .find(
+        (g) =>
+          'codeRef' in g && JSON.stringify(g.codeRef.pathToNode) === pathToNode
+      )
     if (artifact && ['path', 'segment'].includes(artifact.type)) {
       const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
       if (codeRefs?.length) {
