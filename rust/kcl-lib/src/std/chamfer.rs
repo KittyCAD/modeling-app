@@ -48,6 +48,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     Ok(KclValue::Solid { value })
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn inner_chamfer(
     solid: Box<Solid>,
     length: TyF64,
