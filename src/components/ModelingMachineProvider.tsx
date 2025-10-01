@@ -121,7 +121,7 @@ import {
 } from '@src/network/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
-import type { sketchSolveMachine } from '@src/machines/sketchSolveMode'
+import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveMode'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 
 const OVERLAY_TIMEOUT_MS = 1_000

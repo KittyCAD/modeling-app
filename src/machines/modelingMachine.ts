@@ -157,7 +157,10 @@ import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
-import { sketchSolveMachine } from '@src/machines/sketchSolveMode'
+import {
+  type EquipTool,
+  sketchSolveMachine,
+} from '@src/machines/sketchSolve/sketchSolveMode'
 
 export type ModelingMachineEvent =
   | {
@@ -344,7 +347,7 @@ export type ModelingMachineEvent =
     }
   | {
       type: 'equip tool'
-      data: { tool: 'center rectangle' | 'dimension' }
+      data: { tool: EquipTool }
     }
 
 // export type MoveDesc = { line: number; snippet: string }

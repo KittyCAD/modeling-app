@@ -1,37 +1,38 @@
-import { assign, assertEvent, createMachine, sendTo, setup } from 'xstate'
+import { assertEvent, assign, createMachine, sendTo, setup } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import type {
   ModelingMachineContext,
   SetSelections,
-  MouseState,
-  SegmentOverlayPayload,
 } from '@src/machines/modelingSharedTypes'
-import type { PathToNode } from '@src/lang/wasm'
-import { machine as centerRectToolMachine } from '@src/machines/centerRectTool'
-import { machine as dimensionToolMachine } from '@src/machines/dimensionTool'
+import { machine as centerRectTool } from '@src/machines/sketchSolve/tools/centerRectTool'
+import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
+import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 
-type EquipTool = 'dimension' | 'center rectangle'
+const equipTools = Object.freeze({
+  centerRectTool,
+  dimensionTool,
+  pointTool,
+})
+
+export type EquipTool = keyof typeof equipTools
 
 export type SketchSolveMachineEvent =
   | { type: 'exit' }
   | { type: 'update selection'; data?: SetSelections }
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
-  | { type: 'Set mouse state'; data: MouseState }
-  | { type: 'Set Segment Overlays'; data: SegmentOverlayPayload }
-  | { type: 'Delete segment'; data: PathToNode }
-  | { type: 'change tool'; data: { tool: EquipTool } }
-  | { type: 'click in scene'; data: [x: number, y: number] }
-  | { type: 'tool completed' }
+  | { type: 'xstate.done.actor.tool' }
 
 type ToolActorRef =
-  | ActorRefFrom<typeof dimensionToolMachine>
-  | ActorRefFrom<typeof centerRectToolMachine>
+  | ActorRefFrom<typeof dimensionTool>
+  | ActorRefFrom<typeof centerRectTool>
+  | ActorRefFrom<typeof pointTool>
 
 type SketchSolveContext = ModelingMachineContext & {
   toolActor?: ToolActorRef
   sketchSolveTool: EquipTool | 'moveTool'
+  pendingTool?: EquipTool
 }
 
 export const sketchSolveMachine = setup({
@@ -55,38 +56,57 @@ export const sketchSolveMachine = setup({
     'send updated selection to move tool': sendTo('moveTool', {
       type: 'update selection',
     }),
-    'spawn tool': assign(({ event, spawn }) => {
+    'store pending tool': assign(({ event }) => {
       assertEvent(event, 'equip tool')
+      return { pendingTool: event.data.tool }
+    }),
+    'spawn tool': assign(({ event, spawn, context }) => {
+      // Determine which tool to spawn based on event type
+      let toolToSpawn: EquipTool
+
+      if (event.type === 'equip tool') {
+        toolToSpawn = event.data.tool
+      } else if (
+        event.type === 'xstate.done.actor.tool' &&
+        context.pendingTool
+      ) {
+        toolToSpawn = context.pendingTool
+      } else {
+        console.error('Cannot determine tool to spawn')
+        return {}
+      }
+
       let toolActor
-      switch (event.data.tool) {
-        case 'dimension':
-          toolActor = spawn('dimensionToolActor', { id: 'tool' })
+      switch (toolToSpawn) {
+        case 'dimensionTool':
+          toolActor = spawn(toolToSpawn, { id: 'tool' })
           break
-        case 'center rectangle':
-          toolActor = spawn('centerRectToolActor', { id: 'tool' })
+        case 'centerRectTool':
+          toolActor = spawn(toolToSpawn, { id: 'tool' })
+          break
+        case 'pointTool':
+          toolActor = spawn(toolToSpawn, { id: 'tool' })
           break
         default:
-          const _exhaustiveCheck: never = event.data.tool
+          const _exhaustiveCheck: never = toolToSpawn
       }
+      console.log('spawned tool?')
 
       return {
         toolActor,
-        sketchSolveTool: event.data.tool,
+        sketchSolveTool: toolToSpawn,
+        pendingTool: undefined, // Clear the pending tool after spawning
       }
-    }),
-    'stop tool': assign(({ context }) => {
-      return { toolActor: undefined }
     }),
   },
   actors: {
     moveToolActor: createMachine({
       /* ... */
     }),
-    dimensionToolActor: dimensionToolMachine,
-    centerRectToolActor: centerRectToolMachine,
+    ...equipTools,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwAmAKwAOAHQcAzABZFGgGwBOebL16A7LIA0IAJ6INencs0a7ixTvUdpAXy+W0mXAIScioaegBXPggAQwwKWDBiMCwMEVFOHiQQASFUsQkpBHk1RwV7WTVFWVlFaR0dSxsEAFpqjmVZXT0OWXcTeQMenz90bHwiMgpqWjpw0TAAR3DmPjwMQhIMiRzhfKzCkx15ZSOOHu61fpNGxBM1dqOdGsNXRRNpRWGQfzGgydDaMoALaEELRUQQPAJJIpOgQMRgZTMUSkQjoYGgsAAFQ2xC2WR2eXE+xkChU0j0Gg4OkqHD0H3eNwQsk8ylc0k09RM9jeei+P0CExC00RILBEKhiWSGAYACdZYRZco+MRYgAzRVAjHkHGbbjbQS7YmgQpyPSyVQcKo6BkmZyya7WUkaNm9RQ9DSdOw1NT80aC4JTMLaijgyHQ6UMJYrNa4-H8Q1Egq2DgmRzSHpPB16Kr9JnSeTtd00w5qAxKRS+3zff3jQMAxHhISiKCxkizebR1brPWZBO5NLJopVRwmExnJ7Sb13JnVaRss4ffTyOyXT7VgV1-4i5RN5GtnvEOiMWAYWKI+HzZTRFKK5SH5oAKnj2UTg5JCHZynkjw0hicGZqEyag6C68gmNo9zVEYtSdD41aiGE8BZJufzCmEBoDnsJqIA6RaXCuPR3N0Hz5i6OhmPIK46Io4GKOaZh+gEW7oYCYqhhKEYpJhRpDtyYE9AWdL1OaDROggGbzocNJWhwzhWh8TG-EKQaAnuLZtsQPFJh+agfGyBFUg6ZaeIowFKMoVKeJU5oFhB64jMxaGqYiTDCC22nvjhEllioGhyMUOYVDS+amCcNHvFRlG6BU8FeEAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6UNEwAEdQ5j48DEISNIks4VyM-O1FFRqB2Sd6jlk1BstEVo1pZQ1e+Rt5eWlB0u0vH3RxgEpsFaMoALaEIKRUQQPBxBJJOgQMRgZTMUSkQjocGQsAAFU2xG2GV2OXEBxkfRUbU67k0dhuakaMkcqgMalkNk5Gnsxg0w3+fgmgWmIRxUJhcPiiQwDAATnLCHLlHxiNEAGZKsHi-GE4n8QR7cmgfLSAzGAzKexVV6c7TaTrMhBm7RsyqGB32i3yAWjAH+SZBGaoiES2HwmUMZardZ67g7Q1kvKUjhWwqKYw+6pFY7yJ0GdyqQbGOqVNqKdl-P1CoFBsWhISiKCxkhzBbRtYbLbxkmJlLJhAVYzKBQmMoKezSYy3JqPDRW+pyY6KEyVKtjAMikGohvo5td4hRladuPpA3ZfsUwcaYqdGpFIz35xOxQcV0aNq1TTdQqyX0b4VgWDZRYAAd1YXA9xbQ9GFgDBolRZEFmUSIkiVZQD31TI+32E0ZB5ZQKg-RROXOUoOCZO4EG0LpnmqD8bzUZx5GMMovBGUQQngDIANrUVaATC9cMkRA1EtK5jAzLMWJsQYnWaM1nmMIpCjNAspPXf1ALrUFQwoaFw2lJJBKNAcb1vC1ZHUtQHAGJ07EtBRzQcHlX1kTSa0Dfid0bfdCRMpMr1qVMXisjgdDsFcbCdR5h0GTQ-35VjNCMDzAS87cQPA8YoIPALLzwhBzVdDN2XKdwkukPMqLE4p7Teep6gMK4xLSzcgLFJhhCbfLhNNXQ1GUGiOW0ExpyYoonWUt19Bo45p0ceR2I8IA */
   context: ({ input }): SketchSolveContext => ({
     ...modelingMachineDefaultContext,
     sketchSolveTool: 'moveTool',
@@ -118,7 +138,7 @@ export const sketchSolveMachine = setup({
       on: {
         'equip tool': {
           target: 'using tool',
-          actions: ['spawn tool'],
+          actions: 'store pending tool',
         },
       },
       invoke: {
@@ -135,20 +155,42 @@ export const sketchSolveMachine = setup({
       description:
         'The base state of sketch mode is to all the user to move around the scene and select geometry.',
     },
+
     'using tool': {
       on: {
-        'xstate.done.actor.tool.*': {
-          target: 'move and select',
-          actions: 'stop tool',
-        },
         'unequip tool': {
           target: 'move and select',
-          actions: 'stop tool',
+          actions: 'send unequip to tool',
+        },
+
+        'equip tool': {
+          target: 'switching tool',
+          actions: ['send unequip to tool', 'store pending tool'],
         },
       },
+
       description:
         'Tools are workflows that create or modify geometry in the sketch scene after conditions are met. Some, like the Dimension, Center Rectangle, and Tangent tools, are finite, which they signal by reaching a final state. Some, like the Spline tool, appear to be infinite. In these cases, it is up to the tool Actor to receive whatever signal (such as the Esc key for Spline) necessary to reach a final state and unequip itself.\n\nTools can request to be unequipped from the outside by a "unequip tool" event sent to the sketch machine. This will sendTo the toolInvoker actor.',
+
+      entry: 'spawn tool',
     },
+
+    'switching tool': {
+      on: {
+        'xstate.done.actor.tool': {
+          target: 'using tool',
+          actions: [
+            () => console.log('switched tools with xstate.done.actor.tool'),
+          ],
+        },
+      },
+
+      description:
+        'Intermediate state while the current tool is cleaning up before spawning a new tool.',
+
+      exit: [() => console.log('exiting switching tool')],
+    },
+
     exiting: {
       type: 'final',
       description: 'Place any teardown code here.',
