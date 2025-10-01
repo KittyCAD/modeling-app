@@ -121,7 +121,7 @@ export const sketchSolveMachine = setup({
     ...equipTools,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6UNEwAEdQ5j48DEISNIks4VyM-O1FFRqB2Sd6jlk1BstEVo1pZQ1e+Rt5eWlB0u0vH3RxgEpsFaMoALaEIKRUQQPBxBJJOgQMRgZTMUSkQjocGQsAAFU2xG2GV2OXEBxkfRUbU67k0dhuakaMkcqgMalkNk5Gnsxg0w3+fgmgWmIRxUJhcPiiQwDAATnLCHLlHxiNEAGZKsHi-GE4n8QR7cmgfLSAzGAzKexVV6c7TaTrMhBm7RsyqGB32i3yAWjAH+SZBGaoiES2HwmUMZardZ67g7Q1kvKUjhWwqKYw+6pFY7yJ0GdyqQbGOqVNqKdl-P1CoFBsWhISiKCxkhzBbRtYbLbxkmJlLJhBFDSqDjaYx8mo+jjSW5NF6WirqBTObQ2K5qKtjAMikGohvo5td4hRladuPpA3ZfsUwcaYqdGpFIyP5xOxSj55tWqabqFWS+rdhWBYNlFgAB3VhcAPFtj0YWAMGiVFkQWZRIiSJVlCPfVMj7fYTRkR5lAzO9FGud9BnUJ1V1TFd7W0EwDFHflN39IC61BeYllPaCjzoOCEJiZRkNRNCNmVLCe0vI0BwqJ5FBMfkNCUDh3zeJ1pCUZRKjUbNpyOcpOi8EZRBCeAMkA2tRVoBMrzwyREB0tNjAzLN5BzQYnWaM1nnHO1rh-UiNJYmtAyskNcTwaFw2lJIbOkm873vC1ZALFwHAGdTDGUBRzQcHl31kYLAVC3dlH3JsYLipMb1qVMXhSlTtDseSbCdR5jCI9Q70U4wyg0Iwiu3YCxXAyCcB4wkquvfCEHNV0M3Zcp3H5Xq8zuBAdOKe03nqepGOuAxBrYsLlCYYQmymuzTV0NRlFXDl6PHJxylkJ1xzdfRV2OYxPXkI7LNKziOwmkhLuNezB1qLTGO23r+v6gx8wrDo6kWuRMx+jgNyMoA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6UNEwAEdQ5j48DEISNIks4VyM-O1FFRqB2Sd6jlk1BstEVo1pZQ1e+Rt5eWlB0u0vH3RxgEpsFaMoALaEIKRUQQPBxBJJOgQMRgZTMUSkQjocGQsAAFU2xG2GV2OXEBxkBmMTw0L06ig42jkZjuBTUykGBjUN0G3Q0jL+owB-kmQRmqIhUJhcPiiQwDAATgrCArlHxiNEAGYqsE48gErbcHaCPbk0D5aRUgzKexVV6yc7aAaNSnaVRcz7lakuDiWwVjEWBaYhPUUaGw+FyhjLVbrQnE-gmsl5GR2G2FRTGeQaapFY7yF0IAzuVSDYx1SptRRc-3CiZBkGo0JCURQOMkOYLGNrDaG9KJ7IpFMIOzcm19NTFqnSYwaT6FjTnZS6XqyAxXLpz5y1vz14Hi5TN9Ft3vEaMrHvxo0kpNDikIWfFTo1IpGF-OQsMt05xwcTTdQpZGGf5dyBMUQ1gAB3VhcGPdsz0YWAMGiVFkQWZRIiSFVlFPBNMlvfZzRkR4OUfRRrgZQZ1ELbQumUZxtEY7QTHXZjgKFUDRWDUF5iWC84NPOhEOQmJlDQ1FMI2VVcOvAdTWHOwmRtQYmX5IwgKAws5Dda5LV0P9pB6LQvBGUQQngDIAz3cDaGNQdCMkRBJ3TYxM2zXMbEGQtmktZ5jCKB0uRcAYqR3QEuMbUM8HDGUEQwOz5PvRcn2MTpix9NpnVZOxrQUKkHH5BlZDCwN9xDI9W3ghLk3vWoOGeNQ1w4HQ7EURdFAXGcOXURdaRMMoc3YqywO41EoJgnABMJaq7yIotjDdTMuXKdxaWpAtWUnYpGLeep6nXa4DBK6zRuUJhhFbGaHItFdl2uc4TAW7kikLfz3UqRlPIWxx5GOkbIt47sppIK6zUch8BmUQpqkeaQnRUjamk6J56Q+c4QocEyPCAA */
   context: ({ input }): SketchSolveContext => ({
     ...modelingMachineDefaultContext,
     sketchSolveTool: null,
@@ -213,11 +213,14 @@ export const sketchSolveMachine = setup({
     },
 
     'unequiping tool': {
-      exit: 'send tool unequipped to parent',
-
       on: {
-        'xstate.done.actor.tool': 'move and select',
+        'xstate.done.actor.tool': {
+          target: 'move and select',
+          actions: ['send tool unequipped to parent'],
+        },
       },
+
+      description: `Intermediate state, same as the "switching tool" state, but for unequip`,
     },
   },
 })
