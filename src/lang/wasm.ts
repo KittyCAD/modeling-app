@@ -498,8 +498,9 @@ export function humanDisplayNumber(
   }
 }
 
-export function isPointsCCW(points: Coords2d[]): number {
-  return is_points_ccw(new Float64Array(points.flat()))
+export function isPointsCCW(points: Coords2d[], instance?: ModuleType): number {
+  const is_points_ccw_fn = instance ? instance.is_points_ccw : is_points_ccw
+  return is_points_ccw_fn(new Float64Array(points.flat()))
 }
 
 export function getTangentialArcToInfo({
