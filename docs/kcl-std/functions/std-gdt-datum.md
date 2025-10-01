@@ -17,7 +17,7 @@ gdt::datum(
   framePlane?: Plane,
   fontPointSize?: number(_),
   fontScale?: number(_),
-)
+): GdtAnnotation
 ```
 
 
@@ -32,6 +32,10 @@ gdt::datum(
 | `framePlane` | [`Plane`](/docs/kcl-std/types/std-types-Plane) | The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane. | No |
 | `fontPointSize` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The font point size to use for the annotation text rendering. The default is `36`. | No |
 | `fontScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`. | No |
+
+### Returns
+
+[`GdtAnnotation`](/docs/kcl-std/types/std-types-GdtAnnotation) - A GD&T annotation.
 
 
 ### Examples

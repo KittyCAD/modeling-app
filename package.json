@@ -135,16 +135,15 @@
     "tronb:package:prod": "npm run tronb:vite:prod && electron-builder --config electron-builder.yml --publish always",
     "test-setup": "npm install && npm run build:wasm",
     "test": "vitest --mode=development",
-    "test:rust": "(cd rust && just test && just lint)",
-    "test:vitest": "vitest run --mode development",
-    "test:unit": "vitest run --mode development --project unit",
-    "test:integration": "vitest run --mode development --project integration",
+    "test:unit": "vitest run --mode=development --project=unit",
+    "test:integration": "vitest run --mode=development --project=integration",
+    "test:integration:local": "npm run simpleserver:bg && npm run test:integration; kill-port 3000",
     "test:snapshots": "cross-env TARGET=web NODE_ENV=development playwright test --config=playwright.config.ts --grep=@snapshot",
+    "test:e2e:kcl": "(cd rust && just test && just lint)",
     "test:e2e:web": "cross-env TARGET=web NODE_ENV=development playwright test --config=playwright.config.ts --project=\"Google Chrome\" --grep=@web",
     "test:e2e:desktop": "cross-env TARGET=desktop playwright test --config=playwright.electron.config.ts --grep-invert=\"@snapshot|@web\"",
     "test:e2e:desktop:local": "cross-env TARGET=desktop npm run tronb:vite:dev && playwright test --config=playwright.electron.config.ts --grep-invert=\"@snapshot|@web\" --grep-invert=\"$(curl --silent https://test-analysis-bot.hawk-dinosaur.ts.net/projects/KittyCAD/modeling-app/tests/disabled/regex)\"",
-    "test:e2e:desktop:local-engine": "cross-env TARGET=desktop npm run tronb:vite:dev && playwright test --config=playwright.electron.config.ts --grep-invert=\"@snapshot|@web|@skipLocalEngine\" --grep-invert=\"$(curl --silent https://test-analysis-bot.hawk-dinosaur.ts.net/projects/KittyCAD/modeling-app/tests/disabled/regex)\"",
-    "test:unit:local": "npm run simpleserver:bg && npm run test:unit; kill-port 3000"
+    "test:e2e:desktop:local-engine": "cross-env TARGET=desktop npm run tronb:vite:dev && playwright test --config=playwright.electron.config.ts --grep-invert=\"@snapshot|@web|@skipLocalEngine\" --grep-invert=\"$(curl --silent https://test-analysis-bot.hawk-dinosaur.ts.net/projects/KittyCAD/modeling-app/tests/disabled/regex)\""
   },
   "browserslist": {
     "production": [

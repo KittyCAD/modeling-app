@@ -488,6 +488,10 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
         ("types", "Solid") => (PrimitiveType::Solid, StdFnProps::default("std::types::Solid")),
         ("types", "Plane") => (PrimitiveType::Plane, StdFnProps::default("std::types::Plane")),
         ("types", "Face") => (PrimitiveType::Face, StdFnProps::default("std::types::Face")),
+        ("types", "GdtAnnotation") => (
+            PrimitiveType::GdtAnnotation,
+            StdFnProps::default("std::types::GdtAnnotation"),
+        ),
         ("types", "Helix") => (PrimitiveType::Helix, StdFnProps::default("std::types::Helix")),
         ("types", "Edge") => (PrimitiveType::Edge, StdFnProps::default("std::types::Edge")),
         ("types", "Axis2d") => (PrimitiveType::Axis2d, StdFnProps::default("std::types::Axis2d")),
