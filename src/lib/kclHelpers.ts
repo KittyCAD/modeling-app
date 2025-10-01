@@ -9,6 +9,8 @@ import {
 import type { KclExpression } from '@src/lib/commandTypes'
 import { rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
+import { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import RustContext from '@src/lib/rustContext'
 
 const DUMMY_VARIABLE_NAME = '__result__'
 
@@ -27,18 +29,20 @@ function isNumberValueItem(item: KclValue): item is KclNumber {
  */
 export async function getCalculatedKclExpressionValue(
   value: string,
-  allowArrays?: boolean
+  allowArrays?: boolean,
+  instance?: ModuleType,
+  providedRustContext?: RustContext
 ) {
   // Create a one-line program that assigns the value to a variable
   const dummyProgramCode = `${DUMMY_VARIABLE_NAME} = ${value}`
-  const pResult = parse(dummyProgramCode)
+  const pResult = parse(dummyProgramCode, instance)
   if (err(pResult) || !resultIsOk(pResult)) return pResult
   const ast = pResult.program
 
   // Execute the program without hitting the engine
   const { execState } = await executeAstMock({
     ast,
-    rustContext: rustContext,
+    rustContext: providedRustContext ? providedRustContext : rustContext,
   })
 
   // Find the variable declaration for the result

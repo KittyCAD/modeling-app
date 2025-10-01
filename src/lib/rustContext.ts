@@ -48,7 +48,7 @@ export default class RustContext {
     }
   }
 
-  constructor(engineCommandManager: ConnectionManager) {
+  constructor(engineCommandManager: ConnectionManager, instance?: ModuleType) {
     this.engineCommandManager = engineCommandManager
 
     this.ensureWasmInit()
@@ -56,6 +56,10 @@ export default class RustContext {
         this.ctxInstance = this.create()
       })
       .catch(reportRejection)
+
+    if (instance) {
+      this.createFromInstance(instance)
+    }
   }
 
   /** Create a new context instance */
@@ -68,6 +72,17 @@ export default class RustContext {
     )
 
     return ctxInstance
+  }
+
+  createFromInstance(instance: ModuleType) {
+    this.rustInstance = instance
+
+    const ctxInstance = new this.rustInstance.Context(
+      this.engineCommandManager,
+      projectFsManager
+    )
+
+    this.ctxInstance = ctxInstance
   }
 
   async sendOpenProject(
