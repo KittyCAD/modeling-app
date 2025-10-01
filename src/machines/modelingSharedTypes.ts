@@ -3,11 +3,12 @@ import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import type { PathToNode } from '@src/lang/wasm'
 import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { isDesktop } from '@src/lib/isDesktop'
+import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveMode'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -235,6 +236,7 @@ export interface ModelingMachineContext {
   defaultPlaneVisibility: PlaneVisibilityMap
   savedDefaultPlaneVisibility: PlaneVisibilityMap
   planesInitialized: boolean
+  sketchSolveTool: EquipTool | null
 }
 
 export type PlaneVisibilityMap = {

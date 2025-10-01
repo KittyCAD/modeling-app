@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
 import fetch from 'node-fetch'
+import { Vector2 } from 'three'
 import { vi } from 'vitest'
 import 'vitest-webgl-canvas-mock'
 import { WebSocket } from 'ws'
@@ -57,6 +58,10 @@ vi.mock('three', async () => {
       setSize() {}
       render() {}
       dispose() {}
+      // Engine Connection needs this in the modelingMachine.test.ts files
+      getDrawingBufferSize() {
+        return new Vector2()
+      }
       // Add any other methods or properties that are used in your components
     },
     // Mock other 'three' exports if necessary
