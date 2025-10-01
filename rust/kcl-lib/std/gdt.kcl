@@ -44,7 +44,7 @@ export fn datum(
   fontPointSize?: number(Count),
   /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
   fontScale?: number(Count),
-) {}
+): GdtAnnotation {}
 
 /// GD&T annotation specifying how flat faces should be.
 ///
@@ -110,4 +110,4 @@ export fn flatness(
   fontPointSize?: number(Count),
   /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
   fontScale?: number(Count),
-) {}
+): [GdtAnnotation; 1+] {}

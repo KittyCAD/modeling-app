@@ -60,7 +60,7 @@ jobs:
 
       - name: Run unit tests
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        run: xvfb-run -a npm run test:vitest
+        run: xvfb-run -a npm run test
         env:
           VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 

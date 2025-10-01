@@ -136,7 +136,6 @@
     "test-setup": "npm install && npm run build:wasm",
     "test": "vitest --mode=development",
     "test:rust": "(cd rust && just test && just lint)",
-    "test:vitest": "vitest run --mode development",
     "test:unit": "vitest run --mode development --project unit",
     "test:integration": "vitest run --mode development --project integration",
     "test:snapshots": "cross-env TARGET=web NODE_ENV=development playwright test --config=playwright.config.ts --grep=@snapshot",
