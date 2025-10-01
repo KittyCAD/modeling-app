@@ -174,7 +174,7 @@ Where `./store` should look like this
 
 However because much of our tests involve clicking in the stream at specific locations, it's code-gen looks `await page.locator('video').click();` when really we need to use a pixel coord, so I think it's of limited use.
 
-### Unit and component tests
+### Unit and integration tests
 
 If you already haven't, run the following:
 
@@ -187,7 +187,7 @@ npm start
 and finally:
 
 ```
-npm run test:unit
+npm run test
 ```
 
 For individual testing:
