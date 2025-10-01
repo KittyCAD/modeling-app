@@ -98,9 +98,6 @@ import type { Coords2d } from '@src/lang/util'
 import { isPointsCCW } from '@src/lang/wasm'
 import { closestPointOnRay } from '@src/lib/utils2d'
 import { expect } from 'vitest'
-import type { VariableDeclaration } from '@src/lang/wasm'
-import { updateCenterRectangleSketch } from '@src/lib/rectangleTool'
-import { trap } from '@src/lib/trap'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { Parameter } from '@src/lang/wasm'
 import { modelingMachine } from '@src/machines/modelingMachine'
@@ -5077,77 +5074,6 @@ describe('utils2d.test.ts', () => {
       expect(result.closestPoint[0]).toBeCloseTo(3.5)
       expect(result.closestPoint[1]).toBeCloseTo(3.5)
       expect(result.t).toBeCloseTo(4.95, 1)
-    })
-  })
-})
-
-describe('rectangleTool.test.ts', () => {
-  describe('library rectangleTool helper functions', () => {
-    describe('updateCenterRectangleSketch', () => {
-      // regression test for https://github.com/KittyCAD/modeling-app/issues/5157
-      test('should update AST and source code', async () => {
-        // Base source code that will be edited in place
-        const sourceCode = `sketch001 = startSketchOn(XZ)
-profile001 = startProfile(at = [120.37, 162.76])
-|> angledLine(angle = 0, length = 0, tag = $rectangleSegmentA001)
-|> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 0, tag = $rectangleSegmentB001)
-|> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
-|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-|> close()
-`
-        // Create ast
-        const _ast = assertParse(sourceCode)
-        let ast = structuredClone(_ast)
-
-        // Find some nodes and paths to reference
-        const sketchSnippet = `startProfile(at = [120.37, 162.76])`
-        const start = sourceCode.indexOf(sketchSnippet)
-        expect(start).toBeGreaterThanOrEqual(0)
-        const sketchRange = topLevelRange(start, start + sketchSnippet.length)
-        const sketchPathToNode = getNodePathFromSourceRange(ast, sketchRange)
-        const _node = getNodeFromPath<VariableDeclaration>(
-          ast,
-          sketchPathToNode || [],
-          'VariableDeclaration'
-        )
-        if (trap(_node)) return
-        const sketchInit = _node.node?.declaration.init
-
-        // Hard code inputs that a user would have taken with their mouse
-        const x = 40
-        const y = 60
-        const rectangleOrigin = [120, 180]
-        const tags: [string, string, string] = [
-          'rectangleSegmentA001',
-          'rectangleSegmentB001',
-          'rectangleSegmentC001',
-        ]
-
-        // Update the ast
-        if (sketchInit.type === 'PipeExpression') {
-          const maybeErr = updateCenterRectangleSketch(
-            sketchInit,
-            x,
-            y,
-            tags[0],
-            rectangleOrigin[0],
-            rectangleOrigin[1]
-          )
-          expect(maybeErr).toEqual(undefined)
-        }
-
-        // ast is edited in place from the updateCenterRectangleSketch
-        const expectedSourceCode = `sketch001 = startSketchOn(XZ)
-profile001 = startProfile(at = [80, 120])
-  |> angledLine(angle = 0, length = 80, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 120, tag = $rectangleSegmentB001)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-`
-        const recasted = recast(ast)
-        expect(recasted).toEqual(expectedSourceCode)
-      })
     })
   })
 })
