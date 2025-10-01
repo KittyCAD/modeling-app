@@ -131,7 +131,7 @@ async fn inner_chamfer(
                 ModelingCmd::from(mcmd::Solid3dCutEdges {
                     edge_ids: vec![edge_id],
                     extra_face_ids: vec![],
-                    strategy: strategy,
+                    strategy,
                     object_id: solid.id,
                     tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
                     cut_type,
