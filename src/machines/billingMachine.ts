@@ -71,6 +71,7 @@ export const billingMachine = setup({
           isOrg: billing.isOrg,
           hasSubscription: billing.hasSubscription,
           lastFetch: new Date(),
+          error: undefined,
         }
       }
     ),
