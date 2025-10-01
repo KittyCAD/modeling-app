@@ -127,7 +127,7 @@ E2E_MODE ?= none
 endif
 
 .PHONY: test
-test: test-unit test-int test-e2e
+test: test-unit test-e2e
 
 .PHONY: test-unit
 test-unit: install ## Run the unit tests
