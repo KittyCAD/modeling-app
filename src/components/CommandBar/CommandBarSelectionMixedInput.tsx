@@ -55,14 +55,15 @@ export default function CommandBarSelectionMixedInput({
 
   // Clear selection in UI if needed
   useEffect(() => {
-    arg.clearSelectionFirst &&
+    if (arg.clearSelectionFirst) {
       engineCommandManager.modelingSend({
         type: 'Set selection',
         data: {
           selectionType: 'singleCodeCursor',
         },
-      }) &&
+      })
       setHasClearedSelection(true)
+    }
   }, [arg])
 
   // Only auto-skip on initial mount if we have a valid selection
