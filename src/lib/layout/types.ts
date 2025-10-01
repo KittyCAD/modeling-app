@@ -6,9 +6,9 @@ type BasicArea = {
   label: string
 }
 type WithChildren = { children: Layout[] }
-type Orientation = 'inline' | 'block'
-type StartEnd = 'start' | 'end'
-type Side = `${Orientation}-${StartEnd}`
+export type Orientation = 'inline' | 'block'
+export type StartEnd = 'start' | 'end'
+export type Side = `${Orientation}-${StartEnd}`
 type WithOrientation = { orientation: Orientation }
 type WithSide = {
   side: Side
@@ -18,7 +18,8 @@ type SplitArea = BasicArea &
   WithChildren &
   WithOrientation & {
     type: 'splits'
-    splitPoints: number[]
+    /** sizes.length must equal children.length */
+    sizes: number[]
   }
 type TabArea = BasicArea &
   WithChildren & {

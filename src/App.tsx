@@ -68,6 +68,8 @@ import {
 } from '@src/routes/Onboarding/utils'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { ConnectionStream } from '@src/components/ConnectionStream'
+import { LayoutNode } from './lib/layout/Layout'
+import { basicLayout } from './lib/layout/basicLayout'
 
 // CYCLIC REF
 
@@ -269,20 +271,8 @@ export function App() {
           </AppHeader>
         </div>
         <ModalContainer />
-        <section className="flex flex-1">
-          <ModelingSidebarLeft />
-          <div
-            className="relative z-0 flex flex-col flex-1 items-center overflow-hidden"
-            style={{ minWidth: '256px' }}
-          >
-            <Toolbar />
-            <ConnectionStream pool={pool} authToken={authToken} />
-            <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
-              <UnitsMenu />
-              <Gizmo />
-            </div>
-          </div>
-          <ModelingSidebarRight />
+        <section className="pointer-events-auto flex-1">
+          <LayoutNode {...basicLayout} />
         </section>
         {/* <CamToggle /> */}
         <StatusBar
