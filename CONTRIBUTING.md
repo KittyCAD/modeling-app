@@ -208,7 +208,7 @@ Prepare these system dependencies:
 then run tests that target the KCL language:
 
 ```
-npm run test:rust
+npm run test:e2e:kcl
 ```
 
 ### Fuzzing the parser

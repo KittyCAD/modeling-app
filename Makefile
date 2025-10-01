@@ -131,12 +131,13 @@ test: test-unit test-e2e
 
 .PHONY: test-unit
 test-unit: install ## Run the unit tests
-	npm run test:rust
-	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
 	npm run test:unit
+	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
+	npm run test:integration
 
 .PHONY: test-e2e
 test-e2e: test-e2e-$(TARGET)
+	npm run test:e2e:kcl
 
 .PHONY: test-e2e-web
 test-e2e-web: install build ## Run the web e2e tests
