@@ -9,8 +9,8 @@ use crate::{
     CompilationError, KclError, ModuleId, SourceRange,
     errors::KclErrorDetails,
     execution::{
-        EnvironmentRef, ExecState, Face, Geometry, GeometryWithImportedGeometry, Helix, ImportedGeometry, Metadata,
-        Plane, Sketch, Solid, TagIdentifier,
+        EnvironmentRef, ExecState, Face, GdtAnnotation, Geometry, GeometryWithImportedGeometry, Helix,
+        ImportedGeometry, Metadata, Plane, Sketch, Solid, TagIdentifier,
         annotations::{self, FnAttrs, SETTINGS, SETTINGS_UNIT_LENGTH},
         types::{NumericType, PrimitiveType, RuntimeType},
     },
@@ -69,6 +69,9 @@ pub enum KclValue {
     },
     TagIdentifier(Box<TagIdentifier>),
     TagDeclarator(crate::parsing::ast::types::BoxNode<TagDeclarator>),
+    GdtAnnotation {
+        value: Box<GdtAnnotation>,
+    },
     Plane {
         value: Box<Plane>,
     },
@@ -212,6 +215,23 @@ pub enum TypeDef {
     Alias(RuntimeType),
 }
 
+impl From<Vec<GdtAnnotation>> for KclValue {
+    fn from(mut values: Vec<GdtAnnotation>) -> Self {
+        if values.len() == 1 {
+            let value = values.pop().expect("Just checked len == 1");
+            KclValue::GdtAnnotation { value: Box::new(value) }
+        } else {
+            KclValue::HomArray {
+                value: values
+                    .into_iter()
+                    .map(|s| KclValue::GdtAnnotation { value: Box::new(s) })
+                    .collect(),
+                ty: RuntimeType::Primitive(PrimitiveType::GdtAnnotation),
+            }
+        }
+    }
+}
+
 impl From<Vec<Sketch>> for KclValue {
     fn from(mut eg: Vec<Sketch>) -> Self {
         if eg.len() == 1 {
@@ -250,6 +270,7 @@ impl From<KclValue> for Vec<SourceRange> {
         match item {
             KclValue::TagDeclarator(t) => vec![SourceRange::new(t.start, t.end, t.module_id)],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
+            KclValue::GdtAnnotation { value } => to_vec_sr(&value.meta),
             KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Helix { value } => to_vec_sr(&value.meta),
@@ -280,6 +301,7 @@ impl From<&KclValue> for Vec<SourceRange> {
         match item {
             KclValue::TagDeclarator(t) => vec![SourceRange::new(t.start, t.end, t.module_id)],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
+            KclValue::GdtAnnotation { value } => to_vec_sr(&value.meta),
             KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Helix { value } => to_vec_sr(&value.meta),
@@ -320,6 +342,7 @@ impl KclValue {
             KclValue::Object { meta, .. } => meta.clone(),
             KclValue::TagIdentifier(x) => x.meta.clone(),
             KclValue::TagDeclarator(x) => vec![x.metadata()],
+            KclValue::GdtAnnotation { value } => value.meta.clone(),
             KclValue::Plane { value } => value.meta.clone(),
             KclValue::Face { value } => value.meta.clone(),
             KclValue::Sketch { value } => value.meta.clone(),
@@ -353,6 +376,7 @@ impl KclValue {
             | KclValue::Object { .. }
             | KclValue::TagIdentifier(_)
             | KclValue::TagDeclarator(_)
+            | KclValue::GdtAnnotation { .. }
             | KclValue::Plane { .. }
             | KclValue::Face { .. }
             | KclValue::Sketch { .. }
@@ -373,6 +397,7 @@ impl KclValue {
             KclValue::Uuid { .. } => "a unique ID (uuid)".to_owned(),
             KclValue::TagDeclarator(_) => "a tag declarator".to_owned(),
             KclValue::TagIdentifier(_) => "a tag identifier".to_owned(),
+            KclValue::GdtAnnotation { .. } => "an annotation".to_owned(),
             KclValue::Solid { .. } => "a solid".to_owned(),
             KclValue::Sketch { .. } => "a sketch".to_owned(),
             KclValue::Helix { .. } => "a helix".to_owned(),
@@ -763,6 +788,7 @@ impl KclValue {
             KclValue::HomArray { .. } => Some("[...]".to_owned()),
             KclValue::Object { .. } => Some("{ ... }".to_owned()),
             KclValue::Module { .. }
+            | KclValue::GdtAnnotation { .. }
             | KclValue::Solid { .. }
             | KclValue::Sketch { .. }
             | KclValue::Helix { .. }
