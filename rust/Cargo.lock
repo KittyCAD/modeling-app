@@ -2820,8 +2820,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.144"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#229e9cdd32643adb0095a1c8a73a84fe64db6b5b"
+version = "0.2.145"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dfc08235cb273fb7b317f8f072dadfe523d809e4fca4dfcfee80490ef5965d74"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2848,7 +2849,8 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.12"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#229e9cdd32643adb0095a1c8a73a84fe64db6b5b"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fb9bb1a594541b878adc1c8dcb821328774bf7aa09b65b104a206b1291a5235c"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2859,7 +2861,8 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#229e9cdd32643adb0095a1c8a73a84fe64db6b5b"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fdb4ee23cc996aa2dca7584d410e8826e08161e1ac4335bb646d5ede33f37cb3"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -6748,8 +6751,3 @@ dependencies = [
  "cc",
  "pkg-config",
 ]
-
-[[patch.unused]]
-name = "kittycad-modeling-session"
-version = "0.1.5"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=ben/chamfer_angle#229e9cdd32643adb0095a1c8a73a84fe64db6b5b"

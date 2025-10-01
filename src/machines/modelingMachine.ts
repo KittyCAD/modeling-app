@@ -2623,15 +2623,12 @@ export const modelingMachine = setup({
         const ast = kclManager.ast
         let modifiedAst = structuredClone(ast)
         let focusPath: PathToNode[] = []
-        const { nodeToEdit, selection, length, angle, secondLength, swap } =
+        const { nodeToEdit, selection, length} =
           input
 
         const parameters: ChamferParameters = {
           type: EdgeTreatmentType.Chamfer,
           length,
-          angle,
-          secondLength,
-          swap,
         }
         const dependencies = {
           kclManager,

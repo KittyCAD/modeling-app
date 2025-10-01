@@ -457,42 +457,9 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
       return { reason: 'Error in length argument retrieval' }
     }
 
-    const angle = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs?.['angle']?.sourceRange[0],
-        operation.labeledArgs?.['angle']?.sourceRange[1]
-      )
-    )
-    if (err(angle) || 'errors' in angle) {
-      return { reason: 'Error in angle argument retrieval' }
-    }
-
-    const secondLength = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs?.['secondLength']?.sourceRange[0],
-        operation.labeledArgs?.['secondLength']?.sourceRange[1]
-      )
-    )
-    if (err(secondLength) || 'errors' in secondLength) {
-      return { reason: 'Error in secondLength argument retrieval' }
-    }
-
-    const swap = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs?.['swap']?.sourceRange[0],
-        operation.labeledArgs?.['swap']?.sourceRange[1]
-      )
-    )
-    if (err(swap) || 'errors' in swap) {
-      return { reason: 'Error in swap argument retrieval' }
-    }
-
     argDefaultValues = {
       selection,
       length,
-      angle,
-      secondLength,
-      swap,
       nodeToEdit,
     }
   } else if (isFillet) {
