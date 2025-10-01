@@ -96,10 +96,6 @@ const Home = () => {
         })
         .catch(reportRejection)
     }
-    console.log(
-      'pierre calling BillingTransition.Update from Home.tsx with token',
-      apiToken
-    )
     billingActor.send({ type: BillingTransition.Update, apiToken })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])

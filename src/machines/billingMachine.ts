@@ -56,9 +56,12 @@ export const billingMachine = setup({
           input.context.lastFetch &&
           Date.now() - input.context.lastFetch.getTime() < _TIME_1_SECOND
         ) {
+          return input.context
+        }
+
+        if (!input.event.apiToken) {
           console.log(
-            'pierre actor about to return early cause debouced',
-            JSON.stringify(input.context)
+            'BillingTransition.Update was skipped as the token is missing'
           )
           return input.context
         }
@@ -66,24 +69,9 @@ export const billingMachine = setup({
         const client = createKCClient(input.event.apiToken)
         const billing = await getBillingInfo(client)
         if (BillingError.from(billing)) {
-          console.log(
-            'pierre actor about to reject with error',
-            JSON.stringify(billing)
-          )
           return Promise.reject(billing)
         }
 
-        console.log(
-          'pierre actor about to return',
-          JSON.stringify({
-            credits: billing.credits,
-            allowance: billing.allowance,
-            isOrg: billing.isOrg,
-            hasSubscription: billing.hasSubscription,
-            lastFetch: new Date(),
-            error: undefined,
-          })
-        )
         return {
           credits: billing.credits,
           allowance: billing.allowance,
@@ -119,10 +107,7 @@ export const billingMachine = setup({
         onDone: [
           {
             target: BillingState.Waiting,
-            actions: assign(({ event }) => {
-              console.log('pierre onDone event', JSON.stringify(event))
-              return event.output
-            }),
+            actions: assign(({ event }) => event.output),
           },
         ],
         // If request failed for billing, go back into waiting state,
@@ -132,16 +117,14 @@ export const billingMachine = setup({
             target: BillingState.Waiting,
             // Yep, this is hard to follow. XState, why!
             actions: assign({
+              // Clear out the rest of the fields here
               credits: undefined,
               allowance: undefined,
               isOrg: undefined,
               hasSubscription: undefined,
               lastFetch: new Date(),
               // TODO: we shouldn't need this cast here
-              error: ({ event }) => {
-                console.log('pierre onError event', JSON.stringify(event))
-                return event.error as BillingError
-              },
+              error: ({ event }) => event.error as BillingError,
             }),
           },
         ],

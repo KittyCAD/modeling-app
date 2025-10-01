@@ -181,20 +181,10 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       )
 
       // TODO: Move elsewhere eventually, decouple from SystemIOActor
-      if (!!token) {
-        console.log(
-          'pierre calling BillingTransition.Update from hooks.ts with token',
-          token
-        )
-        billingActor.send({
-          type: BillingTransition.Update,
-          apiToken: token,
-        })
-      } else {
-        console.info(
-          'BillingTransition.Update was skipped as no token was provided'
-        )
-      }
+      billingActor.send({
+        type: BillingTransition.Update,
+        apiToken: token,
+      })
     })
 
     let lastId: number | undefined = undefined

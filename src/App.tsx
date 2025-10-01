@@ -140,10 +140,6 @@ export function App() {
     // Not too useful for regular flows but on modeling view refresh,
     // fetch the token count. The regular flow is the count is initialized
     // by the Projects view.
-    console.log(
-      'pierre calling BillingTransition.Update from App.tsx with token',
-      authToken
-    )
     billingActor.send({ type: BillingTransition.Update, apiToken: authToken })
 
     // Tell engineStream to wait for dependencies to start streaming.
