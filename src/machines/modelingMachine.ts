@@ -2665,7 +2665,6 @@ export const modelingMachine = setup({
             codeRef: edgeCutArtifact.codeRef,
           }
 
-          //TODO: (ben) need to deal with all the params
           const editResult = await editEdgeTreatment(
             ast,
             edgeTreatmentSelection,

@@ -438,7 +438,6 @@ function getPathToEdgeTreatmentParameterLiteral(
   return pathToEdgeTreatmentObj
 }
 
-//TODO: (ben) we need the optionals
 function getParameterNameAndValue(
   parameters: EdgeTreatmentParameters
 ): { parameterName: string; parameterValue: Expr } | Error {
@@ -451,8 +450,8 @@ function getParameterNameAndValue(
   } else if (parameters.type === EdgeTreatmentType.Chamfer) {
     const parameterValue =
       'variableName' in parameters.length
-        ? parameters.length?.variableIdentifierAst
-        : parameters.length?.valueAst
+        ? parameters.length.variableIdentifierAst
+        : parameters.length.valueAst
     return { parameterName: 'length', parameterValue }
   } else {
     return new Error('Unsupported edge treatment type')
