@@ -21,7 +21,7 @@ import {
   KCL_AXIS_Z,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type {
@@ -910,6 +910,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           const angleLength = angleLengthInfo({
             selectionRanges,
             angleOrLength: 'setLength',
+            kclManager,
           })
           if (err(angleLength)) return KCL_DEFAULT_LENGTH
           const { transforms } = angleLength

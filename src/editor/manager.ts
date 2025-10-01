@@ -27,13 +27,13 @@ import type { KclManager } from '@src/lang/KclSingleton'
 
 import { isTopLevelModule } from '@src/lang/util'
 import { markOnce } from '@src/lib/performance'
-import type { Selection, Selections } from '@src/lib/selections'
-import { processCodeMirrorRanges } from '@src/lib/selections'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import type {
   ModelingMachineEvent,
   modelingMachine,
 } from '@src/machines/modelingMachine'
+import { type processCodeMirrorRanges as processCodeMirrorRangesFn } from '@src/lib/selections'
 
 import { historyCompartment } from '@src/editor/compartments'
 import type CodeManager from '@src/lang/codeManager'
@@ -433,7 +433,10 @@ export default class EditorManager {
   // This is handled by the code mirror kcl plugin.
   // If you call this function from somewhere else, you best know wtf you are
   // doing. (jess)
-  handleOnViewUpdate(viewUpdate: ViewUpdate): void {
+  handleOnViewUpdate(
+    viewUpdate: ViewUpdate,
+    processCodeMirrorRanges: typeof processCodeMirrorRangesFn
+  ): void {
     if (!this._editorView) {
       this.setEditorView(viewUpdate.view)
     }
