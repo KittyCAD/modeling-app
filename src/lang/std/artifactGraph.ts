@@ -29,7 +29,7 @@ import type {
   SweepEdge,
   WallArtifact,
 } from '@src/lang/wasm'
-import type { Selection } from '@src/lib/selections'
+import type { Selection } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
@@ -689,6 +689,9 @@ const onlyConsecutivePaths = (
   originalPath: PathToNode,
   ast: Program
 ): PathToNode[] => {
+  if (!orderedNodePaths.length) {
+    return []
+  }
   const isExprSafe = (index: number, ast: Program): boolean => {
     // we allow expressions between profiles, but only basic math expressions 5 + 6 etc
     // because 5 + doSomeMath() might be okay, but we can't know if it's an abstraction on a stdlib

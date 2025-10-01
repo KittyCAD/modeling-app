@@ -28,7 +28,7 @@ jobs:
       - name: Commit generated files
         uses: KittyCAD/gha-actions-public/pr-commit@main
         with:
-          app-id: ${{ secrets.GH_ORG_APP_ID }}
-          private-key: ${{ secrets.GH_ORG_APP_PRIVATE_KEY }}
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           commit-message: "New machine-api types"
 

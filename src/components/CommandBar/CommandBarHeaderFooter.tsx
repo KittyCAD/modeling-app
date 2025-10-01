@@ -10,7 +10,7 @@ import type {
   KclCommandValue,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { roundOffWithUnits } from '@src/lib/utils'
@@ -176,6 +176,8 @@ function CommandBarHeaderFooter({
                             (argValue as KclCommandValue).valueCalculated,
                             4
                           )
+                        ) : arg.inputType === 'vector3d' ? (
+                          (argValue as KclCommandValue).valueCalculated
                         ) : arg.inputType === 'text' &&
                           !arg.valueSummary &&
                           typeof argValue === 'string' ? (

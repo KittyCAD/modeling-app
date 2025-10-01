@@ -4,7 +4,7 @@ import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
 import * as THREE from 'three'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const uuidv4 = v4
 
@@ -621,7 +621,7 @@ export async function engineStreamZoomToFit({
   engineCommandManager,
   padding,
 }: {
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   padding: number
 }) {
   // It makes sense to also call zoom to fit here, when a new file is
@@ -643,7 +643,7 @@ export async function engineViewIsometric({
   engineCommandManager,
   padding,
 }: {
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
   padding: number
 }) {
   /**
@@ -684,4 +684,14 @@ export function returnSelfOrGetHostNameFromURL(requestedEnvironment: string) {
     console.log('string is not a url, is that your intention?', e)
   }
   return environment
+}
+
+export function promiseFactory<T = void>() {
+  let resolve: (value: T | PromiseLike<T>) => void = () => {}
+  let reject: (value: T | PromiseLike<T>) => void = () => {}
+  const promise = new Promise<T>((_resolve, _reject) => {
+    resolve = _resolve
+    reject = _reject
+  })
+  return { promise, resolve, reject }
 }
