@@ -181,6 +181,10 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       )
 
       // TODO: Move elsewhere eventually, decouple from SystemIOActor
+      console.log(
+        'pierre calling BillingTransition.Update from hooks.ts with token',
+        token
+      )
       billingActor.send({
         type: BillingTransition.Update,
         apiToken: token,
