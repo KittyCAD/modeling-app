@@ -9,8 +9,8 @@ import {
 import type { KclExpression } from '@src/lib/commandTypes'
 import { rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import RustContext from '@src/lib/rustContext'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type RustContext from '@src/lib/rustContext'
 
 const DUMMY_VARIABLE_NAME = '__result__'
 
@@ -84,7 +84,7 @@ export async function getCalculatedKclExpressionValue(
 
     const arrayValues = varValue.value.map((item: KclValue) => {
       if (isNumberValueItem(item)) {
-        const formatted = formatNumberValue(item.value, item.ty)
+        const formatted = formatNumberValue(item.value, item.ty, instance)
         if (!err(formatted)) {
           return formatted
         }
@@ -106,7 +106,7 @@ export async function getCalculatedKclExpressionValue(
     if (!varValue || varValue.type !== 'Number') {
       return undefined
     }
-    const formatted = formatNumberValue(varValue.value, varValue.ty)
+    const formatted = formatNumberValue(varValue.value, varValue.ty, instance)
     if (err(formatted)) return undefined
     return formatted
   })()

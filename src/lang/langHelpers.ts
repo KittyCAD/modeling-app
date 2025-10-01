@@ -107,7 +107,6 @@ export async function executeAstMock({
       path,
       usePrevMemory
     )
-    console.log('huh', execState.variables)
 
     await rustContext.waitForAllEngineCommands()
     return {

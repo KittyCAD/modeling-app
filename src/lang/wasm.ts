@@ -465,10 +465,14 @@ export function formatNumberLiteral(
  */
 export function formatNumberValue(
   value: number,
-  numericType: NumericType
+  numericType: NumericType,
+  instance?: ModuleType
 ): string | Error {
   try {
-    return format_number_value(value, JSON.stringify(numericType))
+    const format_number_value_fn = instance
+      ? instance.format_number_value
+      : format_number_value
+    return format_number_value_fn(value, JSON.stringify(numericType))
   } catch (e) {
     return new Error(
       `Error formatting number value: value=${value}, numericType=${numericType}`,
