@@ -6,10 +6,10 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { useNavigate } from 'react-router-dom'
 
 import { CustomIcon } from '@src/components/CustomIcon'
+import { isDesktop } from '@src/lib/isDesktop'
 import { interactionMap } from '@src/lib/settings/initialKeybindings'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { useSettings } from '@src/lib/singletons'
-import { isDesktop } from '@src/lib/isDesktop'
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
 
@@ -78,6 +78,7 @@ export function SettingsSearchBar() {
   useEffect(() => {
     const results = fuse.search(query).map((result) => result.item)
     setSearchResults(query.length > 0 ? results : settingsAsSearchable)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [query])
 
   function handleSelection({ level, name }: SettingsSearchItem) {

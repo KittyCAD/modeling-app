@@ -6,6 +6,7 @@ description: Operations executed bad_units_in_annotation.kcl
   "rust/kcl-lib/tests/bad_units_in_annotation/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -113,6 +114,7 @@ description: Operations executed bad_units_in_annotation.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

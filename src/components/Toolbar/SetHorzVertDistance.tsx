@@ -9,15 +9,20 @@ import { createLiteral, createVariableDeclaration } from '@src/lang/create'
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { isSketchVariablesLinked } from '@src/lang/std/sketchConstraints'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import {
   getTransformInfos,
   isExprBinaryPart,
   transformSecondarySketchLinesTagFirst,
 } from '@src/lang/std/sketchcombos'
 import type { TransformInfo } from '@src/lang/std/stdTypes'
-import type { Expr, Program, VariableDeclarator } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
+import {
+  isPathToNode,
+  type Expr,
+  type Program,
+  type VariableDeclarator,
+} from '@src/lang/wasm'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { kclManager } from '@src/lib/singletons'
 import { cleanErrs, err } from '@src/lib/trap'
 
@@ -128,7 +133,7 @@ export async function applyConstraintHorzVertDistance({
   if (
     !variableName &&
     segName === tagInfo?.tag &&
-    Number(value) === valueUsedInTransform
+    value === valueUsedInTransform
   ) {
     return {
       modifiedAst,
@@ -161,8 +166,10 @@ export async function applyConstraintHorzVertDistance({
       )
       _modifiedAst.body = newBody
       Object.values(pathToNodeMap).forEach((pathToNode) => {
-        const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
-        pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+        if (isPathToNode(pathToNode)) {
+          const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
+          pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+        }
       })
       exprInsertIndex = newVariableInsertIndex
     }

@@ -54,12 +54,8 @@ description: Operations executed mike_stress_test.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -88,6 +84,7 @@ description: Operations executed mike_stress_test.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -195,6 +192,7 @@ description: Operations executed mike_stress_test.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

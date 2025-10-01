@@ -11,8 +11,8 @@ import type { Program } from '@src/lang/wasm'
 import { parse, recast } from '@src/lang/wasm'
 import { bracket } from '@src/lib/exampleKcl'
 import { isDesktop } from '@src/lib/isDesktop'
-import { editorManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
+import type EditorManager from '@src/editor/manager'
 
 const PERSIST_CODE_KEY = 'persistCode'
 
@@ -29,8 +29,11 @@ export default class CodeManager {
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
 
   public isBufferMode = false
+  public editorManager: EditorManager
 
-  constructor() {
+  constructor({ editorManager }: { editorManager: EditorManager }) {
+    this.editorManager = editorManager
+
     if (isDesktop()) {
       this.code = ''
       return
@@ -108,12 +111,12 @@ export default class CodeManager {
   updateCodeEditor(code: string, clearHistory?: boolean): void {
     this.code = code
     if (clearHistory) {
-      clearCodeMirrorHistory()
+      clearCodeMirrorHistory(this.editorManager)
     }
-    editorManager.dispatch({
+    this.editorManager.dispatch({
       changes: {
         from: 0,
-        to: editorManager.editorState?.doc.length || 0,
+        to: this.editorManager.editorState?.doc.length || 0,
         insert: code,
       },
       annotations: [
@@ -137,7 +140,8 @@ export default class CodeManager {
   async writeToFile() {
     if (this.isBufferMode) return
 
-    if (isDesktop()) {
+    if (window.electron) {
+      const electron = window.electron
       // Only write our buffer contents to file once per second. Any faster
       // and file-system watchers which read, will receive empty data during
       // writes.
@@ -152,7 +156,7 @@ export default class CodeManager {
 
           // Wait one event loop to give a chance for params to be set
           // Save the file to disk
-          window.electron
+          electron
             .writeFile(this._currentFilePath, this.code ?? '')
             .then(resolve)
             .catch((err: Error) => {
@@ -212,7 +216,7 @@ function safeLSSetItem(key: string, value: string) {
   localStorage?.setItem(key, value)
 }
 
-function clearCodeMirrorHistory() {
+function clearCodeMirrorHistory(editorManager: EditorManager) {
   // Clear history
   editorManager.dispatch({
     effects: [historyCompartment.reconfigure([])],

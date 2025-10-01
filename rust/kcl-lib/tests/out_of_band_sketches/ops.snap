@@ -88,12 +88,8 @@ description: Operations executed out_of_band_sketches.kcl
             "value": 10.14,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -115,6 +111,7 @@ description: Operations executed out_of_band_sketches.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -222,6 +219,7 @@ description: Operations executed out_of_band_sketches.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

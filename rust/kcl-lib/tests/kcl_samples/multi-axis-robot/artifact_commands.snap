@@ -61,8 +61,252 @@ description: Artifact commands multi-axis-robot.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -127.0,
-          "y": -127.0,
+          "x": -104.13999999999999,
+          "y": -76.19999999999999,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -114.3,
+            "y": -76.19999999999999
+          },
+          "radius": 10.16,
+          "start": {
+            "unit": "degrees",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 360.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "close_path",
+        "path_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_circular_pattern",
+        "entity_id": "[uuid]",
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "center": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "num_repetitions": 3,
+        "arc_degrees": 360.0,
+        "rotate_duplicates": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -66.03999999999999,
+          "y": -114.3,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": -76.19999999999999,
+            "y": -114.3
+          },
+          "radius": 10.16,
+          "start": {
+            "unit": "degrees",
+            "value": 0.0
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 360.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "close_path",
+        "path_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "entity_circular_pattern",
+        "entity_id": "[uuid]",
+        "axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "center": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "num_repetitions": 3,
+        "arc_degrees": 360.0,
+        "rotate_duplicates": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -139.7,
+          "y": -139.7,
           "z": 0.0
         }
       }
@@ -83,7 +327,7 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 254.0,
+            "x": 279.4,
             "y": 0.0,
             "z": 0.0
           },
@@ -100,8 +344,8 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000015553014349171386,
-            "y": 254.0,
+            "x": 0.000000000000017108315784088524,
+            "y": 279.4,
             "z": 0.0
           },
           "relative": true
@@ -117,7 +361,7 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -254.0,
+            "x": -279.4,
             "y": -0.0,
             "z": 0.0
           },
@@ -134,8 +378,8 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -127.0,
-            "y": -127.0,
+            "x": -139.7,
+            "y": -139.7,
             "z": 0.0
           },
           "relative": false
@@ -148,6 +392,150 @@ description: Artifact commands multi-axis-robot.kcl
       "command": {
         "type": "close_path",
         "path_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid2d_add_hole",
+        "object_id": "[uuid]",
+        "hole_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid2d_add_hole",
+        "object_id": "[uuid]",
+        "hole_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid2d_add_hole",
+        "object_id": "[uuid]",
+        "hole_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid2d_add_hole",
+        "object_id": "[uuid]",
+        "hole_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid2d_add_hole",
+        "object_id": "[uuid]",
+        "hole_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid2d_add_hole",
+        "object_id": "[uuid]",
+        "hole_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid2d_add_hole",
+        "object_id": "[uuid]",
+        "hole_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid2d_add_hole",
+        "object_id": "[uuid]",
+        "hole_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -602,699 +990,6 @@ description: Artifact commands multi-axis-robot.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -91.44,
-          "y": -63.5,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": -101.6,
-            "y": -63.5
-          },
-          "radius": 10.16,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 360.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
-        "axis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "center": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "num_repetitions": 3,
-        "arc_degrees": 360.0,
-        "rotate_duplicates": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": -12.7,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": -12.7,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": -12.7,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": -12.7,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "start_path"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -53.339999999999996,
-          "y": -101.6,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": -63.5,
-            "y": -101.6
-          },
-          "radius": 10.16,
-          "start": {
-            "unit": "degrees",
-            "value": 0.0
-          },
-          "end": {
-            "unit": "degrees",
-            "value": 360.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "entity_circular_pattern",
-        "entity_id": "[uuid]",
-        "axis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "center": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "num_repetitions": 3,
-        "arc_degrees": 360.0,
-        "rotate_duplicates": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": -12.7,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": -12.7,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": -12.7,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "enable_sketch_mode",
-        "entity_id": "[uuid]",
-        "ortho": false,
-        "animated": false,
-        "adjust_camera": false,
-        "planar_normal": null
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extrude",
-        "target": "[uuid]",
-        "distance": -12.7,
-        "faces": null,
-        "opposite": "None",
-        "extrude_method": "merge"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "sketch_mode_disable"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_bring_to_front",
-        "object_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.45882353,
-          "g": 0.25490198,
-          "b": 0.0627451,
-          "a": 100.0
-        },
-        "metalness": 0.9,
-        "roughness": 0.9,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.45882353,
-          "g": 0.25490198,
-          "b": 0.0627451,
-          "a": 100.0
-        },
-        "metalness": 0.9,
-        "roughness": 0.9,
-        "ambient_occlusion": 0.0
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_set_material_params_pbr",
-        "object_id": "[uuid]",
-        "color": {
-          "r": 0.45882353,
-          "g": 0.25490198,
-          "b": 0.0627451,
-          "a": 100.0
-        },
-        "metalness": 0.9,
-        "roughness": 0.9,
-        "ambient_occlusion": 0.0
       }
     },
     {
@@ -3904,7 +3599,7 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": -12.7,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "new"
       }
     },
     {
@@ -4033,7 +3728,7 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": -12.7,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "new"
       }
     },
     {
@@ -4246,8 +3941,8 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 44.40769344931358,
-            "y": 1.9388817683891852,
+            "x": 43.774704621392644,
+            "y": -7.718661497295053,
             "z": 0.0
           },
           "relative": true
@@ -4263,17 +3958,17 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 372.4035465045796,
-            "y": 829.4732759760165
+            "x": 364.6012829591475,
+            "y": 809.0861548539731
           },
           "radius": 59.266666666666666,
           "start": {
             "unit": "degrees",
-            "value": 152.5
+            "value": 140.0
           },
           "end": {
             "unit": "degrees",
-            "value": 32.5
+            "value": 20.0
           },
           "relative": false
         }
@@ -4288,8 +3983,8 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 29.60512896620905,
-            "y": 1.2925878455927902,
+            "x": 29.183136414261764,
+            "y": -5.145774331530036,
             "z": 0.0
           },
           "relative": true
@@ -4305,8 +4000,8 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -35.60619062643242,
-            "y": 36.233122817032424,
+            "x": -26.9198986230468,
+            "y": 43.08084328474644,
             "z": 0.0
           },
           "relative": true
@@ -4322,8 +4017,8 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -48.44882109800992,
-            "y": 15.275854614817085,
+            "x": -43.994090512249485,
+            "y": 25.399999999999995,
             "z": 0.0
           },
           "relative": true
@@ -4339,8 +4034,8 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -54.75526029350227,
-            "y": -22.68037142483765,
+            "x": -58.36627282852353,
+            "y": -10.29154866306008,
             "z": 0.0
           },
           "relative": true
@@ -4393,7 +4088,7 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": -38.099999999999994,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "new"
       }
     },
     {
@@ -4477,8 +4172,8 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 41.06644522012669,
-            "y": -17.01027856862824,
+            "x": 43.774704621392644,
+            "y": -7.718661497295053,
             "z": 0.0
           },
           "relative": true
@@ -4494,17 +4189,17 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 375.251755013118,
-            "y": 845.6262691089705
+            "x": 374.8928316222076,
+            "y": 867.4524276824965
           },
           "radius": 59.266666666666666,
           "start": {
             "unit": "degrees",
-            "value": 187.5
+            "value": 200.0
           },
           "end": {
             "unit": "degrees",
-            "value": 307.5
+            "value": 320.0
           },
           "relative": false
         }
@@ -4519,8 +4214,8 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 27.37763014675113,
-            "y": -11.340185712418826,
+            "x": 29.183136414261764,
+            "y": -5.145774331530036,
             "z": 0.0
           },
           "relative": true
@@ -4536,8 +4231,8 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -45.85133244497292,
-            "y": -21.86996371786139,
+            "x": -40.03094628322147,
+            "y": -31.275602946543444,
             "z": 0.0
           },
           "relative": true
@@ -4553,8 +4248,8 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -50.751649656358374,
-            "y": 2.21586487815906,
+            "x": -50.02823385302016,
+            "y": -8.821327425480057,
             "z": 0.0
           },
           "relative": true
@@ -4570,8 +4265,8 @@ description: Artifact commands multi-axis-robot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -43.69597016161335,
-            "y": 40.03997963802146,
+            "x": -51.32643893095773,
+            "y": 29.63333333333334,
             "z": 0.0
           },
           "relative": true
@@ -4624,7 +4319,7 @@ description: Artifact commands multi-axis-robot.kcl
         "distance": -38.099999999999994,
         "faces": null,
         "opposite": "None",
-        "extrude_method": "merge"
+        "extrude_method": "new"
       }
     },
     {
@@ -4658,6 +4353,57 @@ description: Artifact commands multi-axis-robot.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_set_material_params_pbr",
+        "object_id": "[uuid]",
+        "color": {
+          "r": 0.39607844,
+          "g": 0.44705883,
+          "b": 0.7019608,
+          "a": 100.0
+        },
+        "metalness": 0.9,
+        "roughness": 0.9,
+        "ambient_occlusion": 0.0
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_set_material_params_pbr",
+        "object_id": "[uuid]",
+        "color": {
+          "r": 0.39607844,
+          "g": 0.44705883,
+          "b": 0.7019608,
+          "a": 100.0
+        },
+        "metalness": 0.9,
+        "roughness": 0.9,
+        "ambient_occlusion": 0.0
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_set_material_params_pbr",
+        "object_id": "[uuid]",
+        "color": {
+          "r": 0.39607844,
+          "g": 0.44705883,
+          "b": 0.7019608,
+          "a": 100.0
+        },
+        "metalness": 0.9,
+        "roughness": 0.9,
+        "ambient_occlusion": 0.0
       }
     },
     {
@@ -5940,9 +5686,11 @@ description: Artifact commands multi-axis-robot.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

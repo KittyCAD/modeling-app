@@ -12,12 +12,8 @@ description: Operations executed washer.kcl
         "value": 0.203,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed washer.kcl
         "value": 0.438,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed washer.kcl
         "value": 0.038,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -111,12 +99,8 @@ description: Operations executed washer.kcl
         "value": 0.032,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -144,12 +128,8 @@ description: Operations executed washer.kcl
         "value": 0.024,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -262,12 +242,8 @@ description: Operations executed washer.kcl
             "value": 0.032,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -292,6 +268,7 @@ description: Operations executed washer.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -399,6 +376,7 @@ description: Operations executed washer.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

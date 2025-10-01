@@ -18,12 +18,8 @@ description: Operations executed cycloidal-gear.kcl
               "value": 1.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -34,12 +30,8 @@ description: Operations executed cycloidal-gear.kcl
               "value": 0.3,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -49,9 +41,9 @@ description: Operations executed cycloidal-gear.kcl
               "type": "Number",
               "value": -80.0,
               "ty": {
+                "degrees": null,
                 "type": "Known",
-                "type": "Angle",
-                "type": "Degrees"
+                "type": "Angle"
               }
             },
             "sourceRange": []
@@ -62,12 +54,8 @@ description: Operations executed cycloidal-gear.kcl
               "value": 0.297,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -99,12 +87,8 @@ description: Operations executed cycloidal-gear.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -154,9 +138,9 @@ description: Operations executed cycloidal-gear.kcl
         "type": "Number",
         "value": -0.0,
         "ty": {
+          "degrees": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Degrees"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -219,12 +203,8 @@ description: Operations executed cycloidal-gear.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -420,12 +400,8 @@ description: Operations executed cycloidal-gear.kcl
             "value": 0.75,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -475,9 +451,9 @@ description: Operations executed cycloidal-gear.kcl
         "type": "Number",
         "value": -40.0,
         "ty": {
+          "degrees": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Degrees"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -540,12 +516,8 @@ description: Operations executed cycloidal-gear.kcl
             "value": 0.75,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -741,12 +713,8 @@ description: Operations executed cycloidal-gear.kcl
             "value": 1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -796,9 +764,9 @@ description: Operations executed cycloidal-gear.kcl
         "type": "Number",
         "value": -80.0,
         "ty": {
+          "degrees": null,
           "type": "Known",
-          "type": "Angle",
-          "type": "Degrees"
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -861,12 +829,8 @@ description: Operations executed cycloidal-gear.kcl
             "value": 1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1115,6 +1079,7 @@ description: Operations executed cycloidal-gear.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -1222,6 +1187,7 @@ description: Operations executed cycloidal-gear.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

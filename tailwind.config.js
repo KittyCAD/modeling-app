@@ -80,6 +80,7 @@ module.exports = {
           return `.${e(`pressed${separator}${className}`)}[aria-pressed='true']`
         })
       })
+      addVariant('light', 'body:not(.dark) &')
     }),
   ],
 }

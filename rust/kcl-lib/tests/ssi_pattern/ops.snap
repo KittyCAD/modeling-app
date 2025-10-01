@@ -54,12 +54,8 @@ description: Operations executed ssi_pattern.kcl
             "value": 50.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -321,12 +317,8 @@ description: Operations executed ssi_pattern.kcl
             "value": -40.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -355,6 +347,7 @@ description: Operations executed ssi_pattern.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -462,6 +455,7 @@ description: Operations executed ssi_pattern.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

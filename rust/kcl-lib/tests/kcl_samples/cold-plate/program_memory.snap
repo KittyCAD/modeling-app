@@ -8,12 +8,8 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "brazedCap": {
@@ -86,9 +82,7 @@ description: Variables in memory after executing cold-plate.kcl
                   1.25
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -105,9 +99,7 @@ description: Variables in memory after executing cold-plate.kcl
                   0.625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -136,9 +128,7 @@ description: Variables in memory after executing cold-plate.kcl
                   0.625
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -155,9 +145,7 @@ description: Variables in memory after executing cold-plate.kcl
                   1.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -174,9 +162,7 @@ description: Variables in memory after executing cold-plate.kcl
                   1.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -186,9 +172,7 @@ description: Variables in memory after executing cold-plate.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "YZ",
@@ -196,25 +180,19 @@ description: Variables in memory after executing cold-plate.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -226,9 +204,7 @@ description: Variables in memory after executing cold-plate.kcl
                 2.6875,
                 1.25
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -237,16 +213,11 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -317,9 +288,7 @@ description: Variables in memory after executing cold-plate.kcl
                   1.25
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -336,9 +305,7 @@ description: Variables in memory after executing cold-plate.kcl
                   0.625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -367,9 +334,7 @@ description: Variables in memory after executing cold-plate.kcl
                   0.625
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -386,9 +351,7 @@ description: Variables in memory after executing cold-plate.kcl
                   1.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -405,9 +368,7 @@ description: Variables in memory after executing cold-plate.kcl
                   1.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -417,9 +378,7 @@ description: Variables in memory after executing cold-plate.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "YZ",
@@ -427,25 +386,19 @@ description: Variables in memory after executing cold-plate.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -457,9 +410,7 @@ description: Variables in memory after executing cold-plate.kcl
                 2.6875,
                 1.25
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -468,16 +419,11 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -548,9 +494,7 @@ description: Variables in memory after executing cold-plate.kcl
                   1.25
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -567,9 +511,7 @@ description: Variables in memory after executing cold-plate.kcl
                   0.625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -598,9 +540,7 @@ description: Variables in memory after executing cold-plate.kcl
                   0.625
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -617,9 +557,7 @@ description: Variables in memory after executing cold-plate.kcl
                   1.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -636,9 +574,7 @@ description: Variables in memory after executing cold-plate.kcl
                   1.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -648,9 +584,7 @@ description: Variables in memory after executing cold-plate.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "YZ",
@@ -658,25 +592,19 @@ description: Variables in memory after executing cold-plate.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -688,9 +616,7 @@ description: Variables in memory after executing cold-plate.kcl
                 2.6875,
                 1.25
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -699,16 +625,11 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       },
@@ -779,9 +700,7 @@ description: Variables in memory after executing cold-plate.kcl
                   1.25
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -798,9 +717,7 @@ description: Variables in memory after executing cold-plate.kcl
                   0.625
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -829,9 +746,7 @@ description: Variables in memory after executing cold-plate.kcl
                   0.625
                 ],
                 "type": "ArcThreePoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -848,9 +763,7 @@ description: Variables in memory after executing cold-plate.kcl
                   1.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -867,9 +780,7 @@ description: Variables in memory after executing cold-plate.kcl
                   1.25
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -879,9 +790,7 @@ description: Variables in memory after executing cold-plate.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "YZ",
@@ -889,25 +798,19 @@ description: Variables in memory after executing cold-plate.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -919,9 +822,7 @@ description: Variables in memory after executing cold-plate.kcl
                 2.6875,
                 1.25
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -930,16 +831,11 @@ description: Variables in memory after executing cold-plate.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 10.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         }
       }
@@ -985,10 +881,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 856,
-            "end": 862,
+            "commentStart": 859,
+            "end": 865,
             "moduleId": 0,
-            "start": 856,
+            "start": 859,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -999,10 +895,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 905,
-            "end": 911,
+            "commentStart": 908,
+            "end": 914,
             "moduleId": 0,
-            "start": 905,
+            "start": 908,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -1020,10 +916,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1012,
-            "end": 1018,
+            "commentStart": 1018,
+            "end": 1024,
             "moduleId": 0,
-            "start": 1012,
+            "start": 1018,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -1048,10 +944,10 @@ description: Variables in memory after executing cold-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1189,
-            "end": 1195,
+            "commentStart": 1201,
+            "end": 1207,
             "moduleId": 0,
-            "start": 1189,
+            "start": 1201,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1098,9 +994,7 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1117,9 +1011,7 @@ description: Variables in memory after executing cold-plate.kcl
               0.625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1141,9 +1033,7 @@ description: Variables in memory after executing cold-plate.kcl
               0.625
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1160,9 +1050,7 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1174,10 +1062,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "tag": {
-              "commentStart": 856,
-              "end": 862,
+              "commentStart": 859,
+              "end": 865,
               "moduleId": 0,
-              "start": 856,
+              "start": 859,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -1186,9 +1074,7 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1200,10 +1086,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "tag": {
-              "commentStart": 905,
-              "end": 911,
+              "commentStart": 908,
+              "end": 914,
               "moduleId": 0,
-              "start": 905,
+              "start": 908,
               "type": "TagDeclarator",
               "value": "seg09"
             },
@@ -1212,9 +1098,7 @@ description: Variables in memory after executing cold-plate.kcl
               0.625
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1236,9 +1120,7 @@ description: Variables in memory after executing cold-plate.kcl
               0.625
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1250,10 +1132,10 @@ description: Variables in memory after executing cold-plate.kcl
               0.625
             ],
             "tag": {
-              "commentStart": 1012,
-              "end": 1018,
+              "commentStart": 1018,
+              "end": 1024,
               "moduleId": 0,
-              "start": 1012,
+              "start": 1018,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -1262,9 +1144,7 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1281,9 +1161,7 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1300,9 +1178,7 @@ description: Variables in memory after executing cold-plate.kcl
               1.047006236503076
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1319,10 +1195,10 @@ description: Variables in memory after executing cold-plate.kcl
               1.047006236503076
             ],
             "tag": {
-              "commentStart": 1189,
-              "end": 1195,
+              "commentStart": 1201,
+              "end": 1207,
               "moduleId": 0,
-              "start": 1189,
+              "start": 1201,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -1331,9 +1207,7 @@ description: Variables in memory after executing cold-plate.kcl
               0.5626006454679922
             ],
             "type": "TangentialArc",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1350,9 +1224,7 @@ description: Variables in memory after executing cold-plate.kcl
               0.5626006454679943
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1369,9 +1241,7 @@ description: Variables in memory after executing cold-plate.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1388,9 +1258,7 @@ description: Variables in memory after executing cold-plate.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -1407,9 +1275,7 @@ description: Variables in memory after executing cold-plate.kcl
               1.25
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -1419,9 +1285,7 @@ description: Variables in memory after executing cold-plate.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -1429,25 +1293,19 @@ description: Variables in memory after executing cold-plate.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1459,9 +1317,7 @@ description: Variables in memory after executing cold-plate.kcl
             0.0,
             1.25
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1488,16 +1344,11 @@ description: Variables in memory after executing cold-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1517,10 +1368,10 @@ description: Variables in memory after executing cold-plate.kcl
             -3.0
           ],
           "tag": {
-            "commentStart": 1594,
-            "end": 1600,
+            "commentStart": 1606,
+            "end": 1612,
             "moduleId": 0,
-            "start": 1594,
+            "start": 1606,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -1529,9 +1380,7 @@ description: Variables in memory after executing cold-plate.kcl
             -3.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1548,10 +1397,10 @@ description: Variables in memory after executing cold-plate.kcl
             -3.0
           ],
           "tag": {
-            "commentStart": 1661,
-            "end": 1667,
+            "commentStart": 1676,
+            "end": 1682,
             "moduleId": 0,
-            "start": 1661,
+            "start": 1676,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1560,9 +1409,7 @@ description: Variables in memory after executing cold-plate.kcl
             -1.0
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1574,10 +1421,10 @@ description: Variables in memory after executing cold-plate.kcl
             -1.0
           ],
           "tag": {
-            "commentStart": 1736,
-            "end": 1742,
+            "commentStart": 1751,
+            "end": 1757,
             "moduleId": 0,
-            "start": 1736,
+            "start": 1751,
             "type": "TagDeclarator",
             "value": "seg06"
           },
@@ -1586,9 +1433,7 @@ description: Variables in memory after executing cold-plate.kcl
             -0.9999999999999984
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1605,10 +1450,10 @@ description: Variables in memory after executing cold-plate.kcl
             -0.9999999999999984
           ],
           "tag": {
-            "commentStart": 1804,
-            "end": 1810,
+            "commentStart": 1822,
+            "end": 1828,
             "moduleId": 0,
-            "start": 1804,
+            "start": 1822,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -1617,9 +1462,7 @@ description: Variables in memory after executing cold-plate.kcl
             1.0000000000000016
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1636,9 +1479,7 @@ description: Variables in memory after executing cold-plate.kcl
             0.9999999999999998
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1655,10 +1496,10 @@ description: Variables in memory after executing cold-plate.kcl
             0.9999999999999998
           ],
           "tag": {
-            "commentStart": 1940,
-            "end": 1946,
+            "commentStart": 1961,
+            "end": 1967,
             "moduleId": 0,
-            "start": 1940,
+            "start": 1961,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -1667,9 +1508,7 @@ description: Variables in memory after executing cold-plate.kcl
             3.0
           ],
           "type": "TangentialArc",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
         {
           "__geoMeta": {
@@ -1686,9 +1525,7 @@ description: Variables in memory after executing cold-plate.kcl
             3.0000000000000018
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1698,9 +1535,7 @@ description: Variables in memory after executing cold-plate.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 15.875,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "Custom",
@@ -1708,25 +1543,19 @@ description: Variables in memory after executing cold-plate.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -1738,9 +1567,7 @@ description: Variables in memory after executing cold-plate.kcl
           -7.35,
           -3.0
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1771,9 +1598,7 @@ description: Variables in memory after executing cold-plate.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "isClosed": false
     }
   },
@@ -1827,12 +1652,8 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 0.625,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "tubeWall": {
@@ -1875,9 +1696,7 @@ description: Variables in memory after executing cold-plate.kcl
               0.625
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "innerPaths": [
@@ -1902,9 +1721,7 @@ description: Variables in memory after executing cold-plate.kcl
               0.625
             ],
             "type": "Circle",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -1914,9 +1731,7 @@ description: Variables in memory after executing cold-plate.kcl
             "x": -186.68999999999997,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1924,25 +1739,19 @@ description: Variables in memory after executing cold-plate.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1954,9 +1763,7 @@ description: Variables in memory after executing cold-plate.kcl
             -2.6875,
             0.625
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1965,16 +1772,11 @@ description: Variables in memory after executing cold-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": null,
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -1983,12 +1785,8 @@ description: Variables in memory after executing cold-plate.kcl
     "value": 0.08,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   }
 }

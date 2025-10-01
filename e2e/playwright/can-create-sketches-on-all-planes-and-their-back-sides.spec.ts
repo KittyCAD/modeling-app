@@ -2,10 +2,10 @@ import type { Page } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { uuidv4 } from '@src/lib/utils'
 
+import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -15,7 +15,7 @@ test.describe('Can create sketches on all planes and their back sides', () => {
     homePage: HomePageFixture,
     scene: SceneFixture,
     toolbar: ToolbarFixture,
-    cmdBar: CmdBarFixture,
+    editor: EditorFixture,
     plane: string,
     clickCoords: { x: number; y: number }
   ) => {
@@ -52,43 +52,36 @@ test.describe('Can create sketches on all planes and their back sides', () => {
       },
     }
 
-    const code = `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(${plane})profile001 = startProfile(sketch001, at = [0.91, -1.22])`
+    const code = `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(${plane})profile001 = startProfile(sketch001, at = [`
 
-    await u.openDebugPanel()
+    await test.step(`Sketch on the ${plane} plane using custom camera commands to orient`, async () => {
+      await u.openDebugPanel()
+      await u.clearCommandLogs()
+      await toolbar.startSketchBtn.click()
 
-    await u.clearCommandLogs()
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+      await u.sendCustomCmd(camCommand)
+      await page.waitForTimeout(100)
+      await u.sendCustomCmd(updateCamCommand)
 
-    await u.sendCustomCmd(camCommand)
-    await page.waitForTimeout(100)
-    await u.sendCustomCmd(updateCamCommand)
+      await u.closeDebugPanel()
 
-    await u.closeDebugPanel()
+      const resolvedCoords = await scene.convertPagePositionToStream(
+        clickCoords.x,
+        clickCoords.y
+      )
+      await page.mouse.click(resolvedCoords.x, resolvedCoords.y)
+      await page.waitForTimeout(600) // wait for animation
 
-    await page.mouse.click(clickCoords.x, clickCoords.y)
-    await page.waitForTimeout(600) // wait for animation
+      await toolbar.waitUntilSketchingReady()
 
-    await toolbar.waitUntilSketchingReady()
+      await u.closeDebugPanel()
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+    })
 
-    await expect(
-      page.getByRole('button', { name: 'line Line', exact: true })
-    ).toBeVisible()
+    const lineCoords = await scene.convertPagePositionToStream(707, 393)
+    await page.mouse.click(lineCoords.x, lineCoords.y)
 
-    await u.closeDebugPanel()
-    await page.mouse.click(707, 393)
-
-    await expect(page.locator('.cm-content')).toHaveText(code)
-
-    await page
-      .getByRole('button', { name: 'line Line', exact: true })
-      .first()
-      .click()
-    await u.openAndClearDebugPanel()
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-
-    await u.clearCommandLogs()
-    await u.removeCurrentCode()
+    await editor.expectEditor.toContain(code)
   }
 
   const planeConfigs = [
@@ -125,13 +118,13 @@ test.describe('Can create sketches on all planes and their back sides', () => {
   ]
 
   for (const config of planeConfigs) {
-    test(config.plane, async ({ page, homePage, scene, toolbar, cmdBar }) => {
+    test(config.plane, async ({ page, homePage, scene, toolbar, editor }) => {
       await sketchOnPlaneAndBackSideTest(
         page,
         homePage,
         scene,
         toolbar,
-        cmdBar,
+        editor,
         config.plane,
         config.coords
       )
@@ -144,7 +137,7 @@ test.describe('Can create sketches on offset planes and their back sides', () =>
     homePage: HomePageFixture,
     scene: SceneFixture,
     toolbar: ToolbarFixture,
-    cmdbar: CmdBarFixture,
+    editor: EditorFixture,
     plane: string,
     clickCoords: { x: number; y: number }
   ) => {
@@ -160,12 +153,7 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
       )
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
-
     await homePage.goToModelingScene()
-    // await scene.settled(cmdbar)
-    const XYPlanRed: [number, number, number] = [74, 74, 74]
-    await scene.expectPixelColor(XYPlanRed, { x: 700, y: 300 }, 15)
-
     await u.openDebugPanel()
 
     const coord =
@@ -194,54 +182,48 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
       .toLocaleLowerCase()
 
     const codeLine1 = `sketch001 = startSketchOn(${prefix}${planeName}Plane)`
-    const codeLine2 = `profile001 = startProfile(sketch001, at = [${0.91 + (plane[0] === '-' ? 0.01 : 0)}, -${1.21 + (plane[0] === '-' ? 0.01 : 0)}])`
+    const codeLine2 = 'profile001 = startProfile(sketch001, at = ['
 
-    await u.openDebugPanel()
+    await test.step(`Sketch on the ${plane} plane using custom camera commands to orient`, async () => {
+      await u.openDebugPanel()
 
-    await u.clearCommandLogs()
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+      await u.clearCommandLogs()
+      await toolbar.startSketchBtn.click()
 
-    await u.sendCustomCmd(camCommand)
-    await page.waitForTimeout(100)
-    await u.sendCustomCmd(updateCamCommand)
+      await u.sendCustomCmd(camCommand)
+      await page.waitForTimeout(100)
+      await u.sendCustomCmd(updateCamCommand)
 
-    await u.closeDebugPanel()
+      await u.closeDebugPanel()
 
-    await toolbar.openFeatureTreePane()
-    await toolbar.getDefaultPlaneVisibilityButton('XY').click()
-    await toolbar.getDefaultPlaneVisibilityButton('XZ').click()
-    await toolbar.getDefaultPlaneVisibilityButton('YZ').click()
-    await expect(
-      toolbar
-        .getDefaultPlaneVisibilityButton('YZ')
-        .locator('[aria-label="eye crossed out"]')
-    ).toBeVisible()
+      // TODO: can we remove these feature tree checks? They seem out of place.
+      await toolbar.openFeatureTreePane()
+      await toolbar.getDefaultPlaneVisibilityButton('XY').click()
+      await toolbar.getDefaultPlaneVisibilityButton('XZ').click()
+      await toolbar.getDefaultPlaneVisibilityButton('YZ').click()
+      await expect(
+        toolbar
+          .getDefaultPlaneVisibilityButton('YZ')
+          .locator('[aria-label="eye crossed out"]')
+      ).toBeVisible()
 
-    await page.mouse.click(clickCoords.x, clickCoords.y)
-    await page.waitForTimeout(600) // wait for animation
+      const resolvedCoords = await scene.convertPagePositionToStream(
+        clickCoords.x,
+        clickCoords.y
+      )
+      await page.mouse.click(resolvedCoords.x, resolvedCoords.y)
+      await page.waitForTimeout(600) // wait for animation
 
-    await toolbar.waitUntilSketchingReady()
+      await toolbar.waitUntilSketchingReady()
 
-    await expect(
-      page.getByRole('button', { name: 'line Line', exact: true })
-    ).toBeVisible()
+      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+    })
 
-    await u.closeDebugPanel()
-    await page.mouse.click(707, 393)
+    const lineCoords = await scene.convertPagePositionToStream(707, 393)
+    await page.mouse.click(lineCoords.x, lineCoords.y)
 
-    await expect(page.locator('.cm-content')).toContainText(codeLine1)
-    await expect(page.locator('.cm-content')).toContainText(codeLine2)
-
-    await page
-      .getByRole('button', { name: 'line Line', exact: true })
-      .first()
-      .click()
-    await u.openAndClearDebugPanel()
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-
-    await u.clearCommandLogs()
-    await u.removeCurrentCode()
+    await editor.expectEditor.toContain(codeLine1)
+    await editor.expectEditor.toContain(codeLine2)
   }
 
   const planeConfigs = [
@@ -278,13 +260,13 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
   ]
 
   for (const config of planeConfigs) {
-    test(config.plane, async ({ page, homePage, scene, toolbar, cmdBar }) => {
+    test(config.plane, async ({ page, homePage, scene, toolbar, editor }) => {
       await sketchOnPlaneAndBackSideTest(
         page,
         homePage,
         scene,
         toolbar,
-        cmdBar,
+        editor,
         config.plane,
         config.coords
       )

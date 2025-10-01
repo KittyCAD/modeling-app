@@ -19,16 +19,16 @@ jobs:
     name: generate-website-docs
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/create-github-app-token@v2
         id: app-token
         with:
           # required
-          app-id: ${{ secrets.GH_ORG_APP_ID }}
-          private-key: ${{ secrets.GH_ORG_APP_PRIVATE_KEY }}
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
       # Checkout the docs repo since we will want to update the files there.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           repository: 'kittycad/documentation'
           path: 'documentation'
@@ -40,9 +40,11 @@ jobs:
           # cleanup old
           rm -rf documentation/content/pages/docs/kcl-std
           rm -rf documentation/content/pages/docs/kcl-lang
+          rm -rf documentation/content/kcl-test-outputs
           # move new
           mv -f docs/kcl-std documentation/content/pages/docs
           mv -f docs/kcl-lang documentation/content/pages/docs
+          mv -f rust/kcl-lib/tests/outputs documentation/content/kcl-test-outputs
           # We don't need the README
           rm documentation/content/pages/docs/kcl-std/README.md
       - name: move kcl-samples

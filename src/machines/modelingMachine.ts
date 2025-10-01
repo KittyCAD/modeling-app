@@ -1,22 +1,38 @@
 import toast from 'react-hot-toast'
 import { Mesh, Vector2, Vector3 } from 'three'
-import { assign, fromPromise, setup } from 'xstate'
+import { assign, fromPromise, sendTo, setup } from 'xstate'
+
+import type {
+  SetSelections,
+  MouseState,
+  SegmentOverlayPayload,
+  SketchDetails,
+  SketchDetailsUpdate,
+  ExtrudeFacePlane,
+  DefaultPlane,
+  OffsetPlane,
+  Store,
+  SketchTool,
+  PlaneVisibilityMap,
+  ModelingMachineContext,
+} from '@src/machines/modelingSharedTypes'
+import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import { deleteSegment } from '@src/clientSideScene/deleteSegment'
+import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { Plane } from '@rust/kcl-lib/bindings/Plane'
+import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
+import { deleteSegmentOrProfile } from '@src/clientSideScene/deleteSegment'
 import {
   orthoScale,
   quaternionFromUpNForward,
 } from '@src/clientSideScene/helpers'
-import type { Setting } from '@src/lib/settings/initialSettings'
-import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import { DRAFT_DASHED_LINE } from '@src/clientSideScene/sceneConstants'
+import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
 import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
-import type { ModelingMachineContext } from '@src/components/ModelingMachineProvider'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
 import {
   applyConstraintEqualAngle,
   equalAngleInfo,
@@ -29,6 +45,7 @@ import {
   applyConstraintHorzVert,
   horzVertInfo,
 } from '@src/components/Toolbar/HorzVert'
+import { intersectInfo } from '@src/components/Toolbar/Intersect'
 import {
   applyRemoveConstrainingValues,
   removeConstrainingValuesInfo,
@@ -45,7 +62,6 @@ import {
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
-  addOffsetPlane,
   insertNamedConstant,
   replaceValueAtNodePath,
 } from '@src/lang/modifyAst'
@@ -55,9 +71,20 @@ import type {
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   EdgeTreatmentType,
-  modifyAstWithEdgeTreatmentAndTag,
   editEdgeTreatment,
+  modifyAstWithEdgeTreatmentAndTag,
 } from '@src/lang/modifyAst/addEdgeTreatment'
+import {
+  addIntersect,
+  addSubtract,
+  addUnion,
+} from '@src/lang/modifyAst/boolean'
+import {
+  deleteSelectionPromise,
+  deletionErrorMessage,
+} from '@src/lang/modifyAst/deleteSelection'
+import { addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
+import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
   addExtrude,
   addLoft,
@@ -65,39 +92,39 @@ import {
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
 import {
-  addSubtract,
-  addUnion,
-  addIntersect,
-} from '@src/lang/modifyAst/boolean'
+  addPatternCircular3D,
+  addPatternLinear3D,
+} from '@src/lang/modifyAst/pattern3D'
 import {
-  deleteSelectionPromise,
-  deletionErrorMessage,
-} from '@src/lang/modifyAst/deleteSelection'
-import {
-  addTranslate,
+  addAppearance,
+  addClone,
   addRotate,
   addScale,
-  addClone,
-  addAppearance,
+  addTranslate,
 } from '@src/lang/modifyAst/transforms'
 import {
+  artifactIsPlaneWithPaths,
   getNodeFromPath,
+  isCursorInFunctionDefinition,
   isNodeSafeToReplacePath,
   stringifyPathToNode,
   updatePathToNodesAfterEdit,
-  artifactIsPlaneWithPaths,
-  isCursorInFunctionDefinition,
-  getSelectedPlaneAsNode,
 } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getFaceCodeRef,
   getPathsFromArtifact,
   getPathsFromPlaneArtifact,
   getPlaneFromArtifact,
 } from '@src/lang/std/artifactGraph'
-import type { Coords2d } from '@src/lang/std/sketch'
+import {
+  crossProduct,
+  isCursorInSketchCommandRange,
+  updateSketchDetailsNodePaths,
+} from '@src/lang/util'
 import type {
   Artifact,
+  ArtifactId,
   KclValue,
   PathToNode,
   Program,
@@ -107,15 +134,15 @@ import type {
 import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import type {
-  Axis,
-  DefaultPlaneSelection,
-  Selection,
-  Selections,
+import { EXECUTION_TYPE_REAL, VALID_PANE_IDS } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import {
+  getEventForSegmentSelection,
+  handleSelectionBatch,
+  updateExtraSegments,
+  updateSelections,
 } from '@src/lib/selections'
-import { handleSelectionBatch, updateSelections } from '@src/lib/selections'
 import {
   codeManager,
   editorManager,
@@ -124,183 +151,13 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { isDesktop } from '@src/lib/isDesktop'
-import {
-  crossProduct,
-  isCursorInSketchCommandRange,
-  updateSketchDetailsNodePaths,
-} from '@src/lang/util'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
-import type { Plane } from '@rust/kcl-lib/bindings/Plane'
-import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
-import { addShell } from '@src/lang/modifyAst/faces'
-import { intersectInfo } from '@src/components/Toolbar/Intersect'
-import { addHelix } from '@src/lang/modifyAst/geometry'
-
-export type SetSelections =
-  | {
-      selectionType: 'singleCodeCursor'
-      selection?: Selection
-      scrollIntoView?: boolean
-    }
-  | {
-      selectionType: 'axisSelection'
-      selection: Axis
-    }
-  | {
-      selectionType: 'defaultPlaneSelection'
-      selection: DefaultPlaneSelection
-    }
-  | {
-      selectionType: 'completeSelection'
-      selection: Selections
-      updatedSketchEntryNodePath?: PathToNode
-      updatedSketchNodePaths?: PathToNode[]
-      updatedPlaneNodePath?: PathToNode
-    }
-  | {
-      selectionType: 'mirrorCodeMirrorSelections'
-      selection: Selections
-    }
-
-export type MouseState =
-  | {
-      type: 'idle'
-    }
-  | {
-      type: 'isHovering'
-      on: any
-    }
-  | {
-      type: 'isDragging'
-      on: any
-    }
-  | {
-      type: 'timeoutEnd'
-      pathToNodeString: string
-    }
-
-export interface SketchDetails {
-  // there is no artifactGraph in sketch mode, so this is only used as vital information when entering sketch mode
-  // or on full/nonMock execution in sketch mode (manual code edit) as the entry point, as it will be accurate in these situations
-  sketchEntryNodePath: PathToNode
-  sketchNodePaths: PathToNode[]
-  planeNodePath: PathToNode
-  zAxis: [number, number, number]
-  yAxis: [number, number, number]
-  origin: [number, number, number]
-  // face id or plane id, both are strings
-  animateTargetId?: string
-  // this is the expression that was added when as sketch tool was used but not completed
-  // i.e first click for the center of the circle, but not the second click for the radius
-  // we added a circle to editor, but they bailed out early so we should remove it, set to -1 to ignore
-  expressionIndexToDelete?: number
-}
-
-export interface SketchDetailsUpdate {
-  updatedEntryNodePath: PathToNode
-  updatedSketchNodePaths: PathToNode[]
-  updatedPlaneNodePath?: PathToNode
-  // see comment in SketchDetails
-  expressionIndexToDelete: number
-}
-
-export interface SegmentOverlay {
-  windowCoords: Coords2d
-  angle: number
-  group: any
-  pathToNode: PathToNode
-  visible: boolean
-  hasThreeDotMenu: boolean
-  filterValue?: string
-}
-
-export interface SegmentOverlays {
-  [pathToNodeString: string]: SegmentOverlay[]
-}
-
-export interface EdgeCutInfo {
-  type: 'edgeCut'
-  tagName: string
-  subType: 'base' | 'opposite' | 'adjacent'
-}
-
-export interface CapInfo {
-  type: 'cap'
-  subType: 'start' | 'end'
-}
-
-export type ExtrudeFacePlane = {
-  type: 'extrudeFace'
-  position: [number, number, number]
-  sketchPathToNode: PathToNode
-  extrudePathToNode: PathToNode
-  faceInfo:
-    | {
-        type: 'wall'
-      }
-    | CapInfo
-    | EdgeCutInfo
-  faceId: string
-  zAxis: [number, number, number]
-  yAxis: [number, number, number]
-}
-
-export type DefaultPlane = {
-  type: 'defaultPlane'
-  plane: DefaultPlaneStr
-  planeId: string
-  zAxis: [number, number, number]
-  yAxis: [number, number, number]
-}
-
-export type OffsetPlane = {
-  type: 'offsetPlane'
-  position: [number, number, number]
-  planeId: string
-  pathToNode: PathToNode
-  zAxis: [number, number, number]
-  yAxis: [number, number, number]
-  negated: boolean
-}
-
-export type SegmentOverlayPayload =
-  | {
-      type: 'set-one'
-      pathToNodeString: string
-      seg: SegmentOverlay[]
-    }
-  | {
-      type: 'delete-one'
-      pathToNodeString: string
-    }
-  | { type: 'clear' }
-  | {
-      type: 'set-many'
-      overlays: SegmentOverlays
-    }
-
-export interface Store {
-  videoElement?: HTMLVideoElement
-  openPanes: SidebarType[]
-  cameraProjection?: Setting<CameraProjectionType>
-}
-
-export type SketchTool =
-  | 'line'
-  | 'tangentialArc'
-  | 'rectangle'
-  | 'center rectangle'
-  | 'circle'
-  | 'circleThreePoint'
-  | 'arc'
-  | 'arcThreePoint'
-  | 'none'
+import {
+  type EquipTool,
+  sketchSolveMachine,
+} from '@src/machines/sketchSolve/sketchSolveMode'
 
 export type ModelingMachineEvent =
   | {
@@ -313,6 +170,10 @@ export type ModelingMachineEvent =
   | {
       type: 'Select sketch plane'
       data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
+    }
+  | {
+      type: 'Select sketch solve plane'
+      data: ArtifactId
     }
   | {
       type: 'Set selection'
@@ -350,14 +211,6 @@ export type ModelingMachineEvent =
   | { type: 'Constrain equal length' }
   | { type: 'Constrain parallel' }
   | { type: 'Constrain remove constraints'; data?: PathToNode }
-  | {
-      type: 'event.parameter.create'
-      data: ModelingCommandSchema['event.parameter.create']
-    }
-  | {
-      type: 'event.parameter.edit'
-      data: ModelingCommandSchema['event.parameter.edit']
-    }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | {
       type: 'Boolean Subtract'
@@ -370,6 +223,14 @@ export type ModelingMachineEvent =
   | {
       type: 'Boolean Intersect'
       data: ModelingCommandSchema['Boolean Intersect']
+    }
+  | {
+      type: 'Pattern Circular 3D'
+      data: ModelingCommandSchema['Pattern Circular 3D']
+    }
+  | {
+      type: 'Pattern Linear 3D'
+      data: ModelingCommandSchema['Pattern Linear 3D']
     }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
@@ -385,6 +246,10 @@ export type ModelingMachineEvent =
   | {
       type: 'Delete selection'
       data: ModelingCommandSchema['Delete selection']
+    }
+  | {
+      type: 'Update sketch details'
+      data: Partial<SketchDetails>
     }
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
@@ -477,8 +342,17 @@ export type ModelingMachineEvent =
   | {
       type: 'Restore default plane visibility'
     }
+  | {
+      type: 'equip tool'
+      data: { tool: EquipTool }
+    }
+  | { type: 'unequip tool' }
+  | {
+      type: 'sketch solve tool changed'
+      data: { tool: EquipTool | null }
+    }
 
-export type MoveDesc = { line: number; snippet: string }
+// export type MoveDesc = { line: number; snippet: string }
 
 export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
 
@@ -490,87 +364,27 @@ type PersistedKeys = keyof PersistedModelingContext
 export const PersistedValues: PersistedKeys[] = ['openPanes']
 
 export const getPersistedContext = (): Partial<PersistedModelingContext> => {
-  const c = (typeof window !== 'undefined' &&
-    JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) || {
+  const fallbackContextObject = {
     openPanes: isDesktop()
       ? (['feature-tree', 'code', 'files'] satisfies Store['openPanes'])
       : (['feature-tree', 'code'] satisfies Store['openPanes']),
   }
-  return c
-}
 
-export interface ModelingMachineContext {
-  currentMode: ToolbarModeName
-  currentTool: SketchTool
-  toastId: string | null
-  machineManager: MachineManager
-  selection: string[]
-  selectionRanges: Selections
-  sketchDetails: SketchDetails | null
-  sketchPlaneId: string
-  sketchEnginePathId: string
-  moveDescs: MoveDesc[]
-  mouseState: MouseState
-  segmentOverlays: SegmentOverlays
-  segmentHoverMap: { [pathToNodeString: string]: number }
-  store: Store
-  defaultPlaneVisibility: PlaneVisibilityMap
-  savedDefaultPlaneVisibility: PlaneVisibilityMap
-  planesInitialized: boolean
-}
+  try {
+    const c: Partial<PersistedModelingContext> =
+      (typeof window !== 'undefined' &&
+        JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) ||
+      fallbackContextObject
 
-export type PlaneVisibilityMap = {
-  xy: boolean
-  xz: boolean
-  yz: boolean
-}
-
-export const modelingMachineDefaultContext: ModelingMachineContext = {
-  currentMode: 'modeling',
-  currentTool: 'none',
-  toastId: null,
-  machineManager: {
-    machines: [],
-    machineApiIp: null,
-    currentMachine: null,
-    setCurrentMachine: () => {},
-    noMachinesReason: () => undefined,
-  },
-  selection: [],
-  selectionRanges: {
-    otherSelections: [],
-    graphSelections: [],
-  },
-
-  sketchDetails: {
-    sketchEntryNodePath: [],
-    planeNodePath: [],
-    sketchNodePaths: [],
-    zAxis: [0, 0, 1],
-    yAxis: [0, 1, 0],
-    origin: [0, 0, 0],
-  },
-  sketchPlaneId: '',
-  sketchEnginePathId: '',
-  moveDescs: [],
-  mouseState: { type: 'idle' },
-  segmentOverlays: {},
-  segmentHoverMap: {},
-  store: {
-    openPanes: getPersistedContext().openPanes || ['code'],
-  },
-  defaultPlaneVisibility: {
-    xy: true,
-    xz: true,
-    yz: true,
-  },
-  // Manually toggled plane visibility is saved and restored when going back to modeling mode
-  savedDefaultPlaneVisibility: {
-    xy: true,
-    xz: true,
-    yz: true,
-  },
-  planesInitialized: false,
+    // filter out any invalid IDs at read time
+    if (c.openPanes) {
+      c.openPanes = c.openPanes.filter((p) => VALID_PANE_IDS.includes(p))
+    }
+    return c
+  } catch (e) {
+    console.error(e)
+    return fallbackContextObject
+  }
 }
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
@@ -582,6 +396,9 @@ export const modelingMachine = setup({
     input: {} as ModelingMachineContext,
   },
   guards: {
+    'should use new sketch mode': ({ context }) => {
+      return context.store.useNewSketchMode?.current === true
+    },
     'Selection is on face': ({
       context: { selectionRanges },
       event,
@@ -671,6 +488,7 @@ export const modelingMachine = setup({
       const angleLength = angleLengthInfo({
         selectionRanges,
         angleOrLength: 'setAngle',
+        kclManager,
       })
       if (err(angleLength)) return false
       return angleBetween.enabled || angleLength.enabled
@@ -678,6 +496,7 @@ export const modelingMachine = setup({
     'Can constrain length': ({ context: { selectionRanges } }) => {
       const angleLength = angleLengthInfo({
         selectionRanges,
+        kclManager,
       })
       if (err(angleLength)) return false
       return angleLength.enabled
@@ -938,7 +757,11 @@ export const modelingMachine = setup({
       )
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
+          sceneEntitiesManager.removeDraftPoint()
           if (!args) return
           if (args.mouseEvent.which !== 1) return
           const twoD = args.intersectionPoint?.twoD
@@ -975,14 +798,22 @@ export const modelingMachine = setup({
       )
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
+          sceneEntitiesManager.removeDraftPoint()
           if (!args) return
           if (args.mouseEvent.which !== 1) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
             sceneInfra.modelingSend({
               type: 'Add center rectangle origin',
-              data: [twoD.x, twoD.y],
+              data: sceneEntitiesManager.getSnappedDragPoint(
+                twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             })
           } else {
             console.error('No intersection point found')
@@ -1008,6 +839,9 @@ export const modelingMachine = setup({
       )
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
@@ -1017,7 +851,11 @@ export const modelingMachine = setup({
           if (twoD) {
             sceneInfra.modelingSend({
               type: 'Add circle origin',
-              data: [twoD.x, twoD.y],
+              data: sceneEntitiesManager.getSnappedDragPoint(
+                twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             })
           } else {
             console.error('No intersection point found')
@@ -1042,6 +880,9 @@ export const modelingMachine = setup({
       )
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
@@ -1051,7 +892,11 @@ export const modelingMachine = setup({
           if (twoD) {
             sceneInfra.modelingSend({
               type: 'Add first point',
-              data: [twoD.x, twoD.y],
+              data: sceneEntitiesManager.getSnappedDragPoint(
+                twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             })
           } else {
             console.error('No intersection point found')
@@ -1088,12 +933,15 @@ export const modelingMachine = setup({
         isDraft: true,
         from: event.data,
         scale,
-        theme: sceneInfra._theme,
+        theme: sceneInfra.theme,
       })
       draftPoint.position.copy(position)
       sceneInfra.scene.add(draftPoint)
 
       sceneInfra.setCallbacks({
+        onMove: (args) => {
+          listenForOriginMove(args, sketchDetails)
+        },
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return
@@ -1105,7 +953,11 @@ export const modelingMachine = setup({
               type: 'Add second point',
               data: {
                 p1: event.data,
-                p2: [twoD.x, twoD.y],
+                p2: sceneEntitiesManager.getSnappedDragPoint(
+                  twoD,
+                  args.intersects,
+                  args.mouseEvent
+                ).snappedPoint,
               },
             })
           } else {
@@ -1128,6 +980,7 @@ export const modelingMachine = setup({
       ) {
         return {}
       }
+
       if (!context.sketchDetails) return {}
       return {
         sketchDetails: {
@@ -1190,7 +1043,6 @@ export const modelingMachine = setup({
     'add axis n grid': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
       if (localStorage.getItem('disableAxis')) return
-
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       sceneEntitiesManager.createSketchAxis(
         sketchDetails.zAxis,
@@ -1222,7 +1074,7 @@ export const modelingMachine = setup({
       if (!sketchDetails || !event.data) return
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      deleteSegment({
+      deleteSegmentOrProfile({
         pathToNode: event.data,
         sketchDetails,
       }).then(() => {
@@ -1318,11 +1170,7 @@ export const modelingMachine = setup({
           } else {
             sceneEntitiesManager.removeDraftPoint()
           }
-          updater(
-            group,
-            [intersectionPoint.twoD.x, intersectionPoint.twoD.y],
-            orthoFactor
-          )
+          updater(group, snappedPoint, orthoFactor)
         },
       })
     },
@@ -1342,7 +1190,7 @@ export const modelingMachine = setup({
         // this was needed for ts after adding 'Set selection' action to on done modal events
         const setSelections =
           ('data' in event &&
-            event.data &&
+            typeof event.data === 'object' &&
             'selectionType' in event.data &&
             event.data) ||
           ('output' in event &&
@@ -1614,6 +1462,7 @@ export const modelingMachine = setup({
   },
   // end actions
   actors: {
+    sketchSolveMachine,
     sketchExit: fromPromise(
       async (args: { input: { context: { store: Store } } }) => {
         const store = args.input.context.store
@@ -1634,12 +1483,18 @@ export const modelingMachine = setup({
         sceneInfra.camControls.syncDirection = 'engineToClient'
 
         // TODO: Re-evaluate if this pause/play logic is needed.
+        // TODO: Do I need this video element?
         store.videoElement?.pause()
 
         await kclManager
           .executeCode()
           .then(() => {
-            if (engineCommandManager.idleMode) return
+            if (
+              !engineCommandManager.started &&
+              engineCommandManager.connection?.websocket?.readyState ===
+                WebSocket.CLOSED
+            )
+              return
 
             store.videoElement?.play().catch((e: Error) => {
               console.warn('Video playing was prevented', e)
@@ -1678,7 +1533,9 @@ export const modelingMachine = setup({
           constraint.modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1717,7 +1574,9 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1754,7 +1613,9 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1789,7 +1650,9 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1825,7 +1688,9 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1861,7 +1726,9 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1897,7 +1764,9 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1940,7 +1809,9 @@ export const modelingMachine = setup({
           recastAst.program,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1976,7 +1847,9 @@ export const modelingMachine = setup({
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -2040,6 +1913,11 @@ export const modelingMachine = setup({
         return {} as ModelingMachineContext['sketchDetails']
       }
     ),
+    'animate-to-sketch-solve': fromPromise(
+      async (_: { input: ArtifactId | undefined }) => {
+        return {} as any // TODO
+      }
+    ),
     'Get horizontal info': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'sketchDetails' | 'selectionRanges'>
@@ -2069,10 +1947,16 @@ export const modelingMachine = setup({
         }
       }) => {
         if (!sketchDetails) return
-        if (!sketchDetails.sketchEntryNodePath?.length) return
+        if (!sketchDetails.sketchEntryNodePath?.length) {
+          // When unequipping eg. the three-point arc tool during placement of the 3rd point, sketchEntryNodePath is
+          // empty if its the first profile in a sketch, but we still need to tear down and cancel the current tool properly.
+          sceneInfra.resetMouseListeners()
+          sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+          return
+        }
         sceneInfra.resetMouseListeners()
         await sceneEntitiesManager.setupSketch({
-          sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
+          sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
           sketchNodePaths: sketchDetails.sketchNodePaths,
           forward: sketchDetails.zAxis,
           up: sketchDetails.yAxis,
@@ -2083,7 +1967,7 @@ export const modelingMachine = setup({
         sceneInfra.resetMouseListeners()
 
         sceneEntitiesManager.setupSketchIdleCallbacks({
-          sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
+          sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
           forward: sketchDetails.zAxis,
           up: sketchDetails.yAxis,
           position: sketchDetails.origin,
@@ -2091,6 +1975,8 @@ export const modelingMachine = setup({
           planeNodePath: sketchDetails.planeNodePath,
           // We will want to pass sketchTools here
           // to add their interactions
+          getEventForSegmentSelection,
+          updateExtraSegments,
         })
 
         // We will want to update the context with sketchTools.
@@ -2206,7 +2092,7 @@ export const modelingMachine = setup({
           zAxis: info.sketchDetails.zAxis || null,
           yAxis: info.sketchDetails.yAxis || null,
           origin: info.sketchDetails.origin.map(
-            (a) => a / sceneInfra._baseUnitMultiplier
+            (a) => a / sceneInfra.baseUnitMultiplier
           ) as [number, number, number],
           animateTargetId: info?.sketchDetails?.faceId || '',
         }
@@ -2323,7 +2209,9 @@ export const modelingMachine = setup({
           parsed,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
-          sketchDetails.origin
+          sketchDetails.origin,
+          getEventForSegmentSelection,
+          updateExtraSegments
         )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -2556,72 +2444,20 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Extract inputs
-        const ast = kclManager.ast
-        const { plane: selection, distance, nodeToEdit } = input
-
-        let insertIndex: number | undefined = undefined
-        let planeName: string | undefined = undefined
-
-        // If this is an edit flow, first we're going to remove the old plane
-        if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
-          // Extract the plane name from the node to edit
-          const planeNameNode = getNodeFromPath<VariableDeclaration>(
-            ast,
-            nodeToEdit,
-            'VariableDeclaration'
-          )
-          if (err(planeNameNode)) {
-            console.error('Error extracting plane name')
-          } else {
-            planeName = planeNameNode.node.declaration.id.name
-          }
-
-          const newBody = [...ast.body]
-          newBody.splice(nodeToEdit[1][0], 1)
-          ast.body = newBody
-          insertIndex = nodeToEdit[1][0]
-        }
-
-        const selectedPlane = getSelectedPlaneAsNode(
-          selection,
-          kclManager.variables
-        )
-        if (!selectedPlane) {
-          return trap('No plane selected')
-        }
-
-        // Get the default plane name from the selection
-        const offsetPlaneResult = addOffsetPlane({
-          node: ast,
-          plane: selectedPlane,
-          offset:
-            'variableName' in distance
-              ? distance.variableIdentifierAst
-              : distance.valueAst,
-          insertIndex,
-          planeName,
+        const { ast, artifactGraph, variables } = kclManager
+        const astResult = addOffsetPlane({
+          ...input,
+          ast,
+          artifactGraph,
+          variables,
         })
-
-        // Insert the distance variable if the user has provided a variable name
-        if (
-          'variableName' in distance &&
-          distance.variableName &&
-          typeof offsetPlaneResult.pathToNode[1][0] === 'number'
-        ) {
-          const insertIndex = Math.min(
-            offsetPlaneResult.pathToNode[1][0],
-            distance.insertIndex
-          )
-          const newBody = [...offsetPlaneResult.modifiedAst.body]
-          newBody.splice(insertIndex, 0, distance.variableDeclarationAst)
-          offsetPlaneResult.modifiedAst.body = newBody
-          // Since we inserted a new variable, we need to update the path to the extrude argument
-          offsetPlaneResult.pathToNode[1][0]++
+        if (err(astResult)) {
+          return Promise.reject(astResult)
         }
 
+        const { modifiedAst, pathToNode } = astResult
         await updateModelingState(
-          offsetPlaneResult.modifiedAst,
+          modifiedAst,
           EXECUTION_TYPE_REAL,
           {
             kclManager,
@@ -2629,7 +2465,7 @@ export const modelingMachine = setup({
             codeManager,
           },
           {
-            focusPath: [offsetPlaneResult.pathToNode],
+            focusPath: [pathToNode],
           }
         )
       }
@@ -2887,67 +2723,6 @@ export const modelingMachine = setup({
             focusPath: focusPath,
           }
         )
-      }
-    ),
-    'actor.parameter.create': fromPromise(
-      async ({
-        input,
-      }: {
-        input: ModelingCommandSchema['event.parameter.create'] | undefined
-      }) => {
-        if (!input) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const { value } = input
-        if (!('variableName' in value)) {
-          return Promise.reject(new Error('variable name is required'))
-        }
-        const newAst = insertNamedConstant({
-          node: kclManager.ast,
-          newExpression: value,
-        })
-        await updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-          kclManager,
-          editorManager,
-          codeManager,
-        })
-      }
-    ),
-    'actor.parameter.edit': fromPromise(
-      async ({
-        input,
-      }: {
-        input: ModelingCommandSchema['event.parameter.edit'] | undefined
-      }) => {
-        if (!input) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        // Get the variable AST node to edit
-        const { nodeToEdit, value } = input
-        const newAst = structuredClone(kclManager.ast)
-        const variableNode = getNodeFromPath<Node<VariableDeclarator>>(
-          newAst,
-          nodeToEdit
-        )
-
-        if (
-          err(variableNode) ||
-          variableNode.node.type !== 'VariableDeclarator' ||
-          !variableNode.node
-        ) {
-          return Promise.reject(new Error('No variable found, this is a bug'))
-        }
-
-        // Mutate the variable's value
-        variableNode.node.init = value.valueAst
-
-        await updateModelingState(newAst, EXECUTION_TYPE_REAL, {
-          codeManager,
-          editorManager,
-          kclManager,
-        })
       }
     ),
     deleteSelectionAstMod: fromPromise(
@@ -3255,6 +3030,78 @@ export const modelingMachine = setup({
           artifactGraph,
         })
         if (err(result)) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+
+    patternCircular3dAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Pattern Circular 3D'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addPatternCircular3D({
+          ...input,
+          ast,
+          artifactGraph,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+
+    patternLinear3dAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Pattern Linear 3D'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const ast = kclManager.ast
+        const artifactGraph = kclManager.artifactGraph
+        const result = addPatternLinear3D({
+          ...input,
+          ast,
+          artifactGraph,
+        })
+        if (err(result)) {
           return Promise.reject(result)
         }
 
@@ -3358,7 +3205,7 @@ export const modelingMachine = setup({
   },
   // end actors
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0ANmEBmAHQBGAJwBWABwKpSqTQDsUsQBoQAT0QAmdQBYJYmmPVjDh4YsMKZAX2e60GHPgIBlMOwACWCwwck5uWgYkEBY2cJ5ogQRBNRkzOUsFOTFFGhNZQ10DBBkZCXU7Szl5KRMTWxNXd3QsPEI-QIBbVABXYKD2EnYwSN5Yji4E0CSUqSlDCQUTGRpZefV1GWF1IsQxbYkTOS0FDRo5dRpDKTkmkA9W7w6A8m5hvnZR6PH43hnU4QSVYWbYyMQKdQKRy7BDCfLSYTXQzHUQmJQuNz3Fpedr+AJ+KCdMC4QIAeQAbmAAE6YEh6WBfZisCbcP5COaKCTydQXHkydRwjYw44LSz2YQaWw5ex3B444jE4ZUl4kIlUkgBbhBEJhSaMmLM36JdlSSHmVbGZY5NLCBQw040CSImjKUrZFSy7FtAgAFVQUCgmDAAQwADMSD1MIEmLTcMHydg2AAjbA4dh6fU-SZs5LzNGHGgSmTzCG1Wow+SO11bMQmHKVRqYuVtCTYCBBggAURJ1KCAGt-OQABaZw3Z43JZFSQ5g4RqFSGZbImEVMqQyEQyFw+a3Jte-Ct9tgLs95WwAfsYdUKRRJlxcfTIQNcpQ23XflKeyFfSIUTTuQAXMcIXDIThSJ6ngtm2Hadh8VI9Bgo73qyE4iDQjqbLUpiFhYVgmDChhWJIjhXBcci2ks5EQY8UCHh2PgAO5gGATBISyUz8EI1TqEC2zZHUO7GN+xTXPsBaLjYeQSiYArUTidHHgAMqgoafPQYxjihj7JIogJpFOciGDI1zbDCC6SC6qwmNstaKGiclQUeBAAEpgOSqCYJSbFGtpgiaDxOSaLpwjFlYwgwmIpQKE65E2P5FS1A5B7QcepKhqGwTRrGIzqd8mkcTMc48VcOFgo4NwyGZEqSJW1VOBkhHqEltEpQQAASrR8N5D6cTpKxOjQxZZMYczzARGSOuh5wXFo9SGM1Cm+EOWCYN1Wm9YI1SOsYhbLLUUIqOFP4IKa1zlHk1lOJs2zgXukHJU5ABiqZBmpt4GshBVcf16EZLIlxzcux2GKscgSNUshzvYAFWAtrVEEOqqhtSa1fck1XlJc4gCqaxm2gRi5g-IUViu6813TRi1uYqEhMCQ6pEkqEjkFSYBDDl71ZutMyYeDRk8mIppqMcdrHYLtrg6WSwqJY4Jw051MkrT9Oqv41ISJAHCozmfmReUxg5CLdaEUdxS1jyhxLJsKyrF+8swXwLBUm9GmfTr1gLFktpSCF-IaKLZsXeDxZ5EZIMQrW9vHsgJADtrqHWJIpzWhctoCkDIlgtOXvglowFQo2zT3S1TkACIhMM2pBrqES5Xe7E61kkg+37pRwkZeQEfY-6mvURympcthR76YAfII7CoIIRAAIKl-H2liILEiOORBfrMc+HHaB06zqB1jHJkGJF5TrUAApUqgnRMOw4+T5rLt5W7qGIjxcwCasVSUWZxaAk4Jig4vS6R8sTF0WtPJgTA2bqgoBzV2Ddn7nHKIvDYZUVj2B0MDTY0VawulMIvSwt1j7yVaj6aBsBaTDHnhtContkTFmMjJOoCgMHFHyKYRYs5kTImqDYYezlUCDEoXXD68DfKaAWLaQyEJyKbGslIGE9QliSxBoRQaAoXTDyIJgbgsDH6iOoYNLk-IeRwlAnkOQm9WF1h4ksFe-cLClGHgAIVQB5NmuB8Q9CTOwdUYQqE8zsIcEKdlrHyFNnsIs5gLFgjqBoXOYhnGuKDGQAIABVXAephFczRn5fMWQFCIgYY4fIEUKjRSyBY7INRbSJLcSkgAkqeYIfisn5XdtULkmgbAgykmiCKSgeL-0XIDRehCQEnyPBIIcbYwCn2yrAAg09nbYHDGEAIUB1RMCHAEFgTBIzswgP4oQmgzClGsqsGhyh9hmWRGYTQh1TC2ElIXcZxDJmwCHKgBicyyBwEWcs1ZgQNkkC2QEMAV9OCQCObmYqYJIpQnQisVOOxjpqHYecOo2wQqiBBmM5sB4fAXmHMQMglBVqtKftpPOZQtgFPWPyOaEU6yHEhLcpcIMNgLUJYOIcJKYGYG5ZeEcFL9FJFqGdNEAN-JXDSCwxAag9bLGqH+NE3JdxEJbIK4l5dXrBmCISRU0KljEUhDYX2TDwQRWnOhFQQU4Tgm2DJLlRLeWvAwGCiAHAQw9CpG0fsPLoU3E0ODXOLobiBR5CuTYHDgQ+zmKsfkzqeXEG4LAHxJA8ABAYhwbZuBVYQACOSEgmAei6Prj5XqcwNhckGuK3SS5Kpi2kgiUw1l8hBvVa8zVLqJBaqHPUpyMcBzagNSSQt1JODkGLYGwydyQkXAsDJRcZkBRmDmDkSK+xcGCyTUK3tLqB0diHXqsAo7AifN9QALzeNOkVFaxUZGiioeoBDqhIgDvKnFUTjI3COMWI4u7hz7p5Ye48RBU3pszRe7A16STFpDImQYMDA2SqdLjf2Vz7UEVML-EKVlHAVEsIBocwGhWgZTbgNN6pM2UmWVOzACG02krLSI+98qGp8yWMsNOhl+Rd0XOYMKoEJTZAAi8-FtE+2keHOR8DlHIMeOnk4nwAQAAaM7ZBAi0HMfmGwrAfoQPgsGGwZXggsThBJFN5JSb7bJiD1HFPKYCAATQ0+UgeInETzhRWbOsZQqmFgsfsZh4n9ySZ7bZpycmqMZo8WQQMLHsk5iDXpao9QcXWUJgRfJQJCPFjsuiJqVnu08uk-2qL9nYsBCDPgdgwrOZtInEGx0aR5gaFNBCCU4SEBGRCsorOGww7bGI2Vuz8mHM7OpJA3AnryD7OVJ6pjyG709TFZl3Le0LrMMLPIsWPswbZFrByQy2QeQjcix2aLCmAjQdg4MTAmA9ABGLdgKAuAUNbEODg5hkUVAizMgU1+g19g3AAug87B6Kvjaq7RydxbHvPZwG9jTFkXQyRMcUjQ38BQFlGVONFRWNUEoi5Dy7lXM2wDzUwAIE81MzusosSK-9B6XSOARTdQJfunDrJFcQEOQNQ5ixTqnNPUAufp4Cbu+XTXRO64uUC5hESEQZQBCx5MifhdKxdsD5OPFgAAI49HgzVqAdWZ3GCBCsKwGwUSlGEkYMNy86xXKUNZao-OyOC+u3TdUD3qAre5uxiUA1bA+2MDNAUBMFf1HrPyONmwPcya9xN1m3RKQvF1+wBkAe0b7QWCoU4QWQSZAIiobOi7ax2CrXCRP5WOxuuDPfb1vr8D+qFTO4N2RlBhtEzb+0-9LZLHQuCLIQba-keHPF4ME8PLQqMqUcGnmuGL3tPMLkfEsb7AdcAiTZXRvvLxD0an+qiQkgWRAHRrZcDuQHBITKR-BDkBwIqQQbAMCv5da-09p+s9iEDZWLkRQQjLIQsG0MyRdcwLYQaGSUQcRYQcfA-QII-EdH-c-S-PAG-MAO-fwB-J-bAF-N-MAD-HlL-M9WAP-G8OBNjE6NIaKI4QyRcWQZQOoSxeVKwR0POLGK0VdQnLtYnLXUnLAzKAIZAk-RUBZakC+KkWmChUMVAKkTobA9gXA5-EkV-GZYgoVUg1Av-HPd2dCPmH2awayAUJwRtYoHkMwCwawOqbhYwEbaeBiDNc9eQmDG9BjRbJDSgAIPAOQggC-OMK-TAiQGAG+W7dwwQXw1AOfLvIEJ5DQLcGPbDS4J0UQReX2Yw4bYrfgvdRw5wm7Vwu7eDTw5jHw3APwyQ+QmQoYOQhQkI-wQQcIuDTASI8o6IvQicZEcEJ0G2YHYsfebDGwRYCxN+GWUfBwpwr1WHbAejRjLw4MKI-w9A6-VAW-UIwQaY+jVouQmIo4coWaNHPOcEOVHrcQMwCiAUZVeYRECY-IzY4oxDUoxYyo6QmMGo+QxQ9Y+4loqI3YwEeJC4WwWwLIHzIwN9TpYsMPH2fTSzDXPfPIr1JTFTVTMovwgIrAjA1YrA9YkgJMWAQQPgbY9ohrSlXqbhR0ZBCUSwKaLoiKQWBYeQTdK4CUfydXPgzXXIyYwIJEtTVE1AAgF46o9gWoz4ho3E-Ewk34jo7Sbha1aA5QcQX2FfMWOwV+BKUQMqZhHfMLeErkgIHk5zPkpYwIzEtYsUvEwQPQIk3YmlQWDdfkBwJlFQcwPMOEdtWoULUBKTBE7kpzQ054qkKQoUkU+om+cUy0606UskgCR0aqQiMmdcCKDeRYZhU0Fkm0Nk3fb0vU+LIMI09EoIrE0MwQXMogqUkk0VMEjIRYAUROEEXnOQAiFYHiVtKyUCSKVOW4r1Uso0wUt44Uj44s0syMis6guw5eTYCoKGROCobLA4YyS4IfLcH2eA7IjkoDcBGMJ7E3OrDPaHPAdgY0jElY2-aeHwH0R-XXQQHc+rKg1bME5YIEDQO3J5OEKECKKoGs20QWFQMxTMnU70iBBHG8vcoXEkAUwMqo-skMs8i814fc3Aa84kU3W8vRMc6JJ0Pkcia4PaIUYGUoSQGA4fXCApKiNc3U-IyBKkabWbebOYp4too8wss0m+KimimY+bQQEomBEcu8wPHrbjENSKWwDUksK1HHZ9MxeoHGbILs6MKbYkWi2kBbR4mBXsyC142Qwc9YtixSji5Sri1SygXitC+8gSz7Q7YyOwEKMSvbRwaQJYKS4wOcWS8iqTRSPAafJJAgSffALy2fKMpIP9aKaSNEG4K2MEMyHCJ807JFI4LIuE9yzy0XDyCQRpDgRZCAAtJjZ2HZVAA86FEYik+YRwNIYyUTKK4NO0s1CpdtBQEbDyuMFKzACQXAD44tYgbRfoc8ANQKxAQ7SQaw0A4aWsG5fMNrGaSKMEAUWE9kvfRq-ylq56DJD5HZC+UMVMY8As00oQnApgR-VQm+QgzQ4cbQ8Q9QaFNEIYrYZYF0BlI4E4kq6KQyX7cEM4a4XgrMntBa5qiQZaxMbZJgdazaiCoM6Cwc+-favAggjQnqrQsQs-C6vqhACaYiCxOcK4LQWVMyQ6GcOcVVdguwf8r0ntdKw8wNMPaQJVFYApRcLLVFeYMoYCTdUQQLeqty0mjJcmyg0y-itrKw0oS4MmGwVgk6JgxXQsAhELLrEbH0KfEkbAeDemcgUXHyxGPy5qy6xEImVOG1TYBqMyQSma5YTYYS8NWW+WzgJWqkFWieNKrmijTgXAUtMFPgRDP1IGlSTawqh1ZeCxB6rUiEAzG4OcTC2oKwX8xeQyC2vyhW62221AVq9qzATq1gPVF1Qq-+PScUGSSsSwUW3uMGRcFy1cfIa4TtL60rOW2Oq2hjZW0XP6vAAGtar2jsbak83a5QqGw69Q9-OG06hGrPYQS6pwQENMguN3NnVFewAKIfZBRQMEdmxKntaumAOOuum2hu-61az2jajsPsrSuoyGg6-AtQ46-uocM6s-Ye5GwyLQQ4a4gCfeHkYO1EcwApFYQSa4JwEbHoGbMXHK9gPtUkXAJinaiQWCwQP+i-V-QYZ2YB97ZGkQYsZeN+bCKEC4EpY6fuJBWleM2WRNDm0raBgBuBoBl1EB0GqCw+xQyBkh2B+mchnlEB6FZBx0KpS4MEK4OwRs46EYw4D6hKUwMEEbVyMIHsmfFO3ymATW5GuoIyQAg2ciSsYsJszTewELW1P6J1IhvdMRpDBLX6n0v1ZpbgAtV4KkOMKkAgbe7ZVmcR-AIMH24PbbYmNuMqq1F0J3fSHIF0REReUR0IAxvMyRiBrkv1VwqAPAHynAcgPsMooISgOMH2lI5hApNED+UQAzRwEGTGReBctQa4LQQJhxwx0J2xyAAIfR0ssBjupQlQ0+o62Gz-Qe7PUcsyt3aKYyc2MOE2XhwORVD0pdfOrfEp4JxaiQEgLKv1CAdUVSAIex8Z2p4IzKKB-a2ZkgVSQQRZ0sn2wJLIfSIaOcd8sWW2J0IO0QMTHBT0ymKTapxxiZqZz1VvDZ+ZnZh5qhzS94o+hoh-V5m+d5hLLW6NEGB6-IUCOobLM0SwBhQWDeew3RoDIgRUXse5sp7y6Rxay637coRQOYZgrIayAiK4J9Sw+NLhNEG56zHtZF08KpoJiRpJMJ5wv1Cxqxmxpu1apJpUBZhlh5zOrxusdLUwDkSEAmCxVBuYRe1BT6gCmllF5UNFkJpl4x1vSJ6J6eLKl4BV3l0pvM9VxB9p-iqpCRCF5QHDSwDOB3DpF6pYbFBUvFOV0rWlnlpViZipgtF11FvlhLZZos4+6Gs+5pkg1pwwLWx8nkWtfO84ZdYGaw3iWA+gpVVc5e51nVt136p5kMOZwIbl3sQFtu5YlZ359ZnNx-BV7Zn1px2+4S80YCeoNraaUvTkPzb+1lTBkbL1xVqtx5rV-57Vulgt48A+75xQ1Zv5stvNqkStvVxLRrbSEw6cSGPxweGyYliELkOKfJvMOoWayuvdJ-dxIIChLaotos1mNyYtQQNq9-OmOrNpvi3PcQMGQaDI66IyPpVFdCc4su2abFVeEbQ9lJchdmT54Mwci9otFom9ogu9ocB93mnJLFQ4aobvbhfkQiYUYyRfa45EL8aGTt7gaY1vWnPNIkAtKD0tP12-EgNNK7BzAAOXzQADVi1S0YivHbQiwFxI3QTDMLhJp5xCJBYEoANEWSM5NiOoBRcAgyPKnKPh2NLwO6jaP2B6PYsmPyPWOS053SSkgpxnrrcSouHIYIp0FpBoDWaIRQWK6nXOT8j4KwLeW09gxHOFMs9qOsCYG3OHNK2XPLyEKH5y0zLkQNB18VgjIClIoXRS8LYLhR72tgRFw5LQLrsmj7tHtPOJBvOrz0v4cMxkauiwZTon66hQJqgqpDJwZTRuIMh9geEUufOYcJ0Zj8usucuEKNiWv6NHtdjPZtgrYjhmEOUV1qyTZ-4LAGDHA927ONy9SmuoNCj3CEcXs3t2vJ4FvEK8uHsrTVvDXH2cwuFARa15h6vVh9sAcOkX6bgtABQIuU25rsyHPddx06N8vEdXtQH27giOuwKuu3uduSykd9vEPDvH04j+RnQZI-H+n5V5BivTDNgNAn6f7xPmWvVNuggRdadVN1uAu-vKcQVb4CSYjaxJWfyAJ6FCx2cshN3qg0sbIwlGuXvCfqdadnM8fNvX8qdieCujW0ZblJpGEKJlg0E5d0dpAchThxA1BzgZQ0efTUuJsDcjcGMbzOeryVer2byYjkRwZh8lVd3BZiXRB198gY8Y89NmeEKdkVY-cU7vuizfuFNBAfd4d-d+ewf6hLZCJpfuHGoCYnAgQMhP6JIJQl7HuaX1aZG-QPIfCMoCBLrkQWzSI+4eGbAblcnu8dMFzyJbOSbnXo-gxY+GMVkFlrxPeJx6gLhzpbk6b0F7cTpjB3Nzuw4TF8-bmo+p8AgS-4-y-DBK+F3k-a+1d0tshG+tAxJs-Gbw95fU290EZu-e+y-E+xBB-epq+U+6+x+M-UUmdFh5wZ-2-O2i+e+kk+-E+TB1+grh-B5R-0+J+jhPZD+2+8+T+l-z+V+qA5Br-EBN+R+0+DfMyAfAP6t9c+4ONHovw1rL8E+VAYQL-wQD-87+gA8fsAIljT9X+EA+fki1P4wDy+6gBAdXxqij4AIhEQpnxzDx0FbEXHfFiPnf7QDP+sAhQIQK6JcgSBL1cgSujXyUs2+-8H2J22wA21lWHkNWt30kbYsUGPIWRPD0qS7YzYGQQEDjFAgKl8k2pAvgv0EGHsjG4TNVr6iiagNNW5jTQfqz0F4AfaSiOsHGmbJ5BIQsPfjhLHsAEUMylEAQUIImaqtpOzkKZtgD6AcsVq2ycgMYN06VkUaRwbaIcTDjnBVg-SNfDyGfRDdzg1gVwVoPKactlonrIIVlwDY91z6LTb-OIRMBa0AI5QPDFFyG6iB+khYCzg0HOBWA48M3dQUiyCGZtpmLzHNi8EyGO9b847UtpsxviBC3BmdeEKogNgj5lAcgiJNGjiQ5AtAaWD0JAOaGhMnmMzdoQMMPZgdwaPzG+BOz6GP4ghI9G4E6HkaAJ5g0JJMkoihDSwbglkOFPQJj5MtYAMYDgE7Wk4X0dk2ASBFkKeFHVP8TAD4WWVDDXtmIGAQ5IVzsB0E1EFQDsnkFNBYdnqP8CwAqWLod9qWhfD-qlUeFpgXhbeYcO8M+EjsByR9b4SdUvp-DIEkRQEXGEgBQpkap0QiuLElTSg8gJxGRIYX5gQhah7uSAbgIeF7UcR2yWos1SyF7UT6MNPunkLILQoHEg1TFJN1sCkC7B62Mqjd1pQfxZWjQiTjyIxF8i3hgoyRhsJob1Nu6jTXukQQvpX0s8UowpjGn9gew7AotQ7NIGT4EYvwH9ZISEyHAXs8qB5IUZi1kaECY8B-RwMNzKQWIFE+-WlEoFwgoJianfZ1osM9HMRvRY6UJh4ICAbUqQaaZMYeUMHpjBBWYlgAVVvrTcH6UYmXmEgmGIDCYuWU0FYGMAzl3R0+RMcGELEpiVWOg14aEDMbZjMq2VLsTNmzGFV7RqDUQPjUrDG9sGuEaQJoHqg2ATgD3fdk0LcE05mx2Yloc82k79s1hHor0a2MPJdDO6azLipOyCHjxmxrvfKiSB9qGJ94aiVePIwUT5AWskPWoKBHkCNiVxu4y8YEFTEdiVxgggtHuL8HN1txTYr8UWIQGGQccdYHFL9ikiRpsGomGtJgzSwit1RcYjQcuLqzgS2xqVD1h0KwmrigJB4o0aKKDbiiQ2+Qs-HICKFgwYCphX9AvQUSxFFEiIIqLkGRAOFN6+ov0eILkZu5JYM0PxrWByDCgVy50LGn9GhKcSFe3E9sSy1byAMexuYpSXuKHHVpxAtyBVDQnMJ-9uQbAmEh2VrALjZuJGJZAnVSppjBRoEgdkqBiYzF4mFOJJsEOoLj9s4nWOyMcStYo1oCLpXkPSWZzoTURuROSZZNaGbj2hytYUdsN6FbNlaPtJeEJH5B1ibBU9YoCLB7hDI7I1gaRFxIsktU0xilaeB81sbPYbaPtGvhuFtAfwu83WUTGYFTJZwO4tKPKb9VsZ+oopJE7ISaNyGUSyCCgS6poDKCUsoQNgYTMcGFCjJ36dNN9N0iCklYQpttIid+N9Gn8+JAY-MOCM-BxDbUwoYaIATUDiBrON1VqdhKTF7jtBCk14WQ2UlatVJ34n2vCAYLmYKgkbSsanDXRWBDsv0OIadOWk+jfxV09MfIQIlaCp29kuJgk1gDOSKpFkeKnjDWCYc+GQdYYibWykbBHWGoiBtxP+m4SCp4U7Nn0LKlLScJ+4s9t0JLbHjdhytM8RewvEQSDuE4XjNFHOCjQn+dQgzNUAVxMFAsvHJYH9NJmXSJgJHaZFSEAnfjgJq1eKTW1sBOhgsVwMzDJBOJzghitg-FtImr4CzzpK0wGcLOk51YAJPYrRGnX5EVT0gUrYaMYiMgwhNJL7aWN03G5qCMJG5HGYLNSH+COpNtaKQ0zFFmiJRqBGQFrTSC5YvwxwfbPUBtlAQa06wTSVsASqR9Ss5kz8drIBlMtSpu9EGl1JFGBsmmFE+GlRKzxqBgWpyEfP7DnGbAbZRkacK9NfGPIZJ2A3NGLlWTHg-A1cQIG8LeLJMkGloLkPI1qBHT2yFwHGsNO-ZwtFES6eaQeDIDYBOgQwP1LTk7mnsTSdTaebPOGDE9m5I9PSKkFxitZGSXcFsjZHETuhdoC0VeXPJI5i5F5Bo0dpMwyRryiCE8QQJvNpF697RGwZOFCDSCR4xY-IOWX3NAgjQ7AZ8++RfP1li5R47tRSS6iy7nz15T8i+lvK5CpA8WoMDUt1i-R5BWZKiKROcBAUzywFMnSBWmhMYwKCRIZOBY-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-u8Tf7vQfW9-R5E-3wHWN3upINWQQ3S08wwYgzPVzHrLAhWs4J+n3sph37kkHiP+nrKy7IHMA6SSYBgaMDTg6ap3HkMcHIjQxSk3RFWZjTAjF7yKFBo9tQfL0e7b5dBhg+Vt-086xU5SWyIFlKDGRuQpSU4Af0uDW5w9ZB+SEIZSQHlqQzSOPUProONIlQBhpg030l65AsUz6RQCAbFilgE2yIcYaukjiCGYDuhppAVs30V7DRxhzw2EHMNlARawekGDZRKi6af4B-GXl0Vz5FZMQMHeANEAkwyGhAn9BEK3BuodxRaKQVYC1o0C51rYaia7W8iDApHkg6cIxOclOjlRrkW8AwjUfUO4VOU5FFKFMhmSUrEjOqpDoYmBzwoekSKYOvnRfD9y306wQsFHDvyfJvk8yMo4IDiijKy84-bYN5J0yxk76ELfI1IOIxlG2ZXeraLTT7h2CUg9ihDbdSeTjLYxwUoDNrh2Mm1BMpQVINNDwosrZokrbvIoZCgM71yJGbXEoRELH4C5nRl1XzUqT3GQ4SKXkJn1h22oA92UvXTZkEJ35nJhMhiBxEjVUpOGD9IwhDEXBRdwCNfU4Hh06aAKtDC0644ifNFTpEKbVG+EmCIIbNUTOx1muDBnE24RdsbFlbKoLB4JvlF6y42SbMl6ltu9FNSlETKNhLRQ+2WsqMaHmYJmU4VZgibRBwpdviIp7wmKfFUykOQSCCTeFQNj2Au4BhZhHd14xtpMZzswU-kR5IokNTXRw7tcRijWd0G6NUWjYChATkZUELc3s7tMno9fSKmf0m0XFMOm2lMqEAsBF035Bju0XE5HYHoQpceytp4EwL0ZrLw5e9KtGdlg6TYx9gsqSavCZ7RaLqsyFXcpt3YDBmiNM+o6RozGj4UN2ImP6AhvRrFGBTfpybNRT0pzZlKaphYkGc1NklBoFJBKLtA3iDQrUQxAaquDSYFIGqyVSRmUZkhKIbqNNe6tkArDMID+27WwZcR9NYyfqoTMmgudnDKJPjxwO0gmo0CAgRdZqbkIzVJM5EgM+5plm1QULFoyjYmAKGV1sH9xbBY1FsgimLwKC6gs5pqu7OboZzSj-ZoKqPX6w+woQPSFY8Ukxjh40spVFsw+ZIyHmoL8qESsMU4aYRaC5EKKkvFXCWEgoxwWSGj1XqKhFaG9BOguaWCks3wmKSpIbWZSA4ORH4KwzHTXq11iZDdLC3aar4VrQ8MqLrKcBuDACl4+wU2mrqVlfG981F9evxbtovnZ5mAd8zwhDy7sroVyFdL7uhiAJuc1ufkxhYkBKW+L9dO2unOBqQWhLC7NuDWhVwShIYwdcRFplDiEnrc6F74xIBIYDBGGCDHY-GQcpq7VgdrZVQohSJ7wNgVJQaDWDGaMsPIC5jGlyGD2rgpQBp4GDPX167sVFxkIjGjwza6zsRpjAcWy2pDvnzuvEYEoNnK6N8fyLWHgq3GgKIa7mPbIWdiINZHmlEeB+vpoGp5ymX2qUvGNRqtUNyJAxVtOWkMqZusjzd622CCSd1l4rUKDDpULEJbN7ErDzdcSsKJlDsjznIZVIFEkRnmoWFJeKm+gxlKpO26bDq-OewuICXLuLKNjglnQA5+okiOOV9udy3W6WU1yyX+IqtUgqrBSZeBHWbKyAs6BMBnGDilCAHtaf111vdfkl6zNQpgtE-mswOIpl435AGH+hUDY4n0BSMS5RGSlI3vWs7NqTNc9Z3XZ2R5ioJbBOSSQn+cuOcS+FlUIpUOcsSAXTfGbrjCZ8zKdrq3GYM2FgkqQ6TLAbal5wl35fTLQSeRtWe0QHB-Sex2NVIgQhxnbLMshZ1H0gUYpLThT5yQCiOLXS+bJ3zSFo2OYAcU4OfMDqJYoKCLYLppmgtpDlemfC9byc6p5UA6eMs0CfRMDnq0MkAoM+jCXMJS8IywvGDicB4c5+Cc+zhjxe7bdHstt4O0NO-oNtcEVUAfK2T-h4ZJ+Xt67N8VTuPWOUgyDO2HbUAQgV0+YREKcHgs7SpNCvebsnaW7NEVuwPNOxXZR04ZikBdK2GwLbToQybxmia4r0x4l2nse3buyyl7uZYuMj1WVLjnSLDRxEPliiknZt6s8ZOqmW2-1C+mcWYJVwdnOwiuVhVI2xYIuxNh3vs997Q5oAtAS3SN9Fw0aWoPeOCxnLr7VWLXmrxLNDhZ7Id7kAvd1siQ8g0UCSB-RDoVJv7maN3vb1ttKB9iboIZobDsHHaeI9Y07OHzIh3Di+jAgO1jb-4WAhz1keRVZGNUM0hi+QGaD7FDjHMPxD1+yxvxZIlCaaZxYKE6R4iebwQUg0SIQwmtEBFhqNrqxjaquM3P6M9YJDVyTKIJwHQteof7EYciO-UXgz1H0HfN5gYNL6LGvIAKSlIJW3y9sgdC2BOyrjEnYR3hJpsBAhHbgqq0vDKhFMpEp0fpOREtwjG4y4gDe1JlscpCmWywtoUTNAlVX76i4R9TdGMkKL9ggSEGILH-SEtHkeDs-slbLtBw6U9CEsEoBi6nNxb7KC6C3DshJOS+d+b4aVZdR4ibbqT7Duk8RlKBlAUVikkyUyzaaEWgjrUS1Uhr8jgZyoJh8mbB5-zawmWa2HYRD2Ihe5+WVy2qMYe4yfxSSFK2F3onexKkjW7BokO8bBLOVO6BYYRLdkqOG1+Y6MN+Pms7w7WkiawtbOR2SCJoLlyGAIcEcJjdngNoGWVfFkHlDrScCi3jG-JZXWEHcXG98+8zxzFxFjnZynLxmTMCZW4h52C-LOPWzjnOCboLGkT4xJxC+ddZN0dtmPWzvjncTC86vzzRZrzkkFVauCWHpTkMSKMxLEgNaxM-O8Y9s5SEzPqb-gypjZLOktijncLiLgi7sDpFU4jfORDYluohQha7cU6XM7hc3RLYaIQiJF27gKJzWyCkKAUkbvWRxXTztG-dLedcu1AY2-onL3DzeTbqdEn1eoqUAFnE5oUgqX+OsnNCp2R53JjcOMJERNAwoT8luA1L+1X76r-GRuMFuBBlaDFjc8+QePS9H0YkvrP-E5vh94rPrv07wpmzFSEsDNyQGcXE1MjBr6UuM37vCuF1k+cb9qa3kDdwuqNMUY2AfDNXeSu8DJJ3VVN7VayOXqclJ8w6CpsTN2WT01B9QUVg5p9srm3IvBnOySSZeLkqyYxul7ijz3vaNrGaXDvSRXRiOmlks80Nu1xo7htSDJsn2uuXcIZC+-f-ivtu38Fv2n5lTgDvdzFp7GcO8bfgvDBe1+ZlZZmcMWzQtiA41Lz4x8N4eKZIEoAq3TnvzHl75Ode9mcavsRBssWdmJCdj0qgwmW1KA9-B+NRl+wY5q-fNP-uk57L1d9NY9lFubaR5qoWXRaWcNhOkc1Q8MklBMFbEK7i6WBZ3q2XKnLbvSfh+uIjnlA3krx5LkAWz7TAZSYjLJybmYb6PfT1CFwlSKTa5oMLE4hzlIqSR1jduPXXAvnlXzsoZR+sybBwrBZonJxHhjOGEqi8Z6ar8igp-NvEKynPKMo9GlkRg5vyxSH2DbLBvnHg97WYpljp0X8KMAsxnnGwKOUxu-M7OR8vnvGGgEgCQa5JcxCYAefAkipeKnhjwShKdMNaVRFihwT8CXPvSlSLC4Y-JBmc0gQyINHRr4skZLKrcMMVnSDnB4sMVL8srcjbLBPgdmYLEgnJdIZxBSPiIqJHsFhmcvvIL4hptXkq8Qi8jz249MAOBIb2wTuKilyAodWZsUN8sl0q83ZOoEXhLVGOuiso3T6DmAn7XuQ4RuMmOoLUzrDUPYPPYXV8UHudwqvTI09MG1ZXw7SJlcQaxtcd+K6sfGCci8sMDGHyW5UV9okPhvdd2Ixx1lVx64IBgmYVSBdYDIGFXQdAkgkoMdeI+mk0cagfmXkHwvgEj6Rn0XkvjoLDqAlCnAtiaHo4no0yb31+GtoIN+nDo+G2xqEMVBqGLgjMI5mRqHroY2qaXhFPw4OC2p-O44oTKXjdet-RGa9dwWxzZZrC1yaOftZEOnImGgfXBq+kWV7aFKCrBOtuqbrRWjq9CA205zHCgdBsB1iTtxzarsYS4YTRhfTOp7dAkoAeeGcOCXnCPiVzZZLAfuxQKhPsBo5gduO9mDb7KBB0haBzK0CHpu6QEjsAyTFHt-xVM65dtXoh1l91cOIVyQ01dCHuDEOU5wP6P3j14N3aI4wHn00AiELpSCL1Ci3diwaOmWQ7feu0vcsnwA+-csuQPuaNFGo5PJVHpOEHxGl7r7Y45P4HwJA4Th9C8CpysVXKsL3JAS0SNtNAfv1BAv9rGnvyj5wbo+RiInOFKAf004+EoyqQllP8oMiEua8-oT75HkZoZLItNDkK3tKQW5ZVYQ5w5DB39Hs9DmYrw1AEG-YIfYN-naOivsPZBFgiiBu9xmUBXAVwCAA */
+  /** @xstate-layout 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-Z3VTAJ6reoJlueHmJQDVsA7YwM0BQE3R-Ues-IlWbF58h4nDmqQnNQJSF4AuSQMjF2jfaCwVCnEkyCTIBEVBqx5rWOwtq4Tq8fVy4MtdAgQAFUK88Irjc5jFf+SVyhsi8gocdJYjo0SR8yFkMVLunLDlU8GMOHl+lGVKODQTiJDLx3tPMGF9CcIaxCgnoMEhMoBB6I94lRJDcEAgKw1suB3IDgr-4avghyA4EVIINgGA+8cr71Guv7BYBiFFZWLkihr1ZELDaMyPNzBbEGjJUQ4DhBl7AO3wI1f62j9qY3uMzfW-b8yp37v2Be-97AIP3Fw+G3j+vEm61kK0jRSOIZFOmc6g5pOlYR0KFLGK0PNc7JZf1Cta7cvSvPfWvRUWpakMuKkCQGMIYUMVAKkToHfC-HvEkPvSpO-QNB-A-Cff3MBdCIDB2awayAUJwV1YoHkMwCwawOqL+YwJjSOBiHVRtDA1dNtTAL9bdSgAIPAdAhvJvPAU-CQGAKuJrfgwQUQ1AdPbIaKK4TJDYZ1QiU9S4J0UQeOdmagiLKzCAwnTg7gxrXg5rDdNLIQ4MRQggRAjAlA8+dAzA6Q-wQQOQ9dTABQ3AdA5Q8EJ0FYdCMEYsXOU9ZmOjZuFQF0Y4DgrgvlZbbAT9Gwn9EQvw1AcQ4-SQ1ANvGQwQJIhNXw-wsg7SNFKjWaHbKFcEZ+IwcQMwCiAUaoOFREeI8wwo6wrdNI+wxw5A1A9gVwrA-IjonwxQ5Qt7axQKWwWwLIZ5ESPtNJYsGXB2KwJ+NovlTDbDHDdIsQo-bfHIvIjwkgJMWAQQPgYopQ0o3qL+R0KDdCCwdCZEWohAE7afItK4CUfyPHcAy7CtMwjYrjbYnoqkJA5wtAjAoYo4k4s4i45Q44IEVfNmfYUoPPbmOwJuBKUQMqJ+KRMtOTCQf4wITYnjHYzIvYk-XI7ffI4404vQWEq4pINFMoVWQtfkBwJFFQcwPMOEb1WoGTPEmzQkgIYk7jUkhwkEpw-owY9wquGkwQOksYhkowACR0aqQiMmdcCKNORYJ+U0T4m0b42TQUhIwIVTIMMU8kg4qko4-AIMekl-CFRklUxYJ5eOEEYHcPFWDQcoSxWoUCSKBWdY0020uwjI8U0EqUiEmUwQM02-RUh09zVHACBYeFHRKgpeFnVHcbLkHaSPLcIdDg0eNbKnFzfXRbPAdgLI-YlvSkgknwH0LvA3QQEs1zBMrLZU5YBEzYDFEGOEKECKKoF020BOFQfhQ0gUv4os9rFsss27EkcMyUlwqMyOesxs8s3AZs4kanVs9hRMpkp0PkITP032QLMEFFCUSwXCHxKiYw340wk0uLKkBLJLFLQQ7osMy0msw4quMeJ84kF82kKkQQVIqee03c9s1HEDCVSKWwLEksOlI7btfheoHGbIIMx8585I18kC4Q4EiMpctw-I38zC5LQC4Cro0C+M8C8XSCvrMrDFOC6EYrRwaQJYZC4wOcNC28gnadRSPAFPKJAgJPfAAStPJUhAcdaKaSNEG4OhMEMyHCBEqrFYUJIw-HfEviuMaHDyCQOJDgOpCACAAYCeaMVACs-pQRNQLkmYtIYyUPBS8VBOeOOwEJb1TBbijS-i7SzACQXACE3BYgFhfoX3QNCyt080LGUCXPP-PMLtEGGaSKMEAURjDymzTS0Sny56FxVZTpMuUMVMY8T8qQ8-JgLvXAquG-Qg4cYg+A9QfpNEZmLYZYF0BFI4Z4+YFi3PUKU4P2U0JjdK7yiQLKxMDpJgPKgqhcvogirAkqsqq-PAyqkK6quAw3Oq8SiaYiQROcK4LQNIdqw6GcOcNEJKj48coeGzPSys0VGXaQZYLaHxRcQzF5eYMoYCItUQQsRQJjS6ggZ-aik3EGJg0oS4MmGwGK2QLeCUaqFQWsKGpjH0ZPEkbADdCecgaHISxGES7y+qnPaffzUZSsTMv0wEZK5YTYGC6VeGxGzgFGqkNGsOXSlxSs1DTgXAC1Y5PgLdIVMalSAqsKnxdnQRNqnEiEUbE6ciacG6ERUc+OQyKmkSpG2m+m1AXy-yzAQK1gIlDlCy+jGFciGSSsSwGK0wMGRcTi1cfIa4X1H4niu9BGhWmmgQ1G6HIavAEa3K3mjsIq2s2ay-a-AgpaocGqw3YQeqpwQEPUnWbnH7F5ewAKSPJeRQWjeWmARWp2uml24anKnm-KjsXosEgYqM328q-AgfQO4OsfUO9a0SQ4eYaGXOHkMWodJgnxFYQSa4JwJjHoRLGHb9WmJDUkXAKsiktvFchs7uxvPvQYfujlQe-pEQYsdnZubCW+UwIrF+eE6wLYKEHIS81VVKitCe3u6e9gAeoe-OyMtwsewQI+qekys++ei9cTJ2CwWCz0xASyw4a4MLL2MEJjVyMIWM7yjG5PbG8SuoIyafYwaUSsYsQLAjewaTRlP6NlA+wnAB7dNTQawkn3UIbgIy14KkOMKkAgLOjpbXQBkMsKyXArYmZ2WyulF0dnZYJXTtREeOf+0ITB801PHynB-ATUQVKAPAISnAcgPsdIoISgOMMKnQp+Z1U4NQUQMWxwEGTGeOYyTQHamxNB6dDBoB3h127K5aIy-RkM4eq07A0qv2hagOofFasfHGzkYyWsVcKUewAcsTfIX-a9WsfYFK9SmzMxrBwxkgQyoVCAdUVSAICh7hwqiQr8s-DwzvSJkgVSQQWJ2MsKuwFmfSIaOcfs7mVYeHUW0QACOsHufk86itYJnhqJCQMJ3lAR1J6JzJ8xi+6anfG+0qlpquNptTHG+VQG-iCGuoIzM0Swe+BONOdg3Ru9IgRUXsWpjKkBrG3h+qobdNEhZQNELagiK4LtRg5VT+NEKpymGzBZ08AIZZ7Bk0oVQh4h0ht2nK6RpUGJrhrJ9anuD-B3VlDkcjYGNFJeuYWjFeMAo0itS5t5m5wx-hqAQRrrERyOQyl4RZ5Ufp803g4RnrdamCoIpYZQM9SwZWVnVJXPJYL5NmUtapwnKFpZj5kMwashk1Ol5UZZixxJqxua-2su+xkfeAwwHGzsnkB1I284RcX7b0wsdfT-O6zfOZoNVl65hlkJ+pxpkMKJwIV53sDF+J7IzlzKbp4CzVrvNFjJlVvBXF4yc0YCeoHzaaG3TkOsUdUW5EUwJjJVmFtVlF3p1Fq53Vyagu6Uw1lJk17VoC3VwZ6cSGF0bYD46wfZiELkOKDRvMOoAJm2-E7vJRIIc+PV6sqQ7XNyXBQQPygfIXFzI3NsmilYsGQaAw66IybJF5dCBoy22aL5VmJjbNhxM+XpQNy+rAots1Hwst2-CtocKt-6xmT5Q4aoZQUibiLQ46BYiWuwZEL8aGD17gJIgR57I1IkIykdi1DlqQkgLVerZTAAOWNQgAADVzV1N3EcxkQmHYUHUoQRW5i9hPNCMLQikEpJ0FWJBUNd34X93b3TVH2B3Onz32BL2OMb3D2H3MALVlDOSqs-ZJsVUUd9hshpBV8PqIRhn0LXh1z3nug9cyO5yx9T3azJ7qP0NzXKPb9GPlM6YrVHTlTvSgsaMfFIoXQbceRwZIQV8tGtBFxSODcLCW1+C2s6O28GOmyvCWs2sAiwZToAJPUor6DJkvxwZTRuIMg8O-7gOhS2Ols41kjVs9AFPt8lP1yCirOE01PxK0Ub5tg6FtZJJv2ToRX2ctZLBxWZiM2IX7zzCLPl1LC5P2tOtus7OJAHO5zPDovvC2sYyNscXq20ZP5AQHV5g8PVgSszIsg1xFAbgtABQVg7ApPyORi1s4uh7vbFPw5IuNz6u6TGvlCmGaMlY8hLhryO4AJpBaDNgNAtPO6zOHy2uggHtodcMEukumPIdSqw4ziAizBrgiNptixV5fsshk3qhdMbJDFau5zZuodntuNFvWumyVvq55TxjJoH4KJlhV4UdFw7UtBchxA1BzgZQpuIvpOycKcBCWybu1zkuQeS2WzlDkRwZ7i7r02E59nRAYVvHCIlcNhQuJzwu+UZuhd1RWssAIe2vBBCeRdE1p2Jx3PDgd7TgJRpirACYnAgQMg26JIMEPXMaYAAg-QPIRCMpfrwG3Xzp3O9Nsgib5lFh5wXrZcAfAnIWefgx+eBDGlak-rOPEz6gLgxfccJebAzJjB+MivBZeFrawvp0EZQHVfBeNfDBsucwdeeI-Z9e7BJfF8xIF3iNNHyILfcerfle+eok7ffqxBHeJxne9fvZ3fDeXkPsZfTffeFfM2Lmg-bf1ffqTAI-tIo-XeY+14iajgb5Zeze-fuebeQ-M+qA5Ac-eo8-SIC+PeXk85E+ff5euLFfaX0+q+heqBhA6+kgG-xfY+ibWY2+5fzeceaXA-K+Bfq-1BB-EAdeao49kyE4rhfOZcP8xFYU5h5H3Ku-Z+saM+++FAl+JKniuQ1-c81BjAzJwE6f6hNGe4HYPXsA6a6mPJVnef1nwHNn6EtlHHD7C1KFhygc4UCGzG8S4kZ+8zD-tm1ubcEhUWLJFii3IDwDMWQjPAPzTMB1glUh6frlkC1K2gYoKJA0pRHf6f8MqBJO5gI2chhNsAfQJ5sYxeAYCn2yabSKEm2hVFBY5wVYDkgLw8hu02sR5NP3OaQs2BTLZ5iYwCBEA2BCXYuvNQqp2N78DjWACYCcZUYL0-HbWKIByRgC7+i4WDJsHSSUCEBoTcJs001asCqBCg5Jj0zDZsCda8IQiJv3jhKASEEUUECZllrfdvMh-VPhIKoGDVGmETawegNsEdNwSbhENg4LSZVwIh2bMOjcCdAQM+48wFYlqSQRQglgHISyLcgr4n96msAGMBwFZrwtA6nSbAGPAUGlCKqQ+JgNULjKhhS2zEDABAHTwuUCwPCLHBkFfjCh0cEMcQFKkRDc5ChvPVXhXjqHlDhUgaKoTUKiGF0YhdQqqkHUaFjwFCLQuMJAHOQX9TokgPAX2VzjSRniMCSgiRghCwYecwHa3kUJ0olVZhw4AIK4WAbNckm7AHAkoNLq35y6ag-pGgkkC1hrIlGWwMmXfoSVh0tlCrtvVbjgsA+8zHvvcI7w14OUzwjAsA0WHBtkR3LWxry1UH8tDc-wu-gqk5jWBYKf+MrNIDdZXovwrdMwTwyHBFtOkZlGNLwx-4ZV6qSuGXo4CfhCQ6MCCBPtvSUC4Rl4Z1cQbS0kEuYmRLACsogImACN8qVILVMyIrIGUjKio5UTKJJAWVHABw83P41kAS0EEhMEzKaCsDGAZYcI2AYq0lGMjmIKo1kfUzhbagyORlLUZWWRZGUEk+DB0Rxz-QQVDIcIJeqICOqVgUex0OsJYBG6jlJeJweVkfzgHBCpR9o90SEMsHwtfWiQhkdKJZGVk3hXTUNvEK7xsDQ4do8drmLCqmJc4g0XhEsHqAIJ8gXmdBH6Xqj0iU8ZY30XKJmEuYP+bo3McwPdpZj2xOY8ytXSOx1hvkQ2KSLKgjGh57UFwcdA-D6o3DbRI4x0TpWZYENVxKY-sfmMUE8sfhfLR-HIE0HnlaCY6JOpQkCKIJEQRUXIMiA4IZ02RwlX-lEk5H2BkEM0WNn43BEogSawISsEBBsD+9rRBJJ8U6NoEVCT6votUcZVpi+idRdqcQGijUDmijICCbkNf1WIaN+I8YwIaYXAk6VnRLwocX6yVCiNkiEjO7NI3YGv4kgsYnUk0XJS8jfxq+LkryAThGCsUZnQiXw3TEat4hHWOmnYKriFj0mqNMKgnHZyrgyMgNE2sKFtwGd8kdkawNAkfHK0iJkE45IlkjjmMyGQk8gGFV14bhbQrcFQijlDxmBdSqsV2NvXUlSDjGQqVGiJM+EHjVhFdWAAoHqqaAygpzHekZGvLr0P6RScwDrGRAuNbAVo8UdOnqT00OxqY58UHz-4X9f80UFyp+CEGMphQw0afEo3BCrhncPEuKWuMCCwstJfdUyqqM9FwTKp2o3FvCC-yCJJQIrIKQgAVj5orAZWX6EIPsnJjgwCUiCUgIVHojSJ4bCieI0kawAaJRkiyEcBCiO5iwy7YoDPmCTmJG6u2TQL1Pim5jsG-E31s7T6kwS9x9g41kWNRqlii25PCsdXXRznBRoxfKwKBAGHo4Ian1L9ksC2klSuxQqHsVSD7Gqj9JEk3FrYCdBSZUEdGBNsdDnDMxIQxwc3IwQfFFSns202UWVKGngcKkf0mCcwk1qPCdyWvAMTkHSAgthoPQ3TrCGAlAhchEUrWDAOil3pYpyMr6YYzIZOThJx0j4dYxLqLUjxB+GQDjTSAmYvwcM+wPWKhlAR7U6wZCVsDUr4SYpT4lGeuMyrSCPaudfNiPXeGuTcRh4-EY-jUCDMhk4IHqryNxgwhfE04CoIMgRSgiEMAQPys8JICUBfAOoQIJUNQIyNxK9CUgU5RQqQwxaU2IED3Bow2AKWg0ECfTMNQw4mkx4PwObFdmojYAHkPXO7NolccTonJDYPO0UYhRvUvnQQPCGlaYRl43OfeupTIDYBOgQwH6TDhTkJdy5lc4YA92jn1V+oQWciKrH2gx1B0g0M3PRnBCeZysUU+SPXKrl7sa52UGDtEKwIjzG5a3ZueJR8zL5qMYIJOl-FaneMzECca+ETPdALQZ51cjmlzQEaB065LiBubfjW6B0w6ekVIOV1BhYkUc3yQOXdJBifwLce8s+aPPA4w5g4R8ioRyknlLDp5n82eeHCvniURABwGSGKBBaoUxaIUCyFQjdJjpGUC0QOj4CTlgAHgCgjlBgs8hYLHZFSD2Rf0EA5BooK8vuE1Vdh-5Lo5C19qEi2CoKPK6CzBdgsxFF1cFrCwhfxXnpkLDulCl2CsBoWmAP89C8dAUyHktgWF+CtheTmqFgMSFfCihbWCoVCKEEPVHMhkAYUSK0FnCmRS0AIDd0Qe8i5KdT18hKLC0KiwRW7AjGdwESW84mDou4oEBKhic-Bd5ReDK8OhECuuoAWMir5PshCcEUBBTJ6In4rpLdh5RHgxg9AQqYOOogQjqzLG8S+CBgEjhaoPA-w1QtKHVK7YVFv2eHkLBdjfdvU4c+SNEraxxK4IiSwBdKRSWJL0l7ATJeJUCJVB2GgibHssH25mBgQNgGsJZRuALQKlsS4+UxBYgKCxlTARpc0pSmAi80MCJqgwptx5ACOdlNeMCDKUthhlPuSZbUqLqTLpl6ATkYHMGw2B9gHsHZjbk7JFoJOJkWWbJm2UCMWEqkBLs8vYCHLvFF-XXj3NpkBl387VSEPSjUDR52GU2OmeUqnJCo3leytwm8o+X9JxA4AiwH92-jrByZC4IZDBl8QMYwMQyyFQI21zuR8FCXQlZgvhULzREtGayKyimhOoIo-IMoPcWM4y4fYeKmJUKlJXEr2FbhTlZSHJV7DoofvbHsCtkAtUUc+SRlVejsDQKhYYgiFeyoEYqQMoeIWufmKVWZRNkcYflWYt6jxwfSX8RQBYHJRaAzI5XCVAu1lrjZEZ6lR5fC3VUqqJ53KrAvavYCaqwA2qgmTRVrC1102kU4FXkFanLFzAU4fkK42M6SKDwtqxrJ1AS7LQcAfAD1f6Jor5gcYVXMUM-1MAEQ907OSPPICsAiK5VWy-FfCzjXYA+AMKrAqWoTUZKjl4DaKKmovRawSMf+NFHl1yQ5CNgDVNlZUuPlxr1ae4vtYmo0wBjpk3aaZu-j+hVR5Un1EbJeQuCERu1IyioX2orUV5B1Naz5Tqvom+S46u3HRCwRRz7CZw9CB3PIEXVCpc6r0BLpev8BDrn2E4YbtWCEGAQfJ1kDuPIEIzvge4-jKEOCqLUKr4WN6ysk6okBAa71HA3qORBnDDYKo2QEKN2n2YuCtq3Zb9d4nPUCMk8nQZGCQ3zGYbsN4GuiXsBJp5qQ8aQLaE0QJggyGgPIuykLDObyqe18LPDdSFXXMaqQBGtOVYEOBkJcgrjCEKUAJgfizRW0QsMNBq5RLi1AQUuOXErgPcPcCg1RJ0A4Dk8y4pyQQB7n+Eedm4XOQRAuy35XQfSv3YGkdyA42rJN0mtTWt3k0gbYAim5TTzTU0aaWlkgLqW-JgS-qO4eq1QEgwZQvV0N8LAlP4EjRxzJgi3E2GAFjlcNJgHGxMoICrB6J3Qos-jY4HJmO5-whqwhBdEGUSaANAQQLabGCAhbuAq6zwEFsi0WxcAMWiCnFsWAJaE4SWzYClvdjipzg4Sh2Fls2WRrJNhyMeMLinh1zR448SeJQCq01sI6tgMzPI0tr38N4ygVIUYP0jexC1XW3LT1qG0-pV1a2vrSNo3WipxtRkWSuCGm2+d-E0bb2Kvkep1h-NT2U+HmwS7apn0ebUbTlwtk+Y-G9CfIPyEzKfawYtkY3usuy1mbctD2vtsMFXUg6ntu2tzmDGaoAglwwwmSAgj5JmJXkqxXkfRv-WMaYmACftvmLLiAJ3VUOlKRAkgGXAWCnmZ2MaIFouhX5XOBhBGtohRr8d-bEDczuGDPaA8QyLgd+sIgnBrgAowIlvU-b2AkqnWxnZJqmm4IklBrBNITqaW1qL+aaI2jJEBpQ0gcvnL1I6AuAwZkty4oHVjsl150JSU1KeRXll0c6ae0yKaKBDhTQMtg323TU6CEjDl2GpQa7d3lYQJcPdWqonVup-bSBLKvIUKMJhoUZAu4PiErC9WITu6WEcYVjbHrl0zK-dLxMGK+EyAyV7dtYBsQ7CdArEqUjcf2B5WpgYFyhCXYODTHYCPRVN3YbFqnMTIEZiOWwKrLaFqD8QByiFODSEt8QLqi9fACvd6BA3l6S9Ve8uDXp4VuctddQTePFXyDr5PGgBN7hSyCjA4Fotab0PmMrkDgR9nQMfcQuT2ERj1oUetjDTmCBYmGnai3PVE5jLbaIa+7wCBs31gBt9u+uvRBTTQOwGVVtbPGOkCzDcLQEIAzCZGpaUw7E0SZRLZrUQaJS9+YpMFEh8CqJtUYQC3dpDEjB70IoIEaMNi8FMNWYfZHcLFAWigGc2EBxA6XpA2wGPI8ByA47PeW+7PVaMDIAj0pRwJHqHgrwVBr9IVNZwWnPCbJiIMOJu68owgDAaiTOJotdBpNS9uYZIhOpxwciNDECSBFoZO1MCD3vUr8HlEghsg8bqDZRkKDmAMQ9wGQOQpgktkT6qUGMjchAkpwGXpcHzV57eDeJDQ+kSVAJJoDCTKQvobiSuGuGxhrTGbjIWFgcYlEJQOCPyn0pvk5XPUhU0INRIc2FZakG4YH06HB2EgLw-El8MSHh1NFMoGDUx69l+Y8VelTnqRI7gYK9CD+RXK-nzdXFmCgIN0AwAJdZM+8seXjKCB1GGjYABADkRwTxBIg749nBKFNACIjgmgMWqQrUbfcJtDgJcCLA8otHv5bRtxXrk6OrrmjICg+bUfcWdHujNZXo64joCipIG6bWjBoFGGI6imtWxrcvFtDAiUqmIMdvAGiB-Jk9ggNugiA5jOxn+Ni4oPnO9LiBDIu1cJect-ivGlY3CEZKdHKj7AKwFBcqLMZmjEZf45SSpG6qeOSGZ2piSbHckyQqUm6RtF8LUBF1IgsYyJ1ZOsjROvG4oSK23JLx41mRF5X4UZhoBkgXAEMye+6bdWJixtLtwSlIbZRMhuk+yCcLfBybJrmBEqqQaaEKGereqtu6IX-GqS3w74q8NeAkWPg5OhIJTNCB5Fpy37S5yg+-VSdrFZPKmppxIYMKkwYgcR71NqLhN6j4iLS0Q4gRfLr1OAbtucTgV8GaaHw4INyflKuEmFvxWmbTEGrTB9RE6MoeQjgUYWZGf4Fhd4oqioHLUB58oVOnRdLLhQyL77iRxTBWHyCtonbd4Ae1QOihYLAHrMfxB8iMTfJTxSSOZlIccI5Cfs8O7sCguEr0RNttw6FYkkCWzP0GX2ddGKMRxXpbU-8IclMn7CigCR7IqZoklxlFKKEczOTf1QFLD2f4OSeXAToMjsC7d0KQDJcwOZp4vV2c-3bxmWfBFJxXqREHOYFG+6FkYljmLcqWTa7sBlzNUTCCXnK6ZkAp+6aaKDHG7Aj0KxFf8lhUAq1msz6BffQ8nMAJRdoacQaHSmZhlZzR-pT8P1S8q8Nk9MkJBE1RWBXQ6g2QCsE-Bl59xCYs+6rMBwGqGNLq2F2cMgl3MSIoUDlQEDGapTcgXqjh0CdRfqZ+VMCuCZPeUwChlm6MxwWGUbxkgvgQYVudcxjrvK8VML9TfSTnQKrYXw6DFzuFCEyQksTo-iTGLLl0wpab9+JWi0eZtSwUWYTsTCBOsPX7xygJGDpdNj1Ip1FQyNdOsrTUv5hI6BSUWcEvTZXHbKSuZYC5bToGSXapljE5HzdDs5hMRkKGoo2CXugMc5NcEJ9zmMJig09tVOo7TCsM0+LlczAIJe-hS502V0TWA-xyAxQysaIPIPmrFGVnCcWV1y0rUzoqyVLQYOi31hWDY4hj29B-gXlbiIJUE2PLuj3Rqln0OT6pViqldWBL7M1EYnQjnA2AXlBoNYThpQ1VYeRsL21HMq40FiEQPGwMOOgjy9S6jv6lFjKxIC9aaT0ZLon0Q82pCCWiuvEGYmFiiqZkRyXmUAp8dXwM78S11vhlpJQGhnCNElUCJtw8GPUboAWDeEcARIPw8Y3zNYsBwBtGMRqJqZZnRY-HFNZixCW3HSkXoPUt5w2HxutbiZpimmGY6wbqzouchmigUSBMcGeJXpbic0vtBsD9Ji78SnrC1hlW2urB00orbeIZBipOBVSMGYvoNk75yz5maLZVhta-6A3brD1qkE9YFqNQkzsgejATDewzYpQQRnPB6zluo3nRwNp66YhcoAFCLQ0Q7F2hgxxXKIoao21c1RubjZBxt3m3RYqB09BkkkYvh9xsAWyxEoEeKmhedvQtebFNgSdE3DbvMFbYAL2wsD3RKMYidrZZQ0UGyic0Q8yP6zZh7bgG82mpsTALCOCFZCwBSWE+kGFFvzrgQFm4Tuys6tGD2JqY9gnbMvXEYLYUf7vmudhhGZoHqaldjystncGs2uFjrOXQwan27jJDQHkh8kd07WLoZmysUWDTRWYaylPpbwZnTdpO6Z1rMUEitlFZ7KKAoN2mEwQgqoPcH0t8xtBt0OGc5ie7Fg67QW7UMkU+2IjUAX2XkIip3acC0uZScgI92LHvYa6ZcX7c9w0WemAwldJL4NuEOhEdsXWZbQacztJw67rYusINtOZiggfcgDMdY9qntWOz6Fho4CYy8aSB7kcVu83HDNBf6idTLhe1Rnr9jfgsqZKIrYsEA4czUOrudD24o3SdgTirgWa+VK3tuNSYGVXD3VNDzB7Pmhw4Dk+3g8RB1jENaUusK3RuCM2pHyiCnsT0KvT3WcSgQ026D5J1gccBMO1BaOb2xEkHW9xVoiLV4ZRsLDxWC8CNh0PwGTzMfIIiekiO4AhdjkDpKKiT82Xe2g+osFA5I8RdN1QPNaEXdYrikxg0oQwi2xZPXvbbdOOnokM6gC62e6c4CrmYL+P4RNoxJzdeSf0DeUfQQS3mCd09pdq8gHxIEkETSBur8jd8KXgSfmClL0gllmwKetSSyoW3KBKdByRQaHU3ONUgxjbEU2whgkocU9a0DMN0DN0WGuTP2A5NpLawXZg-HqsmFj+Ew4JwY9RwXRatawRaR4ME5FMk7S4UiOWdM3IOQODjqYWmBmFuymhdDrTbtxLCqAEEOhDRjzERCaP1g4wlXsUORFtGXhWFo5+FOEsGZuybBGhZCL2jHAYRryaZ4dIGlbWjnIyOe58hDzaxyZPcXXmjjEQsMiM6LxWaVKSczCNRtUt89i8YXX9qVdsSUIS7WCC3CwRXTPRS+ZnUvcGro30bTdlhiW8YLu8Ed8cGMu75wTyHlzuNRnetKb0drVtuP6m5i6LVwf7N+oTjQJ8YEYxKjFaVzTRsYf6+S4mPMGUvvpe7TGf9JJDm2Aj+ZlF+IEJdwacyrlXJOgdleqv5XG4np1uKTGUv1XooX5voQVjfaioiwZqo7DPO7PTXKD3idtfFR+TCIAUj2OouuSdx02mObs0jLRnJOKpgrhl1ZQ0cg1G4lWDCQvAoveZZKWQXqXy+GnKhRpaLOi2o3yHUEiImgYUIOS3BYkhan3Wt0RL2nWDUaalkixoAsMxF7Alz5aR-oLDP8ddq1-t0reSf-ldJamL25IHqIh5pQ6B4ULucWA-JCWxfNkzm+6eOSBGw77FwAZih1gpwCD2+MKFStchiEJk+DUU9AmMyMXO0qF4ffr63jk2Sga-d-XJkzYDhGKf7hYYhCfS5XSsmgbdfzfui6L9QTV75m9ijphQjsbhI9Wcq6aoPXrmD8RJGmSDw2WN6ZIByan1tgPWlwWs6wVjuC33EcsCcVOg9UuB3ir-aQrJKlqWzQYiB6mY6ugDDH1WlgKQdZdC4fOxub7sda4Lc-v6JxTAjtaAj0AG-8GCEmgxj-A6xNpObi1yzOkFszyA6rohOsEJY-LniBTbaJYgSiQD6gYnzF8rJYHtW27Mn5fqvFrqVBgIygHS2p-xaiQWTQSW2fbOjmvHP4uhXTXMmkvyVuYZ5a8pJEBMWHrVmbBY-NxTnYWoxYH1EKRldgfdUkZwVtiGNFWoMy5Gx1o7-K1Q+4OUye+VLAhmzDlTtj89Wz8kx6+YdG6laRZSAeDJ6RyBHFqnZCigAsX4r4HNU5SeT6Zrt9SjAK8aBzX8aVGCWq6lpUUSoW9SjBp39ajWwBJlE3nJuIGAhYkWTkUG3AXmq4ghSaxTa7W8om-elU0YcuBOZAf4C0QkC2s4I1Gu28rHP2RjxJYmknpIxjPiPiOK4QezvJQ4IefMe-11LrNQ6USvMl6Of5yoNJtX9b5jjYxVcgc7O6bFD7KScctWOqtRt5c3CjroqKEOZebXyC0ZkOEEDIDszare+153puG91GFGzYUW-WFDmXd4uVozkUa7UBvO8acPPKcPJeWGBj3EbkBWV8KXdM6g-7miMLDY9eh8TiDyyZMx3kBDyUak7QxkUDyE7TXaLNsmqzbynpdOfkgPscAUyjgTDQSuZ5D7FKBcqlBVg12-LcFqi3rRbTG0L1E6AOjZ2JO5ok7QUwM7UEwQfA84Ndq23DbXvzvmYB8nMDfqawn4WwEZijG3xSua+TtHJfF3A7btvSCb52VFog1E-FiJHfCSLTEIlPnFZ7zjuGATerKaCIdD5LzQ0KeRrFCAR3U5creJdsujb9QgafOpCLH2ShPKh17vJmiTCiXxhoT0V+m4RUUY7yHCkNipJdgIH3LG-Vc3i9DSfAJn8ZWN0LoW3AtOOYOaGmPkNBH7qvolhtBM-asFfAB7kM-PgYE6WC-8yZJepYj9icAwgagMn-Zf8JASPIHyAOLUSxiRnovCwgrabengwPKZwy0M3-A33zkkPbaj-tAXS7zCNLZL+jI0pUU0EhhH-MAxcNEjKLVX93-LeAdhS7T9mBBRnWWEQQ-7EDGUBKjBuU2ME5DoxaBsLAjBqIMkamUJ8YQKALZ4sYPkFf5RZRsFcAgAA */
   id: 'Modeling',
 
   context: ({ input }) => ({
@@ -3434,16 +3281,6 @@ export const modelingMachine = setup({
           guard: 'no kcl errors',
         },
 
-        'event.parameter.create': {
-          target: '#Modeling.state:parameter:creating',
-          guard: 'no kcl errors',
-        },
-
-        'event.parameter.edit': {
-          target: '#Modeling.state:parameter:editing',
-          guard: 'no kcl errors',
-        },
-
         Export: {
           target: 'Exporting',
           guard: 'Has exportable geometry',
@@ -3508,6 +3345,14 @@ export const modelingMachine = setup({
         },
         'Boolean Intersect': {
           target: 'Boolean intersecting',
+          guard: 'no kcl errors',
+        },
+        'Pattern Circular 3D': {
+          target: 'Pattern Circular 3D',
+          guard: 'no kcl errors',
+        },
+        'Pattern Linear 3D': {
+          target: 'Pattern Linear 3D',
           guard: 'no kcl errors',
         },
       },
@@ -4587,7 +4432,10 @@ export const modelingMachine = setup({
                   actions: 'reset deleteIndex',
                 },
 
-                'Close sketch': 'Finish profile',
+                'Close sketch': {
+                  target: 'Finish profile',
+                  actions: 'reset deleteIndex',
+                },
               },
             },
 
@@ -4636,7 +4484,7 @@ export const modelingMachine = setup({
 
         'Delete segment': {
           reenter: false,
-          actions: ['Delete segment', 'Set sketchDetails', 'reset selections'],
+          actions: ['Delete segment', 'reset selections'],
         },
         'code edit during sketch': '.clean slate',
         'Constrain with named value': {
@@ -4663,7 +4511,10 @@ export const modelingMachine = setup({
         'Select sketch plane': {
           target: 'animating to plane',
           actions: ['reset sketch metadata'],
+          reenter: true,
         },
+
+        'Select sketch solve plane': 'animating to sketch solve mode',
       },
     },
 
@@ -4707,6 +4558,32 @@ export const modelingMachine = setup({
 
         onError: 'idle',
       },
+    },
+
+    sketchSolveMode: {
+      invoke: {
+        id: 'sketchSolveMachine',
+        src: 'sketchSolveMachine',
+        input: ({ context }) => ({
+          parentContext: context,
+          initialSketchDetails: context.sketchDetails,
+        }),
+        onDone: {
+          target: 'idle',
+        },
+        onError: {
+          target: 'idle',
+        },
+      },
+      on: {
+        'equip tool': {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        'unequip tool': {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+      },
+      description: `Actor defined in separate file`,
     },
 
     'Applying extrude': {
@@ -4848,37 +4725,6 @@ export const modelingMachine = setup({
         onDone: ['idle'],
         onError: {
           target: 'idle',
-          actions: 'toastError',
-        },
-      },
-    },
-
-    'state:parameter:creating': {
-      invoke: {
-        src: 'actor.parameter.create',
-        id: 'actor.parameter.create',
-        input: ({ event }) => {
-          if (event.type !== 'event.parameter.create') return undefined
-          return event.data
-        },
-        onDone: ['#Modeling.idle'],
-        onError: {
-          target: '#Modeling.idle',
-          actions: 'toastError',
-        },
-      },
-    },
-    'state:parameter:editing': {
-      invoke: {
-        src: 'actor.parameter.edit',
-        id: 'actor.parameter.edit',
-        input: ({ event }) => {
-          if (event.type !== 'event.parameter.edit') return undefined
-          return event.data
-        },
-        onDone: ['#Modeling.idle'],
-        onError: {
-          target: '#Modeling.idle',
           actions: 'toastError',
         },
       },
@@ -5076,6 +4922,46 @@ export const modelingMachine = setup({
         },
       },
     },
+
+    'Pattern Circular 3D': {
+      invoke: {
+        src: 'patternCircular3dAstMod',
+        id: 'patternCircular3dAstMod',
+        input: ({ event }) =>
+          event.type !== 'Pattern Circular 3D' ? undefined : event.data,
+        onDone: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Pattern Linear 3D': {
+      invoke: {
+        src: 'patternLinear3dAstMod',
+        id: 'patternLinear3dAstMod',
+        input: ({ event }) =>
+          event.type !== 'Pattern Linear 3D' ? undefined : event.data,
+        onDone: 'idle',
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'animating to sketch solve mode': {
+      invoke: {
+        src: 'animate-to-sketch-solve',
+        onDone: 'sketchSolveMode',
+        onError: 'Sketch no face',
+        input: ({ event }) => {
+          if (event.type !== 'Select sketch solve plane') return undefined
+          return event.data
+        },
+      },
+    },
   },
 
   initial: 'idle',
@@ -5101,24 +4987,67 @@ export const modelingMachine = setup({
       reenter: false,
       actions: 'Set mouse state',
     },
+
     'Set context': {
       reenter: false,
       actions: 'Set context',
     },
+
     'Set Segment Overlays': {
       reenter: false,
       actions: 'Set Segment Overlays',
+    },
+
+    'Update sketch details': {
+      reenter: false,
+      actions: 'Set sketchDetails',
     },
     'Center camera on selection': {
       reenter: false,
       actions: 'Center camera on selection',
     },
+
     'Toggle default plane visibility': {
       reenter: false,
       actions: 'Toggle default plane visibility',
     },
+
+    'sketch solve tool changed': {
+      reenter: false,
+      actions: assign(({ event }) => {
+        console.log('sketch solve tool changed', event)
+        if (event.type !== 'sketch solve tool changed') return {}
+        return {
+          sketchSolveTool: event.data.tool,
+        }
+      }),
+    },
   },
 })
+
+function listenForOriginMove(
+  args: OnMoveCallbackArgs,
+  sketchDetails: SketchDetails
+) {
+  if (!args) return
+  const { intersectionPoint } = args
+  if (!intersectionPoint?.twoD) return
+  const { snappedPoint, isSnapped } = sceneEntitiesManager.getSnappedDragPoint(
+    intersectionPoint.twoD,
+    args.intersects,
+    args.mouseEvent
+  )
+  if (isSnapped) {
+    sceneEntitiesManager.positionDraftPoint({
+      snappedPoint: new Vector2(...snappedPoint),
+      origin: sketchDetails.origin,
+      yAxis: sketchDetails.yAxis,
+      zAxis: sketchDetails.zAxis,
+    })
+  } else {
+    sceneEntitiesManager.removeDraftPoint()
+  }
+}
 
 export function isEditingExistingSketch({
   sketchDetails,

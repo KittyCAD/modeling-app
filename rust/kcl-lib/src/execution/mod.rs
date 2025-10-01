@@ -23,26 +23,23 @@ use kcmc::{
 use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
 use crate::{
-    CompilationError, ExecError, KclErrorWithOutputs,
+    CompilationError, ExecError, KclErrorWithOutputs, SourceRange,
     engine::{EngineManager, GridScaleBehavior},
     errors::{KclError, KclErrorDetails},
     execution::{
         cache::{CacheInformation, CacheResult},
         import_graph::{Universe, UniverseMap},
         typed_path::TypedPath,
-        types::{UnitAngle, UnitLen},
     },
     fs::FileManager,
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
-    source_range::SourceRange,
 };
 
 pub(crate) mod annotations;
@@ -63,7 +60,7 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
-enum StatementKind<'a> {
+pub(crate) enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,
 }
@@ -90,7 +87,7 @@ pub struct ExecOutcome {
     pub default_planes: Option<DefaultPlanes>,
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct DefaultPlanes {
@@ -102,7 +99,7 @@ pub struct DefaultPlanes {
     pub neg_yz: uuid::Uuid,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct TagIdentifier {
@@ -191,7 +188,7 @@ impl std::hash::Hash for TagIdentifier {
 }
 
 /// Engine information for a tag.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct TagEngineInfo {
@@ -212,7 +209,7 @@ pub enum BodyType {
 }
 
 /// Metadata.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq, Copy)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq, Copy)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Metadata {
@@ -276,7 +273,7 @@ pub struct ExecutorContext {
 }
 
 /// The executor settings.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 pub struct ExecutorSettings {
     /// Highlight edges of 3D objects?
@@ -327,7 +324,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             replay: None,
             project_directory: None,
             current_file: None,
-            fixed_size_grid: settings.app.fixed_size_grid,
+            fixed_size_grid: settings.modeling.fixed_size_grid,
         }
     }
 }
@@ -433,9 +430,7 @@ impl ExecutorContext {
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
-            engine: Arc::new(Box::new(
-                crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
-            )),
+            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
@@ -602,14 +597,7 @@ impl ExecutorContext {
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
         let grid_scale = if self.settings.fixed_size_grid {
-            GridScaleBehavior::Fixed(
-                program
-                    .meta_settings()
-                    .ok()
-                    .flatten()
-                    .map(|s| s.default_length_units)
-                    .map(kcmc::units::UnitLength::from),
-            )
+            GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
         } else {
             GridScaleBehavior::ScaleWithZoom
         };
@@ -1102,14 +1090,7 @@ impl ExecutorContext {
 
         // Re-apply the settings, in case the cache was busted.
         let grid_scale = if self.settings.fixed_size_grid {
-            GridScaleBehavior::Fixed(
-                program
-                    .meta_settings()
-                    .ok()
-                    .flatten()
-                    .map(|s| s.default_length_units)
-                    .map(kcmc::units::UnitLength::from),
-            )
+            GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
         } else {
             GridScaleBehavior::ScaleWithZoom
         };
@@ -1358,7 +1339,7 @@ impl ExecutorContext {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
 pub struct ArtifactId(Uuid);
 
 impl ArtifactId {
@@ -1416,14 +1397,14 @@ pub(crate) async fn parse_execute_with_project_dir(
     let program = crate::Program::parse_no_errs(code)?;
 
     let exec_ctxt = ExecutorContext {
-        engine: Arc::new(Box::new(
-            crate::engine::conn_mock::EngineConnection::new().await.map_err(|err| {
+        engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().map_err(
+            |err| {
                 KclError::new_internal(crate::errors::KclErrorDetails::new(
                     format!("Failed to create mock engine connection: {err}"),
                     vec![SourceRange::default()],
                 ))
-            })?,
-        )),
+            },
+        )?)),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings {
             project_directory,
@@ -1458,7 +1439,7 @@ mod tests {
     use super::*;
     use crate::{
         ModuleId,
-        errors::KclErrorDetails,
+        errors::{KclErrorDetails, Severity},
         exec::NumericType,
         execution::{memory::Stack, types::RuntimeType},
     };
@@ -1809,7 +1790,8 @@ answer = returnX()"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn type_aliases() {
-        let text = r#"type MyTy = [number; 2]
+        let text = r#"@settings(experimentalFeatures = allow)
+type MyTy = [number; 2]
 fn foo(@x: MyTy) {
     return x[0]
 }
@@ -2246,7 +2228,7 @@ test([0, 0])
 "#;
         let result = parse_execute(ast).await;
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("undefined"),);
+        assert!(result.unwrap_err().to_string().contains("undefined"));
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2516,5 +2498,60 @@ sketch2 = startSketchOn(solid, face = tag0)
 foo() |> extrude(length = 1)
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn experimental() {
+        let code = r#"
+startSketchOn(XY)
+  |> startProfile(at = [0, 0], tag = $start)
+  |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 1);
+        assert_eq!(errors[0].severity, Severity::Error);
+        let msg = &errors[0].message;
+        assert!(msg.contains("experimental"), "found {msg}");
+
+        let code = r#"@settings(experimentalFeatures = allow)
+startSketchOn(XY)
+  |> startProfile(at = [0, 0], tag = $start)
+  |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert!(errors.is_empty());
+
+        let code = r#"@settings(experimentalFeatures = warn)
+startSketchOn(XY)
+  |> startProfile(at = [0, 0], tag = $start)
+  |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 1);
+        assert_eq!(errors[0].severity, Severity::Warning);
+        let msg = &errors[0].message;
+        assert!(msg.contains("experimental"), "found {msg}");
+
+        let code = r#"@settings(experimentalFeatures = deny)
+startSketchOn(XY)
+  |> startProfile(at = [0, 0], tag = $start)
+  |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let errors = result.exec_state.errors();
+        assert_eq!(errors.len(), 1);
+        assert_eq!(errors[0].severity, Severity::Error);
+        let msg = &errors[0].message;
+        assert!(msg.contains("experimental"), "found {msg}");
+
+        let code = r#"@settings(experimentalFeatures = foo)
+startSketchOn(XY)
+  |> startProfile(at = [0, 0], tag = $start)
+  |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
+"#;
+        parse_execute(code).await.unwrap_err();
     }
 }

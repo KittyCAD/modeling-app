@@ -8,6 +8,7 @@ description: Operations executed import_cycle1.kcl
   "rust/kcl-lib/tests/import_cycle1/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -115,6 +116,7 @@ description: Operations executed import_cycle1.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

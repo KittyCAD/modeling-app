@@ -1,13 +1,13 @@
 import { Dialog } from '@headlessui/react'
-import type { RefObject, MouseEvent } from 'react'
+import type { MouseEvent, RefObject } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import type { ActionIconProps } from '@src/components/ActionIcon'
 import { ActionIcon } from '@src/components/ActionIcon'
-import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import usePlatform from '@src/hooks/usePlatform'
+import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 
 export interface ContextMenuProps
   extends Omit<React.HTMLAttributes<HTMLUListElement>, 'children'> {
@@ -19,7 +19,6 @@ export interface ContextMenuProps
 }
 
 const DefaultContextMenuItems = [
-  <ContextMenuItemRefresh />,
   <ContextMenuItemCopy />,
   // add more default context menu items here
 ]
@@ -100,6 +99,7 @@ export function ContextMenu({
           ? windowSize.height - position.y
           : 'auto',
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [position, windowSize, dialogRef.current])
 
   // Listen for window resize to update context menu position
@@ -120,8 +120,10 @@ export function ContextMenu({
   useEffect(() => {
     menuTargetElement?.current?.addEventListener(event, handleContextMenu)
     return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
       menuTargetElement?.current?.removeEventListener(event, handleContextMenu)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [menuTargetElement?.current, callback])
 
   return (
@@ -187,18 +189,6 @@ export function ContextMenuItem(props: ContextMenuItemProps) {
         <kbd className="hotkey">{hotkeyDisplay(hotkey, platform)}</kbd>
       )}
     </button>
-  )
-}
-
-export function ContextMenuItemRefresh() {
-  return (
-    <ContextMenuItem
-      icon="arrowRotateRight"
-      onClick={() => globalThis?.window?.location.reload()}
-      hotkey="mod+r"
-    >
-      Refresh
-    </ContextMenuItem>
   )
 }
 

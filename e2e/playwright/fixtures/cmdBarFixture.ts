@@ -77,6 +77,54 @@ export class CmdBarFixture {
         commandName: commandName || '',
       }
     }
+
+    const vector3dInputsExist = await this.page
+      .getByTestId('vector3d-x-input')
+      .isVisible()
+      .catch(() => false)
+    if (vector3dInputsExist) {
+      // Validate that all three vector3d inputs are present
+      const inputsPresent = await Promise.all([
+        this.page.getByTestId('vector3d-x-input').isVisible(),
+        this.page.getByTestId('vector3d-y-input').isVisible(),
+        this.page.getByTestId('vector3d-z-input').isVisible(),
+      ])
+
+      if (!inputsPresent.every(Boolean)) {
+        throw new Error('Not all vector3d inputs are present')
+      }
+
+      const [
+        headerArguments,
+        highlightedHeaderArg,
+        commandName,
+        xValue,
+        yValue,
+        zValue,
+      ] = await Promise.all([
+        getHeaderArgs(),
+        this.page
+          .locator('[data-is-current-arg="true"]')
+          .locator('[data-test-name="arg-name"]')
+          .textContent(),
+        getCommandName(),
+        this.page.getByTestId('vector3d-x-input').inputValue(),
+        this.page.getByTestId('vector3d-y-input').inputValue(),
+        this.page.getByTestId('vector3d-z-input').inputValue(),
+      ])
+
+      const vectorValue = `[${xValue}, ${yValue}, ${zValue}]`
+
+      return {
+        stage: 'arguments',
+        currentArgKey: highlightedHeaderArg || '',
+        currentArgValue: vectorValue,
+        headerArguments,
+        highlightedHeaderArg: highlightedHeaderArg || '',
+        commandName: commandName || '',
+      }
+    }
+
     const [
       currentArgKey,
       currentArgValue,
@@ -143,15 +191,9 @@ export class CmdBarFixture {
     await submitButton.click()
   }
 
-  openCmdBar = async (selectCmd?: 'promptToEdit') => {
+  openCmdBar = async () => {
     await this.cmdBarOpenBtn.click()
     await expect(this.page.getByPlaceholder('Search commands')).toBeVisible()
-    if (selectCmd === 'promptToEdit') {
-      const promptEditCommand = this.selectOption({ name: 'Text-to-CAD Edit' })
-      await expect(promptEditCommand.first()).toBeVisible()
-      await promptEditCommand.first().scrollIntoViewIfNeeded()
-      await promptEditCommand.first().click()
-    }
   }
 
   closeCmdBar = async () => {
@@ -267,15 +309,18 @@ export class CmdBarFixture {
           if (part.startsWith('--')) continue
 
           const nameMatch = part.match(/name="([^"]+)"/)
-          if (!nameMatch) continue
+          if (!nameMatch) {
+            console.log('No name match found in part:', part.substring(0, 100))
+            continue
+          }
 
           const name = nameMatch[1]
           const content = part.split(/\r?\n\r?\n/)[1]?.trim()
           if (!content) continue
 
-          if (name === 'event') {
+          if (name === 'body') {
             eventData = JSON.parse(content)
-          } else {
+          } else if (name === 'files') {
             files[name] = content
           }
         }

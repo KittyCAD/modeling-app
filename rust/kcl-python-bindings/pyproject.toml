@@ -4,19 +4,16 @@ build-backend = "maturin"
 
 [project]
 name = "zoo-kcl"
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 classifiers = [
-    "Programming Language :: Rust",
-    "Programming Language :: Python :: Implementation :: CPython",
-    "Programming Language :: Python :: Implementation :: PyPy",
+  "Programming Language :: Rust",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dynamic = ["version"]
 
 [project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-asyncio",
-]
+test = ["pytest", "pytest-asyncio"]
 
 [tool.maturin]
 features = ["pyo3/extension-module"]

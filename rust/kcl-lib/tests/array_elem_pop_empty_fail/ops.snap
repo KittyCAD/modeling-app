@@ -6,6 +6,7 @@ description: Operations executed array_elem_pop_empty_fail.kcl
   "rust/kcl-lib/tests/array_elem_pop_empty_fail/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -113,6 +114,7 @@ description: Operations executed array_elem_pop_empty_fail.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

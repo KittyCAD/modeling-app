@@ -34,6 +34,7 @@ description: Operations executed tangent_to_3_point_arc.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -141,6 +142,7 @@ description: Operations executed tangent_to_3_point_arc.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

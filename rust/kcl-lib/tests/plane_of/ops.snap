@@ -54,12 +54,8 @@ description: Operations executed plane_of.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Yards"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "yd",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -102,12 +98,8 @@ description: Operations executed plane_of.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Yards"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "yd",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -164,6 +156,7 @@ description: Operations executed plane_of.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -271,6 +264,7 @@ description: Operations executed plane_of.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

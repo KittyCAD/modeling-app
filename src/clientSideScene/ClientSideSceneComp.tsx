@@ -23,12 +23,12 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
+import { defaultSourceRange } from '@src/lang/sourceRange'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import type { ConstrainInfo } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
 import { parse, recast, resultIsOk } from '@src/lang/wasm'
-import { defaultSourceRange } from '@src/lang/sourceRange'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import {
   codeManager,
@@ -38,11 +38,15 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import { err, reportRejection, trap } from '@src/lib/trap'
-import { throttle, toSync } from '@src/lib/utils'
 import type { useSettings } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
-import type { SegmentOverlay } from '@src/machines/modelingMachine'
+import { err, reportRejection, trap } from '@src/lib/trap'
+import { throttle, toSync } from '@src/lib/utils'
+import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
+import {
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -78,7 +82,6 @@ export const ClientSideScene = ({
     typeof useSettings
   >['modeling']['enableTouchControls']['current']
 }) => {
-  const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
 
@@ -97,38 +100,61 @@ export const ClientSideScene = ({
     )
   }, [state?.context?.selectionRanges?.otherSelections])
 
+  const containerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    if (!canvasRef.current) return
-    const canvas = canvasRef.current
-    canvas.appendChild(sceneInfra.renderer.domElement)
-    canvas.appendChild(sceneInfra.labelRenderer.domElement)
-    sceneInfra.onWindowResize()
+    const container = containerRef.current
+    if (!container) {
+      return
+    }
+    const canvas = sceneInfra.renderer.domElement
+    container.appendChild(canvas)
+    container.appendChild(sceneInfra.labelRenderer.domElement)
+
     sceneInfra.animate()
-    canvas.addEventListener(
-      'mousemove',
-      toSync(sceneInfra.onMouseMove, reportRejection),
-      false
+
+    const onMouseMove = toSync(sceneInfra.onMouseMove, reportRejection)
+    container.addEventListener('mousemove', onMouseMove)
+    container.addEventListener('mousedown', sceneInfra.onMouseDown)
+    const onMouseUp = toSync(sceneInfra.onMouseUp, reportRejection)
+    container.addEventListener('mouseup', onMouseUp)
+
+    // Detect canvas size changes
+    const observer = new ResizeObserver(() => {
+      // This is called initially too, not just on resize
+      sceneInfra.onCanvasResized()
+      sceneInfra.camControls.onWindowResize()
+      sceneEntitiesManager.onCamChange()
+    })
+    observer.observe(container)
+
+    // Detect dpr changes
+    let media = window.matchMedia(
+      `(resolution: ${window.devicePixelRatio}dppx)`
     )
-    canvas.addEventListener('mousedown', sceneInfra.onMouseDown, false)
-    canvas.addEventListener(
-      'mouseup',
-      toSync(sceneInfra.onMouseUp, reportRejection),
-      false
-    )
+    function handleChange() {
+      media.removeEventListener('change', handleChange)
+      media = window.matchMedia(`(resolution: ${window.devicePixelRatio}dppx)`)
+      media.addEventListener('change', handleChange)
+
+      sceneInfra.onCanvasResized()
+      sceneInfra.camControls.onWindowResize()
+    }
+    media.addEventListener('change', handleChange)
+
+    // send
     sceneInfra.setSend(send)
     engineCommandManager.modelingSend = send
+
     return () => {
-      canvas?.removeEventListener(
-        'mousemove',
-        toSync(sceneInfra.onMouseMove, reportRejection)
-      )
-      canvas?.removeEventListener('mousedown', sceneInfra.onMouseDown)
-      canvas?.removeEventListener(
-        'mouseup',
-        toSync(sceneInfra.onMouseUp, reportRejection)
-      )
+      container.removeEventListener('mousemove', onMouseMove)
+      container.removeEventListener('mousedown', sceneInfra.onMouseDown)
+      container.removeEventListener('mouseup', onMouseUp)
       sceneEntitiesManager.tearDownSketch({ removeAxis: true })
+
+      observer.disconnect()
+      media.removeEventListener('change', handleChange)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   let cursor = 'default'
@@ -161,7 +187,7 @@ export const ClientSideScene = ({
   return (
     <>
       <div
-        ref={canvasRef}
+        ref={containerRef}
         style={{ cursor: cursor }}
         data-testid="client-side-scene"
         className={`absolute inset-0 h-full w-full transition-all duration-300 ${
@@ -498,6 +524,7 @@ const ConstraintSymbol = ({
 
   const _node = useMemo(
     () => getNodeFromPath<Expr>(kclManager.ast, pathToNode),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [kclManager.ast, pathToNode]
   )
   if (err(_node)) return
@@ -567,7 +594,9 @@ const ConstraintSymbol = ({
                 shallowPath,
                 argPosition,
                 kclManager.ast,
-                kclManager.variables
+                kclManager.variables,
+                removeSingleConstraint,
+                transformAstSketchLines
               )
 
               if (!transform) return
@@ -662,11 +691,13 @@ export const CamDebugSettings = () => {
 
   useEffect(() => {
     sceneInfra.camControls.setReactCameraPropertiesCallback(setCamSettings)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [sceneInfra])
   useEffect(() => {
     if (camSettings.type === 'perspective' && camSettings.fov) {
       setFov(camSettings.fov)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [(camSettings as any)?.fov])
 
   return (

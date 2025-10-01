@@ -157,8 +157,8 @@ description: Artifact commands herringbone-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.0162841835514778,
-            "y": 11.747651272325072,
+            "x": -3.016284183551481,
+            "y": 11.74765127232507,
             "z": 0.0
           },
           "relative": false
@@ -415,8 +415,8 @@ description: Artifact commands herringbone-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.8779014305491148,
-            "y": 13.368750361089909,
+            "x": 1.877901430549112,
+            "y": 13.36875036108991,
             "z": 0.0
           },
           "relative": false
@@ -450,7 +450,7 @@ description: Artifact commands herringbone-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0008486680761613712,
+            "x": -0.0008486680761640642,
             "y": 12.128696548758493,
             "z": 0.0
           },
@@ -686,9 +686,11 @@ description: Artifact commands herringbone-gear.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

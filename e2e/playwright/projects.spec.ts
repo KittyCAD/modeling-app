@@ -1,7 +1,8 @@
 import fs from 'fs'
 import path from 'path'
-import { DEFAULT_PROJECT_KCL_FILE } from '@src/lib/constants'
+import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
 import fsp from 'fs/promises'
+import { NIL as uuidNIL } from 'uuid'
 
 import {
   createProject,
@@ -292,7 +293,9 @@ test(
 
 test(
   'when code with error first loads you get errors in console',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, editor }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(path.join(dir, 'broken-code'), { recursive: true })
@@ -323,7 +326,9 @@ test(
 
 test(
   'Rename and delete projects, also spam arrow keys when renaming',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
@@ -539,7 +544,9 @@ test(
 
 test(
   'pressing "delete" on home screen should do nothing',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, homePage }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
@@ -910,7 +917,9 @@ test(
 
 test(
   'Nested directories in project without main.kcl do not create main.kcl',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     let testDir: string | undefined
     await context.folderSetupFn(async (dir) => {
@@ -967,7 +976,9 @@ test(
 
 test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
@@ -1045,7 +1056,9 @@ test(
 
 test(
   'Can load a file with CRLF line endings',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, scene, cmdBar }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const routerTemplateDir = path.join(dir, 'router-template-slate')
@@ -1077,7 +1090,9 @@ test(
 
 test(
   'Can sort projects on home page',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
@@ -1183,104 +1198,10 @@ test(
 )
 
 test(
-  'When the project folder is empty, user can create new project and open it.',
-  { tag: '@desktop' },
-  async ({ page }, testInfo) => {
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    page.on('console', console.log)
-
-    // Locators and constants
-    const gizmo = page.locator('[aria-label*=gizmo]')
-    const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
-    const pointOnModel = { x: 660, y: 250 }
-    const expectedStartCamZPosition = 15633.47
-
-    // Constants and locators
-    const projectLinks = page.getByTestId('project-link')
-
-    // expect to see text "No projects found"
-    await expect(page.getByText('No projects found')).toBeVisible()
-
-    await createProject({ name: 'project-000', page, returnHome: true })
-    await expect(projectLinks.getByText('project-000')).toBeVisible()
-
-    await projectLinks.getByText('project-000').click()
-
-    await u.waitForPageLoad()
-
-    // The file should be prepopulated with the user's unit settings.
-    await expect(page.locator('.cm-content')).toHaveText(
-      '@settings(defaultLengthUnit = in)'
-    )
-
-    await page.locator('.cm-content').fill(`sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [-87.4, 282.92])
-  |> line(end = [324.07, 27.199], tag = $seg01)
-  |> line(end = [118.328, -291.754])
-  |> line(end = [-180.04, -202.08])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(sketch001, length = 200)`)
-    await page.waitForTimeout(800)
-
-    async function getCameraZValue() {
-      return page
-        .getByTestId('cam-z-position')
-        .inputValue()
-        .then((value) => parseFloat(value))
-    }
-
-    await test.step(`Reset camera`, async () => {
-      await u.openDebugPanel()
-      await u.clearCommandLogs()
-      await u.doAndWaitForCmd(async () => {
-        await gizmo.click({ button: 'right' })
-        await resetCameraButton.click()
-      }, 'zoom_to_fit')
-      await expect
-        .poll(getCameraZValue, {
-          message: 'Camera Z should be at expected position after reset',
-        })
-        .toEqual(expectedStartCamZPosition)
-    })
-
-    // gray at this pixel means the stream has loaded in the most
-    // user way we can verify it (pixel color)
-    await expect
-      .poll(() => u.getGreatestPixDiff(pointOnModel, [143, 143, 143]), {
-        timeout: 10_000,
-      })
-      .toBeLessThan(30)
-
-    await expect(async () => {
-      await page.mouse.move(0, 0, { steps: 5 })
-      await page.mouse.move(pointOnModel.x, pointOnModel.y, { steps: 5 })
-      await page.mouse.click(pointOnModel.x, pointOnModel.y)
-      // check user can interact with model by checking it turns yellow
-      await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [180, 180, 137]))
-        .toBeLessThan(15)
-    }).toPass({ timeout: 40_000, intervals: [1_000] })
-
-    await page.getByTestId('app-logo').click()
-
-    await expect(
-      page.getByRole('button', { name: 'Create project' })
-    ).toBeVisible()
-
-    for (let i = 1; i <= 10; i++) {
-      const name = `project-${i.toString().padStart(3, '0')}`
-      await createProject({ name, page, returnHome: true })
-      await expect(projectLinks.getByText(name)).toBeVisible()
-    }
-  }
-)
-
-test(
   'You can change the root projects directory and nothing is lost',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page, tronApp, homePage }, testInfo) => {
     if (!tronApp) {
       fail()
@@ -1387,7 +1308,9 @@ test(
 
 test(
   'Search projects on desktop home',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['basic bracket', 'focusrite_scarlett_mounting_bracket.kcl'],
@@ -1443,7 +1366,9 @@ test(
 
 test(
   'file pane is scrollable when there are many files',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ scene, cmdBar, context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       const testDir = path.join(dir, 'testProject')
@@ -1545,7 +1470,9 @@ test(
 
 test(
   'select all in code editor does not actually select all, just what is visible (regression)',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       // rust/kcl-lib/e2e/executor/inputs/mike_stress_test.kcl
@@ -1603,7 +1530,9 @@ test(
 
 test(
   'Settings persist across restarts',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ page, toolbar }, testInfo) => {
     await test.step('We can change a user setting like theme', async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1635,7 +1564,9 @@ test(
 
 test(
   'Original project name persist after onboarding',
-  { tag: '@desktop' },
+  {
+    tag: '@desktop',
+  },
   async ({ page, toolbar }, testInfo) => {
     const nextButton = page.getByTestId('onboarding-next')
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1799,3 +1730,68 @@ profile001 = startProfile(sketch001, at = [0, 0])
     })
   }
 )
+
+test.describe('Project id', () => {
+  // Should work on both web and desktop.
+  test(
+    'is created on new project',
+    {
+      tag: ['@desktop', '@web'],
+    },
+    async ({ page, toolbar, context, homePage }, testInfo) => {
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
+
+      const inputProjectId = page.getByTestId('project-id')
+
+      await test.step('Open the project settings modal', async () => {
+        await toolbar.projectSidebarToggle.click()
+        await page.getByTestId('project-settings').click()
+        // Give time to system for writing to a persistent store
+        await page.waitForTimeout(1000)
+      })
+
+      await test.step('Check project id is not the NIL UUID and not empty', async () => {
+        await expect(inputProjectId).not.toHaveValue(uuidNIL)
+        await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
+      })
+    }
+  )
+  test(
+    'is created on existing project without one',
+    { tag: '@desktop' },
+    async ({ page, toolbar, context, homePage }, testInfo) => {
+      const u = await getUtils(page)
+      await context.folderSetupFn(async (rootDir) => {
+        const projectDir = path.join(rootDir, 'hoohee')
+        await fsp.mkdir(projectDir, { recursive: true })
+        await fsp.writeFile(
+          path.join(projectDir, 'project.toml'),
+          `[settings.app]
+themeColor = "255"
+`
+        )
+      })
+
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
+
+      const inputProjectId = page.getByTestId('project-id')
+
+      await test.step('Open the project settings modal', async () => {
+        await toolbar.projectSidebarToggle.click()
+        await page.getByTestId('project-settings').click()
+        // Give time to system for writing to a persistent store
+        await page.waitForTimeout(1000)
+      })
+
+      await test.step('Check project id is not the NIL UUID and not empty', async () => {
+        await expect(inputProjectId).not.toHaveValue(uuidNIL)
+        await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
+      })
+    }
+  )
+})

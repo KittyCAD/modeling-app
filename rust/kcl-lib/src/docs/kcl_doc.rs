@@ -85,13 +85,29 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
     }
     result.description = description;
 
-    for n in &parsed.body {
+    'items: for n in &parsed.body {
         if n.visibility() != ItemVisibility::Export {
             continue;
         }
         match n {
             crate::parsing::ast::types::BodyItem::ImportStatement(import) => match &import.path {
                 crate::parsing::ast::types::ImportPath::Std { path } => {
+                    // Just hide modules where the import is marked as experimental.
+                    for attr in &import.outer_attrs {
+                        if let Annotation {
+                            name: None,
+                            properties: Some(props),
+                            ..
+                        } = &attr.inner
+                        {
+                            for p in props {
+                                if p.key.name == annotations::EXPERIMENTAL {
+                                    continue 'items;
+                                }
+                            }
+                        }
+                    }
+
                     let m = match &import.selector {
                         ImportSelector::Glob(..) => Some(visit_module(&path[1], "", names.clone())?),
                         ImportSelector::None { .. } => {
@@ -375,6 +391,7 @@ impl ConstData {
             properties: Properties {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
+                experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
             },
@@ -476,10 +493,10 @@ impl ModData {
 
         #[allow(clippy::iter_over_hash_type)]
         for (k, v) in &self.children {
-            if k.starts_with("M:") {
-                if let Some(result) = v.expect_mod().find_by_name(name) {
-                    return Some(result);
-                }
+            if k.starts_with("M:")
+                && let Some(result) = v.expect_mod().find_by_name(name)
+            {
+                return Some(result);
             }
         }
 
@@ -546,6 +563,7 @@ impl FnData {
             properties: Properties {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
+                experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
             },
@@ -635,6 +653,8 @@ impl FnData {
             return "clone(${0:part001})".to_owned();
         } else if self.name == "hole" {
             return "hole(${0:holeSketch}, ${1:%})".to_owned();
+        } else if self.name == "extrude" {
+            return "extrude(length = ${0:10})".to_owned();
         }
         let mut args = Vec::new();
         let mut index = 0;
@@ -672,6 +692,7 @@ impl FnData {
 #[derive(Debug, Clone)]
 pub struct Properties {
     pub deprecated: bool,
+    pub experimental: bool,
     pub doc_hidden: bool,
     #[allow(dead_code)]
     pub exported: bool,
@@ -682,6 +703,7 @@ pub struct Properties {
 #[derive(Debug, Clone)]
 pub struct ExampleProperties {
     pub norun: bool,
+    pub no3d: bool,
     pub inline: bool,
 }
 
@@ -729,7 +751,7 @@ impl ArgData {
         let mut result = ArgData {
             snippet_array: Default::default(),
             name: arg.identifier.name.clone(),
-            ty: arg.type_.as_ref().map(|t| t.to_string()),
+            ty: arg.param_type.as_ref().map(|t| t.to_string()),
             docs: None,
             override_in_snippet: None,
             kind: if arg.labeled {
@@ -814,7 +836,16 @@ impl ArgData {
         }
         match self.ty.as_deref() {
             Some("Sketch") if self.kind == ArgKind::Special => None,
-            Some(s) if s.starts_with("number") => Some((index, format!(r#"{label}${{{index}:10}}"#))),
+            Some(s) if s.starts_with("number") => {
+                let value = match &*self.name {
+                    "angleStart" => "0deg",
+                    "angleEnd" => "180deg",
+                    "angle" => "180deg",
+                    "arcDegrees" => "360deg",
+                    _ => "10",
+                };
+                Some((index, format!(r#"{label}${{{index}:{value}}}"#)))
+            }
             Some("Point2d") => Some((index + 1, format!(r#"{label}[${{{}:0}}, ${{{}:0}}]"#, index, index + 1))),
             Some("Point3d") => Some((
                 index + 2,
@@ -909,6 +940,7 @@ impl TyData {
             properties: Properties {
                 exported: !ty.visibility.is_default(),
                 deprecated: false,
+                experimental: false,
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
             },
@@ -982,6 +1014,7 @@ trait ApplyMeta {
         examples: Vec<(String, ExampleProperties)>,
     );
     fn deprecated(&mut self, deprecated: bool);
+    fn experimental(&mut self, experimental: bool);
     fn doc_hidden(&mut self, doc_hidden: bool);
     fn impl_kind(&mut self, impl_kind: annotations::Impl);
 
@@ -1014,14 +1047,16 @@ trait ApplyMeta {
                     let args = l[3..].split(',');
                     let mut inline = false;
                     let mut norun = false;
+                    let mut no3d = false;
                     for a in args {
                         match a.trim() {
                             "inline" => inline = true,
                             "norun" | "no_run" => norun = true,
+                            "no3d" | "no_3d" => no3d = true,
                             _ => {}
                         }
                     }
-                    example = Some((String::new(), ExampleProperties { norun, inline }));
+                    example = Some((String::new(), ExampleProperties { norun, no3d, inline }));
 
                     if inline {
                         description.as_mut().unwrap().push_str("```js\n");
@@ -1069,10 +1104,10 @@ trait ApplyMeta {
             }
         }
         assert!(example.is_none());
-        if let Some(d) = &mut description {
-            if d.is_empty() {
-                description = None;
-            }
+        if let Some(d) = &mut description
+            && d.is_empty()
+        {
+            description = None;
         }
 
         self.apply_docs(
@@ -1100,6 +1135,11 @@ trait ApplyMeta {
                         annotations::DEPRECATED => {
                             if let Some(b) = p.value.literal_bool() {
                                 self.deprecated(b);
+                            }
+                        }
+                        annotations::EXPERIMENTAL => {
+                            if let Some(b) = p.value.literal_bool() {
+                                self.experimental(b);
                             }
                         }
                         "doc_hidden" => {
@@ -1131,6 +1171,10 @@ impl ApplyMeta for ConstData {
         self.properties.deprecated = deprecated;
     }
 
+    fn experimental(&mut self, experimental: bool) {
+        self.properties.experimental = experimental;
+    }
+
     fn doc_hidden(&mut self, doc_hidden: bool) {
         self.properties.doc_hidden = doc_hidden;
     }
@@ -1152,6 +1196,10 @@ impl ApplyMeta for FnData {
 
     fn deprecated(&mut self, deprecated: bool) {
         self.properties.deprecated = deprecated;
+    }
+
+    fn experimental(&mut self, experimental: bool) {
+        self.properties.experimental = experimental;
     }
 
     fn doc_hidden(&mut self, doc_hidden: bool) {
@@ -1179,6 +1227,10 @@ impl ApplyMeta for ModData {
         assert!(!deprecated);
     }
 
+    fn experimental(&mut self, experimental: bool) {
+        assert!(!experimental);
+    }
+
     fn doc_hidden(&mut self, doc_hidden: bool) {
         assert!(!doc_hidden);
     }
@@ -1200,6 +1252,10 @@ impl ApplyMeta for TyData {
 
     fn deprecated(&mut self, deprecated: bool) {
         self.properties.deprecated = deprecated;
+    }
+
+    fn experimental(&mut self, experimental: bool) {
+        self.properties.experimental = experimental;
     }
 
     fn doc_hidden(&mut self, doc_hidden: bool) {
@@ -1233,6 +1289,10 @@ impl ApplyMeta for ArgData {
         unreachable!();
     }
 
+    fn experimental(&mut self, _experimental: bool) {
+        unreachable!();
+    }
+
     fn doc_hidden(&mut self, _doc_hidden: bool) {
         unreachable!();
     }
@@ -1251,15 +1311,15 @@ mod test {
     #[test]
     fn smoke() {
         let result = walk_prelude();
-        if let DocData::Const(d) = result.find_by_name("PI").unwrap() {
-            if d.name == "PI" {
-                assert!(d.value.as_ref().unwrap().starts_with('3'));
-                assert_eq!(d.ty, Some("number(_?)".to_owned()));
-                assert_eq!(d.qual_name, "std::math::PI");
-                assert!(d.summary.is_some());
-                assert!(!d.examples.is_empty());
-                return;
-            }
+        if let DocData::Const(d) = result.find_by_name("PI").unwrap()
+            && d.name == "PI"
+        {
+            assert!(d.value.as_ref().unwrap().starts_with('3'));
+            assert_eq!(d.ty, Some("number(_?)".to_owned()));
+            assert_eq!(d.qual_name, "std::math::PI");
+            assert!(d.summary.is_some());
+            assert!(!d.examples.is_empty());
+            return;
         }
         panic!("didn't find PI");
     }
@@ -1344,7 +1404,7 @@ mod test {
             if i != number {
                 continue;
             }
-            let result = match crate::test_server::execute_and_snapshot(&eg.0, None).await {
+            let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
                     panic!("Error testing example {}{i}: {}", d.name, e.error.message());
                 }
@@ -1359,9 +1419,18 @@ mod test {
                     "tests/outputs/serial_test_example_fn_{}{i}.png",
                     qualname.replace("::", "-")
                 ),
-                &result,
+                &result.image,
                 0.99,
             );
+            for gltf_file in result.gltf {
+                let path = format!(
+                    "tests/outputs/models/serial_test_example_fn_{}{i}_{}",
+                    qualname.replace("::", "-"),
+                    gltf_file.name,
+                );
+                let mut f = std::fs::File::create(path).expect("could not create file");
+                std::io::Write::write_all(&mut f, &gltf_file.contents).expect("could not write to file");
+            }
             return;
         }
 

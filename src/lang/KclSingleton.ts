@@ -1,8 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
-import type {
-  EntityType_type,
-  ModelingCmdReq_type,
-} from '@kittycad/lib/dist/types/src/models'
+import type { EntityType, ModelingCmdReq } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type EditorManager from '@src/editor/manager'
 import type CodeManager from '@src/lang/codeManager'
@@ -20,7 +17,6 @@ import {
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
@@ -38,8 +34,6 @@ import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
 import { markOnce } from '@src/lib/performance'
-import type { Selections } from '@src/lib/selections'
-import { handleSelectionBatch } from '@src/lib/selections'
 import type {
   BaseUnit,
   KclSettingsAnnotation,
@@ -48,7 +42,16 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
 import { deferExecution, uuidv4 } from '@src/lib/utils'
-import type { PlaneVisibilityMap } from '@src/machines/modelingMachine'
+import type { ConnectionManager } from '@src/network/connectionManager'
+
+import { EngineDebugger } from '@src/lib/debugger'
+
+import { kclEditorActor } from '@src/machines/kclEditorMachine'
+import type {
+  PlaneVisibilityMap,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
+import { type handleSelectionBatch as handleSelectionBatchFn } from '@src/lib/selections'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -131,7 +134,7 @@ export class KclManager extends EventTarget {
   // In the future this could be a setting.
   public longExecutionTimeMs = 1000 * 60 * 5
 
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
   private _astCallBack: (arg: Node<Program>) => void = () => {}
@@ -283,10 +286,7 @@ export class KclManager extends EventTarget {
     this._wasmInitFailedCallback(wasmInitFailed)
   }
 
-  constructor(
-    engineCommandManager: EngineCommandManager,
-    singletons: Singletons
-  ) {
+  constructor(engineCommandManager: ConnectionManager, singletons: Singletons) {
     super()
     this.engineCommandManager = engineCommandManager
     this.singletons = singletons
@@ -461,7 +461,6 @@ export class KclManager extends EventTarget {
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
       )
       // Exit early if we are already executing.
-
       return
     }
 
@@ -480,6 +479,15 @@ export class KclManager extends EventTarget {
       path: this.singletons.codeManager.currentFilePath || undefined,
       rustContext: this.singletons.rustContext,
     })
+
+    const livePathsToWatch = Object.values(execState.filenames)
+      .filter((file) => {
+        return file?.type === 'Local'
+      })
+      .map((file) => {
+        return file.value
+      })
+    kclEditorActor.send({ type: 'setLivePathsToWatch', data: livePathsToWatch })
 
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
@@ -535,6 +543,10 @@ export class KclManager extends EventTarget {
         type: 'code edit during sketch',
       })
     }
+    EngineDebugger.addLog({
+      label: 'executeAst',
+      message: 'execution done',
+    })
     this.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,
       data: null,
@@ -611,7 +623,6 @@ export class KclManager extends EventTarget {
       this.clearAst()
       return
     }
-
     clearTimeout(this.executionTimeoutId)
 
     // We consider anything taking longer than 5 minutes a long execution.
@@ -793,7 +804,7 @@ export class KclManager extends EventTarget {
     setSelectionFilterToDefault(this.engineCommandManager, selectionsToRestore)
   }
   /** TODO: this function is hiding unawaited asynchronous work */
-  setSelectionFilter(filter: EntityType_type[]) {
+  setSelectionFilter(filter: EntityType[]) {
     setSelectionFilter(filter, this.engineCommandManager)
   }
 
@@ -826,7 +837,7 @@ export class KclManager extends EventTarget {
   }
 }
 
-const defaultSelectionFilter: EntityType_type[] = [
+const defaultSelectionFilter: EntityType[] = [
   'face',
   'edge',
   'solid2d',
@@ -836,28 +847,32 @@ const defaultSelectionFilter: EntityType_type[] = [
 
 /** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilterToDefault(
-  engineCommandManager: EngineCommandManager,
-  selectionsToRestore?: Selections
+  engineCommandManager: ConnectionManager,
+  selectionsToRestore?: Selections,
+  handleSelectionBatch?: typeof handleSelectionBatchFn
 ) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   setSelectionFilter(
     defaultSelectionFilter,
     engineCommandManager,
-    selectionsToRestore
+    selectionsToRestore,
+    handleSelectionBatch
   )
 }
 
 /** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilter(
-  filter: EntityType_type[],
-  engineCommandManager: EngineCommandManager,
-  selectionsToRestore?: Selections
+  filter: EntityType[],
+  engineCommandManager: ConnectionManager,
+  selectionsToRestore?: Selections,
+  handleSelectionBatch?: typeof handleSelectionBatchFn
 ) {
-  const { engineEvents } = selectionsToRestore
-    ? handleSelectionBatch({
-        selections: selectionsToRestore,
-      })
-    : { engineEvents: undefined }
+  const { engineEvents } =
+    selectionsToRestore && handleSelectionBatch
+      ? handleSelectionBatch({
+          selections: selectionsToRestore,
+        })
+      : { engineEvents: undefined }
   if (!selectionsToRestore || !engineEvents) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     engineCommandManager.sendSceneCommand({
@@ -870,7 +885,7 @@ function setSelectionFilter(
     })
     return
   }
-  const modelingCmd: ModelingCmdReq_type[] = []
+  const modelingCmd: ModelingCmdReq[] = []
   engineEvents.forEach((event) => {
     if (event.type === 'modeling_cmd_req') {
       modelingCmd.push({

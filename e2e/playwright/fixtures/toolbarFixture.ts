@@ -1,5 +1,5 @@
 import { type Locator, type Page, test } from '@playwright/test'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 
@@ -28,6 +28,8 @@ export class ToolbarFixture {
   revolveButton!: Locator
   offsetPlaneButton!: Locator
   helixButton!: Locator
+  patternCircularButton!: Locator
+  patternLinearButton!: Locator
   startSketchBtn!: Locator
   insertButton!: Locator
   lineBtn!: Locator
@@ -50,7 +52,11 @@ export class ToolbarFixture {
   loadButton!: Locator
   /** User button for the user sidebar menu */
   userSidebarButton!: Locator
+  /** Project button for the project's settings */
+  projectSidebarToggle!: Locator
   signOutButton!: Locator
+  /** Selection indicator text in the status bar */
+  selectionStatus!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -66,6 +72,8 @@ export class ToolbarFixture {
     this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.helixButton = page.getByTestId('helix')
+    this.patternCircularButton = page.getByTestId('pattern-circular-3d')
+    this.patternLinearButton = page.getByTestId('pattern-linear-3d')
     this.startSketchBtn = page.getByTestId('sketch')
     this.insertButton = page.getByTestId('insert')
     this.lineBtn = page.getByTestId('line')
@@ -91,7 +99,10 @@ export class ToolbarFixture {
     this.gizmoDisabled = page.getByTestId('gizmo-disabled')
 
     this.userSidebarButton = page.getByTestId('user-sidebar-toggle')
+    this.projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
     this.signOutButton = page.getByTestId('user-sidebar-sign-out')
+
+    this.selectionStatus = page.getByTestId('selection-status')
   }
 
   get logoLink() {
@@ -228,13 +239,13 @@ export class ToolbarFixture {
       .click()
   }
 
-  async closePane(paneId: SidebarType) {
+  async closePane(paneId: SidebarId) {
     return closePane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
-  async openPane(paneId: SidebarType) {
+  async openPane(paneId: SidebarId) {
     return openPane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
-  async checkIfPaneIsOpen(paneId: SidebarType) {
+  async checkIfPaneIsOpen(paneId: SidebarId) {
     return checkIfPaneIsOpen(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
 
@@ -318,5 +329,14 @@ export class ToolbarFixture {
     await operationButton.click({ button: 'right' })
     await expect(goToDefinitionMenuButton).toBeVisible()
     await goToDefinitionMenuButton.click()
+  }
+
+  async fireTtcPrompt(prompt: string) {
+    await this.openPane('text-to-cad')
+    await expect(
+      this.page.getByTestId('ml-ephant-conversation-input')
+    ).toBeVisible()
+    await this.page.getByTestId('ml-ephant-conversation-input').fill(prompt)
+    await this.page.getByTestId('ml-ephant-conversation-input-button').click()
   }
 }

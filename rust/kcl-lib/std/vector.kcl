@@ -1,3 +1,10 @@
+@no_std
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+import assert from "std"
+import * from "std::array"
+import pow, sqrt from "std::math"
+
 /// Adds every element of u to its corresponding element in v.
 /// Both vectors must have the same length. Returns a new vector of the same length.
 /// In other words, component-wise addition.

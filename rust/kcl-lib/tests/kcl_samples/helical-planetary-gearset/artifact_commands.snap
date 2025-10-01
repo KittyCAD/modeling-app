@@ -1545,7 +1545,7 @@ description: Artifact commands helical-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.2721503422803828,
+            "x": -1.2721503422803806,
             "y": 10.422650023225183,
             "z": 0.0
           },
@@ -1753,7 +1753,7 @@ description: Artifact commands helical-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.09232333396144166,
+            "x": -0.09232333396144399,
             "y": 10.499594106536035,
             "z": 0.0
           },
@@ -1788,8 +1788,8 @@ description: Artifact commands helical-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.5780166821928425,
-            "y": 8.343452972068697,
+            "x": -2.5780166821928443,
+            "y": 8.343452972068695,
             "z": 0.0
           },
           "relative": false
@@ -2388,8 +2388,8 @@ description: Artifact commands helical-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.5408417166794406,
-            "y": 9.884960290128767,
+            "x": -3.540841716679438,
+            "y": 9.884960290128769,
             "z": 0.0
           },
           "relative": false
@@ -2423,8 +2423,8 @@ description: Artifact commands helical-planetary-gearset.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.17899041761511,
-            "y": 7.031175987346457,
+            "x": -5.178990417615113,
+            "y": 7.0311759873464545,
             "z": 0.0
           },
           "relative": false
@@ -2779,9 +2779,11 @@ description: Artifact commands helical-planetary-gearset.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

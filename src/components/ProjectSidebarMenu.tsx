@@ -17,8 +17,8 @@ import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
-import type { IndexLoaderData } from '@src/lib/types'
 import { commandBarActor } from '@src/lib/singletons'
+import type { IndexLoaderData } from '@src/lib/types'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
@@ -35,7 +35,7 @@ const ProjectSidebarMenu = ({
   // Make room for traffic lights on desktop left side.
   // TODO: make sure this doesn't look like shit on Linux or Windows
   const trafficLightsOffset =
-    isDesktop() && window.electron.os.isMac ? 'ml-20' : ''
+    window.electron && window.electron.os.isMac ? 'ml-20' : ''
   return (
     <div className={'!no-underline flex gap-2 ' + trafficLightsOffset}>
       <AppLogoLink project={project} file={file} />
@@ -123,7 +123,9 @@ function ProjectMenuPopover({
           Element: 'button',
           children: (
             <>
-              <span className="flex-1">Project settings</span>
+              <span className="flex-1" data-testid="project-settings">
+                Project settings
+              </span>
               <kbd className="hotkey">{`${platform === 'macos' ? '⌘' : 'Ctrl'}${
                 isDesktop() ? '' : '⬆'
               },`}</kbd>
@@ -224,6 +226,7 @@ function ProjectMenuPopover({
           props === 'break' ||
           (typeof props !== 'string' && !props.className?.includes('hidden'))
       ) as (ActionButtonProps | 'break')[],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [
       platform,
       findCommand,
@@ -239,7 +242,7 @@ function ProjectMenuPopover({
     projectName: project?.name || '',
     sep: '/',
     filename:
-      isDesktop() && file?.name
+      window.electron && file?.name
         ? file.name.slice(file.name.lastIndexOf(window.electron.path.sep) + 1)
         : APP_NAME,
   }

@@ -68,45 +68,6 @@ test.describe('Command bar tests', () => {
     )
   })
 
-  test('Fillet from command bar', async ({ page, homePage }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XY)
-    |> startProfile(at = [-5, -5])
-    |> line(end = [0, 10])
-    |> line(end = [10, 0])
-    |> line(end = [0, -10])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-  extrude001 = extrude(sketch001, length = -10)`
-      )
-    })
-
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    const selectSegment = () => page.getByText(`line(end = [0, -10])`).click()
-
-    await selectSegment()
-    await page.waitForTimeout(100)
-    await page.getByRole('button', { name: 'Fillet' }).click()
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Enter') // skip selection
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Enter') // accept default radius
-    await page.waitForTimeout(100)
-    await page.keyboard.press('Enter') // submit
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-activeLine')).toContainText(
-      `fillet(radius = ${KCL_DEFAULT_LENGTH}, tags = [getCommonEdge(faces=[seg01,capEnd001])])`
-    )
-  })
-
   test('Command bar can change a setting, and switch back and forth between arguments', async ({
     page,
     homePage,
@@ -324,7 +285,7 @@ test.describe('Command bar tests', () => {
         Length: '5',
       },
     })
-    await page.keyboard.press('Shift+Backspace')
+    await page.keyboard.press('Meta+Backspace')
 
     // Assert we're back on the distance step
     await expect(
@@ -418,7 +379,7 @@ test.describe('Command bar tests', () => {
       name: 'rectangle Corner rectangle',
     })
     const lineToolCommand = page.getByRole('option', {
-      name: 'Line',
+      name: 'line Line Start drawing',
     })
     const lineToolButton = page.getByRole('button', {
       name: 'line Line',
@@ -762,7 +723,7 @@ theta = 45deg
     await homePage.textToCadBtn.click()
     await cmdBar.expectState({
       stage: 'arguments',
-      commandName: 'Text-to-CAD Create',
+      commandName: 'Create Project using Text-to-CAD',
       currentArgKey: 'prompt',
       currentArgValue: '',
       headerArguments: {

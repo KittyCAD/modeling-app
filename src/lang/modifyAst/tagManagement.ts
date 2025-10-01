@@ -14,6 +14,26 @@
  * 3. Low-level: Building blocks for tag manipulation
  */
 
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import {
+  createArrayExpression,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
+  createLocalName,
+  createTagDeclarator,
+  findUniqueName,
+} from '@src/lang/create'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import type { Artifact } from '@src/lang/std/artifactGraph'
+import {
+  getArtifactOfTypes,
+  getCommonFacesForEdge,
+  getSweepArtifactFromSelection,
+} from '@src/lang/std/artifactGraph'
+import {
+  addTagForSketchOnFace,
+  sketchLineHelperMapKw,
+} from '@src/lang/std/sketch'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -21,29 +41,9 @@ import type {
   PathToNode,
   Program,
 } from '@src/lang/wasm'
-import {
-  createArrayExpression,
-  createLocalName,
-  createCallExpressionStdLibKw,
-  createLabeledArg,
-  findUniqueName,
-  createTagDeclarator,
-} from '@src/lang/create'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import {
-  addTagForSketchOnFace,
-  sketchLineHelperMapKw,
-} from '@src/lang/std/sketch'
+import type { Selection } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
-import type { Selection } from '@src/lib/selections'
 import { capitaliseFC } from '@src/lib/utils'
-import type { Artifact } from '@src/lang/std/artifactGraph'
-import {
-  getArtifactOfTypes,
-  getCommonFacesForEdge,
-  getSweepArtifactFromSelection,
-} from '@src/lang/std/artifactGraph'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 // ==============================================
 // SECTION 1: PUBLIC TAG ENTRY POINTS

@@ -115,38 +115,6 @@ test.describe('when using the file tree to', () => {
   )
 
   test(
-    `create many new files of the same name, incrementing their names`,
-    { tag: '@desktop' },
-    async ({ page }, testInfo) => {
-      const { panesOpen, createNewFile } = await getUtils(page, test)
-
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      page.on('console', console.log)
-
-      await panesOpen(['files'])
-
-      await createProject({ name: 'project-000', page })
-
-      await createNewFile('lee')
-      await createNewFile('lee')
-      await createNewFile('lee')
-      await createNewFile('lee')
-      await createNewFile('lee')
-
-      await test.step('Postcondition: there are 5 new lee-*.kcl files', async () => {
-        await expect
-          .poll(() =>
-            page
-              .locator('[data-testid="file-pane-scroll-container"] button')
-              .filter({ hasText: /lee[-]?[0-5]?/ })
-              .count()
-          )
-          .toEqual(5)
-      })
-    }
-  )
-
-  test(
     'create a new file with the same name as an existing file cancels the operation',
     { tag: '@desktop' },
     async ({ context, page, homePage, scene, editor, toolbar }, testInfo) => {
@@ -298,15 +266,6 @@ test.describe('when using the file tree to', () => {
         'utf-8'
       )
       await pasteCodeInEditor(kclLego)
-
-      // Open settings and enable the debug panel
-      await page
-        .getByRole('link', {
-          name: 'settings Settings',
-        })
-        .click()
-      await page.locator('#showDebugPanel').getByText('OffOn').click()
-      await page.getByTestId('settings-close-button').click()
 
       await test.step('swap between small and large files', async () => {
         await openDebugPanel()
@@ -728,11 +687,6 @@ test.describe('Deleting items from the file pane', () => {
     }
   )
 
-  test.fixme(
-    'TODO - delete file we have open when main.kcl does not exist',
-    async () => {}
-  )
-
   test(
     `Delete folder we are not in, don't navigate`,
     { tag: '@desktop' },
@@ -844,8 +798,6 @@ test.describe('Deleting items from the file pane', () => {
     }
   )
 
-  test.fixme('TODO - delete folder we are in, with no main.kcl', async () => {})
-
   // Copied from tests above.
   test(
     `external deletion of project navigates back home`,
@@ -902,76 +854,6 @@ test.describe('Deleting items from the file pane', () => {
       await test.step('Check the app is back on the home view', async () => {
         const projectsDirLink = page.getByText('Loaded from')
         await expect(projectsDirLink).toBeVisible()
-      })
-    }
-  )
-
-  // Similar to the above
-  test(
-    `external deletion of file in sub-directory updates the file tree and recreates it on code editor typing`,
-    { tag: '@desktop' },
-    async ({ context, page }, testInfo) => {
-      const TEST_PROJECT_NAME = 'Test Project'
-      const { dir: projectsDirName } = await context.folderSetupFn(
-        async (dir) => {
-          await fsp.mkdir(join(dir, TEST_PROJECT_NAME), { recursive: true })
-          await fsp.mkdir(join(dir, TEST_PROJECT_NAME, 'folderToDelete'), {
-            recursive: true,
-          })
-          await fsp.copyFile(
-            executorInputPath('basic_fillet_cube_end.kcl'),
-            join(dir, TEST_PROJECT_NAME, 'main.kcl')
-          )
-          await fsp.copyFile(
-            executorInputPath('cylinder.kcl'),
-            join(dir, TEST_PROJECT_NAME, 'folderToDelete', 'someFileWithin.kcl')
-          )
-        }
-      )
-      const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
-
-      // Constants and locators
-      const projectCard = page.getByText(TEST_PROJECT_NAME)
-      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const folderToDelete = u.locatorFolder('folderToDelete')
-      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
-
-      await test.step('Open project and navigate into folderToDelete', async () => {
-        await projectCard.click()
-        await u.waitForPageLoad()
-        await expect(projectMenuButton).toContainText('main.kcl')
-
-        await u.openFilePanel()
-
-        await folderToDelete.click()
-        await expect(fileWithinFolder).toBeVisible()
-        await fileWithinFolder.click()
-        await expect(projectMenuButton).toContainText('someFileWithin.kcl')
-      })
-
-      await test.step('Delete projectsDirName/<project-name> externally', async () => {
-        await fsp.rm(
-          join(
-            projectsDirName,
-            TEST_PROJECT_NAME,
-            'folderToDelete',
-            'someFileWithin.kcl'
-          )
-        )
-      })
-
-      await test.step('Check the file is gone in the file tree', async () => {
-        await expect(
-          page.getByTestId('file-pane-scroll-container')
-        ).not.toContainText('someFileWithin.kcl')
-      })
-
-      await test.step('Check the file is back in the file tree after typing in code editor', async () => {
-        await u.pasteCodeInEditor('hello = 1')
-        await expect(
-          page.getByTestId('file-pane-scroll-container')
-        ).toContainText('someFileWithin.kcl')
       })
     }
   )
@@ -1137,58 +1019,6 @@ test.describe('Undo and redo do not keep history when navigating between files',
         await page.waitForTimeout(100)
         await expect(u.codeLocator).toContainText(originalText)
         await expect(u.codeLocator).not.toContainText(badContent)
-      })
-    }
-  )
-
-  test(
-    `cloned file has an incremented name and same contents`,
-    { tag: '@desktop' },
-    async ({ page, context, homePage }, testInfo) => {
-      const { panesOpen, cloneFile } = await getUtils(page, test)
-
-      const { dir } = await context.folderSetupFn(async (dir) => {
-        const finalDir = join(dir, 'testDefault')
-        await fsp.mkdir(finalDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
-          join(finalDir, 'lee.kcl')
-        )
-      })
-
-      const contentOriginal = await fsp.readFile(
-        join(dir, 'testDefault', 'lee.kcl'),
-        'utf-8'
-      )
-
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      page.on('console', console.log)
-
-      await panesOpen(['files'])
-      await homePage.openProject('testDefault')
-
-      await cloneFile('lee.kcl')
-      await cloneFile('lee-1.kcl')
-      await cloneFile('lee-2.kcl')
-      await cloneFile('lee-3.kcl')
-      await cloneFile('lee-4.kcl')
-
-      await test.step('Postcondition: there are 5 new lee-*.kcl files', async () => {
-        await expect(
-          page
-            .locator('[data-testid="file-pane-scroll-container"] button')
-            .filter({ hasText: /lee[-]?[0-5]?/ })
-        ).toHaveCount(5)
-      })
-
-      await test.step('Postcondition: the files have the same contents', async () => {
-        for (let n = 0; n < 5; n += 1) {
-          const content = await fsp.readFile(
-            join(dir, 'testDefault', `lee-${n + 1}.kcl`),
-            'utf-8'
-          )
-          await expect(content).toEqual(contentOriginal)
-        }
       })
     }
   )

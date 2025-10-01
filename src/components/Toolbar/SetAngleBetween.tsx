@@ -7,15 +7,20 @@ import { createVariableDeclaration } from '@src/lang/create'
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { isSketchVariablesLinked } from '@src/lang/std/sketchConstraints'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import {
   getTransformInfos,
   isExprBinaryPart,
   transformSecondarySketchLinesTagFirst,
 } from '@src/lang/std/sketchcombos'
 import type { TransformInfo } from '@src/lang/std/stdTypes'
-import type { Expr, Program, VariableDeclarator } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
+import {
+  type Expr,
+  type Program,
+  type VariableDeclarator,
+  isPathToNode,
+} from '@src/lang/wasm'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 
@@ -121,7 +126,7 @@ export async function applyConstraintAngleBetween({
   })
   if (
     segName === tagInfo?.tag &&
-    Number(value) === valueUsedInTransform &&
+    value === valueUsedInTransform &&
     !variableName
   ) {
     return {
@@ -157,8 +162,10 @@ export async function applyConstraintAngleBetween({
     )
     _modifiedAst.body = newBody
     Object.values(_pathToNodeMap).forEach((pathToNode) => {
-      const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
-      pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+      if (isPathToNode(pathToNode)) {
+        const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
+        pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+      }
     })
     exprInsertIndex = newVariableInsertIndex
   }

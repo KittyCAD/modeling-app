@@ -11,6 +11,7 @@ import type {
   ARG_LENGTH_Y,
 } from '@src/lang/constants'
 import type { ToolTip } from '@src/lang/langHelpers'
+import type { Coords2d } from '@src/lang/util'
 import type { LineInputsType } from '@src/lang/std/sketchcombos'
 import type {
   BinaryPart,
@@ -23,7 +24,6 @@ import type {
   SourceRange,
   VariableMap,
 } from '@src/lang/wasm'
-import type { Coords2d } from '@src/lang/std/sketch'
 
 export interface ModifyAstBase {
   node: Node<Program>
@@ -250,7 +250,7 @@ export type SimplifiedArgDetails =
  */
 export interface CreatedSketchExprResult {
   callExp: Expr
-  valueUsedInTransform?: number
+  valueUsedInTransform?: string
 }
 
 export type CreateStdLibSketchCallExpr = (args: {
@@ -288,7 +288,7 @@ export interface SketchLineHelperKw {
     | {
         modifiedAst: Node<Program>
         pathToNode: PathToNode
-        valueUsedInTransform?: number
+        valueUsedInTransform?: string
       }
     | Error
   updateArgs: (a: updateArgs) =>

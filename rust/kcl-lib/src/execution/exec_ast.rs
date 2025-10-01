@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 
 use crate::{
-    CompilationError, NodePath,
+    CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta, ModuleArtifactState,
@@ -20,9 +20,9 @@ use crate::{
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
         BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, MemberExpression, Name,
-        Node, NodeRef, ObjectExpression, PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
+        Node, NodeRef, ObjectExpression, PipeExpression, Program, SketchBlock, SketchVar, TagDeclarator, Type,
+        UnaryExpression, UnaryOperator,
     },
-    source_range::SourceRange,
     std::args::TyF64,
 };
 
@@ -47,8 +47,19 @@ impl ExecutorContext {
         for annotation in annotations {
             if annotation.name() == Some(annotations::SETTINGS) {
                 if matches!(body_type, BodyType::Root) {
-                    if exec_state.mod_local.settings.update_from_annotation(annotation)? {
+                    let (updated_len, updated_angle) =
+                        exec_state.mod_local.settings.update_from_annotation(annotation)?;
+                    if updated_len {
                         exec_state.mod_local.explicit_length_units = true;
+                    }
+                    if updated_angle {
+                        exec_state.warn(
+                            CompilationError::err(
+                                annotation.as_source_range(),
+                                "Prefer to use explicit units for angles",
+                            ),
+                            annotations::WARN_ANGLE_UNITS,
+                        );
                     }
                 } else {
                     exec_state.err(CompilationError::err(
@@ -65,11 +76,51 @@ impl ExecutorContext {
                         "The standard library can only be skipped at the top level scope of a file",
                     ));
                 }
+            } else if annotation.name() == Some(annotations::WARNINGS) {
+                // TODO we should support setting warnings for the whole project, not just one file
+                if matches!(body_type, BodyType::Root) {
+                    let props = annotations::expect_properties(annotations::WARNINGS, annotation)?;
+                    for p in props {
+                        match &*p.inner.key.name {
+                            annotations::WARN_ALLOW => {
+                                let allowed = annotations::many_of(
+                                    &p.inner.value,
+                                    &annotations::WARN_VALUES,
+                                    annotation.as_source_range(),
+                                )?;
+                                exec_state.mod_local.allowed_warnings = allowed;
+                            }
+                            annotations::WARN_DENY => {
+                                let denied = annotations::many_of(
+                                    &p.inner.value,
+                                    &annotations::WARN_VALUES,
+                                    annotation.as_source_range(),
+                                )?;
+                                exec_state.mod_local.denied_warnings = denied;
+                            }
+                            name => {
+                                return Err(KclError::new_semantic(KclErrorDetails::new(
+                                    format!(
+                                        "Unexpected warnings key: `{name}`; expected one of `{}`, `{}`",
+                                        annotations::WARN_ALLOW,
+                                        annotations::WARN_DENY,
+                                    ),
+                                    vec![annotation.as_source_range()],
+                                )));
+                            }
+                        }
+                    }
+                } else {
+                    exec_state.err(CompilationError::err(
+                        annotation.as_source_range(),
+                        "Warnings can only be customized at the top level scope of a file",
+                    ));
+                }
             } else {
-                exec_state.warn(CompilationError::err(
-                    annotation.as_source_range(),
-                    "Unknown annotation",
-                ));
+                exec_state.warn(
+                    CompilationError::err(annotation.as_source_range(), "Unknown annotation"),
+                    annotations::WARN_UNKNOWN_ATTR,
+                );
             }
         }
         Ok(no_prelude)
@@ -364,9 +415,9 @@ impl ExecutorContext {
                 }
                 BodyItem::TypeDeclaration(ty) => {
                     let metadata = Metadata::from(&**ty);
-                    let impl_kind = annotations::get_impl(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
-                    match impl_kind {
-                        annotations::Impl::Rust => {
+                    let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
+                    match attrs.impl_ {
+                        annotations::Impl::Rust | annotations::Impl::RustConstraint => {
                             let std_path = match &exec_state.mod_local.path {
                                 ModulePath::Std { value } => value,
                                 ModulePath::Local { .. } | ModulePath::Main => {
@@ -380,6 +431,7 @@ impl ExecutorContext {
                             let value = KclValue::Type {
                                 value: TypeDef::RustRepr(t, props),
                                 meta: vec![metadata],
+                                experimental: attrs.experimental,
                             };
                             let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
                             exec_state
@@ -398,7 +450,7 @@ impl ExecutorContext {
                         }
                         // Do nothing for primitive types, they get special treatment and their declarations are just for documentation.
                         annotations::Impl::Primitive => {}
-                        annotations::Impl::Kcl => match &ty.alias {
+                        annotations::Impl::Kcl | annotations::Impl::KclConstrainable => match &ty.alias {
                             Some(alias) => {
                                 let value = KclValue::Type {
                                     value: TypeDef::Alias(
@@ -406,10 +458,12 @@ impl ExecutorContext {
                                             alias.inner.clone(),
                                             exec_state,
                                             metadata.source_range,
+                                            attrs.impl_ == annotations::Impl::KclConstrainable,
                                         )
                                         .map_err(|e| KclError::new_semantic(e.into()))?,
                                     ),
                                     meta: vec![metadata],
+                                    experimental: attrs.experimental,
                                 };
                                 let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
                                 exec_state
@@ -658,7 +712,7 @@ impl ExecutorContext {
     }
 
     #[async_recursion]
-    pub(super) async fn execute_expr<'a: 'async_recursion>(
+    pub(crate) async fn execute_expr<'a: 'async_recursion>(
         &self,
         init: &Expr,
         exec_state: &mut ExecState,
@@ -687,7 +741,8 @@ impl ExecutorContext {
                             exec_state.warn(CompilationError::err(
                                 metadata.source_range,
                                 "Imported module has no return value. The last statement of the module must be an expression, usually the Solid.",
-                            ));
+                            ),
+                        annotations::WARN_MOD_RETURN_VALUE);
 
                             let mut new_meta = vec![metadata.to_owned()];
                             new_meta.extend(meta);
@@ -702,19 +757,14 @@ impl ExecutorContext {
             }
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
-                let rust_impl = annotations::get_impl(annotations, metadata.source_range)?
-                    .map(|s| s == annotations::Impl::Rust)
-                    .unwrap_or(false);
-
-                if rust_impl {
+                let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
+                if let Some(attrs) = attrs
+                    && (attrs.impl_ == annotations::Impl::Rust || attrs.impl_ == annotations::Impl::RustConstraint)
+                {
                     if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
                         KclValue::Function {
-                            value: FunctionSource::Std {
-                                func,
-                                props,
-                                ast: function_expression.clone(),
-                            },
+                            value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
                             meta: vec![metadata.to_owned()],
                         }
                     } else {
@@ -728,11 +778,11 @@ impl ExecutorContext {
                     // over variables. Variables defined lexically later shouldn't
                     // be available to the function body.
                     KclValue::Function {
-                        value: FunctionSource::User {
-                            ast: function_expression.clone(),
-                            settings: exec_state.mod_local.settings.clone(),
-                            memory: exec_state.mut_stack().snapshot(),
-                        },
+                        value: Box::new(FunctionSource::kcl(
+                            function_expression.clone(),
+                            exec_state.mut_stack().snapshot(),
+                            matches!(&exec_state.mod_local.path, ModulePath::Std { .. }),
+                        )),
                         meta: vec![metadata.to_owned()],
                     }
                 }
@@ -777,6 +827,8 @@ impl ExecutorContext {
                 result
             }
             Expr::AscribedExpression(expr) => expr.get_result(exec_state, self).await?,
+            Expr::SketchBlock(expr) => expr.get_result(exec_state, self).await?,
+            Expr::SketchVar(expr) => expr.get_result(exec_state, self).await?,
         };
         Ok(item)
     }
@@ -814,13 +866,45 @@ impl Node<AscribedExpression> {
     }
 }
 
+impl Node<SketchBlock> {
+    pub async fn get_result(&self, _exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        let metadata = Metadata {
+            source_range: SourceRange::from(self),
+        };
+        // TODO: sketch-api: Implement sketch block execution
+        Ok(KclValue::Bool {
+            value: false,
+            meta: vec![metadata],
+        })
+    }
+}
+
+impl Node<SketchVar> {
+    pub async fn get_result(&self, exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        // TODO: sketch-api: Implement sketch variable execution
+        if let Some(initial) = &self.initial {
+            Ok(KclValue::from_numeric_literal(initial, exec_state))
+        } else {
+            let metadata = Metadata {
+                source_range: SourceRange::from(self),
+            };
+
+            Ok(KclValue::Number {
+                value: 0.0,
+                ty: NumericType::default(),
+                meta: vec![metadata],
+            })
+        }
+    }
+}
+
 fn apply_ascription(
     value: &KclValue,
     ty: &Node<Type>,
     exec_state: &mut ExecState,
     source_range: SourceRange,
 ) -> Result<KclValue, KclError> {
-    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into())
+    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into(), false)
         .map_err(|e| KclError::new_semantic(e.into()))?;
 
     if matches!(&ty, &RuntimeType::Primitive(PrimitiveType::Number(..))) {
@@ -829,9 +913,9 @@ fn apply_ascription(
 
     value.coerce(&ty, false, exec_state).map_err(|_| {
         let suggestion = if ty == RuntimeType::length() {
-            ", you might try coercing to a fully specified numeric type such as `number(mm)`"
+            ", you might try coercing to a fully specified numeric type such as `mm`"
         } else if ty == RuntimeType::angle() {
-            ", you might try coercing to a fully specified numeric type such as `number(deg)`"
+            ", you might try coercing to a fully specified numeric type such as `deg`"
         } else {
             ""
         };
@@ -865,6 +949,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.execute(exec_state, ctx).await,
             BinaryPart::IfExpression(e) => e.get_result(exec_state, ctx).await,
             BinaryPart::AscribedExpression(e) => e.get_result(exec_state, ctx).await,
+            BinaryPart::SketchVar(e) => e.get_result(exec_state, ctx).await,
         }
     }
 }
@@ -1003,35 +1088,19 @@ impl Node<MemberExpression> {
             (KclValue::Plane { value: plane }, Property::String(property), false) => match property.as_str() {
                 "zAxis" => {
                     let (p, u) = plane.info.z_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(
-                        p,
-                        NumericType::Known(crate::exec::UnitType::Length(u)),
-                        vec![meta],
-                    ))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
                 }
                 "yAxis" => {
                     let (p, u) = plane.info.y_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(
-                        p,
-                        NumericType::Known(crate::exec::UnitType::Length(u)),
-                        vec![meta],
-                    ))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
                 }
                 "xAxis" => {
                     let (p, u) = plane.info.x_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(
-                        p,
-                        NumericType::Known(crate::exec::UnitType::Length(u)),
-                        vec![meta],
-                    ))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
                 }
                 "origin" => {
                     let (p, u) = plane.info.origin.as_3_dims();
-                    Ok(KclValue::array_from_point3d(
-                        p,
-                        NumericType::Known(crate::exec::UnitType::Length(u)),
-                        vec![meta],
-                    ))
+                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]))
                 }
                 other => Err(KclError::new_undefined_value(
                     KclErrorDetails::new(
@@ -1041,7 +1110,7 @@ impl Node<MemberExpression> {
                     None,
                 )),
             },
-            (KclValue::Object { value: map, meta: _ }, Property::String(property), false) => {
+            (KclValue::Object { value: map, .. }, Property::String(property), false) => {
                 if let Some(value) = map.get(&property) {
                     Ok(value.to_owned())
                 } else {
@@ -1130,6 +1199,7 @@ impl Node<MemberExpression> {
                     .iter()
                     .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
                     .collect(),
+                constrainable: false,
             }),
             (geometry @ (KclValue::Sketch { .. } | KclValue::Solid { .. }), Property::String(property), false) => {
                 Err(KclError::new_semantic(KclErrorDetails::new(
@@ -1157,21 +1227,20 @@ impl Node<BinaryExpression> {
         meta.extend(right_value.metadata());
 
         // First check if we are doing string concatenation.
-        if self.operator == BinaryOperator::Add {
-            if let (KclValue::String { value: left, meta: _ }, KclValue::String { value: right, meta: _ }) =
+        if self.operator == BinaryOperator::Add
+            && let (KclValue::String { value: left, meta: _ }, KclValue::String { value: right, meta: _ }) =
                 (&left_value, &right_value)
-            {
-                return Ok(KclValue::String {
-                    value: format!("{left}{right}"),
-                    meta,
-                });
-            }
+        {
+            return Ok(KclValue::String {
+                value: format!("{left}{right}"),
+                meta,
+            });
         }
 
         // Then check if we have solids.
         if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let args = Args::new_no_args(self.into(), ctx.clone());
                 let result = crate::std::csg::inner_union(
                     vec![*left.clone(), *right.clone()],
                     Default::default(),
@@ -1184,7 +1253,7 @@ impl Node<BinaryExpression> {
         } else if self.operator == BinaryOperator::Sub {
             // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let args = Args::new_no_args(self.into(), ctx.clone());
                 let result = crate::std::csg::inner_subtract(
                     vec![*left.clone()],
                     vec![*right.clone()],
@@ -1198,7 +1267,7 @@ impl Node<BinaryExpression> {
         } else if self.operator == BinaryOperator::And {
             // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let args = Args::new_no_args(self.into(), ctx.clone());
                 let result = crate::std::csg::inner_intersect(
                     vec![*left.clone(), *right.clone()],
                     Default::default(),
@@ -1251,12 +1320,12 @@ impl Node<BinaryExpression> {
 
         let value = match self.operator {
             BinaryOperator::Add => {
-                let (l, r, ty) = NumericType::combine_eq_coerce(left, right);
+                let (l, r, ty) = NumericType::combine_eq_coerce(left, right, None);
                 self.warn_on_unknown(&ty, "Adding", exec_state);
                 KclValue::Number { value: l + r, meta, ty }
             }
             BinaryOperator::Sub => {
-                let (l, r, ty) = NumericType::combine_eq_coerce(left, right);
+                let (l, r, ty) = NumericType::combine_eq_coerce(left, right, None);
                 self.warn_on_unknown(&ty, "Subtracting", exec_state);
                 KclValue::Number { value: l - r, meta, ty }
             }
@@ -1281,32 +1350,32 @@ impl Node<BinaryExpression> {
                 ty: exec_state.current_default_units(),
             },
             BinaryOperator::Neq => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq(left, right, exec_state, self.as_source_range());
                 self.warn_on_unknown(&ty, "Comparing", exec_state);
                 KclValue::Bool { value: l != r, meta }
             }
             BinaryOperator::Gt => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq(left, right, exec_state, self.as_source_range());
                 self.warn_on_unknown(&ty, "Comparing", exec_state);
                 KclValue::Bool { value: l > r, meta }
             }
             BinaryOperator::Gte => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq(left, right, exec_state, self.as_source_range());
                 self.warn_on_unknown(&ty, "Comparing", exec_state);
                 KclValue::Bool { value: l >= r, meta }
             }
             BinaryOperator::Lt => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq(left, right, exec_state, self.as_source_range());
                 self.warn_on_unknown(&ty, "Comparing", exec_state);
                 KclValue::Bool { value: l < r, meta }
             }
             BinaryOperator::Lte => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq(left, right, exec_state, self.as_source_range());
                 self.warn_on_unknown(&ty, "Comparing", exec_state);
                 KclValue::Bool { value: l <= r, meta }
             }
             BinaryOperator::Eq => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq(left, right, exec_state, self.as_source_range());
                 self.warn_on_unknown(&ty, "Comparing", exec_state);
                 KclValue::Bool { value: l == r, meta }
             }
@@ -1327,7 +1396,7 @@ impl Node<BinaryExpression> {
                 ),
             );
             err.tag = crate::errors::Tag::UnknownNumericUnits;
-            exec_state.warn(err);
+            exec_state.warn(err, annotations::WARN_UNKNOWN_UNITS);
         }
     }
 }
@@ -1397,7 +1466,9 @@ impl Node<UnaryExpression> {
                 plane.id = exec_state.next_uuid();
                 Ok(KclValue::Plane { value: plane })
             }
-            KclValue::Object { value: values, meta } => {
+            KclValue::Object {
+                value: values, meta, ..
+            } => {
                 // Special-case for negating line-like objects.
                 let Some(direction) = values.get("direction") else {
                     return Err(err());
@@ -1451,6 +1522,7 @@ impl Node<UnaryExpression> {
                 Ok(KclValue::Object {
                     value,
                     meta: meta.clone(),
+                    constrainable: false,
                 })
             }
             _ => Err(err()),
@@ -1652,6 +1724,7 @@ impl Node<ObjectExpression> {
             meta: vec![Metadata {
                 source_range: self.into(),
             }],
+            constrainable: false,
         })
     }
 }
@@ -1815,7 +1888,8 @@ mod test {
 
     use super::*;
     use crate::{
-        ExecutorSettings, UnitLen,
+        ExecutorSettings,
+        errors::Severity,
         exec::UnitType,
         execution::{ContextType, parse_execute},
     };
@@ -1848,12 +1922,18 @@ arr1 = [42]: [number(cm)]
             .unwrap();
         if let KclValue::HomArray { value, ty } = arr1 {
             assert_eq!(value.len(), 1, "Expected Vec with specific length: found {value:?}");
-            assert_eq!(*ty, RuntimeType::known_length(UnitLen::Cm));
+            assert_eq!(
+                *ty,
+                RuntimeType::known_length(kittycad_modeling_cmds::units::UnitLength::Centimeters)
+            );
             // Compare, ignoring meta.
             if let KclValue::Number { value, ty, .. } = &value[0] {
                 // It should not convert units.
                 assert_eq!(*value, 42.0);
-                assert_eq!(*ty, NumericType::Known(UnitType::Length(UnitLen::Cm)));
+                assert_eq!(
+                    *ty,
+                    NumericType::Known(UnitType::Length(kittycad_modeling_cmds::units::UnitLength::Centimeters))
+                );
             } else {
                 panic!("Expected a number; found {:?}", value[0]);
             }
@@ -1897,6 +1977,18 @@ arr = [0]: [string]
 
         let program = r#"
 mixedArr = [0, "a"]: [number(mm)]
+"#;
+        let result = parse_execute(program).await;
+        let err = result.unwrap_err();
+        assert!(
+            err.to_string().contains(
+                "could not coerce an array of `number`, `string` (with type `[any; 2]`) to type `[number(mm)]`"
+            ),
+            "Expected error but found {err:?}"
+        );
+
+        let program = r#"
+mixedArr = [0, "a"]: [mm]
 "#;
         let result = parse_execute(program).await;
         let err = result.unwrap_err();
@@ -2013,7 +2105,6 @@ d = b + c
         let exec_ctxt = ExecutorContext {
             engine: Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
-                    .await
                     .map_err(|err| {
                         KclError::new_internal(KclErrorDetails::new(
                             format!("Failed to create mock engine connection: {err}"),
@@ -2075,7 +2166,25 @@ a = foo()
 
         parse_execute(program).await.unwrap();
 
+        let program = r#"fn foo(): mm {
+  return 42
+}
+
+a = foo()
+"#;
+
+        parse_execute(program).await.unwrap();
+
         let program = r#"fn foo(): number(mm) {
+  return { bar: 42 }
+}
+
+a = foo()
+"#;
+
+        parse_execute(program).await.unwrap_err();
+
+        let program = r#"fn foo(): mm {
   return { bar: 42 }
 }
 
@@ -2140,6 +2249,9 @@ startSketchOn(XY)
     #[tokio::test(flavor = "multi_thread")]
     async fn ascription_in_binop() {
         let ast = r#"foo = tan(0): number(rad) - 4deg"#;
+        parse_execute(ast).await.unwrap();
+
+        let ast = r#"foo = tan(0): rad - 4deg"#;
         parse_execute(ast).await.unwrap();
     }
 
@@ -2249,5 +2361,30 @@ y = x[0mm + 1]
         let ast = std::fs::read_to_string("tests/inputs/planestuff.kcl").unwrap();
 
         parse_execute(&ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn custom_warning() {
+        let warn = r#"
+a = PI * 2
+"#;
+        let result = parse_execute(warn).await.unwrap();
+        assert_eq!(result.exec_state.errors().len(), 1);
+        assert_eq!(result.exec_state.errors()[0].severity, Severity::Warning);
+
+        let allow = r#"
+@warnings(allow = unknownUnits)
+a = PI * 2
+"#;
+        let result = parse_execute(allow).await.unwrap();
+        assert_eq!(result.exec_state.errors().len(), 0);
+
+        let deny = r#"
+@warnings(deny = [unknownUnits])
+a = PI * 2
+"#;
+        let result = parse_execute(deny).await.unwrap();
+        assert_eq!(result.exec_state.errors().len(), 1);
+        assert_eq!(result.exec_state.errors()[0].severity, Severity::Error);
     }
 }

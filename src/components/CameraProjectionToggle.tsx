@@ -11,6 +11,7 @@ export function CameraProjectionToggle() {
 
   useEffect(() => {
     setChecked(settings.modeling.cameraProjection.current === 'perspective')
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settings.modeling.cameraProjection.current])
 
   return (

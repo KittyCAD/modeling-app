@@ -57,6 +57,8 @@ pub enum Step {
     LabeledExpressionExpr,
     LabeledExpressionLabel,
     AscribedExpressionExpr,
+    SketchBlock,
+    SketchVar,
 }
 
 impl NodePath {
@@ -109,11 +111,11 @@ impl NodePath {
                                 path.push(Step::ImportStatementItemName);
                                 return Some(path);
                             }
-                            if let Some(alias) = &item.alias {
-                                if alias.contains_range(&range) {
-                                    path.push(Step::ImportStatementItemAlias);
-                                    return Some(path);
-                                }
+                            if let Some(alias) = &item.alias
+                                && alias.contains_range(&range)
+                            {
+                                path.push(Step::ImportStatementItemAlias);
+                                return Some(path);
                             }
                             return Some(path);
                         }
@@ -203,11 +205,11 @@ impl NodePath {
                     path.push(Step::CallKwCallee);
                     return Some(path);
                 }
-                if let Some(unlabeled) = &node.unlabeled {
-                    if unlabeled.contains_range(&range) {
-                        path.push(Step::CallKwUnlabeledArg);
-                        return Self::from_expr(unlabeled, range, path);
-                    }
+                if let Some(unlabeled) = &node.unlabeled
+                    && unlabeled.contains_range(&range)
+                {
+                    path.push(Step::CallKwUnlabeledArg);
+                    return Self::from_expr(unlabeled, range, path);
                 }
                 for (i, arg) in node.arguments.iter().enumerate() {
                     if arg.arg.contains_range(&range) {
@@ -320,6 +322,21 @@ impl NodePath {
                     return Self::from_expr(&node.expr, range, path);
                 }
                 // TODO: Check the type annotation.
+            }
+            Expr::SketchBlock(node) => {
+                // TODO: sketch-api: implement arguments.
+                if node.contains_range(&range) {
+                    path.push(Step::SketchBlock);
+                    // TODO: sketch-api: implement body.
+                    return Some(path);
+                }
+            }
+            Expr::SketchVar(node) => {
+                // TODO: sketch-api: implement initial.
+                if node.contains_range(&range) {
+                    path.push(Step::SketchVar);
+                    return Some(path);
+                }
             }
             Expr::None(_) => {}
         }

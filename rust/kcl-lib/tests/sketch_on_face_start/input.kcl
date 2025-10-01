@@ -1,3 +1,5 @@
+@settings(experimentalFeatures = allow)
+
 fn cube(pos, scale) {
   sg = startSketchOn(XY)
     |> startProfile(at = pos)

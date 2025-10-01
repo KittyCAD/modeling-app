@@ -12,12 +12,8 @@ description: Operations executed exhaust-manifold.kcl
         "value": 1.625,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed exhaust-manifold.kcl
         "value": 0.08,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed exhaust-manifold.kcl
         "value": 0.125,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -111,12 +99,8 @@ description: Operations executed exhaust-manifold.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -150,12 +134,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 0.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -166,12 +146,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 3.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -182,12 +158,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 6.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -198,12 +170,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 5.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -214,12 +182,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 0.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -247,12 +211,8 @@ description: Operations executed exhaust-manifold.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -501,13 +461,9 @@ description: Operations executed exhaust-manifold.kcl
               "type": "Number",
               "value": 1.0,
               "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "degrees": null,
+                "type": "Known",
+                "type": "Angle"
               }
             },
             "sourceRange": []
@@ -518,12 +474,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 3.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -534,12 +486,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 6.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -550,12 +498,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 5.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -566,12 +510,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 1.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -599,12 +539,8 @@ description: Operations executed exhaust-manifold.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -853,13 +789,9 @@ description: Operations executed exhaust-manifold.kcl
               "type": "Number",
               "value": 24.3,
               "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "degrees": null,
+                "type": "Known",
+                "type": "Angle"
               }
             },
             "sourceRange": []
@@ -870,12 +802,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 5.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -886,12 +814,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 5.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -902,12 +826,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 3.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -918,12 +838,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 2.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -951,12 +867,8 @@ description: Operations executed exhaust-manifold.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1205,13 +1117,9 @@ description: Operations executed exhaust-manifold.kcl
               "type": "Number",
               "value": 25.2,
               "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "degrees": null,
+                "type": "Known",
+                "type": "Angle"
               }
             },
             "sourceRange": []
@@ -1222,12 +1130,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 5.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1238,12 +1142,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 5.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1254,12 +1154,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 3.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1270,12 +1166,8 @@ description: Operations executed exhaust-manifold.kcl
               "value": 3.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1303,12 +1195,8 @@ description: Operations executed exhaust-manifold.kcl
         "value": 6.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Inches"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "in",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1938,12 +1826,8 @@ description: Operations executed exhaust-manifold.kcl
             "value": 0.125,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1988,12 +1872,8 @@ description: Operations executed exhaust-manifold.kcl
             "value": 1.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2054,12 +1934,8 @@ description: Operations executed exhaust-manifold.kcl
             "value": 0.25,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2104,6 +1980,7 @@ description: Operations executed exhaust-manifold.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -2211,6 +2088,7 @@ description: Operations executed exhaust-manifold.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

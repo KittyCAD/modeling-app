@@ -6,6 +6,7 @@ description: Operations executed pipe_substitution_inside_function_called_from_p
   "rust/kcl-lib/tests/pipe_substitution_inside_function_called_from_pipeline/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -113,6 +114,7 @@ description: Operations executed pipe_substitution_inside_function_called_from_p
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

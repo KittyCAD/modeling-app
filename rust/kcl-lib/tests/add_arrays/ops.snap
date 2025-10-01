@@ -6,6 +6,7 @@ description: Operations executed add_arrays.kcl
   "rust/kcl-lib/tests/add_arrays/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -113,6 +114,7 @@ description: Operations executed add_arrays.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

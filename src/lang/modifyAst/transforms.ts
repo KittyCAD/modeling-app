@@ -7,19 +7,19 @@ import {
   createVariableDeclaration,
 } from '@src/lang/create'
 import {
-  getVariableExprsFromSelection,
-  valueOrVariable,
-} from '@src/lang/queryAst'
-import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
-import type { Selections } from '@src/lib/selections'
-import type { KclCommandValue } from '@src/lib/commandTypes'
-import {
   createPathToNodeForLastVariable,
   createVariableExpressionsArray,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import {
+  getVariableExprsFromSelection,
+  valueOrVariable,
+} from '@src/lang/queryAst'
+import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import { err } from '@src/lib/trap'
 
 export function addTranslate({
   ast,

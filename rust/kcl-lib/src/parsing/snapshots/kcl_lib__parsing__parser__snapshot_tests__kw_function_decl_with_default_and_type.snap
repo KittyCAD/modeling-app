@@ -61,6 +61,15 @@ expression: actual
                 "start": 7,
                 "type": "Identifier"
               },
+              "param_type": {
+                "None": null,
+                "commentStart": 11,
+                "end": 17,
+                "moduleId": 0,
+                "p_type": "Number",
+                "start": 11,
+                "type": "Primitive"
+              },
               "default_value": {
                 "commentStart": 20,
                 "end": 21,

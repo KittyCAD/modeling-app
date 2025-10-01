@@ -12,12 +12,8 @@ description: Operations executed gridfinity-baseplate.kcl
         "value": 42.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed gridfinity-baseplate.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed gridfinity-baseplate.kcl
         "value": 0.7,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -111,12 +99,8 @@ description: Operations executed gridfinity-baseplate.kcl
         "value": 1.8,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -144,12 +128,8 @@ description: Operations executed gridfinity-baseplate.kcl
         "value": 2.15,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -177,12 +157,8 @@ description: Operations executed gridfinity-baseplate.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -210,12 +186,8 @@ description: Operations executed gridfinity-baseplate.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -243,12 +215,8 @@ description: Operations executed gridfinity-baseplate.kcl
         "value": 4.65,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -285,12 +253,8 @@ description: Operations executed gridfinity-baseplate.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -418,12 +382,8 @@ description: Operations executed gridfinity-baseplate.kcl
             "value": 34.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -463,9 +423,9 @@ description: Operations executed gridfinity-baseplate.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -479,12 +439,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -492,12 +448,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -505,12 +457,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -526,12 +474,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 21.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -539,12 +483,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 21.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -552,12 +492,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -616,12 +552,8 @@ description: Operations executed gridfinity-baseplate.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -749,12 +681,8 @@ description: Operations executed gridfinity-baseplate.kcl
             "value": -90.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -771,12 +699,8 @@ description: Operations executed gridfinity-baseplate.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -784,12 +708,8 @@ description: Operations executed gridfinity-baseplate.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -802,12 +722,8 @@ description: Operations executed gridfinity-baseplate.kcl
                     "value": 4.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -815,12 +731,8 @@ description: Operations executed gridfinity-baseplate.kcl
                     "value": 4.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -864,9 +776,9 @@ description: Operations executed gridfinity-baseplate.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -880,12 +792,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -893,12 +801,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -906,12 +810,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -927,12 +827,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 21.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -940,12 +836,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 21.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -953,12 +845,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1045,12 +933,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1058,12 +942,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1071,12 +951,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1089,12 +965,8 @@ description: Operations executed gridfinity-baseplate.kcl
             "value": 42.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1200,12 +1072,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1213,12 +1081,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1226,12 +1090,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1244,12 +1104,8 @@ description: Operations executed gridfinity-baseplate.kcl
             "value": 42.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1331,12 +1187,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1344,12 +1196,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1357,12 +1205,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1375,12 +1219,8 @@ description: Operations executed gridfinity-baseplate.kcl
             "value": 42.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1486,12 +1326,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1499,12 +1335,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -1512,12 +1344,8 @@ description: Operations executed gridfinity-baseplate.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -1530,12 +1358,8 @@ description: Operations executed gridfinity-baseplate.kcl
             "value": 42.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1575,6 +1399,7 @@ description: Operations executed gridfinity-baseplate.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -1682,6 +1507,7 @@ description: Operations executed gridfinity-baseplate.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

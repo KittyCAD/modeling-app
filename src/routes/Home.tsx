@@ -11,35 +11,46 @@ import {
 
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
+import { BillingDialog } from '@kittycad/react-shared'
+import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
+import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import ProjectCard from '@src/components/ProjectCard/ProjectCard'
 import {
   ProjectSearchBar,
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
-import { BillingDialog } from '@src/components/BillingDialog'
-import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
+import { StatusBar } from '@src/components/StatusBar/StatusBar'
+import {
+  defaultGlobalStatusBarItems,
+  defaultLocalStatusBarItems,
+} from '@src/components/StatusBar/defaultStatusBarItems'
+import Tooltip from '@src/components/Tooltip'
 import { useMenuListener } from '@src/hooks/useMenu'
+import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
+import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
+import {
+  authActor,
+  billingActor,
+  codeManager,
+  commandBarActor,
+  kclManager,
+  systemIOActor,
+  useSettings,
+  useToken,
+} from '@src/lib/singletons'
 import {
   getNextSearchParams,
   getSortFunction,
   getSortIcon,
 } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
-import {
-  useToken,
-  commandBarActor,
-  codeManager,
-  kclManager,
-  authActor,
-  billingActor,
-  systemIOActor,
-  useSettings,
-} from '@src/lib/singletons'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   useCanReadWriteProjectDirectory,
@@ -51,23 +62,12 @@ import {
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import {
   acceptOnboarding,
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
-import { CustomIcon } from '@src/components/CustomIcon'
-import Tooltip from '@src/components/Tooltip'
-import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
-import { StatusBar } from '@src/components/StatusBar/StatusBar'
-import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import {
-  defaultLocalStatusBarItems,
-  defaultGlobalStatusBarItems,
-} from '@src/components/StatusBar/defaultStatusBarItems'
 import { useSelector } from '@xstate/react'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -88,7 +88,7 @@ const Home = () => {
 
   // Only create the native file menus on desktop
   useEffect(() => {
-    if (isDesktop()) {
+    if (window.electron) {
       window.electron
         .createHomePageMenu()
         .then(() => {
@@ -97,6 +97,7 @@ const Home = () => {
         .catch(reportRejection)
     }
     billingActor.send({ type: BillingTransition.Update, apiToken })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   const location = useLocation()
@@ -358,7 +359,13 @@ const Home = () => {
             {!hasUnlimitedCredits && (
               <li className="contents">
                 <div className="my-2">
-                  <BillingDialog billingActor={billingActor} />
+                  <BillingDialog
+                    upgradeHref={withSiteBaseURL('/design-studio-pricing')}
+                    upgradeClick={openExternalBrowserIfDesktop()}
+                    error={billingContext.error}
+                    credits={billingContext.credits}
+                    allowance={billingContext.allowance}
+                  />
                 </div>
               </li>
             )}

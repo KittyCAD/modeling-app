@@ -1,17 +1,10 @@
 import * as TWEEN from '@tweenjs/tween.js'
-import type {
-  Group,
-  Intersection,
-  MeshBasicMaterial,
-  Object3D,
-  Object3DEventMap,
-} from 'three'
+import type { Group, Intersection, Object3D, Object3DEventMap } from 'three'
 import {
   AmbientLight,
   Color,
-  GridHelper,
-  LineBasicMaterial,
   Mesh,
+  MeshBasicMaterial,
   OrthographicCamera,
   Raycaster,
   Scene,
@@ -23,6 +16,7 @@ import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 import { CameraControls } from '@src/clientSideScene/CameraControls'
 import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
+import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
 import {
   AXIS_GROUP,
   DEBUG_SHOW_INTERSECTION_PLANE,
@@ -31,21 +25,21 @@ import {
   SKETCH_LAYER,
   X_AXIS,
   Y_AXIS,
-  getSceneScale,
 } from '@src/clientSideScene/sceneUtils'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import type { Coords2d } from '@src/lang/std/sketch'
-import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
-import type { Axis, NonCodeSelection } from '@src/lib/selections'
+import type { Coords2d } from '@src/lang/util'
+import { vec2WithinDistance } from '@src/lang/std/sketch'
+import type { Axis, NonCodeSelection } from '@src/machines/modelingSharedTypes'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
+import { Signal } from '@src/lib/signal'
 import { Themes } from '@src/lib/theme'
 import { getAngle, getLength, throttle } from '@src/lib/utils'
 import type {
   MouseState,
   SegmentOverlayPayload,
-} from '@src/machines/modelingMachine'
-import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
+} from '@src/machines/modelingSharedTypes'
+
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -77,7 +71,7 @@ export interface OnClickCallbackArgs {
   selected?: Object3D<Object3DEventMap>
 }
 
-interface OnMoveCallbackArgs {
+export interface OnMoveCallbackArgs {
   mouseEvent: MouseEvent
   intersectionPoint: {
     twoD: Vector2
@@ -100,9 +94,10 @@ export class SceneInfra {
   readonly labelRenderer: CSS2DRenderer
   readonly camControls: CameraControls
   isFovAnimationInProgress = false
-  _baseUnitMultiplier = 1
-  _theme: Themes = Themes.System
+  private _baseUnitMultiplier = 1
+  private _theme: Themes = Themes.System
   lastMouseState: MouseState = { type: 'idle' }
+  public readonly baseUnitChange = new Signal()
   onDragStartCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragEndCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
   onDragCallback: (arg: OnDragCallbackArgs) => Voidish = () => {}
@@ -130,16 +125,43 @@ export class SceneInfra {
   }
 
   set baseUnit(unit: BaseUnit) {
-    this._baseUnitMultiplier = baseUnitTomm(unit)
-    this.scene.scale.set(
-      this._baseUnitMultiplier,
-      this._baseUnitMultiplier,
+    const newBaseUnitMultiplier = baseUnitTomm(unit)
+    if (newBaseUnitMultiplier !== this._baseUnitMultiplier) {
+      this._baseUnitMultiplier = baseUnitTomm(unit)
+      this.scene.scale.set(
+        this._baseUnitMultiplier,
+        this._baseUnitMultiplier,
+        this._baseUnitMultiplier
+      )
+      this.baseUnitChange.dispatch()
+    }
+  }
+
+  get baseUnitMultiplier() {
+    return this._baseUnitMultiplier
+  }
+
+  /**
+   * Returns the size of the current base unit in ortho view (in logical/CSS pixels, not device pixels).
+   * Eg. if 1 mm takes up 4 pixels in the current view, and the current base unit is 1cm then it returns 40 pixels.
+   */
+  getPixelsPerBaseUnit(camera: OrthographicCamera) {
+    const worldViewportWidth = (camera.right - camera.left) / camera.zoom
+    const viewportSize = this.renderer.getDrawingBufferSize(new Vector2())
+
+    // one [mm] in screen space (pixels) multiplied by baseUnitMultiplier
+    return (
+      (((1 / worldViewportWidth) * viewportSize.x) / window.devicePixelRatio) *
       this._baseUnitMultiplier
     )
   }
 
   set theme(theme: Themes) {
     this._theme = theme
+  }
+
+  get theme() {
+    return this._theme
   }
 
   resetMouseListeners = () => {
@@ -232,8 +254,8 @@ export class SceneInfra {
         _angle = typeof angle === 'number' ? angle : getAngle(from, to)
       }
 
-      const x = (vector.x * 0.5 + 0.5) * window.innerWidth
-      const y = (-vector.y * 0.5 + 0.5) * window.innerHeight
+      const x = (vector.x * 0.5 + 0.5) * this.renderer.domElement.clientWidth
+      const y = (-vector.y * 0.5 + 0.5) * this.renderer.domElement.clientHeight
       const pathToNodeString = JSON.stringify(group.userData.pathToNode)
       return {
         type: 'set-one',
@@ -256,17 +278,17 @@ export class SceneInfra {
   hoveredObject: null | Object3D<Object3DEventMap> = null
   raycaster = new Raycaster()
   planeRaycaster = new Raycaster()
+  // Given in NDC: [-1, 1] range, where (-1, -1) corresponds to the bottom left of the canvas, (0, 0) is the center.
   currentMouseVector = new Vector2()
   selected: {
     mouseDownVector: Vector2
     object: Object3D<Object3DEventMap>
     hasBeenDragged: boolean
   } | null = null
-  mouseDownVector: null | Vector2 = null
   private isRenderingPaused = false
   private lastFrameTime = 0
 
-  constructor(engineCommandManager: EngineCommandManager) {
+  constructor(engineCommandManager: ConnectionManager) {
     // SCENE
     this.scene = new Scene()
     this.scene.background = new Color(0x000000)
@@ -285,14 +307,11 @@ export class SceneInfra {
     this.renderer.domElement.style.height = '100%'
     this.labelRenderer.domElement.className = 'z-sketchSegmentIndicators'
 
-    window.addEventListener('resize', this.onWindowResize)
-
     this.camControls = new CameraControls(
       this.renderer.domElement,
       engineCommandManager,
       false
     )
-    this.camControls.subscribeToCamChange(() => this.onCameraChange())
     this.camControls.camera.layers.enable(SKETCH_LAYER)
     if (DEBUG_SHOW_INTERSECTION_PLANE)
       this.camControls.camera.layers.enable(INTERSECTION_PLANE_LAYER)
@@ -302,19 +321,20 @@ export class SceneInfra {
     this.raycaster.layers.disable(0)
     this.planeRaycaster.layers.enable(INTERSECTION_PLANE_LAYER)
 
-    // GRID
-    const size = 100
-    const divisions = 10
-    const gridHelperMaterial = new LineBasicMaterial({
-      color: 0x0000ff,
-      transparent: true,
-      opacity: 0.5,
-    })
-
-    const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0xffffff)
-    gridHelper.material = gridHelperMaterial
-    gridHelper.rotation.x = Math.PI / 2
-    // this.scene.add(gridHelper) // more of a debug thing, but maybe useful
+    // GRID - more of a debug thing, but maybe useful
+    // const size = 100
+    // const divisions = 10
+    // const gridHelperMaterial = new LineBasicMaterial({
+    //   color: 0x0000ff,
+    //   transparent: true,
+    //   opacity: 0.5,
+    // })
+    //
+    // This is the GridHelper in the 3D scene, the one in sketching is in sceneEntities.ts
+    // const gridHelper = new GridHelper(size, divisions, 0x0000ff, 0xffffff)
+    // gridHelper.material = gridHelperMaterial
+    // gridHelper.rotation.x = Math.PI / 2
+    // this.scene.add(gridHelper)
 
     const light = new AmbientLight(0x505050) // soft white light
     this.scene.add(light)
@@ -322,22 +342,11 @@ export class SceneInfra {
     SceneInfra.instance = this
   }
 
-  onCameraChange = () => {
-    const scale = getSceneScale(
-      this.camControls.camera,
-      this.camControls.target
-    )
-    const axisGroup = this.scene
-      .getObjectByName(AXIS_GROUP)
-      ?.getObjectByName('gridHelper')
-    axisGroup?.name === 'gridHelper' && axisGroup.scale.set(scale, scale, scale)
-  }
-
   // Called after canvas is attached to the DOM and on each resize.
   // Note: would be better to use ResizeObserver instead of window.onresize
   // See:
   // https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
-  onWindowResize = () => {
+  onCanvasResized = () => {
     const cssSize = [
       this.renderer.domElement.clientWidth,
       this.renderer.domElement.clientHeight,
@@ -376,7 +385,6 @@ export class SceneInfra {
   dispose = () => {
     // Dispose of scene resources, renderer, and controls
     this.renderer.dispose()
-    window.removeEventListener('resize', this.onWindowResize)
     // Dispose of any other resources like geometries, materials, textures
   }
 
@@ -443,6 +451,19 @@ export class SceneInfra {
   private _processingMouseMove = false
   private _lastUnprocessedMouseEvent: MouseEvent | undefined
 
+  private updateCurrentMouseVector(event: MouseEvent) {
+    const target = this.renderer.domElement
+
+    const rect = target.getBoundingClientRect()
+    if (rect.width === 0 || rect.height === 0) {
+      return
+    }
+    const localX = event.clientX - rect.left
+    const localY = event.clientY - rect.top
+    this.currentMouseVector.x = (localX / rect.width) * 2 - 1
+    this.currentMouseVector.y = -(localY / rect.height) * 2 + 1
+  }
+
   onMouseMove = async (mouseEvent: MouseEvent) => {
     if (this.mouseMoveThrottling) {
       // Throttle mouse move events to help with performance.
@@ -456,25 +477,23 @@ export class SceneInfra {
       this._processingMouseMove = true
     }
 
-    this.currentMouseVector.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1
-    this.currentMouseVector.y =
-      -(mouseEvent.clientY / window.innerHeight) * 2 + 1
+    this.updateCurrentMouseVector(mouseEvent)
 
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
 
     if (this.selected) {
-      const hasBeenDragged = !compareVec2Epsilon2(
-        [this.currentMouseVector.x, this.currentMouseVector.y],
-        [this.selected.mouseDownVector.x, this.selected.mouseDownVector.y],
-        0.02
+      const hasBeenDragged = !vec2WithinDistance(
+        this.ndc2screenSpace(this.currentMouseVector),
+        this.ndc2screenSpace(this.selected.mouseDownVector),
+        10 // Drag threshold in pixels
       )
       if (!this.selected.hasBeenDragged && hasBeenDragged) {
         this.selected.hasBeenDragged = true
         // this is where we could fire a onDragStart event
       }
       if (
-        hasBeenDragged &&
+        this.selected.hasBeenDragged &&
         planeIntersectPoint &&
         planeIntersectPoint.twoD &&
         planeIntersectPoint.threeD
@@ -578,14 +597,12 @@ export class SceneInfra {
       intersections: Intersection<Object3D<Object3DEventMap>>[]
     ) => {
       intersections.forEach((intersection) => {
-        if (intersection.object.type !== 'GridHelper') {
-          const existingIntersection = intersectionsMap.get(intersection.object)
-          if (
-            !existingIntersection ||
-            existingIntersection.distance > intersection.distance
-          ) {
-            intersectionsMap.set(intersection.object, intersection)
-          }
+        const existingIntersection = intersectionsMap.get(intersection.object)
+        if (
+          !existingIntersection ||
+          existingIntersection.distance > intersection.distance
+        ) {
+          intersectionsMap.set(intersection.object, intersection)
         }
       })
     }
@@ -599,8 +616,14 @@ export class SceneInfra {
     // Check the ring points
     for (let i = 0; i < rayRingCount; i++) {
       const angle = (i / rayRingCount) * Math.PI * 2
-      const offsetX = ((pixelRadius * Math.cos(angle)) / window.innerWidth) * 2
-      const offsetY = ((pixelRadius * Math.sin(angle)) / window.innerHeight) * 2
+      const offsetX =
+        ((pixelRadius * Math.cos(angle)) /
+          this.renderer.domElement.clientWidth) *
+        2
+      const offsetY =
+        ((pixelRadius * Math.sin(angle)) /
+          this.renderer.domElement.clientHeight) *
+        2
       const ringVector = new Vector2(
         mouseDownVector.x + offsetX,
         mouseDownVector.y - offsetY
@@ -624,8 +647,7 @@ export class SceneInfra {
   }
 
   onMouseDown = (event: MouseEvent) => {
-    this.currentMouseVector.x = (event.clientX / window.innerWidth) * 2 - 1
-    this.currentMouseVector.y = -(event.clientY / window.innerHeight) * 2 + 1
+    this.updateCurrentMouseVector(event)
 
     const mouseDownVector = this.currentMouseVector.clone()
     const intersect = this.raycastRing()[0]
@@ -643,9 +665,7 @@ export class SceneInfra {
   }
 
   onMouseUp = async (mouseEvent: MouseEvent) => {
-    this.currentMouseVector.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1
-    this.currentMouseVector.y =
-      -(mouseEvent.clientY / window.innerHeight) * 2 + 1
+    this.updateCurrentMouseVector(mouseEvent)
     const planeIntersectPoint = this.getPlaneIntersectPoint()
     const intersects = this.raycastRing()
 
@@ -715,23 +735,32 @@ export class SceneInfra {
     }
     axisGroup?.children.forEach((_mesh) => {
       const mesh = _mesh as Mesh
-      const mat = mesh.material as MeshBasicMaterial
-      if (otherSelections.includes(axisMap[mesh.userData?.type])) {
-        mat.color.set(mesh?.userData?.baseColor)
-        mat.color.offsetHSL(0, 0, 0.2)
-        mesh.userData.isSelected = true
-      } else {
-        mat.color.set(mesh?.userData?.baseColor)
-        mesh.userData.isSelected = false
+      const mat = mesh.material
+      if (mat instanceof MeshBasicMaterial) {
+        if (otherSelections.includes(axisMap[mesh.userData?.type])) {
+          mat.color.set(mesh?.userData?.baseColor)
+          mat.color.offsetHSL(0, 0, 0.2)
+          mesh.userData.isSelected = true
+        } else {
+          mat.color.set(mesh?.userData?.baseColor)
+          mesh.userData.isSelected = false
+        }
       }
     })
   }
 
+  // a and b given in world space
   screenSpaceDistance(a: Coords2d, b: Coords2d): number {
     const dummy = new Mesh()
     dummy.position.set(0, 0, 0)
     const scale = this.getClientSceneScaleFactor(dummy)
     return getLength(a, b) / scale
+  }
+  ndc2screenSpace(ndc: Vector2): Coords2d {
+    return [
+      ((ndc.x + 1) / 2) * this.renderer.domElement.clientWidth,
+      ((ndc.y + 1) / 2) * this.renderer.domElement.clientHeight,
+    ]
   }
   pauseRendering() {
     this.isRenderingPaused = true

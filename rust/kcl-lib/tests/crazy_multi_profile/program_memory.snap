@@ -72,9 +72,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               5.359999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -98,9 +96,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               -4.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -117,9 +113,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               -3.66
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -136,9 +130,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               -3.66
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -148,9 +140,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -158,25 +148,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -188,9 +172,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             6.71,
             -3.66
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -209,16 +191,11 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -270,9 +247,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               9.44
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -289,9 +264,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               3.869999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -308,9 +281,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               3.82
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -327,9 +298,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               3.82
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -341,17 +310,13 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -420,9 +385,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                     5.359999999999999
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -446,9 +409,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                     -4.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -465,9 +426,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                     -3.66
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -484,9 +443,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                     -3.66
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -496,9 +453,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XZ",
@@ -506,25 +461,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -536,9 +485,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   6.71,
                   -3.66
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -557,21 +504,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": 20.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -582,9 +522,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             9.65,
             3.82
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -593,16 +531,11 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -675,9 +608,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               -6.39
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -694,9 +625,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               -10.559999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -713,9 +642,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               -10.559999999999999
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -732,9 +659,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               -6.39
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -751,9 +676,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               -6.39
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -763,9 +686,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -773,25 +694,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "x": -1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -803,9 +718,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             5.07,
             -6.39
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -820,16 +733,11 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 2.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -861,9 +769,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             5.359999999999999
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -887,9 +793,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             -4.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -906,9 +810,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             -3.66
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -925,9 +827,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             -3.66
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -937,9 +837,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -947,25 +845,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": -1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -977,9 +869,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           6.71,
           -3.66
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -998,9 +888,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "profile002": {
@@ -1024,9 +912,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             17.25
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1043,9 +929,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             14.44
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1057,17 +941,13 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -1136,9 +1016,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   5.359999999999999
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1162,9 +1040,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -4.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1181,9 +1057,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -3.66
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1200,9 +1074,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -3.66
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1212,9 +1084,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -1222,25 +1092,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1252,9 +1116,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 6.71,
                 -3.66
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1273,21 +1135,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 20.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -1298,9 +1153,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           0.75,
           13.46
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1309,9 +1162,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "isClosed": false
     }
   },
@@ -1343,9 +1194,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             13.3
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1362,9 +1211,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             10.49
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1381,9 +1228,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             10.49
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1400,9 +1245,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             13.3
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1419,9 +1262,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             13.3
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1433,17 +1274,13 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -1512,9 +1349,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   5.359999999999999
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1538,9 +1373,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -4.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1557,9 +1390,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -3.66
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1576,9 +1407,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -3.66
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1588,9 +1417,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -1598,25 +1425,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1628,9 +1449,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 6.71,
                 -3.66
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1649,21 +1468,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 20.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -1674,9 +1486,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           3.19,
           13.3
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1691,9 +1501,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "profile004": {
@@ -1717,9 +1525,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             9.39
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1736,9 +1542,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             6.540000000000001
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1755,9 +1559,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             9.39
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -1774,9 +1576,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             9.39
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -1788,17 +1588,13 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -1867,9 +1663,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   5.359999999999999
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1893,9 +1687,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -4.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1912,9 +1704,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -3.66
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1931,9 +1721,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -3.66
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1943,9 +1731,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -1953,25 +1739,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1983,9 +1763,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 6.71,
                 -3.66
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2004,21 +1782,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 20.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -2029,9 +1800,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           3.15,
           9.39
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2040,9 +1809,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "profile005": {
@@ -2072,9 +1839,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             4.34
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2086,17 +1851,13 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -2165,9 +1926,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   5.359999999999999
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2191,9 +1950,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -4.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2210,9 +1967,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -3.66
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2229,9 +1984,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -3.66
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2241,9 +1994,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -2251,25 +2002,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2281,9 +2026,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 6.71,
                 -3.66
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2302,21 +2045,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 20.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -2327,9 +2063,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           6.8100000000000005,
           4.34
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2338,9 +2072,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "profile006": {
@@ -2364,9 +2096,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             9.44
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2383,9 +2113,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             3.869999999999999
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2402,9 +2130,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             3.82
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2421,9 +2147,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             3.82
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2435,17 +2159,13 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -2514,9 +2234,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   5.359999999999999
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2540,9 +2258,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -4.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2559,9 +2275,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -3.66
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -2578,9 +2292,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -3.66
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -2590,9 +2302,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "XZ",
@@ -2600,25 +2310,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 0.0,
                 "y": -1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2630,9 +2334,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 6.71,
                 -3.66
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2651,21 +2353,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 20.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         },
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "start": {
         "from": [
@@ -2676,9 +2371,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           9.65,
           3.82
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2687,9 +2380,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "profile007": {
@@ -2713,9 +2404,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             10.129999999999999
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2732,9 +2421,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             7.279999999999999
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2744,9 +2431,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -2754,25 +2439,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": -1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2784,9 +2463,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           4.8,
           7.55
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2795,9 +2472,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "isClosed": false
     }
   },
@@ -2822,9 +2497,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             8.13
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2841,9 +2514,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             5.170000000000001
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2860,9 +2531,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             5.49
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2879,9 +2548,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             5.49
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2891,9 +2558,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -2901,25 +2566,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": -1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2931,9 +2590,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           5.54,
           5.49
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2942,9 +2599,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "profile009": {
@@ -2968,9 +2623,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             4.12
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2987,9 +2640,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             1.37
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3006,9 +2657,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             1.95
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3025,9 +2674,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             1.95
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -3037,9 +2684,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -3047,25 +2692,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": -1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3077,9 +2716,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           5.23,
           1.95
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3088,9 +2725,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "profile010": {
@@ -3120,9 +2755,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             -2.11
           ],
           "type": "Circle",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -3132,9 +2765,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -3142,25 +2773,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": -1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3172,9 +2797,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           9.85,
           -2.11
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3183,9 +2806,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "profile011": {
@@ -3216,9 +2837,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             -6.39
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3235,9 +2854,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             -10.559999999999999
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3254,9 +2871,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             -10.559999999999999
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3273,9 +2888,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             -6.39
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -3292,9 +2905,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             -6.39
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -3304,9 +2915,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XZ",
@@ -3314,25 +2923,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "x": -1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -3344,9 +2947,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           5.07,
           -6.39
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -3361,9 +2962,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "rectangleSegmentA001": {
@@ -3424,9 +3023,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               9.39
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3443,9 +3040,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               6.540000000000001
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3462,9 +3057,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               9.39
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3481,9 +3074,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               9.39
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -3495,17 +3086,13 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "solid": {
             "type": "Solid",
@@ -3574,9 +3161,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                     5.359999999999999
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -3600,9 +3185,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                     -4.0
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -3619,9 +3202,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                     -3.66
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 {
                   "__geoMeta": {
@@ -3638,9 +3219,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                     -3.66
                   ],
                   "type": "ToPoint",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 }
               ],
               "on": {
@@ -3650,9 +3229,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
                 "type": "plane",
                 "value": "XZ",
@@ -3660,25 +3237,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 },
                 "zAxis": {
                   "x": 0.0,
                   "y": -1.0,
                   "z": 0.0,
-                  "units": {
-                    "type": "Unknown"
-                  }
+                  "units": null
                 }
               },
               "start": {
@@ -3690,9 +3261,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   6.71,
                   -3.66
                 ],
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
@@ -3711,21 +3280,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
-            "height": 20.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "sectional": false
           },
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "start": {
           "from": [
@@ -3736,9 +3298,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             3.15,
             9.39
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3747,16 +3307,11 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -3808,9 +3363,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               8.13
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3827,9 +3380,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               5.170000000000001
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3846,9 +3397,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               5.49
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -3865,9 +3414,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               5.49
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -3877,9 +3424,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XZ",
@@ -3887,25 +3432,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "x": -1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -3917,9 +3456,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             5.54,
             5.49
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -3928,16 +3465,11 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -3960,34 +3492,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": -1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -4001,17 +3525,13 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "solid": {
         "type": "Solid",
@@ -4080,9 +3600,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 5.359999999999999
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -4106,9 +3624,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 -4.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -4125,9 +3641,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 -3.66
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             {
               "__geoMeta": {
@@ -4144,9 +3658,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 -3.66
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             }
           ],
           "on": {
@@ -4156,9 +3668,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "XZ",
@@ -4166,25 +3676,19 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "x": 1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 0.0,
               "y": -1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -4196,9 +3700,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               6.71,
               -3.66
             ],
-            "units": {
-              "type": "Mm"
-            },
+            "units": "mm",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -4217,21 +3719,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
-        "height": 20.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "sectional": false
       },
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "sketch003": {
@@ -4243,34 +3738,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XZ",
       "xAxis": {
         "x": -1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   }

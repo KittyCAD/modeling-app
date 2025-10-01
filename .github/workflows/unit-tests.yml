@@ -23,7 +23,7 @@ jobs:
     runs-on: namespace-profile-ubuntu-2-cores
     needs: npm-build-wasm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - uses: actions/setup-node@v4
         with:
@@ -31,7 +31,7 @@ jobs:
           cache: 'npm'
 
       - run: npm install
-      - uses: taiki-e/install-action@c07504cae06f832dc8de08911c9a9c5cddb0d2d3
+      - uses: taiki-e/install-action@5ab30948b991e8d6aa5a6c1e33c6aea130c6de65
         with:
           tool: wasm-pack
 
@@ -60,7 +60,7 @@ jobs:
 
       - name: Run unit tests
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        run: xvfb-run -a npm run test:unit
+        run: xvfb-run -a npm run test:vitest
         env:
           VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 
@@ -68,32 +68,16 @@ jobs:
         if: always()
         run: .github/ci-cd-scripts/upload-results.sh
         env:
-          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: unit
 
-      - name: Check for changes
+      - name: Commit generated files
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        id: git-check
-        run: |
-            git add src/lang/std/artifactMapGraphs
-            if git status src/lang/std/artifactMapGraphs | grep -q "Changes to be committed"
-            then echo "modified=true" >> $GITHUB_OUTPUT
-            else echo "modified=false" >> $GITHUB_OUTPUT
-            fi
-
-      - name: Commit changes, if any
-        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' && steps.git-check.outputs.modified == 'true' }}
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
-          git fetch origin
-          echo ${{ github.head_ref }}
-          git checkout ${{ github.head_ref }}
-          # TODO when webkit works on ubuntu remove the os part of the commit message
-          git commit -am "Look at this (photo)Graph *in the voice of Nickelback*" || true
-          git push
-          git push origin ${{ github.head_ref }}
+        uses: KittyCAD/gha-actions-public/pr-commit@main
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          commit-message: "Look at this (photo)Graph *in the voice of Nickelback*"

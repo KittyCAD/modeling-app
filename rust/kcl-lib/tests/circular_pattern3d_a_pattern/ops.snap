@@ -54,12 +54,8 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -107,12 +103,8 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -120,12 +112,8 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -133,12 +121,8 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -151,12 +135,8 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
             "value": 6.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -248,9 +228,9 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
             "type": "Number",
             "value": 360.0,
             "ty": {
+              "degrees": null,
               "type": "Known",
-              "type": "Angle",
-              "type": "Degrees"
+              "type": "Angle"
             }
           },
           "sourceRange": []
@@ -264,12 +244,8 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -277,12 +253,8 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -290,12 +262,8 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -311,12 +279,8 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "value": -20.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -324,12 +288,8 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "value": -20.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               },
               {
@@ -337,12 +297,8 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "value": -20.0,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "mm",
+                  "angle": "degrees"
                 }
               }
             ]
@@ -387,6 +343,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -494,6 +451,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

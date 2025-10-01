@@ -6,6 +6,7 @@ description: Operations executed invalid_index_fractional.kcl
   "rust/kcl-lib/tests/invalid_index_fractional/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -113,6 +114,7 @@ description: Operations executed invalid_index_fractional.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

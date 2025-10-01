@@ -334,7 +334,7 @@ description: Artifact commands helical-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -5.816564508980187,
+            "x": -5.816564508980192,
             "y": 18.856838998639372,
             "z": 0.0
           },
@@ -507,7 +507,7 @@ description: Artifact commands helical-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.603024957692658,
+            "x": -0.6030249576926529,
             "y": 22.992093443190416,
             "z": 0.0
           },
@@ -715,7 +715,7 @@ description: Artifact commands helical-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.8787542118590292,
+            "x": 1.8787542118590241,
             "y": 22.923138585530168,
             "z": 0.0
           },
@@ -750,7 +750,7 @@ description: Artifact commands helical-gear.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.6644342460226098,
+            "x": -1.664434246022614,
             "y": 19.66322604122736,
             "z": 0.0
           },
@@ -850,9 +850,11 @@ description: Artifact commands helical-gear.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -6,6 +6,7 @@ description: Operations executed var_ref_in_own_def_decl.kcl
   "rust/kcl-lib/tests/var_ref_in_own_def_decl/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -113,6 +114,7 @@ description: Operations executed var_ref_in_own_def_decl.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

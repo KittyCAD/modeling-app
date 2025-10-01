@@ -1,21 +1,27 @@
-import { useEffect, useCallback } from 'react'
+import {
+  CREATE_FILE_URL_PARAM,
+  DEFAULT_PROJECT_KCL_FILE,
+} from '@src/lib/constants'
+import {
+  billingActor,
+  mlEphantManagerActor,
+  systemIOActor,
+  useSettings,
+  useToken,
+} from '@src/lib/singletons'
+import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
 import {
   useClearURLParams,
-  useRequestedTextToCadGeneration,
+  useProjectIdToConversationId,
+  useWatchForNewFileRequestsFromMlEphant,
 } from '@src/machines/systemIO/hooks'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { CREATE_FILE_URL_PARAM } from '@src/lib/constants'
-import { submitAndAwaitTextToKclSystemIO } from '@src/lib/textToCad'
-import { reportRejection } from '@src/lib/trap'
-import { useNavigate } from 'react-router-dom'
-import { billingActor, useSettings, useToken } from '@src/lib/singletons'
-import { BillingTransition } from '@src/machines/billingMachine'
 
 export function SystemIOMachineLogicListenerWeb() {
   const clearURLParams = useClearURLParams()
-  const navigate = useNavigate()
   const settings = useSettings()
-  const requestedTextToCadGeneration = useRequestedTextToCadGeneration()
   const token = useToken()
   const [searchParams, setSearchParams] = useSearchParams()
   const clearImportSearchParams = useCallback(() => {
@@ -33,33 +39,54 @@ export function SystemIOMachineLogicListenerWeb() {
       if (clearURLParams.value) {
         clearImportSearchParams()
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [clearURLParams])
   }
 
-  // TODO: Move this generateTextToCAD to another machine in the future and make a whole machine out of it.
-  useEffect(() => {
-    const requestedPromptTrimmed =
-      requestedTextToCadGeneration.requestedPrompt.trim()
-    const requestedProjectName =
-      requestedTextToCadGeneration.requestedProjectName
-    const isProjectNew = requestedTextToCadGeneration.isProjectNew
-    if (!requestedPromptTrimmed || !requestedProjectName) return
-    // Gotcha: web has no project name.
-    const uniqueNameIfNeeded = requestedProjectName
-    submitAndAwaitTextToKclSystemIO({
-      trimmedPrompt: requestedPromptTrimmed,
-      projectName: uniqueNameIfNeeded,
-      navigate,
-      token,
-      isProjectNew,
-      settings: { highlightEdges: settings.modeling.highlightEdges.current },
-    })
-      .then(() => {
-        billingActor.send({ type: BillingTransition.Update, apiToken: token })
-      })
-      .catch(reportRejection)
-  }, [requestedTextToCadGeneration])
-
   useClearQueryParams()
+
+  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
+
+  useWatchForNewFileRequestsFromMlEphant(
+    mlEphantManagerActor,
+    mlEphantManagerActor2,
+    billingActor,
+    token,
+    (prompt, promptMeta) => {
+      systemIOActor.send({
+        type: SystemIOMachineEvents.createKCLFile,
+        data: {
+          requestedProjectName: promptMeta.project.name,
+          requestedCode: prompt.outputs?.['main.kcl'] ?? prompt.code ?? '',
+          requestedFileNameWithExtension:
+            promptMeta.targetFile?.name ?? DEFAULT_PROJECT_KCL_FILE,
+        },
+      })
+    },
+    (toolOutput, projectNameCurrentlyOpened) => {
+      if (
+        toolOutput.type !== 'text_to_cad' &&
+        toolOutput.type !== 'edit_kcl_code'
+      ) {
+        return
+      }
+      systemIOActor.send({
+        type: SystemIOMachineEvents.createKCLFile,
+        data: {
+          requestedProjectName: projectNameCurrentlyOpened,
+          requestedCode: toolOutput.outputs?.[DEFAULT_PROJECT_KCL_FILE] ?? '',
+          requestedFileNameWithExtension: DEFAULT_PROJECT_KCL_FILE,
+        },
+      })
+    }
+  )
+
+  useProjectIdToConversationId(
+    mlEphantManagerActor,
+    mlEphantManagerActor2,
+    systemIOActor,
+    settings
+  )
+
   return null
 }

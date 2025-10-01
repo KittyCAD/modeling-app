@@ -12,34 +12,26 @@ description: Variables in memory after executing plane_of.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 1828.8,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       }
     }
   },
@@ -91,9 +83,7 @@ description: Variables in memory after executing plane_of.kcl
               2.598076211353316
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Yards"
-            }
+            "units": "yd"
           },
           {
             "__geoMeta": {
@@ -110,9 +100,7 @@ description: Variables in memory after executing plane_of.kcl
               -2.5980762113533156
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Yards"
-            }
+            "units": "yd"
           },
           {
             "__geoMeta": {
@@ -129,9 +117,7 @@ description: Variables in memory after executing plane_of.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Yards"
-            }
+            "units": "yd"
           }
         ],
         "on": {
@@ -141,9 +127,7 @@ description: Variables in memory after executing plane_of.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -151,25 +135,19 @@ description: Variables in memory after executing plane_of.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -181,9 +159,7 @@ description: Variables in memory after executing plane_of.kcl
             3.0,
             0.0
           ],
-          "units": {
-            "type": "Yards"
-          },
+          "units": "yd",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -192,16 +168,11 @@ description: Variables in memory after executing plane_of.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Yards"
-        }
+        "units": "yd"
       },
-      "height": 2.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Yards"
-      },
+      "units": "yd",
       "sectional": false
     }
   }

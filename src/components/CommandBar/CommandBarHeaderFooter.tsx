@@ -1,19 +1,19 @@
 import type React from 'react'
-import { useMemo, useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { ActionButton } from '@src/components/ActionButton'
+import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
-import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import type {
   KclCommandValue,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { roundOffWithUnits } from '@src/lib/utils'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { roundOffWithUnits } from '@src/lib/utils'
 
 function CommandBarHeaderFooter({
   children,
@@ -39,6 +39,7 @@ function CommandBarHeaderFooter({
         delete s[name]
     }
     return s
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [selectedCommand])
   const isReviewing = commandBarState.matches('Review')
   const [showShortcuts, setShowShortcuts] = useState(false)
@@ -175,6 +176,8 @@ function CommandBarHeaderFooter({
                             (argValue as KclCommandValue).valueCalculated,
                             4
                           )
+                        ) : arg.inputType === 'vector3d' ? (
+                          (argValue as KclCommandValue).valueCalculated
                         ) : arg.inputType === 'text' &&
                           !arg.valueSummary &&
                           typeof argValue === 'string' ? (

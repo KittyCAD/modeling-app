@@ -2,7 +2,6 @@ import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
-import type { Selections } from '@src/lib/selections'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
@@ -10,6 +9,7 @@ import {
 } from '@src/lib/selections'
 import { kclManager } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
@@ -63,12 +63,14 @@ export default function CommandBarSelectionMixedInput({
         setHasAutoSkipped(true)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.name])
 
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
     return () => kclManager.defaultSelectionFilter(selection)
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.selectionFilter])
 
   // Watch for outside teardowns of this component
@@ -87,6 +89,7 @@ export default function CommandBarSelectionMixedInput({
         onSubmit(resolvedSelection)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   function handleChange() {
@@ -163,7 +166,7 @@ export default function CommandBarSelectionMixedInput({
           placeholder="Select an entity with your mouse"
           className="absolute inset-0 w-full h-full opacity-0 cursor-default"
           onKeyDown={(event) => {
-            if (event.key === 'Backspace' && event.shiftKey) {
+            if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
             } else if (event.key === 'Escape') {
               commandBarActor.send({ type: 'Close' })

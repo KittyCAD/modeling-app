@@ -1,5 +1,4 @@
 import type { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
-import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 
@@ -27,22 +26,9 @@ import {
   isNodeSafeToReplace,
   isNodeSafeToReplacePath,
 } from '@src/lang/queryAst'
-import {
-  ARG_INDEX_FIELD,
-  LABELED_ARG_FIELD,
-  UNLABELED_ARG,
-} from '@src/lang/queryAstConstants'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import {
-  addTagForSketchOnFace,
-  getConstraintInfoKw,
-} from '@src/lang/std/sketch'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
-import {
-  isLiteralArrayOrStatic,
-  removeSingleConstraint,
-  transformAstSketchLines,
-} from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import type {
   ArrayExpression,
@@ -66,10 +52,19 @@ import type {
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
+import { ARG_AT } from '@src/lang/constants'
+import { isLiteralArrayOrStatic, type Coords2d } from '@src/lang/util'
 import { err, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
-import type { ExtrudeFacePlane } from '@src/machines/modelingMachine'
-import { ARG_AT } from '@src/lang/constants'
+import type { ExtrudeFacePlane } from '@src/machines/modelingSharedTypes'
+import {
+  type addTagForSketchOnFace as AddTagForSketchOnFaceFn,
+  type getConstraintInfoKw as GetConstraintInfoKwFn,
+} from '@src/lang/std/sketch'
+import {
+  type removeSingleConstraint as RemoveSingleConstraintFn,
+  type transformAstSketchLines as TransformAstSketchLinesFn,
+} from '@src/lang/std/sketchcombos'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -108,7 +103,7 @@ export function insertNewStartProfileAt(
   node: Node<Program>,
   sketchNodePaths: PathToNode[],
   planeNodePath: PathToNode,
-  at: [number, number],
+  at: Coords2d,
   insertType: 'start' | 'end' = 'end'
 ):
   | {
@@ -343,6 +338,7 @@ export function sketchOnExtrudedFace(
   node: Node<Program>,
   sketchPathToNode: PathToNode,
   extrudePathToNode: PathToNode,
+  addTagForSketchOnFace: typeof AddTagForSketchOnFaceFn,
   info: ExtrudeFacePlane['faceInfo'] = { type: 'wall' }
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   let _node = { ...node }
@@ -419,56 +415,6 @@ export function sketchOnExtrudedFace(
   return {
     modifiedAst: _node,
     pathToNode: newpathToNode,
-  }
-}
-
-/**
- * Append an offset plane to the AST
- */
-export function addOffsetPlane({
-  node,
-  plane,
-  insertIndex,
-  offset,
-  planeName,
-}: {
-  node: Node<Program>
-  plane: Node<Literal> | Node<Name> // Can be DefaultPlaneStr or string for offsetPlanes
-  insertIndex?: number
-  offset: Expr
-  planeName?: string
-}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  const modifiedAst = structuredClone(node)
-  const newPlaneName =
-    planeName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.PLANE)
-
-  const newPlane = createVariableDeclaration(
-    newPlaneName,
-    createCallExpressionStdLibKw('offsetPlane', plane, [
-      createLabeledArg('offset', offset),
-    ])
-  )
-
-  const insertAt =
-    insertIndex !== undefined
-      ? insertIndex
-      : modifiedAst.body.length
-        ? modifiedAst.body.length
-        : 0
-
-  modifiedAst.body.length
-    ? modifiedAst.body.splice(insertAt, 0, newPlane)
-    : modifiedAst.body.push(newPlane)
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [insertAt, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['unlabeled', UNLABELED_ARG],
-  ]
-  return {
-    modifiedAst,
-    pathToNode,
   }
 }
 
@@ -723,12 +669,15 @@ export function moveValueIntoNewVariable(
  * Deletes a segment from a pipe expression, if the segment has a tag that other segments use, it will remove that value and replace it with the equivalent literal
  * @param dependentRanges - The ranges of the segments that are dependent on the segment being deleted, this is usually the output of `findUsesOfTagInPipe`
  */
-export function deleteSegmentFromPipeExpression(
+export function deleteSegmentOrProfileFromPipeExpression(
   dependentRanges: SourceRange[],
   modifiedAst: Node<Program>,
   memVars: VariableMap,
   code: string,
-  pathToNode: PathToNode
+  pathToNode: PathToNode,
+  getConstraintInfoKw: typeof GetConstraintInfoKwFn,
+  removeSingleConstraint: typeof RemoveSingleConstraintFn,
+  transformAstSketchLines: typeof TransformAstSketchLinesFn
 ): Node<Program> | Error {
   let _modifiedAst = structuredClone(modifiedAst)
 
@@ -753,19 +702,31 @@ export function deleteSegmentFromPipeExpression(
       callExp.shallowPath,
       constraintInfo.argPosition,
       _modifiedAst,
-      memVars
+      memVars,
+      removeSingleConstraint,
+      transformAstSketchLines
     )
     if (!transform) return
     _modifiedAst = transform.modifiedAst
   })
 
-  const pipeExpression = getNodeFromPath<PipeExpression>(
+  const pipeExpression = getNodeFromPath<PipeExpression | CallExpressionKw>(
     _modifiedAst,
     pathToNode,
     'PipeExpression'
   )
   if (err(pipeExpression)) return pipeExpression
 
+  if (pipeExpression.node.type === 'CallExpressionKw') {
+    const topLevelDeleteResult = deleteTopLevelStatement(
+      _modifiedAst,
+      pathToNode
+    )
+    if (topLevelDeleteResult instanceof Error) {
+      return topLevelDeleteResult
+    }
+    return _modifiedAst
+  }
   const pipeInPathIndex = pathToNode.findIndex(
     ([_, desc]) => desc === 'PipeExpression'
   )
@@ -803,7 +764,9 @@ export function removeSingleConstraintInfo(
   pathToCallExp: PathToNode,
   argDetails: SimplifiedArgDetails,
   ast: Node<Program>,
-  memVars: VariableMap
+  memVars: VariableMap,
+  removeSingleConstraint: typeof RemoveSingleConstraintFn,
+  transformAstSketchLines: typeof TransformAstSketchLinesFn
 ):
   | {
       modifiedAst: Node<Program>
@@ -884,8 +847,8 @@ export function updateSketchNodePathsWithInsertIndex({
 }
 
 /**
- * 
- * Split the following pipe expression into 
+ *
+ * Split the following pipe expression into
  * ```ts
  * part001 = startSketchOn(XZ)
   |> startProfile(at = [1, 2])
@@ -905,7 +868,7 @@ extrude001 = extrude(part001, length = 5)
 ```
 Notice that the `startSketchOn` is what gets the new variable name, this is so part001 still has the same data as before
 making it safe for later code that uses part001 (the extrude in this example)
- * 
+ *
  */
 export function splitPipedProfile(
   ast: Node<Program>,

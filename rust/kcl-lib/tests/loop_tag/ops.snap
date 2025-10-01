@@ -12,12 +12,8 @@ description: Operations executed loop_tag.kcl
         "value": 10.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed loop_tag.kcl
         "value": 50.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed loop_tag.kcl
         "value": 50.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -110,13 +98,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 7.2,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -179,12 +163,8 @@ description: Operations executed loop_tag.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -222,13 +202,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 0.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -269,12 +245,8 @@ description: Operations executed loop_tag.kcl
         "value": 10.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -315,12 +287,8 @@ description: Operations executed loop_tag.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -368,12 +336,8 @@ description: Operations executed loop_tag.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -418,12 +382,8 @@ description: Operations executed loop_tag.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -471,13 +431,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 7.2,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -518,12 +474,8 @@ description: Operations executed loop_tag.kcl
         "value": 9.921147013144779,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -564,12 +516,8 @@ description: Operations executed loop_tag.kcl
         "value": 1.2533323356430426,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -620,12 +568,8 @@ description: Operations executed loop_tag.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -670,12 +614,8 @@ description: Operations executed loop_tag.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -723,13 +663,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 14.4,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -770,12 +706,8 @@ description: Operations executed loop_tag.kcl
         "value": 9.68583161128631,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -816,12 +748,8 @@ description: Operations executed loop_tag.kcl
         "value": 2.486898871648548,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -872,12 +800,8 @@ description: Operations executed loop_tag.kcl
             "value": 3.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -922,12 +846,8 @@ description: Operations executed loop_tag.kcl
             "value": 3.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -975,13 +895,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 21.6,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -1022,12 +938,8 @@ description: Operations executed loop_tag.kcl
         "value": 9.297764858882514,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1068,12 +980,8 @@ description: Operations executed loop_tag.kcl
         "value": 3.6812455268467796,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1124,12 +1032,8 @@ description: Operations executed loop_tag.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1174,12 +1078,8 @@ description: Operations executed loop_tag.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1227,13 +1127,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 28.8,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -1274,12 +1170,8 @@ description: Operations executed loop_tag.kcl
         "value": 8.763066800438637,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1320,12 +1212,8 @@ description: Operations executed loop_tag.kcl
         "value": 4.817536741017153,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1376,12 +1264,8 @@ description: Operations executed loop_tag.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1426,12 +1310,8 @@ description: Operations executed loop_tag.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1479,13 +1359,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 36.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -1526,12 +1402,8 @@ description: Operations executed loop_tag.kcl
         "value": 8.090169943749475,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1572,12 +1444,8 @@ description: Operations executed loop_tag.kcl
         "value": 5.877852522924732,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1628,12 +1496,8 @@ description: Operations executed loop_tag.kcl
             "value": 6.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1678,12 +1542,8 @@ description: Operations executed loop_tag.kcl
             "value": 6.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1731,13 +1591,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 43.2,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -1778,12 +1634,8 @@ description: Operations executed loop_tag.kcl
         "value": 7.289686274214116,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1824,12 +1676,8 @@ description: Operations executed loop_tag.kcl
         "value": 6.845471059286887,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1880,12 +1728,8 @@ description: Operations executed loop_tag.kcl
             "value": 7.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1930,12 +1774,8 @@ description: Operations executed loop_tag.kcl
             "value": 7.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1983,13 +1823,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 50.4,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -2030,12 +1866,8 @@ description: Operations executed loop_tag.kcl
         "value": 6.374239897486898,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2076,12 +1908,8 @@ description: Operations executed loop_tag.kcl
         "value": 7.705132427757891,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2132,12 +1960,8 @@ description: Operations executed loop_tag.kcl
             "value": 8.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2182,12 +2006,8 @@ description: Operations executed loop_tag.kcl
             "value": 8.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2235,13 +2055,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 57.6,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -2282,12 +2098,8 @@ description: Operations executed loop_tag.kcl
         "value": 5.3582679497899655,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2328,12 +2140,8 @@ description: Operations executed loop_tag.kcl
         "value": 8.443279255020151,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2384,12 +2192,8 @@ description: Operations executed loop_tag.kcl
             "value": 9.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2434,12 +2238,8 @@ description: Operations executed loop_tag.kcl
             "value": 9.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2487,13 +2287,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 64.8,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -2534,12 +2330,8 @@ description: Operations executed loop_tag.kcl
         "value": 4.257792915650727,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2580,12 +2372,8 @@ description: Operations executed loop_tag.kcl
         "value": 9.048270524660197,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2636,12 +2424,8 @@ description: Operations executed loop_tag.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2686,12 +2470,8 @@ description: Operations executed loop_tag.kcl
             "value": 10.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2739,13 +2519,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 72.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -2786,12 +2562,8 @@ description: Operations executed loop_tag.kcl
         "value": 3.0901699437494745,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2832,12 +2604,8 @@ description: Operations executed loop_tag.kcl
         "value": 9.510565162951535,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2888,12 +2656,8 @@ description: Operations executed loop_tag.kcl
             "value": 11.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2938,12 +2702,8 @@ description: Operations executed loop_tag.kcl
             "value": 11.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2991,13 +2751,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 79.2,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -3038,12 +2794,8 @@ description: Operations executed loop_tag.kcl
         "value": 1.8738131458572473,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3084,12 +2836,8 @@ description: Operations executed loop_tag.kcl
         "value": 9.822872507286887,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3140,12 +2888,8 @@ description: Operations executed loop_tag.kcl
             "value": 12.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3190,12 +2934,8 @@ description: Operations executed loop_tag.kcl
             "value": 12.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3243,13 +2983,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 86.4,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -3290,12 +3026,8 @@ description: Operations executed loop_tag.kcl
         "value": 0.627905195293133,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3336,12 +3068,8 @@ description: Operations executed loop_tag.kcl
         "value": 9.980267284282716,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3392,12 +3120,8 @@ description: Operations executed loop_tag.kcl
             "value": 13.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3442,12 +3166,8 @@ description: Operations executed loop_tag.kcl
             "value": 13.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3495,13 +3215,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 93.60000000000001,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -3542,12 +3258,8 @@ description: Operations executed loop_tag.kcl
         "value": -0.627905195293134,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3588,12 +3300,8 @@ description: Operations executed loop_tag.kcl
         "value": 9.980267284282716,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3644,12 +3352,8 @@ description: Operations executed loop_tag.kcl
             "value": 14.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3694,12 +3398,8 @@ description: Operations executed loop_tag.kcl
             "value": 14.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3747,13 +3447,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 100.8,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -3794,12 +3490,8 @@ description: Operations executed loop_tag.kcl
         "value": -1.8738131458572438,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3840,12 +3532,8 @@ description: Operations executed loop_tag.kcl
         "value": 9.822872507286887,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -3896,12 +3584,8 @@ description: Operations executed loop_tag.kcl
             "value": 15.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3946,12 +3630,8 @@ description: Operations executed loop_tag.kcl
             "value": 15.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3999,13 +3679,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 108.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -4046,12 +3722,8 @@ description: Operations executed loop_tag.kcl
         "value": -3.0901699437494736,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -4092,12 +3764,8 @@ description: Operations executed loop_tag.kcl
         "value": 9.510565162951536,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -4148,12 +3816,8 @@ description: Operations executed loop_tag.kcl
             "value": 16.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4198,12 +3862,8 @@ description: Operations executed loop_tag.kcl
             "value": 16.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4251,13 +3911,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 115.2,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -4298,12 +3954,8 @@ description: Operations executed loop_tag.kcl
         "value": -4.257792915650727,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -4344,12 +3996,8 @@ description: Operations executed loop_tag.kcl
         "value": 9.048270524660195,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -4400,12 +4048,8 @@ description: Operations executed loop_tag.kcl
             "value": 17.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4450,12 +4094,8 @@ description: Operations executed loop_tag.kcl
             "value": 17.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4503,13 +4143,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 122.4,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -4550,12 +4186,8 @@ description: Operations executed loop_tag.kcl
         "value": -5.358267949789969,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -4596,12 +4228,8 @@ description: Operations executed loop_tag.kcl
         "value": 8.44327925502015,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -4652,12 +4280,8 @@ description: Operations executed loop_tag.kcl
             "value": 18.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4702,12 +4326,8 @@ description: Operations executed loop_tag.kcl
             "value": 18.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4755,13 +4375,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 129.6,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -4802,12 +4418,8 @@ description: Operations executed loop_tag.kcl
         "value": -6.3742398974868975,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -4848,12 +4460,8 @@ description: Operations executed loop_tag.kcl
         "value": 7.705132427757892,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -4904,12 +4512,8 @@ description: Operations executed loop_tag.kcl
             "value": 19.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -4954,12 +4558,8 @@ description: Operations executed loop_tag.kcl
             "value": 19.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -5007,13 +4607,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 136.8,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -5054,12 +4650,8 @@ description: Operations executed loop_tag.kcl
         "value": -7.289686274214113,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -5100,12 +4692,8 @@ description: Operations executed loop_tag.kcl
         "value": 6.845471059286888,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -5156,12 +4744,8 @@ description: Operations executed loop_tag.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -5206,12 +4790,8 @@ description: Operations executed loop_tag.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -5259,13 +4839,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 144.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -5306,12 +4882,8 @@ description: Operations executed loop_tag.kcl
         "value": -8.090169943749473,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -5352,12 +4924,8 @@ description: Operations executed loop_tag.kcl
         "value": 5.877852522924733,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -5408,12 +4976,8 @@ description: Operations executed loop_tag.kcl
             "value": 21.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -5458,12 +5022,8 @@ description: Operations executed loop_tag.kcl
             "value": 21.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -5511,13 +5071,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 151.20000000000002,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -5558,12 +5114,8 @@ description: Operations executed loop_tag.kcl
         "value": -8.763066800438637,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -5604,12 +5156,8 @@ description: Operations executed loop_tag.kcl
         "value": 4.817536741017152,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -5660,12 +5208,8 @@ description: Operations executed loop_tag.kcl
             "value": 22.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -5710,12 +5254,8 @@ description: Operations executed loop_tag.kcl
             "value": 22.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -5763,13 +5303,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 158.4,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -5810,12 +5346,8 @@ description: Operations executed loop_tag.kcl
         "value": -9.297764858882513,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -5856,12 +5388,8 @@ description: Operations executed loop_tag.kcl
         "value": 3.6812455268467814,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -5912,12 +5440,8 @@ description: Operations executed loop_tag.kcl
             "value": 23.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -5962,12 +5486,8 @@ description: Operations executed loop_tag.kcl
             "value": 23.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -6015,13 +5535,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 165.6,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -6062,12 +5578,8 @@ description: Operations executed loop_tag.kcl
         "value": -9.685831611286309,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6108,12 +5620,8 @@ description: Operations executed loop_tag.kcl
         "value": 2.4868988716485525,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6164,12 +5672,8 @@ description: Operations executed loop_tag.kcl
             "value": 24.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -6214,12 +5718,8 @@ description: Operations executed loop_tag.kcl
             "value": 24.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -6267,13 +5767,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 172.8,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -6314,12 +5810,8 @@ description: Operations executed loop_tag.kcl
         "value": -9.921147013144779,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6360,12 +5852,8 @@ description: Operations executed loop_tag.kcl
         "value": 1.2533323356430408,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6416,12 +5904,8 @@ description: Operations executed loop_tag.kcl
             "value": 25.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -6466,12 +5950,8 @@ description: Operations executed loop_tag.kcl
             "value": 25.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -6519,13 +5999,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 180.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -6566,12 +6042,8 @@ description: Operations executed loop_tag.kcl
         "value": -10.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6612,12 +6084,8 @@ description: Operations executed loop_tag.kcl
         "value": 0.0000000000000012246467991473533,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6668,12 +6136,8 @@ description: Operations executed loop_tag.kcl
             "value": 26.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -6718,12 +6182,8 @@ description: Operations executed loop_tag.kcl
             "value": 26.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -6771,13 +6231,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 187.20000000000002,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -6818,12 +6274,8 @@ description: Operations executed loop_tag.kcl
         "value": -9.921147013144779,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6864,12 +6316,8 @@ description: Operations executed loop_tag.kcl
         "value": -1.2533323356430428,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -6920,12 +6368,8 @@ description: Operations executed loop_tag.kcl
             "value": 27.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -6970,12 +6414,8 @@ description: Operations executed loop_tag.kcl
             "value": 27.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -7023,13 +6463,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 194.4,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -7070,12 +6506,8 @@ description: Operations executed loop_tag.kcl
         "value": -9.68583161128631,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -7116,12 +6548,8 @@ description: Operations executed loop_tag.kcl
         "value": -2.4868988716485503,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -7172,12 +6600,8 @@ description: Operations executed loop_tag.kcl
             "value": 28.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -7222,12 +6646,8 @@ description: Operations executed loop_tag.kcl
             "value": 28.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -7275,13 +6695,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 201.6,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -7322,12 +6738,8 @@ description: Operations executed loop_tag.kcl
         "value": -9.297764858882516,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -7368,12 +6780,8 @@ description: Operations executed loop_tag.kcl
         "value": -3.6812455268467748,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -7424,12 +6832,8 @@ description: Operations executed loop_tag.kcl
             "value": 29.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -7474,12 +6878,8 @@ description: Operations executed loop_tag.kcl
             "value": 29.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -7527,13 +6927,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 208.8,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -7574,12 +6970,8 @@ description: Operations executed loop_tag.kcl
         "value": -8.763066800438637,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -7620,12 +7012,8 @@ description: Operations executed loop_tag.kcl
         "value": -4.817536741017154,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -7676,12 +7064,8 @@ description: Operations executed loop_tag.kcl
             "value": 30.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -7726,12 +7110,8 @@ description: Operations executed loop_tag.kcl
             "value": 30.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -7779,13 +7159,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 216.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -7826,12 +7202,8 @@ description: Operations executed loop_tag.kcl
         "value": -8.090169943749475,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -7872,12 +7244,8 @@ description: Operations executed loop_tag.kcl
         "value": -5.87785252292473,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -7928,12 +7296,8 @@ description: Operations executed loop_tag.kcl
             "value": 31.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -7978,12 +7342,8 @@ description: Operations executed loop_tag.kcl
             "value": 31.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -8031,13 +7391,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 223.20000000000002,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -8078,12 +7434,8 @@ description: Operations executed loop_tag.kcl
         "value": -7.289686274214116,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -8124,12 +7476,8 @@ description: Operations executed loop_tag.kcl
         "value": -6.845471059286887,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -8180,12 +7528,8 @@ description: Operations executed loop_tag.kcl
             "value": 32.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -8230,12 +7574,8 @@ description: Operations executed loop_tag.kcl
             "value": 32.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -8283,13 +7623,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 230.4,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -8330,12 +7666,8 @@ description: Operations executed loop_tag.kcl
         "value": -6.374239897486895,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -8376,12 +7708,8 @@ description: Operations executed loop_tag.kcl
         "value": -7.705132427757894,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -8432,12 +7760,8 @@ description: Operations executed loop_tag.kcl
             "value": 33.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -8482,12 +7806,8 @@ description: Operations executed loop_tag.kcl
             "value": 33.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -8535,13 +7855,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 237.6,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -8582,12 +7898,8 @@ description: Operations executed loop_tag.kcl
         "value": -5.358267949789964,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -8628,12 +7940,8 @@ description: Operations executed loop_tag.kcl
         "value": -8.443279255020153,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -8684,12 +7992,8 @@ description: Operations executed loop_tag.kcl
             "value": 34.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -8734,12 +8038,8 @@ description: Operations executed loop_tag.kcl
             "value": 34.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -8787,13 +8087,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 244.8,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -8834,12 +8130,8 @@ description: Operations executed loop_tag.kcl
         "value": -4.257792915650722,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -8880,12 +8172,8 @@ description: Operations executed loop_tag.kcl
         "value": -9.048270524660198,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -8936,12 +8224,8 @@ description: Operations executed loop_tag.kcl
             "value": 35.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -8986,12 +8270,8 @@ description: Operations executed loop_tag.kcl
             "value": 35.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -9039,13 +8319,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 252.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -9086,12 +8362,8 @@ description: Operations executed loop_tag.kcl
         "value": -3.0901699437494754,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -9132,12 +8404,8 @@ description: Operations executed loop_tag.kcl
         "value": -9.510565162951535,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -9188,12 +8456,8 @@ description: Operations executed loop_tag.kcl
             "value": 36.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -9238,12 +8502,8 @@ description: Operations executed loop_tag.kcl
             "value": 36.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -9291,13 +8551,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 259.2,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -9338,12 +8594,8 @@ description: Operations executed loop_tag.kcl
         "value": -1.8738131458572462,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -9384,12 +8636,8 @@ description: Operations executed loop_tag.kcl
         "value": -9.822872507286887,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -9440,12 +8688,8 @@ description: Operations executed loop_tag.kcl
             "value": 37.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -9490,12 +8734,8 @@ description: Operations executed loop_tag.kcl
             "value": 37.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -9543,13 +8783,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 266.40000000000003,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -9590,12 +8826,8 @@ description: Operations executed loop_tag.kcl
         "value": -0.627905195293132,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -9636,12 +8868,8 @@ description: Operations executed loop_tag.kcl
         "value": -9.980267284282716,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -9692,12 +8920,8 @@ description: Operations executed loop_tag.kcl
             "value": 38.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -9742,12 +8966,8 @@ description: Operations executed loop_tag.kcl
             "value": 38.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -9795,13 +9015,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 273.6,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -9842,12 +9058,8 @@ description: Operations executed loop_tag.kcl
         "value": 0.6279051952931283,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -9888,12 +9100,8 @@ description: Operations executed loop_tag.kcl
         "value": -9.980267284282716,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -9944,12 +9152,8 @@ description: Operations executed loop_tag.kcl
             "value": 39.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -9994,12 +9198,8 @@ description: Operations executed loop_tag.kcl
             "value": 39.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -10047,13 +9247,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 280.8,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -10094,12 +9290,8 @@ description: Operations executed loop_tag.kcl
         "value": 1.8738131458572427,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -10140,12 +9332,8 @@ description: Operations executed loop_tag.kcl
         "value": -9.822872507286887,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -10196,12 +9384,8 @@ description: Operations executed loop_tag.kcl
             "value": 40.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -10246,12 +9430,8 @@ description: Operations executed loop_tag.kcl
             "value": 40.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -10299,13 +9479,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 288.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -10346,12 +9522,8 @@ description: Operations executed loop_tag.kcl
         "value": 3.0901699437494723,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -10392,12 +9564,8 @@ description: Operations executed loop_tag.kcl
         "value": -9.510565162951536,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -10448,12 +9616,8 @@ description: Operations executed loop_tag.kcl
             "value": 41.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -10498,12 +9662,8 @@ description: Operations executed loop_tag.kcl
             "value": 41.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -10551,13 +9711,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 295.2,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -10598,12 +9754,8 @@ description: Operations executed loop_tag.kcl
         "value": 4.257792915650718,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -10644,12 +9796,8 @@ description: Operations executed loop_tag.kcl
         "value": -9.048270524660198,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -10700,12 +9848,8 @@ description: Operations executed loop_tag.kcl
             "value": 42.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -10750,12 +9894,8 @@ description: Operations executed loop_tag.kcl
             "value": 42.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -10803,13 +9943,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 302.40000000000003,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -10850,12 +9986,8 @@ description: Operations executed loop_tag.kcl
         "value": 5.358267949789967,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -10896,12 +10028,8 @@ description: Operations executed loop_tag.kcl
         "value": -8.44327925502015,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -10952,12 +10080,8 @@ description: Operations executed loop_tag.kcl
             "value": 43.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -11002,12 +10126,8 @@ description: Operations executed loop_tag.kcl
             "value": 43.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -11055,13 +10175,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 309.6,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -11102,12 +10218,8 @@ description: Operations executed loop_tag.kcl
         "value": 6.3742398974869,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -11148,12 +10260,8 @@ description: Operations executed loop_tag.kcl
         "value": -7.70513242775789,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -11204,12 +10312,8 @@ description: Operations executed loop_tag.kcl
             "value": 44.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -11254,12 +10358,8 @@ description: Operations executed loop_tag.kcl
             "value": 44.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -11307,13 +10407,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 316.8,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -11354,12 +10450,8 @@ description: Operations executed loop_tag.kcl
         "value": 7.289686274214112,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -11400,12 +10492,8 @@ description: Operations executed loop_tag.kcl
         "value": -6.84547105928689,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -11456,12 +10544,8 @@ description: Operations executed loop_tag.kcl
             "value": 45.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -11506,12 +10590,8 @@ description: Operations executed loop_tag.kcl
             "value": 45.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -11559,13 +10639,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 324.0,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -11606,12 +10682,8 @@ description: Operations executed loop_tag.kcl
         "value": 8.090169943749473,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -11652,12 +10724,8 @@ description: Operations executed loop_tag.kcl
         "value": -5.877852522924734,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -11708,12 +10776,8 @@ description: Operations executed loop_tag.kcl
             "value": 46.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -11758,12 +10822,8 @@ description: Operations executed loop_tag.kcl
             "value": 46.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -11811,13 +10871,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 331.2,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -11858,12 +10914,8 @@ description: Operations executed loop_tag.kcl
         "value": 8.763066800438631,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -11904,12 +10956,8 @@ description: Operations executed loop_tag.kcl
         "value": -4.817536741017161,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -11960,12 +11008,8 @@ description: Operations executed loop_tag.kcl
             "value": 47.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -12010,12 +11054,8 @@ description: Operations executed loop_tag.kcl
             "value": 47.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -12063,13 +11103,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 338.40000000000003,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -12110,12 +11146,8 @@ description: Operations executed loop_tag.kcl
         "value": 9.297764858882514,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -12156,12 +11188,8 @@ description: Operations executed loop_tag.kcl
         "value": -3.6812455268467787,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -12212,12 +11240,8 @@ description: Operations executed loop_tag.kcl
             "value": 48.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -12262,12 +11286,8 @@ description: Operations executed loop_tag.kcl
             "value": 48.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -12315,13 +11335,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 345.6,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -12362,12 +11378,8 @@ description: Operations executed loop_tag.kcl
         "value": 9.685831611286313,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -12408,12 +11420,8 @@ description: Operations executed loop_tag.kcl
         "value": -2.486898871648545,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -12464,12 +11472,8 @@ description: Operations executed loop_tag.kcl
             "value": 49.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -12514,12 +11518,8 @@ description: Operations executed loop_tag.kcl
             "value": 49.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -12567,13 +11567,9 @@ description: Operations executed loop_tag.kcl
         "type": "Number",
         "value": 352.8,
         "ty": {
-          "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "degrees": null,
+          "type": "Known",
+          "type": "Angle"
         }
       },
       "visibility": "default",
@@ -12614,12 +11610,8 @@ description: Operations executed loop_tag.kcl
         "value": 9.921147013144777,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -12660,12 +11652,8 @@ description: Operations executed loop_tag.kcl
         "value": -1.2533323356430466,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -12723,12 +11711,8 @@ description: Operations executed loop_tag.kcl
             "value": 50.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -12753,6 +11737,7 @@ description: Operations executed loop_tag.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -12860,6 +11845,7 @@ description: Operations executed loop_tag.kcl
     }
   ],
   "std::sketch": [],
+  "std::sketch2": [],
   "std::solid": [],
   "std::sweep": [],
   "std::transform": [],

@@ -1,5 +1,3 @@
-import toast from 'react-hot-toast'
-import { assign, fromPromise, setup } from 'xstate'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type {
   Command,
@@ -8,6 +6,8 @@ import type {
   KclCommandValue,
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
+import toast from 'react-hot-toast'
+import { assign, fromPromise, setup } from 'xstate'
 
 export type CommandBarContext = {
   commands: Command[]
@@ -389,7 +389,11 @@ export const commandBarMachine = setup({
                 isRequired &&
                 resolvedDefaultValue !== undefined &&
                 typeof argValue !== typeof resolvedDefaultValue &&
-                !(argConfig.inputType === 'kcl' || argConfig.skip)
+                !(
+                  argConfig.inputType === 'kcl' ||
+                  argConfig.inputType === 'vector3d' ||
+                  argConfig.skip
+                )
               const hasInvalidKclValue =
                 argConfig.inputType === 'kcl' &&
                 isRequired &&

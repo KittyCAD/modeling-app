@@ -10,10 +10,11 @@ import {
 
 import { App } from '@src/App'
 import { Auth } from '@src/Auth'
+import RootLayout from '@src/Root'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
 import { ErrorPage } from '@src/components/ErrorPage'
-import ModelingPageProvider from '@src/components/ModelingPageProvider'
 import ModelingMachineProvider from '@src/components/ModelingMachineProvider'
+import ModelingPageProvider from '@src/components/ModelingPageProvider'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
 import { coreDump } from '@src/lang/wasm'
@@ -32,9 +33,8 @@ import {
   engineCommandManager,
   rustContext,
 } from '@src/lib/singletons'
-import { reportRejection } from '@src/lib/trap'
 import { useToken } from '@src/lib/singletons'
-import RootLayout from '@src/Root'
+import { reportRejection } from '@src/lib/trap'
 import Home from '@src/routes/Home'
 import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
@@ -173,6 +173,7 @@ function CoreDump() {
         rustContext,
         token
       ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     []
   )
   useHotkeyWrapper(['mod + shift + period'], () => {

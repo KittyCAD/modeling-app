@@ -3,12 +3,12 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import { ActionButton } from '@src/components/ActionButton'
 import type { CommandArgument } from '@src/lib/commandTypes'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, toSync } from '@src/lib/utils'
-import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { useSelector } from '@xstate/react'
-import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 import type { OpenDialogOptions } from 'electron'
+import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -40,6 +40,7 @@ function CommandBarPathInput({
           ? arg.defaultValue(commandBarState.context, argMachineContext)
           : arg.defaultValue
         : '',
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [arg.defaultValue, commandBarState.context, argMachineContext]
   )
 
@@ -64,6 +65,9 @@ function CommandBarPathInput({
         configuration.filters = arg.filters
       }
 
+      if (!window.electron) {
+        return new Error("Can't open file picker without electron")
+      }
       const newPath = await window.electron.open(configuration)
       if (newPath.canceled) return
       inputRef.current.value = newPath.filePaths[0]
@@ -74,8 +78,9 @@ function CommandBarPathInput({
 
   // Fire on component mount, if outside of e2e test context
   useEffect(() => {
-    window.electron.process.env.NODE_ENV !== 'test' &&
+    window.electron?.process.env.NODE_ENV !== 'test' &&
       toSync(pickFileThroughNativeDialog, reportRejection)()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   return (
@@ -98,7 +103,7 @@ function CommandBarPathInput({
           placeholder="Enter a path"
           defaultValue={defaultValue}
           onKeyDown={(event) => {
-            if (event.key === 'Backspace' && event.shiftKey) {
+            if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
             }
           }}
