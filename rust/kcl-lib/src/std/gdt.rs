@@ -13,7 +13,7 @@ use crate::{
     errors::KclErrorDetails,
     exec::KclValue,
     execution::{
-        Metadata, Plane, StatementKind, TagIdentifier,
+        GdtAnnotation, Metadata, ModelingCmdMeta, Plane, StatementKind, TagIdentifier,
         types::{ArrayLen, RuntimeType},
     },
     parsing::ast::types as ast,
@@ -36,7 +36,7 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
     let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
 
-    inner_datum(
+    let annotation = inner_datum(
         face,
         name,
         frame_position,
@@ -49,7 +49,9 @@ pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         &args,
     )
     .await?;
-    Ok(KclValue::none())
+    Ok(KclValue::GdtAnnotation {
+        value: Box::new(annotation),
+    })
 }
 
 async fn inner_datum(
@@ -60,7 +62,7 @@ async fn inner_datum(
     style: AnnotationStyle,
     exec_state: &mut ExecState,
     args: &Args,
-) -> Result<(), KclError> {
+) -> Result<GdtAnnotation, KclError> {
     const DATUM_LENGTH_ERROR: &str = "Datum name must be a single character.";
     if name.len() > 1 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -89,9 +91,11 @@ async fn inner_datum(
         frame_plane.id
     };
     let face_id = args.get_adjacent_face_to_tag(exec_state, &face, false).await?;
+    let meta = vec![Metadata::from(args.source_range)];
+    let annotation_id = exec_state.next_uuid();
     exec_state
         .batch_modeling_cmd(
-            args.into(),
+            ModelingCmdMeta::from_args_id(args, annotation_id),
             ModelingCmd::from(mcmd::NewAnnotation {
                 options: AnnotationOptions {
                     text: None,
@@ -130,7 +134,10 @@ async fn inner_datum(
             }),
         )
         .await?;
-    Ok(())
+    Ok(GdtAnnotation {
+        id: annotation_id,
+        meta,
+    })
 }
 
 pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -147,7 +154,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
     let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
 
-    inner_flatness(
+    let annotations = inner_flatness(
         faces,
         tolerance,
         precision,
@@ -161,7 +168,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         &args,
     )
     .await?;
-    Ok(KclValue::none())
+    Ok(annotations.into())
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -174,7 +181,7 @@ async fn inner_flatness(
     style: AnnotationStyle,
     exec_state: &mut ExecState,
     args: &Args,
-) -> Result<(), KclError> {
+) -> Result<Vec<GdtAnnotation>, KclError> {
     let frame_plane = if let Some(plane) = frame_plane {
         plane
     } else {
@@ -189,11 +196,14 @@ async fn inner_flatness(
     } else {
         frame_plane.id
     };
+    let mut annotations = Vec::with_capacity(faces.len());
     for face in &faces {
         let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
+        let meta = vec![Metadata::from(args.source_range)];
+        let annotation_id = exec_state.next_uuid();
         exec_state
             .batch_modeling_cmd(
-                args.into(),
+                ModelingCmdMeta::from_args_id(args, annotation_id),
                 ModelingCmd::from(mcmd::NewAnnotation {
                     options: AnnotationOptions {
                         text: None,
@@ -240,8 +250,12 @@ async fn inner_flatness(
                 }),
             )
             .await?;
+        annotations.push(GdtAnnotation {
+            id: annotation_id,
+            meta,
+        });
     }
-    Ok(())
+    Ok(annotations)
 }
 
 /// Get the XY plane by evaluating the `XY` expression so that it's the same as
