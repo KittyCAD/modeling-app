@@ -73,12 +73,11 @@ export const billingMachine = setup({
         }
 
         return {
+          ...BILLING_CONTEXT_DEFAULTS,
           credits: billing.credits,
           allowance: billing.allowance,
           isOrg: billing.isOrg,
           hasSubscription: billing.hasSubscription,
-          lastFetch: new Date(),
-          error: undefined,
         }
       }
     ),
