@@ -174,15 +174,15 @@ export const sketchSolveMachine = setup({
     'using tool': {
       on: {
         'unequip tool': {
-          target: "unequiping tool",
+          target: 'unequiping tool',
           actions: ['send unequip to tool'],
-          reenter: true
+          reenter: true,
         },
 
         'equip tool': {
           target: 'switching tool',
           actions: ['send unequip to tool', 'store pending tool'],
-        }
+        },
       },
 
       description:
@@ -212,12 +212,12 @@ export const sketchSolveMachine = setup({
       description: 'Place any teardown code here.',
     },
 
-    "unequiping tool": {
-      exit: "send tool unequipped to parent",
+    'unequiping tool': {
+      exit: 'send tool unequipped to parent',
 
       on: {
-        "xstate.done.actor.tool": "move and select"
-      }
-    }
+        'xstate.done.actor.tool': 'move and select',
+      },
+    },
   },
 })
