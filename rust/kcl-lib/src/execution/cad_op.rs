@@ -160,6 +160,10 @@ pub enum OpKclValue {
     String {
         value: String,
     },
+    SketchVar {
+        value: f64,
+        ty: NumericType,
+    },
     Array {
         value: Vec<OpKclValue>,
     },
@@ -232,6 +236,7 @@ impl From<&KclValue> for OpKclValue {
             KclValue::Bool { value, .. } => Self::Bool { value: *value },
             KclValue::Number { value, ty, .. } => Self::Number { value: *value, ty: *ty },
             KclValue::String { value, .. } => Self::String { value: value.clone() },
+            KclValue::SketchVar { value, ty, .. } => Self::SketchVar { value: *value, ty: *ty },
             KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
                 let value = value.iter().map(Self::from).collect();
                 Self::Array { value }
