@@ -17,6 +17,7 @@ Types can (optionally) be used to describe a function's arguments and returned v
 * [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d)
 * [`Edge`](/docs/kcl-std/types/std-types-Edge)
 * [`Face`](/docs/kcl-std/types/std-types-Face)
+* [`GdtAnnotation`](/docs/kcl-std/types/std-types-GdtAnnotation)
 * [`Helix`](/docs/kcl-std/types/std-types-Helix)
 * [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
 * [`Plane`](/docs/kcl-std/types/std-types-Plane)

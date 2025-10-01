@@ -343,6 +343,10 @@ export type Axis2d
 @(impl = std_rust)
 export type Axis3d
 
+/// A GD&T annotation.
+@(impl = std_rust, experimental = true)
+export type GdtAnnotation
+
 export type mm = number(mm)
 export type cm = number(cm)
 export type m = number(m)

@@ -102,7 +102,6 @@ jobs:
       - run: npm run simpleserver:bg
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
 
-      # TODO: Determine if integration tests need a token
       - name: Install Chromium Browser
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: npm run playwright install chromium --with-deps
@@ -110,7 +109,7 @@ jobs:
       - name: npm run test:integration
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: xvfb-run -a npm run test:integration
-        # TODO: Determine if unit tests need a token
+        # TODO: Determine if integration tests need a token
         env:
           VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
 
