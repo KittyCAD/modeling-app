@@ -1356,7 +1356,7 @@ export const modelingMachine = setup({
           )
 
           // This turns the selection into blue, needed when selecting with ctrl+A
-          const {  updateSceneObjectColors } = handleSelectionBatch({
+          const { updateSceneObjectColors } = handleSelectionBatch({
             selections: setSelections.selection,
           })
           updateSceneObjectColors()
