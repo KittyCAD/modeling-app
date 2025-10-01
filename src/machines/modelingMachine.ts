@@ -5018,7 +5018,7 @@ export const modelingMachine = setup({
         console.log('sketch solve tool changed', event)
         if (event.type !== 'sketch solve tool changed') return {}
         return {
-          sketchSolveTool: event.data.tool,
+          sketchSolveToolName: event.data.tool,
         }
       }),
     },
