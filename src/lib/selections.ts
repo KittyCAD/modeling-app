@@ -17,25 +17,21 @@ import { AXIS_GROUP, X_AXIS } from '@src/clientSideScene/sceneUtils'
 import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 import {
   findAllChildrenAndOrderByPlaceInCode,
+  getEdgeCutMeta,
   getNodeFromPath,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { defaultSourceRange } from '@src/lang/sourceRange'
-import type {
-  Artifact,
-  ArtifactId,
-  CodeRef,
-  SegmentArtifact,
-} from '@src/lang/std/artifactGraph'
+import type { Artifact, ArtifactId } from '@src/lang/std/artifactGraph'
+
 import {
-  getArtifactOfTypes,
   getCapCodeRef,
   getCodeRefsByArtifactId,
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import {
   isCursorInSketchCommandRange,
   isTopLevelModule,
@@ -60,7 +56,6 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import { engineStreamActor } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import {
   getModuleId,
@@ -73,7 +68,6 @@ import {
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
   DefaultPlane,
-  EdgeCutInfo,
   ExtrudeFacePlane,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
@@ -81,25 +75,10 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import toast from 'react-hot-toast'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
 import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
-
-export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
-export type DefaultPlaneSelection = {
-  name: DefaultPlaneStr
-  id: string
-}
-
-export type NonCodeSelection = Axis | DefaultPlaneSelection
-export interface Selection {
-  artifact?: Artifact
-  codeRef: CodeRef
-}
-export type Selections = {
-  otherSelections: Array<NonCodeSelection>
-  graphSelections: Array<Selection>
-}
 
 export async function getEventForSelectWithPoint({
   data,
@@ -438,7 +417,7 @@ export function updateExtraSegments(
 function resetAndSetEngineEntitySelectionCmds(
   selections: SelectionToEngine[]
 ): WebSocketRequest[] {
-  if (!engineCommandManager.engineConnection?.isReady()) {
+  if (engineCommandManager.connection?.pingIntervalId === undefined) {
     return []
   }
   return [
@@ -735,16 +714,12 @@ export function codeToIdSelections(
 }
 
 export async function sendSelectEventToEngine(
-  e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  videoRef: HTMLVideoElement
 ) {
-  // No video stream to normalise against, return immediately
-  const engineStreamState = engineStreamActor.getSnapshot().context
-  if (!engineStreamState.videoRef.current)
-    return Promise.reject('video element not ready')
-
   const { x, y } = getNormalisedCoordinates(
     e,
-    engineStreamState.videoRef.current,
+    videoRef,
     engineCommandManager.streamDimensions
   )
   let res = await engineCommandManager.sendSceneCommand({
@@ -1094,59 +1069,11 @@ export async function selectionBodyFace(
   const { z_axis, y_axis, origin } = faceInfo
   const sketchPathToNode = err(codeRef) ? [] : codeRef.pathToNode
 
-  const getEdgeCutMeta = (): null | EdgeCutInfo => {
-    let chamferInfo: {
-      segment: SegmentArtifact
-      type: EdgeCutInfo['subType']
-    } | null = null
-    if (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer') {
-      const consumedArtifact = getArtifactOfTypes(
-        {
-          key: artifact.consumedEdgeId,
-          types: ['segment', 'sweepEdge'],
-        },
-        kclManager.artifactGraph
-      )
-      if (err(consumedArtifact)) return null
-      if (consumedArtifact.type === 'segment') {
-        chamferInfo = {
-          type: 'base',
-          segment: consumedArtifact,
-        }
-      } else {
-        const segment = getArtifactOfTypes(
-          { key: consumedArtifact.segId, types: ['segment'] },
-          kclManager.artifactGraph
-        )
-        if (err(segment)) return null
-        chamferInfo = {
-          type: consumedArtifact.subType,
-          segment,
-        }
-      }
-    }
-    if (!chamferInfo) return null
-    const segmentCallExpr = getNodeFromPath<CallExpressionKw>(
-      kclManager.ast,
-      chamferInfo?.segment.codeRef.pathToNode || [],
-      ['CallExpressionKw']
-    )
-    if (err(segmentCallExpr)) return null
-    if (segmentCallExpr.node.type !== 'CallExpressionKw') return null
-    const sketchNodeArgs = segmentCallExpr.node.arguments.map((la) => la.arg)
-    const tagDeclarator = sketchNodeArgs.find(
-      ({ type }) => type === 'TagDeclarator'
-    )
-    if (!tagDeclarator || tagDeclarator.type !== 'TagDeclarator') return null
-
-    return {
-      type: 'edgeCut',
-      subType: chamferInfo.type,
-      tagName: tagDeclarator.value,
-    }
-  }
-  const edgeCutMeta = getEdgeCutMeta()
-
+  const edgeCutMeta = getEdgeCutMeta(
+    artifact,
+    kclManager.ast,
+    kclManager.artifactGraph
+  )
   const _faceInfo: ExtrudeFacePlane['faceInfo'] = edgeCutMeta
     ? edgeCutMeta
     : artifact.type === 'cap'

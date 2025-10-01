@@ -12,11 +12,16 @@ import type {
 import {
   KCL_DEFAULT_CONSTANT_PREFIXES,
   KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_INSTANCES,
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_TRANSFORM,
+  KCL_DEFAULT_ORIGIN,
+  KCL_AXIS_X,
+  KCL_AXIS_Y,
+  KCL_AXIS_Z,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -227,6 +232,24 @@ export type ModelingCommandSchema = {
     nodeToEdit?: PathToNode
     objects: Selections
     variableName: string
+  }
+  'Pattern Circular 3D': {
+    nodeToEdit?: PathToNode
+    solids: Selections
+    instances: KclCommandValue
+    axis: string
+    center: KclCommandValue
+    arcDegrees?: KclCommandValue
+    rotateDuplicates?: boolean
+    useOriginal?: boolean
+  }
+  'Pattern Linear 3D': {
+    nodeToEdit?: PathToNode
+    solids: Selections
+    instances: KclCommandValue
+    distance: KclCommandValue
+    axis: string
+    useOriginal?: boolean
   }
   'Boolean Subtract': {
     solids: Selections
@@ -724,7 +747,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       plane: {
         inputType: 'selection',
-        selectionTypes: ['plane', 'cap', 'wall'],
+        selectionTypes: ['plane', 'cap', 'wall', 'edgeCut'],
         multiple: false,
         required: true,
         skip: true,
@@ -887,6 +910,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           const angleLength = angleLengthInfo({
             selectionRanges,
             angleOrLength: 'setLength',
+            kclManager,
           })
           if (err(angleLength)) return KCL_DEFAULT_LENGTH
           const { transforms } = angleLength
@@ -1129,6 +1153,97 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  'Pattern Circular 3D': {
+    description: 'Create a circular pattern of 3D solids around an axis.',
+    icon: 'patternCircular3d',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      solids: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      instances: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: KCL_DEFAULT_INSTANCES,
+      },
+      axis: {
+        inputType: 'options',
+        required: true,
+        defaultValue: KCL_AXIS_Z,
+        options: [
+          { name: 'X-axis', value: KCL_AXIS_X },
+          { name: 'Y-axis', value: KCL_AXIS_Y },
+          { name: 'Z-axis', isCurrent: true, value: KCL_AXIS_Z },
+        ],
+      },
+      center: {
+        inputType: 'vector3d',
+        required: true,
+        defaultValue: KCL_DEFAULT_ORIGIN,
+      },
+      arcDegrees: {
+        inputType: 'kcl',
+        required: false,
+        defaultValue: KCL_DEFAULT_DEGREE,
+      },
+      rotateDuplicates: {
+        inputType: 'boolean',
+        required: false,
+      },
+      useOriginal: {
+        inputType: 'boolean',
+        required: false,
+      },
+    },
+  },
+  'Pattern Linear 3D': {
+    description: 'Create a linear pattern of 3D solids along an axis.',
+    icon: 'patternLinear3d',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      solids: {
+        ...objectsTypesAndFilters,
+        inputType: 'selectionMixed',
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      instances: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: KCL_DEFAULT_INSTANCES,
+      },
+      distance: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: KCL_DEFAULT_LENGTH,
+      },
+      axis: {
+        inputType: 'options',
+        required: true,
+        defaultValue: KCL_AXIS_X,
+        options: [
+          { name: 'X-axis', isCurrent: true, value: KCL_AXIS_X },
+          { name: 'Y-axis', value: KCL_AXIS_Y },
+          { name: 'Z-axis', value: KCL_AXIS_Z },
+        ],
+      },
+      useOriginal: {
+        inputType: 'boolean',
+        required: false,
+      },
+    },
+  },
 }
 
-modelingMachineCommandConfig
+modelingMachineCommandConfig // TODO: update with satisfies?

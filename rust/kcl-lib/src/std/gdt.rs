@@ -1,3 +1,4 @@
+use kcl_error::SourceRange;
 use kcmc::{ModelingCmd, each_cmd as mcmd};
 use kittycad_modeling_cmds::{
     self as kcmc,
@@ -26,6 +27,112 @@ pub(crate) struct AnnotationStyle {
     pub font_scale: Option<TyF64>,
 }
 
+pub async fn datum(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let face: TagIdentifier = args.get_kw_arg("face", &RuntimeType::tagged_face(), exec_state)?;
+    let name: String = args.get_kw_arg("name", &RuntimeType::string(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
+    let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
+
+    inner_datum(
+        face,
+        name,
+        frame_position,
+        frame_plane,
+        AnnotationStyle {
+            font_point_size,
+            font_scale,
+        },
+        exec_state,
+        &args,
+    )
+    .await?;
+    Ok(KclValue::none())
+}
+
+async fn inner_datum(
+    face: TagIdentifier,
+    name: String,
+    frame_position: Option<[TyF64; 2]>,
+    frame_plane: Option<Plane>,
+    style: AnnotationStyle,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<(), KclError> {
+    const DATUM_LENGTH_ERROR: &str = "Datum name must be a single character.";
+    if name.len() > 1 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            DATUM_LENGTH_ERROR.to_owned(),
+            vec![args.source_range],
+        )));
+    }
+    let name_char = name.chars().next().ok_or_else(|| {
+        KclError::new_semantic(KclErrorDetails::new(
+            DATUM_LENGTH_ERROR.to_owned(),
+            vec![args.source_range],
+        ))
+    })?;
+    let frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        // No plane given. Use one of the standard planes.
+        xy_plane(exec_state, args).await?
+    };
+    let frame_plane_id = if frame_plane.value == crate::exec::PlaneType::Uninit {
+        // Create it in the engine.
+        let engine_plane =
+            make_sketch_plane_from_orientation(frame_plane.info.into_plane_data(), exec_state, args).await?;
+        engine_plane.id
+    } else {
+        frame_plane.id
+    };
+    let face_id = args.get_adjacent_face_to_tag(exec_state, &face, false).await?;
+    exec_state
+        .batch_modeling_cmd(
+            args.into(),
+            ModelingCmd::from(mcmd::NewAnnotation {
+                options: AnnotationOptions {
+                    text: None,
+                    line_ends: None,
+                    line_width: None,
+                    color: None,
+                    position: None,
+                    dimension: None,
+                    feature_control: Some(AnnotationFeatureControl {
+                        entity_id: face_id,
+                        // Point to the center of the face.
+                        entity_pos: KPoint2d { x: 0.5, y: 0.5 },
+                        leader_type: AnnotationLineEnd::Dot,
+                        dimension: None,
+                        control_frame: None,
+                        defined_datum: Some(name_char),
+                        prefix: None,
+                        suffix: None,
+                        plane_id: frame_plane_id,
+                        offset: if let Some(offset) = &frame_position {
+                            KPoint2d {
+                                x: offset[0].to_mm(),
+                                y: offset[1].to_mm(),
+                            }
+                        } else {
+                            KPoint2d { x: 100.0, y: 100.0 }
+                        },
+                        precision: 0,
+                        font_scale: style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
+                        font_point_size: style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36),
+                    }),
+                    feature_tag: None,
+                },
+                clobber: false,
+                annotation_type: AnnotationType::T3D,
+            }),
+        )
+        .await?;
+    Ok(())
+}
+
 pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let faces: Vec<TagIdentifier> = args.get_kw_arg(
         "faces",
@@ -36,7 +143,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let precision = args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?;
     let frame_position: Option<[TyF64; 2]> =
         args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
-    let in_plane: Option<Plane> = args.get_kw_arg_opt("inPlane", &RuntimeType::plane(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
     let font_point_size: Option<TyF64> = args.get_kw_arg_opt("fontPointSize", &RuntimeType::count(), exec_state)?;
     let font_scale: Option<TyF64> = args.get_kw_arg_opt("fontScale", &RuntimeType::count(), exec_state)?;
 
@@ -45,7 +152,7 @@ pub async fn flatness(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         tolerance,
         precision,
         frame_position,
-        in_plane,
+        frame_plane,
         AnnotationStyle {
             font_point_size,
             font_scale,
@@ -63,58 +170,27 @@ async fn inner_flatness(
     tolerance: TyF64,
     precision: Option<TyF64>,
     frame_position: Option<[TyF64; 2]>,
-    in_plane: Option<Plane>,
+    frame_plane: Option<Plane>,
     style: AnnotationStyle,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<(), KclError> {
-    let in_plane = if let Some(plane) = in_plane {
+    let frame_plane = if let Some(plane) = frame_plane {
         plane
     } else {
-        // No plane given. Use one of the default planes by evaluating the `XY`
-        // expression.
-        let plane_ast = ast::Node::new(
-            ast::Expr::Name(Box::new(ast::Node::new(
-                ast::Name {
-                    name: ast::Identifier::new("XY"),
-                    path: Vec::new(),
-                    abs_path: false,
-                    digest: None,
-                },
-                args.source_range.start(),
-                args.source_range.end(),
-                args.source_range.module_id(),
-            ))),
-            args.source_range.start(),
-            args.source_range.end(),
-            args.source_range.module_id(),
-        );
-        let metadata = Metadata::from(args.source_range);
-        let plane_value = args
-            .ctx
-            .execute_expr(&plane_ast, exec_state, &metadata, &[], StatementKind::Expression)
-            .await?
-            .clone();
-        plane_value
-            .as_plane()
-            .ok_or_else(|| {
-                KclError::new_internal(KclErrorDetails::new(
-                    "Expected XY plane to be defined".to_owned(),
-                    vec![args.source_range],
-                ))
-            })?
-            .clone()
+        // No plane given. Use one of the standard planes.
+        xy_plane(exec_state, args).await?
     };
-    let in_plane_id = if in_plane.value == crate::exec::PlaneType::Uninit {
+    let frame_plane_id = if frame_plane.value == crate::exec::PlaneType::Uninit {
         // Create it in the engine.
         let engine_plane =
-            make_sketch_plane_from_orientation(in_plane.info.into_plane_data(), exec_state, args).await?;
+            make_sketch_plane_from_orientation(frame_plane.info.into_plane_data(), exec_state, args).await?;
         engine_plane.id
     } else {
-        in_plane.id
+        frame_plane.id
     };
     for face in &faces {
-        let face_id = args.get_adjacent_face_to_tag(exec_state, face, true).await?;
+        let face_id = args.get_adjacent_face_to_tag(exec_state, face, false).await?;
         exec_state
             .batch_modeling_cmd(
                 args.into(),
@@ -144,7 +220,7 @@ async fn inner_flatness(
                             defined_datum: None,
                             prefix: None,
                             suffix: None,
-                            plane_id: in_plane_id,
+                            plane_id: frame_plane_id,
                             offset: if let Some(offset) = &frame_position {
                                 KPoint2d {
                                     x: offset[0].to_mm(),
@@ -166,4 +242,47 @@ async fn inner_flatness(
             .await?;
     }
     Ok(())
+}
+
+/// Get the XY plane by evaluating the `XY` expression so that it's the same as
+/// if the user specified `XY`.
+async fn xy_plane(exec_state: &mut ExecState, args: &Args) -> Result<Plane, KclError> {
+    let plane_ast = plane_ast("XY", args.source_range);
+    let metadata = Metadata::from(args.source_range);
+    let plane_value = args
+        .ctx
+        .execute_expr(&plane_ast, exec_state, &metadata, &[], StatementKind::Expression)
+        .await?
+        .clone();
+    Ok(plane_value
+        .as_plane()
+        .ok_or_else(|| {
+            KclError::new_internal(KclErrorDetails::new(
+                "Expected XY plane to be defined".to_owned(),
+                vec![args.source_range],
+            ))
+        })?
+        .clone())
+}
+
+/// An AST node for a plane with the given name.
+fn plane_ast(plane_name: &str, range: SourceRange) -> ast::Node<ast::Expr> {
+    ast::Node::new(
+        ast::Expr::Name(Box::new(ast::Node::new(
+            ast::Name {
+                name: ast::Identifier::new(plane_name),
+                path: Vec::new(),
+                // TODO: We may want to set this to true once we implement it to
+                // prevent it breaking if users redefine the identifier.
+                abs_path: false,
+                digest: None,
+            },
+            range.start(),
+            range.end(),
+            range.module_id(),
+        ))),
+        range.start(),
+        range.end(),
+        range.module_id(),
+    )
 }

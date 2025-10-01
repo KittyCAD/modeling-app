@@ -16,11 +16,11 @@ import { machine as centerRectTool } from '@src/machines/sketchSolve/tools/cente
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 
-const equipTools = {
+const equipTools = Object.freeze({
   centerRectTool,
   dimensionTool,
   pointTool,
-} as const
+})
 
 export type EquipTool = keyof typeof equipTools
 

@@ -19,6 +19,7 @@ import { S } from '@src/machines/utils'
 import { useSelector } from '@xstate/react'
 import { useEffect } from 'react'
 import { NIL as uuidNIL } from 'uuid'
+import type { BillingActor } from '@src/machines/billingMachine'
 
 const hasPromptsPending = (promptsPool: Prompt[]) => {
   return (
@@ -30,6 +31,7 @@ const hasPromptsPending = (promptsPool: Prompt[]) => {
 
 export const MlEphantConversationPane = (props: {
   mlEphantManagerActor: MlEphantManagerActor
+  billingActor: BillingActor
   systemIOActor: SystemIOActor
   kclManager: KclManager
   codeManager: CodeManager
@@ -46,6 +48,10 @@ export const MlEphantConversationPane = (props: {
       return mlEphantManagerActorSnapshot.context.promptsBelongingToConversation
     }
   )
+  const billingContext = useSelector(props.billingActor, (actor) => {
+    return actor.context
+  })
+
   const prompts = Array.from(
     promptsBelongingToConversation
       ?.map((promptId) =>
@@ -235,6 +241,7 @@ export const MlEphantConversationPane = (props: {
       isLoading={promptsBelongingToConversation === undefined || isProcessing}
       prompts={prompts}
       promptsThoughts={promptsThoughts}
+      billingContext={billingContext}
       onProcess={(requestedPrompt: string) => {
         onProcess(requestedPrompt).catch(reportRejection)
       }}

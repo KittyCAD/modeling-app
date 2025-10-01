@@ -647,6 +647,20 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  gdtDatum: (
+    <svg
+      width="12"
+      height="16"
+      viewBox="0 0 12 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M12 12H6.5V13.4717L8.85645 15.8281H3.2002L5.5 13.5283V12H0V0H12V12ZM1 11H11V1H1V11ZM8.99902 9.46387H7.72656L7.16016 7.47461H4.78613L4.21875 9.46387H2.99902L5.18164 2H6.81738L8.99902 9.46387ZM5.01074 6.48047H6.93555L6.01562 3.20801H5.92969L5.01074 6.48047Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   gdtFlatness: (
     <svg
       width="20"
@@ -1709,8 +1723,6 @@ const CustomIconMap = {
   ),
   brain: (
     <svg
-      width="20"
-      height="20"
       viewBox="-3 0 28 28"
       xmlns="http://www.w3.org/2000/svg"
       fill="currentColor"

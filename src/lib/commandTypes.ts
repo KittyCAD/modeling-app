@@ -279,11 +279,11 @@ export type CommandArgumentConfig<
   | {
       inputType: 'vector3d'
       defaultValue?:
-        | OutputType
+        | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: C
-          ) => OutputType)
+          ) => string)
       defaultValueFromContext?: (context: C) => OutputType
       validation?: ({
         data,
@@ -457,11 +457,11 @@ export type CommandArgument<
   | {
       inputType: 'vector3d'
       defaultValue?:
-        | OutputType
+        | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: ContextFrom<T>
-          ) => OutputType)
+          ) => string)
       validation?: ({
         data,
         context,
