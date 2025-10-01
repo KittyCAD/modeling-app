@@ -2134,14 +2134,14 @@ impl Node<CallExpressionKw> {
 }
 
 impl CallExpressionKw {
-    pub fn new(name: &str, unlabeled: Option<Expr>, arguments: Vec<LabeledArg>) -> Result<Node<Self>, KclError> {
-        Ok(Node::no_src(Self {
+    pub fn new(name: &str, unlabeled: Option<Expr>, arguments: Vec<LabeledArg>) -> Node<Self> {
+        Node::no_src(Self {
             callee: Name::new(name),
             unlabeled,
             arguments,
             digest: None,
             non_code_meta: Default::default(),
-        }))
+        })
     }
 
     /// Iterate over all arguments (labeled or not)

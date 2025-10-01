@@ -10,6 +10,7 @@ use kcl_error::SourceRange;
 
 use crate::{
     Program, fmt::format_number_literal, frontend::traverse::dfs_mut, id::IncIdGenerator, parsing::ast::types as ast,
+    walk::NodeMut,
 };
 
 mod traverse;
@@ -141,50 +142,69 @@ impl FrontendState {
         // Create updated KCL source from args.
         let start_ast = to_ast_point2d(&start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&end).map_err(|err| Error { msg: err.to_string() })?;
-        let line_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node {
-            inner: ast::CallExpressionKw {
-                callee: ast_name("line".to_owned()),
-                unlabeled: None,
-                arguments: vec![
-                    ast::LabeledArg {
-                        label: Some(ast::Identifier::new("from")),
-                        arg: start_ast,
-                    },
-                    ast::LabeledArg {
-                        label: Some(ast::Identifier::new("to")),
-                        arg: end_ast,
-                    },
-                ],
-                digest: None,
-                non_code_meta: Default::default(),
-            },
-            start: Default::default(),
-            end: Default::default(),
-            module_id: Default::default(),
-            outer_attrs: Default::default(),
-            pre_comments: Default::default(),
-            comment_start: Default::default(),
-        }));
+        let line_ast = ast::Expr::CallExpressionKw(Box::new(ast::CallExpressionKw::new(
+            "line",
+            None,
+            vec![
+                ast::LabeledArg {
+                    label: Some(ast::Identifier::new("from")),
+                    arg: start_ast,
+                },
+                ast::LabeledArg {
+                    label: Some(ast::Identifier::new("to")),
+                    arg: end_ast,
+                },
+            ],
+        )));
+
         // Look up existing sketch.
-        let sketch_object = self.scene_graph.objects.get(sketch.0).ok_or_else(|| Error {
+        let sketch_id = sketch;
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
             msg: format!("Sketch not found: {sketch:?}"),
         })?;
-        let ObjectKind::Sketch(sketch) = &mut sketch_object.kind else {
+        let ObjectKind::Sketch(_) = &sketch_object.kind else {
             return Err(Error {
                 msg: format!("Object is not a sketch: {sketch_object:?}"),
             });
         };
-        let new_source = format!("{}\n\n{sketch_source}", self.program.original_file_contents);
+        // Add the line to the AST of the sketch block.
+        let mut new_ast = self.program.ast.clone();
+        self.sketch_ast_from_id_mut(&mut new_ast, sketch_id, |node| {
+            if let NodeMut::SketchBlock(sketch_block) = node {
+                sketch_block
+                    .body
+                    .items
+                    .push(ast::BodyItem::ExpressionStatement(ast::Node {
+                        inner: ast::ExpressionStatement {
+                            expression: line_ast.clone(),
+                            digest: None,
+                        },
+                        start: Default::default(),
+                        end: Default::default(),
+                        module_id: Default::default(),
+                        outer_attrs: Default::default(),
+                        pre_comments: Default::default(),
+                        comment_start: Default::default(),
+                    }));
+                return ControlFlow::Break(());
+            }
+            ControlFlow::Continue(())
+        })
+        .map_err(|err| Error { msg: err.to_string() })?;
+        // Convert to string source to create real source ranges.
+        //
+        // TODO: Don't duplicate this from lib.rs Program.
+        let new_source = new_ast.recast_top(&Default::default(), 0);
         // Parse the new KCL source.
         let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
         if !errors.is_empty() {
             return Err(Error {
-                msg: format!("Error parsing KCL source after adding sketch: {errors:?}"),
+                msg: format!("Error parsing KCL source after adding line: {errors:?}"),
             });
         }
         let Some(new_program) = new_program else {
             return Err(Error {
-                msg: "No AST produced after adding sketch".to_string(),
+                msg: "No AST produced after adding line".to_string(),
             });
         };
         // TODO: sketch-api: make sure to only set this if there are no errors.
@@ -236,7 +256,7 @@ impl FrontendState {
         };
 
         // Look up existing sketch.
-        let sketch_object = self.scene_graph.objects.get_mut(sketch.0).ok_or_else(|| Error {
+        let sketch_object = self.scene_graph.objects.get_mut(sketch_id.0).ok_or_else(|| Error {
             msg: format!("Sketch not found: {sketch:?}"),
         })?;
         let ObjectKind::Sketch(sketch) = &mut sketch_object.kind else {
@@ -364,7 +384,7 @@ impl FrontendState {
         todo!()
     }
 
-    fn sketch_ast_from_id<F>(&self, sketch_id: ObjectId, f: F) -> anyhow::Result<bool>
+    fn sketch_ast_from_id<F>(&self, ast: &ast::Node<ast::Program>, sketch_id: ObjectId, f: F) -> anyhow::Result<bool>
     where
         F: Fn(&crate::walk::Node) -> anyhow::Result<()>,
     {
@@ -377,12 +397,17 @@ impl FrontendState {
             bail!("Object is not a sketch: {sketch_object:?}");
         };
         match &sketch_object.source {
-            SourceRef::Simple(range) => self.ast_node_from_source_range(*range, f),
+            SourceRef::Simple(range) => ast_node_from_source_range(ast, *range, f),
             SourceRef::BackTrace(_) => bail!("BackTrace source refs not supported yet"),
         }
     }
 
-    fn sketch_ast_from_id_mut<B, F>(&mut self, sketch_id: ObjectId, f: F) -> anyhow::Result<B>
+    fn sketch_ast_from_id_mut<B, F>(
+        &mut self,
+        ast: &mut ast::Node<ast::Program>,
+        sketch_id: ObjectId,
+        f: F,
+    ) -> anyhow::Result<B>
     where
         F: Fn(crate::walk::NodeMut) -> ControlFlow<B>,
     {
@@ -395,43 +420,8 @@ impl FrontendState {
             bail!("Object is not a sketch: {sketch_object:?}");
         };
         match &sketch_object.source {
-            SourceRef::Simple(range) => self.ast_node_from_source_range_mut(*range, f),
+            SourceRef::Simple(range) => ast_node_from_source_range_mut(ast, *range, f),
             SourceRef::BackTrace(_) => bail!("BackTrace source refs not supported yet"),
-        }
-    }
-
-    fn ast_node_from_source_range<F>(&self, source_range: SourceRange, f: F) -> anyhow::Result<bool>
-    where
-        F: Fn(&crate::walk::Node) -> anyhow::Result<()>,
-    {
-        crate::walk::walk(&self.program.ast, |node: crate::walk::Node| -> anyhow::Result<bool> {
-            let Ok(node_range) = SourceRange::try_from(&node) else {
-                return Ok(true);
-            };
-            if node_range != source_range {
-                return Ok(true);
-            }
-            f(&node)?;
-            Ok(false)
-        })
-    }
-
-    fn ast_node_from_source_range_mut<B, F>(&mut self, source_range: SourceRange, f: F) -> anyhow::Result<B>
-    where
-        F: Fn(crate::walk::NodeMut) -> ControlFlow<B>,
-    {
-        let control = dfs_mut(&mut self.program.ast, |node| {
-            let Ok(node_range) = SourceRange::try_from(&node) else {
-                return ControlFlow::Continue(());
-            };
-            if node_range != source_range {
-                return ControlFlow::Continue(());
-            }
-            f(node)
-        });
-        match control {
-            ControlFlow::Continue(_) => Err(anyhow!("Source range not found: {source_range:?}")),
-            ControlFlow::Break(break_value) => Ok(break_value),
         }
     }
 
@@ -541,5 +531,44 @@ fn ast_name(name: String) -> ast::Node<ast::Name> {
         outer_attrs: Default::default(),
         pre_comments: Default::default(),
         comment_start: Default::default(),
+    }
+}
+
+fn ast_node_from_source_range<F>(ast: &ast::Node<ast::Program>, source_range: SourceRange, f: F) -> anyhow::Result<bool>
+where
+    F: Fn(&crate::walk::Node) -> anyhow::Result<()>,
+{
+    crate::walk::walk(ast, |node: crate::walk::Node| -> anyhow::Result<bool> {
+        let Ok(node_range) = SourceRange::try_from(&node) else {
+            return Ok(true);
+        };
+        if node_range != source_range {
+            return Ok(true);
+        }
+        f(&node)?;
+        Ok(false)
+    })
+}
+
+fn ast_node_from_source_range_mut<B, F>(
+    ast: &mut ast::Node<ast::Program>,
+    source_range: SourceRange,
+    f: F,
+) -> anyhow::Result<B>
+where
+    F: Fn(crate::walk::NodeMut) -> ControlFlow<B>,
+{
+    let control = dfs_mut(ast, |node| {
+        let Ok(node_range) = SourceRange::try_from(&node) else {
+            return ControlFlow::Continue(());
+        };
+        if node_range != source_range {
+            return ControlFlow::Continue(());
+        }
+        f(node)
+    });
+    match control {
+        ControlFlow::Continue(_) => Err(anyhow!("Source range not found: {source_range:?}")),
+        ControlFlow::Break(break_value) => Ok(break_value),
     }
 }
