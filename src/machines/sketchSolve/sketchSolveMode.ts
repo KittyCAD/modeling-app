@@ -6,7 +6,7 @@ import {
   sendTo,
   setup,
 } from 'xstate'
-import type { ActorRefFrom } from 'xstate'
+import type { ActorRefFrom, AnyActorLogic } from 'xstate'
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import type {
   ModelingMachineContext,
@@ -31,10 +31,14 @@ export type SketchSolveMachineEvent =
   | { type: 'equip tool'; data: { tool: EquipTool } }
   | { type: 'xstate.done.actor.tool' }
 
-type ToolActorRef =
-  | ActorRefFrom<typeof dimensionTool>
-  | ActorRefFrom<typeof centerRectTool>
-  | ActorRefFrom<typeof pointTool>
+/**
+ * using distributive conditional type
+ * to wrap actor type union in ActorRefFrom
+ * https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types
+ */
+type ToActorRefFrom<A> = A extends AnyActorLogic ? ActorRefFrom<A> : never
+type ToolActorUnion = (typeof equipTools)[keyof typeof equipTools]
+type ToolActorRef = ToActorRefFrom<ToolActorUnion>
 
 type SketchSolveContext = ModelingMachineContext & {
   toolActor?: ToolActorRef
@@ -122,7 +126,8 @@ export const sketchSolveMachine = setup({
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6UNEwAEdQ5j48DEISNIks4VyM-O1FFRqB2Sd6jlk1BstEVo1pZQ1e+Rt5eWlB0u0vH3RxgEpsFaMoALaEIKRUQQPBxBJJOgQMRgZTMUSkQjocGQsAAFU2xG2GV2OXEBxkBmMTw0L06ig42jkZjuBTUykGBjUN0G3Q0jL+owB-kmQRmqIhUJhcPiiQwDAATgrCArlHxiNEAGYqsE48gErbcHaCPbk0D5aRUgzKexVV6yc7aAaNSnaVRcz7lakuDiWwVjEWBaYhPUUaGw+FyhjLVbrQnE-gmsl5GR2G2FRTGeQaapFY7yF0IAzuVSDYx1SptRRc-3CiZBkGo0JCURQOMkOYLGNrDaG9KJ7IpFMIOzcm19NTFqnSYwaT6FjTnZS6XqyAxXLpz5y1vz14Hi5TN9Ft3vEaMrHvxo0kpNDikIWfFTo1IpGF-OQsMt05xwcTTdQpZGGf5dyBMUQ1gAB3VhcGPdsz0YWAMGiVFkQWZRIiSFVlFPBNMlvfZzRkR4OUfRRrgZQZ1ELbQumUZxtEY7QTHXZjgKFUDRWDUF5iWC84NPOhEOQmJlDQ1FMI2VVcOvAdTWHOwmRtQYmX5IwgKAws5Dda5LV0P9pB6LQvBGUQQngDIAz3cDaGNQdCMkRBJ3TYxM2zXMbEGQtmktZ5jCKB0uRcAYqR3QEuMbUM8HDGUEQwOz5PvRcn2MTpix9NpnVZOxrQUKkHH5BlZDCwN9xDI9W3ghLk3vWoOGeNQ1w4HQ7EURdFAXGcOXURdaRMMoc3YqywO41EoJgnABMJaq7yIotjDdTMuXKdxaWpAtWUnYpGLeep6nXa4DBK6zRuUJhhFbGaHItFdl2uc4TAW7kikLfz3UqRlPIWxx5GOkbIt47sppIK6zUch8BmUQpqkeaQnRUjamk6J56Q+c4QocEyPCAA */
-  context: ({ input }): SketchSolveContext => ({
+  context: (): SketchSolveContext => ({
+    // TODO does the current modelingMachineContext need to be passed in (not default)? and do we even need this context here?
     ...modelingMachineDefaultContext,
     sketchSolveTool: null,
   }),
