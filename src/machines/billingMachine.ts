@@ -118,11 +118,7 @@ export const billingMachine = setup({
             // Yep, this is hard to follow. XState, why!
             actions: assign({
               // Clear out the rest of the fields here
-              credits: undefined,
-              allowance: undefined,
-              isOrg: undefined,
-              hasSubscription: undefined,
-              lastFetch: new Date(),
+              ...BILLING_CONTEXT_DEFAULTS,
               // TODO: we shouldn't need this cast here
               error: ({ event }) => event.error as BillingError,
             }),
