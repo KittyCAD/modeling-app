@@ -18,7 +18,8 @@
   @apply flex-col;
 }
 
+/** converts to display: grid in TSX code when handle parent is hovered */
 .resizeHandle {
-  @apply hidden group-data-[resize-handle-state=hover]/handle:grid place-content-center;
-  @apply py-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-sm bg-3 border b-6;
+  @apply hidden place-content-center;
+  @apply py-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-sm bg-3 border b-5;
 }
