@@ -175,6 +175,9 @@ pub enum OpKclValue {
     TagDeclarator {
         name: String,
     },
+    GdtAnnotation {
+        artifact_id: ArtifactId,
+    },
     Plane {
         artifact_id: ArtifactId,
     },
@@ -243,6 +246,9 @@ impl From<&KclValue> for OpKclValue {
             },
             KclValue::TagDeclarator(node) => Self::TagDeclarator {
                 name: node.name.clone(),
+            },
+            KclValue::GdtAnnotation { value } => Self::GdtAnnotation {
+                artifact_id: ArtifactId::new(value.id),
             },
             KclValue::Plane { value } => Self::Plane {
                 artifact_id: value.artifact_id,
