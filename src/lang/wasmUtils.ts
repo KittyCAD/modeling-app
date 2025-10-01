@@ -24,12 +24,15 @@ export const wasmUrl = () => {
       wasmFile
   return fullUrl
 }
-
-export const GLOBAL_MESSAGE_FOR_VITEST =
-  'process.env.VITEST is running, a test required this. Error is being caught and ignored.'
-
 // Initialise the wasm module.
 const initialise = async () => {
+  if (processEnv()?.VITEST) {
+    const message =
+      'wasmUtils is trying to call initialise. This will be blocked in VITEST runtimes.'
+    console.log(message)
+    return Promise.resolve(message)
+  }
+
   try {
     await reloadModule()
     const fullUrl = wasmUrl()
@@ -37,10 +40,6 @@ const initialise = async () => {
     const buffer = await input.arrayBuffer()
     return await init({ module_or_path: buffer })
   } catch (e) {
-    if (processEnv()?.VITEST) {
-      console.log(GLOBAL_MESSAGE_FOR_VITEST)
-      return Promise.resolve(GLOBAL_MESSAGE_FOR_VITEST)
-    }
     console.log('Error initialising WASM', e)
     return Promise.reject(e)
   }

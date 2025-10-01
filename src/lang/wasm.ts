@@ -418,10 +418,14 @@ export async function rustImplPathToNode(
 
 export async function nodePathFromRange(
   ast: Program,
-  range: SourceRange
+  range: SourceRange,
+  instance?: ModuleType
 ): Promise<NodePath | null> {
   try {
-    const nodePath: NodePath | null = await node_path_from_range(
+    const node_path_from_range_fn = instance
+      ? instance.node_path_from_range
+      : node_path_from_range
+    const nodePath: NodePath | null = await node_path_from_range_fn(
       JSON.stringify(ast),
       JSON.stringify(range)
     )

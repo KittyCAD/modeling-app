@@ -52,6 +52,7 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import { type handleSelectionBatch as handleSelectionBatchFn } from '@src/lib/selections'
+import { processEnv } from '@src/env'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -281,6 +282,15 @@ export class KclManager extends EventTarget {
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.ensureWasmInit().then(async () => {
+      if (this.wasmInitFailed) {
+        if (processEnv()?.VITEST) {
+          console.log(
+            'Running in vitest runtime. KclSingleton polluting global runtime.'
+          )
+          return
+        }
+      }
+
       await this.safeParse(this.singletons.codeManager.code).then((ast) => {
         if (ast) {
           this.ast = ast
@@ -422,6 +432,13 @@ export class KclManager extends EventTarget {
   }
 
   async ensureWasmInit() {
+    if (processEnv()?.VITEST) {
+      const message =
+        'kclSingle is trying to call ensureWasmInit. This will be blocked in VITEST runtimes.'
+      console.log(message)
+      return Promise.resolve(message)
+    }
+
     try {
       await initPromise
       if (this.wasmInitFailed) {

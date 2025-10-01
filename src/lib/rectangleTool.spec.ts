@@ -8,7 +8,6 @@ import { updateCenterRectangleSketch } from '@src/lib/rectangleTool'
 import { trap } from '@src/lib/trap'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { join } from 'path'
-
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 describe('library rectangleTool helper functions', () => {
