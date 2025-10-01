@@ -1354,6 +1354,13 @@ export const modelingMachine = setup({
           const codeMirrorSelection = editorManager.createEditorSelection(
             setSelections.selection
           )
+
+          // This turns the selection into blue, needed when selecting with ctrl+A
+          const {  updateSceneObjectColors } = handleSelectionBatch({
+            selections: setSelections.selection,
+          })
+          updateSceneObjectColors()
+
           kclEditorActor.send({
             type: 'setLastSelectionEvent',
             data: {

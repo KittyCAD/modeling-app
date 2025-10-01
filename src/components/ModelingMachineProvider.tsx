@@ -92,6 +92,7 @@ import {
   getDefaultSketchPlaneData,
   selectionBodyFace,
   getOffsetSketchPlaneData,
+  selectAllInCurrentSketch,
   updateSelections,
 } from '@src/lib/selections'
 import {
@@ -1523,6 +1524,25 @@ export const ModelingMachineProvider = ({
       data: { level: 'project', value: !snapToGrid.current },
     })
   })
+
+  // Select all on canvas (only in Sketch mode)
+  useHotkeys(
+    ['mod + a'],
+    (e) => {
+      const inSketchMode = modelingState.matches('Sketch')
+      if (!inSketchMode) return
+
+      e.preventDefault()
+      const selection = selectAllInCurrentSketch()
+      modelingSend({
+        type: 'Set selection',
+        data: { selectionType: 'completeSelection', selection },
+      })
+    },
+    {
+      enableOnContentEditable: false,
+    }
+  )
 
   useModelingMachineCommands({
     machineId: 'modeling',
