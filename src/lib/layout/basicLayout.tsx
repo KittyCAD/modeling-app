@@ -10,58 +10,64 @@ import type { Layout } from '@src/lib/layout/types'
  * - a right (in LTR languages) sidebar with:
  *   - Text-to-CAD
  */
-export const defaultLayout: Layout = {
-  id: '0000',
+export const basicLayout: Layout = {
+  id: 'a',
   label: 'root',
   type: 'splits',
   orientation: 'inline',
-  splitPoints: [0.3, 0.8],
+  sizes: [30, 50, 10],
   children: [
     {
-      id: '',
+      id: 'b',
       label: 'left-toolbar',
       type: 'toolbar',
       side: 'inline-start',
       activeIndices: [0],
       children: [
         {
-          id: '',
+          id: 'c',
           label: 'feature-tree',
           type: 'simple',
-          component: <p>Hi I'm the feature tree area!</p>,
+          component: (
+            <p className="bg-blue-300">Hi I'm the feature tree area!</p>
+          ),
           icon: 'model',
         },
         {
-          id: '',
+          id: 'd',
           label: 'code',
           type: 'simple',
-          component: <p>Hi I'm the code editor area!</p>,
+          component: (
+            <p className="bg-green-300">Hi I'm the code editor area!</p>
+          ),
           icon: 'code',
         },
         {
-          id: '',
+          id: 'e',
           label: 'variables',
           type: 'simple',
-          component: <p>Hi I'm the variables area!</p>,
+          component: (
+            <p className="bg-orange-300">Hi I'm the variables area!</p>
+          ),
           icon: 'make-variable',
         },
       ],
     },
     {
-      id: '',
+      id: 'f',
       label: 'modeling-scene',
       type: 'simple',
       component: <p>Hi I'm the modeling scene!</p>,
     },
     {
-      id: '',
+      id: 'g',
       label: 'right-toolbar',
       type: 'toolbar',
       side: 'inline-end',
       activeIndices: [0],
       children: [
         {
-          id: '',
+          id: 'h',
           label: 'ttc',
           type: 'simple',
           component: <p>Hi I'm the TTC "pane"</p>,

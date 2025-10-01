@@ -1,7 +1,24 @@
+/* 
+* This file uses a trick to get CSS nesting in CSS modules, following
+* https://aaideas.com/posts/2024/css-modules-and-css-nesting/ 
+*/
 .layout {
   @apply border b-3;
+}
 
-  .splitLayout {
-    @apply flex;
-  }
+.split {
+  @apply flex-1;
+}
+
+.orientation-inline {
+  @apply flex;
+}
+
+.orientation-block {
+  @apply flex-col;
+}
+
+.resizeHandle {
+  @apply hidden group-data-[resize-handle-state=hover]/handle:grid place-content-center;
+  @apply py-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-sm bg-3 border b-6;
 }

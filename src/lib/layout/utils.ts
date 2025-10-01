@@ -1,21 +1,13 @@
 import type { Layout } from '@src/lib/layout/types'
 
 /**
- * A split area must have split points equal to the divisions
- * between its children. Each point must be between 0 and 1.
+ * A split area must have the same number of sizes as children.
+ * Each point must be an integer between 0 and 100.
+ * The sum of the areas must be 100.
  */
-export function hasValidSplitPoints(area: Layout & { type: 'splits' }) {
+export function hasValidSizes(area: Layout & { type: 'splits' }) {
   return (
-    area.splitPoints.length === area.children.length - 1 &&
-    area.splitPoints.every((p) => p > 0 && p < 1)
+    area.sizes.length === area.children.length &&
+    area.sizes.every((p) => Number.isInteger(p) && p > 0 && p < 100)
   )
-}
-
-/**
- * Split points must be sorted in ascending order
- */
-export function sortSplitPoints(
-  splitPoints: (Layout & { type: 'splits' })['splitPoints']
-) {
-  return splitPoints.sort((a, b) => a - b)
 }
