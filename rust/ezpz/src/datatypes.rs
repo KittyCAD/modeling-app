@@ -17,7 +17,7 @@ impl DatumDistance {
 }
 
 /// 2D point.
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct DatumPoint {
     id: Id,
     x_id: Id,
@@ -78,7 +78,7 @@ impl DatumLine {
 }
 
 /// Finite segment of a line.
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub struct LineSegment {
     pub id: Id,
     pub p0: DatumPoint,
