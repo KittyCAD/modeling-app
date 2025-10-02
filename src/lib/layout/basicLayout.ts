@@ -65,7 +65,7 @@ export const basicLayout: Layout = {
           id: 'j',
           label: 'modeling-scene',
           type: 'simple',
-          areaType: 'modeling',
+          areaType: 'logs',
         },
       ],
     },
