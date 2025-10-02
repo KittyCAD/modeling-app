@@ -6520,8 +6520,8 @@ p3 = [342.51, 216.38],
 
             // Now that we're in sketchIdle state, test the "Constrain with named value" event
             actor.send({
-              type: 'Delete segment',
-              data: constraint.pathToNode,
+              type: 'Delete segments',
+              data: [constraint.pathToNode],
             })
 
             // Wait for the state to change in response to the constraint

@@ -305,10 +305,6 @@ export type ModelingMachineEvent =
       type: 'Center camera on selection'
     }
   | {
-      type: 'Delete segment'
-      data: PathToNode
-    }
-  | {
       type: 'Delete segments'
       data: PathToNode[]
     }
@@ -1073,18 +1069,6 @@ export const modelingMachine = setup({
     'set selection filter to defaults': () => {
       kclManager.defaultSelectionFilter()
     },
-    'Delete segment': ({ context: { sketchDetails }, event }) => {
-      if (event.type !== 'Delete segment') return
-      if (!sketchDetails || !event.data) return
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      deleteSegmentOrProfile({
-        pathToNodes: [event.data],
-        sketchDetails,
-      }).then(() => {
-        return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-      })
-    },
     'Delete segments': ({ context: { sketchDetails }, event }) => {
       if (event.type !== 'Delete segments') return
       if (!sketchDetails || !event.data) return
@@ -1098,7 +1082,7 @@ export const modelingMachine = setup({
           return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
         })
         .catch((e) => {
-          console.log('error', e)
+          console.warn('error', e)
         })
     },
     'Set context': assign({
@@ -4508,11 +4492,6 @@ export const modelingMachine = setup({
 
       on: {
         Cancel: '.undo startSketchOn',
-
-        'Delete segment': {
-          reenter: false,
-          actions: ['Delete segment', 'reset selections'],
-        },
         'Delete segments': {
           reenter: false,
           actions: ['Delete segments', 'reset selections'],
