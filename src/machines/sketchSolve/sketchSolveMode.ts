@@ -103,7 +103,7 @@ export const sketchSolveMachine = setup({
       return {
         toolActor: spawn(nameOfToolToSpawn, { id: 'tool' }),
         sketchSolveToolName: nameOfToolToSpawn,
-        pendingTool: undefined, // Clear the pending tool after spawning
+        pendingToolName: undefined, // Clear the pending tool after spawning
       }
     }),
   },
