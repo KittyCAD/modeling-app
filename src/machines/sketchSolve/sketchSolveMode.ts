@@ -38,8 +38,8 @@ type ToolActorRef =
 
 type SketchSolveContext = ModelingMachineContext & {
   toolActor?: ToolActorRef
-  sketchSolveTool: EquipTool | null
-  pendingTool?: EquipTool
+  sketchSolveToolName: EquipTool | null
+  pendingToolName?: EquipTool
 }
 
 export const sketchSolveMachine = setup({
@@ -65,11 +65,11 @@ export const sketchSolveMachine = setup({
     }),
     'store pending tool': assign(({ event }) => {
       assertEvent(event, 'equip tool')
-      return { pendingTool: event.data.tool }
+      return { pendingToolName: event.data.tool }
     }),
     'send tool equipped to parent': sendParent(({ context }) => ({
       type: 'sketch solve tool changed',
-      data: { tool: context.sketchSolveTool },
+      data: { tool: context.sketchSolveToolName },
     })),
     'send tool unequipped to parent': sendParent({
       type: 'sketch solve tool changed',
@@ -77,40 +77,39 @@ export const sketchSolveMachine = setup({
     }),
     'spawn tool': assign(({ event, spawn, context }) => {
       // Determine which tool to spawn based on event type
-      let toolToSpawn: EquipTool
+      let nameOfToolToSpawn: EquipTool
 
       if (event.type === 'equip tool') {
-        toolToSpawn = event.data.tool
+        nameOfToolToSpawn = event.data.tool
       } else if (
         event.type === 'xstate.done.actor.tool' &&
-        context.pendingTool
+        context.pendingToolName
       ) {
-        toolToSpawn = context.pendingTool
+        nameOfToolToSpawn = context.pendingToolName
       } else {
         console.error('Cannot determine tool to spawn')
         return {}
       }
 
       let toolActor
-      switch (toolToSpawn) {
+      switch (nameOfToolToSpawn) {
         case 'dimensionTool':
-          toolActor = spawn(toolToSpawn, { id: 'tool' })
+          toolActor = spawn(nameOfToolToSpawn, { id: 'tool' })
           break
         case 'centerRectTool':
-          toolActor = spawn(toolToSpawn, { id: 'tool' })
+          toolActor = spawn(nameOfToolToSpawn, { id: 'tool' })
           break
         case 'pointTool':
-          toolActor = spawn(toolToSpawn, { id: 'tool' })
+          toolActor = spawn(nameOfToolToSpawn, { id: 'tool' })
           break
         default:
-          const _exhaustiveCheck: never = toolToSpawn
+          const _exhaustiveCheck: never = nameOfToolToSpawn
       }
-      console.log('spawned tool?')
 
       return {
         toolActor,
-        sketchSolveTool: toolToSpawn,
-        pendingTool: undefined, // Clear the pending tool after spawning
+        sketchSolveToolName: nameOfToolToSpawn,
+        pendingToolName: undefined, // Clear the pending tool after spawning
       }
     }),
   },
@@ -124,7 +123,7 @@ export const sketchSolveMachine = setup({
   /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6UNEwAEdQ5j48DEISNIks4VyM-O1FFRqB2Sd6jlk1BstEVo1pZQ1e+Rt5eWlB0u0vH3RxgEpsFaMoALaEIKRUQQPBxBJJOgQMRgZTMUSkQjocGQsAAFU2xG2GV2OXEBxkBmMTw0L06ig42jkZjuBTUykGBjUN0G3Q0jL+owB-kmQRmqIhUJhcPiiQwDAATgrCArlHxiNEAGYqsE48gErbcHaCPbk0D5aRUgzKexVV6yc7aAaNSnaVRcz7lakuDiWwVjEWBaYhPUUaGw+FyhjLVbrQnE-gmsl5GR2G2FRTGeQaapFY7yF0IAzuVSDYx1SptRRc-3CiZBkGo0JCURQOMkOYLGNrDaG9KJ7IpFMIOzcm19NTFqnSYwaT6FjTnZS6XqyAxXLpz5y1vz14Hi5TN9Ft3vEaMrHvxo0kpNDikIWfFTo1IpGF-OQsMt05xwcTTdQpZGGf5dyBMUQ1gAB3VhcGPdsz0YWAMGiVFkQWZRIiSFVlFPBNMlvfZzRkR4OUfRRrgZQZ1ELbQumUZxtEY7QTHXZjgKFUDRWDUF5iWC84NPOhEOQmJlDQ1FMI2VVcOvAdTWHOwmRtQYmX5IwgKAws5Dda5LV0P9pB6LQvBGUQQngDIAz3cDaGNQdCMkRBJ3TYxM2zXMbEGQtmktZ5jCKB0uRcAYqR3QEuMbUM8HDGUEQwOz5PvRcn2MTpix9NpnVZOxrQUKkHH5BlZDCwN9xDI9W3ghLk3vWoOGeNQ1w4HQ7EURdFAXGcOXURdaRMMoc3YqywO41EoJgnABMJaq7yIotjDdTMuXKdxaWpAtWUnYpGLeep6nXa4DBK6zRuUJhhFbGaHItFdl2uc4TAW7kikLfz3UqRlPIWxx5GOkbIt47sppIK6zUch8BmUQpqkeaQnRUjamk6J56Q+c4QocEyPCAA */
   context: ({ input }): SketchSolveContext => ({
     ...modelingMachineDefaultContext,
-    sketchSolveTool: null,
+    sketchSolveToolName: null,
   }),
   id: 'Sketch Solve Mode',
   initial: 'move and select',

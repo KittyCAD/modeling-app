@@ -190,6 +190,7 @@ export type CommandArgumentConfig<
       selectionTypes: Artifact['type'][]
       selectionFilter?: EntityType[]
       multiple: boolean
+      clearSelectionFirst?: boolean
       allowNoSelection?: boolean
       validation?: ({
         data,
@@ -364,6 +365,7 @@ export type CommandArgument<
       selectionTypes: Artifact['type'][]
       selectionFilter?: EntityType[]
       multiple: boolean
+      clearSelectionFirst?: boolean
       allowNoSelection?: boolean
       validation?: ({
         data,

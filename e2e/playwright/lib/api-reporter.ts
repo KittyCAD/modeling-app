@@ -89,6 +89,7 @@ class APIReporter implements Reporter {
       // Extra test and result data
       annotations: test.annotations.map((a) => a.type), // e.g. 'fail' or 'fixme'
       id: test.id, // computed file/test/project ID used for reruns
+      logs: logsAsString,
       retry: result.retry,
       tags: test.tags, // e.g. '@snapshot' or '@skipLocalEngine'
       // Extra environment variables
@@ -103,7 +104,6 @@ class APIReporter implements Reporter {
       GITHUB_SHA: process.env.GITHUB_SHA || null,
       GITHUB_WORKFLOW: process.env.GITHUB_WORKFLOW || null,
       RUNNER_ARCH: process.env.RUNNER_ARCH || null,
-      logs: logsAsString,
     }
 
     const request = (async () => {
