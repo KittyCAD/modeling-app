@@ -15,40 +15,35 @@ export const basicLayout: Layout = {
   label: 'root',
   type: 'splits',
   orientation: 'inline',
-  sizes: [30, 50, 10],
+  sizes: [30, 50, 20],
   children: [
     {
       id: 'b',
       label: 'left-toolbar',
-      type: 'toolbar',
+      type: 'panes',
       side: 'inline-start',
-      activeIndices: [0],
+      activeIndices: [0, 2],
+      sizes: [50, 50],
       children: [
         {
           id: 'c',
           label: 'feature-tree',
           type: 'simple',
-          component: (
-            <p className="bg-blue-300">Hi I'm the feature tree area!</p>
-          ),
+          areaType: 'featureTree',
           icon: 'model',
         },
         {
           id: 'd',
           label: 'code',
           type: 'simple',
-          component: (
-            <p className="bg-green-300">Hi I'm the code editor area!</p>
-          ),
+          areaType: 'codeEditor',
           icon: 'code',
         },
         {
           id: 'e',
           label: 'variables',
           type: 'simple',
-          component: (
-            <p className="bg-orange-300">Hi I'm the variables area!</p>
-          ),
+          areaType: 'variables',
           icon: 'make-variable',
         },
       ],
@@ -57,35 +52,36 @@ export const basicLayout: Layout = {
       id: 'i',
       label: 'middle-split',
       type: 'splits',
-      sizes: [50, 50],
+      sizes: [75, 25],
       orientation: 'block',
       children: [
         {
           id: 'f',
           label: 'modeling-scene',
           type: 'simple',
-          component: <p>Hi I'm the modeling scene!</p>,
+          areaType: 'modeling',
         },
         {
           id: 'j',
           label: 'modeling-scene',
           type: 'simple',
-          component: <p>Hi I'm the modeling scene, but again!</p>,
+          areaType: 'modeling',
         },
       ],
     },
     {
       id: 'g',
       label: 'right-toolbar',
-      type: 'toolbar',
+      type: 'panes',
       side: 'inline-end',
       activeIndices: [0],
+      sizes: [],
       children: [
         {
           id: 'h',
           label: 'ttc',
           type: 'simple',
-          component: <p>Hi I'm the TTC "pane"</p>,
+          areaType: 'ttc',
           icon: 'sparkles',
         },
       ],
