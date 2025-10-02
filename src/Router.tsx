@@ -42,6 +42,7 @@ import { Telemetry } from '@src/routes/Telemetry'
 import { LayoutRoot } from '@src/lib/layout/Layout'
 import { testAreaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 import { testLayout } from '@src/lib/layout/testLayout'
+import { loadLayout } from './lib/layout/utils'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -151,7 +152,7 @@ const router = createRouter([
         element: (
           <LayoutRoot
             areaLibrary={testAreaTypeRegistry}
-            initialLayout={testLayout}
+            initialLayout={loadLayout('test') || testLayout}
           />
         ),
       },
