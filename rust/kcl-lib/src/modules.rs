@@ -44,13 +44,13 @@ impl ModuleLoader {
     }
 
     pub(crate) fn enter_module(&mut self, path: &ModulePath) {
-        if let ModulePath::Local { value: path } = path {
+        if let ModulePath::Local { value: path, .. } = path {
             self.import_stack.push(path.clone());
         }
     }
 
     pub(crate) fn leave_module(&mut self, path: &ModulePath) {
-        if let ModulePath::Local { value: path } = path {
+        if let ModulePath::Local { value: path, .. } = path {
             let popped = self.import_stack.pop().unwrap();
             assert_eq!(path, &popped);
         }
@@ -119,21 +119,26 @@ pub enum ModuleRepr {
 pub enum ModulePath {
     // The main file of the project.
     Main,
-    Local { value: TypedPath },
-    Std { value: String },
+    Local {
+        value: TypedPath,
+        original_import_path: Option<TypedPath>,
+    },
+    Std {
+        value: String,
+    },
 }
 
 impl ModulePath {
     pub(crate) fn expect_path(&self) -> &TypedPath {
         match self {
-            ModulePath::Local { value: p } => p,
+            ModulePath::Local { value: p, .. } => p,
             _ => unreachable!(),
         }
     }
 
     pub(crate) async fn source(&self, fs: &FileManager, source_range: SourceRange) -> Result<ModuleSource, KclError> {
         match self {
-            ModulePath::Local { value: p } => Ok(ModuleSource {
+            ModulePath::Local { value: p, .. } => Ok(ModuleSource {
                 source: fs.read_to_string(p, source_range).await?,
                 path: self.clone(),
             }),
@@ -167,7 +172,7 @@ impl ModulePath {
                             path.clone()
                         }
                     }
-                    ModulePath::Local { value } => {
+                    ModulePath::Local { value, .. } => {
                         let import_from_dir = value.parent();
                         let base = import_from_dir.as_ref().or(project_directory.as_ref());
                         if let Some(dir) = base {
@@ -183,7 +188,10 @@ impl ModulePath {
                     }
                 };
 
-                Ok(ModulePath::Local { value: resolved_path })
+                Ok(ModulePath::Local {
+                    value: resolved_path,
+                    original_import_path: Some(path.clone()),
+                })
             }
             ImportPath::Std { path } => Self::from_std_import_path(path),
         }
@@ -211,7 +219,7 @@ impl fmt::Display for ModulePath {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             ModulePath::Main => write!(f, "main"),
-            ModulePath::Local { value: path } => path.fmt(f),
+            ModulePath::Local { value: path, .. } => path.fmt(f),
             ModulePath::Std { value: s } => write!(f, "std::{s}"),
         }
     }
