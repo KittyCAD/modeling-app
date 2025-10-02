@@ -1,7 +1,7 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 
-type BasicArea = {
+type BasicLayout = {
   id: string
   label: string
 }
@@ -16,19 +16,19 @@ type WithSide = {
 }
 type WithSizes = { sizes: number[] }
 
-type SplitsArea = BasicArea &
+export type SplitLayout = BasicLayout &
   WithChildren &
   WithSizes &
   WithOrientation & {
     type: 'splits'
   }
-type TabsArea = BasicArea &
+export type TabLayout = BasicLayout &
   WithChildren &
   WithSide & {
     type: 'tabs'
     activeIndex: number
   }
-type PanesArea = BasicArea &
+export type PaneLayout = BasicLayout &
   WithSizes &
   WithSide & {
     type: 'panes'
@@ -37,8 +37,8 @@ type PanesArea = BasicArea &
       icon: CustomIconName
     })[]
   }
-type SimpleArea = BasicArea & {
+type SimpleLayout = BasicLayout & {
   type: 'simple'
   areaType: keyof typeof areaTypeRegistry
 }
-export type Layout = SimpleArea | SplitsArea | TabsArea | PanesArea
+export type Layout = SimpleLayout | SplitLayout | TabLayout | PaneLayout

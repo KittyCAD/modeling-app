@@ -2,6 +2,10 @@ import type { Direction, Layout, Side } from '@src/lib/layout/types'
 import type React from 'react'
 import { capitaliseFC } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
+import { throttle } from '@src/lib/utils'
+
+const LAYOUT_PERSIST_PREFIX = 'layout-'
+const LAYOUT_SAVE_THROTTLE = 500
 
 /**
  * A split area must have the same number of sizes as children.
@@ -80,4 +84,112 @@ export function getOppositionDirection(direction: Direction): Direction {
 
 export function sideToReactCss(side: Side): string {
   return side.split('-').map(capitaliseFC).join('')
+}
+
+interface IFindLayoutChildNode {
+  rootLayout: Layout
+  targetNode: Layout
+}
+
+export function findLayoutChildNode(
+  { rootLayout, targetNode }: IFindLayoutChildNode
+): Layout | undefined {
+  if (rootLayout.id === targetNode.id) {
+    return rootLayout
+  }
+
+  if ('children' in rootLayout && rootLayout.children) {
+    for (const child of rootLayout.children) {
+      const found = findLayoutChildNode({ rootLayout: child, targetNode })
+      if (found) {
+        return found
+      }
+    }
+  }
+
+  return undefined
+}
+
+export interface IReplaceLayoutChildNode {
+  rootLayout: Layout
+  targetNodeId: string
+  newNode: Layout
+}
+export function findAndReplaceLayoutChildNode(
+  { rootLayout, targetNodeId, newNode }: IReplaceLayoutChildNode
+): Layout {
+  if (rootLayout.id === targetNodeId) {
+    return newNode
+  }
+
+  if ('children' in rootLayout && rootLayout.children) {
+    rootLayout.children = rootLayout.children.map(child =>
+      child.id === targetNodeId ? newNode : findAndReplaceLayoutChildNode({ rootLayout: child, targetNodeId, newNode })
+    )
+  }
+
+  return rootLayout
+}
+
+export interface IUpdateNodeSizes extends IFindLayoutChildNode {
+  newSizes: number[]
+}
+
+/* Mutate rootLayout at targetNode in-place, if found, to have newSizes. */
+export function findAndUpdateSplitSizes({
+  rootLayout,
+  targetNode,
+  newSizes,
+}: IUpdateNodeSizes) {
+  const foundNode = findLayoutChildNode({ rootLayout, targetNode })
+  if (foundNode && 'sizes' in foundNode) {
+    foundNode.sizes = newSizes
+  }
+
+  return rootLayout
+}
+
+export function findAndReplaceLayoutNode({
+  rootLayout,
+  targetNode,
+}: IFindLayoutChildNode) {
+  const foundNode = findLayoutChildNode({ rootLayout, targetNode })
+  if (foundNode) {
+    foundNode = targetNode
+  }
+
+  return rootLayout
+}
+
+
+export function loadLayout(
+  id: string
+): Layout | undefined {
+  const layoutString = localStorage.getItem(`${LAYOUT_PERSIST_PREFIX}${id}`)
+  const parsed = layoutString
+    ? parseLayoutString(layoutString)
+    : undefined
+  console.log('loaded layout', parsed)
+  return parsed
+}
+function saveLayoutInner(
+  layout: Layout
+) {
+  return localStorage.setItem(`${LAYOUT_PERSIST_PREFIX}${layout.id}`, JSON.stringify(layout))
+}
+export const saveLayout = throttle(saveLayoutInner, LAYOUT_SAVE_THROTTLE)
+
+function parseLayoutString(
+  layoutString: string
+) {
+  // TODO: validate this JSON
+  return JSON.parse(layoutString) as Layout
+}
+
+/** Have the panes not been resized at all, just divided evenly? */
+export function areSplitSizesNatural(
+  sizes: number[]
+) {
+  const epsilon = 0.1
+  return sizes.every(size => Math.abs(100 / sizes.length - size) < epsilon)
 }
