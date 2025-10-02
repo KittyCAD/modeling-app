@@ -1529,7 +1529,8 @@ export const ModelingMachineProvider = ({
       modelingState.context.selectionRanges.graphSelections.filter((sel) =>
         segmentNodePaths.includes(JSON.stringify(sel.codeRef.pathToNode))
       )
-    // Delete dependents before their dependencies by prioritizing later-in-code items
+    // Order selections by how late they are used in the codebase, as later nodes are less likely to be referenced than
+    // earlier ones. This could be further refined as this is just a simple heuristic.
     const orderedSelections = selections.slice().sort((a, b) => {
       const aStart = a.codeRef.range?.[0] ?? 0
       const bStart = b.codeRef.range?.[0] ?? 0
@@ -1564,7 +1565,6 @@ export const ModelingMachineProvider = ({
     })
   })
 
-  // Select all on canvas (only in Sketch mode)
   useHotkeys(
     ['mod + a'],
     (e) => {
