@@ -34,7 +34,7 @@ import {
 
 import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
 
-export async function deleteSegmentOrProfile({
+export async function deleteSegmentsOrProfiles({
   pathToNodes,
   sketchDetails,
 }: {
