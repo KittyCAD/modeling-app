@@ -90,6 +90,8 @@ import {
   selectionBodyFace,
   getOffsetSketchPlaneData,
   updateSelections,
+  getEventForSegmentSelection,
+  updateExtraSegments,
 } from '@src/lib/selections'
 import {
   codeManager,
@@ -117,8 +119,8 @@ import {
   EngineConnectionEvents,
   EngineConnectionStateType,
 } from '@src/network/utils'
-
 import type { WebContentSendPayload } from '@src/menu/channels'
+import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 
 const OVERLAY_TIMEOUT_MS = 1_000
@@ -578,6 +580,7 @@ export const ModelingMachineProvider = ({
                     kclManager.ast,
                     input.sketchPathToNode,
                     input.extrudePathToNode,
+                    addTagForSketchOnFace,
                     input.faceInfo
                   )
                 : sketchOnOffsetPlane(
@@ -673,7 +676,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -729,7 +734,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -795,7 +802,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -856,7 +865,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -910,7 +921,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -965,7 +978,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -1020,7 +1035,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -1269,6 +1286,7 @@ export const ModelingMachineProvider = ({
           useNewSketchMode,
         },
         machineManager,
+        sketchSolveToolName: null,
       },
       // devTools: true,
     }

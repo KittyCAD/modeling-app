@@ -15,7 +15,7 @@ import {
   nodePathFromRange,
   type ParseResult,
 } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/lib/selections'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err, reportRejection } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
@@ -94,7 +94,7 @@ import {
   getStringValue,
 } from '@src/lib/kclHelpers'
 import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
 import { isPointsCCW } from '@src/lang/wasm'
 import { closestPointOnRay } from '@src/lib/utils2d'
 import { expect } from 'vitest'
@@ -112,6 +112,10 @@ import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import { getTagDeclaratorsInProgram } from '@src/lang/queryAst/getTagDeclaratorsInProgram'
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+import {
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
 
 // Unfortunately, we need the real engine here it seems to get sweep faces populated
 beforeAll(async () => {
@@ -264,7 +268,7 @@ const createSelectionWithFirstMatchingArtifact = async (
   return { selection }
 }
 
-describe('transforms.test.ts', () => {
+describe('transforms.spec.ts', () => {
   describe('Testing addTranslate', () => {
     async function runAddTranslateTest(code: string) {
       const {
@@ -800,7 +804,7 @@ appearance(extrude001, color = '#00FF00')`
   })
 })
 
-describe('tagManagement.test.ts', () => {
+describe('tagManagement.spec.ts', () => {
   // Tests for modifyAstWithTagsForSelection
   describe('modifyAstWithTagsForSelection', () => {
     const basicExampleCode = `
@@ -1002,7 +1006,7 @@ extrude001 = extrude(sketch001, length = 15)
   })
 })
 
-describe('sweeps.test.ts', () => {
+describe('sweeps.spec.ts', () => {
   const circleProfileCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)`
   const circleAndRectProfilesCode = `sketch001 = startSketchOn(XY)
@@ -1555,7 +1559,7 @@ helix001 = helix(
   })
 })
 
-describe('pattern3D.test.ts', () => {
+describe('pattern3D.spec.ts', () => {
   async function getAstAndArtifactGraph(code: string) {
     const ast = assertParse(code)
     if (err(ast)) throw ast
@@ -2435,7 +2439,7 @@ extrude(exampleSketch, length = -5)
   })
 })
 
-describe('geometry.test.ts', () => {
+describe('geometry.spec.ts', () => {
   describe('Testing addHelix', () => {
     it('should add a standalone call on default axis selection', async () => {
       const expectedNewLine = `helix001 = helix(
@@ -2681,7 +2685,7 @@ helix001 = helix(
   })
 })
 
-describe('faces.test.ts', () => {
+describe('faces.spec.ts', () => {
   async function getAstAndArtifactGraph(code: string) {
     const ast = assertParse(code)
     await kclManager.executeAst({ ast })
@@ -3361,7 +3365,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
   })
 })
 
-describe('addEdgeTreatment.test.ts', () => {
+describe('addEdgeTreatment.spec.ts', () => {
   const dependencies = {
     kclManager,
     engineCommandManager,
@@ -4389,7 +4393,7 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
   })
 })
 
-describe('boolean.test.ts', () => {
+describe('boolean.spec.ts', () => {
   describe('Testing addSubtract', () => {
     async function runAddSubtractTest(code: string, toolCount = 1) {
       const ast = assertParse(code)
@@ -4462,7 +4466,7 @@ extrude003 = extrude(profile003, length = -1)`
   })
 })
 
-describe('operations.test.ts', () => {
+describe('operations.spec.ts', () => {
   function stdlib(name: string): Operation {
     return {
       type: 'StdLibCall',
@@ -4734,7 +4738,7 @@ describe('operations.test.ts', () => {
   })
 })
 
-describe('kclHelpers.test.ts', () => {
+describe('kclHelpers.spec.ts', () => {
   describe('KCL expression calculations', () => {
     it('calculates a simple expression without units', async () => {
       const actual = await getCalculatedKclExpressionValue('1 + 2')
@@ -4958,7 +4962,7 @@ describe('kclHelpers.test.ts', () => {
   })
 })
 
-describe('getSafeInsertIndex.test.ts', () => {
+describe('getSafeInsertIndex.spec.ts', () => {
   describe(`getSafeInsertIndex`, () => {
     it(`expression with no identifiers`, () => {
       const baseProgram = assertParse(`x = 5 + 2
@@ -5018,7 +5022,7 @@ z = x + y`)
   })
 })
 
-describe('utils2d.test.ts', () => {
+describe('utils2d.spec.ts', () => {
   describe('test isPointsCW', () => {
     test('basic test', () => {
       const points: Coords2d[] = [
@@ -5104,7 +5108,7 @@ describe('utils2d.test.ts', () => {
   })
 })
 
-describe('rectangleTool.test.ts', () => {
+describe('rectangleTool.spec.ts', () => {
   describe('library rectangleTool helper functions', () => {
     describe('updateCenterRectangleSketch', () => {
       // regression test for https://github.com/KittyCAD/modeling-app/issues/5157
@@ -5175,7 +5179,7 @@ profile001 = startProfile(at = [80, 120])
   })
 })
 
-describe('recast.test.ts', () => {
+describe('recast.spec.ts', () => {
   describe('recast', () => {
     it('recasts a simple program', () => {
       const code = '1 + 2'
@@ -5539,7 +5543,7 @@ mySk1 = startSketchOn(XY)
   }
 })
 
-describe('getNodePathFromSourceRange.test.ts', () => {
+describe('getNodePathFromSourceRange.spec.ts', () => {
   describe('testing getNodePathFromSourceRange', () => {
     it('test it gets the right path for a `lineTo` CallExpression within a SketchExpression', () => {
       const code = `
@@ -5648,7 +5652,7 @@ b1 = cube(pos = [0,0], scale = 10)`
 })
 
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
-describe('modelingMachine.test.ts', () => {
+describe('modelingMachine.spec.ts', () => {
   // Define mock implementations that will be referenced in vi.mock calls
   vi.mock('@src/components/SetHorVertDistanceModal', () => ({
     createInfoModal: vi.fn(() => ({
@@ -6820,7 +6824,9 @@ p3 = [342.51, 216.38],
               constraint.pathToNode,
               constraint.argPosition,
               ast,
-              kclManager.variables
+              kclManager.variables,
+              removeSingleConstraint,
+              transformAstSketchLines
             )
             if (!mod) {
               throw new Error('Failed to remove constraint info')
@@ -6960,7 +6966,7 @@ p3 = [342.51, 216.38],
   })
 })
 
-describe('getTagDeclaratorsInProgram.test.ts', () => {
+describe('getTagDeclaratorsInProgram.spec.ts', () => {
   function tagDeclaratorWithIndex(
     value: string,
     start: number,

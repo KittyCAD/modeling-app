@@ -37,9 +37,17 @@ import { topLevelRange } from '@src/lang/util'
 import type { Identifier, Literal } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
+import {
+  addTagForSketchOnFace,
+  getConstraintInfoKw,
+} from '@src/lang/std/sketch'
+import {
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
 
 beforeAll(async () => {
   await initPromise
@@ -424,7 +432,8 @@ describe('testing sketchOnExtrudedFace', () => {
     const extruded = sketchOnExtrudedFace(
       ast,
       segmentPathToNode,
-      extrudePathToNode
+      extrudePathToNode,
+      addTagForSketchOnFace
     )
     if (err(extruded)) throw extruded
     const { modifiedAst } = extruded
@@ -462,7 +471,8 @@ sketch001 = startSketchOn(part001, face = seg01)`)
     const extruded = sketchOnExtrudedFace(
       ast,
       segmentPathToNode,
-      extrudePathToNode
+      extrudePathToNode,
+      addTagForSketchOnFace
     )
     if (err(extruded)) throw extruded
     const { modifiedAst } = extruded
@@ -501,6 +511,7 @@ sketch001 = startSketchOn(part001, face = seg01)`)
       ast,
       sketchPathToNode,
       extrudePathToNode,
+      addTagForSketchOnFace,
       { type: 'cap', subType: 'end' }
     )
     if (err(extruded)) throw extruded
@@ -547,7 +558,8 @@ sketch001 = startSketchOn(part001, face = END)`)
     const updatedAst = sketchOnExtrudedFace(
       ast,
       segmentPathToNode,
-      extrudePathToNode
+      extrudePathToNode,
+      addTagForSketchOnFace
     )
     if (err(updatedAst)) throw updatedAst
     const newCode = recast(updatedAst.modifiedAst)
@@ -576,7 +588,10 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
       ast,
       execState.variables,
       code,
-      pathToNode
+      pathToNode,
+      getConstraintInfoKw,
+      removeSingleConstraint,
+      transformAstSketchLines
     )
     if (err(modifiedAst)) throw modifiedAst
     const newCode = recast(modifiedAst)
@@ -661,7 +676,10 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65deg, length = ${
         ast,
         execState.variables,
         code,
-        pathToNode
+        pathToNode,
+        getConstraintInfoKw,
+        removeSingleConstraint,
+        transformAstSketchLines
       )
       if (err(modifiedAst)) throw modifiedAst
       const newCode = recast(modifiedAst)

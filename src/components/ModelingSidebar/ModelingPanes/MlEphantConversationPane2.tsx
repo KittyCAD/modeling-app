@@ -14,7 +14,7 @@ import {
 } from '@src/machines/mlEphantManagerMachine2'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
-import type { ModelingMachineContext } from '@src/machines/modelingMachine'
+import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { BillingActor } from '@src/machines/billingMachine'
 import { useSelector } from '@xstate/react'
