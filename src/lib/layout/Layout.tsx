@@ -3,7 +3,7 @@ import type { PanelGroupStorage } from 'react-resizable-panels'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Tab, Switch } from '@headlessui/react'
-import React, {
+import {
   createContext,
   type Dispatch,
   Fragment,
@@ -33,7 +33,7 @@ interface LayoutState {
 
 const LayoutStateContext = createContext<LayoutState>({
   layout: basicLayout,
-  setLayout: () => {},
+  setLayout: () => { },
   areaLibrary: areaTypeRegistry,
 })
 
@@ -56,7 +56,7 @@ export function LayoutRoot(props: LayoutRootProps) {
         areaLibrary: props.areaLibrary || areaTypeRegistry,
       }}
     >
-      <LayoutNode {...layout} />
+      <LayoutNode layout={layout} />
     </LayoutStateContext.Provider>
   )
 }
@@ -65,15 +65,15 @@ export function LayoutRoot(props: LayoutRootProps) {
  * A layout is a nested set of Areas (Splits, Tabs, or Toolbars),
  * ending in leaf nodes that contain UI components.
  */
-function LayoutNode(layout: Layout) {
+function LayoutNode({ layout }: { layout: Layout }) {
   const { areaLibrary } = useLayoutState()
   switch (layout.type) {
     case 'splits':
-      return <SplitLayout {...layout} />
+      return <SplitLayout layout={layout} />
     case 'tabs':
-      return <TabLayout {...layout} />
+      return <TabLayout layout={layout} />
     case 'panes':
-      return <PaneLayout {...layout} />
+      return <PaneLayout layout={layout} />
     default:
       return areaLibrary[layout.areaType]()
   }
@@ -82,7 +82,7 @@ function LayoutNode(layout: Layout) {
 /**
  * Need to see if we should just roll our own resizable component?
  */
-function SplitLayout(layout: Layout & { type: 'splits' }) {
+function SplitLayout({ layout }: { layout: Layout & { type: 'splits' } }) {
   // Direction is simpler than Orientation, which uses logical properties.
   const orientationAsDirection =
     layout.orientation === 'inline' ? 'horizontal' : 'vertical'
@@ -129,7 +129,7 @@ function SplitLayoutContents({
                 defaultSize={layout.sizes[i]}
                 className="flex bg-default"
               >
-                <LayoutNode {...a} />
+                <LayoutNode layout={a} />
               </Panel>
               {!isLastChild && (
                 <ResizeHandle direction={direction} id={`handle-${a.id}`} />
@@ -145,7 +145,7 @@ function SplitLayoutContents({
 /**
  * Use headless UI tabs
  */
-function TabLayout(layout: Layout & { type: 'tabs' }) {
+function TabLayout({ layout }: { layout: Layout & { type: 'tabs' } }) {
   return (
     <Tab.Group
       as="div"
@@ -164,7 +164,7 @@ function TabLayout(layout: Layout & { type: 'tabs' }) {
         {layout.children.map((tab) => {
           return (
             <Tab.Panel key={tab.id}>
-              <LayoutNode {...tab} />
+              <LayoutNode layout={tab} />
             </Tab.Panel>
           )
         })}
@@ -177,7 +177,7 @@ function TabLayout(layout: Layout & { type: 'tabs' }) {
  * Use headless UI tabs if they can have multiple active items
  * with resizable panes
  */
-function PaneLayout(layout: Layout & { type: 'panes' }) {
+function PaneLayout({ layout }: { layout: Layout & { type: 'panes' } }) {
   const [activeIndices, setActiveItems] = useState(layout.activeIndices)
   const activePanes = useMemo(
     () => activeIndices.map((index) => layout.children[index]),
@@ -228,7 +228,7 @@ function PaneLayout(layout: Layout & { type: 'panes' }) {
       {activePanes.length === 0 ? (
         <></>
       ) : activePanes.length === 1 ? (
-        <LayoutNode {...activePanes[0]} />
+        <LayoutNode layout={activePanes[0]} />
       ) : (
         <SplitLayoutContents
           direction={getOppositionDirection(sideToSplitDirection(layout.side))}
