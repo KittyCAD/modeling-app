@@ -1287,7 +1287,7 @@ export const ModelingMachineProvider = ({
           useNewSketchMode,
         },
         machineManager,
-        sketchSolveTool: null,
+        sketchSolveToolName: null,
       },
       // devTools: true,
     }

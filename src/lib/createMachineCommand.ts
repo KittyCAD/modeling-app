@@ -204,6 +204,7 @@ export function buildCommandArgument<
       multiple: arg.multiple,
       selectionTypes: arg.selectionTypes,
       validation: arg.validation,
+      clearSelectionFirst: arg.clearSelectionFirst,
       allowNoSelection: arg.allowNoSelection,
       selectionSource: arg.selectionSource,
       selectionFilter: arg.selectionFilter,

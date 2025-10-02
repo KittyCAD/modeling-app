@@ -236,7 +236,7 @@ export interface ModelingMachineContext {
   defaultPlaneVisibility: PlaneVisibilityMap
   savedDefaultPlaneVisibility: PlaneVisibilityMap
   planesInitialized: boolean
-  sketchSolveTool: EquipTool | null
+  sketchSolveToolName: EquipTool | null
 }
 
 export type PlaneVisibilityMap = {
