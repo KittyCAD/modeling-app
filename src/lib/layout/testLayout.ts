@@ -1,7 +1,7 @@
 import type { Layout } from '@src/lib/layout/types'
 
 export const testLayout: Layout = {
-  id: crypto.randomUUID(),
+  id: 'test',
   label: 'root',
   type: 'splits',
   orientation: 'block',

@@ -11,7 +11,7 @@ import type { Layout } from '@src/lib/layout/types'
  *   - Text-to-CAD
  */
 export const basicLayout: Layout = {
-  id: 'a',
+  id: 'basic',
   label: 'root',
   type: 'splits',
   orientation: 'inline',
@@ -45,6 +45,13 @@ export const basicLayout: Layout = {
           type: 'simple',
           areaType: 'variables',
           icon: 'make-variable',
+        },
+        {
+          id: crypto.randomUUID(),
+          label: 'logs',
+          type: 'simple',
+          areaType: 'logs',
+          icon: 'logs',
         },
       ],
     },
