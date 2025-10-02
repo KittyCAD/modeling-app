@@ -6,7 +6,7 @@ import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { KCL_DEFAULT_INSTANCES } from '@src/lib/constants'
+import { KCL_DEFAULT_INSTANCES, KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
@@ -2420,67 +2420,132 @@ extrude001 = extrude(sketch001, length = 30)
   |> close()
 extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
-  |> circle(center = [-11.34, 10.0], radius = 8.69)
+  |> circle(center = [-11.34, 10.0], radius = 8.69)`
+    const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360deg, axis = rectangleSegmentA001)`
 
-`
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 800 })
     await homePage.goToModelingScene()
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
-    // select line of code
-    const codeToSelection = `center = [-11.34, 10.0]`
-    // revolve
-    await editor.scrollToText(codeToSelection)
-    await page.getByText(codeToSelection).click()
-    await toolbar.revolveButton.click()
-    await cmdBar.progressCmdBar()
-    await page.getByText('Edge', { exact: true }).click()
-    const lineCodeToSelection = `angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)`
-    await editor.selectText(lineCodeToSelection)
-    await cmdBar.progressCmdBar()
-    await cmdBar.progressCmdBar()
-    await cmdBar.progressCmdBar()
+    await test.step('Add revolve feature via point-and-click', async () => {
+      // select line of code
+      const codeToSelection = `center = [-11.34, 10.0]`
+      // revolve
+      await editor.scrollToText(codeToSelection)
+      await page.getByText(codeToSelection).click()
+      await toolbar.revolveButton.click()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'sketches',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '',
+          AxisOrEdge: '',
+          Angle: '',
+        },
+        highlightedHeaderArg: 'Profiles',
+        stage: 'arguments',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'axisOrEdge',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '1 profile',
+          AxisOrEdge: '',
+          Angle: '',
+        },
+        highlightedHeaderArg: 'axisOrEdge',
+        stage: 'arguments',
+      })
+      await cmdBar.selectOption({ name: 'Edge' }).click()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'edge',
+        currentArgValue: '',
+        headerArguments: {
+          Profiles: '1 profile',
+          Angle: '',
+          AxisOrEdge: 'Edge',
+          Edge: '',
+        },
+        highlightedHeaderArg: 'edge',
+        stage: 'arguments',
+      })
+      const lineCodeToSelection = `angledLine(angle = 0deg, length = 202.6, tag = $rectangleSegmentA001)`
+      await editor.selectText(lineCodeToSelection)
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'angle',
+        currentArgValue: '360deg',
+        headerArguments: {
+          Profiles: '1 profile',
+          Angle: '',
+          AxisOrEdge: 'Edge',
+          Edge: '1 segment',
+        },
+        highlightedHeaderArg: 'angle',
+        stage: 'arguments',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        headerArguments: {
+          Profiles: '1 profile',
+          Angle: '360deg',
+          AxisOrEdge: 'Edge',
+          Edge: '1 segment',
+        },
+        stage: 'review',
+      })
+      await cmdBar.submit()
 
-    const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360deg, axis = rectangleSegmentA001)`
-    await editor.expectEditor.toContain(newCodeToFind)
+      await editor.expectEditor.toContain(newCodeToFind)
+    })
 
-    // Edit flow
-    const newAngle = '180deg'
-    await toolbar.openPane('feature-tree')
-    const operationButton = await toolbar.getFeatureTreeOperation('Revolve', 0)
-    await operationButton.dblclick({ button: 'left' })
-    await cmdBar.expectState({
-      commandName: 'Revolve',
-      currentArgKey: 'angle',
-      currentArgValue: '360deg',
-      headerArguments: {
-        Angle: '360deg',
-      },
-      highlightedHeaderArg: 'angle',
-      stage: 'arguments',
+    await test.step('Edit revolve feature via feature tree selection', async () => {
+      const newAngle = '180deg'
+      await toolbar.openPane('feature-tree')
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'Revolve',
+        0
+      )
+      await operationButton.dblclick({ button: 'left' })
+      await cmdBar.expectState({
+        commandName: 'Revolve',
+        currentArgKey: 'angle',
+        currentArgValue: '360deg',
+        headerArguments: {
+          Angle: '360deg',
+        },
+        highlightedHeaderArg: 'angle',
+        stage: 'arguments',
+      })
+      await page.keyboard.insertText(newAngle)
+      await cmdBar.variableCheckbox.click()
+      await expect(page.getByPlaceholder('Variable name')).toHaveValue(
+        'angle001'
+      )
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Angle: newAngle,
+        },
+        commandName: 'Revolve',
+      })
+      await cmdBar.progressCmdBar()
+      await toolbar.closePane('feature-tree')
+      await editor.expectEditor.toContain('angle001 = ' + newAngle)
+      await editor.expectEditor.toContain(
+        newCodeToFind.replace('angle = 360deg', 'angle = angle001')
+      )
     })
-    await page.keyboard.insertText(newAngle)
-    await cmdBar.variableCheckbox.click()
-    await expect(page.getByPlaceholder('Variable name')).toHaveValue('angle001')
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'review',
-      headerArguments: {
-        Angle: newAngle,
-      },
-      commandName: 'Revolve',
-    })
-    await cmdBar.progressCmdBar()
-    await toolbar.closePane('feature-tree')
-    await editor.expectEditor.toContain('angle001 = ' + newAngle)
-    await editor.expectEditor.toContain(
-      newCodeToFind.replace('angle = 360deg', 'angle = angle001')
-    )
-    expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
   })
 
   test(`Appearance point-and-click`, async ({
@@ -3103,6 +3168,350 @@ solid001 = extrude(sketch001, length = 5)`
       await page.keyboard.press('Delete')
       await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain('patternCircular3d(')
+    })
+  })
+
+  test('Pattern Linear 3D point-and-click', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> circle(center = [0, 0], radius = 2)
+solid001 = extrude(sketch001, length = 5)`
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      // await toolbar.closePane('code')
+    })
+
+    await test.step('Add Pattern Linear 3D to the scene', async () => {
+      await test.step('Open Pattern Linear 3D command from toolbar', async () => {
+        await page
+          .getByRole('button', { name: 'caret down pattern: open menu' })
+          .click()
+        await expect(
+          page.getByTestId('dropdown-pattern-linear-3d')
+        ).toBeVisible()
+        await page.getByTestId('dropdown-pattern-linear-3d').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'Pattern Linear 3D',
+          currentArgKey: 'solids',
+          currentArgValue: '',
+          headerArguments: {
+            Solids: '',
+            Instances: '',
+            Distance: '',
+            Axis: '',
+          },
+          highlightedHeaderArg: 'solids',
+        })
+      })
+
+      await test.step('Select solid and configure parameters', async () => {
+        await test.step('Select solid', async () => {
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'solids',
+            currentArgValue: '',
+            headerArguments: {
+              Solids: '',
+              Instances: '',
+              Distance: '',
+              Axis: '',
+            },
+            highlightedHeaderArg: 'solids',
+          })
+          await editor.selectText('extrude(sketch001, length = 5)')
+        })
+
+        await test.step('Configure instances', async () => {
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'instances',
+            currentArgValue: KCL_DEFAULT_INSTANCES,
+            headerArguments: {
+              Solids: '1 sweep',
+              Instances: '',
+              Distance: '',
+              Axis: '',
+            },
+            highlightedHeaderArg: 'instances',
+          })
+          // Update instances from DEFAULT to 6
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('6')
+        })
+
+        await test.step('Configure distance', async () => {
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'distance',
+            currentArgValue: KCL_DEFAULT_LENGTH,
+            headerArguments: {
+              Solids: '1 sweep',
+              Instances: '6',
+              Distance: '',
+              Axis: '',
+            },
+            highlightedHeaderArg: 'distance',
+          })
+          // Update distance from KCL_DEFAULT_LENGTH to 8
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('8')
+        })
+
+        await test.step('Configure axis', async () => {
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'axis',
+            currentArgValue: '',
+            headerArguments: {
+              Solids: '1 sweep',
+              Instances: '6',
+              Distance: '8',
+              Axis: '',
+            },
+            highlightedHeaderArg: 'axis',
+          })
+          // Select Y-axis and auto-progress
+          await cmdBar.selectOption({ name: 'Y-axis' }).click()
+        })
+
+        await test.step('Configure use original', async () => {
+          await cmdBar.clickOptionalArgument('useOriginal')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'useOriginal',
+            currentArgValue: '',
+            headerArguments: {
+              Solids: '1 sweep',
+              Instances: '6',
+              Distance: '8',
+              Axis: 'Y',
+              UseOriginal: '',
+            },
+            highlightedHeaderArg: 'useOriginal',
+          })
+          // Select On option and auto-progress
+          await cmdBar.selectOption({ name: 'On' }).click()
+          // Review changes to use original
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'Pattern Linear 3D',
+            headerArguments: {
+              Solids: '1 sweep',
+              Instances: '6',
+              Distance: '8',
+              Axis: 'Y',
+              UseOriginal: '', // True value shows as empty string in header
+            },
+          })
+        })
+
+        await test.step('Review basic parameters', async () => {
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'Pattern Linear 3D',
+            headerArguments: {
+              Solids: '1 sweep',
+              Instances: '6',
+              Distance: '8',
+              Axis: 'Y',
+              UseOriginal: '',
+            },
+          })
+        })
+      })
+
+      await test.step('Submit and verify all parameters', async () => {
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain('patternLinear3d(')
+        await editor.expectEditor.toContain('instances = 6')
+        await editor.expectEditor.toContain('distance = 8')
+        await editor.expectEditor.toContain('axis = Y')
+        await editor.expectEditor.toContain('useOriginal = true')
+      })
+    })
+
+    await test.step('Edit Pattern Linear 3D', async () => {
+      await test.step('Open edit mode from feature tree', async () => {
+        await toolbar.closePane('code')
+        await toolbar.openPane('feature-tree')
+        const patternOperation = await toolbar.getFeatureTreeOperation(
+          'Linear Pattern',
+          0
+        )
+        await patternOperation.dblclick()
+        // Should open the command bar in edit mode
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'Pattern Linear 3D',
+          currentArgKey: 'axis',
+          currentArgValue: '',
+          headerArguments: {
+            Instances: '6',
+            Distance: '8',
+            Axis: 'Y',
+            UseOriginal: '',
+          },
+          highlightedHeaderArg: 'axis',
+        })
+      })
+
+      await test.step('Edit parameters', async () => {
+        await test.step('Edit axis parameter', async () => {
+          // Select Z-axis and auto-progress
+          await cmdBar.selectOption({ name: 'Z-axis' }).click()
+          // Review changes to axis
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'Pattern Linear 3D',
+            headerArguments: {
+              Instances: '6',
+              Distance: '8',
+              Axis: 'Z',
+              UseOriginal: '',
+            },
+          })
+        })
+
+        await test.step('Edit instances parameter', async () => {
+          await page.getByRole('button', { name: 'Instances' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'instances',
+            currentArgValue: '6',
+            headerArguments: {
+              Instances: '6',
+              Distance: '8',
+              Axis: 'Z',
+              UseOriginal: '',
+            },
+            highlightedHeaderArg: 'instances',
+          })
+          // Update instances from 6 to 4
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('4')
+          await cmdBar.progressCmdBar()
+          // Review changes to instances
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'Pattern Linear 3D',
+            headerArguments: {
+              Instances: '4',
+              Distance: '8',
+              Axis: 'Z',
+              UseOriginal: '',
+            },
+          })
+        })
+
+        await test.step('Edit distance parameter', async () => {
+          await page.getByRole('button', { name: 'Distance' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'distance',
+            currentArgValue: '8',
+            headerArguments: {
+              Instances: '4',
+              Distance: '8',
+              Axis: 'Z',
+              UseOriginal: '',
+            },
+            highlightedHeaderArg: 'distance',
+          })
+          // Update distance from 8 to 12
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('12')
+          await cmdBar.progressCmdBar()
+          // Review changes to distance
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'Pattern Linear 3D',
+            headerArguments: {
+              Instances: '4',
+              Distance: '12',
+              Axis: 'Z',
+              UseOriginal: '',
+            },
+          })
+        })
+
+        await test.step('Edit use original parameter', async () => {
+          await page.getByRole('button', { name: 'UseOriginal' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'useOriginal',
+            currentArgValue: '',
+            headerArguments: {
+              Instances: '4',
+              Distance: '12',
+              Axis: 'Z',
+              UseOriginal: '',
+            },
+            highlightedHeaderArg: 'useOriginal',
+          })
+          // Update use original from On to Off
+          await cmdBar.selectOption({ name: 'Off' }).click()
+          // Review changes to use original
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'Pattern Linear 3D',
+            headerArguments: {
+              Instances: '4',
+              Distance: '12',
+              Axis: 'Z',
+              // UseOriginal with False value appears as a button in UI, not in header
+            },
+          })
+        })
+      })
+
+      await test.step('Submit and verify edited parameters', async () => {
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain('patternLinear3d(')
+        await editor.expectEditor.toContain('instances = 4')
+        await editor.expectEditor.toContain('distance = 12')
+        await editor.expectEditor.toContain('axis = Z')
+        await editor.expectEditor.toContain('useOriginal = false')
+      })
+    })
+
+    await test.step('Delete Pattern Linear 3D', async () => {
+      await toolbar.closePane('code')
+      await toolbar.openPane('feature-tree')
+
+      const patternOperation = await toolbar.getFeatureTreeOperation(
+        'Linear Pattern',
+        0
+      )
+      await patternOperation.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+
+      await scene.settled(cmdBar)
+      await toolbar.openPane('code')
+      await toolbar.closePane('feature-tree')
+      await editor.expectEditor.not.toContain('patternLinear3d(')
     })
   })
 })

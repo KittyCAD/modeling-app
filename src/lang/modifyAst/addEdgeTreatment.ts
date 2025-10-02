@@ -27,7 +27,6 @@ import {
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { getSweepArtifactFromSelection } from '@src/lang/std/artifactGraph'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import {
   addTagForSketchOnFace,
   sketchLineHelperMapKw,
@@ -44,8 +43,10 @@ import {
   type VariableDeclarator,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { Selection, Selections } from '@src/lib/selections'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import { type EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 
 // Edge Treatment Types
 export enum EdgeTreatmentType {
@@ -70,7 +71,7 @@ export async function modifyAstWithEdgeTreatmentAndTag(
   parameters: EdgeTreatmentParameters,
   dependencies: {
     kclManager: KclManager
-    engineCommandManager: EngineCommandManager
+    engineCommandManager: ConnectionManager
     editorManager: EditorManager
     codeManager: CodeManager
   }
@@ -279,7 +280,8 @@ export function getPathToExtrudeForSegmentSelection(
 
 export function mutateAstWithTagForSketchSegment(
   astClone: Node<Program>,
-  pathToSegmentNode: PathToNode
+  pathToSegmentNode: PathToNode,
+  edgeCutMeta: EdgeCutInfo | null = null
 ): { modifiedAst: Node<Program>; tag: string } | Error {
   const segmentNode = getNodeFromPath<CallExpressionKw>(
     astClone,
@@ -291,9 +293,12 @@ export function mutateAstWithTagForSketchSegment(
   // Check whether selection is a valid segment
   if (
     !segmentNode.node.callee ||
-    !(segmentNode.node.callee.name.name in sketchLineHelperMapKw)
+    !(
+      segmentNode.node.callee.name.name in sketchLineHelperMapKw ||
+      segmentNode.node.callee.name.name === 'chamfer'
+    )
   ) {
-    return new Error('Selection is not a sketch segment')
+    return new Error('Selection is not a sketch segment or chamfer')
   }
 
   // Add tag to the sketch segment or use existing tag
@@ -304,7 +309,7 @@ export function mutateAstWithTagForSketchSegment(
       node: astClone,
     },
     segmentNode.node.callee.name.name,
-    null
+    edgeCutMeta
   )
   if (err(taggedSegment)) return taggedSegment
   const { tag } = taggedSegment
