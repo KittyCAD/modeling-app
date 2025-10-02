@@ -1,8 +1,4 @@
-import type {
-  Direction,
-  Layout,
-  Side,
-} from '@src/lib/layout/types'
+import type { Direction, Layout, Side } from '@src/lib/layout/types'
 import type React from 'react'
 import { capitaliseFC } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
