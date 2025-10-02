@@ -40,8 +40,7 @@ import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
 import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
-import { basicLayout } from './lib/layout/basicLayout'
-import { LayoutNode } from './lib/layout/Layout'
+import { LayoutRoot } from '@src/lib/layout/Layout'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -150,7 +149,7 @@ const router = createRouter([
       {
         path: '/layout',
         errorElement: <ErrorPage />,
-        element: <LayoutNode {...basicLayout} />,
+        element: <LayoutRoot />,
       },
     ],
   },

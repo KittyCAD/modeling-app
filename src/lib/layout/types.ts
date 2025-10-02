@@ -1,11 +1,12 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
-import type { ReactNode } from 'react'
+import type { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 
 type BasicArea = {
   id: string
   label: string
 }
 type WithChildren = { children: Layout[] }
+export type Direction = 'horizontal' | 'vertical'
 export type Orientation = 'inline' | 'block'
 export type StartEnd = 'start' | 'end'
 export type Side = `${Orientation}-${StartEnd}`
@@ -13,30 +14,31 @@ type WithOrientation = { orientation: Orientation }
 type WithSide = {
   side: Side
 }
+type WithSizes = { sizes: number[] }
 
-type SplitArea = BasicArea &
+type SplitsArea = BasicArea &
   WithChildren &
+  WithSizes &
   WithOrientation & {
     type: 'splits'
-    /** sizes.length must equal children.length */
-    sizes: number[]
   }
-type TabArea = BasicArea &
-  WithChildren & {
+type TabsArea = BasicArea &
+  WithChildren &
+  WithSide & {
     type: 'tabs'
     activeIndex: number
   }
-type ToolbarArea = BasicArea &
-  WithChildren &
+type PanesArea = BasicArea &
+  WithSizes &
   WithSide & {
-    type: 'toolbar'
+    type: 'panes'
     activeIndices: number[]
     children: (Layout & {
       icon: CustomIconName
     })[]
   }
-type LeafArea = BasicArea & {
+type SimpleArea = BasicArea & {
   type: 'simple'
-  component: ReactNode
+  areaType: keyof typeof areaTypeRegistry
 }
-export type Layout = LeafArea | SplitArea | TabArea | ToolbarArea
+export type Layout = SimpleArea | SplitsArea | TabsArea | PanesArea
