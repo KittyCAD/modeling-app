@@ -691,8 +691,14 @@ impl Stack {
             .map(|(k, _)| k)
     }
 
-    /// Iterate over all key/value pairs in the specified environment which satisfy the provided
-    /// predicate. `env` must either be read-only or owned by `self`.
+    /// Iterate over all key/value pairs in the current environment. `env` must
+    /// either be read-only or owned by `self`.
+    pub fn find_all_in_current_env(&self) -> impl Iterator<Item = (&String, &KclValue)> {
+        self.find_all_in_env(self.current_env)
+    }
+
+    /// Iterate over all key/value pairs in the specified environment. `env`
+    /// must either be read-only or owned by `self`.
     pub fn find_all_in_env(&self, env: EnvironmentRef) -> impl Iterator<Item = (&String, &KclValue)> {
         self.memory.find_all_in_env(env, |_| true, self.id)
     }
