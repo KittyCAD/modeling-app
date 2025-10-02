@@ -41,7 +41,7 @@ import type {
   PathToNode,
   Program,
 } from '@src/lang/wasm'
-import type { Selection } from '@src/lib/selections'
+import type { Selection } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import { capitaliseFC } from '@src/lib/utils'
 

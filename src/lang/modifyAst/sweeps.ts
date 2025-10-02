@@ -35,8 +35,8 @@ import type {
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import type { Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export function addExtrude({
   ast,

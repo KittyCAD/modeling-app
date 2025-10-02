@@ -1,10 +1,5 @@
 import { useEffect, useState } from 'react'
-
-import type {
-  ConnectingType,
-  EngineConnectionState,
-  ErrorType,
-} from '@src/lang/std/engineConnection'
+import { engineCommandManager } from '@src/lib/singletons'
 import {
   ConnectingTypeGroup,
   DisconnectingType,
@@ -12,8 +7,12 @@ import {
   EngineConnectionEvents,
   EngineConnectionStateType,
   initialConnectingTypeGroupState,
-} from '@src/lang/std/engineConnection'
-import { engineCommandManager } from '@src/lib/singletons'
+} from '@src/network/utils'
+import type {
+  ConnectingType,
+  EngineConnectionState,
+  IErrorType,
+} from '@src/network/utils'
 
 export enum NetworkHealthState {
   Ok,
@@ -29,7 +28,7 @@ export interface NetworkStatus {
   internetConnected: boolean
   steps: typeof initialConnectingTypeGroupState
   issues: Record<ConnectingTypeGroup, boolean | undefined>
-  error: ErrorType | undefined
+  error: IErrorType | undefined
   setHasCopied: (b: boolean) => void
   hasCopied: boolean
   ping: undefined | number
@@ -52,7 +51,7 @@ export function useNetworkStatus() {
   const [pingEMA, setPingEMA] = useState<undefined | number>(undefined)
   const [hasCopied, setHasCopied] = useState<boolean>(false)
 
-  const [error, setError] = useState<ErrorType | undefined>(undefined)
+  const [error, setError] = useState<IErrorType | undefined>(undefined)
 
   const hasIssue = (i: [ConnectingType, boolean | undefined]) =>
     i[1] === undefined ? i[1] : !i[1]
@@ -176,7 +175,6 @@ export function useNetworkStatus() {
       setImmediateState(engineConnectionState)
       setSteps((steps) => {
         let nextSteps = structuredClone(steps)
-
         if (
           engineConnectionState.type === EngineConnectionStateType.Connecting
         ) {
@@ -230,18 +228,15 @@ export function useNetworkStatus() {
       })
     }
 
-    const onEngineAvailable = ({ detail: engineConnection }: CustomEvent) => {
-      engineConnection.addEventListener(
+    const onEngineAvailable = ({ detail: connection }: CustomEvent) => {
+      connection.addEventListener(
         EngineConnectionEvents.PingPongChanged,
         onPingPongChange as EventListener
       )
-      engineConnection.addEventListener(
+      connection.addEventListener(
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChange as EventListener
       )
-
-      // Tell EngineConnection to start firing events.
-      window.dispatchEvent(new CustomEvent('use-network-status-ready', {}))
     }
 
     engineCommandManager.addEventListener(
@@ -257,11 +252,11 @@ export function useNetworkStatus() {
 
       // When the component is unmounted these should be assigned, but it's possible
       // the component mounts and unmounts before engine is available.
-      engineCommandManager.engineConnection?.removeEventListener(
+      engineCommandManager.connection?.removeEventListener(
         EngineConnectionEvents.PingPongChanged,
         onPingPongChange as EventListener
       )
-      engineCommandManager.engineConnection?.removeEventListener(
+      engineCommandManager.connection?.removeEventListener(
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChange as EventListener
       )

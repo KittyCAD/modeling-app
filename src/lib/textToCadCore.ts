@@ -101,7 +101,10 @@ export async function textToCadMlPromptsBelongingToConversation(
     })
     promptsPagers.set(key, pager)
   }
-  const pager = promptsPagers.get(key) as PromptsPager
+  const pager = promptsPagers.get(key)
+  if (!pager) {
+    return new Error('pager is undefined')
+  }
   if (!pager.hasNext() && args.pageToken) {
     pager.reset()
   }

@@ -58,6 +58,21 @@ class APIReporter implements Reporter {
       return
     }
 
+    const logs = result.attachments.find((a) => {
+      return a.name === 'logs'
+    })
+    let logsAsString = ''
+    /**
+     * gotcha: this is not actually a string for some unknown reason
+     * testInfo.attachments.logs will have body be body: <Buffer 5b 0a 20 20 ...
+     * even if I set the contentType to text/plain which is the default
+     */
+    if (logs && Buffer.isBuffer(logs.body)) {
+      const byteBuffer = Buffer.from(logs.body)
+      const stringContent = JSON.parse(byteBuffer.toString())
+      logsAsString = stringContent
+    }
+
     const payload = {
       // Required information
       project: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`,
@@ -88,6 +103,7 @@ class APIReporter implements Reporter {
       GITHUB_SHA: process.env.GITHUB_SHA || null,
       GITHUB_WORKFLOW: process.env.GITHUB_WORKFLOW || null,
       RUNNER_ARCH: process.env.RUNNER_ARCH || null,
+      logs: logsAsString,
     }
 
     const request = (async () => {

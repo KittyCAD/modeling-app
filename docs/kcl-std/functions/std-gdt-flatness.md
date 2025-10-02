@@ -15,10 +15,10 @@ gdt::flatness(
   tolerance: number(Length),
   precision?: number(_),
   framePosition?: Point2d,
-  inPlane?: Plane,
+  framePlane?: Plane,
   fontPointSize?: number(_),
   fontScale?: number(_),
-)
+): [GdtAnnotation; 1+]
 ```
 
 
@@ -31,9 +31,13 @@ gdt::flatness(
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The amount of deviation from a perfect plane that is acceptable. | Yes |
 | `precision` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of decimal places to display. The default is `3`. Must be greater than or equal to `0`. | No |
 | `framePosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`. | No |
-| `inPlane` | [`Plane`](/docs/kcl-std/types/std-types-Plane) | The plane in which to display the annotation. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The annotation may be displayed in a plane parallel to the given plane. | No |
+| `framePlane` | [`Plane`](/docs/kcl-std/types/std-types-Plane) | The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane. | No |
 | `fontPointSize` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The font point size to use for the annotation text rendering. The default is `36`. | No |
 | `fontScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`. | No |
+
+### Returns
+
+[`[GdtAnnotation; 1+]`](/docs/kcl-std/types/std-types-GdtAnnotation)
 
 
 ### Examples
@@ -82,7 +86,7 @@ gdt::flatness(
   faces = [face1],
   tolerance = 0.02mm,
   framePosition = [10mm, 20mm],
-  inPlane = XZ,
+  framePlane = XZ,
 )
 
 ```
@@ -116,7 +120,7 @@ gdt::flatness(
   faces = [face1],
   tolerance = 0.02mm,
   framePosition = [10mm, 20mm],
-  inPlane = XZ,
+  framePlane = XZ,
 )
 
 ```

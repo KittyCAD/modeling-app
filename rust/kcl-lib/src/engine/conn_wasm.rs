@@ -17,7 +17,7 @@ use crate::{
     execution::{DefaultPlanes, IdGenerator},
 };
 
-#[wasm_bindgen(module = "/../../src/lang/std/engineConnection.ts")]
+#[wasm_bindgen(module = "/../../src/network/connectionManager.ts")]
 extern "C" {
     #[derive(Debug, Clone)]
     pub type EngineCommandManager;

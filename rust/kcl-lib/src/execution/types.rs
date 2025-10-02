@@ -405,6 +405,7 @@ pub enum PrimitiveType {
     TaggedEdge,
     TaggedFace,
     TagDecl,
+    GdtAnnotation,
     Sketch,
     Solid,
     Plane,
@@ -426,6 +427,7 @@ impl PrimitiveType {
             PrimitiveType::Number(_) => "numbers".to_owned(),
             PrimitiveType::String => "strings".to_owned(),
             PrimitiveType::Boolean => "bools".to_owned(),
+            PrimitiveType::GdtAnnotation => "GD&T Annotations".to_owned(),
             PrimitiveType::Sketch => "Sketches".to_owned(),
             PrimitiveType::Solid => "Solids".to_owned(),
             PrimitiveType::Plane => "Planes".to_owned(),
@@ -467,6 +469,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::TagDecl => write!(f, "tag declarator"),
             PrimitiveType::TaggedEdge => write!(f, "tagged edge"),
             PrimitiveType::TaggedFace => write!(f, "tagged face"),
+            PrimitiveType::GdtAnnotation => write!(f, "GD&T Annotation"),
             PrimitiveType::Sketch => write!(f, "Sketch"),
             PrimitiveType::Solid => write!(f, "Solid"),
             PrimitiveType::Plane => write!(f, "Plane"),
@@ -1164,6 +1167,10 @@ impl KclValue {
                 KclValue::Bool { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::GdtAnnotation => match self {
+                KclValue::GdtAnnotation { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::Sketch => match self {
                 KclValue::Sketch { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
@@ -1533,6 +1540,7 @@ impl KclValue {
                     .collect::<Option<Vec<_>>>()?;
                 Some(RuntimeType::Object(properties, *constrainable))
             }
+            KclValue::GdtAnnotation { .. } => Some(RuntimeType::Primitive(PrimitiveType::GdtAnnotation)),
             KclValue::Plane { .. } => Some(RuntimeType::Primitive(PrimitiveType::Plane)),
             KclValue::Sketch { .. } => Some(RuntimeType::Primitive(PrimitiveType::Sketch)),
             KclValue::Solid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Solid)),

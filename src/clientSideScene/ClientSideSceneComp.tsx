@@ -43,6 +43,10 @@ import { commandBarActor } from '@src/lib/singletons'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { throttle, toSync } from '@src/lib/utils'
 import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
+import {
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -590,7 +594,9 @@ const ConstraintSymbol = ({
                 shallowPath,
                 argPosition,
                 kclManager.ast,
-                kclManager.variables
+                kclManager.variables,
+                removeSingleConstraint,
+                transformAstSketchLines
               )
 
               if (!transform) return

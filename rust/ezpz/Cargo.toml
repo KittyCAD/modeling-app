@@ -10,7 +10,7 @@ indexmap.workspace = true
 kittycad-modeling-cmds = { workspace = true }
 libm = "0.2.15"
 newton_faer = { git = "https://github.com/adamchalmers/newton-faer", branch = "achalmers/fallible" }
-thiserror = "2.0.16"
+thiserror = "2.0.17"
 
 [dev-dependencies]
 criterion = "0.7.0"

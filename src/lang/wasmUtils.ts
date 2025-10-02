@@ -2,6 +2,7 @@ import {
   import_file_extensions,
   relevant_file_extensions,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import { processEnv } from '@src/env'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import { init, reloadModule } from '@src/lib/wasm_lib_wrapper'
 
@@ -24,6 +25,9 @@ export const wasmUrl = () => {
   return fullUrl
 }
 
+export const GLOBAL_MESSAGE_FOR_VITEST =
+  'process.env.VITEST is running, a test required this. Error is being caught and ignored.'
+
 // Initialise the wasm module.
 const initialise = async () => {
   try {
@@ -33,6 +37,10 @@ const initialise = async () => {
     const buffer = await input.arrayBuffer()
     return await init({ module_or_path: buffer })
   } catch (e) {
+    if (processEnv()?.VITEST) {
+      console.log(GLOBAL_MESSAGE_FOR_VITEST)
+      return Promise.resolve(GLOBAL_MESSAGE_FOR_VITEST)
+    }
     console.log('Error initialising WASM', e)
     return Promise.reject(e)
   }

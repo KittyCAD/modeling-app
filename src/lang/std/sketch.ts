@@ -46,10 +46,6 @@ import {
 import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import {
-  isLiteralArrayOrStatic,
-  isNotLiteralArrayOrStatic,
-} from '@src/lang/std/sketchcombos'
 import type {
   AddTagInfo,
   ArrayItemInput,
@@ -69,6 +65,8 @@ import {
   findKwArgAny,
   findKwArgAnyIndex,
   findKwArgWithIndex,
+  isLiteralArrayOrStatic,
+  isNotLiteralArrayOrStatic,
   topLevelRange,
 } from '@src/lang/util'
 import type {
@@ -95,6 +93,7 @@ import {
 } from '@src/lib/utils'
 import { cross2d, distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
 import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
+import type { Coords2d } from '@src/lang/util'
 
 const STRAIGHT_SEGMENT_ERR = () =>
   new Error('Invalid input, expected "straight-segment"')
@@ -102,8 +101,6 @@ const ARC_SEGMENT_ERR = () => new Error('Invalid input, expected "arc-segment"')
 const CIRCLE_THREE_POINT_SEGMENT_ERR = new Error(
   'Invalid input, expected "circle-three-point-segment"'
 )
-
-export type Coords2d = [number, number]
 
 export function getCoordsFromPaths(skGroup: Sketch, index = 0): Coords2d {
   const currentPath = skGroup?.paths?.[index]

@@ -10,7 +10,7 @@ import { isArray } from '@src/lib/utils'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { FileEntry, Project } from '@src/lib/project'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { FileMeta } from '@src/lib/types'
 
 import type { Prompt } from '@src/lib/prompt'

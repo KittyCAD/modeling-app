@@ -116,7 +116,7 @@ impl FromStr for Impl {
 }
 
 pub(crate) fn settings_completion_text() -> String {
-    format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = mm, {SETTINGS_UNIT_ANGLE} = deg, {SETTINGS_VERSION} = 1.0)")
+    format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = mm, {SETTINGS_VERSION} = 1.0)")
 }
 
 pub(super) fn is_significant(attr: &&Node<Annotation>) -> bool {

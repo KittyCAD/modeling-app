@@ -2,7 +2,6 @@ import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
-import type { Selections } from '@src/lib/selections'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
@@ -10,6 +9,7 @@ import {
 } from '@src/lib/selections'
 import { kclManager } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 

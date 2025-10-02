@@ -67,6 +67,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-clone-7",
     "std-clone-8",
     "std-clone-9",
+    "std-gdt-datum-0",
     "std-gdt-flatness-0",
     "std-gdt-flatness-1",
     "std-gdt-flatness-2",

@@ -22,6 +22,17 @@ use crate::{
 
 type Point3D = kcmc::shared::Point3d<f64>;
 
+/// A GD&T annotation.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub struct GdtAnnotation {
+    /// The engine ID.
+    pub id: uuid::Uuid,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
 /// A geometry.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]

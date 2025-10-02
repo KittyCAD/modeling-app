@@ -2,7 +2,6 @@ import type { CameraDragInteractionType, CameraViewState } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { isArray } from '@src/lib/utils'
 
-import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
 import * as TWEEN from '@tweenjs/tween.js'
 import Hammer from 'hammerjs'
 import type { Camera } from 'three'
@@ -28,11 +27,6 @@ import {
   ZOOM_MAGIC_NUMBER,
 } from '@src/clientSideScene/sceneUtils'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
-import type {
-  EngineCommandManager,
-  Subscription,
-  UnreliableSubscription,
-} from '@src/lang/std/engineConnection'
 import type { MouseGuard } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
@@ -49,6 +43,8 @@ import {
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
 import { degToRad } from 'three/src/math/MathUtils'
+import { type ConnectionManager } from '@src/network/connectionManager'
+import type { Subscription, UnreliableSubscription } from '@src/network/utils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -113,8 +109,7 @@ class CameraRateLimiter {
 }
 
 export class CameraControls {
-  engineCommandManager: EngineCommandManager
-  engineStreamActor?: EngineStreamActor
+  engineCommandManager: ConnectionManager
   syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
@@ -293,7 +288,7 @@ export class CameraControls {
 
   constructor(
     domElement: HTMLCanvasElement,
-    engineCommandManager: EngineCommandManager,
+    engineCommandManager: ConnectionManager,
     isOrtho = false
   ) {
     this.engineCommandManager = engineCommandManager
@@ -533,13 +528,17 @@ export class CameraControls {
       if (this.syncDirection === 'engineToClient') {
         const newCmdId = uuidv4()
 
-        const videoRef = this.engineStreamActor?.getSnapshot().context.videoRef
+        // You can use raw JS to fetch the element from the DOM. We do not need to proxy a ref of a ref element on the DOM element
+        // There will be only one of these in the page.
+        const videoElement = <HTMLVideoElement>(
+          document.getElementById('video-stream')
+        )
         // Nonsense to do anything until the video stream is established.
-        if (!videoRef?.current) return
+        if (!videoElement) return
 
         const { x, y } = getNormalisedCoordinates(
           event,
-          videoRef.current,
+          videoElement,
           this.engineCommandManager.streamDimensions
         )
         this.throttledEngCmd({
@@ -1825,7 +1824,7 @@ function _getInteractionType(
  */
 
 export async function letEngineAnimateAndSyncCamAfter(
-  engineCommandManager: EngineCommandManager,
+  engineCommandManager: ConnectionManager,
   entityId: string
 ) {
   await engineCommandManager.sendSceneCommand({

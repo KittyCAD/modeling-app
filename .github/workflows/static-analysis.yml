@@ -156,4 +156,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Run codespell
-        uses: crate-ci/typos@v1.34.0
+        uses: crate-ci/typos@v1.36.3

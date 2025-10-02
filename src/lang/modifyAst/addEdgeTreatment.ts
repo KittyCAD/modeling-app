@@ -27,7 +27,6 @@ import {
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { getSweepArtifactFromSelection } from '@src/lang/std/artifactGraph'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import {
   addTagForSketchOnFace,
   sketchLineHelperMapKw,
@@ -44,8 +43,9 @@ import {
   type VariableDeclarator,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { Selection, Selections } from '@src/lib/selections'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { type EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 
 // Edge Treatment Types
@@ -71,7 +71,7 @@ export async function modifyAstWithEdgeTreatmentAndTag(
   parameters: EdgeTreatmentParameters,
   dependencies: {
     kclManager: KclManager
-    engineCommandManager: EngineCommandManager
+    engineCommandManager: ConnectionManager
     editorManager: EditorManager
     codeManager: CodeManager
   }

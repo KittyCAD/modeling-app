@@ -4,7 +4,6 @@ import type { StateFrom } from 'xstate'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
-  type Selections,
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
@@ -15,6 +14,7 @@ import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 const selectionSelector = (snapshot?: StateFrom<typeof modelingMachine>) =>
   snapshot?.context.selectionRanges

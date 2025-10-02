@@ -21,6 +21,17 @@ import {
 } from '@src/lib/singletons'
 import { err, isErr } from '@src/lib/trap'
 import type { SketchDetails } from '@src/machines/modelingSharedTypes'
+
+import { getConstraintInfoKw } from '@src/lang/std/sketch'
+import {
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
+import {
+  getEventForSegmentSelection,
+  updateExtraSegments,
+} from '@src/lib/selections'
+
 import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
 
 export async function deleteSegmentOrProfile({
@@ -47,7 +58,10 @@ export async function deleteSegmentOrProfile({
     modifiedAst,
     kclManager.variables,
     codeManager.code,
-    pathToNode
+    pathToNode,
+    getConstraintInfoKw,
+    removeSingleConstraint,
+    transformAstSketchLines
   )
   if (err(modifiedAst)) return Promise.reject(modifiedAst)
 
@@ -83,7 +97,9 @@ export async function deleteSegmentOrProfile({
     modifiedAst,
     sketchDetails.zAxis,
     sketchDetails.yAxis,
-    sketchDetails.origin
+    sketchDetails.origin,
+    getEventForSegmentSelection,
+    updateExtraSegments
   )
 
   // Update the machine context.sketchDetails so subsequent interactions use fresh paths

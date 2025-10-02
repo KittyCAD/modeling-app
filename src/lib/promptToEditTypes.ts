@@ -1,6 +1,6 @@
 import type { TextToCadMultiFileIterationBody } from '@kittycad/lib'
 import type { ArtifactGraph } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { FileMeta } from '@src/lib/types'
 export type KittyCadLibFile = { name: string; data: Blob }
 import type { FileEntry } from '@src/lib/project'

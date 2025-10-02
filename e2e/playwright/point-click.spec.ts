@@ -6,7 +6,7 @@ import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { KCL_DEFAULT_INSTANCES } from '@src/lib/constants'
+import { KCL_DEFAULT_INSTANCES, KCL_DEFAULT_LENGTH } from '@src/lib/constants'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
@@ -3168,6 +3168,350 @@ solid001 = extrude(sketch001, length = 5)`
       await page.keyboard.press('Delete')
       await scene.settled(cmdBar)
       await editor.expectEditor.not.toContain('patternCircular3d(')
+    })
+  })
+
+  test('Pattern Linear 3D point-and-click', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> circle(center = [0, 0], radius = 2)
+solid001 = extrude(sketch001, length = 5)`
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+      // await toolbar.closePane('code')
+    })
+
+    await test.step('Add Pattern Linear 3D to the scene', async () => {
+      await test.step('Open Pattern Linear 3D command from toolbar', async () => {
+        await page
+          .getByRole('button', { name: 'caret down pattern: open menu' })
+          .click()
+        await expect(
+          page.getByTestId('dropdown-pattern-linear-3d')
+        ).toBeVisible()
+        await page.getByTestId('dropdown-pattern-linear-3d').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'Pattern Linear 3D',
+          currentArgKey: 'solids',
+          currentArgValue: '',
+          headerArguments: {
+            Solids: '',
+            Instances: '',
+            Distance: '',
+            Axis: '',
+          },
+          highlightedHeaderArg: 'solids',
+        })
+      })
+
+      await test.step('Select solid and configure parameters', async () => {
+        await test.step('Select solid', async () => {
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'solids',
+            currentArgValue: '',
+            headerArguments: {
+              Solids: '',
+              Instances: '',
+              Distance: '',
+              Axis: '',
+            },
+            highlightedHeaderArg: 'solids',
+          })
+          await editor.selectText('extrude(sketch001, length = 5)')
+        })
+
+        await test.step('Configure instances', async () => {
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'instances',
+            currentArgValue: KCL_DEFAULT_INSTANCES,
+            headerArguments: {
+              Solids: '1 sweep',
+              Instances: '',
+              Distance: '',
+              Axis: '',
+            },
+            highlightedHeaderArg: 'instances',
+          })
+          // Update instances from DEFAULT to 6
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('6')
+        })
+
+        await test.step('Configure distance', async () => {
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'distance',
+            currentArgValue: KCL_DEFAULT_LENGTH,
+            headerArguments: {
+              Solids: '1 sweep',
+              Instances: '6',
+              Distance: '',
+              Axis: '',
+            },
+            highlightedHeaderArg: 'distance',
+          })
+          // Update distance from KCL_DEFAULT_LENGTH to 8
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('8')
+        })
+
+        await test.step('Configure axis', async () => {
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'axis',
+            currentArgValue: '',
+            headerArguments: {
+              Solids: '1 sweep',
+              Instances: '6',
+              Distance: '8',
+              Axis: '',
+            },
+            highlightedHeaderArg: 'axis',
+          })
+          // Select Y-axis and auto-progress
+          await cmdBar.selectOption({ name: 'Y-axis' }).click()
+        })
+
+        await test.step('Configure use original', async () => {
+          await cmdBar.clickOptionalArgument('useOriginal')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'useOriginal',
+            currentArgValue: '',
+            headerArguments: {
+              Solids: '1 sweep',
+              Instances: '6',
+              Distance: '8',
+              Axis: 'Y',
+              UseOriginal: '',
+            },
+            highlightedHeaderArg: 'useOriginal',
+          })
+          // Select On option and auto-progress
+          await cmdBar.selectOption({ name: 'On' }).click()
+          // Review changes to use original
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'Pattern Linear 3D',
+            headerArguments: {
+              Solids: '1 sweep',
+              Instances: '6',
+              Distance: '8',
+              Axis: 'Y',
+              UseOriginal: '', // True value shows as empty string in header
+            },
+          })
+        })
+
+        await test.step('Review basic parameters', async () => {
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'Pattern Linear 3D',
+            headerArguments: {
+              Solids: '1 sweep',
+              Instances: '6',
+              Distance: '8',
+              Axis: 'Y',
+              UseOriginal: '',
+            },
+          })
+        })
+      })
+
+      await test.step('Submit and verify all parameters', async () => {
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain('patternLinear3d(')
+        await editor.expectEditor.toContain('instances = 6')
+        await editor.expectEditor.toContain('distance = 8')
+        await editor.expectEditor.toContain('axis = Y')
+        await editor.expectEditor.toContain('useOriginal = true')
+      })
+    })
+
+    await test.step('Edit Pattern Linear 3D', async () => {
+      await test.step('Open edit mode from feature tree', async () => {
+        await toolbar.closePane('code')
+        await toolbar.openPane('feature-tree')
+        const patternOperation = await toolbar.getFeatureTreeOperation(
+          'Linear Pattern',
+          0
+        )
+        await patternOperation.dblclick()
+        // Should open the command bar in edit mode
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'Pattern Linear 3D',
+          currentArgKey: 'axis',
+          currentArgValue: '',
+          headerArguments: {
+            Instances: '6',
+            Distance: '8',
+            Axis: 'Y',
+            UseOriginal: '',
+          },
+          highlightedHeaderArg: 'axis',
+        })
+      })
+
+      await test.step('Edit parameters', async () => {
+        await test.step('Edit axis parameter', async () => {
+          // Select Z-axis and auto-progress
+          await cmdBar.selectOption({ name: 'Z-axis' }).click()
+          // Review changes to axis
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'Pattern Linear 3D',
+            headerArguments: {
+              Instances: '6',
+              Distance: '8',
+              Axis: 'Z',
+              UseOriginal: '',
+            },
+          })
+        })
+
+        await test.step('Edit instances parameter', async () => {
+          await page.getByRole('button', { name: 'Instances' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'instances',
+            currentArgValue: '6',
+            headerArguments: {
+              Instances: '6',
+              Distance: '8',
+              Axis: 'Z',
+              UseOriginal: '',
+            },
+            highlightedHeaderArg: 'instances',
+          })
+          // Update instances from 6 to 4
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('4')
+          await cmdBar.progressCmdBar()
+          // Review changes to instances
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'Pattern Linear 3D',
+            headerArguments: {
+              Instances: '4',
+              Distance: '8',
+              Axis: 'Z',
+              UseOriginal: '',
+            },
+          })
+        })
+
+        await test.step('Edit distance parameter', async () => {
+          await page.getByRole('button', { name: 'Distance' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'distance',
+            currentArgValue: '8',
+            headerArguments: {
+              Instances: '4',
+              Distance: '8',
+              Axis: 'Z',
+              UseOriginal: '',
+            },
+            highlightedHeaderArg: 'distance',
+          })
+          // Update distance from 8 to 12
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('12')
+          await cmdBar.progressCmdBar()
+          // Review changes to distance
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'Pattern Linear 3D',
+            headerArguments: {
+              Instances: '4',
+              Distance: '12',
+              Axis: 'Z',
+              UseOriginal: '',
+            },
+          })
+        })
+
+        await test.step('Edit use original parameter', async () => {
+          await page.getByRole('button', { name: 'UseOriginal' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'Pattern Linear 3D',
+            currentArgKey: 'useOriginal',
+            currentArgValue: '',
+            headerArguments: {
+              Instances: '4',
+              Distance: '12',
+              Axis: 'Z',
+              UseOriginal: '',
+            },
+            highlightedHeaderArg: 'useOriginal',
+          })
+          // Update use original from On to Off
+          await cmdBar.selectOption({ name: 'Off' }).click()
+          // Review changes to use original
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'Pattern Linear 3D',
+            headerArguments: {
+              Instances: '4',
+              Distance: '12',
+              Axis: 'Z',
+              // UseOriginal with False value appears as a button in UI, not in header
+            },
+          })
+        })
+      })
+
+      await test.step('Submit and verify edited parameters', async () => {
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain('patternLinear3d(')
+        await editor.expectEditor.toContain('instances = 4')
+        await editor.expectEditor.toContain('distance = 12')
+        await editor.expectEditor.toContain('axis = Z')
+        await editor.expectEditor.toContain('useOriginal = false')
+      })
+    })
+
+    await test.step('Delete Pattern Linear 3D', async () => {
+      await toolbar.closePane('code')
+      await toolbar.openPane('feature-tree')
+
+      const patternOperation = await toolbar.getFeatureTreeOperation(
+        'Linear Pattern',
+        0
+      )
+      await patternOperation.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+
+      await scene.settled(cmdBar)
+      await toolbar.openPane('code')
+      await toolbar.closePane('feature-tree')
+      await editor.expectEditor.not.toContain('patternLinear3d(')
     })
   })
 })

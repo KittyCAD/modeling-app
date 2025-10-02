@@ -10,14 +10,14 @@ import {
   createName,
   createVariableDeclaration,
 } from '@src/lang/create'
-import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import type { PathToNodeMap } from '@src/lang/util'
 import {
   isExprBinaryPart,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
-import type { Expr, Program } from '@src/lang/wasm'
+import { isPathToNode, type Expr, type Program } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { normaliseAngle } from '@src/lib/utils'
@@ -36,7 +36,7 @@ export async function applyConstraintLength({
   exprInsertIndex: number
 }> {
   const ast = kclManager.ast
-  const angleLength = angleLengthInfo({ selectionRanges })
+  const angleLength = angleLengthInfo({ selectionRanges, kclManager })
   if (err(angleLength)) return Promise.reject(angleLength)
   const { transforms } = angleLength
 
@@ -99,6 +99,7 @@ export async function applyConstraintAngleLength({
   const angleLength = angleLengthInfo({
     selectionRanges,
     angleOrLength,
+    kclManager,
   })
   if (err(angleLength)) return Promise.reject(angleLength)
 
@@ -190,8 +191,10 @@ export async function applyConstraintAngleLength({
     )
     _modifiedAst.body = newBody
     Object.values(pathToNodeMap).forEach((pathToNode) => {
-      const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
-      pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+      if (isPathToNode(pathToNode)) {
+        const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
+        pathToNode[index][0] = Number(pathToNode[index][0]) + 1
+      }
     })
   }
   return {

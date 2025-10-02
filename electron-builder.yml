@@ -32,11 +32,6 @@ win:
       arch:
         - x64
         - arm64
-  signtoolOptions:
-    sign: "./scripts/sign-win.js"
-    signingHashAlgorithms:
-      - sha256
-    publisherName: "ZOO CORPORATION" # needs to be exactly like on Digicert
   icon: "assets/icon.ico"
   fileAssociations:
     - ext: kcl
