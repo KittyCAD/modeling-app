@@ -1,9 +1,9 @@
-import type { Direction, Layout, Orientation } from '@src/lib/layout/types'
+import type { Direction, Layout } from '@src/lib/layout/types'
 import type { PanelGroupStorage } from 'react-resizable-panels'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Tab, Switch } from '@headlessui/react'
-import {
+import React, {
   createContext,
   type Dispatch,
   Fragment,
@@ -28,20 +28,34 @@ import Tooltip from '@src/components/Tooltip'
 interface LayoutState {
   layout: SetStateAction<Layout>
   setLayout: Dispatch<SetStateAction<Layout>>
+  areaLibrary: Record<keyof typeof areaTypeRegistry, () => React.ReactElement>
 }
 
 const LayoutStateContext = createContext<LayoutState>({
   layout: basicLayout,
   setLayout: () => {},
+  areaLibrary: areaTypeRegistry,
 })
 
 export const useLayoutState = () => useContext(LayoutStateContext)
 
-export function LayoutRoot() {
-  const [layout, setLayout] = useState<Layout>(basicLayout)
+interface LayoutRootProps {
+  areaLibrary?: LayoutState['areaLibrary']
+  initialLayout?: Layout
+}
+export function LayoutRoot(props: LayoutRootProps) {
+  const [layout, setLayout] = useState<Layout>(
+    props.initialLayout || basicLayout
+  )
 
   return (
-    <LayoutStateContext.Provider value={{ layout, setLayout }}>
+    <LayoutStateContext.Provider
+      value={{
+        layout,
+        setLayout,
+        areaLibrary: props.areaLibrary || areaTypeRegistry,
+      }}
+    >
       <LayoutNode {...layout} />
     </LayoutStateContext.Provider>
   )
@@ -52,6 +66,7 @@ export function LayoutRoot() {
  * ending in leaf nodes that contain UI components.
  */
 function LayoutNode(layout: Layout) {
+  const { areaLibrary } = useLayoutState()
   switch (layout.type) {
     case 'splits':
       return <SplitLayout {...layout} />
@@ -60,7 +75,7 @@ function LayoutNode(layout: Layout) {
     case 'panes':
       return <PaneLayout {...layout} />
     default:
-      return areaTypeRegistry[layout.areaType]
+      return areaLibrary[layout.areaType]()
   }
 }
 
