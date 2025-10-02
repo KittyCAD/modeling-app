@@ -68,8 +68,7 @@ import {
 } from '@src/routes/Onboarding/utils'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { ConnectionStream } from '@src/components/ConnectionStream'
-import { LayoutNode } from './lib/layout/Layout'
-import { basicLayout } from './lib/layout/basicLayout'
+import { LayoutRoot } from '@src/lib/layout/Layout'
 
 // CYCLIC REF
 
@@ -272,7 +271,7 @@ export function App() {
         </div>
         <ModalContainer />
         <section className="pointer-events-auto flex-1">
-          <LayoutNode {...basicLayout} />
+          <LayoutRoot />
         </section>
         {/* <CamToggle /> */}
         <StatusBar
