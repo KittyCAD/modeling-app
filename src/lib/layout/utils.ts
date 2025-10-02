@@ -1,13 +1,11 @@
 import type {
   Direction,
   Layout,
-  Orientation,
   Side,
-  StartEnd,
 } from '@src/lib/layout/types'
 import type React from 'react'
-import { capitaliseFC } from '../utils'
-import { TooltipProps } from '@src/components/Tooltip'
+import { capitaliseFC } from '@src/lib/utils'
+import type { TooltipProps } from '@src/components/Tooltip'
 
 /**
  * A split area must have the same number of sizes as children.
