@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use async_recursion::async_recursion;
+use kcl_ezpz::Constraint;
 
 use crate::{
     CompilationError, NodePath, SourceRange,
@@ -12,16 +13,16 @@ use crate::{
         fn_call::Args,
         kcl_value::{FunctionSource, TypeDef},
         memory,
-        state::ModuleState,
+        state::{ModuleState, SketchBlockState},
         types::{NumericType, PrimitiveType, RuntimeType},
     },
     fmt,
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
-        BinaryPart, BodyItem, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility, MemberExpression, Name,
-        Node, NodeRef, ObjectExpression, PipeExpression, Program, SketchBlock, SketchVar, TagDeclarator, Type,
-        UnaryExpression, UnaryOperator,
+        BinaryPart, BodyItem, CodeBlock, Expr, IfExpression, ImportPath, ImportSelector, ItemVisibility,
+        MemberExpression, Name, Node, ObjectExpression, PipeExpression, Program, SketchBlock, SketchVar, TagDeclarator,
+        Type, UnaryExpression, UnaryOperator,
     },
     std::args::TyF64,
 };
@@ -178,15 +179,18 @@ impl ExecutorContext {
 
     /// Execute an AST's program.
     #[async_recursion]
-    pub(super) async fn exec_block<'a>(
+    pub(super) async fn exec_block<'a, B>(
         &'a self,
-        program: NodeRef<'a, Program>,
+        block: &'a B,
         exec_state: &mut ExecState,
         body_type: BodyType,
-    ) -> Result<Option<KclValue>, KclError> {
+    ) -> Result<Option<KclValue>, KclError>
+    where
+        B: CodeBlock + Sync,
+    {
         let mut last_expr = None;
         // Iterate over the body of the program.
-        for statement in &program.body {
+        for statement in block.body() {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
                     if !matches!(body_type, BodyType::Root) {
@@ -528,7 +532,7 @@ impl ExecutorContext {
             // Flush the batch queue.
             exec_state
                 .flush_batch(
-                    ModelingCmdMeta::new(self, SourceRange::new(program.end, program.end, program.module_id)),
+                    ModelingCmdMeta::new(self, block.to_source_range()),
                     // True here tells the engine to flush all the end commands as well like fillets
                     // and chamfers where the engine would otherwise eat the ID of the segments.
                     true,
@@ -867,33 +871,89 @@ impl Node<AscribedExpression> {
 }
 
 impl Node<SketchBlock> {
-    pub async fn get_result(&self, _exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        if exec_state.mod_local.sketch_block.is_some() {
+            // Disallow nested sketch blocks for now.
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot execute a sketch block from within another sketch block".to_owned(),
+                vec![SourceRange::from(self)],
+            )));
+        }
+
+        let (return_result, variables) = {
+            // Don't early return until the stack frame is popped!
+            self.prep_mem(exec_state.mut_stack().snapshot(), exec_state);
+
+            // Track that we're executing a sketch block.
+            let original_value = exec_state.mod_local.sketch_block.replace(SketchBlockState::default());
+
+            let result = ctx.exec_block(&self.body, exec_state, BodyType::Block).await;
+
+            exec_state.mod_local.sketch_block = original_value;
+
+            let mut block_variables = HashMap::new();
+            for (name, value) in exec_state.stack().find_all_in_current_env() {
+                block_variables.insert(name.clone(), value.clone());
+            }
+
+            exec_state.mut_stack().pop_env();
+
+            (result, block_variables)
+        };
+
+        // Propagate error.
+        return_result?;
+
         let metadata = Metadata {
             source_range: SourceRange::from(self),
         };
-        // TODO: sketch-api: Implement sketch block execution
-        Ok(KclValue::Bool {
-            value: false,
+        Ok(KclValue::Object {
+            value: variables,
+            constrainable: Default::default(),
             meta: vec![metadata],
         })
     }
 }
 
+impl SketchBlock {
+    fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) {
+        exec_state.mut_stack().push_new_env_for_call(parent);
+    }
+}
+
 impl Node<SketchVar> {
     pub async fn get_result(&self, exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        if let Some(initial) = &self.initial {
-            Ok(KclValue::from_sketch_var_literal(initial, exec_state))
+        let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot use a sketch variable outside of a sketch block".to_owned(),
+                vec![SourceRange::from(self)],
+            )));
+        };
+        let id = sketch_block_state.next_sketch_var_id();
+        let sketch_var = if let Some(initial) = &self.initial {
+            KclValue::from_sketch_var_literal(initial, id, exec_state)
         } else {
             let metadata = Metadata {
                 source_range: SourceRange::from(self),
             };
 
-            Ok(KclValue::SketchVar {
+            KclValue::SketchVar {
+                id,
                 value: 0.0,
                 ty: NumericType::default(),
                 meta: vec![metadata],
-            })
-        }
+            }
+        };
+
+        let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot use a sketch variable outside of a sketch block".to_owned(),
+                vec![SourceRange::from(self)],
+            )));
+        };
+        sketch_block_state.sketch_vars.push(sketch_var.clone());
+
+        Ok(sketch_var)
     }
 }
 
@@ -1312,6 +1372,47 @@ impl Node<BinaryExpression> {
                 _ => unreachable!(),
             };
             return Ok(KclValue::Bool { value: raw_value, meta });
+        }
+
+        // Check if we're doing equivalence in sketch mode.
+        if self.operator == BinaryOperator::Eq
+            && let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block
+        {
+            match (&left_value, &right_value) {
+                // Same sketch variables.
+                (KclValue::SketchVar { id: left_id, .. }, KclValue::SketchVar { id: right_id, .. })
+                    if left_id == right_id =>
+                {
+                    return Ok(KclValue::Bool { value: true, meta });
+                }
+                // Different sketch variables.
+                (KclValue::SketchVar { .. }, KclValue::SketchVar { .. }) => {
+                    // TODO: sketch-api: Collapse the two sketch variables into
+                    // one constraint variable.
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "TODO: Different sketch variables".to_owned(),
+                        vec![self.into()],
+                    )));
+                }
+                // One sketch variable, one number.
+                (KclValue::SketchVar { id, .. }, KclValue::Number { value, .. })
+                | (KclValue::Number { value, .. }, KclValue::SketchVar { id, .. }) => {
+                    // TODO: sketch-api: Normalize units.
+                    let constraint = Constraint::Fixed(id.to_constraint_id(self.as_source_range())?, *value);
+                    sketch_block_state.constraints.push(constraint);
+                    return Ok(KclValue::Bool { value: true, meta });
+                }
+                _ => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "Cannot create an equivalence constraint between values of these types: {} and {}",
+                            left_value.human_friendly_type(),
+                            right_value.human_friendly_type()
+                        ),
+                        vec![self.into()],
+                    )));
+                }
+            }
         }
 
         let left = number_as_f64(&left_value, self.left.clone().into())?;
@@ -1762,7 +1863,7 @@ impl Node<IfExpression> {
             .await?
             .get_bool()?;
         if cond {
-            let block_result = ctx.exec_block(&self.then_val, exec_state, BodyType::Block).await?;
+            let block_result = ctx.exec_block(&*self.then_val, exec_state, BodyType::Block).await?;
             // Block must end in an expression, so this has to be Some.
             // Enforced by the parser.
             // See https://github.com/KittyCAD/modeling-app/issues/4015
@@ -1782,7 +1883,7 @@ impl Node<IfExpression> {
                 .await?
                 .get_bool()?;
             if cond {
-                let block_result = ctx.exec_block(&else_if.then_val, exec_state, BodyType::Block).await?;
+                let block_result = ctx.exec_block(&*else_if.then_val, exec_state, BodyType::Block).await?;
                 // Block must end in an expression, so this has to be Some.
                 // Enforced by the parser.
                 // See https://github.com/KittyCAD/modeling-app/issues/4015
@@ -1791,7 +1892,7 @@ impl Node<IfExpression> {
         }
 
         // Run the final `else` branch.
-        ctx.exec_block(&self.final_else, exec_state, BodyType::Block)
+        ctx.exec_block(&*self.final_else, exec_state, BodyType::Block)
             .await
             .map(|expr| expr.unwrap())
     }

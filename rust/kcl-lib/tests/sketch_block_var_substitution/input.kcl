@@ -1,0 +1,11 @@
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  x = var 0
+  y = var 10
+  x == 3
+  y == 22
+}
+
+assert(s.x, isEqualTo = 3)
+assert(s.y, isEqualTo = 22)
