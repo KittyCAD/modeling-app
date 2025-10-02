@@ -1079,7 +1079,7 @@ export const modelingMachine = setup({
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deleteSegmentOrProfile({
-        pathToNode: event.data,
+        pathToNodes: [event.data],
         sketchDetails,
       }).then(() => {
         return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
@@ -1089,15 +1089,17 @@ export const modelingMachine = setup({
       if (event.type !== 'Delete segments') return
       if (!sketchDetails || !event.data) return
 
-      void (async function () {
-        for (const pathToNode of event.data) {
-          await deleteSegmentOrProfile({
-            pathToNode,
-            sketchDetails,
-          })
-          await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-        }
-      })()
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      deleteSegmentOrProfile({
+        pathToNodes: event.data,
+        sketchDetails,
+      })
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
+        .catch((e) => {
+          console.log('error', e)
+        })
     },
     'Set context': assign({
       store: ({ context: { store }, event }) => {

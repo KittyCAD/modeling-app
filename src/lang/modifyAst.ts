@@ -674,7 +674,7 @@ export function deleteSegmentOrProfileFromPipeExpression(
   modifiedAst: Node<Program>,
   memVars: VariableMap,
   code: string,
-  pathToNode: PathToNode,
+  pathToNodes: PathToNode[],
   getConstraintInfoKw: typeof GetConstraintInfoKwFn,
   removeSingleConstraint: typeof RemoveSingleConstraintFn,
   transformAstSketchLines: typeof TransformAstSketchLinesFn
@@ -710,31 +710,46 @@ export function deleteSegmentOrProfileFromPipeExpression(
     _modifiedAst = transform.modifiedAst
   })
 
-  const pipeExpression = getNodeFromPath<PipeExpression | CallExpressionKw>(
-    _modifiedAst,
-    pathToNode,
-    'PipeExpression'
-  )
-  if (err(pipeExpression)) return pipeExpression
-
-  if (pipeExpression.node.type === 'CallExpressionKw') {
-    const topLevelDeleteResult = deleteTopLevelStatement(
+  for (const pathToNode of pathToNodes) {
+    const pipeExpression = getNodeFromPath<PipeExpression | CallExpressionKw>(
       _modifiedAst,
-      pathToNode
+      pathToNode,
+      'PipeExpression'
     )
-    if (topLevelDeleteResult instanceof Error) {
-      return topLevelDeleteResult
+    if (err(pipeExpression)) {
+      console.log('err', pipeExpression)
+      return pipeExpression
     }
-    return _modifiedAst
-  }
-  const pipeInPathIndex = pathToNode.findIndex(
-    ([_, desc]) => desc === 'PipeExpression'
-  )
-  const segmentIndexInPipe = pathToNode[pipeInPathIndex + 1]
-  pipeExpression.node.body.splice(segmentIndexInPipe[0] as number, 1)
 
-  // Move up to the next segment.
-  segmentIndexInPipe[0] = Math.max((segmentIndexInPipe[0] as number) - 1, 0)
+    if (pipeExpression.node.type === 'CallExpressionKw') {
+      const topLevelDeleteResult = deleteTopLevelStatement(
+        _modifiedAst,
+        pathToNode
+      )
+      if (topLevelDeleteResult instanceof Error) {
+        return topLevelDeleteResult
+      }
+    } else {
+      const pipeInPathIndex = pathToNode.findIndex(
+        ([_, desc]) => desc === 'PipeExpression'
+      )
+      const segmentIndexInPipe = pathToNode[pipeInPathIndex + 1]
+      pipeExpression.node.body.splice(segmentIndexInPipe[0] as number, 1) // Note that this mutates _modifiedAst
+      if (!pipeExpression.node.body.length) {
+        // this pipe is empty now, it should be deleted
+        const topLevelDeleteResult = deleteTopLevelStatement(
+          _modifiedAst,
+          pathToNode
+        )
+        if (topLevelDeleteResult instanceof Error) {
+          return topLevelDeleteResult
+        }
+      }
+
+      // Move up to the next segment.
+      segmentIndexInPipe[0] = Math.max((segmentIndexInPipe[0] as number) - 1, 0)
+    }
+  }
 
   return _modifiedAst
 }
