@@ -1,10 +1,12 @@
 import type { Direction, Layout, Orientation } from '@src/lib/layout/types'
+import type { PanelGroupStorage } from 'react-resizable-panels'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Tab, Switch } from '@headlessui/react'
 import {
   createContext,
   type Dispatch,
+  Fragment,
   type SetStateAction,
   useContext,
   useMemo,
@@ -75,6 +77,18 @@ function SplitLayout(layout: Layout & { type: 'splits' }) {
   )
 }
 
+const data = new Map<string, string>()
+const storage: PanelGroupStorage = {
+  getItem(name) {
+    console.log('getting', name, data)
+    return data.get(name) || null
+  },
+  setItem(name, value) {
+    console.log('setting', name, value, data)
+    data.set(name, value)
+  },
+}
+
 function SplitLayoutContents({
   layout,
   direction,
@@ -84,13 +98,18 @@ function SplitLayoutContents({
 }) {
   return (
     layout.children.length && (
-      <PanelGroup id={layout.id} direction={direction} className="bg-3">
+      <PanelGroup
+        autoSaveId={layout.id}
+        id={layout.id}
+        direction={direction}
+        className="bg-3"
+        storage={storage}
+      >
         {layout.children.map((a, i, arr) => {
           const isLastChild = i >= arr.length - 1
           return (
-            <>
+            <Fragment key={a.id}>
               <Panel
-                key={a.id}
                 id={a.id}
                 defaultSize={layout.sizes[i]}
                 className="flex bg-default"
@@ -100,7 +119,7 @@ function SplitLayoutContents({
               {!isLastChild && (
                 <ResizeHandle direction={direction} id={`handle-${a.id}`} />
               )}
-            </>
+            </Fragment>
           )
         })}
       </PanelGroup>
@@ -167,7 +186,7 @@ function PaneLayout(layout: Layout & { type: 'panes' }) {
       className={`flex-1 flex ${sideToTailwindLayoutDirection(layout.side)}`}
     >
       <ul
-        className={`flex border-solid b-3 ${sideToTailwindTabDirection(layout.side)}`}
+        className={`flex border-solid b-4 ${sideToTailwindTabDirection(layout.side)}`}
         style={{ [sideBorderWidthProp]: '1px' }}
       >
         {layout.children.map((tab, i) => {
