@@ -2674,6 +2674,7 @@ dependencies = [
  "kcl-derive-docs",
  "kcl-directory-test-macro",
  "kcl-error",
+ "kcl-ezpz",
  "kittycad",
  "kittycad-modeling-cmds",
  "lazy_static",
