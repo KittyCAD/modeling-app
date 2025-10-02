@@ -5,7 +5,7 @@ use crate::{NonLinearSystemError, datatypes::*, id::Id, solver::Layout};
 const EPSILON: f64 = 0.00000001;
 
 /// Each geometric constraint we support.
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub enum Constraint {
     /// These two points should be a given distance apart.
     Distance(DatumPoint, DatumPoint, Distance),
@@ -19,7 +19,7 @@ pub enum Constraint {
     Fixed(Id, f64),
 }
 
-#[derive(Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 pub enum AngleKind {
     Parallel,
     Perpendicular,
