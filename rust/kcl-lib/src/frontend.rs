@@ -86,9 +86,7 @@ impl FrontendState {
             comment_start: Default::default(),
         }));
         // Convert to string source to create real source ranges.
-        //
-        // TODO: Don't duplicate this from lib.rs Program.
-        let new_source = new_ast.recast_top(&Default::default(), 0);
+        let new_source = source_from_ast(&new_ast);
         // Parse the new source.
         let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
         if !errors.is_empty() {
@@ -196,9 +194,7 @@ impl FrontendState {
         })
         .map_err(|err| Error { msg: err.to_string() })?;
         // Convert to string source to create real source ranges.
-        //
-        // TODO: Don't duplicate this from lib.rs Program.
-        let new_source = new_ast.recast_top(&Default::default(), 0);
+        let new_source = source_from_ast(&new_ast);
         // Parse the new KCL source.
         let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
         if !errors.is_empty() {
@@ -361,9 +357,7 @@ impl FrontendState {
         })
         .map_err(|err| Error { msg: err.to_string() })?;
         // Convert to string source to create real source ranges.
-        //
-        // TODO: Don't duplicate this from lib.rs Program.
-        let new_source = new_ast.recast_top(&Default::default(), 0);
+        let new_source = source_from_ast(&new_ast);
         // Parse the new KCL source.
         let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
         if !errors.is_empty() {
@@ -459,6 +453,11 @@ impl FrontendState {
         // TODO: sketch-api: implement
         Ok(Freedom::Free)
     }
+}
+
+fn source_from_ast(ast: &ast::Node<ast::Program>) -> String {
+    // TODO: Don't duplicate this from lib.rs Program.
+    ast.recast_top(&Default::default(), 0)
 }
 
 fn to_ast_point2d(point: &Point2d<Expr>) -> anyhow::Result<ast::Expr> {
