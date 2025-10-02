@@ -23,6 +23,20 @@ use crate::{
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, ts_rs::TS)]
+pub struct SketchVarId(pub usize);
+
+impl SketchVarId {
+    pub fn to_constraint_id(self, range: SourceRange) -> Result<kcl_ezpz::Id, KclError> {
+        self.0.try_into().map_err(|_| {
+            KclError::new_type(KclErrorDetails::new(
+                "Cannot convert to constraint ID since the sketch variable ID is too large".to_owned(),
+                vec![range],
+            ))
+        })
+    }
+}
+
 /// Any KCL value.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -50,6 +64,7 @@ pub enum KclValue {
         meta: Vec<Metadata>,
     },
     SketchVar {
+        id: SketchVarId,
         /// The initial value of the sketch variable. This isn't the solved
         /// value.
         value: f64,
@@ -460,10 +475,15 @@ impl KclValue {
         }
     }
 
-    pub(crate) fn from_sketch_var_literal(literal: &Node<NumericLiteral>, exec_state: &mut ExecState) -> Self {
+    pub(crate) fn from_sketch_var_literal(
+        literal: &Node<NumericLiteral>,
+        id: SketchVarId,
+        exec_state: &mut ExecState,
+    ) -> Self {
         let meta = vec![literal.metadata()];
         let ty = NumericType::from_parsed(literal.suffix, &exec_state.mod_local.settings);
         KclValue::SketchVar {
+            id,
             value: literal.value,
             meta,
             ty,
