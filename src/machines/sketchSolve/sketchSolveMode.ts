@@ -24,6 +24,14 @@ const equipTools = Object.freeze({
 
 export type EquipTool = keyof typeof equipTools
 
+// Type for the spawn function used in XState setup actions
+// This provides better type safety by constraining the actor parameter to valid tool names
+// and ensuring the return type matches the specific tool actor
+type SpawnToolActor = <K extends keyof typeof equipTools>(
+  src: K,
+  options?: { id?: string }
+) => ActorRefFrom<(typeof equipTools)[K]>
+
 export type SketchSolveMachineEvent =
   | { type: 'exit' }
   | { type: 'update selection'; data?: SetSelections }
@@ -75,7 +83,8 @@ export const sketchSolveMachine = setup({
       type: 'sketch solve tool changed',
       data: { tool: null },
     }),
-    'spawn tool': assign(({ event, spawn, context }) => {
+    'spawn tool': assign(({ event, spawn: _spawn, context }) => {
+      const spawn: SpawnToolActor = _spawn
       // Determine which tool to spawn based on event type
       let nameOfToolToSpawn: EquipTool
 
@@ -91,25 +100,10 @@ export const sketchSolveMachine = setup({
         return {}
       }
 
-      let toolActor
-      switch (nameOfToolToSpawn) {
-        case 'dimensionTool':
-          toolActor = spawn(nameOfToolToSpawn, { id: 'tool' })
-          break
-        case 'centerRectTool':
-          toolActor = spawn(nameOfToolToSpawn, { id: 'tool' })
-          break
-        case 'pointTool':
-          toolActor = spawn(nameOfToolToSpawn, { id: 'tool' })
-          break
-        default:
-          const _exhaustiveCheck: never = nameOfToolToSpawn
-      }
-
       return {
-        toolActor,
-        sketchSolveToolName: nameOfToolToSpawn,
-        pendingToolName: undefined, // Clear the pending tool after spawning
+        toolActor: spawn(nameOfToolToSpawn, { id: 'tool' }),
+        sketchSolveTool: nameOfToolToSpawn,
+        pendingTool: undefined, // Clear the pending tool after spawning
       }
     }),
   },
