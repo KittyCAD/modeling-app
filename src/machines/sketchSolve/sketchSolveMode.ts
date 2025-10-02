@@ -85,7 +85,7 @@ export const sketchSolveMachine = setup({
     }),
     'spawn tool': assign(({ event, spawn: _spawn, context }) => {
       // this type-annotation informs spawn tool of the association between the EquipTools type and the machines in equipTools
-      // It's not an type assertion. The TS still checks that _spawn is assignable to SpawnToolActor.
+      // It's not an type assertion. TS still checks that _spawn is assignable to SpawnToolActor.
       const spawn: SpawnToolActor = _spawn
       // Determine which tool to spawn based on event type
       let nameOfToolToSpawn: EquipTool
