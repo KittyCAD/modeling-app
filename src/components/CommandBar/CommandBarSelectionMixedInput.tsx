@@ -64,7 +64,7 @@ export default function CommandBarSelectionMixedInput({
       })
       setHasClearedSelection(true)
     }
-  }, [arg])
+  }, [arg.clearSelectionFirst])
 
   // Only auto-skip on initial mount if we have a valid selection
   // different from the component CommandBarSelectionInput in the the dependency array
