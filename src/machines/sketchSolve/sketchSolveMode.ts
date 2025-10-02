@@ -27,7 +27,7 @@ export type EquipTool = keyof typeof equipTools
 // Type for the spawn function used in XState setup actions
 // This provides better type safety by constraining the actor parameter to valid tool names
 // and ensuring the return type matches the specific tool actor
-type SpawnToolActor = <K extends keyof typeof equipTools>(
+type SpawnToolActor = <K extends EquipTool>(
   src: K,
   options?: { id?: string }
 ) => ActorRefFrom<(typeof equipTools)[K]>
