@@ -960,6 +960,58 @@ profile001 = startProfile(sketch001, at = [0, 0])
       { shouldNormalise: true }
     )
   })
+
+  test('Select-all delete removes drawn segments and circle in sketch mode', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    toolbar,
+    editor,
+  }) => {
+    const viewportSize = { width: 1200, height: 600 }
+    await page.setBodyDimensions(viewportSize)
+
+    await page.addInitScript(async () => {
+      localStorage.setItem('persistCode', '')
+    })
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await toolbar.startSketchPlaneSelection()
+    await toolbar.openFeatureTreePane()
+    await page.getByRole('button', { name: 'Front plane' }).click()
+    await editor.expectEditor.toContain('startSketchOn(XZ)')
+
+    const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
+    const { click00r } = getMovementUtils({ center, page })
+    await click00r(0, 0)
+    await click00r(120, 0)
+    await click00r(120, 120)
+    await editor.expectEditor.toContain('|> line(')
+
+    await toolbar.circleBtn.click()
+    await page.waitForTimeout(300)
+    const [circleCenterClick] = scene.makeMouseHelpers(0.55, 0.55, {
+      format: 'ratio',
+    })
+    const [circleRadiusClick] = scene.makeMouseHelpers(0.65, 0.65, {
+      format: 'ratio',
+    })
+    await circleCenterClick()
+    await page.waitForTimeout(300)
+    await circleRadiusClick()
+    await editor.expectEditor.toContain('circle(')
+
+    // Select all and delete
+    await page.keyboard.press('ControlOrMeta+A')
+    await page.waitForTimeout(500)
+    await page.keyboard.press('Delete')
+
+    await editor.expectEditor.not.toContain('|> line(')
+    await editor.expectEditor.not.toContain('circle(')
+  })
 })
 
 test.describe('multi-profile sketching', () => {
