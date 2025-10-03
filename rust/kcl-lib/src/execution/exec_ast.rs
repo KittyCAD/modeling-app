@@ -1,11 +1,13 @@
 use std::collections::HashMap;
 
 use async_recursion::async_recursion;
+use indexmap::IndexMap;
 use kcl_ezpz::Constraint;
 
 use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
+    exec::UnitType,
     execution::{
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta, ModuleArtifactState,
         Operation, PlaneType, StatementKind, TagIdentifier, annotations,
@@ -880,7 +882,7 @@ impl Node<SketchBlock> {
             )));
         }
 
-        let (return_result, variables) = {
+        let (return_result, variables, sketch_block_state) = {
             // Don't early return until the stack frame is popped!
             self.prep_mem(exec_state.mut_stack().snapshot(), exec_state);
 
@@ -889,20 +891,89 @@ impl Node<SketchBlock> {
 
             let result = ctx.exec_block(&self.body, exec_state, BodyType::Block).await;
 
-            exec_state.mod_local.sketch_block = original_value;
+            let sketch_block_state = std::mem::replace(&mut exec_state.mod_local.sketch_block, original_value);
 
-            let mut block_variables = HashMap::new();
+            let mut block_variables = IndexMap::new();
             for (name, value) in exec_state.stack().find_all_in_current_env() {
                 block_variables.insert(name.clone(), value.clone());
             }
 
             exec_state.mut_stack().pop_env();
 
-            (result, block_variables)
+            (result, block_variables, sketch_block_state)
         };
 
-        // Propagate error.
+        // Propagate errors.
         return_result?;
+        let Some(sketch_block_state) = sketch_block_state else {
+            debug_assert!(false, "Sketch block state should still be set to Some from just above");
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                "Sketch block state should still be set to Some from just above".to_owned(),
+                vec![SourceRange::from(self)],
+            )));
+        };
+
+        // Translate sketch variables and constraints to solver input.
+        let range = SourceRange::from(self);
+        let module_length_unit = exec_state.length_unit();
+        let module_length_ty = RuntimeType::known_length(module_length_unit);
+        let constraints = sketch_block_state.constraints.clone();
+        let initial_guesses = sketch_block_state
+            .sketch_vars
+            .iter()
+            .map(|v| {
+                let Some(sketch_var) = v.as_sketch_var() else {
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        "Expected sketch variable".to_owned(),
+                        vec![SourceRange::from(self)],
+                    )));
+                };
+                let constraint_id = sketch_var.id.to_constraint_id(range)?;
+                // Normalize units.
+                let number_value = KclValue::Number {
+                    value: sketch_var.initial_value,
+                    ty: sketch_var.ty,
+                    meta: sketch_var.meta.clone(),
+                };
+                let initial_guess_value = number_value.coerce(&module_length_ty, true, exec_state).map_err(|_| {
+                    KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "sketch variable initial value must be a length coercible to the module length unit {}, but found {}",
+                            module_length_ty.human_friendly_type(),
+                            number_value.human_friendly_type(),
+                        ),
+                        v.into(),
+                    ))
+                })?;
+                let initial_guess = if let Some(n) = initial_guess_value.as_ty_f64() {
+                    n.n
+                } else {
+                    let message = format!(
+                        "Expected number after coercion, but found {}",
+                        initial_guess_value.human_friendly_type()
+                    );
+                    debug_assert!(false, "{}", &message);
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        message,
+                        vec![SourceRange::from(self)],
+                    )));
+                };
+                Ok((constraint_id, initial_guess))
+            })
+            .collect::<Result<Vec<_>, KclError>>()?;
+        // Solve constraints.
+        let solve_outcome = kcl_ezpz::solve(constraints, initial_guesses).map_err(|e| {
+            KclError::new_internal(KclErrorDetails::new(
+                format!("Error from constraint solver: {e}"),
+                vec![SourceRange::from(self)],
+            ))
+        })?;
+        // Substitute solutions back into sketch variables.
+        let variables = substitute_sketch_vars(
+            variables,
+            &solve_outcome.final_values,
+            NumericType::Known(UnitType::Length(module_length_unit)),
+        )?;
 
         let metadata = Metadata {
             source_range: SourceRange::from(self),
@@ -912,6 +983,85 @@ impl Node<SketchBlock> {
             constrainable: Default::default(),
             meta: vec![metadata],
         })
+    }
+}
+
+fn substitute_sketch_vars(
+    variables: IndexMap<String, KclValue>,
+    solutions: &[f64],
+    solution_ty: NumericType,
+) -> Result<HashMap<String, KclValue>, KclError> {
+    let mut subbed = HashMap::with_capacity(variables.len());
+    for (name, value) in variables {
+        let subbed_value = substitute_sketch_var(value, solutions, solution_ty)?;
+        subbed.insert(name, subbed_value);
+    }
+    Ok(subbed)
+}
+
+fn substitute_sketch_var(value: KclValue, solutions: &[f64], solution_ty: NumericType) -> Result<KclValue, KclError> {
+    match value {
+        KclValue::Uuid { .. } => Ok(value),
+        KclValue::Bool { .. } => Ok(value),
+        KclValue::Number { .. } => Ok(value),
+        KclValue::String { .. } => Ok(value),
+        KclValue::SketchVar { value: var } => {
+            let Some(solution) = solutions.get(var.id.0) else {
+                let message = format!("No solution for sketch variable with id {}", var.id.0);
+                debug_assert!(false, "{}", &message);
+                return Err(KclError::new_internal(KclErrorDetails::new(
+                    message,
+                    var.meta.into_iter().map(|m| m.source_range).collect(),
+                )));
+            };
+            Ok(KclValue::Number {
+                value: *solution,
+                ty: solution_ty,
+                meta: var.meta.clone(),
+            })
+        }
+        KclValue::Tuple { value, meta } => {
+            let subbed = value
+                .into_iter()
+                .map(|v| substitute_sketch_var(v, solutions, solution_ty))
+                .collect::<Result<Vec<_>, KclError>>()?;
+            Ok(KclValue::Tuple { value: subbed, meta })
+        }
+        KclValue::HomArray { value, ty } => {
+            let subbed = value
+                .into_iter()
+                .map(|v| substitute_sketch_var(v, solutions, solution_ty))
+                .collect::<Result<Vec<_>, KclError>>()?;
+            Ok(KclValue::HomArray { value: subbed, ty })
+        }
+        KclValue::Object {
+            value,
+            constrainable,
+            meta,
+        } => {
+            let subbed = value
+                .into_iter()
+                .map(|(k, v)| substitute_sketch_var(v, solutions, solution_ty).map(|v| (k, v)))
+                .collect::<Result<HashMap<_, _>, KclError>>()?;
+            Ok(KclValue::Object {
+                value: subbed,
+                constrainable,
+                meta,
+            })
+        }
+        KclValue::TagIdentifier(_) => Ok(value),
+        KclValue::TagDeclarator(_) => Ok(value),
+        KclValue::GdtAnnotation { .. } => Ok(value),
+        KclValue::Plane { .. } => Ok(value),
+        KclValue::Face { .. } => Ok(value),
+        KclValue::Sketch { .. } => Ok(value),
+        KclValue::Solid { .. } => Ok(value),
+        KclValue::Helix { .. } => Ok(value),
+        KclValue::ImportedGeometry(_) => Ok(value),
+        KclValue::Function { .. } => Ok(value),
+        KclValue::Module { .. } => Ok(value),
+        KclValue::Type { .. } => Ok(value),
+        KclValue::KclNone { .. } => Ok(value),
     }
 }
 
@@ -938,10 +1088,12 @@ impl Node<SketchVar> {
             };
 
             KclValue::SketchVar {
-                id,
-                value: 0.0,
-                ty: NumericType::default(),
-                meta: vec![metadata],
+                value: Box::new(super::SketchVar {
+                    id,
+                    initial_value: 0.0,
+                    ty: NumericType::default(),
+                    meta: vec![metadata],
+                }),
             }
         };
 
@@ -1380,8 +1532,8 @@ impl Node<BinaryExpression> {
         {
             match (&left_value, &right_value) {
                 // Same sketch variables.
-                (KclValue::SketchVar { id: left_id, .. }, KclValue::SketchVar { id: right_id, .. })
-                    if left_id == right_id =>
+                (KclValue::SketchVar { value: left_value, .. }, KclValue::SketchVar { value: right_value, .. })
+                    if left_value.id == right_value.id =>
                 {
                     return Ok(KclValue::Bool { value: true, meta });
                 }
@@ -1395,10 +1547,10 @@ impl Node<BinaryExpression> {
                     )));
                 }
                 // One sketch variable, one number.
-                (KclValue::SketchVar { id, .. }, KclValue::Number { value, .. })
-                | (KclValue::Number { value, .. }, KclValue::SketchVar { id, .. }) => {
+                (KclValue::SketchVar { value: var, .. }, KclValue::Number { value, .. })
+                | (KclValue::Number { value, .. }, KclValue::SketchVar { value: var, .. }) => {
                     // TODO: sketch-api: Normalize units.
-                    let constraint = Constraint::Fixed(id.to_constraint_id(self.as_source_range())?, *value);
+                    let constraint = Constraint::Fixed(var.id.to_constraint_id(self.as_source_range())?, *value);
                     sketch_block_state.constraints.push(constraint);
                     return Ok(KclValue::Bool { value: true, meta });
                 }

@@ -13,10 +13,9 @@ use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     exec::DefaultPlanes,
     execution::{
-        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, annotations,
+        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, SketchVarId, annotations,
         cad_op::Operation,
         id_generator::IdGenerator,
-        kcl_value::SketchVarId,
         memory::{ProgramMemory, Stack},
         types::NumericType,
     },

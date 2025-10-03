@@ -1529,10 +1529,9 @@ impl KclValue {
     pub fn principal_type(&self) -> Option<RuntimeType> {
         match self {
             KclValue::Bool { .. } => Some(RuntimeType::Primitive(PrimitiveType::Boolean)),
-            KclValue::Number { ty, .. } | KclValue::SketchVar { ty, .. } => {
-                Some(RuntimeType::Primitive(PrimitiveType::Number(*ty)))
-            }
+            KclValue::Number { ty, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(*ty))),
             KclValue::String { .. } => Some(RuntimeType::Primitive(PrimitiveType::String)),
+            KclValue::SketchVar { value, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(value.ty))),
             KclValue::Object {
                 value, constrainable, ..
             } => {
