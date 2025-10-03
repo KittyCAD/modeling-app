@@ -22,8 +22,8 @@ const equipTools = Object.freeze({
   pointTool,
 })
 
-const CHILD_TOOL = 'child tool'
-const CHILD_TOOL_DONE_EVENT = `xstate.done.actor.${CHILD_TOOL}`
+const CHILD_TOOL_ID = 'child tool'
+const CHILD_TOOL_DONE_EVENT = `xstate.done.actor.${CHILD_TOOL_ID}`
 
 export type EquipTool = keyof typeof equipTools
 
@@ -53,8 +53,8 @@ export const sketchSolveMachine = setup({
     events: {} as SketchSolveMachineEvent,
   },
   actions: {
-    'send unequip to tool': sendTo(CHILD_TOOL, { type: 'unequip' }),
-    'send update selection to equipped tool': sendTo(CHILD_TOOL, {
+    'send unequip to tool': sendTo(CHILD_TOOL_ID, { type: 'unequip' }),
+    'send update selection to equipped tool': sendTo(CHILD_TOOL_ID, {
       type: 'update selection',
     }),
     'send updated selection to move tool': sendTo('moveTool', {
@@ -90,7 +90,7 @@ export const sketchSolveMachine = setup({
       // this type-annotation informs spawn tool of the association between the EquipTools type and the machines in equipTools
       // It's not an type assertion. TS still checks that _spawn is assignable to SpawnToolActor.
       const typedSpawn: SpawnToolActor = spawn
-      typedSpawn(nameOfToolToSpawn, { id: CHILD_TOOL })
+      typedSpawn(nameOfToolToSpawn, { id: CHILD_TOOL_ID })
 
       return {
         sketchSolveToolName: nameOfToolToSpawn,
