@@ -717,7 +717,6 @@ export function deleteSegmentOrProfileFromPipeExpression(
       'PipeExpression'
     )
     if (err(pipeExpression)) {
-      console.log('err', pipeExpression)
       return pipeExpression
     }
 
