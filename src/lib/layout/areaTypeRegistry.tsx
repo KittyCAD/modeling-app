@@ -5,18 +5,20 @@ import { ConnectionStream } from '@src/components/ConnectionStream'
 import Gizmo from '@src/components/Gizmo'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { Toolbar } from '@src/Toolbar'
+import { type SidebarPane, sidebarPanesLeft, sidebarPanesRight } from '@src/components/ModelingSidebar/ModelingPanes'
+import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
 
 /**
  * For now we have strict area types but in future
  * we should make it possible to register your own in an extension.
  */
 export const areaTypeRegistry = Object.freeze({
+  featureTree: () => PaneToArea({ pane: sidebarPanesLeft[0] }),
   modeling: ModelingArea,
-  ttc: () => <TestArea name="Text-to-CAD" />,
-  variables: () => <TestArea name="Variables" />,
-  codeEditor: () => <TestArea name="Code Editor" />,
-  featureTree: () => <TestArea name="Feature Tree" />,
-  logs: () => <TestArea name="Logs" />,
+  ttc: () => PaneToArea({ pane: sidebarPanesRight[0] }),
+  variables: () => PaneToArea({ pane: sidebarPanesLeft[3] }),
+  codeEditor: () => PaneToArea({ pane: sidebarPanesLeft[1] }),
+  logs: () => PaneToArea({ pane: sidebarPanesLeft[4] }),
 })
 
 function TestArea({ name }: { name: string }) {
@@ -50,4 +52,14 @@ function ModelingArea() {
       </div>
     </div>
   )
+}
+
+function PaneToArea({ pane }: { pane: SidebarPane }) {
+  return <ModelingPane
+    icon={pane.icon}
+    title={pane.sidebarName}
+    onClose={() => { }}
+    id={`${pane.id}-pane`}
+  >{pane.Content({ id: pane.id, onClose: () => { } })}
+  </ModelingPane>
 }

@@ -2,7 +2,7 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import type { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 
 type BasicLayout = {
-  id: string
+  id: string // uuid
   label: string
 }
 type WithChildren = { children: Layout[] }
