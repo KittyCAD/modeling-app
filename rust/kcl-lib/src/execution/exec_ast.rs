@@ -917,7 +917,7 @@ impl Node<SketchBlock> {
         let range = SourceRange::from(self);
         let module_length_unit = exec_state.length_unit();
         let module_length_ty = RuntimeType::known_length(module_length_unit);
-        let constraints = sketch_block_state.constraints.clone();
+        let constraints = &sketch_block_state.constraints;
         let initial_guesses = sketch_block_state
             .sketch_vars
             .iter()
@@ -962,12 +962,20 @@ impl Node<SketchBlock> {
             })
             .collect::<Result<Vec<_>, KclError>>()?;
         // Solve constraints.
-        let solve_outcome = kcl_ezpz::solve(constraints, initial_guesses).map_err(|e| {
+        let config = kcl_ezpz::Config::default();
+        let solve_outcome = kcl_ezpz::solve(constraints, initial_guesses, config).map_err(|e| {
             KclError::new_internal(KclErrorDetails::new(
-                format!("Error from constraint solver: {e}"),
+                format!("Error from constraint solver: {}", e.error),
                 vec![SourceRange::from(self)],
             ))
         })?;
+        // Propagate warnings.
+        for warning in &solve_outcome.warnings {
+            exec_state.warn(
+                CompilationError::err(range, format!("Warning from constraint solver: {:?}", warning)),
+                annotations::WARN_SOLVER,
+            );
+        }
         // Substitute solutions back into sketch variables.
         let variables = substitute_sketch_vars(
             variables,
