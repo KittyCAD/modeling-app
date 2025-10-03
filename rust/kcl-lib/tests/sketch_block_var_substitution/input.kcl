@@ -1,11 +1,28 @@
 @settings(experimentalFeatures = allow)
 
-s = sketch(on = XY) {
+myParam = 4
+
+s = sketch() {
   x = var 0
   y = var 10
-  x == 3
-  y == 22
+  x == 1 + 2
+  y == max([5 * myParam, 0])
+
+  len = var 1in
+  len == 5mm
+
+  p1 = [var, var]
+  p1[0] == 30
+  p1[1] == 40
 }
 
 assert(s.x, isEqualTo = 3)
-assert(s.y, isEqualTo = 22)
+assert(s.y, isEqualTo = 20)
+assert(s.len, isEqualTo = 5mm)
+assert(s.p1[0], isEqualTo = 30)
+assert(s.p1[1], isEqualTo = 40)
+
+s2 = sketch() {
+  // Error since degrees can't be converted to the module units (millimeters).
+  // len = var 1deg
+}
