@@ -1020,10 +1020,10 @@ profile002 = rectangle(
 
   describe('Testing addExtrude', () => {
     it('should add a basic extrude call', async () => {
-      const { ast, sketches } =
+      const { ast, artifactGraph, sketches } =
         await getAstAndSketchSelections(circleProfileCode)
       const length = await getKclCommandValue('1')
-      const result = addExtrude({ ast, sketches, length })
+      const result = addExtrude({ ast, artifactGraph, sketches, length })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst)
       expect(newCode).toContain(circleProfileCode)
@@ -1032,11 +1032,11 @@ profile002 = rectangle(
     })
 
     it('should add a basic multi-profile extrude call', async () => {
-      const { ast, sketches } = await getAstAndSketchSelections(
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         circleAndRectProfilesCode
       )
       const length = await getKclCommandValue('1')
-      const result = addExtrude({ ast, sketches, length })
+      const result = addExtrude({ ast, artifactGraph, sketches, length })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst)
       expect(newCode).toContain(circleProfileCode)
@@ -1047,10 +1047,16 @@ profile002 = rectangle(
     })
 
     it('should add an extrude call with symmetric true', async () => {
-      const { ast, sketches } =
+      const { ast, artifactGraph, sketches } =
         await getAstAndSketchSelections(circleProfileCode)
       const length = await getKclCommandValue('1')
-      const result = addExtrude({ ast, sketches, length, symmetric: true })
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        length,
+        symmetric: true,
+      })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst)
       expect(newCode).toContain(circleProfileCode)
@@ -1061,13 +1067,14 @@ profile002 = rectangle(
     })
 
     it('should add an extrude call with bidirectional length and twist angle', async () => {
-      const { ast, sketches } =
+      const { ast, artifactGraph, sketches } =
         await getAstAndSketchSelections(circleProfileCode)
       const length = await getKclCommandValue('10')
       const bidirectionalLength = await getKclCommandValue('20')
       const twistAngle = await getKclCommandValue('30')
       const result = addExtrude({
         ast,
+        artifactGraph,
         sketches,
         length,
         bidirectionalLength,
@@ -1088,12 +1095,14 @@ profile002 = rectangle(
     it('should edit an extrude call from symmetric true to false and new length', async () => {
       const extrudeCode = `${circleProfileCode}
 extrude001 = extrude(profile001, length = 1, symmetric = true)`
-      const { ast, sketches } = await getAstAndSketchSelections(extrudeCode)
+      const { ast, artifactGraph, sketches } =
+        await getAstAndSketchSelections(extrudeCode)
       const length = await getKclCommandValue('2')
       const symmetric = false
       const nodeToEdit = createPathToNodeForLastVariable(ast)
       const result = addExtrude({
         ast,
+        artifactGraph,
         sketches,
         length,
         symmetric,
@@ -1107,10 +1116,16 @@ extrude001 = extrude(profile001, length = 2)`)
     })
 
     it('should add an extrude call with method NEW', async () => {
-      const { ast, sketches } =
+      const { ast, artifactGraph, sketches } =
         await getAstAndSketchSelections(circleProfileCode)
       const length = await getKclCommandValue('1')
-      const result = addExtrude({ ast, sketches, length, method: 'NEW' })
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        length,
+        method: 'NEW',
+      })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst)
       expect(newCode).toContain(circleProfileCode)

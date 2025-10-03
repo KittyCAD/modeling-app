@@ -396,7 +396,7 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
   return new Error('Unsupported plane artifact type')
 }
 
-function buildSolidsAndFacesExprs(
+export function buildSolidsAndFacesExprs(
   faces: Selections,
   artifactGraph: ArtifactGraph,
   modifiedAst: Node<Program>,
