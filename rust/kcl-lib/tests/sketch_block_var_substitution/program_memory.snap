@@ -1,0 +1,71 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing sketch_block_var_substitution.kcl
+---
+{
+  "myParam": {
+    "type": "Number",
+    "value": 4.0,
+    "ty": {
+      "type": "Default",
+      "len": "mm",
+      "angle": "degrees"
+    }
+  },
+  "s": {
+    "type": "Object",
+    "value": {
+      "len": {
+        "type": "Number",
+        "value": 5.0,
+        "ty": {
+          "mm": null,
+          "type": "Known",
+          "type": "Length"
+        }
+      },
+      "p1": {
+        "type": "HomArray",
+        "value": [
+          {
+            "type": "Number",
+            "value": 30.0,
+            "ty": {
+              "mm": null,
+              "type": "Known",
+              "type": "Length"
+            }
+          },
+          {
+            "type": "Number",
+            "value": 40.0,
+            "ty": {
+              "mm": null,
+              "type": "Known",
+              "type": "Length"
+            }
+          }
+        ]
+      },
+      "x": {
+        "type": "Number",
+        "value": 3.0,
+        "ty": {
+          "mm": null,
+          "type": "Known",
+          "type": "Length"
+        }
+      },
+      "y": {
+        "type": "Number",
+        "value": 20.0,
+        "ty": {
+          "mm": null,
+          "type": "Known",
+          "type": "Length"
+        }
+      }
+    },
+    "constrainable": false
+  }
+}
