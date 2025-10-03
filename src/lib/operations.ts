@@ -1934,7 +1934,7 @@ async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
     kclManager.artifactGraph
   )
   if (err(objects)) {
-    return { reason: "Couldn't retrieve objects" }
+    return { reason: objects.message }
   }
 
   // 2. Convert the x y z arguments from a string to a KCL expression
