@@ -1,3 +1,7 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_block_var_substitution.kcl
+---
 @settings(experimentalFeatures = allow)
 
 myParam = 4
@@ -5,15 +9,15 @@ myParam = 4
 s = sketch() {
   x = var 0
   y = var 10
-  x == 1 + 2
-  y == max([5 * myParam, 0])
+x == 1 + 2
+y == max([5 * myParam, 0])
 
   len = var 1in
-  len == 5mm
+len == 5mm
 
   p1 = [var, var]
-  p1[0] == 30
-  p1[1] == 40
+p1[0] == 30
+p1[1] == 40
 }
 
 assert(s.x, isEqualTo = 3)
