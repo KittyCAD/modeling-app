@@ -236,7 +236,10 @@ impl From<&KclValue> for OpKclValue {
             KclValue::Bool { value, .. } => Self::Bool { value: *value },
             KclValue::Number { value, ty, .. } => Self::Number { value: *value, ty: *ty },
             KclValue::String { value, .. } => Self::String { value: value.clone() },
-            KclValue::SketchVar { value, ty, .. } => Self::SketchVar { value: *value, ty: *ty },
+            KclValue::SketchVar { value, .. } => Self::SketchVar {
+                value: value.initial_value,
+                ty: value.ty,
+            },
             KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
                 let value = value.iter().map(Self::from).collect();
                 Self::Array { value }

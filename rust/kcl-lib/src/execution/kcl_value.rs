@@ -10,7 +10,7 @@ use crate::{
     errors::KclErrorDetails,
     execution::{
         EnvironmentRef, ExecState, Face, GdtAnnotation, Geometry, GeometryWithImportedGeometry, Helix,
-        ImportedGeometry, Metadata, Plane, Sketch, Solid, TagIdentifier,
+        ImportedGeometry, Metadata, Plane, Sketch, SketchVar, SketchVarId, Solid, TagIdentifier,
         annotations::{self, FnAttrs, SETTINGS, SETTINGS_UNIT_LENGTH},
         types::{NumericType, PrimitiveType, RuntimeType},
     },
@@ -22,20 +22,6 @@ use crate::{
 };
 
 pub type KclObjectFields = HashMap<String, KclValue>;
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, ts_rs::TS)]
-pub struct SketchVarId(pub usize);
-
-impl SketchVarId {
-    pub fn to_constraint_id(self, range: SourceRange) -> Result<kcl_ezpz::Id, KclError> {
-        self.0.try_into().map_err(|_| {
-            KclError::new_type(KclErrorDetails::new(
-                "Cannot convert to constraint ID since the sketch variable ID is too large".to_owned(),
-                vec![range],
-            ))
-        })
-    }
-}
 
 /// Any KCL value.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -64,13 +50,7 @@ pub enum KclValue {
         meta: Vec<Metadata>,
     },
     SketchVar {
-        id: SketchVarId,
-        /// The initial value of the sketch variable. This isn't the solved
-        /// value.
-        value: f64,
-        ty: NumericType,
-        #[serde(skip)]
-        meta: Vec<Metadata>,
+        value: Box<SketchVar>,
     },
     Tuple {
         value: Vec<KclValue>,
@@ -304,7 +284,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Bool { meta, .. } => to_vec_sr(&meta),
             KclValue::Number { meta, .. } => to_vec_sr(&meta),
             KclValue::String { meta, .. } => to_vec_sr(&meta),
-            KclValue::SketchVar { meta, .. } => to_vec_sr(&meta),
+            KclValue::SketchVar { value, .. } => to_vec_sr(&value.meta),
             KclValue::Tuple { meta, .. } => to_vec_sr(&meta),
             KclValue::HomArray { value, .. } => value.iter().flat_map(Into::<Vec<SourceRange>>::into).collect(),
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
@@ -336,7 +316,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Bool { meta, .. } => to_vec_sr(meta),
             KclValue::Number { meta, .. } => to_vec_sr(meta),
             KclValue::String { meta, .. } => to_vec_sr(meta),
-            KclValue::SketchVar { meta, .. } => to_vec_sr(meta),
+            KclValue::SketchVar { value, .. } => to_vec_sr(&value.meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(meta),
             KclValue::Tuple { meta, .. } => to_vec_sr(meta),
             KclValue::HomArray { value, .. } => value.iter().flat_map(Into::<Vec<SourceRange>>::into).collect(),
@@ -362,7 +342,7 @@ impl KclValue {
             KclValue::Bool { value: _, meta } => meta.clone(),
             KclValue::Number { meta, .. } => meta.clone(),
             KclValue::String { value: _, meta } => meta.clone(),
-            KclValue::SketchVar { meta, .. } => meta.clone(),
+            KclValue::SketchVar { value, .. } => value.meta.clone(),
             KclValue::Tuple { value: _, meta } => meta.clone(),
             KclValue::HomArray { value, .. } => value.iter().flat_map(|v| v.metadata()).collect(),
             KclValue::Object { meta, .. } => meta.clone(),
@@ -483,10 +463,12 @@ impl KclValue {
         let meta = vec![literal.metadata()];
         let ty = NumericType::from_parsed(literal.suffix, &exec_state.mod_local.settings);
         KclValue::SketchVar {
-            id,
-            value: literal.value,
-            meta,
-            ty,
+            value: Box::new(SketchVar {
+                id,
+                initial_value: literal.value,
+                meta,
+                ty,
+            }),
         }
     }
 
@@ -732,6 +714,13 @@ impl KclValue {
         }
     }
 
+    pub fn as_sketch_var(&self) -> Option<&SketchVar> {
+        match self {
+            KclValue::SketchVar { value, .. } => Some(value),
+            _ => None,
+        }
+    }
+
     pub fn as_mut_tag(&mut self) -> Option<&mut TagIdentifier> {
         match self {
             KclValue::TagIdentifier(value) => Some(value),
@@ -815,9 +804,7 @@ impl KclValue {
             KclValue::Number { value, .. } => Some(format!("{value}")),
             KclValue::String { value, .. } => Some(format!("'{value}'")),
             // TODO: Show units.
-            KclValue::SketchVar {
-                value: initial_value, ..
-            } => Some(format!("var {initial_value}")),
+            KclValue::SketchVar { value, .. } => Some(format!("var {}", value.initial_value)),
             KclValue::Uuid { value, .. } => Some(format!("{value}")),
             KclValue::TagDeclarator(tag) => Some(format!("${}", tag.name)),
             KclValue::TagIdentifier(tag) => Some(format!("${}", tag.value)),
