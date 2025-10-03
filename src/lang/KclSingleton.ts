@@ -790,8 +790,8 @@ export class KclManager extends EventTarget {
     setSelectionFilterToDefault(this.engineCommandManager, selectionsToRestore)
   }
   /** TODO: this function is hiding unawaited asynchronous work */
-  setSelectionFilter(filter: EntityType[]) {
-    setSelectionFilter(filter, this.engineCommandManager)
+  setSelectionFilter(filter: EntityType[], selectionsToRestore?: Selections) {
+    setSelectionFilter(filter, this.engineCommandManager, selectionsToRestore)
   }
 
   // Determines if there is no KCL code which means it is executing a blank KCL file
