@@ -83,10 +83,10 @@ export const sketchSolveMachine = setup({
       type: 'sketch solve tool changed',
       data: { tool: null },
     }),
-    'spawn tool': assign(({ event, spawn: _spawn, context }) => {
+    'spawn tool': assign(({ event, spawn, context }) => {
       // this type-annotation informs spawn tool of the association between the EquipTools type and the machines in equipTools
       // It's not an type assertion. TS still checks that _spawn is assignable to SpawnToolActor.
-      const spawn: SpawnToolActor = _spawn
+      const typedSpawn: SpawnToolActor = spawn
       // Determine which tool to spawn based on event type
       let nameOfToolToSpawn: EquipTool
 
@@ -103,7 +103,7 @@ export const sketchSolveMachine = setup({
       }
 
       return {
-        toolActor: spawn(nameOfToolToSpawn, { id: 'tool' }),
+        toolActor: typedSpawn(nameOfToolToSpawn, { id: 'tool' }),
         sketchSolveToolName: nameOfToolToSpawn,
         pendingToolName: undefined, // Clear the pending tool after spawning
       }
