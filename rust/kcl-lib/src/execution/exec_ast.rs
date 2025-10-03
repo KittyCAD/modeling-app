@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 use kcl_ezpz::Constraint;
+use kittycad_modeling_cmds::units::UnitLength;
 
 use crate::{
     CompilationError, NodePath, SourceRange,
@@ -915,8 +916,6 @@ impl Node<SketchBlock> {
 
         // Translate sketch variables and constraints to solver input.
         let range = SourceRange::from(self);
-        let module_length_unit = exec_state.length_unit();
-        let module_length_ty = RuntimeType::known_length(module_length_unit);
         let constraints = &sketch_block_state.constraints;
         let initial_guesses = sketch_block_state
             .sketch_vars
@@ -935,16 +934,8 @@ impl Node<SketchBlock> {
                     ty: sketch_var.ty,
                     meta: sketch_var.meta.clone(),
                 };
-                let initial_guess_value = number_value.coerce(&module_length_ty, true, exec_state).map_err(|_| {
-                    KclError::new_semantic(KclErrorDetails::new(
-                        format!(
-                            "sketch variable initial value must be a length coercible to the module length unit {}, but found {}",
-                            module_length_ty.human_friendly_type(),
-                            number_value.human_friendly_type(),
-                        ),
-                        v.into(),
-                    ))
-                })?;
+                let initial_guess_value =
+                    normalize_to_solver_unit(&number_value, v.into(), exec_state, "sketch variable initial value")?;
                 let initial_guess = if let Some(n) = initial_guess_value.as_ty_f64() {
                     n.n
                 } else {
@@ -977,11 +968,8 @@ impl Node<SketchBlock> {
             );
         }
         // Substitute solutions back into sketch variables.
-        let variables = substitute_sketch_vars(
-            variables,
-            &solve_outcome.final_values,
-            NumericType::Known(UnitType::Length(module_length_unit)),
-        )?;
+        let variables =
+            substitute_sketch_vars(variables, &solve_outcome.final_values, solver_numeric_type(exec_state))?;
 
         let metadata = Metadata {
             source_range: SourceRange::from(self),
@@ -992,6 +980,36 @@ impl Node<SketchBlock> {
             meta: vec![metadata],
         })
     }
+}
+
+fn solver_unit(exec_state: &ExecState) -> UnitLength {
+    exec_state.length_unit()
+}
+
+fn solver_numeric_type(exec_state: &ExecState) -> NumericType {
+    NumericType::Known(UnitType::Length(solver_unit(exec_state)))
+}
+
+/// When giving input to the solver, all numbers must be given in the same
+/// units.
+fn normalize_to_solver_unit(
+    value: &KclValue,
+    source_range: SourceRange,
+    exec_state: &mut ExecState,
+    description: &str,
+) -> Result<KclValue, KclError> {
+    let length_ty = RuntimeType::Primitive(PrimitiveType::Number(solver_numeric_type(exec_state)));
+    value.coerce(&length_ty, true, exec_state).map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "{} must be a length coercible to the module length unit {}, but found {}",
+                description,
+                length_ty.human_friendly_type(),
+                value.human_friendly_type(),
+            ),
+            vec![source_range],
+        ))
+    })
 }
 
 fn substitute_sketch_vars(
@@ -1535,9 +1553,7 @@ impl Node<BinaryExpression> {
         }
 
         // Check if we're doing equivalence in sketch mode.
-        if self.operator == BinaryOperator::Eq
-            && let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block
-        {
+        if self.operator == BinaryOperator::Eq && exec_state.mod_local.sketch_block.is_some() {
             match (&left_value, &right_value) {
                 // Same sketch variables.
                 (KclValue::SketchVar { value: left_value, .. }, KclValue::SketchVar { value: right_value, .. })
@@ -1555,10 +1571,31 @@ impl Node<BinaryExpression> {
                     )));
                 }
                 // One sketch variable, one number.
-                (KclValue::SketchVar { value: var, .. }, KclValue::Number { value, .. })
-                | (KclValue::Number { value, .. }, KclValue::SketchVar { value: var, .. }) => {
-                    // TODO: sketch-api: Normalize units.
-                    let constraint = Constraint::Fixed(var.id.to_constraint_id(self.as_source_range())?, *value);
+                (KclValue::SketchVar { value: var, .. }, input_number @ KclValue::Number { .. })
+                | (input_number @ KclValue::Number { .. }, KclValue::SketchVar { value: var, .. }) => {
+                    let number_value = normalize_to_solver_unit(
+                        input_number,
+                        input_number.into(),
+                        exec_state,
+                        "fixed constraint value",
+                    )?;
+                    let Some(n) = number_value.as_ty_f64() else {
+                        let message = format!(
+                            "Expected number after coercion, but found {}",
+                            number_value.human_friendly_type()
+                        );
+                        debug_assert!(false, "{}", &message);
+                        return Err(KclError::new_internal(KclErrorDetails::new(message, vec![self.into()])));
+                    };
+                    let constraint = Constraint::Fixed(var.id.to_constraint_id(self.as_source_range())?, n.n);
+                    let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                        let message = "Being inside a sketch block should have already been checked above".to_owned();
+                        debug_assert!(false, "{}", &message);
+                        return Err(KclError::new_internal(KclErrorDetails::new(
+                            message,
+                            vec![SourceRange::from(self)],
+                        )));
+                    };
                     sketch_block_state.constraints.push(constraint);
                     return Ok(KclValue::Bool { value: true, meta });
                 }
