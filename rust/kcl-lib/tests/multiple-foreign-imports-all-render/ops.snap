@@ -27,7 +27,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "type": "GroupBegin",
       "group": {
         "type": "ModuleInstance",
-        "name": "cube.step",
+        "name": "../inputs/cube.step",
         "moduleId": 0
       },
       "nodePath": {

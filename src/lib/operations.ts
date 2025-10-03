@@ -1,3 +1,4 @@
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -1493,7 +1494,8 @@ export function getOperationVariableName(
   }
   if (
     op.type !== 'StdLibCall' &&
-    !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall')
+    !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall') &&
+    !(op.type === 'GroupBegin' && op.group.type === 'ModuleInstance')
   ) {
     return undefined
   }
@@ -1507,6 +1509,27 @@ export function getOperationVariableName(
   if (pathToNode.length === 0) {
     return undefined
   }
+
+  // If this is a module instance, the variable name is the import alias.
+  if (op.type === 'GroupBegin' && op.group.type === 'ModuleInstance') {
+    const statement = getNodeFromPath<ImportStatement>(
+      program,
+      pathToNode,
+      'ImportStatement'
+    )
+    if (
+      err(statement) ||
+      statement.node.type !== 'ImportStatement' ||
+      statement.node.selector.type !== 'None' ||
+      !statement.node.selector.alias
+    ) {
+      return undefined
+    }
+
+    return statement.node.selector.alias.name
+  }
+
+  // Otherwise, this is a StdLibCall or a function call and we need to find the node then the variable
   const call = getNodeFromPath<CallExpressionKw>(
     program,
     pathToNode,

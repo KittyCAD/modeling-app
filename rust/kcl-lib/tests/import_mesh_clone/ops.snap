@@ -8,7 +8,7 @@ description: Operations executed import_mesh_clone.kcl
       "type": "GroupBegin",
       "group": {
         "type": "ModuleInstance",
-        "name": "cube.obj",
+        "name": "../inputs/cube.obj",
         "moduleId": 0
       },
       "nodePath": {

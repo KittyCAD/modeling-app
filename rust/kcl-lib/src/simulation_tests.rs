@@ -117,7 +117,7 @@ impl ExecState {
 fn relative_module_path(module_path: &ModulePath, abs_project_directory: &Path) -> Result<String, std::io::Error> {
     match module_path {
         ModulePath::Main => Ok("main".to_owned()),
-        ModulePath::Local { value: path } => {
+        ModulePath::Local { value: path, .. } => {
             let abs_path = path.canonicalize()?;
             abs_path
                 .strip_prefix(abs_project_directory)
