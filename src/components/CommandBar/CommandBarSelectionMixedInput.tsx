@@ -2,16 +2,16 @@ import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
-import type { Selections } from '@src/lib/selections'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
 } from '@src/lib/selections'
-import { kclManager } from '@src/lib/singletons'
+import { kclManager, engineCommandManager } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
 import { err } from '@src/lib/trap'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
@@ -29,6 +29,7 @@ export default function CommandBarSelectionMixedInput({
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const [hasAutoSkipped, setHasAutoSkipped] = useState(false)
   const [hasCoercedSelections, setHasCoercedSelections] = useState(false)
+  const [hasClearedSelection, setHasClearedSelection] = useState(false)
   const selection: Selections = useSelector(arg.machineActor, selectionSelector)
 
   const selectionsByType = useMemo(() => {
@@ -95,6 +96,19 @@ export default function CommandBarSelectionMixedInput({
     inputRef.current?.focus()
   }, [selection, inputRef])
 
+  // Clear selection in UI if needed
+  useEffect(() => {
+    if (arg.clearSelectionFirst) {
+      engineCommandManager.modelingSend({
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+        },
+      })
+      setHasClearedSelection(true)
+    }
+  }, [arg.clearSelectionFirst])
+
   // Only auto-skip on initial mount if we have a valid selection
   // different from the component CommandBarSelectionInput in the the dependency array
   // is empty
@@ -137,12 +151,16 @@ export default function CommandBarSelectionMixedInput({
             otherSelections: [],
           }
 
-      if (canSubmitSelection && resolvedSelection) {
+      if (
+        !(arg.clearSelectionFirst && !hasClearedSelection) &&
+        canSubmitSelection &&
+        resolvedSelection
+      ) {
         onSubmit(resolvedSelection)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [])
+  }, [hasClearedSelection])
 
   function handleChange() {
     inputRef.current?.focus()

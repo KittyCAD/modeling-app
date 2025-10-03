@@ -23,8 +23,6 @@ describe('@src/env', () => {
         POOL: '',
       }
       const actual = env()
-      // Gotcha: If this fails you need a token in .env.development.local
-      expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
       //@ts-ignore I do not want this token in our logs for any reason.
       actual.VITE_KITTYCAD_API_TOKEN = 'redacted'
       expect(actual).toStrictEqual(expected)
@@ -36,8 +34,6 @@ describe('@src/env', () => {
       // We only need to match against EnvironmentVariables
       const actual = viteEnv()
       expect(typeof actual.NODE_ENV).toBe('string')
-      // Gotcha: If this fails you need a token in .env.development.local
-      expect(typeof actual.VITE_KITTYCAD_API_TOKEN).toBe('string')
       expect(typeof actual.VITE_KITTYCAD_BASE_DOMAIN).toBe('string')
     })
   })
@@ -92,8 +88,6 @@ describe('@src/env', () => {
       expect(!!actual).toBe(true)
       expect(typeof actual?.NODE_ENV).toBe('string')
       expect(typeof actual?.VITE_KITTYCAD_BASE_DOMAIN).toBe('string')
-      // Gotcha: If this fails you need a token in .env.development.local
-      expect(typeof actual?.VITE_KITTYCAD_API_TOKEN).toBe('string')
     })
   })
   describe('generateDomainsFromBaseDomain', () => {

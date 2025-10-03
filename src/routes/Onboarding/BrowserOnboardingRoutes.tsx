@@ -10,7 +10,7 @@ import {
 } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { commandBarActor, systemIOActor } from '@src/lib/singletons'
 import type { IndexLoaderData } from '@src/lib/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'

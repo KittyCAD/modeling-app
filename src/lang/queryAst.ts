@@ -47,7 +47,6 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import { kclSettings, recast, sketchFromKclValue } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/lib/selections'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
@@ -58,7 +57,11 @@ import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
-import { type EdgeCutInfo } from '@src/machines/modelingSharedTypes'
+import type {
+  Selection,
+  Selections,
+  EdgeCutInfo,
+} from '@src/machines/modelingSharedTypes'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1171,6 +1174,17 @@ export function retrieveSelectionsFromOpArg(
     const codeRefs = getCodeRefsByArtifactId(artifactId, artifactGraph)
     if (!codeRefs || codeRefs.length === 0) {
       continue
+    }
+
+    const isArtifactFromImportedModule = codeRefs.some(
+      (c) => c.pathToNode.length === 0
+    )
+    if (isArtifactFromImportedModule) {
+      // TODO: retrieve module import alias instead of throwing here
+      // https://github.com/KittyCAD/modeling-app/issues/8463
+      return new Error(
+        "The selected artifact is from an imported module, editing isn't supported yet. Please delete the operation and recreate."
+      )
     }
 
     graphSelections.push({

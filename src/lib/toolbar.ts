@@ -10,7 +10,6 @@ import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
-import type { sketchSolveMachine } from '@src/machines/sketchSolveMode'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
@@ -29,7 +28,7 @@ export interface ToolbarItemCallbackProps {
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
   sketchPathId: string | false
   editorHasFocus: boolean | undefined
-  sketchSolveState?: StateFrom<typeof sketchSolveMachine>
+  isActive: boolean
 }
 
 export type ToolbarItem = {
@@ -49,10 +48,7 @@ export type ToolbarItem = {
   description: string
   extraNote?: string
   links: { label: string; url: string }[]
-  isActive?: (states: {
-    modelingState: StateFrom<typeof modelingMachine>
-    sketchSolveState?: StateFrom<typeof sketchSolveMachine>
-  }) => boolean
+  isActive?: (state: StateFrom<typeof modelingMachine>) => boolean
   disabledReason?:
     | string
     | ((state: StateFrom<typeof modelingMachine>) => string | undefined)
@@ -67,6 +63,7 @@ export type ToolbarItemResolved = Omit<
   disableHotkey?: boolean
   hotkey?: string | string[]
   isActive?: boolean
+  callbackProps: ToolbarItemCallbackProps
 }
 
 export type ToolbarItemResolvedDropdown = {
@@ -599,8 +596,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           state.matches({ Sketch: 'Line tool' }) ? ['Esc', 'L'] : 'L',
         description: 'Start drawing straight lines',
         links: [],
-        isActive: ({ modelingState }) =>
-          modelingState.matches({ Sketch: 'Line tool' }),
+        isActive: (state) => state.matches({ Sketch: 'Line tool' }),
       },
       {
         id: 'arcs',
@@ -633,8 +629,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 url: 'https://github.com/KittyCAD/modeling-app/issues/1659',
               },
             ],
-            isActive: ({ modelingState }) =>
-              modelingState.matches({ Sketch: 'Arc three point tool' }),
+            isActive: (state) =>
+              state.matches({ Sketch: 'Arc three point tool' }),
           },
           {
             id: 'tangential-arc',
@@ -665,8 +661,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 : 'A',
             description: 'Start drawing an arc tangent to the current segment',
             links: [],
-            isActive: ({ modelingState }) =>
-              modelingState.matches({ Sketch: 'Tangential arc to' }),
+            isActive: (state) => state.matches({ Sketch: 'Tangential arc to' }),
           },
         ],
       },
@@ -689,8 +684,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             status: 'available',
             title: 'Center circle',
             disabled: (state) => state.matches('Sketch no face'),
-            isActive: ({ modelingState }) =>
-              modelingState.matches({ Sketch: 'Circle tool' }),
+            isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
             hotkey: (state) =>
               state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
             showTitle: false,
@@ -713,8 +707,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'circle',
             status: 'available',
             title: '3-point circle',
-            isActive: ({ modelingState }) =>
-              modelingState.matches({ Sketch: 'Circle three point tool' }),
+            isActive: (state) =>
+              state.matches({ Sketch: 'Circle three point tool' }),
             hotkey: (state) =>
               state.matches({ Sketch: 'Circle three point tool' })
                 ? ['Alt+C', 'Esc']
@@ -747,8 +741,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               state.matches({ Sketch: 'Rectangle tool' }) ? ['Esc', 'R'] : 'R',
             description: 'Start drawing a rectangle',
             links: [],
-            isActive: ({ modelingState }) =>
-              modelingState.matches({ Sketch: 'Rectangle tool' }),
+            isActive: (state) => state.matches({ Sketch: 'Rectangle tool' }),
           },
           {
             id: 'center-rectangle',
@@ -773,8 +766,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               state.matches({ Sketch: 'Center Rectangle tool' })
                 ? ['Alt+R', 'Esc']
                 : 'Alt+R',
-            isActive: ({ modelingState }) =>
-              modelingState.matches({ Sketch: 'Center Rectangle tool' }),
+            isActive: (state) =>
+              state.matches({ Sketch: 'Center Rectangle tool' }),
           },
         ],
       },
@@ -1098,22 +1091,45 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'line',
-        onClick: ({ modelingSend }) =>
-          modelingSend({
-            type: 'equip tool',
-            data: { tool: 'dimension' },
-          }),
+        onClick: ({ modelingSend, isActive }) =>
+          isActive
+            ? modelingSend({
+                type: 'unequip tool',
+              })
+            : modelingSend({
+                type: 'equip tool',
+                data: { tool: 'dimensionTool' },
+              }),
         icon: 'line',
         status: 'available',
         title: 'Line',
         hotkey: 'L',
         description: 'Start drawing straight lines',
         links: [],
-        isActive: ({ sketchSolveState }) =>
-          !!(
-            sketchSolveState?.matches('using tool') &&
-            sketchSolveState?.context?.sketchSolveTool === 'dimension'
-          ),
+        isActive: (state) =>
+          state.matches('sketchSolveMode') &&
+          state.context.sketchSolveToolName === 'dimensionTool',
+      },
+      {
+        id: 'point',
+        onClick: ({ modelingSend, isActive }) =>
+          isActive
+            ? modelingSend({
+                type: 'unequip tool',
+              })
+            : modelingSend({
+                type: 'equip tool',
+                data: { tool: 'pointTool' },
+              }),
+        icon: 'arrowDown',
+        status: 'available',
+        title: 'Point',
+        hotkey: 'L',
+        description: 'Start drawing straight points',
+        links: [],
+        isActive: (state) =>
+          state.matches('sketchSolveMode') &&
+          state.context.sketchSolveToolName === 'pointTool',
       },
     ],
   },

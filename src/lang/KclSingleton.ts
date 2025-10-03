@@ -34,8 +34,6 @@ import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
 import { markOnce } from '@src/lib/performance'
-import type { Selections } from '@src/lib/selections'
-import { handleSelectionBatch } from '@src/lib/selections'
 import type {
   BaseUnit,
   KclSettingsAnnotation,
@@ -49,7 +47,11 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { EngineDebugger } from '@src/lib/debugger'
 
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
-import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
+import type {
+  PlaneVisibilityMap,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
+import { type handleSelectionBatch as handleSelectionBatchFn } from '@src/lib/selections'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -834,13 +836,15 @@ const defaultSelectionFilter: EntityType[] = [
 /** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilterToDefault(
   engineCommandManager: ConnectionManager,
-  selectionsToRestore?: Selections
+  selectionsToRestore?: Selections,
+  handleSelectionBatch?: typeof handleSelectionBatchFn
 ) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   setSelectionFilter(
     defaultSelectionFilter,
     engineCommandManager,
-    selectionsToRestore
+    selectionsToRestore,
+    handleSelectionBatch
   )
 }
 
@@ -848,13 +852,15 @@ function setSelectionFilterToDefault(
 function setSelectionFilter(
   filter: EntityType[],
   engineCommandManager: ConnectionManager,
-  selectionsToRestore?: Selections
+  selectionsToRestore?: Selections,
+  handleSelectionBatch?: typeof handleSelectionBatchFn
 ) {
-  const { engineEvents } = selectionsToRestore
-    ? handleSelectionBatch({
-        selections: selectionsToRestore,
-      })
-    : { engineEvents: undefined }
+  const { engineEvents } =
+    selectionsToRestore && handleSelectionBatch
+      ? handleSelectionBatch({
+          selections: selectionsToRestore,
+        })
+      : { engineEvents: undefined }
   if (!selectionsToRestore || !engineEvents) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     engineCommandManager.sendSceneCommand({
