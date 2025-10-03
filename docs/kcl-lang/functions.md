@@ -27,8 +27,7 @@ fn add(left, right) {
 total = add(left = 1, right = 2)
 ```
 
-Functions can also declare one *unlabeled* arg. If you do want to declare an unlabeled arg, it must
-be the first arg declared. When declaring an unlabeled arg, prefix it with @, like here:
+Functions can also declare one *unlabeled* arg. If you do want to declare an unlabeled arg, it must be the first arg and prefixed with @, like this:
 
 ```
 // The @ indicates an argument is used without a label.
