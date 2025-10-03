@@ -711,16 +711,16 @@ export function deleteSegmentOrProfileFromPipeExpression(
   })
 
   for (const pathToNode of pathToNodes) {
-    const pipeExpression = getNodeFromPath<PipeExpression | CallExpressionKw>(
+    const expr = getNodeFromPath<PipeExpression | CallExpressionKw>(
       _modifiedAst,
       pathToNode,
       'PipeExpression'
     )
-    if (err(pipeExpression)) {
-      return pipeExpression
+    if (err(expr)) {
+      return expr
     }
 
-    if (pipeExpression.node.type === 'CallExpressionKw') {
+    if (expr.node.type === 'CallExpressionKw') {
       const topLevelDeleteResult = deleteTopLevelStatement(
         _modifiedAst,
         pathToNode
@@ -733,8 +733,8 @@ export function deleteSegmentOrProfileFromPipeExpression(
         ([_, desc]) => desc === 'PipeExpression'
       )
       const segmentIndexInPipe = pathToNode[pipeInPathIndex + 1]
-      pipeExpression.node.body.splice(segmentIndexInPipe[0] as number, 1) // Note that this mutates _modifiedAst
-      if (!pipeExpression.node.body.length) {
+      expr.node.body.splice(segmentIndexInPipe[0] as number, 1) // Note that this mutates _modifiedAst
+      if (!expr.node.body.length) {
         // this pipe is empty now, it should be deleted
         const topLevelDeleteResult = deleteTopLevelStatement(
           _modifiedAst,
