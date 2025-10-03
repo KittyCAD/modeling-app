@@ -1,9 +1,9 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Operations executed sketch_block_var_substitution.kcl
+description: Operations executed sketch_block_basic_fixed_constraints.kcl
 ---
 {
-  "rust/kcl-lib/tests/sketch_block_var_substitution/input.kcl": [
+  "rust/kcl-lib/tests/sketch_block_basic_fixed_constraints/input.kcl": [
     {
       "type": "VariableDeclaration",
       "name": "myParam",
