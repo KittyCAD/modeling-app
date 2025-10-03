@@ -3,6 +3,8 @@ import type React from 'react'
 import { capitaliseFC } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
 import { throttle } from '@src/lib/utils'
+import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
+import { CustomIcon, CustomIconName } from '@src/components/CustomIcon'
 
 const LAYOUT_PERSIST_PREFIX = 'layout-'
 const LAYOUT_SAVE_THROTTLE = 500
@@ -86,14 +88,15 @@ export function sideToReactCss(side: Side): string {
   return side.split('-').map(capitaliseFC).join('')
 }
 
-interface IFindLayoutChildNode {
+export interface IRootAndTargetLayouts {
   rootLayout: Layout
   targetNode: Layout
 }
 
-export function findLayoutChildNode(
-  { rootLayout, targetNode }: IFindLayoutChildNode
-): Layout | undefined {
+export function findLayoutChildNode({
+  rootLayout,
+  targetNode,
+}: IRootAndTargetLayouts): Layout | undefined {
   if (rootLayout.id === targetNode.id) {
     return rootLayout
   }
@@ -110,28 +113,60 @@ export function findLayoutChildNode(
   return undefined
 }
 
+export function findLayoutParentNode({
+  rootLayout,
+  targetNode,
+}: IRootAndTargetLayouts): Layout | undefined {
+  if (rootLayout.id === targetNode.id) {
+    // There is no parent because our target is the root
+    return undefined
+  }
+
+  if ('children' in rootLayout && rootLayout.children) {
+    for (const child of rootLayout.children) {
+      if (child.id === targetNode.id) {
+        return rootLayout
+      }
+      const found = findLayoutParentNode({ rootLayout: child, targetNode })
+      if (found) {
+        return found
+      }
+    }
+  }
+
+  return undefined
+}
+
 export interface IReplaceLayoutChildNode {
   rootLayout: Layout
   targetNodeId: string
   newNode: Layout
 }
-export function findAndReplaceLayoutChildNode(
-  { rootLayout, targetNodeId, newNode }: IReplaceLayoutChildNode
-): Layout {
+export function findAndReplaceLayoutChildNode({
+  rootLayout,
+  targetNodeId,
+  newNode,
+}: IReplaceLayoutChildNode): Layout {
   if (rootLayout.id === targetNodeId) {
     return newNode
   }
 
   if ('children' in rootLayout && rootLayout.children) {
-    rootLayout.children = rootLayout.children.map(child =>
-      child.id === targetNodeId ? newNode : findAndReplaceLayoutChildNode({ rootLayout: child, targetNodeId, newNode })
+    rootLayout.children = rootLayout.children.map((child) =>
+      child.id === targetNodeId
+        ? newNode
+        : findAndReplaceLayoutChildNode({
+          rootLayout: child,
+          targetNodeId,
+          newNode,
+        })
     )
   }
 
   return rootLayout
 }
 
-export interface IUpdateNodeSizes extends IFindLayoutChildNode {
+export interface IUpdateNodeSizes extends IRootAndTargetLayouts {
   newSizes: number[]
 }
 
@@ -149,47 +184,99 @@ export function findAndUpdateSplitSizes({
   return rootLayout
 }
 
-export function findAndReplaceLayoutNode({
-  rootLayout,
-  targetNode,
-}: IFindLayoutChildNode) {
-  const foundNode = findLayoutChildNode({ rootLayout, targetNode })
-  if (foundNode) {
-    foundNode = targetNode
-  }
-
-  return rootLayout
-}
-
-
-export function loadLayout(
-  id: string
-): Layout | undefined {
+export function loadLayout(id: string): Layout | undefined {
   const layoutString = localStorage.getItem(`${LAYOUT_PERSIST_PREFIX}${id}`)
-  const parsed = layoutString
-    ? parseLayoutString(layoutString)
-    : undefined
+  const parsed = layoutString ? parseLayoutString(layoutString) : undefined
   console.log('loaded layout', parsed)
   return parsed
 }
-function saveLayoutInner(
-  layout: Layout
-) {
-  return localStorage.setItem(`${LAYOUT_PERSIST_PREFIX}${layout.id}`, JSON.stringify(layout))
+function saveLayoutInner(layout: Layout) {
+  return localStorage.setItem(
+    `${LAYOUT_PERSIST_PREFIX}${layout.id}`,
+    JSON.stringify(layout)
+  )
 }
 export const saveLayout = throttle(saveLayoutInner, LAYOUT_SAVE_THROTTLE)
 
-function parseLayoutString(
-  layoutString: string
-) {
+function parseLayoutString(layoutString: string) {
   // TODO: validate this JSON
   return JSON.parse(layoutString) as Layout
 }
 
 /** Have the panes not been resized at all, just divided evenly? */
-export function areSplitSizesNatural(
-  sizes: number[]
-) {
+export function areSplitSizesNatural(sizes: number[]) {
   const epsilon = 0.1
-  return sizes.every(size => Math.abs(100 / sizes.length - size) < epsilon)
+  return sizes.every((size) => Math.abs(100 / sizes.length - size) < epsilon)
+}
+
+export function expandSplitChildPaneNode({ rootLayout, targetNode: panesLayoutNode }: IRootAndTargetLayouts) {
+  if (!panesLayoutNode || panesLayoutNode.type !== 'panes') { return rootLayout }
+
+  const splitsLayoutNode = findLayoutParentNode({ rootLayout, targetNode: panesLayoutNode })
+  if (!splitsLayoutNode || splitsLayoutNode.type !== 'splits') { return rootLayout }
+
+  const indexOfSplit = splitsLayoutNode.children.findIndex(child => child.id === panesLayoutNode.id)
+  splitsLayoutNode.children[indexOfSplit] = panesLayoutNode
+
+  /**
+   * Only need to expand if the child pane node is on a side that is the same
+   * as its parent's orientation.
+   */
+  const paneToolbarIsInLineWithSplit = panesLayoutNode.side.includes(splitsLayoutNode.orientation)
+  if (!panesLayoutNode.onExpandSize || !paneToolbarIsInLineWithSplit || indexOfSplit < 0) { return rootLayout }
+
+  const sizeDelta = Math.abs(panesLayoutNode.onExpandSize - splitsLayoutNode.sizes[indexOfSplit])
+  const childIndexToTransferDeltaFrom = indexOfSplit === 0 ? 1 : indexOfSplit - 1
+
+  splitsLayoutNode.sizes[indexOfSplit] = panesLayoutNode.onExpandSize
+  splitsLayoutNode.sizes[childIndexToTransferDeltaFrom] -= sizeDelta
+  splitsLayoutNode.children[indexOfSplit] = panesLayoutNode
+
+  return rootLayout
+}
+
+/**
+ * Mutate the rootLayout to collapse a pane layout that is a child of a split layout
+ * if the pane layout's orientation is in-line with the parent split layout.
+ */
+export function collapseSplitChildPaneNode({ rootLayout, targetNode: panesLayoutNode }: IRootAndTargetLayouts) {
+  if (!panesLayoutNode || panesLayoutNode.type !== 'panes') { return rootLayout }
+
+  const splitsLayoutNode = findLayoutParentNode({ rootLayout, targetNode: panesLayoutNode })
+  if (!splitsLayoutNode || splitsLayoutNode.type !== 'splits') { return rootLayout }
+
+  const indexOfSplit = splitsLayoutNode.children.findIndex(child => child.id === panesLayoutNode.id)
+  splitsLayoutNode.children[indexOfSplit] = panesLayoutNode
+
+
+  // Only need to collapse if the child pane node is on a side that is the same
+  // as its parent's orientation.
+  const shouldCollapse = panesLayoutNode.side.includes(splitsLayoutNode.orientation)
+  if (!shouldCollapse || indexOfSplit < 0) { return rootLayout }
+
+
+  // Need to reach into the DOM to get the elements to measure
+  const parentElement = getPanelGroupElement(splitsLayoutNode.id)
+  const childElement = getPanelElement(panesLayoutNode.id)
+  const toolbarElement = childElement?.querySelector('[data-pane-toolbar]')
+  if (!parentElement || indexOfSplit < 0 || !toolbarElement) { return rootLayout }
+
+  const directionToMeasure = splitsLayoutNode.orientation === 'inline' ? 'width' : 'height'
+  const parentSize = parentElement.getBoundingClientRect()[directionToMeasure]
+  const toolbarSize = toolbarElement.getBoundingClientRect()[directionToMeasure]
+
+  const newSizeAsPercentage = toolbarSize / parentSize * 100
+  const sizeDelta = Math.abs(newSizeAsPercentage - splitsLayoutNode.sizes[indexOfSplit])
+  const childIndexToTransferDeltaTo = indexOfSplit === 0 ? 1 : indexOfSplit - 1
+
+  // Mutate all the values-by-reference to make the split
+  // containing the pane layout only as large as its toolbar
+  panesLayoutNode.onExpandSize = splitsLayoutNode.sizes[indexOfSplit]
+  const newSizes = [...splitsLayoutNode.sizes]
+  newSizes[indexOfSplit] = newSizeAsPercentage
+  newSizes[childIndexToTransferDeltaTo] += sizeDelta
+  splitsLayoutNode.sizes = newSizes
+  splitsLayoutNode.children[indexOfSplit] = panesLayoutNode
+
+  return rootLayout
 }

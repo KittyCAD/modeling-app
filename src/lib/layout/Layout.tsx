@@ -7,7 +7,6 @@ import {
   Fragment,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from 'react'
 import {
@@ -23,10 +22,13 @@ import {
   findAndReplaceLayoutChildNode,
   loadLayout,
   areSplitSizesNatural,
+  collapseSplitChildPaneNode,
+  expandSplitChildPaneNode,
 } from '@src/lib/layout/utils'
 import type {
   IUpdateNodeSizes,
   IReplaceLayoutChildNode,
+  IRootAndTargetLayouts,
 } from '@src/lib/layout/utils'
 import { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 import { basicLayout } from '@src/lib/layout/basicLayout'
@@ -35,16 +37,22 @@ import Tooltip from '@src/components/Tooltip'
 type WithoutRootLayout<T> = Omit<T, 'rootLayout'>
 interface LayoutState {
   areaLibrary: Record<keyof typeof areaTypeRegistry, () => React.ReactElement>
-  updateLayoutNodeSizes: (
-    props: WithoutRootLayout<IUpdateNodeSizes>
-  ) => void
+  updateLayoutNodeSizes: (props: WithoutRootLayout<IUpdateNodeSizes>) => void
   replaceLayoutNode: (props: WithoutRootLayout<IReplaceLayoutChildNode>) => void
+  collapsePaneInParentSplit: (
+    props: WithoutRootLayout<IRootAndTargetLayouts>
+  ) => void
+  expandPaneInParentSplit: (
+    props: WithoutRootLayout<IRootAndTargetLayouts>
+  ) => void
 }
 
 const LayoutStateContext = createContext<LayoutState>({
   areaLibrary: areaTypeRegistry,
   updateLayoutNodeSizes: () => { },
   replaceLayoutNode: () => { },
+  collapsePaneInParentSplit: () => { },
+  expandPaneInParentSplit: () => { },
 })
 
 export const useLayoutState = () => useContext(LayoutStateContext)
@@ -64,16 +72,49 @@ export function LayoutRoot(props: LayoutRootProps) {
     saveLayout(layout)
   }, [layout])
 
-  function updateLayoutNodeSizes(
-    props: WithoutRootLayout<IUpdateNodeSizes>
-  ) {
-    setLayout(rootLayout => findAndUpdateSplitSizes({ rootLayout: structuredClone(rootLayout), ...props }))
+  function updateLayoutNodeSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
+    setLayout((rootLayout) =>
+      findAndUpdateSplitSizes({
+        rootLayout: structuredClone(rootLayout),
+        ...props,
+      })
+    )
   }
 
   function replaceLayoutNode(
     props: WithoutRootLayout<IReplaceLayoutChildNode>
   ) {
-    setLayout(rootLayout => findAndReplaceLayoutChildNode({ rootLayout: structuredClone(rootLayout), ...props }))
+    setLayout((rootLayout) =>
+      findAndReplaceLayoutChildNode({
+        rootLayout: structuredClone(rootLayout),
+        ...props,
+      })
+    )
+  }
+
+  function collapsePaneInParentSplit(
+    props: WithoutRootLayout<IRootAndTargetLayouts>
+  ) {
+    setLayout((rootLayout) => {
+      console.log('oldLayout is', rootLayout)
+      const newLayout = collapseSplitChildPaneNode({
+        rootLayout: structuredClone(rootLayout),
+        ...props,
+      })
+      console.log('newLayout is', newLayout)
+      return newLayout
+    })
+  }
+
+  function expandPaneInParentSplit(
+    props: WithoutRootLayout<IRootAndTargetLayouts>
+  ) {
+    setLayout((rootLayout) =>
+      expandSplitChildPaneNode({
+        rootLayout: structuredClone(rootLayout),
+        ...props,
+      })
+    )
   }
 
 
@@ -83,6 +124,8 @@ export function LayoutRoot(props: LayoutRootProps) {
         areaLibrary: props.areaLibrary || areaTypeRegistry,
         updateLayoutNodeSizes,
         replaceLayoutNode,
+        collapsePaneInParentSplit,
+        expandPaneInParentSplit,
         // More API here
       }}
     >
@@ -95,7 +138,7 @@ export function LayoutRoot(props: LayoutRootProps) {
  * A layout is a nested set of Areas (Splits, Tabs, or Toolbars),
  * ending in leaf nodes that contain UI components.
  */
-function LayoutNode({ layout, }: { layout: Layout, }) {
+function LayoutNode({ layout }: { layout: Layout }) {
   const { areaLibrary } = useLayoutState()
   switch (layout.type) {
     case 'splits':
@@ -112,11 +155,10 @@ function LayoutNode({ layout, }: { layout: Layout, }) {
 /**
  * Need to see if we should just roll our own resizable component?
  */
-function SplitLayout({ layout, }: { layout: Layout & { type: 'splits' }, }) {
+function SplitLayout({ layout }: { layout: Layout & { type: 'splits' } }) {
   // Direction is simpler than Orientation, which uses logical properties.
   const orientationAsDirection =
     layout.orientation === 'inline' ? 'horizontal' : 'vertical'
-
 
   return (
     <SplitLayoutContents direction={orientationAsDirection} layout={layout} />
@@ -126,17 +168,13 @@ function SplitLayout({ layout, }: { layout: Layout & { type: 'splits' }, }) {
 function SplitLayoutContents({
   layout,
   direction,
-
 }: {
   direction: Direction
   layout: Omit<Layout & { type: 'splits' }, 'orientation' | 'type'>
-
 }) {
   const { updateLayoutNodeSizes } = useLayoutState()
 
-  function onSplitDrag(
-    newSizes: number[],
-  ) {
+  function onSplitDrag(newSizes: number[]) {
     updateLayoutNodeSizes({ targetNode: layout as Layout, newSizes })
   }
   return (
@@ -173,7 +211,7 @@ function SplitLayoutContents({
 /**
  * Use headless UI tabs
  */
-function TabLayout({ layout, }: { layout: Layout & { type: 'tabs' }, }) {
+function TabLayout({ layout }: { layout: Layout & { type: 'tabs' } }) {
   return (
     <Tab.Group
       as="div"
@@ -205,10 +243,17 @@ function TabLayout({ layout, }: { layout: Layout & { type: 'tabs' }, }) {
  * Use headless UI tabs if they can have multiple active items
  * with resizable panes
  */
-function PaneLayout({ layout, }: { layout: Layout & { type: 'panes' }, }) {
-  const { replaceLayoutNode } = useLayoutState()
+function PaneLayout({ layout }: { layout: Layout & { type: 'panes' } }) {
+  const { replaceLayoutNode, collapsePaneInParentSplit, expandPaneInParentSplit } = useLayoutState()
   const sideBorderWidthProp = `border${sideToReactCss(getOppositeSide(layout.side))}Width`
-  const activePanes = layout.activeIndices.map((itemIndex) => layout.children[itemIndex]).filter(item => item !== undefined)
+  const activePanes = layout.activeIndices
+    .map((itemIndex) => layout.children[itemIndex])
+    .filter((item) => item !== undefined)
+
+  useEffect(() => {
+    console.log('rerendering panelayout', layout)
+  }, [layout])
+
   const onToggleItem = (checked: boolean, i: number) => {
     console.log('toggley toggley', checked, i)
     const indexInActiveItems = layout.activeIndices.indexOf(i)
@@ -224,9 +269,12 @@ function PaneLayout({ layout, }: { layout: Layout & { type: 'panes' }, }) {
         const newActiveIndex = layout.activeIndices.indexOf(i)
 
         if (areSplitSizesNatural(layout.sizes)) {
-          layout.sizes = Array(layout.activeIndices.length).fill(100 / layout.activeIndices.length)
+          layout.sizes = Array(layout.activeIndices.length).fill(
+            100 / layout.activeIndices.length
+          )
         } else {
-          const activeIndexToSplit = newActiveIndex === 0 ? 1 : newActiveIndex - 1
+          const activeIndexToSplit =
+            newActiveIndex === 0 ? 1 : newActiveIndex - 1
           const halfSize = (layout.sizes[activeIndexToSplit] || 2) / 2
           layout.sizes[activeIndexToSplit] = halfSize
           layout.sizes.splice(newActiveIndex, 0, halfSize)
@@ -235,6 +283,8 @@ function PaneLayout({ layout, }: { layout: Layout & { type: 'panes' }, }) {
         layout.sizes = [50, 50]
       } else {
         layout.sizes = [100]
+        expandPaneInParentSplit({ targetNode: layout })
+        return
       }
 
       console.log('gonna pop in this pane real quick')
@@ -244,9 +294,14 @@ function PaneLayout({ layout, }: { layout: Layout & { type: 'panes' }, }) {
 
       if (layout.sizes.length > 1) {
         const removedSize = layout.sizes.splice(indexInActiveItems, 1)
-        layout.sizes[indexInActiveItems === 0 ? 0 : indexInActiveItems - 1] += removedSize[0]
+        layout.sizes[indexInActiveItems === 0 ? 0 : indexInActiveItems - 1] +=
+          removedSize[0]
       } else {
+        console.log('this was our only opened pane that we are closing, collapse!')
+        layout.activeIndices = []
         layout.sizes = []
+        collapsePaneInParentSplit({ targetNode: layout })
+        return
       }
 
       console.log('gonna pop out this pane real quick')
@@ -260,6 +315,7 @@ function PaneLayout({ layout, }: { layout: Layout & { type: 'panes' }, }) {
       <ul
         className={`flex border-solid b-4 ${sideToTailwindTabDirection(layout.side)}`}
         style={{ [sideBorderWidthProp]: '1px' }}
+        data-pane-toolbar
       >
         {layout.children.map((tab, i) => {
           return (
