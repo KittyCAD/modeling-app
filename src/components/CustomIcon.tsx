@@ -1781,10 +1781,10 @@ const CustomIconMap = Object.freeze({
 })
 
 export type CustomIconName = keyof typeof CustomIconMap
-export function isCustomIconName(
-  name: unknown
-): name is CustomIconName {
-  if (typeof name !== 'string') { return false }
+export function isCustomIconName(name: unknown): name is CustomIconName {
+  if (typeof name !== 'string') {
+    return false
+  }
   return Object.keys(CustomIconMap).indexOf(name) >= 0
 }
 

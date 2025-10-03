@@ -36,6 +36,10 @@ export type PaneLayout = BasicLayout &
     children: (Layout & {
       icon: CustomIconName
     })[]
+    /** if the pane layout is a split layout's child in the same axis, it will onExpandSize
+     * when it goes from 0 to 1 active child panes
+     */
+    onExpandSize?: number
   }
 type SimpleLayout = BasicLayout & {
   type: 'simple'
