@@ -22,6 +22,9 @@ const equipTools = Object.freeze({
   pointTool,
 })
 
+const CHILD_TOOL = 'child tool'
+const CHILD_TOOL_DONE_EVENT = `xstate.done.actor.${CHILD_TOOL}`
+
 export type EquipTool = keyof typeof equipTools
 
 // Type for the spawn function used in XState setup actions
@@ -37,15 +40,9 @@ export type SketchSolveMachineEvent =
   | { type: 'update selection'; data?: SetSelections }
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
-  | { type: 'xstate.done.actor.tool' }
-
-type ToolActorRef =
-  | ActorRefFrom<typeof dimensionTool>
-  | ActorRefFrom<typeof centerRectTool>
-  | ActorRefFrom<typeof pointTool>
+  | { type: typeof CHILD_TOOL_DONE_EVENT }
 
 type SketchSolveContext = ModelingMachineContext & {
-  toolActor?: ToolActorRef
   sketchSolveToolName: EquipTool | null
   pendingToolName?: EquipTool
 }
@@ -56,18 +53,10 @@ export const sketchSolveMachine = setup({
     events: {} as SketchSolveMachineEvent,
   },
   actions: {
-    'send unequip to tool': sendTo(
-      ({ context }) => context.toolActor || 'moveTool',
-      {
-        type: 'unequip',
-      }
-    ),
-    'send update selection to equipped tool': sendTo(
-      ({ context }) => context.toolActor || 'moveTool',
-      {
-        type: 'update selection',
-      }
-    ),
+    'send unequip to tool': sendTo(CHILD_TOOL, { type: 'unequip' }),
+    'send update selection to equipped tool': sendTo(CHILD_TOOL, {
+      type: 'update selection',
+    }),
     'send updated selection to move tool': sendTo('moveTool', {
       type: 'update selection',
     }),
@@ -93,7 +82,7 @@ export const sketchSolveMachine = setup({
       if (event.type === 'equip tool') {
         nameOfToolToSpawn = event.data.tool
       } else if (
-        event.type === 'xstate.done.actor.tool' &&
+        event.type === CHILD_TOOL_DONE_EVENT &&
         context.pendingToolName
       ) {
         nameOfToolToSpawn = context.pendingToolName
@@ -103,7 +92,7 @@ export const sketchSolveMachine = setup({
       }
 
       return {
-        toolActor: typedSpawn(nameOfToolToSpawn, { id: 'tool' }),
+        toolActor: typedSpawn(nameOfToolToSpawn, { id: CHILD_TOOL }),
         sketchSolveToolName: nameOfToolToSpawn,
         pendingToolName: undefined, // Clear the pending tool after spawning
       }
@@ -188,7 +177,7 @@ export const sketchSolveMachine = setup({
 
     'switching tool': {
       on: {
-        'xstate.done.actor.tool': {
+        [CHILD_TOOL_DONE_EVENT]: {
           target: 'using tool',
           actions: [
             () => console.log('switched tools with xstate.done.actor.tool'),
@@ -209,7 +198,7 @@ export const sketchSolveMachine = setup({
 
     'unequipping tool': {
       on: {
-        'xstate.done.actor.tool': {
+        [CHILD_TOOL_DONE_EVENT]: {
           target: 'move and select',
           actions: ['send tool unequipped to parent'],
         },
