@@ -38,7 +38,7 @@ description: Variables in memory after executing sketch_block_var_substitution.k
           },
           {
             "type": "Number",
-            "value": 40.0,
+            "value": 1016.0,
             "ty": {
               "mm": null,
               "type": "Known",
