@@ -44,7 +44,7 @@ two = increment(1)
 three = add(1, delta = 2)
 ```
 
-Below is an example of how the the custom function must be called if it has a labeled argument, and another example with an unlabeled argument:
+Below shows how a custom function must be called if it has a labeled argument, and another example with an unlabeled argument:
 
 ```
 @settings(defaultLengthUnit = mm)
