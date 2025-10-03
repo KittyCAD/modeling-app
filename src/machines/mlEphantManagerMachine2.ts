@@ -17,7 +17,7 @@ import { Socket } from '@src/lib/socket'
 // import { MockSocket } from '@src/mocks/copilot'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
 

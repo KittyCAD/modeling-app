@@ -8,7 +8,7 @@ description: Operations executed import_foreign.kcl
       "type": "GroupBegin",
       "group": {
         "type": "ModuleInstance",
-        "name": "cube.gltf",
+        "name": "../inputs/cube.gltf",
         "moduleId": 0
       },
       "nodePath": {

@@ -33,7 +33,7 @@ import {
   type Artifact,
   defaultArtifactGraph,
 } from '@src/lang/std/artifactGraph'
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
 import { isTopLevelModule } from '@src/lang/util'
 import type { CoreDumpManager } from '@src/lib/coredump'
 import openWindow from '@src/lib/openWindow'

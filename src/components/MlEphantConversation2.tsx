@@ -1,5 +1,5 @@
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { type Selections } from '@src/lib/selections'
+import { type Selections } from '@src/machines/modelingSharedTypes'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import Tooltip from '@src/components/Tooltip'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
