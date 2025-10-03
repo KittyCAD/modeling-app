@@ -2311,9 +2311,10 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast } = kclManager
+        const { ast, artifactGraph } = kclManager
         const astResult = addExtrude({
           ast,
+          artifactGraph,
           ...input,
         })
         if (err(astResult)) {

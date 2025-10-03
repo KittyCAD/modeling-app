@@ -79,8 +79,8 @@ export type ModelingCommandSchema = {
     nodeToEdit?: PathToNode
     // KCL stdlib arguments
     sketches: Selections
-    length: KclCommandValue
-    // TODO: add `to` as Selections arg here
+    length?: KclCommandValue
+    to?: Selections
     symmetric?: boolean
     bidirectionalLength?: KclCommandValue
     tagStart?: string
@@ -464,7 +464,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       length: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
-        required: true,
+        required: false,
+      },
+      to: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall'],
+        required: false,
       },
       symmetric: {
         inputType: 'boolean',

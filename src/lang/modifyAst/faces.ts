@@ -188,7 +188,7 @@ export function addOffsetPlane({
 
 // Utilities
 
-function getFacesExprsFromSelection(
+export function getFacesExprsFromSelection(
   ast: Node<Program>,
   faces: Selections,
   artifactGraph: ArtifactGraph

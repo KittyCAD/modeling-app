@@ -29,6 +29,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
+  LabeledArg,
   PathToNode,
   Program,
   VariableDeclaration,
@@ -37,11 +38,14 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { getFacesExprsFromSelection } from './faces'
 
 export function addExtrude({
   ast,
+  artifactGraph,
   sketches,
   length,
+  to,
   symmetric,
   bidirectionalLength,
   tagStart,
@@ -53,8 +57,10 @@ export function addExtrude({
   nodeToEdit,
 }: {
   ast: Node<Program>
+  artifactGraph: ArtifactGraph
   sketches: Selections
-  length: KclCommandValue
+  length?: KclCommandValue
+  to?: Selections
   symmetric?: boolean
   bidirectionalLength?: KclCommandValue
   tagStart?: string
@@ -81,6 +87,21 @@ export function addExtrude({
   }
 
   // Extra labeled args expressions
+  const lengthExpr = length
+    ? [createLabeledArg('length', valueOrVariable(length))]
+    : []
+  // Special handling for 'to' arg
+  let toExpr: LabeledArg[] = []
+  if (to) {
+    const facesExprs = getFacesExprsFromSelection(
+      modifiedAst,
+      to,
+      artifactGraph
+    )
+    const facesExpr = createVariableExpressionsArray(facesExprs)
+    if (!facesExpr) return new Error("Couldn't retrieve face expressions")
+    toExpr = [createLabeledArg('to', facesExpr)]
+  }
   const symmetricExpr = symmetric
     ? [createLabeledArg('symmetric', createLiteral(symmetric))]
     : []
@@ -113,7 +134,8 @@ export function addExtrude({
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('extrude', sketchesExpr, [
-    createLabeledArg('length', valueOrVariable(length)),
+    ...lengthExpr,
+    ...toExpr,
     ...symmetricExpr,
     ...bidirectionalLengthExpr,
     ...tagStartExpr,
@@ -125,7 +147,7 @@ export function addExtrude({
   ])
 
   // Insert variables for labeled arguments if provided
-  if ('variableName' in length && length.variableName) {
+  if (length && 'variableName' in length && length.variableName) {
     insertVariableAndOffsetPathToNode(length, modifiedAst, nodeToEdit)
   }
   if (
