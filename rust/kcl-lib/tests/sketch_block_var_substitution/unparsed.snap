@@ -17,11 +17,12 @@ len == 5mm
 
   p1 = [var, var]
 p1[0] == 30
-p1[1] == 40
+p1[1] == 40in
 }
 
 assert(s.x, isEqualTo = 3)
 assert(s.y, isEqualTo = 20)
 assert(s.len, isEqualTo = 5mm)
 assert(s.p1[0], isEqualTo = 30)
-assert(s.p1[1], isEqualTo = 40)
+// Should have converted to the module units (millimeters).
+assert(s.p1[1], isEqualTo = 1016mm)

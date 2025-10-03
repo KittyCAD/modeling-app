@@ -603,13 +603,13 @@ description: Result of parsing sketch_block_var_substitution.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "40",
+                      "raw": "40in",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
                         "value": 40.0,
-                        "suffix": "None"
+                        "suffix": "Inch"
                       }
                     },
                     "start": 0,
@@ -1130,13 +1130,13 @@ description: Result of parsing sketch_block_var_substitution.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "raw": "40",
+                "raw": "1016mm",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
-                  "value": 40.0,
-                  "suffix": "None"
+                  "value": 1016.0,
+                  "suffix": "Mm"
                 }
               }
             }
@@ -1233,6 +1233,9 @@ description: Result of parsing sketch_block_var_substitution.kcl
           }
         },
         "moduleId": 0,
+        "preComments": [
+          "// Should have converted to the module units (millimeters)."
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
