@@ -103,7 +103,9 @@ export function processMemory(variables: VariableMap) {
     } else if (val.type === 'Number') {
       processedMemory[key] = humanDisplayNumber(val.value, val.ty)
     } else if (val.type === 'SketchVar') {
-      processedMemory[key] = `var ${humanDisplayNumber(val.value, val.ty)}`
+      const sketchVar = val.value
+      processedMemory[key] =
+        `var ${humanDisplayNumber(sketchVar.initialValue, sketchVar.ty)}`
     } else {
       processedMemory[key] = val.value
     }
