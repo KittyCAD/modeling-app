@@ -468,7 +468,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       to: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall'],
+        selectionTypes: ['cap', 'wall', 'edgeCut'],
         clearSelectionFirst: true,
         required: false,
       },

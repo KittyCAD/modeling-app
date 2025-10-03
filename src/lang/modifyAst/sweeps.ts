@@ -38,7 +38,7 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { getFacesExprsFromSelection } from './faces'
+import { buildSolidsAndFacesExprs } from '@src/lang/modifyAst/faces'
 
 export function addExtrude({
   ast,
@@ -93,14 +93,25 @@ export function addExtrude({
   // Special handling for 'to' arg
   let toExpr: LabeledArg[] = []
   if (to) {
-    const facesExprs = getFacesExprsFromSelection(
-      modifiedAst,
+    const result = buildSolidsAndFacesExprs(
       to,
-      artifactGraph
+      artifactGraph,
+      modifiedAst,
+      nodeToEdit
     )
-    const facesExpr = createVariableExpressionsArray(facesExprs)
-    if (!facesExpr) return new Error("Couldn't retrieve face expressions")
-    toExpr = [createLabeledArg('to', facesExpr)]
+    if (err(result)) {
+      return result
+    }
+
+    const { solidsExpr, facesExpr } = result
+    toExpr = [
+      createLabeledArg(
+        'to',
+        createCallExpressionStdLibKw('planeOf', solidsExpr, [
+          createLabeledArg('face', facesExpr),
+        ])
+      ),
+    ]
   }
   const symmetricExpr = symmetric
     ? [createLabeledArg('symmetric', createLiteral(symmetric))]
