@@ -2,13 +2,7 @@ import type { Direction, Layout } from '@src/lib/layout/types'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Tab, Switch } from '@headlessui/react'
-import {
-  createContext,
-  Fragment,
-  useContext,
-  useEffect,
-  useState,
-} from 'react'
+import { createContext, Fragment, useContext, useEffect, useState } from 'react'
 import {
   getOppositeSide,
   getOppositionDirection,
@@ -24,6 +18,7 @@ import {
   areSplitSizesNatural,
   collapseSplitChildPaneNode,
   expandSplitChildPaneNode,
+  shouldEnableResizeHandle,
 } from '@src/lib/layout/utils'
 import type {
   IUpdateNodeSizes,
@@ -63,6 +58,7 @@ interface LayoutRootProps {
 }
 
 const maybePersistedLayout = loadLayout('basic')
+
 export function LayoutRoot(props: LayoutRootProps) {
   const [layout, setLayout] = useState<Layout>(
     props.initialLayout || maybePersistedLayout || basicLayout
@@ -116,7 +112,6 @@ export function LayoutRoot(props: LayoutRootProps) {
       })
     )
   }
-
 
   return (
     <LayoutStateContext.Provider
@@ -186,20 +181,19 @@ function SplitLayoutContents({
         onLayout={onSplitDrag}
       >
         {layout.children.map((a, i, arr) => {
-          const isLastChild = i >= arr.length - 1
+          const disableResize = !shouldEnableResizeHandle(a, i, arr)
           return (
-            <Fragment key={a.id}>
+            <Fragment key={`${a.id}${a.type === 'panes' ? a.activeIndices : ''}`}>
               <Panel
                 id={a.id}
                 order={i}
                 defaultSize={layout.sizes[i]}
                 className="flex bg-default"
               >
+                {a.key}
                 <LayoutNode layout={a} />
               </Panel>
-              {!isLastChild && (
-                <ResizeHandle direction={direction} id={`handle-${a.id}`} />
-              )}
+              <ResizeHandle direction={direction} id={`handle-${a.id}`} disabled={disableResize} />
             </Fragment>
           )
         })}
@@ -244,15 +238,15 @@ function TabLayout({ layout }: { layout: Layout & { type: 'tabs' } }) {
  * with resizable panes
  */
 function PaneLayout({ layout }: { layout: Layout & { type: 'panes' } }) {
-  const { replaceLayoutNode, collapsePaneInParentSplit, expandPaneInParentSplit } = useLayoutState()
+  const {
+    replaceLayoutNode,
+    collapsePaneInParentSplit,
+    expandPaneInParentSplit,
+  } = useLayoutState()
   const sideBorderWidthProp = `border${sideToReactCss(getOppositeSide(layout.side))}Width`
   const activePanes = layout.activeIndices
     .map((itemIndex) => layout.children[itemIndex])
     .filter((item) => item !== undefined)
-
-  useEffect(() => {
-    console.log('rerendering panelayout', layout)
-  }, [layout])
 
   const onToggleItem = (checked: boolean, i: number) => {
     console.log('toggley toggley', checked, i)
@@ -297,7 +291,9 @@ function PaneLayout({ layout }: { layout: Layout & { type: 'panes' } }) {
         layout.sizes[indexInActiveItems === 0 ? 0 : indexInActiveItems - 1] +=
           removedSize[0]
       } else {
-        console.log('this was our only opened pane that we are closing, collapse!')
+        console.log(
+          'this was our only opened pane that we are closing, collapse!'
+        )
         layout.activeIndices = []
         layout.sizes = []
         collapsePaneInParentSplit({ targetNode: layout })
@@ -357,10 +353,11 @@ function PaneLayout({ layout }: { layout: Layout & { type: 'panes' } }) {
   )
 }
 
-function ResizeHandle({ direction, id }: { direction: Direction; id: string }) {
+function ResizeHandle({ direction, id, disabled }: { direction: Direction; id: string, disabled: boolean }) {
   return (
     <PanelResizeHandle
-      className={`relative group/handle ${direction === 'vertical' ? 'h-0.5' : 'w-0.5'}`}
+      disabled={disabled}
+      className={`relative group/handle ${direction === 'vertical' ? 'h-0.5' : 'w-0.5'} ${disabled ? 'bg-default' : ''}`}
       id={id}
     >
       <div

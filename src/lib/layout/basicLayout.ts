@@ -56,25 +56,10 @@ export const basicLayout: Layout = {
       ],
     },
     {
-      id: 'i',
-      label: 'middle-split',
-      type: 'splits',
-      sizes: [75, 25],
-      orientation: 'block',
-      children: [
-        {
-          id: 'f',
-          label: 'modeling-scene',
-          type: 'simple',
-          areaType: 'modeling',
-        },
-        {
-          id: 'j',
-          label: 'modeling-scene',
-          type: 'simple',
-          areaType: 'logs',
-        },
-      ],
+      id: 'f',
+      label: 'modeling-scene',
+      type: 'simple',
+      areaType: 'modeling',
     },
     {
       id: 'g',
