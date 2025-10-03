@@ -3962,8 +3962,8 @@ mod plane_of_chamfer {
         super::execute(TEST_NAME, true).await
     }
 }
-mod sketch_block_var_substitution {
-    const TEST_NAME: &str = "sketch_block_var_substitution";
+mod sketch_block_basic_fixed_constraints {
+    const TEST_NAME: &str = "sketch_block_basic_fixed_constraints";
 
     /// Test parsing KCL.
     #[test]

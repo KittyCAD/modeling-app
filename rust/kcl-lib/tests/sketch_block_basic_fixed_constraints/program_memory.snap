@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Variables in memory after executing sketch_block_var_substitution.kcl
+description: Variables in memory after executing sketch_block_basic_fixed_constraints.kcl
 ---
 {
   "myParam": {
