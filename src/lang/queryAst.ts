@@ -1183,7 +1183,7 @@ export function retrieveSelectionsFromOpArg(
       // TODO: retrieve module import alias instead of throwing here
       // https://github.com/KittyCAD/modeling-app/issues/8463
       return new Error(
-        "Artifact is from a foreign module, editing isn't supported yet"
+        "The selected artifact is from an imported module, editing isn't supported yet. Please delete the operation and recreate."
       )
     }
 
