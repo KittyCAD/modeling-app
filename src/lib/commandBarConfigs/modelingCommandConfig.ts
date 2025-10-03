@@ -471,6 +471,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall', 'edgeCut'],
         clearSelectionFirst: true,
         required: false,
+        multiple: false,
       },
       symmetric: {
         inputType: 'boolean',
