@@ -112,7 +112,7 @@ export type SidebarAction = {
 // For now a lot of icons are the same but the reality is they could totally
 // be different, like an icon based on some data for the pane, or the icon
 // changes to be a spinning loader on loading.
-const textToCadPane: SidebarPane = {
+const textToCadPane = Object.freeze({
   id: 'text-to-cad',
   icon: 'sparkles',
   keybinding: 'Ctrl + T',
@@ -153,9 +153,9 @@ const textToCadPane: SidebarPane = {
       </>
     )
   },
-}
+})
 
-const textToCadPane2: SidebarPane = {
+const textToCadPane2 = Object.freeze({
   id: 'text-to-cad-2',
   icon: 'elephant',
   keybinding: 'Ctrl + T',
@@ -197,9 +197,9 @@ const textToCadPane2: SidebarPane = {
       </>
     )
   },
-}
+})
 
-export const sidebarPanesLeft: SidebarPane[] = [
+export const sidebarPanesLeft = Object.freeze([
   {
     id: 'feature-tree',
     icon: 'model',
@@ -475,11 +475,11 @@ export const sidebarPanesLeft: SidebarPane[] = [
     hide: ({ settings }) => !settings.app.showDebugPanel.current,
   },
   ...(isPlaywright() ? [textToCadPane, textToCadPane2] : []),
-]
+] as const)
 
-export const sidebarPanesRight: SidebarPane[] = [
+export const sidebarPanesRight = Object.freeze([
   ...(!isPlaywright() ? [textToCadPane, textToCadPane2] : []),
-]
+] as const)
 
 /**
  * Gathered up all the pane IDs defined in this file

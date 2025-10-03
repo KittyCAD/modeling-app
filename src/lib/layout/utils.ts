@@ -209,26 +209,50 @@ export function areSplitSizesNatural(sizes: number[]) {
   return sizes.every((size) => Math.abs(100 / sizes.length - size) < epsilon)
 }
 
-export function expandSplitChildPaneNode({ rootLayout, targetNode: panesLayoutNode }: IRootAndTargetLayouts) {
-  if (!panesLayoutNode || panesLayoutNode.type !== 'panes') { return rootLayout }
+export function expandSplitChildPaneNode({
+  rootLayout,
+  targetNode: panesLayoutNode,
+}: IRootAndTargetLayouts) {
+  if (!panesLayoutNode || panesLayoutNode.type !== 'panes') {
+    return rootLayout
+  }
 
-  const splitsLayoutNode = findLayoutParentNode({ rootLayout, targetNode: panesLayoutNode })
-  if (!splitsLayoutNode || splitsLayoutNode.type !== 'splits') { return rootLayout }
+  const splitsLayoutNode = findLayoutParentNode({
+    rootLayout,
+    targetNode: panesLayoutNode,
+  })
+  if (!splitsLayoutNode || splitsLayoutNode.type !== 'splits') {
+    return rootLayout
+  }
 
-  const indexOfSplit = splitsLayoutNode.children.findIndex(child => child.id === panesLayoutNode.id)
+  const indexOfSplit = splitsLayoutNode.children.findIndex(
+    (child) => child.id === panesLayoutNode.id
+  )
   splitsLayoutNode.children[indexOfSplit] = panesLayoutNode
 
   /**
    * Only need to expand if the child pane node is on a side that is the same
    * as its parent's orientation.
    */
-  const paneToolbarIsInLineWithSplit = panesLayoutNode.side.includes(splitsLayoutNode.orientation)
-  if (!panesLayoutNode.onExpandSize || !paneToolbarIsInLineWithSplit || indexOfSplit < 0) { return rootLayout }
+  const paneToolbarIsInLineWithSplit = panesLayoutNode.side.includes(
+    splitsLayoutNode.orientation
+  )
+  if (
+    !panesLayoutNode.onExpandSize ||
+    !paneToolbarIsInLineWithSplit ||
+    indexOfSplit < 0
+  ) {
+    return rootLayout
+  }
 
-  const sizeDelta = Math.abs(panesLayoutNode.onExpandSize - splitsLayoutNode.sizes[indexOfSplit])
-  const childIndexToTransferDeltaFrom = indexOfSplit === 0 ? 1 : indexOfSplit - 1
+  const sizeDelta = Math.abs(
+    panesLayoutNode.onExpandSize - splitsLayoutNode.sizes[indexOfSplit]
+  )
+  const childIndexToTransferDeltaFrom =
+    indexOfSplit === 0 ? 1 : indexOfSplit - 1
 
   splitsLayoutNode.sizes[indexOfSplit] = panesLayoutNode.onExpandSize
+  panesLayoutNode.onExpandSize = undefined
   splitsLayoutNode.sizes[childIndexToTransferDeltaFrom] -= sizeDelta
   splitsLayoutNode.children[indexOfSplit] = panesLayoutNode
 
@@ -239,34 +263,53 @@ export function expandSplitChildPaneNode({ rootLayout, targetNode: panesLayoutNo
  * Mutate the rootLayout to collapse a pane layout that is a child of a split layout
  * if the pane layout's orientation is in-line with the parent split layout.
  */
-export function collapseSplitChildPaneNode({ rootLayout, targetNode: panesLayoutNode }: IRootAndTargetLayouts) {
-  if (!panesLayoutNode || panesLayoutNode.type !== 'panes') { return rootLayout }
+export function collapseSplitChildPaneNode({
+  rootLayout,
+  targetNode: panesLayoutNode,
+}: IRootAndTargetLayouts) {
+  if (!panesLayoutNode || panesLayoutNode.type !== 'panes') {
+    return rootLayout
+  }
 
-  const splitsLayoutNode = findLayoutParentNode({ rootLayout, targetNode: panesLayoutNode })
-  if (!splitsLayoutNode || splitsLayoutNode.type !== 'splits') { return rootLayout }
+  const splitsLayoutNode = findLayoutParentNode({
+    rootLayout,
+    targetNode: panesLayoutNode,
+  })
+  if (!splitsLayoutNode || splitsLayoutNode.type !== 'splits') {
+    return rootLayout
+  }
 
-  const indexOfSplit = splitsLayoutNode.children.findIndex(child => child.id === panesLayoutNode.id)
+  const indexOfSplit = splitsLayoutNode.children.findIndex(
+    (child) => child.id === panesLayoutNode.id
+  )
   splitsLayoutNode.children[indexOfSplit] = panesLayoutNode
-
 
   // Only need to collapse if the child pane node is on a side that is the same
   // as its parent's orientation.
-  const shouldCollapse = panesLayoutNode.side.includes(splitsLayoutNode.orientation)
-  if (!shouldCollapse || indexOfSplit < 0) { return rootLayout }
-
+  const shouldCollapse = panesLayoutNode.side.includes(
+    splitsLayoutNode.orientation
+  )
+  if (!shouldCollapse || indexOfSplit < 0) {
+    return rootLayout
+  }
 
   // Need to reach into the DOM to get the elements to measure
   const parentElement = getPanelGroupElement(splitsLayoutNode.id)
   const childElement = getPanelElement(panesLayoutNode.id)
   const toolbarElement = childElement?.querySelector('[data-pane-toolbar]')
-  if (!parentElement || indexOfSplit < 0 || !toolbarElement) { return rootLayout }
+  if (!parentElement || indexOfSplit < 0 || !toolbarElement) {
+    return rootLayout
+  }
 
-  const directionToMeasure = splitsLayoutNode.orientation === 'inline' ? 'width' : 'height'
+  const directionToMeasure =
+    splitsLayoutNode.orientation === 'inline' ? 'width' : 'height'
   const parentSize = parentElement.getBoundingClientRect()[directionToMeasure]
   const toolbarSize = toolbarElement.getBoundingClientRect()[directionToMeasure]
 
-  const newSizeAsPercentage = toolbarSize / parentSize * 100
-  const sizeDelta = Math.abs(newSizeAsPercentage - splitsLayoutNode.sizes[indexOfSplit])
+  const newSizeAsPercentage = (toolbarSize / parentSize) * 100
+  const sizeDelta = Math.abs(
+    newSizeAsPercentage - splitsLayoutNode.sizes[indexOfSplit]
+  )
   const childIndexToTransferDeltaTo = indexOfSplit === 0 ? 1 : indexOfSplit - 1
 
   // Mutate all the values-by-reference to make the split
@@ -279,4 +322,14 @@ export function collapseSplitChildPaneNode({ rootLayout, targetNode: panesLayout
   splitsLayoutNode.children[indexOfSplit] = panesLayoutNode
 
   return rootLayout
+}
+
+export function shouldEnableResizeHandle(currentPane: Layout, index: number, allPanes: Layout[]): boolean {
+  const isLastPane = index >= allPanes.length - 1
+  const nextPane = !isLastPane ? allPanes[index + 1] : undefined
+  const isCollapsedPaneLayout = (l: Layout | undefined) => l?.type === 'panes' && l.onExpandSize !== undefined
+  const nextIsCollapsed = isCollapsedPaneLayout(nextPane)
+  const thisIsCollapsed = isCollapsedPaneLayout(currentPane)
+
+  return !(isLastPane || nextIsCollapsed || thisIsCollapsed)
 }
