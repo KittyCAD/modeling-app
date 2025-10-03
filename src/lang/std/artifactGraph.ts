@@ -29,7 +29,7 @@ import type {
   SweepEdge,
   WallArtifact,
 } from '@src/lang/wasm'
-import type { Selection } from '@src/lib/selections'
+import type { Selection, Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
@@ -867,4 +867,84 @@ export function getFaceCodeRef(
     return artifact.codeRef
   }
   return null
+}
+
+/**
+ * Coerce selections that may contain faces or edges to their parent body (sweep/compositeSolid).
+ * This is useful for commands that only work with bodies, but users may have faces or edges selected.
+ *
+ * @param selections - The selections to coerce
+ * @param artifactGraph - The artifact graph to use for lookups
+ * @returns A new Selections object with only body artifacts, or an Error if coercion fails
+ */
+export function coerceSelectionsToBody(
+  selections: Selections,
+  artifactGraph: ArtifactGraph
+): Selections | Error {
+  const bodySelections: Selection[] = []
+  const seenBodyIds = new Set<string>()
+
+  for (const selection of selections.graphSelections) {
+    if (!selection.artifact) {
+      continue
+    }
+
+    let bodyArtifact: Artifact | null = null
+    let bodyCodeRef: CodeRef | null = null
+
+    // If it's already a body type, use it directly
+    if (
+      selection.artifact.type === 'sweep' ||
+      selection.artifact.type === 'compositeSolid' ||
+      selection.artifact.type === 'path'
+    ) {
+      bodyArtifact = selection.artifact
+      bodyCodeRef = selection.codeRef
+    } else {
+      // Get the parent body (sweep) from faces, edges, or edgeCuts
+      // getSweepArtifactFromSelection handles all common types: sweepEdge, segment, wall, cap, edgeCut
+      const sweep = getSweepArtifactFromSelection(selection, artifactGraph)
+
+      if (err(sweep)) {
+        return new Error(
+          `Unable to find parent body for selected artifact: ${selection.artifact.type}`
+        )
+      }
+
+      // Prefer the path over the sweep for the final selection
+      // The engine selects the path (not the sweep) when the object filter is active,
+      // so we follow the same convention for consistency
+      const sweepArtifact = sweep as Artifact
+      if ('pathId' in sweepArtifact && sweepArtifact.pathId) {
+        const path = getArtifactOfTypes(
+          { key: sweepArtifact.pathId, types: ['path'] },
+          artifactGraph
+        )
+        if (!err(path)) {
+          bodyArtifact = path
+          bodyCodeRef = path.codeRef
+        } else {
+          bodyArtifact = sweepArtifact
+          bodyCodeRef = sweep.codeRef
+        }
+      } else {
+        bodyArtifact = sweepArtifact
+        bodyCodeRef = sweep.codeRef
+      }
+    }
+
+    // Add to the result, avoiding duplicates
+    if (bodyArtifact && bodyCodeRef && !seenBodyIds.has(bodyArtifact.id)) {
+      seenBodyIds.add(bodyArtifact.id)
+      bodySelections.push({
+        artifact: bodyArtifact,
+        codeRef: bodyCodeRef,
+      })
+    }
+  }
+
+  return {
+    graphSelections: bodySelections,
+    otherSelections: selections.otherSelections,
+  }
 }
