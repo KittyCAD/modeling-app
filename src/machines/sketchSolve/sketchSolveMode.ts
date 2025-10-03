@@ -90,9 +90,9 @@ export const sketchSolveMachine = setup({
         console.error('Cannot determine tool to spawn')
         return {}
       }
+      typedSpawn(nameOfToolToSpawn, { id: CHILD_TOOL })
 
       return {
-        toolActor: typedSpawn(nameOfToolToSpawn, { id: CHILD_TOOL }),
         sketchSolveToolName: nameOfToolToSpawn,
         pendingToolName: undefined, // Clear the pending tool after spawning
       }
