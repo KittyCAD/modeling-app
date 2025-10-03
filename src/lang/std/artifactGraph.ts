@@ -515,6 +515,35 @@ export function getSweepArtifactFromSelection(
     )
     if (err(_artifact)) return _artifact
     sweepArtifact = _artifact
+  } else if (selection.artifact?.type === 'edgeCut') {
+    // Handle edgeCut by getting its consumed edge (segment or sweepEdge)
+    const segOrEdge = getArtifactOfTypes(
+      {
+        key: selection.artifact.consumedEdgeId,
+        types: ['segment', 'sweepEdge'],
+      },
+      artifactGraph
+    )
+    if (err(segOrEdge)) return segOrEdge
+
+    // If it's a segment, traverse through path to get sweep
+    if (segOrEdge.type === 'segment') {
+      const path = getArtifactOfTypes(
+        { key: segOrEdge.pathId, types: ['path'] },
+        artifactGraph
+      )
+      if (err(path)) return path
+      if (!path.sweepId) return new Error('Path does not have a sweepId')
+      return getArtifactOfTypes(
+        { key: path.sweepId, types: ['sweep'] },
+        artifactGraph
+      )
+    }
+    // Otherwise it's a sweepEdge, get sweep directly
+    return getArtifactOfTypes(
+      { key: segOrEdge.sweepId, types: ['sweep'] },
+      artifactGraph
+    )
   }
   if (!sweepArtifact) return new Error('No sweep artifact found')
 
