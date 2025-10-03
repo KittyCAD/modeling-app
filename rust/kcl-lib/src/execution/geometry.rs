@@ -1669,7 +1669,7 @@ impl SketchVarId {
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export)]
+#[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct SketchVar {
     pub id: SketchVarId,
