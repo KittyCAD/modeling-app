@@ -469,6 +469,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       to: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall'],
+        clearSelectionFirst: true,
         required: false,
       },
       symmetric: {
