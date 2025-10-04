@@ -44,10 +44,10 @@ interface LayoutState {
 
 const LayoutStateContext = createContext<LayoutState>({
   areaLibrary: areaTypeRegistry,
-  updateLayoutNodeSizes: () => { },
-  replaceLayoutNode: () => { },
-  collapsePaneInParentSplit: () => { },
-  expandPaneInParentSplit: () => { },
+  updateLayoutNodeSizes: () => {},
+  replaceLayoutNode: () => {},
+  collapsePaneInParentSplit: () => {},
+  expandPaneInParentSplit: () => {},
 })
 
 export const useLayoutState = () => useContext(LayoutStateContext)
@@ -183,7 +183,9 @@ function SplitLayoutContents({
         {layout.children.map((a, i, arr) => {
           const disableResize = !shouldEnableResizeHandle(a, i, arr)
           return (
-            <Fragment key={`${a.id}${a.type === 'panes' ? a.activeIndices : ''}`}>
+            <Fragment
+              key={`${a.id}${a.type === 'panes' ? a.activeIndices : ''}`}
+            >
               <Panel
                 id={a.id}
                 order={i}
@@ -193,7 +195,11 @@ function SplitLayoutContents({
                 {a.key}
                 <LayoutNode layout={a} />
               </Panel>
-              <ResizeHandle direction={direction} id={`handle-${a.id}`} disabled={disableResize} />
+              <ResizeHandle
+                direction={direction}
+                id={`handle-${a.id}`}
+                disabled={disableResize}
+              />
             </Fragment>
           )
         })}
@@ -353,7 +359,11 @@ function PaneLayout({ layout }: { layout: Layout & { type: 'panes' } }) {
   )
 }
 
-function ResizeHandle({ direction, id, disabled }: { direction: Direction; id: string, disabled: boolean }) {
+function ResizeHandle({
+  direction,
+  id,
+  disabled,
+}: { direction: Direction; id: string; disabled: boolean }) {
   return (
     <PanelResizeHandle
       disabled={disabled}
