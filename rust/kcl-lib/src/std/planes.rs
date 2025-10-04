@@ -32,6 +32,17 @@ pub(crate) async fn inner_plane_of(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Plane, KclError> {
+    let plane_object_id = exec_state.next_object_id();
+    let plane_object = kcl_api::Object {
+        id: plane_object_id,
+        kind: kcl_api::ObjectKind::Plane(kcl_api::Plane::Object(plane_object_id)),
+        label: Default::default(),
+        comments: Default::default(),
+        artifact_id: 0, // TODO: sketch-api: implement
+        source: args.source_range.into(),
+    };
+    exec_state.add_scene_object(plane_object, args.source_range);
+
     // Support mock execution
     // Return an arbitrary (incorrect) plane and a non-fatal error.
     if args.ctx.no_engine_commands().await {
@@ -46,6 +57,7 @@ pub(crate) async fn inner_plane_of(
         return Ok(Plane {
             artifact_id: plane_id.into(),
             id: plane_id,
+            object_id: Some(plane_object_id),
             // Engine doesn't know about the ID we created, so set this to Uninit.
             value: PlaneType::Uninit,
             info: crate::execution::PlaneInfo {
@@ -133,6 +145,7 @@ pub(crate) async fn inner_plane_of(
     Ok(Plane {
         artifact_id: plane_id.into(),
         id: plane_id,
+        object_id: Some(plane_object_id),
         value: PlaneType::Custom,
         info: plane_info,
         meta: vec![Metadata {

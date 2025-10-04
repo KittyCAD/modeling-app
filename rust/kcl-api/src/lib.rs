@@ -105,6 +105,7 @@ pub struct Object {
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 pub enum ObjectKind {
+    Plane(Plane),
     Sketch(crate::sketch::Sketch),
     Segment(crate::sketch::Segment),
     Constraint(crate::sketch::Constraint),
@@ -156,6 +157,12 @@ impl std::str::FromStr for StandardPlane {
 pub enum SourceRef {
     Simple(SourceRange),
     BackTrace(Vec<SourceRange>),
+}
+
+impl From<SourceRange> for SourceRef {
+    fn from(value: SourceRange) -> Self {
+        Self::Simple(value)
+    }
 }
 
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, ts_rs::TS)]
