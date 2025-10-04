@@ -23,7 +23,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
-import { deleteSegmentOrProfile } from '@src/clientSideScene/deleteSegment'
+import { deleteSegmentsOrProfiles } from '@src/clientSideScene/deleteSegment'
 import {
   orthoScale,
   quaternionFromUpNForward,
@@ -305,8 +305,8 @@ export type ModelingMachineEvent =
       type: 'Center camera on selection'
     }
   | {
-      type: 'Delete segment'
-      data: PathToNode
+      type: 'Delete segments'
+      data: PathToNode[]
     }
   | {
       type: 'code edit during sketch'
@@ -1069,17 +1069,21 @@ export const modelingMachine = setup({
     'set selection filter to defaults': () => {
       kclManager.defaultSelectionFilter()
     },
-    'Delete segment': ({ context: { sketchDetails }, event }) => {
-      if (event.type !== 'Delete segment') return
+    'Delete segments': ({ context: { sketchDetails }, event }) => {
+      if (event.type !== 'Delete segments') return
       if (!sketchDetails || !event.data) return
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      deleteSegmentOrProfile({
-        pathToNode: event.data,
+      deleteSegmentsOrProfiles({
+        pathToNodes: event.data,
         sketchDetails,
-      }).then(() => {
-        return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
       })
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
+        .catch((e) => {
+          console.warn('error', e)
+        })
     },
     'Set context': assign({
       store: ({ context: { store }, event }) => {
@@ -1356,6 +1360,13 @@ export const modelingMachine = setup({
           const codeMirrorSelection = editorManager.createEditorSelection(
             setSelections.selection
           )
+
+          // This turns the selection into blue, needed when selecting with ctrl+A
+          const { updateSceneObjectColors } = handleSelectionBatch({
+            selections: setSelections.selection,
+          })
+          updateSceneObjectColors()
+
           kclEditorActor.send({
             type: 'setLastSelectionEvent',
             data: {
@@ -4481,10 +4492,9 @@ export const modelingMachine = setup({
 
       on: {
         Cancel: '.undo startSketchOn',
-
-        'Delete segment': {
+        'Delete segments': {
           reenter: false,
-          actions: ['Delete segment', 'reset selections'],
+          actions: ['Delete segments', 'reset selections'],
         },
         'code edit during sketch': '.clean slate',
         'Constrain with named value': {

@@ -34,15 +34,17 @@ import {
 
 import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
 
-export async function deleteSegmentOrProfile({
-  pathToNode,
+export async function deleteSegmentsOrProfiles({
+  pathToNodes,
   sketchDetails,
 }: {
-  pathToNode: PathToNode
+  pathToNodes: PathToNode[]
   sketchDetails: SketchDetails | null
 }) {
   let modifiedAst: Node<Program> | Error = kclManager.ast
-  const dependentRanges = findUsesOfTagInPipe(modifiedAst, pathToNode)
+  const dependentRanges = pathToNodes.flatMap((pathToNode) =>
+    findUsesOfTagInPipe(kclManager.ast, pathToNode)
+  )
 
   const shouldContinueSegDelete = dependentRanges.length
     ? await confirmModal({
@@ -51,19 +53,23 @@ export async function deleteSegmentOrProfile({
       })
     : true
 
-  if (!shouldContinueSegDelete) return
+  if (!shouldContinueSegDelete) {
+    return
+  }
 
   modifiedAst = deleteSegmentOrProfileFromPipeExpression(
     dependentRanges,
     modifiedAst,
     kclManager.variables,
     codeManager.code,
-    pathToNode,
+    pathToNodes,
     getConstraintInfoKw,
     removeSingleConstraint,
     transformAstSketchLines
   )
-  if (err(modifiedAst)) return Promise.reject(modifiedAst)
+  if (err(modifiedAst)) {
+    return Promise.reject(modifiedAst)
+  }
 
   const newCode = recast(modifiedAst)
   const pResult = parse(newCode)

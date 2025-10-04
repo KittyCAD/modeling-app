@@ -421,7 +421,7 @@ const SegmentMenu = ({
                   : ''
               }
               onClick={() => {
-                send({ type: 'Delete segment', data: pathToNode })
+                send({ type: 'Delete segments', data: [pathToNode] })
               }}
             >
               Delete Segment
