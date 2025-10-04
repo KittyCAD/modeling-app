@@ -1,5 +1,6 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
+import type { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
 
 type BasicLayout = {
   id: string // uuid
@@ -15,6 +16,9 @@ type WithSide = {
   side: Side
 }
 type WithSizes = { sizes: number[] }
+type WithIcon = {
+  icon: CustomIconName
+}
 
 export type SplitLayout = BasicLayout &
   WithChildren &
@@ -28,14 +32,17 @@ export type TabLayout = BasicLayout &
     type: 'tabs'
     activeIndex: number
   }
+export type Action = BasicLayout &
+  WithIcon & {
+    actionType: keyof typeof actionTypeRegistry
+  }
 export type PaneLayout = BasicLayout &
   WithSizes &
   WithSide & {
     type: 'panes'
     activeIndices: number[]
-    children: (Layout & {
-      icon: CustomIconName
-    })[]
+    children: (Layout & WithIcon)[]
+    actions?: Action[]
     /** if the pane layout is a split layout's child in the same axis, it will onExpandSize
      * when it goes from 0 to 1 active child panes
      */
