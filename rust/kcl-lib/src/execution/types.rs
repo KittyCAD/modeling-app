@@ -1213,6 +1213,7 @@ impl KclValue {
                         let id = exec_state.mod_local.id_generator.next_uuid();
                         let plane = Plane {
                             id,
+                            object_id: None,
                             artifact_id: id.into(),
                             info: PlaneInfo {
                                 origin,

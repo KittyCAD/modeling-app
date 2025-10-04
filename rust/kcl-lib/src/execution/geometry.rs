@@ -2,6 +2,7 @@ use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kcl_api::ObjectId;
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::{
@@ -294,6 +295,10 @@ pub struct Plane {
     pub id: uuid::Uuid,
     /// The artifact ID.
     pub artifact_id: ArtifactId,
+    /// The scene object ID.
+    // TODO: This shouldn't be an Option. It should be part of the [`PlaneType`]
+    // enum since it's only none when `Uninit`.
+    pub object_id: Option<ObjectId>,
     // The code for the plane either a string or custom.
     pub value: PlaneType,
     /// The information for the plane.
@@ -564,6 +569,7 @@ impl Plane {
         let id = exec_state.next_uuid();
         Ok(Plane {
             id,
+            object_id: None,
             artifact_id: id.into(),
             info: PlaneInfo::try_from(value.clone())?,
             value: value.into(),

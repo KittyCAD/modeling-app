@@ -1,6 +1,6 @@
 //! The executor for the AST.
 
-use std::sync::Arc;
+use std::{collections::BTreeMap, sync::Arc};
 
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
@@ -14,6 +14,7 @@ pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
+use kcl_api::ObjectId;
 pub use kcl_value::{KclObjectFields, KclValue};
 use kcmc::{
     ImageFormat, ModelingCmd, each_cmd as mcmd,
@@ -79,6 +80,9 @@ pub struct ExecOutcome {
     /// Output artifact graph.
     #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
+    /// Map from source range to object ID for lookup of objects by their source
+    /// range.
+    pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     /// Non-fatal errors and warnings.
     pub errors: Vec<CompilationError>,
     /// File Names in module Id array index order
