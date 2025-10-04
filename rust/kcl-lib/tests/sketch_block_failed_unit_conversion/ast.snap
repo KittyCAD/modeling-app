@@ -1,0 +1,153 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing sketch_block_failed_unit_conversion.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "arguments": [],
+          "body": {
+            "commentStart": 0,
+            "end": 0,
+            "items": [
+              {
+                "commentStart": 0,
+                "declaration": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "id": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "len",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "init": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "initial": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "1deg",
+                      "start": 0,
+                      "suffix": "Deg",
+                      "type": "NumericLiteral",
+                      "value": 1.0
+                    },
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "SketchVar",
+                    "type": "SketchVar"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "VariableDeclarator"
+                },
+                "end": 0,
+                "kind": "const",
+                "moduleId": 0,
+                "preComments": [
+                  "// This should be an error since degrees can't be converted to the module",
+                  "// units (millimeters)."
+                ],
+                "start": 0,
+                "type": "VariableDeclaration",
+                "type": "VariableDeclaration"
+              }
+            ],
+            "moduleId": 0,
+            "start": 0,
+            "type": "Block"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "SketchBlock",
+          "type": "SketchBlock"
+        },
+        "moduleId": 0,
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "innerAttrs": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "moduleId": 0,
+        "name": {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "name": "settings",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "experimentalFeatures",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "moduleId": 0,
+                "name": "allow",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "moduleId": 0,
+    "nonCodeMeta": {
+      "nonCodeNodes": {},
+      "startNodes": [
+        {
+          "commentStart": 0,
+          "end": 0,
+          "moduleId": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

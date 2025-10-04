@@ -49,14 +49,16 @@ pub(crate) const WARN_UNKNOWN_ATTR: &str = "unknownAttribute";
 pub(crate) const WARN_MOD_RETURN_VALUE: &str = "moduleReturnValue";
 pub(crate) const WARN_DEPRECATED: &str = "deprecated";
 pub(crate) const WARN_IGNORED_Z_AXIS: &str = "ignoredZAxis";
+pub(crate) const WARN_SOLVER: &str = "solver";
 pub(crate) const WARN_UNNECESSARY_CLOSE: &str = "unnecessaryClose";
-pub(super) const WARN_VALUES: [&str; 7] = [
+pub(super) const WARN_VALUES: [&str; 8] = [
     WARN_UNKNOWN_UNITS,
     WARN_ANGLE_UNITS,
     WARN_UNKNOWN_ATTR,
     WARN_MOD_RETURN_VALUE,
     WARN_DEPRECATED,
     WARN_IGNORED_Z_AXIS,
+    WARN_SOLVER,
     WARN_UNNECESSARY_CLOSE,
 ];
 
