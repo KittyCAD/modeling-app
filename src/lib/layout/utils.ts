@@ -156,10 +156,10 @@ export function findAndReplaceLayoutChildNode({
       child.id === targetNodeId
         ? newNode
         : findAndReplaceLayoutChildNode({
-          rootLayout: child,
-          targetNodeId,
-          newNode,
-        })
+            rootLayout: child,
+            targetNodeId,
+            newNode,
+          })
     )
   }
 
@@ -324,10 +324,15 @@ export function collapseSplitChildPaneNode({
   return rootLayout
 }
 
-export function shouldEnableResizeHandle(currentPane: Layout, index: number, allPanes: Layout[]): boolean {
+export function shouldEnableResizeHandle(
+  currentPane: Layout,
+  index: number,
+  allPanes: Layout[]
+): boolean {
   const isLastPane = index >= allPanes.length - 1
   const nextPane = !isLastPane ? allPanes[index + 1] : undefined
-  const isCollapsedPaneLayout = (l: Layout | undefined) => l?.type === 'panes' && l.onExpandSize !== undefined
+  const isCollapsedPaneLayout = (l: Layout | undefined) =>
+    l?.type === 'panes' && l.onExpandSize !== undefined
   const nextIsCollapsed = isCollapsedPaneLayout(nextPane)
   const thisIsCollapsed = isCollapsedPaneLayout(currentPane)
 
