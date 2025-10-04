@@ -9,8 +9,8 @@ use kcl_api::{
 use kcl_error::SourceRange;
 
 use crate::{
-    Program, fmt::format_number_literal, frontend::traverse::dfs_mut, id::IncIdGenerator, parsing::ast::types as ast,
-    walk::NodeMut,
+    ExecutorContext, Program, fmt::format_number_literal, frontend::traverse::dfs_mut, id::IncIdGenerator,
+    parsing::ast::types as ast, walk::NodeMut,
 };
 
 mod traverse;
@@ -22,14 +22,16 @@ const LINE_END_PARAM: &str = "end";
 #[derive(Debug, Clone)]
 pub(crate) struct FrontendState {
     id_generator: IncIdGenerator<usize>,
+    ctx: ExecutorContext,
     program: Program,
     scene_graph: SceneGraph,
 }
 
 impl FrontendState {
-    fn new() -> Self {
+    fn new(ctx: ExecutorContext) -> Self {
         Self {
-            id_generator: IncIdGenerator::new(),
+            id_generator: IncIdGenerator::new(0),
+            ctx,
             program: Program::empty(),
             scene_graph: SceneGraph {
                 project: ProjectId(0),
@@ -42,7 +44,7 @@ impl FrontendState {
         }
     }
 
-    fn new_sketch(
+    async fn new_sketch(
         &mut self,
         _project: ProjectId,
         _file: FileId,
@@ -96,35 +98,40 @@ impl FrontendState {
         }
         let Some(new_program) = new_program else {
             return Err(Error {
-                msg: "No AST produced after adding sketch".to_string(),
+                msg: "No AST produced after adding sketch".to_owned(),
             });
         };
 
-        // Make sure to only set this if there are no errors.
-        self.program = new_program;
+        let sketch_source_range = new_program
+            .ast
+            .body
+            .last()
+            .map(|item| SourceRange::new(item.start(), item.end(), item.module_id()))
+            .ok_or_else(|| Error {
+                msg: "No AST body items after adding sketch".to_owned(),
+            })?;
 
-        // Create a new sketch.
-        let sketch_id = ObjectId(self.id_generator.next_id());
-        let sketch = Sketch {
-            args,
-            segments: Vec::new(),
-            constraints: Vec::new(),
-        };
+        // Make sure to only set this if there are no errors.
+        self.program = new_program.clone();
+
+        // Execute.
+        let outcome = self.ctx.run_with_caching(new_program).await.map_err(|err| {
+            // TODO: sketch-api: Yeah, this needs to change. We need to
+            // return the full error.
+            Error {
+                msg: err.error.message().to_owned(),
+            }
+        })?;
+
+        let sketch_id = outcome
+            .source_range_to_object
+            .get(&sketch_source_range)
+            .copied()
+            .ok_or_else(|| Error {
+                msg: format!("Source range of sketch not found: {sketch_source_range:?}"),
+            })?;
         let src_delta = SourceDelta {};
-        // TODO: sketch-api: implement
-        let artifact_id = 0;
-        // TODO: sketch-api: implement
-        let source_range = SourceRange::default();
-        let object = Object {
-            id: sketch_id,
-            kind: ObjectKind::Sketch(sketch),
-            artifact_id,
-            source: SourceRef::Simple(source_range),
-            label: Default::default(),
-            comments: Default::default(),
-        };
         // Store the object in the scene.
-        self.scene_graph.objects.push(object);
         self.scene_graph.sketch_mode = Some(sketch_id);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),

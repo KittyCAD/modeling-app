@@ -1050,6 +1050,16 @@ pub async fn make_sketch_plane_from_orientation(
             }),
         )
         .await?;
+    let plane_object_id = exec_state.next_object_id();
+    let plane_object = kcl_api::Object {
+        id: plane_object_id,
+        kind: kcl_api::ObjectKind::Plane(kcl_api::Plane::Object(plane_object_id)),
+        label: Default::default(),
+        comments: Default::default(),
+        artifact_id: 0, // TODO: sketch-api: implement
+        source: args.source_range.into(),
+    };
+    exec_state.add_scene_object(plane_object, args.source_range);
 
     Ok(Box::new(plane))
 }
