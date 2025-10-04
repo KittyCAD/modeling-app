@@ -1,21 +1,35 @@
 /// An auto-incrementing integer ID generator.
-#[derive(Debug, Clone, Default, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct IncIdGenerator<T> {
     next_id: T,
 }
 
-impl<T> IncIdGenerator<T>
+impl<T> Default for IncIdGenerator<T>
 where
-    T: Copy + std::ops::AddAssign + From<u8> + Default,
+    T: Default,
 {
-    pub fn new() -> Self {
+    fn default() -> Self {
         Self { next_id: T::default() }
     }
+}
 
+impl<T> IncIdGenerator<T> {
+    #[allow(dead_code)]
+    pub fn new(next_id: T) -> Self {
+        Self { next_id }
+    }
+}
+
+impl<T> IncIdGenerator<T>
+where
+    T: Copy + std::ops::AddAssign + From<bool>,
+{
+    /// Get the next ID and increment the internal counter.
     pub fn next_id(&mut self) -> T {
         let next_id = self.next_id;
 
-        self.next_id += T::from(1_u8);
+        // All built-in numeric types convert true to 1.
+        self.next_id += T::from(true);
 
         next_id
     }

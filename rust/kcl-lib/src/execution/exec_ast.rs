@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
+use kcl_api::{Object, ObjectKind};
 use kcl_ezpz::Constraint;
 use kittycad_modeling_cmds::units::UnitLength;
 
@@ -13,7 +14,7 @@ use crate::{
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta, ModuleArtifactState,
         Operation, PlaneType, StatementKind, TagIdentifier, annotations,
         cad_op::OpKclValue,
-        fn_call::Args,
+        fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
         memory,
         state::{ModuleState, SketchBlockState},
@@ -897,6 +898,36 @@ impl Node<SketchBlock> {
             )));
         }
 
+        let range = SourceRange::from(self);
+
+        let mut labeled = IndexMap::new();
+        for labeled_arg in &self.arguments {
+            let source_range = SourceRange::from(labeled_arg.arg.clone());
+            let metadata = Metadata { source_range };
+            let value = ctx
+                .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
+                .await?;
+            let arg = Arg::new(value, source_range);
+            match &labeled_arg.label {
+                Some(label) => {
+                    labeled.insert(label.name.clone(), arg);
+                }
+                None => {
+                    let name = labeled_arg.arg.ident_name();
+                    if let Some(name) = name {
+                        labeled.insert(name.to_owned(), arg);
+                    } else {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Arguments to sketch blocks must be either labeled or simple identifiers".to_owned(),
+                            vec![SourceRange::from(&labeled_arg.arg)],
+                        )));
+                    }
+                }
+            }
+        }
+        let mut args = Args::new_no_args(range, ctx.clone());
+        args.labeled = labeled;
+
         let (return_result, variables, sketch_block_state) = {
             // Don't early return until the stack frame is popped!
             self.prep_mem(exec_state.mut_stack().snapshot(), exec_state);
@@ -930,7 +961,6 @@ impl Node<SketchBlock> {
         };
 
         // Translate sketch variables and constraints to solver input.
-        let range = SourceRange::from(self);
         let constraints = &sketch_block_state.constraints;
         let initial_guesses = sketch_block_state
             .sketch_vars
@@ -987,6 +1017,32 @@ impl Node<SketchBlock> {
         // Substitute solutions back into sketch variables.
         let variables =
             substitute_sketch_vars(variables, &solve_outcome.final_values, solver_numeric_type(exec_state))?;
+
+        // Create the scene object.
+        let sketch_id = exec_state.next_object_id();
+        let arg_on: Option<crate::execution::Plane> = args.get_kw_arg_opt("on", &RuntimeType::plane(), exec_state)?;
+        let on_object = arg_on.and_then(|plane| plane.object_id);
+        // TODO: sketch-api: send this to the engine.
+        let scene_object = Object {
+            id: sketch_id,
+            kind: ObjectKind::Sketch(kcl_api::sketch::Sketch {
+                args: kcl_api::sketch::SketchArgs {
+                    on: on_object
+                        .map(kcl_api::Plane::Object)
+                        .unwrap_or(kcl_api::Plane::Default(kcl_api::StandardPlane::XY)),
+                },
+                // TODO: sketch-api: implement
+                segments: Vec::new(),
+                // TODO: sketch-api: implement
+                constraints: Vec::new(),
+            }),
+            label: Default::default(),
+            comments: Default::default(),
+            // TODO: sketch-api: implement
+            artifact_id: 0,
+            source: range.into(),
+        };
+        exec_state.add_scene_object(scene_object, range);
 
         let metadata = Metadata {
             source_range: SourceRange::from(self),

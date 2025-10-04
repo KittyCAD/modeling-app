@@ -1,7 +1,8 @@
-use std::{str::FromStr, sync::Arc};
+use std::{collections::BTreeMap, str::FromStr, sync::Arc};
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kcl_api::{Object, ObjectId};
 use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -19,6 +20,7 @@ use crate::{
         memory::{ProgramMemory, Stack},
         types::NumericType,
     },
+    id::IncIdGenerator,
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
 };
@@ -110,6 +112,13 @@ pub(super) struct ModuleState {
     pub(super) path: ModulePath,
     /// Artifacts for only this module.
     pub artifacts: ModuleArtifactState,
+    /// [`ObjectId`] generator.
+    pub object_id_generator: IncIdGenerator<usize>,
+    /// Objects in the scene, created from execution.
+    pub scene_objects: IndexMap<ObjectId, Object>,
+    /// Map from source range to object ID for lookup of objects by their source
+    /// range.
+    pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
 
     pub(super) allowed_warnings: Vec<&'static str>,
     pub(super) denied_warnings: Vec<&'static str>,
@@ -203,6 +212,7 @@ impl ExecState {
             operations: self.global.root_module_artifacts.operations,
             #[cfg(feature = "artifact-graph")]
             artifact_graph: self.global.artifacts.graph,
+            source_range_to_object: self.mod_local.source_range_to_object,
             errors: self.global.errors,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
@@ -214,6 +224,17 @@ impl ExecState {
 
     pub(crate) fn mut_stack(&mut self) -> &mut Stack {
         &mut self.mod_local.stack
+    }
+
+    pub fn next_object_id(&mut self) -> ObjectId {
+        ObjectId(self.mod_local.object_id_generator.next_id())
+    }
+
+    pub fn add_scene_object(&mut self, obj: Object, source_range: SourceRange) -> ObjectId {
+        let id = obj.id;
+        self.mod_local.scene_objects.insert(id, obj);
+        self.mod_local.source_range_to_object.insert(source_range, id);
+        id
     }
 
     pub fn next_uuid(&mut self) -> Uuid {
@@ -532,6 +553,9 @@ impl ModuleState {
             path,
             settings: Default::default(),
             artifacts: Default::default(),
+            object_id_generator: Default::default(),
+            scene_objects: Default::default(),
+            source_range_to_object: Default::default(),
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
             inside_stdlib: false,
