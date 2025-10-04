@@ -28,6 +28,7 @@ import type {
 import { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 import { basicLayout } from '@src/lib/layout/basicLayout'
 import Tooltip from '@src/components/Tooltip'
+import { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
 
 type WithoutRootLayout<T> = Omit<T, 'rootLayout'>
 interface LayoutState {
@@ -344,6 +345,50 @@ function PaneLayout({ layout }: { layout: Layout & { type: 'panes' } }) {
                 {tab.label}
               </Tooltip>
             </Switch>
+          )
+        })}
+        {layout.children.length && layout.actions?.length && (
+          <hr
+            className={`bg-3 ${sideToSplitDirection(layout.side) === 'vertical' ? 'w-[1px] h-full' : 'h-[1px] w-full'}`}
+          />
+        )}
+        {layout.actions?.map((action) => {
+          const resolvedAction = actionTypeRegistry[action.actionType]
+          const disabledReason = resolvedAction.useDisabled()
+          const hidden = resolvedAction.useHidden()
+
+          return (
+            !hidden && (
+              <button
+                key={action.id}
+                type="button"
+                className="ui-checked:border-primary hover:b-3 border-transparent p-2 m-0 rounded-none border-0 hover:bg-2"
+                disabled={disabledReason !== undefined}
+                onClick={() => resolvedAction.execute()}
+              >
+                <CustomIcon name={action.icon} className="w-5 h-5" />
+                <Tooltip
+                  position={logicalSideToTooltipPosition(
+                    getOppositeSide(layout.side)
+                  )}
+                  contentClassName={
+                    layout.side === 'inline-start'
+                      ? 'text-left'
+                      : layout.side === 'inline-end'
+                        ? 'text-right'
+                        : ''
+                  }
+                >
+                  {action.label}
+                  {disabledReason !== undefined && (
+                    <>
+                      <br />
+                      <span className="text-3">{disabledReason}</span>
+                    </>
+                  )}
+                </Tooltip>
+              </button>
+            )
           )
         })}
       </ul>

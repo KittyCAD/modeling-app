@@ -21,7 +21,7 @@ export const basicLayout: Layout = {
       id: 'b',
       label: 'left-toolbar',
       type: 'panes',
-      side: 'inline-start',
+      side: 'block-start',
       activeIndices: [0, 2],
       sizes: [50, 50],
       children: [
@@ -52,6 +52,32 @@ export const basicLayout: Layout = {
           type: 'simple',
           areaType: 'logs',
           icon: 'logs',
+        },
+      ],
+      actions: [
+        {
+          id: 'add-file-to-project',
+          label: 'Add file to project',
+          icon: 'importFile',
+          actionType: 'addFileToProject',
+        },
+        {
+          id: 'export',
+          label: 'Export part',
+          icon: 'floppyDiskArrow',
+          actionType: 'export',
+        },
+        {
+          id: 'make',
+          label: 'Make part',
+          icon: 'printer3d',
+          actionType: 'make',
+        },
+        {
+          id: 'refresh',
+          label: 'Refresh app',
+          icon: 'exclamationMark',
+          actionType: 'refreshApp',
         },
       ],
     },
