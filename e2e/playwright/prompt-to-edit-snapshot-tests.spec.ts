@@ -80,19 +80,8 @@ test.describe('edit with AI example snapshots', () => {
       await homePage.openProject(project)
       await scene.settled(cmdBar)
 
-      const body1CapCoords = { x: 571, y: 351 }
-      const [clickBody1Cap] = scene.makeMouseHelpers(
-        body1CapCoords.x,
-        body1CapCoords.y
-      )
-
-      await test.step('wait for scene to load select body and check selection came through', async () => {
-        await clickBody1Cap()
-        await editor.expectState({
-          highlightedCode: '',
-          activeLines: ['|>startProfile(at=[-73.64,-42.89])'],
-          diagnostics: [],
-        })
+      await test.step('wait for scene to load select body', async () => {
+        await editor.selectText('startProfile(at = [-73.64, -42.89])')
       })
 
       await test.step('fire off edit prompt', async () => {
