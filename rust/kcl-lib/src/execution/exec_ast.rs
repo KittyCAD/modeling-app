@@ -894,10 +894,11 @@ impl Node<SketchBlock> {
 
             let sketch_block_state = std::mem::replace(&mut exec_state.mod_local.sketch_block, original_value);
 
-            let mut block_variables = IndexMap::new();
-            for (name, value) in exec_state.stack().find_all_in_current_env() {
-                block_variables.insert(name.clone(), value.clone());
-            }
+            let block_variables = exec_state
+                .stack()
+                .find_all_in_current_env()
+                .map(|(name, value)| (name.clone(), value.clone()))
+                .collect::<IndexMap<_, _>>();
 
             exec_state.mut_stack().pop_env();
 
