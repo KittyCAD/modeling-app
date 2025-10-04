@@ -11,18 +11,24 @@ import {
   sidebarPanesRight,
 } from '@src/components/ModelingSidebar/ModelingPanes'
 import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
+import type { Closeable } from '@src/lib/layout/types'
 
 /**
  * For now we have strict area types but in future
  * we should make it possible to register your own in an extension.
  */
 export const areaTypeRegistry = Object.freeze({
-  featureTree: () => PaneToArea({ pane: sidebarPanesLeft[0] }),
+  featureTree: (props: Partial<Closeable>) =>
+    PaneToArea({ pane: sidebarPanesLeft[0], ...props }),
   modeling: ModelingArea,
-  ttc: () => PaneToArea({ pane: sidebarPanesRight[0] }),
-  variables: () => PaneToArea({ pane: sidebarPanesLeft[3] }),
-  codeEditor: () => PaneToArea({ pane: sidebarPanesLeft[1] }),
-  logs: () => PaneToArea({ pane: sidebarPanesLeft[4] }),
+  ttc: (props: Partial<Closeable>) =>
+    PaneToArea({ pane: sidebarPanesRight[0], ...props }),
+  variables: (props: Partial<Closeable>) =>
+    PaneToArea({ pane: sidebarPanesLeft[3], ...props }),
+  codeEditor: (props: Partial<Closeable>) =>
+    PaneToArea({ pane: sidebarPanesLeft[1], ...props }),
+  logs: (props: Partial<Closeable>) =>
+    PaneToArea({ pane: sidebarPanesLeft[4], ...props }),
 })
 
 function TestArea({ name }: { name: string }) {
@@ -58,15 +64,21 @@ function ModelingArea() {
   )
 }
 
-function PaneToArea({ pane }: { pane: SidebarPane }) {
+function PaneToArea({
+  pane,
+  onClose,
+}: Partial<Closeable> & { pane: SidebarPane }) {
+  const onCloseWithFallback =
+    onClose || (() => console.warn('no onClose defined for', pane.id))
   return (
     <ModelingPane
       icon={pane.icon}
       title={pane.sidebarName}
-      onClose={() => {}}
+      onClose={onCloseWithFallback}
       id={`${pane.id}-pane`}
+      className="border-none"
     >
-      {pane.Content({ id: pane.id, onClose: () => {} })}
+      {pane.Content({ id: pane.id, onClose: onCloseWithFallback })}
     </ModelingPane>
   )
 }
