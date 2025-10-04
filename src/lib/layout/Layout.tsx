@@ -1,4 +1,4 @@
-import type { Direction, Layout } from '@src/lib/layout/types'
+import type { Closeable, Direction, Layout } from '@src/lib/layout/types'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Tab, Switch } from '@headlessui/react'
@@ -31,7 +31,10 @@ import Tooltip from '@src/components/Tooltip'
 
 type WithoutRootLayout<T> = Omit<T, 'rootLayout'>
 interface LayoutState {
-  areaLibrary: Record<keyof typeof areaTypeRegistry, () => React.ReactElement>
+  areaLibrary: Record<
+    keyof typeof areaTypeRegistry,
+    (props: Partial<Closeable>) => React.ReactElement
+  >
   updateLayoutNodeSizes: (props: WithoutRootLayout<IUpdateNodeSizes>) => void
   replaceLayoutNode: (props: WithoutRootLayout<IReplaceLayoutChildNode>) => void
   collapsePaneInParentSplit: (
@@ -133,7 +136,10 @@ export function LayoutRoot(props: LayoutRootProps) {
  * A layout is a nested set of Areas (Splits, Tabs, or Toolbars),
  * ending in leaf nodes that contain UI components.
  */
-function LayoutNode({ layout }: { layout: Layout }) {
+function LayoutNode({
+  layout,
+  onClose,
+}: { layout: Layout } & Partial<Closeable>) {
   const { areaLibrary } = useLayoutState()
   switch (layout.type) {
     case 'splits':
@@ -143,7 +149,7 @@ function LayoutNode({ layout }: { layout: Layout }) {
     case 'panes':
       return <PaneLayout layout={layout} />
     default:
-      return areaLibrary[layout.areaType]()
+      return areaLibrary[layout.areaType]({ onClose })
   }
 }
 
@@ -163,9 +169,11 @@ function SplitLayout({ layout }: { layout: Layout & { type: 'splits' } }) {
 function SplitLayoutContents({
   layout,
   direction,
+  onClose,
 }: {
   direction: Direction
   layout: Omit<Layout & { type: 'splits' }, 'orientation' | 'type'>
+  onClose?: (index: number) => void
 }) {
   const { updateLayoutNodeSizes } = useLayoutState()
 
@@ -192,8 +200,7 @@ function SplitLayoutContents({
                 defaultSize={layout.sizes[i]}
                 className="flex bg-default"
               >
-                {a.key}
-                <LayoutNode layout={a} />
+                <LayoutNode layout={a} onClose={() => onClose?.(i)} />
               </Panel>
               <ResizeHandle
                 direction={direction}
@@ -343,7 +350,10 @@ function PaneLayout({ layout }: { layout: Layout & { type: 'panes' } }) {
       {activePanes.length === 0 ? (
         <></>
       ) : activePanes.length === 1 ? (
-        <LayoutNode layout={activePanes[0]} />
+        <LayoutNode
+          layout={activePanes[0]}
+          onClose={() => onToggleItem(false, layout.activeIndices[0])}
+        />
       ) : (
         <SplitLayoutContents
           direction={getOppositionDirection(sideToSplitDirection(layout.side))}
@@ -353,6 +363,9 @@ function PaneLayout({ layout }: { layout: Layout & { type: 'panes' } }) {
               (_, i) => layout.activeIndices.indexOf(i) >= 0
             ),
           }}
+          onClose={(index: number) =>
+            onToggleItem(false, layout.activeIndices[index])
+          }
         />
       )}
     </div>

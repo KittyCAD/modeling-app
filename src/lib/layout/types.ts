@@ -41,6 +41,9 @@ export type PaneLayout = BasicLayout &
      */
     onExpandSize?: number
   }
+export interface Closeable {
+  onClose: () => void
+}
 type SimpleLayout = BasicLayout & {
   type: 'simple'
   areaType: keyof typeof areaTypeRegistry
