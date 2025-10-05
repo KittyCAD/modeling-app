@@ -1,10 +1,18 @@
-import type { Direction, Layout, Side } from '@src/lib/layout/types'
+import type {
+  Direction,
+  Layout,
+  Orientation,
+  Side,
+  SimpleLayout,
+  SplitLayout,
+} from '@src/lib/layout/types'
+import { LayoutType } from '@src/lib/layout/types'
 import type React from 'react'
 import { capitaliseFC } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
 import { throttle } from '@src/lib/utils'
 import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
-import { CustomIcon, CustomIconName } from '@src/components/CustomIcon'
+import { areaTypeRegistry } from './areaTypeRegistry'
 
 const LAYOUT_PERSIST_PREFIX = 'layout-'
 const LAYOUT_SAVE_THROTTLE = 500
@@ -337,4 +345,55 @@ export function shouldEnableResizeHandle(
   const thisIsCollapsed = isCollapsedPaneLayout(currentPane)
 
   return !(isLastPane || nextIsCollapsed || thisIsCollapsed)
+}
+
+function validateLayout(l: unknown): l is Layout {
+  if (validateBasicLayout(l)) {
+    switch (l.type) {
+    }
+  }
+}
+
+function validateLayoutType(l: string): l is LayoutType {
+  return Object.values(LayoutType).includes(l as LayoutType)
+}
+
+function validateBasicLayout(layout: unknown): layout is Layout {
+  return (
+    typeof layout === 'object' &&
+    layout !== null &&
+    'id' in layout &&
+    typeof layout.id === 'string' &&
+    'label' in layout &&
+    typeof layout.label === 'string' &&
+    'type' in layout &&
+    typeof layout.type === 'string' &&
+    validateLayoutType(layout.type)
+  )
+}
+
+function validateAreaType(a: unknown): a is keyof typeof areaTypeRegistry {
+  return Object.keys(areaTypeRegistry).includes(
+    a as keyof typeof areaTypeRegistry
+  )
+}
+export function validateSimpleLayout(layout: unknown): layout is SimpleLayout {
+  return (
+    validateBasicLayout(layout) &&
+    'areaType' in layout &&
+    validateAreaType(layout.areaType)
+  )
+}
+
+function validateOrientation(o: unknown): o is Orientation {
+  return typeof o === 'string' && (o === 'horizontal' || o === 'vertical')
+}
+export function validateSplitLayout(layout: unknown): layout is SplitLayout {
+  const isBasicLayout = validateBasicLayout(layout)
+  const hasValidOrientation =
+    isBasicLayout &&
+    'orientation' in layout &&
+    validateOrientation(layout.orientation)
+
+  return isBasicLayout && hasValidOrientation
 }

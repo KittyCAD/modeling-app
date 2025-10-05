@@ -2,9 +2,17 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 import type { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 import type { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
 
+export enum LayoutType {
+  Splits = 'split',
+  Tabs = 'tabs',
+  Panes = 'panes',
+  Simple = 'simple',
+}
+
 type BasicLayout = {
   id: string // uuid
   label: string
+  type: LayoutType
 }
 type WithChildren = { children: Layout[] }
 export type Direction = 'horizontal' | 'vertical'
@@ -24,12 +32,12 @@ export type SplitLayout = BasicLayout &
   WithChildren &
   WithSizes &
   WithOrientation & {
-    type: 'splits'
+    type: LayoutType.Splits
   }
 export type TabLayout = BasicLayout &
   WithChildren &
   WithSide & {
-    type: 'tabs'
+    type: LayoutType.Tabs
     activeIndex: number
   }
 export type Action = BasicLayout &
@@ -39,7 +47,7 @@ export type Action = BasicLayout &
 export type PaneLayout = BasicLayout &
   WithSizes &
   WithSide & {
-    type: 'panes'
+    type: LayoutType.Panes
     activeIndices: number[]
     children: (Layout & WithIcon)[]
     actions?: Action[]
@@ -51,8 +59,8 @@ export type PaneLayout = BasicLayout &
 export interface Closeable {
   onClose: () => void
 }
-type SimpleLayout = BasicLayout & {
-  type: 'simple'
+export type SimpleLayout = BasicLayout & {
+  type: LayoutType.Simple
   areaType: keyof typeof areaTypeRegistry
 }
 export type Layout = SimpleLayout | SplitLayout | TabLayout | PaneLayout
