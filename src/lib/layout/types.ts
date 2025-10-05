@@ -9,9 +9,11 @@ export enum LayoutType {
   Simple = 'simple',
 }
 
-type BasicLayout = {
+type HasIdAndLabel = {
   id: string // uuid
   label: string
+}
+type BasicLayout = HasIdAndLabel & {
   type: LayoutType
 }
 type WithChildren = { children: Layout[] }
@@ -40,7 +42,7 @@ export type TabLayout = BasicLayout &
     type: LayoutType.Tabs
     activeIndex: number
   }
-export type Action = BasicLayout &
+export type Action = HasIdAndLabel &
   WithIcon & {
     actionType: keyof typeof actionTypeRegistry
   }

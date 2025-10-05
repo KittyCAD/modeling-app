@@ -1,8 +1,23 @@
-import type { Closeable, Direction, Layout } from '@src/lib/layout/types'
+import { LayoutType } from '@src/lib/layout/types'
+import type {
+  SplitLayout as SplitLayoutType,
+  PaneLayout as PaneLayoutType,
+  TabLayout as TabLayoutType,
+  Closeable,
+  Direction,
+  Layout,
+} from '@src/lib/layout/types'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Tab, Switch } from '@headlessui/react'
-import { createContext, Fragment, useContext, useEffect, useState } from 'react'
+import {
+  createContext,
+  type Dispatch,
+  Fragment,
+  type SetStateAction,
+  useContext,
+  useEffect,
+} from 'react'
 import {
   getOppositeSide,
   getOppositionDirection,
@@ -14,7 +29,6 @@ import {
   findAndUpdateSplitSizes,
   saveLayout,
   findAndReplaceLayoutChildNode,
-  loadLayout,
   areSplitSizesNatural,
   collapseSplitChildPaneNode,
   expandSplitChildPaneNode,
@@ -26,7 +40,6 @@ import type {
   IRootAndTargetLayouts,
 } from '@src/lib/layout/utils'
 import { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
-import { basicLayout } from '@src/lib/layout/basicLayout'
 import Tooltip from '@src/components/Tooltip'
 import { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
 
@@ -58,16 +71,15 @@ export const useLayoutState = () => useContext(LayoutStateContext)
 
 interface LayoutRootProps {
   areaLibrary?: LayoutState['areaLibrary']
-  initialLayout?: Layout
+  layout: Layout
+  setLayout: Dispatch<SetStateAction<Layout>>
 }
 
-const maybePersistedLayout = loadLayout('basic')
-
-export function LayoutRoot(props: LayoutRootProps) {
-  const [layout, setLayout] = useState<Layout>(
-    props.initialLayout || maybePersistedLayout || basicLayout
-  )
-
+export function LayoutRoot({
+  areaLibrary,
+  layout,
+  setLayout,
+}: LayoutRootProps) {
   useEffect(() => {
     saveLayout(layout)
   }, [layout])
@@ -120,7 +132,7 @@ export function LayoutRoot(props: LayoutRootProps) {
   return (
     <LayoutStateContext.Provider
       value={{
-        areaLibrary: props.areaLibrary || areaTypeRegistry,
+        areaLibrary: areaLibrary || areaTypeRegistry,
         updateLayoutNodeSizes,
         replaceLayoutNode,
         collapsePaneInParentSplit,
@@ -143,11 +155,11 @@ function LayoutNode({
 }: { layout: Layout } & Partial<Closeable>) {
   const { areaLibrary } = useLayoutState()
   switch (layout.type) {
-    case 'splits':
+    case LayoutType.Splits:
       return <SplitLayout layout={layout} />
-    case 'tabs':
+    case LayoutType.Tabs:
       return <TabLayout layout={layout} />
-    case 'panes':
+    case LayoutType.Panes:
       return <PaneLayout layout={layout} />
     default:
       return areaLibrary[layout.areaType]({ onClose })
@@ -157,7 +169,7 @@ function LayoutNode({
 /**
  * Need to see if we should just roll our own resizable component?
  */
-function SplitLayout({ layout }: { layout: Layout & { type: 'splits' } }) {
+function SplitLayout({ layout }: { layout: SplitLayoutType }) {
   // Direction is simpler than Orientation, which uses logical properties.
   const orientationAsDirection =
     layout.orientation === 'inline' ? 'horizontal' : 'vertical'
@@ -173,7 +185,7 @@ function SplitLayoutContents({
   onClose,
 }: {
   direction: Direction
-  layout: Omit<Layout & { type: 'splits' }, 'orientation' | 'type'>
+  layout: Omit<SplitLayoutType, 'orientation' | 'type'>
   onClose?: (index: number) => void
 }) {
   const { updateLayoutNodeSizes } = useLayoutState()
@@ -219,7 +231,7 @@ function SplitLayoutContents({
 /**
  * Use headless UI tabs
  */
-function TabLayout({ layout }: { layout: Layout & { type: 'tabs' } }) {
+function TabLayout({ layout }: { layout: TabLayoutType }) {
   return (
     <Tab.Group
       as="div"
@@ -251,7 +263,7 @@ function TabLayout({ layout }: { layout: Layout & { type: 'tabs' } }) {
  * Use headless UI tabs if they can have multiple active items
  * with resizable panes
  */
-function PaneLayout({ layout }: { layout: Layout & { type: 'panes' } }) {
+function PaneLayout({ layout }: { layout: PaneLayoutType }) {
   const {
     replaceLayoutNode,
     collapsePaneInParentSplit,

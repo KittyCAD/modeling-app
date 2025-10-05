@@ -1,4 +1,4 @@
-import type { Layout } from '@src/lib/layout/types'
+import { LayoutType, type Layout } from '@src/lib/layout/types'
 
 /**
  * The default layout has:
@@ -13,14 +13,14 @@ import type { Layout } from '@src/lib/layout/types'
 export const basicLayout: Layout = {
   id: 'basic',
   label: 'root',
-  type: 'splits',
+  type: LayoutType.Splits,
   orientation: 'inline',
   sizes: [30, 50, 20],
   children: [
     {
       id: 'b',
       label: 'left-toolbar',
-      type: 'panes',
+      type: LayoutType.Panes,
       side: 'block-start',
       activeIndices: [0, 2],
       sizes: [50, 50],
@@ -28,28 +28,28 @@ export const basicLayout: Layout = {
         {
           id: 'c',
           label: 'feature-tree',
-          type: 'simple',
+          type: LayoutType.Simple,
           areaType: 'featureTree',
           icon: 'model',
         },
         {
           id: 'd',
           label: 'code',
-          type: 'simple',
+          type: LayoutType.Simple,
           areaType: 'codeEditor',
           icon: 'code',
         },
         {
           id: 'e',
           label: 'variables',
-          type: 'simple',
+          type: LayoutType.Simple,
           areaType: 'variables',
           icon: 'make-variable',
         },
         {
           id: crypto.randomUUID(),
           label: 'logs',
-          type: 'simple',
+          type: LayoutType.Simple,
           areaType: 'logs',
           icon: 'logs',
         },
@@ -84,13 +84,13 @@ export const basicLayout: Layout = {
     {
       id: 'f',
       label: 'modeling-scene',
-      type: 'simple',
+      type: LayoutType.Simple,
       areaType: 'modeling',
     },
     {
       id: 'g',
       label: 'right-toolbar',
-      type: 'panes',
+      type: LayoutType.Panes,
       side: 'inline-end',
       activeIndices: [0],
       sizes: [],
@@ -98,7 +98,7 @@ export const basicLayout: Layout = {
         {
           id: 'h',
           label: 'ttc',
-          type: 'simple',
+          type: LayoutType.Simple,
           areaType: 'ttc',
           icon: 'sparkles',
         },

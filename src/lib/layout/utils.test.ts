@@ -1,5 +1,5 @@
-import { LayoutType } from './types'
-import { validateSimpleLayout } from './utils'
+import { LayoutType } from '@src/lib/layout/types'
+import { validateSimpleLayout } from '@src/lib/layout/utils'
 
 describe('Layout utils', () => {
   describe('Layout validation', () => {
