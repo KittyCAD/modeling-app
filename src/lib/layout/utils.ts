@@ -2,13 +2,15 @@ import type {
   Direction,
   Layout,
   Orientation,
+  PaneLayout,
   Side,
   SimpleLayout,
   SplitLayout,
+  TabLayout,
 } from '@src/lib/layout/types'
 import { LayoutType } from '@src/lib/layout/types'
 import type React from 'react'
-import { capitaliseFC } from '@src/lib/utils'
+import { capitaliseFC, isArray } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
 import { throttle } from '@src/lib/utils'
 import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
@@ -275,7 +277,7 @@ export function collapseSplitChildPaneNode({
   rootLayout,
   targetNode: panesLayoutNode,
 }: IRootAndTargetLayouts) {
-  if (!panesLayoutNode || panesLayoutNode.type !== 'panes') {
+  if (!panesLayoutNode || panesLayoutNode.type !== LayoutType.Panes) {
     return rootLayout
   }
 
@@ -283,7 +285,7 @@ export function collapseSplitChildPaneNode({
     rootLayout,
     targetNode: panesLayoutNode,
   })
-  if (!splitsLayoutNode || splitsLayoutNode.type !== 'splits') {
+  if (!splitsLayoutNode || splitsLayoutNode.type !== LayoutType.Splits) {
     return rootLayout
   }
 
@@ -340,18 +342,28 @@ export function shouldEnableResizeHandle(
   const isLastPane = index >= allPanes.length - 1
   const nextPane = !isLastPane ? allPanes[index + 1] : undefined
   const isCollapsedPaneLayout = (l: Layout | undefined) =>
-    l?.type === 'panes' && l.onExpandSize !== undefined
+    l?.type === LayoutType.Panes && l.onExpandSize !== undefined
   const nextIsCollapsed = isCollapsedPaneLayout(nextPane)
   const thisIsCollapsed = isCollapsedPaneLayout(currentPane)
 
   return !(isLastPane || nextIsCollapsed || thisIsCollapsed)
 }
 
-function validateLayout(l: unknown): l is Layout {
+export function validateLayout(l: unknown): l is Layout {
   if (validateBasicLayout(l)) {
     switch (l.type) {
+      case LayoutType.Simple:
+        return validateSimpleLayout(l)
+      case LayoutType.Splits:
+        return validateSplitLayout(l)
+      case LayoutType.Tabs:
+        return validateTabLayout(l)
+      case LayoutType.Panes:
+        return validatePaneLayout(l)
     }
   }
+
+  return false
 }
 
 function validateLayoutType(l: string): l is LayoutType {
@@ -390,10 +402,83 @@ function validateOrientation(o: unknown): o is Orientation {
 }
 export function validateSplitLayout(layout: unknown): layout is SplitLayout {
   const isBasicLayout = validateBasicLayout(layout)
+  if (!isBasicLayout) {
+    return false
+  }
+  const hasValidType = 'type' in layout && layout.type === LayoutType.Splits
   const hasValidOrientation =
-    isBasicLayout &&
-    'orientation' in layout &&
-    validateOrientation(layout.orientation)
+    'orientation' in layout && validateOrientation(layout.orientation)
+  const hasValidChildren =
+    'children' in layout &&
+    isArray(layout.children) &&
+    layout.children.every(validateLayout)
+  const hasValidSizes =
+    'sizes' in layout &&
+    isArray(layout.sizes) &&
+    layout.sizes.length === layout.children.length &&
+    layout.sizes.every(Number.isFinite)
 
-  return isBasicLayout && hasValidOrientation
+  return (
+    isBasicLayout &&
+    hasValidType &&
+    hasValidOrientation &&
+    hasValidChildren &&
+    hasValidSizes
+  )
+}
+
+function validateSide(s: unknown): s is Side {
+  return (
+    typeof s === 'string' &&
+    ['inline-start', 'inline-end', 'block-start', 'block-end'].includes(s)
+  )
+}
+
+function validateTabLayout(l: unknown): l is TabLayout {
+  const isBasicLayout = validateBasicLayout(l)
+  if (!isBasicLayout) {
+    return false
+  }
+  const hasValidType = 'type' in l && l.type === LayoutType.Tabs
+  const hasValidSide = 'side' in l && validateSide(l.side)
+  const hasValidChildren =
+    'children' in l && isArray(l.children) && l.children.every(validateLayout)
+  const hasValidActiveIndex =
+    'activeIndex' in l &&
+    typeof l.activeIndex === 'number' &&
+    Number.isSafeInteger(l.activeIndex) &&
+    l.activeIndex >= 0 &&
+    l.activeIndex < l.children.length
+
+  return hasValidType && hasValidSide && hasValidChildren && hasValidActiveIndex
+}
+
+function validatePaneLayout(l: unknown): l is PaneLayout {
+  const isBasicLayout = validateBasicLayout(l)
+  if (!isBasicLayout) {
+    return false
+  }
+  const hasValidType = 'type' in l && l.type === LayoutType.Panes
+  const hasValidSide = 'side' in l && validateSide(l.side)
+  const hasValidChildren =
+    'children' in l && isArray(l.children) && l.children.every(validateLayout)
+  const hasValidActiveIndices =
+    'activeIndices' in l &&
+    isArray(l.activeIndices) &&
+    l.activeIndices.every(Number.isSafeInteger) &&
+    l.activeIndices.every((a) => a >= 0 && a < l.children.length)
+  const hasValidSizes =
+    hasValidActiveIndices &&
+    'sizes' in l &&
+    isArray(l.sizes) &&
+    l.sizes.length === l.activeIndices.length &&
+    l.sizes.every(Number.isFinite)
+
+  return (
+    hasValidType &&
+    hasValidSide &&
+    hasValidChildren &&
+    hasValidActiveIndices &&
+    hasValidSizes
+  )
 }
