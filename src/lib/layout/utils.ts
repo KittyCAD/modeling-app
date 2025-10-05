@@ -14,17 +14,20 @@ import { capitaliseFC, isArray } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
 import { throttle } from '@src/lib/utils'
 import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
-import { areaTypeRegistry } from './areaTypeRegistry'
+import { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
+import { basicLayout } from '@src/lib/layout/basicLayout'
 
 const LAYOUT_PERSIST_PREFIX = 'layout-'
 const LAYOUT_SAVE_THROTTLE = 500
+
+export const defaultLayout = loadLayout('basic') || basicLayout
 
 /**
  * A split area must have the same number of sizes as children.
  * Each point must be an integer between 0 and 100.
  * The sum of the areas must be 100.
  */
-export function hasValidSizes(area: Layout & { type: 'splits' }) {
+export function hasValidSizes(area: SplitLayout | PaneLayout) {
   return (
     area.sizes.length === area.children.length &&
     area.sizes.every((p) => Number.isInteger(p) && p > 0 && p < 100)
