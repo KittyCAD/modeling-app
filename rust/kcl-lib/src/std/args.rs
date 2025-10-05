@@ -1219,7 +1219,11 @@ impl<'a> FromKclValue<'a> for Box<Sketch> {
 
 impl<'a> FromKclValue<'a> for FunctionSource {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        arg.as_function().cloned()
+        let f = arg.as_function()?;
+        if f.len() != 1 {
+            return None;
+        }
+        Some(f[0].clone())
     }
 }
 
