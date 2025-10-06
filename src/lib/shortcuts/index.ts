@@ -136,40 +136,45 @@ export class ShortcutService {
         : 'ctrl'
       : null
 
-    const matches = this.shortcuts
+    const searchStringSteps = searchString.split(' ')
+
+    const prefixMatches = this.shortcuts
       .values()
       .filter((item) => {
-        if (shouldSearchForMod && keyToReplaceWithMod !== null) {
-          const modReplacedSearchString = searchString.replace(
-            keyToReplaceWithMod,
-            'mod'
-          )
-          return (
-            item.sequence.startsWith(searchString) ||
-            item.sequence.startsWith(modReplacedSearchString)
-          )
-        }
+        const itemSteps = item.sequence.split(' ')
 
-        return item.sequence.startsWith(searchString)
+        return searchStringSteps.every((searchStep, stepIndex) => {
+          if (!itemSteps[stepIndex]) {
+            return false
+          }
+          const itemStep = itemSteps[stepIndex]
+
+          return (
+            itemStep === searchStep ||
+            (shouldSearchForMod && keyToReplaceWithMod !== null
+              ? itemStep === searchStep.replace(keyToReplaceWithMod, 'mod')
+              : false)
+          )
+        })
       })
       .toArray()
 
     console.log({
       shortcuts: this.shortcuts,
       searchString,
-      matches,
+      matches: prefixMatches,
       step,
       shouldSearchForMod,
       keyToReplaceWithMod,
     })
 
     // If we have no matches, reject the promise
-    if (matches.length === 0) {
+    if (prefixMatches.length === 0) {
       this.clearSequence()
       return Promise.reject(`No prefix matches found for ${searchString}`)
     }
 
-    const exactMatches = matches.filter((item) => {
+    const exactMatches = prefixMatches.filter((item) => {
       if (shouldSearchForMod && keyToReplaceWithMod !== null) {
         const modReplacedSearchString = searchString.replace(
           keyToReplaceWithMod,
