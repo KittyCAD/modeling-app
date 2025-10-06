@@ -189,7 +189,7 @@
     "@types/three": "^0.175.0",
     "@types/ua-parser-js": "^0.7.39",
     "@types/uuid": "^9.0.8",
-    "@types/wicg-file-system-access": "^2023.10.6",
+    "@types/wicg-file-system-access": "^2023.10.7",
     "@types/ws": "^8.18.1",
     "@vitejs/plugin-react": "^4.4.1",
     "@vitest/web-worker": "^3.1.2",
