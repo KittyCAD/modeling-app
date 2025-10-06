@@ -42,7 +42,6 @@ import {
   orientationToReactCss,
   sideToOrientation,
   orientationToDirection,
-  getOppositeOrientation,
 } from '@src/lib/layout/utils'
 import type {
   IUpdateNodeSizes,
@@ -489,77 +488,8 @@ function ResizeHandle({
         className={`hidden group-data-[resize-handle-state=hover]/handle:grid place-content-center z-10 py-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-sm bg-3 border b-5 ${direction === 'horizontal' ? '' : 'rotate-90'}`}
       >
         <CustomIcon className="w-4 h-4 -mx-0.5 rotate-90" name="sixDots" />
-        <SplitLayoutContextMenu
-          layout={layout}
-          menuTargetElement={handleRef}
-          currentIndex={currentIndex}
-        />
       </div>
     </PanelResizeHandle>
-  )
-}
-
-function SplitLayoutContextMenu({
-  layout,
-  currentIndex,
-  ...props
-}: Omit<ContextMenuProps, 'items'> & { layout: Layout; currentIndex: number }) {
-  const { replaceLayoutNode } = useLayoutState()
-  if (!('sizes' in layout)) {
-    return <></>
-  }
-  const orientation =
-    'orientation' in layout
-      ? layout.orientation
-      : sideToOrientation(layout.side)
-
-  function onAddSplit() {
-    if (layout.type === LayoutType.Splits) {
-      const clone = structuredClone(layout.children[currentIndex])
-      clone.id = crypto.randomUUID()
-      const indexToSlotInClone = currentIndex === 0 ? 1 : currentIndex - 1
-
-      const halfSize = (layout.sizes[currentIndex] || 2) / 2
-      layout.sizes[currentIndex] = halfSize
-      layout.sizes.splice(indexToSlotInClone, 0, halfSize)
-      layout.children.splice(indexToSlotInClone, 0, clone)
-      replaceLayoutNode({ targetNodeId: layout.id, newNode: { ...layout } })
-    } else if (layout.type === LayoutType.Panes) {
-      // TODO: this should just reuse the logic from onToggleItem once that's made a utility function
-    }
-  }
-
-  function onDeleteSplit() {
-    if (layout.type === LayoutType.Splits) {
-      const indexToDonateSizeTo = currentIndex === 0 ? 1 : currentIndex - 1
-
-      layout.sizes[indexToDonateSizeTo] += layout.sizes[currentIndex]
-      layout.sizes.splice(currentIndex, 1)
-      layout.children.splice(currentIndex, 1)
-      replaceLayoutNode({ targetNodeId: layout.id, newNode: { ...layout } })
-    }
-  }
-
-  return (
-    <ContextMenu
-      {...props}
-      items={[
-        <ContextMenuItem
-          key="add-left"
-          icon="arrowLeft"
-          onClick={() => onAddSplit()}
-        >
-          Split {orientation === 'inline' ? 'above' : 'to left'}
-        </ContextMenuItem>,
-        <ContextMenuItem
-          key="add-left"
-          icon="close"
-          onClick={() => onDeleteSplit()}
-        >
-          Remove {orientation === 'inline' ? 'above' : 'to left'}
-        </ContextMenuItem>,
-      ]}
-    />
   )
 }
 
