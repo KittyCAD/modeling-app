@@ -1,6 +1,4 @@
 import { assertParse, recast } from '@src/lang/wasm'
-import { join } from 'path'
-import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -8,6 +6,8 @@ import { addSubtract } from '@src/lang/modifyAst/boolean'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import RustContext from '@src/lib/rustContext'
 import { ConnectionManager } from '@src/network/connectionManager'
+import { join } from 'path'
+import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 describe('boolean', () => {
