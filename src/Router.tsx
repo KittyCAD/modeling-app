@@ -40,6 +40,7 @@ import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
 import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
+import { DebugShortcutsRoute } from '@src/lib/shortcuts/DebugShortcutsRoute'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -139,6 +140,11 @@ const router = createRouter([
             element: <Telemetry />,
           },
         ],
+      },
+      {
+        path: PATHS.DEBUG_SHORTCUTS,
+        errorElement: <ErrorPage />,
+        element: <DebugShortcutsRoute />,
       },
       {
         path: PATHS.SIGN_IN,
