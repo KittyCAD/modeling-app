@@ -978,9 +978,9 @@ profile001 = startProfile(sketch001, at = [0, 0])
 profile001 = startProfile(sketch001, at = [-0.26, 0])
   |> xLine(length = 0.11)
   |> line(end = [0.12, -0.11])
-  // testcomment1
+
 profile002 = circle(sketch001, center = [0.03, -0.03], radius = 0.08)
-  // testcomment2`
+// testcomment2`
       )
     })
 
@@ -1004,7 +1004,6 @@ profile002 = circle(sketch001, center = [0.03, -0.03], radius = 0.08)
     await editor.expectEditor.not.toContain('startProfile(')
     await editor.expectEditor.not.toContain('|> xLine(')
     await editor.expectEditor.not.toContain('circle(')
-    await editor.expectEditor.toContain('testcomment1')
     await editor.expectEditor.toContain('testcomment2')
   })
 })

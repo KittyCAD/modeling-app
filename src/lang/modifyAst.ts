@@ -772,6 +772,47 @@ export function deleteTopLevelStatement(
   }
   const statementIndex: number = pathStep[0]
   ast.body.splice(statementIndex, 1)
+
+  updateCommentIndicesAfterDelete(ast, statementIndex)
+}
+
+function updateCommentIndicesAfterDelete(
+  ast: Node<Program>,
+  deletedIndex: number
+) {
+  const nonCodeMeta = ast.nonCodeMeta
+  const nonCodeNodes = nonCodeMeta?.nonCodeNodes
+  if (nonCodeNodes) {
+    Object.keys(nonCodeNodes)
+      // Note: ascending order by key is assumed, which is the case currently.
+      .forEach((key) => {
+        const index = Number(key) // index points to the top level profile AFTER which to place the comment
+        const indexIsValid = index > 0 || index === 0
+        if (indexIsValid && index >= deletedIndex) {
+          const currentTarget = nonCodeNodes[index]
+          if (currentTarget) {
+            const newIndex = index - 1
+            if (newIndex >= 0) {
+              // Move index up by one, if there is already one, just add to it
+              const newTarget = nonCodeNodes[index - 1]
+              if (newTarget) {
+                nonCodeNodes[index - 1] = [...newTarget, ...currentTarget]
+              } else {
+                // Just move up, nothing is there
+                nonCodeNodes[index - 1] = currentTarget
+              }
+            } else {
+              // the first top level statement was deleted -> move comment to nonCodeMeta.startNodes
+              if (!nonCodeMeta.startNodes) {
+                nonCodeMeta.startNodes = []
+              }
+              nonCodeMeta?.startNodes.push(...currentTarget)
+            }
+            delete nonCodeNodes[index]
+          }
+        }
+      })
+  }
 }
 
 export function removeSingleConstraintInfo(
