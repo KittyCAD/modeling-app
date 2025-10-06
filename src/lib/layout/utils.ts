@@ -34,6 +34,9 @@ export function hasValidSizes(area: SplitLayout | PaneLayout) {
   )
 }
 
+export function getOppositeOrientation(o: Orientation): Orientation {
+  return o === 'inline' ? 'block' : 'inlin'
+}
 export function getOppositeSide(side: Side): Side {
   switch (side) {
     case 'inline-start':
@@ -97,8 +100,20 @@ export function getOppositionDirection(direction: Direction): Direction {
   return direction === 'horizontal' ? 'vertical' : 'horizontal'
 }
 
+export function sideToOrientation(side: Side): Orientation {
+  if (side.includes('inline')) {
+    return 'inline'
+  }
+
+  return 'block'
+}
+
 export function sideToReactCss(side: Side): string {
   return side.split('-').map(capitaliseFC).join('')
+}
+
+export function orientationToReactCss(orientation: Orientation): string {
+  return capitaliseFC(orientation)
 }
 
 export interface IRootAndTargetLayouts {
@@ -226,7 +241,7 @@ export function expandSplitChildPaneNode({
   rootLayout,
   targetNode: panesLayoutNode,
 }: IRootAndTargetLayouts) {
-  if (!panesLayoutNode || panesLayoutNode.type !== 'panes') {
+  if (!panesLayoutNode || panesLayoutNode.type !== LayoutType.Panes) {
     return rootLayout
   }
 
@@ -234,7 +249,7 @@ export function expandSplitChildPaneNode({
     rootLayout,
     targetNode: panesLayoutNode,
   })
-  if (!splitsLayoutNode || splitsLayoutNode.type !== 'splits') {
+  if (!splitsLayoutNode || splitsLayoutNode.type !== LayoutType.Splits) {
     return rootLayout
   }
 
