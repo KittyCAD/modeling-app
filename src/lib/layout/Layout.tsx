@@ -41,6 +41,7 @@ import {
   shouldEnableResizeHandle,
   orientationToReactCss,
   sideToOrientation,
+  orientationToDirection,
   getOppositeOrientation,
 } from '@src/lib/layout/utils'
 import type {
@@ -185,12 +186,11 @@ function LayoutNode({
  * Need to see if we should just roll our own resizable component?
  */
 function SplitLayout({ layout }: { layout: SplitLayoutType }) {
-  // Direction is simpler than Orientation, which uses logical properties.
-  const orientationAsDirection =
-    layout.orientation === 'inline' ? 'horizontal' : 'vertical'
-
   return (
-    <SplitLayoutContents direction={orientationAsDirection} layout={layout} />
+    <SplitLayoutContents
+      direction={orientationToDirection(layout.orientation)}
+      layout={layout}
+    />
   )
 }
 
@@ -443,7 +443,10 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
         />
       ) : (
         <SplitLayoutContents
-          direction={getOppositionDirection(sideToSplitDirection(layout.side))}
+          direction={
+            orientationToDirection(layout.splitOrientation) ||
+            getOppositionDirection(sideToSplitDirection(layout.side))
+          }
           layout={{
             ...layout,
             children: layout.children.filter(
@@ -621,8 +624,8 @@ function PaneLayoutContextMenu({
           Set to bottom side
         </ContextMenuItem>,
         <ContextMenuItem
-          key="set-bottom"
-          icon={layout.side === 'block-end' ? 'checkmark' : 'arrowDown'}
+          key="close-all"
+          icon="collapse"
           onClick={() =>
             replaceLayoutNode({
               targetNodeId: layout.id,
@@ -631,6 +634,32 @@ function PaneLayoutContextMenu({
           }
         >
           Close all panes
+        </ContextMenuItem>,
+        <ContextMenuItem
+          key="orient-inline"
+          icon={
+            layout.splitOrientation === 'inline' ? 'checkmark' : 'horizontal'
+          }
+          onClick={() =>
+            replaceLayoutNode({
+              targetNodeId: layout.id,
+              newNode: { ...layout, splitOrientation: 'inline' },
+            })
+          }
+        >
+          Horizontal splits
+        </ContextMenuItem>,
+        <ContextMenuItem
+          key="orient-block"
+          icon={layout.splitOrientation === 'block' ? 'checkmark' : 'vertical'}
+          onClick={() =>
+            replaceLayoutNode({
+              targetNodeId: layout.id,
+              newNode: { ...layout, splitOrientation: 'block' },
+            })
+          }
+        >
+          Vertical splits
         </ContextMenuItem>,
       ]}
     />

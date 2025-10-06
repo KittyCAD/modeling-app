@@ -63,6 +63,13 @@ export function logicalSideToTooltipPosition(
       return 'bottom'
   }
 }
+/**
+ * Direction is simpler than Orientation, which uses logical properties.
+ */
+export function orientationToDirection(o: Orientation): Direction {
+  return o === 'inline' ? 'horizontal' : 'vertical'
+}
+
 export function sideToTailwindLayoutDirection(
   side: Side
 ): React.HTMLProps<HTMLElement>['className'] {
