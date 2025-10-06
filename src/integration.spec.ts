@@ -81,7 +81,6 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import { isOverlap } from '@src/lib/utils'
-import { addSubtract } from '@src/lang/modifyAst/boolean'
 import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
 import { expect } from 'vitest'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
@@ -4372,79 +4371,6 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
     it('should return false when body exists and not a segment is selected', async () => {
       await runButtonStateTest(codeWithBody, `close()`, false)
     }, 10_000)
-  })
-})
-
-describe('boolean.test.ts', () => {
-  describe('Testing addSubtract', () => {
-    async function runAddSubtractTest(code: string, toolCount = 1) {
-      const ast = assertParse(code)
-      if (err(ast)) throw ast
-
-      const { artifactGraph } = await enginelessExecutor(ast)
-      const sweeps = [...artifactGraph.values()].filter(
-        (n) => n.type === 'sweep'
-      )
-      const solids: Selections = {
-        graphSelections: sweeps.slice(-1),
-        otherSelections: [],
-      }
-      const tools: Selections = {
-        graphSelections: sweeps.slice(0, toolCount),
-        otherSelections: [],
-      }
-      const result = addSubtract({
-        ast,
-        artifactGraph,
-        solids,
-        tools,
-      })
-      if (err(result)) throw result
-
-      await enginelessExecutor(ast)
-      return recast(result.modifiedAst)
-    }
-
-    it('should add a standalone call on standalone sweeps selection', async () => {
-      const code = `sketch001 = startSketchOn(XY)
-profile001 = circle(sketch001, center = [0.2, 0.2], radius = 0.1)
-extrude001 = extrude(profile001, length = 1)
-
-sketch002 = startSketchOn(XZ)
-profile002 = circle(sketch002, center = [0.2, 0.2], radius = 0.05)
-extrude002 = extrude(profile002, length = -1)`
-      const expectedNewLine = `solid001 = subtract(extrude002, tools = extrude001)`
-      const newCode = await runAddSubtractTest(code)
-      expect(newCode).toContain(code + '\n' + expectedNewLine)
-    })
-
-    it('should push a call in pipe if selection was in variable-less pipe', async () => {
-      const code = `sketch001 = startSketchOn(XY)
-profile001 = circle(sketch001, center = [0.2, 0.2], radius = 0.1)
-extrude001 = extrude(profile001, length = 1)
-
-startSketchOn(XZ)
-  |> circle(center = [0.2, 0.2], radius = 0.05)
-  |> extrude(length = -1)`
-      const expectedNewLine = `  |> subtract(tools = extrude001)`
-      const newCode = await runAddSubtractTest(code)
-      expect(newCode).toContain(code + '\n' + expectedNewLine)
-    })
-
-    it('should support multi-profile extrude as tool', async () => {
-      const code = `sketch001 = startSketchOn(XY)
-profile001 = circle(sketch001, center = [0.2, 0.2], radius = 0.05)
-profile002 = circle(sketch001, center = [0.2, 0.4], radius = 0.05)
-extrude001 = extrude([profile001, profile002], length = 1)
-
-sketch003 = startSketchOn(XZ)
-profile003 = circle(sketch003, center = [0.2, 0.2], radius = 0.1)
-extrude003 = extrude(profile003, length = -1)`
-      const expectedNewLine = `solid001 = subtract(extrude003, tools = extrude001)`
-      const toolCount = 2
-      const newCode = await runAddSubtractTest(code, toolCount)
-      expect(newCode).toContain(code + '\n' + expectedNewLine)
-    })
   })
 })
 
