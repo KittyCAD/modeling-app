@@ -35,7 +35,6 @@ import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import usePlatform from '@src/hooks/usePlatform'
 import { useKclContext } from '@src/lang/KclProvider'
-import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -44,6 +43,7 @@ import { commandBarActor } from '@src/lib/singletons'
 import { settingsActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
+import { EngineConnectionStateType } from '@src/network/utils'
 
 interface BadgeInfoComputed {
   value: number | boolean | string
@@ -166,6 +166,16 @@ export function ModelingSidebarRight() {
   )
   const [actuallyNew, setActuallyNew] = useState<boolean>(false)
 
+  // We need to filter out text-to-cad-2 if the setting enable_copilot is false.
+  // Because sidebars are constructed at import time, it's not possible to do
+  // this before, so we do it now.
+  const sidebarPanesRightFiltered = sidebarPanesRight.filter((x) => {
+    if (settings.modeling.enableCopilot.current === false) {
+      return !(x.id === 'text-to-cad-2')
+    }
+    return true
+  })
+
   useEffect(() => {
     if (promptsBelongingToConversation === undefined) {
       return
@@ -197,7 +207,7 @@ export function ModelingSidebarRight() {
   return (
     <ModelingSidebar
       id="right-sidebar"
-      sidebarPanes={sidebarPanesRight || []}
+      sidebarPanes={sidebarPanesRightFiltered || []}
       sidebarActions={sidebarActions.current || []}
       settings={settings}
       align={Alignment.Right}
@@ -491,7 +501,7 @@ function ModelingPaneButton({
       data-onboarding-id={`${paneConfig.id}-pane-button`}
     >
       <button
-        className={`group pointer-events-auto flex items-center justify-center border-0 rounded-none border-transparent dark:border-transparent p-2 m-0 !outline-0 ${paneIsOpen ? ' !border-primary' : ''} ${paneConfig.cssClassOverrides?.button ?? ''}`}
+        className={`group pointer-events-auto flex items-center justify-center border-0 rounded-none border-transparent dark:border-transparent p-[8px] ${tooltipPosition === 'right' ? 'pl-[9px] pr-[7px]' : 'pl-[7px] pr-[9px]'} m-0 !outline-0 ${paneIsOpen ? ' !border-primary' : ''} ${paneConfig.cssClassOverrides?.button ?? ''}`}
         aria-pressed={paneIsOpen}
         style={{
           [tooltipPosition === 'left' ? 'borderLeft' : 'borderRight']:

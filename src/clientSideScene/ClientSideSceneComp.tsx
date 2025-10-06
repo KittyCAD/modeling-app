@@ -42,7 +42,11 @@ import type { useSettings } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { throttle, toSync } from '@src/lib/utils'
-import type { SegmentOverlay } from '@src/machines/modelingMachine'
+import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
+import {
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -78,7 +82,6 @@ export const ClientSideScene = ({
     typeof useSettings
   >['modeling']['enableTouchControls']['current']
 }) => {
-  const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
 
@@ -97,51 +100,32 @@ export const ClientSideScene = ({
     )
   }, [state?.context?.selectionRanges?.otherSelections])
 
+  const containerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    if (!canvasRef.current) return
-    const canvas = canvasRef.current
-    canvas.appendChild(sceneInfra.renderer.domElement)
-    canvas.appendChild(sceneInfra.labelRenderer.domElement)
-    sceneInfra.onCanvasResized()
-    sceneInfra.animate()
-    canvas.addEventListener(
-      'mousemove',
-      toSync(sceneInfra.onMouseMove, reportRejection),
-      false
-    )
-    canvas.addEventListener('mousedown', sceneInfra.onMouseDown, false)
-    canvas.addEventListener(
-      'mouseup',
-      toSync(sceneInfra.onMouseUp, reportRejection),
-      false
-    )
-    sceneInfra.setSend(send)
-    engineCommandManager.modelingSend = send
-    return () => {
-      canvas?.removeEventListener(
-        'mousemove',
-        toSync(sceneInfra.onMouseMove, reportRejection)
-      )
-      canvas?.removeEventListener('mousedown', sceneInfra.onMouseDown)
-      canvas?.removeEventListener(
-        'mouseup',
-        toSync(sceneInfra.onMouseUp, reportRejection)
-      )
-      sceneEntitiesManager.tearDownSketch({ removeAxis: true })
+    const container = containerRef.current
+    if (!container) {
+      return
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [])
+    const canvas = sceneInfra.renderer.domElement
+    container.appendChild(canvas)
+    container.appendChild(sceneInfra.labelRenderer.domElement)
 
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+    sceneInfra.animate()
+
+    const onMouseMove = toSync(sceneInfra.onMouseMove, reportRejection)
+    container.addEventListener('mousemove', onMouseMove)
+    container.addEventListener('mousedown', sceneInfra.onMouseDown)
+    const onMouseUp = toSync(sceneInfra.onMouseUp, reportRejection)
+    container.addEventListener('mouseup', onMouseUp)
 
     // Detect canvas size changes
     const observer = new ResizeObserver(() => {
+      // This is called initially too, not just on resize
       sceneInfra.onCanvasResized()
       sceneInfra.camControls.onWindowResize()
+      sceneEntitiesManager.onCamChange()
     })
-    observer.observe(canvas)
+    observer.observe(container)
 
     // Detect dpr changes
     let media = window.matchMedia(
@@ -157,10 +141,20 @@ export const ClientSideScene = ({
     }
     media.addEventListener('change', handleChange)
 
+    // send
+    sceneInfra.setSend(send)
+    engineCommandManager.modelingSend = send
+
     return () => {
+      container.removeEventListener('mousemove', onMouseMove)
+      container.removeEventListener('mousedown', sceneInfra.onMouseDown)
+      container.removeEventListener('mouseup', onMouseUp)
+      sceneEntitiesManager.tearDownSketch({ removeAxis: true })
+
       observer.disconnect()
       media.removeEventListener('change', handleChange)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   let cursor = 'default'
@@ -193,7 +187,7 @@ export const ClientSideScene = ({
   return (
     <>
       <div
-        ref={canvasRef}
+        ref={containerRef}
         style={{ cursor: cursor }}
         data-testid="client-side-scene"
         className={`absolute inset-0 h-full w-full transition-all duration-300 ${
@@ -600,7 +594,9 @@ const ConstraintSymbol = ({
                 shallowPath,
                 argPosition,
                 kclManager.ast,
-                kclManager.variables
+                kclManager.variables,
+                removeSingleConstraint,
+                transformAstSketchLines
               )
 
               if (!transform) return

@@ -108,6 +108,7 @@ description: Artifact commands coerce_from_trig_to_point.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

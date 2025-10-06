@@ -432,6 +432,7 @@ description: Artifact commands user_reported_union_2_bug.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

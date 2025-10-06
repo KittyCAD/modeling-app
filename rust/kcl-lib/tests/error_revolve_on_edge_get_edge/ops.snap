@@ -180,6 +180,7 @@ description: Operations executed error_revolve_on_edge_get_edge.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

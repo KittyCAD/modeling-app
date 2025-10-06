@@ -46,10 +46,6 @@ import {
 import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import {
-  isLiteralArrayOrStatic,
-  isNotLiteralArrayOrStatic,
-} from '@src/lang/std/sketchcombos'
 import type {
   AddTagInfo,
   ArrayItemInput,
@@ -69,6 +65,8 @@ import {
   findKwArgAny,
   findKwArgAnyIndex,
   findKwArgWithIndex,
+  isLiteralArrayOrStatic,
+  isNotLiteralArrayOrStatic,
   topLevelRange,
 } from '@src/lang/util'
 import type {
@@ -94,7 +92,8 @@ import {
   roundOff,
 } from '@src/lib/utils'
 import { cross2d, distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
-import type { EdgeCutInfo } from '@src/machines/modelingMachine'
+import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
+import type { Coords2d } from '@src/lang/util'
 
 const STRAIGHT_SEGMENT_ERR = () =>
   new Error('Invalid input, expected "straight-segment"')
@@ -102,8 +101,6 @@ const ARC_SEGMENT_ERR = () => new Error('Invalid input, expected "arc-segment"')
 const CIRCLE_THREE_POINT_SEGMENT_ERR = new Error(
   'Invalid input, expected "circle-three-point-segment"'
 )
-
-export type Coords2d = [number, number]
 
 export function getCoordsFromPaths(skGroup: Sketch, index = 0): Coords2d {
   const currentPath = skGroup?.paths?.[index]
@@ -3365,28 +3362,16 @@ export function getConstraintInfoKw(
   )
 }
 
-export function compareVec2Epsilon(
-  vec1: [number, number],
-  vec2: [number, number],
-  compareEpsilon = 0.015625 // or 2^-6
+// Compare if the distance between 2 points is within a threshold
+export function vec2WithinDistance(
+  a: Coords2d,
+  b: Coords2d,
+  threshold = 0.015625 // or 2^-6
 ) {
-  const xDifference = Math.abs(vec1[0] - vec2[0])
-  const yDifference = Math.abs(vec1[1] - vec2[1])
-  return xDifference < compareEpsilon && yDifference < compareEpsilon
-}
-
-// this version uses this distance of the two points instead of comparing x and y separately
-export function compareVec2Epsilon2(
-  vec1: [number, number],
-  vec2: [number, number],
-  compareEpsilon = 0.015625 // or 2^-6
-) {
-  const xDifference = Math.abs(vec1[0] - vec2[0])
-  const yDifference = Math.abs(vec1[1] - vec2[1])
-  const distance = Math.sqrt(
-    xDifference * xDifference + yDifference * yDifference
-  )
-  return distance < compareEpsilon
+  const x = a[0] - b[0]
+  const y = a[1] - b[1]
+  const distanceSquared = x * x + y * y
+  return distanceSquared < threshold * threshold
 }
 
 interface CreateLineFnCallArgs {

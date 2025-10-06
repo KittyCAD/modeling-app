@@ -1,6 +1,6 @@
 [package]
 name = "kcl-wasm-lib"
-version = "0.1.96"
+version = "0.1.102"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
 rust-version = "1.83"
@@ -32,7 +32,7 @@ kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 serde_json = { workspace = true }
 tokio = { workspace = true, features = ["sync", "rt"] }
-toml = "0.9.5"
+toml = "0.9.7"
 tower-lsp = { workspace = true, features = ["runtime-agnostic"] }
 uuid = { workspace = true, features = ["v4", "js", "serde"] }
 wasm-bindgen = "0.2.99"
@@ -51,7 +51,7 @@ features = [
 [dev-dependencies]
 anyhow.workspace = true
 pretty_assertions = "1.4.1"
-wasm-bindgen-test = "0.3.51"
+wasm-bindgen-test = "0.3.54"
 
 # Local development only. Placeholder to speed up development cycle
 #[package.metadata.wasm-pack.profile.release]

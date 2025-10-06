@@ -597,6 +597,7 @@ description: Operations executed straight-rung-ladder.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

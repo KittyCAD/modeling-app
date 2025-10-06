@@ -44,11 +44,8 @@ import {
   getNodeFromPath,
   traverse,
 } from '@src/lang/queryAst'
-import {
-  EngineConnectionEvents,
-  EngineConnectionStateType,
-} from '@src/lang/std/engineConnection'
-import { err, reject, reportRejection, trap } from '@src/lib/trap'
+
+import { err, reportRejection, trap, reject } from '@src/lib/trap'
 
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
@@ -88,7 +85,14 @@ import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
 import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { updateSelections } from '@src/lib/selections'
+import {
+  getDefaultSketchPlaneData,
+  selectionBodyFace,
+  getOffsetSketchPlaneData,
+  updateSelections,
+  getEventForSegmentSelection,
+  updateExtraSegments,
+} from '@src/lib/selections'
 import {
   codeManager,
   editorManager,
@@ -99,13 +103,25 @@ import {
   sceneInfra,
 } from '@src/lib/singletons'
 import type { IndexLoaderData } from '@src/lib/types'
+import type {
+  DefaultPlane,
+  ExtrudeFacePlane,
+  OffsetPlane,
+} from '@src/machines/modelingSharedTypes'
 import {
   getPersistedContext,
   modelingMachine,
-  modelingMachineDefaultContext,
 } from '@src/machines/modelingMachine'
+import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import { useFolders } from '@src/machines/systemIO/hooks'
+
+import {
+  EngineConnectionEvents,
+  EngineConnectionStateType,
+} from '@src/network/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import { addTagForSketchOnFace } from '@src/lang/std/sketch'
+import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -137,6 +153,7 @@ export const ModelingMachineProvider = ({
       snapToGrid,
     },
   } = useSettings()
+  const previousCameraOrbit = useRef<CameraOrbitType | null>(null)
   const loaderData = useLoaderData() as IndexLoaderData
   const projects = useFolders()
   const { project, file } = loaderData
@@ -282,14 +299,16 @@ export const ModelingMachineProvider = ({
             .catch(reportRejection)
         },
         'Set sketchDetails': assign(({ context: { sketchDetails }, event }) => {
-          if (event.type !== 'Delete segment') return {}
           if (!sketchDetails) return {}
-          return {
-            sketchDetails: {
-              ...sketchDetails,
-              sketchEntryNodePath: event.data,
-            },
+          if (event.type === 'Update sketch details') {
+            return {
+              sketchDetails: {
+                ...sketchDetails,
+                ...event.data,
+              },
+            }
           }
+          return {}
         }),
       },
       guards: {
@@ -405,13 +424,13 @@ export const ModelingMachineProvider = ({
             // Due to our use of singeton pattern, we need to do this to reliably
             // update this object across React and non-React boundary.
             // We need to do this eagerly because of the exportToEngine call below.
-            if (engineCommandManager.machineManager === null) {
+            if (machineManager === null) {
               console.warn(
-                "engineCommandManager.machineManager is null. It shouldn't be at this point. Aborting operation."
+                "machineManager is null. It shouldn't be at this point. Aborting operation."
               )
               return new Error('Machine manager is not set')
             } else {
-              engineCommandManager.machineManager.currentMachine = input.machine
+              machineManager.currentMachine = input.machine
             }
 
             // Update the rest of the UI that needs to know the current machine
@@ -453,7 +472,7 @@ export const ModelingMachineProvider = ({
               files,
               toastId,
               name,
-              machineManager: engineCommandManager.machineManager,
+              machineManager: machineManager,
             })
           }
         ),
@@ -503,6 +522,54 @@ export const ModelingMachineProvider = ({
             return undefined
           }
         ),
+        'animate-to-sketch-solve': fromPromise(
+          async ({
+            input: artifactOrPlaneId,
+          }): Promise<DefaultPlane | OffsetPlane | ExtrudeFacePlane> => {
+            if (!artifactOrPlaneId) {
+              const errorMessage = 'No artifact or plane ID provided'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+            let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null =
+              null
+
+            const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId)
+            if (!err(defaultResult) && defaultResult) {
+              result = defaultResult
+            }
+            console.log('result', result)
+
+            // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
+            if (!result) {
+              const artifact = kclManager.artifactGraph.get(artifactOrPlaneId)
+              const offsetResult = await getOffsetSketchPlaneData(artifact)
+              if (!err(offsetResult) && offsetResult) {
+                result = offsetResult
+              }
+            }
+            console.log('result', result)
+            if (!result) {
+              const sweepFaceSelected =
+                await selectionBodyFace(artifactOrPlaneId)
+              if (sweepFaceSelected) {
+                result = sweepFaceSelected
+              }
+            }
+            if (!result) {
+              const errorMessage = 'Please select a valid sketch plane'
+              toast.error(errorMessage)
+              return reject(new Error(errorMessage))
+            }
+
+            const id =
+              result.type === 'extrudeFace' ? result.faceId : result.planeId
+            await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
+            console.log('result', result)
+            return result
+          }
+        ),
         'animate-to-face': fromPromise(async ({ input }) => {
           if (!input) return null
           if (input.type === 'extrudeFace' || input.type === 'offsetPlane') {
@@ -513,6 +580,7 @@ export const ModelingMachineProvider = ({
                     kclManager.ast,
                     input.sketchPathToNode,
                     input.extrudePathToNode,
+                    addTagForSketchOnFace,
                     input.faceInfo
                   )
                 : sketchOnOffsetPlane(
@@ -608,7 +676,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -664,7 +734,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -730,7 +802,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -791,7 +865,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -845,7 +921,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -900,7 +978,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -955,7 +1035,9 @@ export const ModelingMachineProvider = ({
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
-                sketchDetails.origin
+                sketchDetails.origin,
+                getEventForSegmentSelection,
+                updateExtraSegments
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
 
@@ -1204,6 +1286,7 @@ export const ModelingMachineProvider = ({
           useNewSketchMode,
         },
         machineManager,
+        sketchSolveToolName: null,
       },
       // devTools: true,
     }
@@ -1369,31 +1452,43 @@ export const ModelingMachineProvider = ({
   // the up vector otherwise the conconical orientation for the camera modes will be
   // wrong
   useEffect(() => {
-    sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+    engineCommandManager.connection?.deferredPeerConnection?.promise
+      .then(() => {
+        if (
+          previousCameraOrbit.current === null ||
+          cameraOrbit.current === previousCameraOrbit.current
+        ) {
+          // Do not reset, nothing has changed.
+          // Do not trigger on first initialization either.
+          previousCameraOrbit.current = cameraOrbit.current
+          return
+        }
+        previousCameraOrbit.current = cameraOrbit.current
+        // Gotcha: This will absolutely brick E2E tests if called incorrectly.
+        sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+      })
+      .catch(reportRejection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [cameraOrbit.current])
 
   useEffect(() => {
     const onConnectionStateChanged = ({ detail }: CustomEvent) => {
-      // If we are in sketch mode we need to exit it.
-      // TODO: how do i check if we are in a sketch mode, I only want to call
-      // this then.
       if (detail.type === EngineConnectionStateType.Disconnecting) {
         modelingSend({ type: 'Cancel' })
       }
     }
-    engineCommandManager.engineConnection?.addEventListener(
+    engineCommandManager.connection?.addEventListener(
       EngineConnectionEvents.ConnectionStateChanged,
       onConnectionStateChanged as EventListener
     )
     return () => {
-      engineCommandManager.engineConnection?.removeEventListener(
+      engineCommandManager.connection?.removeEventListener(
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChanged as EventListener
       )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [engineCommandManager.engineConnection, modelingSend])
+  }, [engineCommandManager.connection, modelingSend])
 
   useEffect(() => {
     const inSketchMode = modelingState.matches('Sketch')

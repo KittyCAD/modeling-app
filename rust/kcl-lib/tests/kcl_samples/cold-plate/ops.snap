@@ -789,6 +789,7 @@ description: Operations executed cold-plate.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

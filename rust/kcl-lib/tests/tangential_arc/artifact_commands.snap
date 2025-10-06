@@ -186,6 +186,7 @@ description: Artifact commands tangential_arc.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

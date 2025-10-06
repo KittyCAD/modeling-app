@@ -247,6 +247,7 @@ description: Operations executed pattern_linear_in_module.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

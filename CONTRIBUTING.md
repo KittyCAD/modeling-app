@@ -98,16 +98,6 @@ Prepare these system dependencies:
 
 - Set `$VITE_KITTYCAD_API_TOKEN` from https://zoo.dev/account/api-tokens
 
-#### Snapshot tests (Google Chrome on Ubuntu only)
-
-Only Ubuntu and Google Chrome is supported for the set of tests evaluating screenshot snapshots.
-If you don't run Ubuntu locally or in a VM, you may use a GitHub Codespace.
-```
-npm run playwright -- install chrome
-npm run test:snapshots
-```
-You may use `-- --update-snapshots` as needed.
-
 #### Desktop tests (Electron on all platforms)
 
 ```
@@ -122,6 +112,19 @@ You may use `-- -g "my test"` to match specific test titles, or `-- path/to/file
 ```
 npm run test:e2e:web
 ```
+
+#### Snapshot tests (Google Chrome on Ubuntu only)
+
+If you are running Ubuntu locally, in a VM, or using GitHub Codespaces:
+
+```
+npm run playwright -- install chrome
+npm run test:snapshots
+```
+
+Append `-- --update-snapshots` if you made significant UI changes.
+
+Alternatively, you can simply delete `e2e/playwright/snapshot-tests.spec.ts-snapshots/` to let the GitHub Actions job create a fresh snapshots commit automatically.
 
 #### Debugger
 
@@ -171,7 +174,7 @@ Where `./store` should look like this
 
 However because much of our tests involve clicking in the stream at specific locations, it's code-gen looks `await page.locator('video').click();` when really we need to use a pixel coord, so I think it's of limited use.
 
-### Unit and component tests
+### Unit and integration tests
 
 If you already haven't, run the following:
 
@@ -184,7 +187,7 @@ npm start
 and finally:
 
 ```
-npm run test:unit
+npm run test
 ```
 
 For individual testing:
@@ -205,7 +208,7 @@ Prepare these system dependencies:
 then run tests that target the KCL language:
 
 ```
-npm run test:rust
+npm run test:e2e:kcl
 ```
 
 ### Fuzzing the parser

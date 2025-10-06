@@ -1016,6 +1016,7 @@ description: Artifact commands router-template-cross-bar.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

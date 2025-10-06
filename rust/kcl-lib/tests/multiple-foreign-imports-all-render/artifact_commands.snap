@@ -16027,6 +16027,7 @@ description: Artifact commands multiple-foreign-imports-all-render.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

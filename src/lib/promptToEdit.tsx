@@ -283,7 +283,7 @@ export async function getPromptToEditResult(
 ): Promise<TextToCadMultiFileIteration | Error> {
   const client = createKCClient(token)
   const data = await kcCall(() =>
-    ml.get_text_to_cad_model_for_user({ client, id })
+    ml.get_text_to_cad_part_for_user({ client, id })
   )
   return data as TextToCadMultiFileIteration | Error
 }

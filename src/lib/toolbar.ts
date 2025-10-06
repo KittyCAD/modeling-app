@@ -11,7 +11,7 @@ import {
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
 
-export type ToolbarModeName = 'modeling' | 'sketching'
+export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
 type ToolbarMode = {
   check: (state: StateFrom<typeof modelingMachine>) => boolean
@@ -28,6 +28,7 @@ export interface ToolbarItemCallbackProps {
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
   sketchPathId: string | false
   editorHasFocus: boolean | undefined
+  isActive: boolean
 }
 
 export type ToolbarItem = {
@@ -62,6 +63,7 @@ export type ToolbarItemResolved = Omit<
   disableHotkey?: boolean
   hotkey?: string | string[]
   isActive?: boolean
+  callbackProps: ToolbarItemCallbackProps
 }
 
 export type ToolbarItemResolvedDropdown = {
@@ -82,7 +84,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         state.matches('Sketch') ||
         state.matches('Sketch no face') ||
         state.matches('animating to existing sketch') ||
-        state.matches('animating to plane')
+        state.matches('animating to plane') ||
+        state.matches('sketchSolveMode')
       ),
     items: [
       {
@@ -498,6 +501,52 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
         ],
       },
+      {
+        id: 'pattern',
+        array: [
+          {
+            id: 'pattern-circular-3d',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Pattern Circular 3D', groupId: 'modeling' },
+              }),
+            status: 'available',
+            title: 'Circular Pattern',
+            icon: 'patternCircular3d',
+            description:
+              'Create a circular pattern of 3D solids around an axis.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-solid-patternCircular3d'
+                ),
+              },
+            ],
+          },
+          {
+            id: 'pattern-linear-3d',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'Pattern Linear 3D', groupId: 'modeling' },
+              }),
+            status: 'available',
+            title: 'Linear Pattern',
+            icon: 'patternLinear3d',
+            description: 'Create a linear pattern of 3D solids along an axis.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-solid-patternLinear3d'
+                ),
+              },
+            ],
+          },
+        ],
+      },
     ],
   },
   sketching: {
@@ -717,9 +766,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               state.matches({ Sketch: 'Center Rectangle tool' })
                 ? ['Alt+R', 'Esc']
                 : 'Alt+R',
-            isActive: (state) => {
-              return state.matches({ Sketch: 'Center Rectangle tool' })
-            },
+            isActive: (state) =>
+              state.matches({ Sketch: 'Center Rectangle tool' }),
           },
         ],
       },
@@ -1021,6 +1069,67 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [],
           },
         ],
+      },
+    ],
+  },
+  sketchSolve: {
+    check: (state) => state.matches('sketchSolveMode'),
+    items: [
+      {
+        id: 'sketch-exit',
+        onClick: ({ modelingSend }) =>
+          modelingSend({
+            type: 'Cancel',
+          }),
+        icon: 'arrowLeft',
+        status: 'available',
+        title: 'Exit sketch',
+        showTitle: true,
+        hotkey: 'Esc',
+        description: 'Exit the current sketch',
+        links: [],
+      },
+      {
+        id: 'line',
+        onClick: ({ modelingSend, isActive }) =>
+          isActive
+            ? modelingSend({
+                type: 'unequip tool',
+              })
+            : modelingSend({
+                type: 'equip tool',
+                data: { tool: 'dimensionTool' },
+              }),
+        icon: 'line',
+        status: 'available',
+        title: 'Line',
+        hotkey: 'L',
+        description: 'Start drawing straight lines',
+        links: [],
+        isActive: (state) =>
+          state.matches('sketchSolveMode') &&
+          state.context.sketchSolveToolName === 'dimensionTool',
+      },
+      {
+        id: 'point',
+        onClick: ({ modelingSend, isActive }) =>
+          isActive
+            ? modelingSend({
+                type: 'unequip tool',
+              })
+            : modelingSend({
+                type: 'equip tool',
+                data: { tool: 'pointTool' },
+              }),
+        icon: 'arrowDown',
+        status: 'available',
+        title: 'Point',
+        hotkey: 'L',
+        description: 'Start drawing straight points',
+        links: [],
+        isActive: (state) =>
+          state.matches('sketchSolveMode') &&
+          state.context.sketchSolveToolName === 'pointTool',
       },
     ],
   },

@@ -84,6 +84,7 @@ description: Operations executed circle_three_point.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

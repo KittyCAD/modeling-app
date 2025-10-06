@@ -37,6 +37,6 @@ test.describe('Snap to Grid', () => {
     await clickB()
 
     // Check if snapping is working
-    await editor.expectEditor.toContain('line(end = [10, 7.5])')
+    await editor.expectEditor.toContain('line(end = [0.15, 0.1])')
   })
 })

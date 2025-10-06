@@ -60,7 +60,7 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
-enum StatementKind<'a> {
+pub(crate) enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,
 }
@@ -430,9 +430,7 @@ impl ExecutorContext {
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
-            engine: Arc::new(Box::new(
-                crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
-            )),
+            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
@@ -1045,7 +1043,10 @@ impl ExecutorContext {
             ModulePath::Main => {
                 // This should never happen.
             }
-            ModulePath::Local { value, .. } => {
+            ModulePath::Local {
+                value,
+                original_import_path,
+            } => {
                 // We only want to display the top-level module imports in
                 // the Feature Tree, not transitive imports.
                 if universe_map.contains_key(value) {
@@ -1060,11 +1061,12 @@ impl ExecutorContext {
                         NodePath::placeholder()
                     };
 
+                    let name = match original_import_path {
+                        Some(value) => value.to_string_lossy(),
+                        None => value.file_name().unwrap_or_default(),
+                    };
                     exec_state.push_op(Operation::GroupBegin {
-                        group: Group::ModuleInstance {
-                            name: value.file_name().unwrap_or_default(),
-                            module_id,
-                        },
+                        group: Group::ModuleInstance { name, module_id },
                         node_path,
                         source_range,
                     });
@@ -1399,14 +1401,14 @@ pub(crate) async fn parse_execute_with_project_dir(
     let program = crate::Program::parse_no_errs(code)?;
 
     let exec_ctxt = ExecutorContext {
-        engine: Arc::new(Box::new(
-            crate::engine::conn_mock::EngineConnection::new().await.map_err(|err| {
+        engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().map_err(
+            |err| {
                 KclError::new_internal(crate::errors::KclErrorDetails::new(
                     format!("Failed to create mock engine connection: {err}"),
                     vec![SourceRange::default()],
                 ))
-            })?,
-        )),
+            },
+        )?)),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings {
             project_directory,

@@ -1601,6 +1601,7 @@ description: Operations executed spur-reduction-gearset.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

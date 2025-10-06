@@ -17,7 +17,7 @@ use crate::{
     execution::{DefaultPlanes, IdGenerator},
 };
 
-#[wasm_bindgen(module = "/../../src/lang/std/engineConnection.ts")]
+#[wasm_bindgen(module = "/../../src/network/connectionManager.ts")]
 extern "C" {
     #[derive(Debug, Clone)]
     pub type EngineCommandManager;
@@ -118,7 +118,7 @@ unsafe impl Send for EngineConnection {}
 unsafe impl Sync for EngineConnection {}
 
 impl EngineConnection {
-    pub async fn new(
+    pub fn new(
         manager: EngineCommandManager,
         response_context: Arc<ResponseContext>,
     ) -> Result<EngineConnection, JsValue> {

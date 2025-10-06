@@ -6,6 +6,7 @@ description: Operations executed invalid_index_str.kcl
   "rust/kcl-lib/tests/invalid_index_str/input.kcl": [],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

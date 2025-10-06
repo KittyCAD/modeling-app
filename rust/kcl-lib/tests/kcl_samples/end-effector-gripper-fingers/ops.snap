@@ -3534,6 +3534,7 @@ description: Operations executed end-effector-gripper-fingers.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
