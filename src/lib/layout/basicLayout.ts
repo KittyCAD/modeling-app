@@ -21,7 +21,7 @@ export const basicLayout: Layout = {
       id: 'b',
       label: 'left-toolbar',
       type: LayoutType.Panes,
-      side: 'block-start',
+      side: 'inline-start',
       activeIndices: [0, 2],
       sizes: [50, 50],
       children: [

@@ -7,7 +7,12 @@ import type {
   Direction,
   Layout,
 } from '@src/lib/layout/types'
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
+import {
+  getResizeHandleElement,
+  Panel,
+  PanelGroup,
+  PanelResizeHandle,
+} from 'react-resizable-panels'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Tab, Switch } from '@headlessui/react'
 import {
@@ -17,6 +22,7 @@ import {
   type SetStateAction,
   useContext,
   useEffect,
+  useRef,
 } from 'react'
 import {
   getOppositeSide,
@@ -33,6 +39,9 @@ import {
   collapseSplitChildPaneNode,
   expandSplitChildPaneNode,
   shouldEnableResizeHandle,
+  orientationToReactCss,
+  sideToOrientation,
+  getOppositeOrientation,
 } from '@src/lib/layout/utils'
 import type {
   IUpdateNodeSizes,
@@ -42,6 +51,12 @@ import type {
 import { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 import Tooltip from '@src/components/Tooltip'
 import { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
+import {
+  ContextMenu,
+  ContextMenuItem,
+  type ContextMenuProps,
+} from '@src/components/ContextMenu'
+import { isArray } from '@src/lib/utils'
 
 type WithoutRootLayout<T> = Omit<T, 'rootLayout'>
 interface LayoutState {
@@ -185,13 +200,22 @@ function SplitLayoutContents({
   onClose,
 }: {
   direction: Direction
-  layout: Omit<SplitLayoutType, 'orientation' | 'type'>
+  layout: Layout
   onClose?: (index: number) => void
 }) {
   const { updateLayoutNodeSizes } = useLayoutState()
+  const hasValidChildren = 'children' in layout && isArray(layout.children)
+  const hasValidSizes =
+    'sizes' in layout &&
+    isArray(layout.sizes) &&
+    layout.sizes.every(Number.isFinite)
+
+  if (!hasValidChildren || !hasValidSizes) {
+    return <></>
+  }
 
   function onSplitDrag(newSizes: number[]) {
-    updateLayoutNodeSizes({ targetNode: layout as Layout, newSizes })
+    updateLayoutNodeSizes({ targetNode: layout, newSizes })
   }
   return (
     layout.children.length && (
@@ -219,6 +243,8 @@ function SplitLayoutContents({
                 direction={direction}
                 id={`handle-${a.id}`}
                 disabled={disableResize}
+                layout={layout}
+                currentIndex={i}
               />
             </Fragment>
           )
@@ -269,7 +295,9 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
     collapsePaneInParentSplit,
     expandPaneInParentSplit,
   } = useLayoutState()
-  const sideBorderWidthProp = `border${sideToReactCss(getOppositeSide(layout.side))}Width`
+  const paneBarRef = useRef<HTMLUListElement>(null)
+  const barBorderWidthProp = `border${orientationToReactCss(sideToOrientation(layout.side))}Width`
+  const buttonBorderWidthProp = `border${sideToReactCss(getOppositeSide(layout.side))}Width`
   const activePanes = layout.activeIndices
     .map((itemIndex) => layout.children[itemIndex])
     .filter((item) => item !== undefined)
@@ -335,8 +363,9 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
       className={`flex-1 flex ${sideToTailwindLayoutDirection(layout.side)}`}
     >
       <ul
+        ref={paneBarRef}
         className={`flex border-solid b-4 ${sideToTailwindTabDirection(layout.side)}`}
-        style={{ [sideBorderWidthProp]: '1px' }}
+        style={{ [barBorderWidthProp]: '1px' }}
         data-pane-toolbar
       >
         {layout.children.map((tab, i) => {
@@ -345,8 +374,8 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
               key={tab.id}
               checked={layout.activeIndices.includes(i)}
               onChange={(checked) => onToggleItem(checked, i)}
-              className="ui-checked:border-primary hover:b-3 border-transparent p-2 m-0 rounded-none border-0 hover:bg-2"
-              style={{ [sideBorderWidthProp]: '2px' }}
+              className="ui-checked:border-primary dark:ui-checked:border-primary hover:b-3 border-transparent dark:border-transparent p-2 m-0 rounded-none border-0 hover:bg-2"
+              style={{ [buttonBorderWidthProp]: '2px' }}
             >
               <CustomIcon name={tab.icon} className="w-5 h-5" />
               <Tooltip
@@ -361,7 +390,7 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
         })}
         {layout.children.length && layout.actions?.length && (
           <hr
-            className={`bg-3 ${sideToSplitDirection(layout.side) === 'vertical' ? 'w-[1px] h-full' : 'h-[1px] w-full'}`}
+            className={`bg-3 border-none ${sideToSplitDirection(layout.side) === 'vertical' ? 'w-[1px] h-full' : 'h-[1px] w-full'}`}
           />
         )}
         {layout.actions?.map((action) => {
@@ -374,7 +403,7 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
               <button
                 key={action.id}
                 type="button"
-                className="ui-checked:border-primary hover:b-3 border-transparent p-2 m-0 rounded-none border-0 hover:bg-2"
+                className="hover:b-3 border-transparent p-2 m-0 rounded-none border-0 hover:bg-2"
                 disabled={disabledReason !== undefined}
                 onClick={() => resolvedAction.execute()}
               >
@@ -403,6 +432,7 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
             )
           )
         })}
+        <PaneLayoutContextMenu layout={layout} menuTargetElement={paneBarRef} />
       </ul>
       {activePanes.length === 0 ? (
         <></>
@@ -433,7 +463,19 @@ function ResizeHandle({
   direction,
   id,
   disabled,
-}: { direction: Direction; id: string; disabled: boolean }) {
+  layout,
+  currentIndex,
+}: {
+  direction: Direction
+  id: string
+  disabled: boolean
+  layout: Layout
+  currentIndex: number
+}) {
+  const handleRef = useRef<HTMLElement | null>(null)
+  useEffect(() => {
+    handleRef.current = getResizeHandleElement(id)
+  }, [id])
   return (
     <PanelResizeHandle
       disabled={disabled}
@@ -444,7 +486,153 @@ function ResizeHandle({
         className={`hidden group-data-[resize-handle-state=hover]/handle:grid place-content-center z-10 py-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-sm bg-3 border b-5 ${direction === 'horizontal' ? '' : 'rotate-90'}`}
       >
         <CustomIcon className="w-4 h-4 -mx-0.5 rotate-90" name="sixDots" />
+        <SplitLayoutContextMenu
+          layout={layout}
+          menuTargetElement={handleRef}
+          currentIndex={currentIndex}
+        />
       </div>
     </PanelResizeHandle>
+  )
+}
+
+function SplitLayoutContextMenu({
+  layout,
+  currentIndex,
+  ...props
+}: Omit<ContextMenuProps, 'items'> & { layout: Layout; currentIndex: number }) {
+  const { replaceLayoutNode } = useLayoutState()
+  if (!('sizes' in layout)) {
+    return <></>
+  }
+  const orientation =
+    'orientation' in layout
+      ? layout.orientation
+      : sideToOrientation(layout.side)
+
+  function onAddSplit() {
+    if (layout.type === LayoutType.Splits) {
+      const clone = structuredClone(layout.children[currentIndex])
+      clone.id = crypto.randomUUID()
+      const indexToSlotInClone = currentIndex === 0 ? 1 : currentIndex - 1
+
+      const halfSize = (layout.sizes[currentIndex] || 2) / 2
+      layout.sizes[currentIndex] = halfSize
+      layout.sizes.splice(indexToSlotInClone, 0, halfSize)
+      layout.children.splice(indexToSlotInClone, 0, clone)
+      replaceLayoutNode({ targetNodeId: layout.id, newNode: { ...layout } })
+    } else if (layout.type === LayoutType.Panes) {
+      // TODO: this should just reuse the logic from onToggleItem once that's made a utility function
+    }
+  }
+
+  function onDeleteSplit() {
+    if (layout.type === LayoutType.Splits) {
+      const indexToDonateSizeTo = currentIndex === 0 ? 1 : currentIndex - 1
+
+      layout.sizes[indexToDonateSizeTo] += layout.sizes[currentIndex]
+      layout.sizes.splice(currentIndex, 1)
+      layout.children.splice(currentIndex, 1)
+      replaceLayoutNode({ targetNodeId: layout.id, newNode: { ...layout } })
+    }
+  }
+
+  return (
+    <ContextMenu
+      {...props}
+      items={[
+        <ContextMenuItem
+          key="add-left"
+          icon="arrowLeft"
+          onClick={() => onAddSplit()}
+        >
+          Split {orientation === 'inline' ? 'above' : 'to left'}
+        </ContextMenuItem>,
+        <ContextMenuItem
+          key="add-left"
+          icon="close"
+          onClick={() => onDeleteSplit()}
+        >
+          Remove {orientation === 'inline' ? 'above' : 'to left'}
+        </ContextMenuItem>,
+      ]}
+    />
+  )
+}
+
+function PaneLayoutContextMenu({
+  layout,
+  ...props
+}: Omit<ContextMenuProps, 'items'> & { layout: Layout }) {
+  const { replaceLayoutNode } = useLayoutState()
+  if (layout.type !== LayoutType.Panes) {
+    return <></>
+  }
+  return (
+    <ContextMenu
+      {...props}
+      items={[
+        <ContextMenuItem
+          key="set-left"
+          icon={layout.side === 'inline-start' ? 'checkmark' : 'arrowLeft'}
+          onClick={() =>
+            replaceLayoutNode({
+              targetNodeId: layout.id,
+              newNode: { ...layout, side: 'inline-start' },
+            })
+          }
+        >
+          Set to left side
+        </ContextMenuItem>,
+        <ContextMenuItem
+          key="set-right"
+          icon={layout.side === 'inline-end' ? 'checkmark' : 'arrowRight'}
+          onClick={() =>
+            replaceLayoutNode({
+              targetNodeId: layout.id,
+              newNode: { ...layout, side: 'inline-end' },
+            })
+          }
+        >
+          Set to right side
+        </ContextMenuItem>,
+        <ContextMenuItem
+          key="set-top"
+          icon={layout.side === 'block-start' ? 'checkmark' : 'arrowUp'}
+          onClick={() =>
+            replaceLayoutNode({
+              targetNodeId: layout.id,
+              newNode: { ...layout, side: 'block-start' },
+            })
+          }
+        >
+          Set to top side
+        </ContextMenuItem>,
+        <ContextMenuItem
+          key="set-bottom"
+          icon={layout.side === 'block-end' ? 'checkmark' : 'arrowDown'}
+          onClick={() =>
+            replaceLayoutNode({
+              targetNodeId: layout.id,
+              newNode: { ...layout, side: 'block-end' },
+            })
+          }
+        >
+          Set to bottom side
+        </ContextMenuItem>,
+        <ContextMenuItem
+          key="set-bottom"
+          icon={layout.side === 'block-end' ? 'checkmark' : 'arrowDown'}
+          onClick={() =>
+            replaceLayoutNode({
+              targetNodeId: layout.id,
+              newNode: { ...layout, activeIndices: [], sizes: [] },
+            })
+          }
+        >
+          Close all panes
+        </ContextMenuItem>,
+      ]}
+    />
   )
 }

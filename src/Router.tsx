@@ -39,10 +39,7 @@ import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
 import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
-import { LayoutRoot } from '@src/lib/layout/Layout'
-import { testAreaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
-import { testLayout } from '@src/lib/layout/testLayout'
-import { loadLayout } from './lib/layout/utils'
+import { TestLayout } from '@src/lib/layout/TestLayout'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -149,12 +146,7 @@ const router = createRouter([
       {
         path: '/layout',
         errorElement: <ErrorPage />,
-        element: (
-          <LayoutRoot
-            areaLibrary={testAreaTypeRegistry}
-            initialLayout={loadLayout('test') || testLayout}
-          />
-        ),
+        element: <TestLayout />,
       },
     ],
   },

@@ -8,16 +8,10 @@ import {
   useNavigate,
   useSearchParams,
 } from 'react-router-dom'
-import { Toolbar } from '@src/Toolbar'
 import { AppHeader } from '@src/components/AppHeader'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { DownloadAppToast } from '@src/components/DownloadAppToast'
-import Gizmo from '@src/components/Gizmo'
 import { useLspContext } from '@src/components/LspProvider'
-import {
-  ModelingSidebarLeft,
-  ModelingSidebarRight,
-} from '@src/components/ModelingSidebar/ModelingSidebar'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
 import { ShareButton } from '@src/components/ShareButton'
@@ -28,9 +22,7 @@ import {
 } from '@src/components/StatusBar/defaultStatusBarItems'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
-import { UnitsMenu } from '@src/components/UnitsMenu'
 import { WasmErrToast } from '@src/components/WasmErrToast'
-import env from '@src/env'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
@@ -67,8 +59,8 @@ import {
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
-import { ConnectionStream } from '@src/components/ConnectionStream'
 import { LayoutRoot } from '@src/lib/layout/Layout'
+import { defaultLayout } from '@src/lib/layout/utils'
 
 // CYCLIC REF
 
@@ -79,6 +71,7 @@ if (window.electron) {
 }
 
 export function App() {
+  const [layout, setLayout] = useState(defaultLayout)
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -270,7 +263,7 @@ export function App() {
         </div>
         <ModalContainer />
         <section className="pointer-events-auto flex-1">
-          <LayoutRoot />
+          <LayoutRoot layout={layout} setLayout={setLayout} />
         </section>
         {/* <CamToggle /> */}
         <StatusBar
