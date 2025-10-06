@@ -46,6 +46,7 @@ export const testLayout: Layout = {
           label: 'right-toolbar',
           type: LayoutType.Panes,
           side: 'inline-end',
+          splitOrientation: 'block',
           activeIndices: [0, 2, 3],
           sizes: [20, 20, 60],
           children: [
@@ -68,6 +69,7 @@ export const testLayout: Layout = {
               label: 'right-toolbar',
               type: LayoutType.Panes,
               side: 'block-start',
+              splitOrientation: 'inline',
               activeIndices: [0, 2, 3],
               sizes: [20, 20, 60],
               icon: 'glasses',
@@ -124,6 +126,7 @@ export const testLayout: Layout = {
       label: 'right-toolbar',
       type: LayoutType.Panes,
       side: 'block-start',
+      splitOrientation: 'inline',
       activeIndices: [0, 2, 3],
       sizes: [20, 20, 60],
       children: [

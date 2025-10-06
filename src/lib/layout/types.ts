@@ -52,6 +52,7 @@ export type PaneLayout = BasicLayout &
     type: LayoutType.Panes
     activeIndices: number[]
     children: (Layout & WithIcon)[]
+    splitOrientation: Orientation
     actions?: Action[]
     /** if the pane layout is a split layout's child in the same axis, it will onExpandSize
      * when it goes from 0 to 1 active child panes
