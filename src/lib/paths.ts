@@ -32,6 +32,7 @@ export const PATHS = {
   SIGN_IN: '/signin',
   ONBOARDING: '/onboarding',
   TELEMETRY: '/telemetry',
+  DEBUG_SHORTCUTS: '/debug/shortcuts',
 } as const
 export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
 

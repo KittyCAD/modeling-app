@@ -34,6 +34,17 @@ export function createRouteCommands(
       navigate(PATHS.HOME)
     },
   }
+  const RouteShortcutsDebugCommand: Command = {
+    name: 'Go to Shortcut Debug',
+    displayName: `Go to Shortcut Debug`,
+    description: 'Go to shortcut debugging page',
+    groupId: 'routes',
+    icon: 'settings',
+    needsReview: false,
+    onSubmit: (_data) => {
+      navigate(PATHS.DEBUG_SHORTCUTS)
+    },
+  }
 
   const RouteSettingsCommand: Command = {
     name: 'Go to Settings',
@@ -54,5 +65,6 @@ export function createRouteCommands(
     RouteTelemetryCommand,
     RouteHomeCommand,
     RouteSettingsCommand,
+    RouteShortcutsDebugCommand,
   }
 }

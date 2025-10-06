@@ -41,6 +41,7 @@ import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { DebugShortcutsRoute } from '@src/lib/shortcuts/DebugShortcutsRoute'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -138,6 +139,11 @@ const router = createRouter([
             element: <Telemetry />,
           },
         ],
+      },
+      {
+        path: PATHS.DEBUG_SHORTCUTS,
+        errorElement: <ErrorPage />,
+        element: <DebugShortcutsRoute />,
       },
       {
         path: PATHS.SIGN_IN,
