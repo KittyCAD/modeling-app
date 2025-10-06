@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -149,7 +149,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         name: prepared-files
 
       - name: Copy prepared files
@@ -165,7 +165,7 @@ jobs:
           cp prepared-files/assets/icon.png assets/icon.png
 
       - name: Sync node version and setup cache
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version-file: '.nvmrc'
           cache: 'npm' # Set this to npm, npm or pnpm.
@@ -268,47 +268,47 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: out-arm64-windows
           path: out
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: out-x64-windows
           path: out
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: out-yml-windows
           path: out
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: out-arm64-macos
           path: out
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: out-x64-macos
           path: out
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: out-yml-macos
           path: out
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: out-arm64-linux
           path: out
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: out-x64-linux
           path: out
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: out-yml-linux
           path: out
@@ -368,13 +368,13 @@ jobs:
 
       - name: Authenticate to Google Cloud
         if: ${{ env.IS_STAGING == 'true' }}
-        uses: 'google-github-actions/auth@v2.1.10'
+        uses: 'google-github-actions/auth@v3.0.0'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
       - name: Set up Google Cloud SDK
         if: ${{ env.IS_STAGING == 'true' }}
-        uses: google-github-actions/setup-gcloud@v2.1.4
+        uses: google-github-actions/setup-gcloud@v3.0.1
         with:
           project_id: ${{ env.GOOGLE_CLOUD_PROJECT_ID }}
 
