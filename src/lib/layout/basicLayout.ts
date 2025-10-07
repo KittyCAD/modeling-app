@@ -1,3 +1,4 @@
+import type { LayoutWithMetadata } from '@src/lib/layout/types'
 import { LayoutType, type Layout } from '@src/lib/layout/types'
 
 /**
@@ -24,6 +25,7 @@ export const basicLayout: Layout = {
       side: 'inline-start',
       activeIndices: [0, 2],
       sizes: [50, 50],
+      splitOrientation: 'block',
       children: [
         {
           id: 'c',
@@ -94,6 +96,7 @@ export const basicLayout: Layout = {
       side: 'inline-end',
       activeIndices: [0],
       sizes: [],
+      splitOrientation: 'block',
       children: [
         {
           id: 'h',
@@ -105,4 +108,9 @@ export const basicLayout: Layout = {
       ],
     },
   ],
+}
+
+export const basicLayoutPersisted: LayoutWithMetadata = {
+  version: 'v1',
+  layout: basicLayout,
 }
