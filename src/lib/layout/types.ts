@@ -13,7 +13,7 @@ type HasIdAndLabel = {
   id: string // uuid
   label: string
 }
-type BasicLayout = HasIdAndLabel & {
+export type BasicLayout = HasIdAndLabel & {
   type: LayoutType
 }
 type WithChildren = { children: Layout[] }
@@ -67,3 +67,10 @@ export type SimpleLayout = BasicLayout & {
   areaType: keyof typeof areaTypeRegistry
 }
 export type Layout = SimpleLayout | SplitLayout | TabLayout | PaneLayout
+
+/** add more fields as needed */
+export type LayoutWithMetadata = {
+  version: 'v1'
+  /** We don't know if this is valid yet */
+  layout: Layout
+}

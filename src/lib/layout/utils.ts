@@ -374,6 +374,35 @@ export function shouldEnableResizeHandle(
   return !(isLastPane || nextIsCollapsed || thisIsCollapsed)
 }
 
+export function parseLayout(layoutString: string): Layout | Error {
+  try {
+    const layoutWithMetadata = JSON.parse(layoutString)
+    if (
+      !(
+        'version' in layoutWithMetadata &&
+        layoutWithMetadata.version === 'v1' &&
+        'layout' in layoutWithMetadata &&
+        layoutWithMetadata.layout
+      )
+    ) {
+      return basicLayout
+    }
+
+    return validateLayout(layoutWithMetadata.layout)
+      ? layoutWithMetadata
+      : new Error('invalid layout')
+  } catch (e) {
+    return new Error(`Failed to parse layout from disk ${String(e)}`)
+  }
+export enum LayoutValidationError {
+  SplitSizesChildrenMismatch = 'sizes-children-mismatch',
+  PaneSizesActiveIndicesMismatch = 'panes-sizes-activeIndices-mismatch',
+  SizesOverOneHundred = 'sizes-over-one-hundred',
+  ActiveIndicesChildrenMismatch = 'activeIndices-children-mismatch',
+  UnregisteredAreaType = 'unregistered-areaType',
+  UnregisteredActionType = 'unregistered-actionType',
+}
+
 export function validateLayout(l: unknown): l is Layout {
   if (validateBasicLayout(l)) {
     switch (l.type) {
