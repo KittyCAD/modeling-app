@@ -14,7 +14,7 @@ bench = false
 dhat-heap = ["kcl-lib/dhat-heap"]
 
 [dependencies]
-typed-path = "0.11.0"
+typed-path = "0.12.0"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 bson = { workspace = true, features = ["uuid-1", "chrono"] }
