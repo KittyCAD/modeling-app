@@ -13,6 +13,7 @@ import { engineCommandManager } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import toast from 'react-hot-toast'
 import { EngineConnectionStateType } from '@src/network/utils'
+import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
@@ -21,7 +22,7 @@ export const CommandBar = () => {
   const commandBarState = useCommandBarState()
   const { immediateState } = useNetworkContext()
   const {
-    context: { selectedCommand, currentArgument, commands, argumentsToSubmit },
+    context: { selectedCommand, currentArgument, commands },
   } = commandBarState
   const isArgumentThatShouldBeHardToDismiss =
     currentArgument?.inputType === 'selection' ||
@@ -72,16 +73,12 @@ export const CommandBar = () => {
   function stepBack() {
     const entries = Object.entries(selectedCommand?.args || {}).filter(
       ([argName, arg]) => {
-        const argValue =
-          (typeof argumentsToSubmit[argName] === 'function'
-            ? argumentsToSubmit[argName](commandBarState.context)
-            : argumentsToSubmit[argName]) || ''
-        const isRequired =
-          typeof arg.required === 'function'
-            ? arg.required(commandBarState.context)
-            : arg.required
-
-        return !arg.hidden && (argValue || isRequired)
+        const { value, isRequired, isHidden } = evaluateCommandBarArg(
+          argName,
+          arg,
+          commandBarState.context
+        )
+        return !isHidden && (value || isRequired)
       }
     )
 
