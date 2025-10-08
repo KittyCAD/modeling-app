@@ -29,7 +29,10 @@ export const areaTypeRegistry = Object.freeze({
     PaneToArea({ pane: sidebarPanesLeft[1], ...props }),
   logs: (props: Partial<Closeable>) =>
     PaneToArea({ pane: sidebarPanesLeft[4], ...props }),
-})
+} as const)
+
+export const areaTypeKey: Array<keyof typeof areaTypeRegistry> =
+  Object.keys(areaTypeRegistry)
 
 function TestArea({ name }: { name: string }) {
   return (

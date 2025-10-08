@@ -1,20 +1,18 @@
 import type {
   Direction,
   Layout,
+  LayoutWithMetadata,
   Orientation,
   PaneLayout,
   Side,
-  SimpleLayout,
   SplitLayout,
-  TabLayout,
 } from '@src/lib/layout/types'
-import { LayoutType } from '@src/lib/layout/types'
+import { LayoutWithMetadataSchema } from '@src/lib/layout/types'
 import type React from 'react'
-import { capitaliseFC, isArray } from '@src/lib/utils'
+import { capitaliseFC } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
 import { throttle } from '@src/lib/utils'
 import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
-import { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 import { basicLayout } from '@src/lib/layout/basicLayout'
 
 const LAYOUT_PERSIST_PREFIX = 'layout-'
@@ -35,7 +33,7 @@ export function hasValidSizes(area: SplitLayout | PaneLayout) {
 }
 
 export function getOppositeOrientation(o: Orientation): Orientation {
-  return o === 'inline' ? 'block' : 'inlin'
+  return o === 'inline' ? 'block' : 'inline'
 }
 export function getOppositeSide(side: Side): Side {
   switch (side) {
@@ -221,22 +219,20 @@ export function findAndUpdateSplitSizes({
 
 export function loadLayout(id: string): Layout | undefined {
   const layoutString = localStorage.getItem(`${LAYOUT_PERSIST_PREFIX}${id}`)
-  const parsed = layoutString ? parseLayoutString(layoutString) : undefined
+  const parsed = layoutString ? parseLayout(layoutString) : undefined
   console.log('loaded layout', parsed)
   return parsed
 }
 function saveLayoutInner(layout: Layout) {
   return localStorage.setItem(
     `${LAYOUT_PERSIST_PREFIX}${layout.id}`,
-    JSON.stringify(layout)
+    JSON.stringify({
+      version: 'v1',
+      layout,
+    } satisfies LayoutWithMetadata)
   )
 }
 export const saveLayout = throttle(saveLayoutInner, LAYOUT_SAVE_THROTTLE)
-
-function parseLayoutString(layoutString: string) {
-  // TODO: validate this JSON
-  return JSON.parse(layoutString) as Layout
-}
 
 /** Have the panes not been resized at all, just divided evenly? */
 export function areSplitSizesNatural(sizes: number[]) {
@@ -248,7 +244,7 @@ export function expandSplitChildPaneNode({
   rootLayout,
   targetNode: panesLayoutNode,
 }: IRootAndTargetLayouts) {
-  if (!panesLayoutNode || panesLayoutNode.type !== LayoutType.Panes) {
+  if (!panesLayoutNode || panesLayoutNode.type !== 'panes') {
     return rootLayout
   }
 
@@ -256,7 +252,7 @@ export function expandSplitChildPaneNode({
     rootLayout,
     targetNode: panesLayoutNode,
   })
-  if (!splitsLayoutNode || splitsLayoutNode.type !== LayoutType.Splits) {
+  if (!splitsLayoutNode || splitsLayoutNode.type !== 'splits') {
     return rootLayout
   }
 
@@ -302,7 +298,7 @@ export function collapseSplitChildPaneNode({
   rootLayout,
   targetNode: panesLayoutNode,
 }: IRootAndTargetLayouts) {
-  if (!panesLayoutNode || panesLayoutNode.type !== LayoutType.Panes) {
+  if (!panesLayoutNode || panesLayoutNode.type !== 'panes') {
     return rootLayout
   }
 
@@ -310,7 +306,7 @@ export function collapseSplitChildPaneNode({
     rootLayout,
     targetNode: panesLayoutNode,
   })
-  if (!splitsLayoutNode || splitsLayoutNode.type !== LayoutType.Splits) {
+  if (!splitsLayoutNode || splitsLayoutNode.type !== 'splits') {
     return rootLayout
   }
 
@@ -367,172 +363,19 @@ export function shouldEnableResizeHandle(
   const isLastPane = index >= allPanes.length - 1
   const nextPane = !isLastPane ? allPanes[index + 1] : undefined
   const isCollapsedPaneLayout = (l: Layout | undefined) =>
-    l?.type === LayoutType.Panes && l.onExpandSize !== undefined
+    l?.type === 'panes' && l.onExpandSize !== undefined
   const nextIsCollapsed = isCollapsedPaneLayout(nextPane)
   const thisIsCollapsed = isCollapsedPaneLayout(currentPane)
 
   return !(isLastPane || nextIsCollapsed || thisIsCollapsed)
 }
 
-export function parseLayout(layoutString: string): Layout | Error {
-  try {
-    const layoutWithMetadata = JSON.parse(layoutString)
-    if (
-      !(
-        'version' in layoutWithMetadata &&
-        layoutWithMetadata.version === 'v1' &&
-        'layout' in layoutWithMetadata &&
-        layoutWithMetadata.layout
-      )
-    ) {
-      return basicLayout
-    }
+export function parseLayout(layoutString: string): Layout {
+  const layoutWithMetadata = LayoutWithMetadataSchema.safeParse(layoutString)
 
-    return validateLayout(layoutWithMetadata.layout)
-      ? layoutWithMetadata
-      : new Error('invalid layout')
-  } catch (e) {
-    return new Error(`Failed to parse layout from disk ${String(e)}`)
-  }
-export enum LayoutValidationError {
-  SplitSizesChildrenMismatch = 'sizes-children-mismatch',
-  PaneSizesActiveIndicesMismatch = 'panes-sizes-activeIndices-mismatch',
-  SizesOverOneHundred = 'sizes-over-one-hundred',
-  ActiveIndicesChildrenMismatch = 'activeIndices-children-mismatch',
-  UnregisteredAreaType = 'unregistered-areaType',
-  UnregisteredActionType = 'unregistered-actionType',
-}
+  console.log('layoutWithMetadata', layoutWithMetadata)
 
-export function validateLayout(l: unknown): l is Layout {
-  if (validateBasicLayout(l)) {
-    switch (l.type) {
-      case LayoutType.Simple:
-        return validateSimpleLayout(l)
-      case LayoutType.Splits:
-        return validateSplitLayout(l)
-      case LayoutType.Tabs:
-        return validateTabLayout(l)
-      case LayoutType.Panes:
-        return validatePaneLayout(l)
-    }
-  }
-
-  return false
-}
-
-function validateLayoutType(l: string): l is LayoutType {
-  return Object.values(LayoutType).includes(l as LayoutType)
-}
-
-function validateBasicLayout(layout: unknown): layout is Layout {
-  return (
-    typeof layout === 'object' &&
-    layout !== null &&
-    'id' in layout &&
-    typeof layout.id === 'string' &&
-    'label' in layout &&
-    typeof layout.label === 'string' &&
-    'type' in layout &&
-    typeof layout.type === 'string' &&
-    validateLayoutType(layout.type)
-  )
-}
-
-function validateAreaType(a: unknown): a is keyof typeof areaTypeRegistry {
-  return Object.keys(areaTypeRegistry).includes(
-    a as keyof typeof areaTypeRegistry
-  )
-}
-export function validateSimpleLayout(layout: unknown): layout is SimpleLayout {
-  return (
-    validateBasicLayout(layout) &&
-    'areaType' in layout &&
-    validateAreaType(layout.areaType)
-  )
-}
-
-function validateOrientation(o: unknown): o is Orientation {
-  return typeof o === 'string' && (o === 'horizontal' || o === 'vertical')
-}
-export function validateSplitLayout(layout: unknown): layout is SplitLayout {
-  const isBasicLayout = validateBasicLayout(layout)
-  if (!isBasicLayout) {
-    return false
-  }
-  const hasValidType = 'type' in layout && layout.type === LayoutType.Splits
-  const hasValidOrientation =
-    'orientation' in layout && validateOrientation(layout.orientation)
-  const hasValidChildren =
-    'children' in layout &&
-    isArray(layout.children) &&
-    layout.children.every(validateLayout)
-  const hasValidSizes =
-    'sizes' in layout &&
-    isArray(layout.sizes) &&
-    layout.sizes.length === layout.children.length &&
-    layout.sizes.every(Number.isFinite)
-
-  return (
-    isBasicLayout &&
-    hasValidType &&
-    hasValidOrientation &&
-    hasValidChildren &&
-    hasValidSizes
-  )
-}
-
-function validateSide(s: unknown): s is Side {
-  return (
-    typeof s === 'string' &&
-    ['inline-start', 'inline-end', 'block-start', 'block-end'].includes(s)
-  )
-}
-
-function validateTabLayout(l: unknown): l is TabLayout {
-  const isBasicLayout = validateBasicLayout(l)
-  if (!isBasicLayout) {
-    return false
-  }
-  const hasValidType = 'type' in l && l.type === LayoutType.Tabs
-  const hasValidSide = 'side' in l && validateSide(l.side)
-  const hasValidChildren =
-    'children' in l && isArray(l.children) && l.children.every(validateLayout)
-  const hasValidActiveIndex =
-    'activeIndex' in l &&
-    typeof l.activeIndex === 'number' &&
-    Number.isSafeInteger(l.activeIndex) &&
-    l.activeIndex >= 0 &&
-    l.activeIndex < l.children.length
-
-  return hasValidType && hasValidSide && hasValidChildren && hasValidActiveIndex
-}
-
-function validatePaneLayout(l: unknown): l is PaneLayout {
-  const isBasicLayout = validateBasicLayout(l)
-  if (!isBasicLayout) {
-    return false
-  }
-  const hasValidType = 'type' in l && l.type === LayoutType.Panes
-  const hasValidSide = 'side' in l && validateSide(l.side)
-  const hasValidChildren =
-    'children' in l && isArray(l.children) && l.children.every(validateLayout)
-  const hasValidActiveIndices =
-    'activeIndices' in l &&
-    isArray(l.activeIndices) &&
-    l.activeIndices.every(Number.isSafeInteger) &&
-    l.activeIndices.every((a) => a >= 0 && a < l.children.length)
-  const hasValidSizes =
-    hasValidActiveIndices &&
-    'sizes' in l &&
-    isArray(l.sizes) &&
-    l.sizes.length === l.activeIndices.length &&
-    l.sizes.every(Number.isFinite)
-
-  return (
-    hasValidType &&
-    hasValidSide &&
-    hasValidChildren &&
-    hasValidActiveIndices &&
-    hasValidSizes
-  )
+  return layoutWithMetadata.success
+    ? layoutWithMetadata.data.layout
+    : basicLayout
 }

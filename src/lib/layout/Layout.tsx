@@ -1,4 +1,3 @@
-import { LayoutType } from '@src/lib/layout/types'
 import type {
   SplitLayout as SplitLayoutType,
   PaneLayout as PaneLayoutType,
@@ -170,11 +169,11 @@ function LayoutNode({
 }: { layout: Layout } & Partial<Closeable>) {
   const { areaLibrary } = useLayoutState()
   switch (layout.type) {
-    case LayoutType.Splits:
+    case 'splits':
       return <SplitLayout layout={layout} />
-    case LayoutType.Tabs:
+    case 'tabs':
       return <TabLayout layout={layout} />
-    case LayoutType.Panes:
+    case 'panes':
       return <PaneLayout layout={layout} />
     default:
       return areaLibrary[layout.areaType]({ onClose })
@@ -376,7 +375,7 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
               className="ui-checked:border-primary dark:ui-checked:border-primary hover:b-3 border-transparent dark:border-transparent p-2 m-0 rounded-none border-0 hover:bg-2"
               style={{ [buttonBorderWidthProp]: '2px' }}
             >
-              <CustomIcon name={tab.icon} className="w-5 h-5" />
+              <CustomIcon name={layout.paneIcons[i]} className="w-5 h-5" />
               <Tooltip
                 position={logicalSideToTooltipPosition(
                   getOppositeSide(layout.side)
@@ -465,8 +464,6 @@ function ResizeHandle({
   direction,
   id,
   disabled,
-  layout,
-  currentIndex,
 }: {
   direction: Direction
   id: string
@@ -498,7 +495,7 @@ function PaneLayoutContextMenu({
   ...props
 }: Omit<ContextMenuProps, 'items'> & { layout: Layout }) {
   const { replaceLayoutNode } = useLayoutState()
-  if (layout.type !== LayoutType.Panes) {
+  if (layout.type !== 'panes') {
     return <></>
   }
   return (

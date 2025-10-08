@@ -79,7 +79,8 @@
     "why-is-node-running": "^3.2.2",
     "win-ca": "^3.5.1",
     "xstate": "^5.19.2",
-    "yargs": "^17.7.2"
+    "yargs": "^17.7.2",
+    "zod": "^4.1.12"
   },
   "scripts": {
     "prepare": "husky",

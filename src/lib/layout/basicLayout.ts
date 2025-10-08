@@ -1,5 +1,4 @@
-import type { LayoutWithMetadata } from '@src/lib/layout/types'
-import { LayoutType, type Layout } from '@src/lib/layout/types'
+import { type Layout } from '@src/lib/layout/types'
 
 /**
  * The default layout has:
@@ -14,46 +13,43 @@ import { LayoutType, type Layout } from '@src/lib/layout/types'
 export const basicLayout: Layout = {
   id: 'basic',
   label: 'root',
-  type: LayoutType.Splits,
+  type: 'splits',
   orientation: 'inline',
   sizes: [30, 50, 20],
   children: [
     {
       id: 'b',
       label: 'left-toolbar',
-      type: LayoutType.Panes,
+      type: 'panes',
       side: 'inline-start',
       activeIndices: [0, 2],
       sizes: [50, 50],
       splitOrientation: 'block',
+      paneIcons: ['model', 'code', 'make-variable', 'logs'],
       children: [
         {
           id: 'c',
           label: 'feature-tree',
-          type: LayoutType.Simple,
+          type: 'simple',
           areaType: 'featureTree',
-          icon: 'model',
         },
         {
           id: 'd',
           label: 'code',
-          type: LayoutType.Simple,
+          type: 'simple',
           areaType: 'codeEditor',
-          icon: 'code',
         },
         {
           id: 'e',
           label: 'variables',
-          type: LayoutType.Simple,
+          type: 'simple',
           areaType: 'variables',
-          icon: 'make-variable',
         },
         {
           id: crypto.randomUUID(),
           label: 'logs',
-          type: LayoutType.Simple,
+          type: 'simple',
           areaType: 'logs',
-          icon: 'logs',
         },
       ],
       actions: [
@@ -86,31 +82,26 @@ export const basicLayout: Layout = {
     {
       id: 'f',
       label: 'modeling-scene',
-      type: LayoutType.Simple,
+      type: 'simple',
       areaType: 'modeling',
     },
     {
       id: 'g',
       label: 'right-toolbar',
-      type: LayoutType.Panes,
+      type: 'panes',
       side: 'inline-end',
       activeIndices: [0],
-      sizes: [],
+      sizes: [100],
       splitOrientation: 'block',
+      paneIcons: ['sparkles'],
       children: [
         {
           id: 'h',
           label: 'ttc',
-          type: LayoutType.Simple,
+          type: 'simple',
           areaType: 'ttc',
-          icon: 'sparkles',
         },
       ],
     },
   ],
-}
-
-export const basicLayoutPersisted: LayoutWithMetadata = {
-  version: 'v1',
-  layout: basicLayout,
 }

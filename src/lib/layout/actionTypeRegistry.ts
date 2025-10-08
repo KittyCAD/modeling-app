@@ -68,3 +68,6 @@ export const actionTypeRegistry = Object.freeze({
     useHidden: () => !isDesktop(),
   },
 } satisfies Record<string, Action>)
+
+export const actionRegistryKey: Array<keyof typeof actionTypeRegistry> =
+  Object.keys(actionTypeRegistry)
