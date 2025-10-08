@@ -155,6 +155,7 @@ async fn fix_tags_and_references(
                 exec_state,
                 args,
                 None,
+                false,
             )
             .await?;
 

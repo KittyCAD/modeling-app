@@ -11,7 +11,7 @@ pub use cache::{bust_cache, clear_mem_cache};
 pub use cad_op::Group;
 pub use cad_op::Operation;
 pub use geometry::*;
-pub use id_generator::IdGenerator;
+pub use id_generator::{EngineIdGenerator, IdGenerator};
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
 pub use kcl_value::{KclObjectFields, KclValue};
