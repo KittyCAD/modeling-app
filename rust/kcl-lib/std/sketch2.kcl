@@ -12,14 +12,12 @@ export type Line = {
   midpoint: Point2d | none,
 }
 
-@(impl = std_constrainable, experimental = true, feature_tree = false)
+@(impl = std_rust_constrainable, experimental = true, feature_tree = false)
 export fn line(
   start: Point2d,
   end?: Point2d,
   midpoint?: Point2d,
-): Line {
-  { start, end, midpoint }
-}
+): Line {}
 
 @(impl = std_constrainable, experimental = true, feature_tree = false)
 export type Arc = {
@@ -39,6 +37,7 @@ export fn arc(
   { start, end, center, interior }
 }
 
+/// A single segment of a path in a sketch. It may be a line, arc, or other segment type.
 @(experimental = true)
 export type Segment = Arc | Line
 

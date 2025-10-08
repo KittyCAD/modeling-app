@@ -10,6 +10,7 @@ use kittycad_modeling_cmds::{
 };
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::{
     engine::{DEFAULT_PLANE_INFO, PlaneName},
@@ -1683,4 +1684,50 @@ pub struct SketchVar {
     pub ty: NumericType,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(tag = "type")]
+pub enum UnsolvedExpr {
+    Known(TyF64),
+    Unknown(SketchVarId),
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct UnsolvedSegment {
+    // TODO: sketch-api: implement other segment types.
+    pub start: [UnsolvedExpr; 2],
+    pub end: [UnsolvedExpr; 2],
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct Segment {
+    // TODO: sketch-api: implement other segment types.
+    pub start: [TyF64; 2],
+    pub end: [TyF64; 2],
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct AbstractSegment {
+    pub repr: SegmentRepr,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+pub enum SegmentRepr {
+    Unsolved { segment: UnsolvedSegment },
+    Solved { segment: Segment },
+    InEngine { id: Uuid, segment: Segment },
 }

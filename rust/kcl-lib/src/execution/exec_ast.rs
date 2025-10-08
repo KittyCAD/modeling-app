@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
-use kcl_api::{Object, ObjectKind};
+use kcl_api::{Object, ObjectId, ObjectKind, sketch::Freedom};
 use kcl_ezpz::Constraint;
 use kittycad_modeling_cmds::units::UnitLength;
 
@@ -11,8 +11,9 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     exec::UnitType,
     execution::{
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta, ModuleArtifactState,
-        Operation, PlaneType, StatementKind, TagIdentifier, annotations,
+        AbstractSegment, BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta,
+        ModuleArtifactState, Operation, PlaneType, Segment, SegmentRepr, StatementKind, TagIdentifier, UnsolvedExpr,
+        UnsolvedSegment, annotations,
         cad_op::OpKclValue,
         fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
@@ -430,7 +431,9 @@ impl ExecutorContext {
                     let metadata = Metadata::from(&**ty);
                     let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
                     match attrs.impl_ {
-                        annotations::Impl::Rust | annotations::Impl::RustConstraint => {
+                        annotations::Impl::Rust
+                        | annotations::Impl::RustConstrainable
+                        | annotations::Impl::RustConstraint => {
                             let std_path = match &exec_state.mod_local.path {
                                 ModulePath::Std { value } => value,
                                 ModulePath::Local { .. } | ModulePath::Main => {
@@ -1017,8 +1020,19 @@ impl Node<SketchBlock> {
         // Substitute solutions back into sketch variables.
         let variables =
             substitute_sketch_vars(variables, &solve_outcome.final_values, solver_numeric_type(exec_state))?;
+        let mut solved_segments = Vec::with_capacity(sketch_block_state.needed_by_engine.len());
+        for unsolved_segment in sketch_block_state.needed_by_engine.clone() {
+            solved_segments.push(substitute_sketch_var_in_segment(
+                unsolved_segment,
+                &solve_outcome.final_values,
+                solver_numeric_type(exec_state),
+            )?);
+        }
 
-        // Create the scene object.
+        // Create scene objects in the engine after unknowns are solved for.
+        let segment_object_ids = create_segment_scene_objects(&solved_segments, range, exec_state)?;
+
+        // Create the sketch block scene object.
         let sketch_id = exec_state.next_object_id();
         let arg_on: Option<crate::execution::Plane> = args.get_kw_arg_opt("on", &RuntimeType::plane(), exec_state)?;
         let on_object = arg_on.and_then(|plane| plane.object_id);
@@ -1031,8 +1045,7 @@ impl Node<SketchBlock> {
                         .map(kcl_api::Plane::Object)
                         .unwrap_or(kcl_api::Plane::Default(kcl_api::StandardPlane::XY)),
                 },
-                // TODO: sketch-api: implement
-                segments: Vec::new(),
+                segments: segment_object_ids,
                 // TODO: sketch-api: implement
                 constraints: Vec::new(),
             }),
@@ -1153,6 +1166,25 @@ fn substitute_sketch_var(value: KclValue, solutions: &[f64], solution_ty: Numeri
         KclValue::GdtAnnotation { .. } => Ok(value),
         KclValue::Plane { .. } => Ok(value),
         KclValue::Face { .. } => Ok(value),
+        KclValue::Segment {
+            value: abstract_segment,
+        } => match abstract_segment.repr {
+            SegmentRepr::Unsolved { segment } => {
+                let subbed = substitute_sketch_var_in_segment(segment, solutions, solution_ty)?;
+                Ok(KclValue::Segment {
+                    value: Box::new(AbstractSegment {
+                        repr: SegmentRepr::Solved { segment: subbed },
+                        meta: abstract_segment.meta,
+                    }),
+                })
+            }
+            SegmentRepr::Solved { .. } => Ok(KclValue::Segment {
+                value: abstract_segment,
+            }),
+            SegmentRepr::InEngine { .. } => Ok(KclValue::Segment {
+                value: abstract_segment,
+            }),
+        },
         KclValue::Sketch { .. } => Ok(value),
         KclValue::Solid { .. } => Ok(value),
         KclValue::Helix { .. } => Ok(value),
@@ -1162,6 +1194,146 @@ fn substitute_sketch_var(value: KclValue, solutions: &[f64], solution_ty: Numeri
         KclValue::Type { .. } => Ok(value),
         KclValue::KclNone { .. } => Ok(value),
     }
+}
+
+fn substitute_sketch_var_in_segment(
+    segment: UnsolvedSegment,
+    solutions: &[f64],
+    solution_ty: NumericType,
+) -> Result<Segment, KclError> {
+    let srs = segment.meta.iter().map(|m| m.source_range).collect::<Vec<_>>();
+    let start_x = substitute_sketch_var_in_unsolved_expr(&segment.start[0], solutions, solution_ty, &srs)?;
+    let start_y = substitute_sketch_var_in_unsolved_expr(&segment.start[1], solutions, solution_ty, &srs)?;
+    let end_x = substitute_sketch_var_in_unsolved_expr(&segment.end[0], solutions, solution_ty, &srs)?;
+    let end_y = substitute_sketch_var_in_unsolved_expr(&segment.end[1], solutions, solution_ty, &srs)?;
+    let start = [start_x, start_y];
+    let end = [end_x, end_y];
+    Ok(Segment {
+        start,
+        end,
+        meta: segment.meta,
+    })
+}
+
+fn substitute_sketch_var_in_unsolved_expr(
+    unsolved_expr: &UnsolvedExpr,
+    solutions: &[f64],
+    solution_ty: NumericType,
+    source_ranges: &[SourceRange],
+) -> Result<TyF64, KclError> {
+    match unsolved_expr {
+        UnsolvedExpr::Known(n) => Ok(n.clone()),
+        UnsolvedExpr::Unknown(var_id) => {
+            let Some(solution) = solutions.get(var_id.0) else {
+                let message = format!("No solution for sketch variable with id {}", var_id.0);
+                debug_assert!(false, "{}", &message);
+                return Err(KclError::new_internal(KclErrorDetails::new(
+                    message,
+                    source_ranges.to_vec(),
+                )));
+            };
+            Ok(TyF64::new(*solution, solution_ty))
+        }
+    }
+}
+
+fn create_segment_scene_objects(
+    segments: &[Segment],
+    sketch_block_range: SourceRange,
+    exec_state: &mut ExecState,
+) -> Result<Vec<ObjectId>, KclError> {
+    let mut segment_object_ids = Vec::with_capacity(segments.len());
+    for segment in segments {
+        let source = Metadata::to_source_ref(&segment.meta);
+        let segment_range = segment
+            .meta
+            .first()
+            .map(|m| m.source_range)
+            .unwrap_or(sketch_block_range);
+        let segment_object_id = exec_state.next_object_id();
+
+        let start_point2d = TyF64::to_point2d(&segment.start).map_err(|_| {
+            KclError::new_internal(KclErrorDetails::new(
+                format!("Error converting start point runtime type to API value"),
+                vec![sketch_block_range],
+            ))
+        })?;
+        let start_point_object = Object {
+            id: exec_state.next_object_id(),
+            kind: ObjectKind::Segment(kcl_api::sketch::Segment::Point(kcl_api::sketch::Point {
+                position: start_point2d.clone(),
+                ctor: None,
+                owner: Some(segment_object_id),
+                // TODO: sketch-api: implement
+                freedom: Freedom::Free,
+                constraints: Vec::new(),
+            })),
+            label: Default::default(),
+            comments: Default::default(),
+            // TODO: sketch-api: implement
+            artifact_id: 0,
+            source: source.clone(),
+        };
+        let start_point_object_id = start_point_object.id;
+        exec_state.add_scene_object(start_point_object, segment_range);
+
+        let end_point2d = TyF64::to_point2d(&segment.end).map_err(|_| {
+            KclError::new_internal(KclErrorDetails::new(
+                format!("Error converting end point runtime type to API value"),
+                vec![sketch_block_range],
+            ))
+        })?;
+        let end_point_object = Object {
+            id: exec_state.next_object_id(),
+            kind: ObjectKind::Segment(kcl_api::sketch::Segment::Point(kcl_api::sketch::Point {
+                position: end_point2d.clone(),
+                ctor: None,
+                owner: Some(segment_object_id),
+                // TODO: sketch-api: implement
+                freedom: Freedom::Free,
+                constraints: Vec::new(),
+            })),
+            label: Default::default(),
+            comments: Default::default(),
+            // TODO: sketch-api: implement
+            artifact_id: 0,
+            source: source.clone(),
+        };
+        let end_point_object_id = end_point_object.id;
+        exec_state.add_scene_object(end_point_object, segment_range);
+
+        let segment_object = Object {
+            id: segment_object_id,
+            kind: ObjectKind::Segment(kcl_api::sketch::Segment::Line(kcl_api::sketch::Line {
+                start: start_point_object_id,
+                end: end_point_object_id,
+                ctor: kcl_api::sketch::SegmentCtor::Line(kcl_api::sketch::LineCtor {
+                    start: kcl_api::sketch::Point2d {
+                        // TODO: sketch-api: use original input expressions
+                        // instead of numbers.
+                        x: kcl_api::Expr::Number(start_point2d.x.clone()),
+                        y: kcl_api::Expr::Number(start_point2d.y.clone()),
+                    },
+                    end: kcl_api::sketch::Point2d {
+                        // TODO: sketch-api: use original input expressions
+                        // instead of numbers.
+                        x: kcl_api::Expr::Number(end_point2d.x.clone()),
+                        y: kcl_api::Expr::Number(end_point2d.y.clone()),
+                    },
+                }),
+                ctor_applicable: true,
+            })),
+            label: Default::default(),
+            comments: Default::default(),
+            // TODO: sketch-api: implement
+            artifact_id: 0,
+            source,
+        };
+        segment_object_ids.push(segment_object.id);
+        exec_state.add_scene_object(segment_object, segment_range);
+        // TODO: sketch-api: create the segment in the engine.
+    }
+    Ok(segment_object_ids)
 }
 
 impl SketchBlock {
