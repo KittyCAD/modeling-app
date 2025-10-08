@@ -105,7 +105,8 @@ export const CommandBar = () => {
       )
 
       if (index === 0) {
-        commandBarActor.send({ type: 'Deselect command' })
+        // We're on the first entry, just close
+        commandBarActor.send({ type: 'Close' })
       } else {
         commandBarActor.send({
           type: 'Change current argument',
