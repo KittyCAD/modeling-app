@@ -35,9 +35,17 @@ pub(crate) const IMPL: &str = "impl";
 pub(crate) const IMPL_RUST: &str = "std_rust";
 pub(crate) const IMPL_CONSTRAINT: &str = "std_rust_constraint";
 pub(crate) const IMPL_CONSTRAINABLE: &str = "std_constrainable";
+pub(crate) const IMPL_RUST_CONSTRAINABLE: &str = "std_rust_constrainable";
 pub(crate) const IMPL_KCL: &str = "kcl";
 pub(crate) const IMPL_PRIMITIVE: &str = "primitive";
-pub(super) const IMPL_VALUES: [&str; 5] = [IMPL_RUST, IMPL_KCL, IMPL_PRIMITIVE, IMPL_CONSTRAINT, IMPL_CONSTRAINABLE];
+pub(super) const IMPL_VALUES: [&str; 6] = [
+    IMPL_RUST,
+    IMPL_KCL,
+    IMPL_PRIMITIVE,
+    IMPL_CONSTRAINT,
+    IMPL_CONSTRAINABLE,
+    IMPL_RUST_CONSTRAINABLE,
+];
 
 pub(crate) const WARNINGS: &str = "warnings";
 pub(crate) const WARN_ALLOW: &str = "allow";
@@ -109,6 +117,7 @@ pub enum Impl {
     Kcl,
     KclConstrainable,
     Rust,
+    RustConstrainable,
     RustConstraint,
     Primitive,
 }
@@ -121,6 +130,7 @@ impl FromStr for Impl {
             IMPL_RUST => Ok(Self::Rust),
             IMPL_CONSTRAINT => Ok(Self::RustConstraint),
             IMPL_CONSTRAINABLE => Ok(Self::KclConstrainable),
+            IMPL_RUST_CONSTRAINABLE => Ok(Self::RustConstrainable),
             IMPL_KCL => Ok(Self::Kcl),
             IMPL_PRIMITIVE => Ok(Self::Primitive),
             _ => Err(()),

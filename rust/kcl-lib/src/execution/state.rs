@@ -14,7 +14,7 @@ use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     exec::DefaultPlanes,
     execution::{
-        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, SketchVarId, annotations,
+        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, SketchVarId, UnsolvedSegment, annotations,
         cad_op::Operation,
         id_generator::IdGenerator,
         memory::{ProgramMemory, Stack},
@@ -125,9 +125,10 @@ pub(super) struct ModuleState {
 }
 
 #[derive(Debug, Clone, Default)]
-pub(super) struct SketchBlockState {
+pub(crate) struct SketchBlockState {
     pub sketch_vars: Vec<KclValue>,
     pub constraints: Vec<kcl_ezpz::Constraint>,
+    pub needed_by_engine: Vec<UnsolvedSegment>,
 }
 
 impl ExecState {
@@ -235,6 +236,10 @@ impl ExecState {
         self.mod_local.scene_objects.insert(id, obj);
         self.mod_local.source_range_to_object.insert(source_range, id);
         id
+    }
+
+    pub(crate) fn sketch_block_mut(&mut self) -> Option<&mut SketchBlockState> {
+        self.mod_local.sketch_block.as_mut()
     }
 
     pub fn next_uuid(&mut self) -> Uuid {

@@ -9,8 +9,8 @@ use crate::{
     CompilationError, KclError, ModuleId, SourceRange,
     errors::KclErrorDetails,
     execution::{
-        EnvironmentRef, ExecState, Face, GdtAnnotation, Geometry, GeometryWithImportedGeometry, Helix,
-        ImportedGeometry, Metadata, Plane, Sketch, SketchVar, SketchVarId, Solid, TagIdentifier,
+        AbstractSegment, EnvironmentRef, ExecState, Face, GdtAnnotation, Geometry, GeometryWithImportedGeometry, Helix,
+        ImportedGeometry, Metadata, Plane, Sketch, SketchVar, SketchVarId, Solid, TagIdentifier, UnsolvedExpr,
         annotations::{self, FnAttrs, SETTINGS, SETTINGS_UNIT_LENGTH},
         types::{NumericType, PrimitiveType, RuntimeType},
     },
@@ -80,6 +80,9 @@ pub enum KclValue {
     },
     Face {
         value: Box<Face>,
+    },
+    Segment {
+        value: Box<AbstractSegment>,
     },
     Sketch {
         value: Box<Sketch>,
@@ -292,6 +295,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Function { meta, .. } => to_vec_sr(&meta),
             KclValue::Plane { value } => to_vec_sr(&value.meta),
             KclValue::Face { value } => to_vec_sr(&value.meta),
+            KclValue::Segment { value } => to_vec_sr(&value.meta),
             KclValue::Bool { meta, .. } => to_vec_sr(&meta),
             KclValue::Number { meta, .. } => to_vec_sr(&meta),
             KclValue::String { meta, .. } => to_vec_sr(&meta),
@@ -324,6 +328,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Function { meta, .. } => to_vec_sr(meta),
             KclValue::Plane { value } => to_vec_sr(&value.meta),
             KclValue::Face { value } => to_vec_sr(&value.meta),
+            KclValue::Segment { value } => to_vec_sr(&value.meta),
             KclValue::Bool { meta, .. } => to_vec_sr(meta),
             KclValue::Number { meta, .. } => to_vec_sr(meta),
             KclValue::String { meta, .. } => to_vec_sr(meta),
@@ -362,6 +367,7 @@ impl KclValue {
             KclValue::GdtAnnotation { value } => value.meta.clone(),
             KclValue::Plane { value } => value.meta.clone(),
             KclValue::Face { value } => value.meta.clone(),
+            KclValue::Segment { value } => value.meta.clone(),
             KclValue::Sketch { value } => value.meta.clone(),
             KclValue::Solid { value } => value.meta.clone(),
             KclValue::Helix { value } => value.meta.clone(),
@@ -397,6 +403,7 @@ impl KclValue {
             | KclValue::GdtAnnotation { .. }
             | KclValue::Plane { .. }
             | KclValue::Face { .. }
+            | KclValue::Segment { .. }
             | KclValue::Sketch { .. }
             | KclValue::Solid { .. }
             | KclValue::Helix { .. }
@@ -423,6 +430,7 @@ impl KclValue {
             KclValue::Function { .. } => "a function".to_owned(),
             KclValue::Plane { .. } => "a plane".to_owned(),
             KclValue::Face { .. } => "a face".to_owned(),
+            KclValue::Segment { .. } => "a segment".to_owned(),
             KclValue::Bool { .. } => "a boolean (`true` or `false`)".to_owned(),
             KclValue::Number {
                 ty: NumericType::Unknown,
@@ -647,6 +655,14 @@ impl KclValue {
         }
     }
 
+    pub fn as_unsolved_expr(&self) -> Option<UnsolvedExpr> {
+        match self {
+            KclValue::Number { value, ty, .. } => Some(UnsolvedExpr::Known(TyF64::new(*value, *ty))),
+            KclValue::SketchVar { value, .. } => Some(UnsolvedExpr::Unknown(value.id)),
+            _ => None,
+        }
+    }
+
     pub fn as_str(&self) -> Option<&str> {
         match self {
             KclValue::String { value, .. } => Some(value),
@@ -832,6 +848,7 @@ impl KclValue {
             | KclValue::Function { .. }
             | KclValue::Plane { .. }
             | KclValue::Face { .. }
+            | KclValue::Segment { .. }
             | KclValue::KclNone { .. }
             | KclValue::Type { .. } => None,
         }

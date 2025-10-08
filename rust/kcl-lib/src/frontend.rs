@@ -2,9 +2,9 @@ use std::ops::ControlFlow;
 
 use anyhow::{anyhow, bail};
 use kcl_api::{
-    Error, Expr, FileId, Number, NumericSuffix, Object, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta,
-    Settings, SourceDelta, SourceRef, Version,
-    sketch::{Freedom, Line, LineCtor, Point, Point2d, Segment, SegmentCtor, Sketch, SketchArgs},
+    Error, Expr, FileId, Number, NumericSuffix, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, Settings,
+    SourceDelta, SourceRef, Version,
+    sketch::{Freedom, Point2d, Segment, SketchArgs},
 };
 use kcl_error::SourceRange;
 
@@ -141,7 +141,7 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta, sketch_id))
     }
 
-    fn add_line(
+    async fn add_line(
         &mut self,
         sketch: ObjectId,
         _version: Version,
@@ -178,28 +178,31 @@ impl FrontendState {
         };
         // Add the line to the AST of the sketch block.
         let mut new_ast = self.program.ast.clone();
-        self.ast_from_object_id_mut(&mut new_ast, sketch_id, |node| {
-            if let NodeMut::SketchBlock(sketch_block) = node {
-                sketch_block
-                    .body
-                    .items
-                    .push(ast::BodyItem::ExpressionStatement(ast::Node {
-                        inner: ast::ExpressionStatement {
-                            expression: line_ast.clone(),
-                            digest: None,
-                        },
-                        start: Default::default(),
-                        end: Default::default(),
-                        module_id: Default::default(),
-                        outer_attrs: Default::default(),
-                        pre_comments: Default::default(),
-                        comment_start: Default::default(),
-                    }));
-                return ControlFlow::Break(());
-            }
-            ControlFlow::Continue(())
-        })
-        .map_err(|err| Error { msg: err.to_string() })?;
+        let sketch_block_range = self
+            .ast_from_object_id_mut(&mut new_ast, sketch_id, |node| {
+                if let NodeMut::SketchBlock(sketch_block) = node {
+                    sketch_block
+                        .body
+                        .items
+                        .push(ast::BodyItem::ExpressionStatement(ast::Node {
+                            inner: ast::ExpressionStatement {
+                                expression: line_ast.clone(),
+                                digest: None,
+                            },
+                            start: Default::default(),
+                            end: Default::default(),
+                            module_id: Default::default(),
+                            outer_attrs: Default::default(),
+                            pre_comments: Default::default(),
+                            comment_start: Default::default(),
+                        }));
+                    let sketch_block_range =
+                        SourceRange::new(sketch_block.start, sketch_block.end, sketch_block.module_id);
+                    return ControlFlow::Break(sketch_block_range);
+                }
+                ControlFlow::Continue(())
+            })
+            .map_err(|err| Error { msg: err.to_string() })?;
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new KCL source.
@@ -214,94 +217,67 @@ impl FrontendState {
                 msg: "No AST produced after adding line".to_string(),
             });
         };
-        // TODO: sketch-api: make sure to only set this if there are no errors.
-        self.program = new_program;
 
-        // Evaluate.
-        let new_start_position = self.position_from_expr(&start)?;
-        let new_end_position = self.position_from_expr(&end)?;
-        let new_start_freedom = self.freedom_from_expr(&start)?;
-        let new_end_freedom = self.freedom_from_expr(&end)?;
+        let line_source_range = new_program
+            .ast
+            .body
+            .iter()
+            .find_map(|item| {
+                if let ast::BodyItem::ExpressionStatement(expr_stmt) = item {
+                    // End shouldn't match since we added a line.
+                    if expr_stmt.module_id == sketch_block_range.module_id()
+                        && expr_stmt.start == sketch_block_range.start()
+                        && expr_stmt.end >= sketch_block_range.end()
+                    {
+                        if let ast::Expr::SketchBlock(sketch_block) = &expr_stmt.expression {
+                            return sketch_block
+                                .body
+                                .items
+                                .last()
+                                .map(|last_item| SourceRange::from(last_item));
+                        }
+                    }
+                }
+                None
+            })
+            .ok_or_else(|| Error {
+                msg: format!("Source range of line not found in sketch block: {sketch_block_range:?}"),
+            })?;
 
-        // Build points.
-        let segment_id = ObjectId(self.id_generator.next_id());
-        let start_point = Point {
-            position: new_start_position,
-            ctor: None,
-            owner: Some(segment_id),
-            freedom: new_start_freedom,
-            // TODO: sketch-api: implement
-            constraints: Vec::new(),
-        };
-        let start_point_object = Object {
-            id: ObjectId(self.id_generator.next_id()),
-            kind: ObjectKind::Segment(Segment::Point(start_point)),
-            label: Default::default(),
-            comments: Default::default(),
-            // TODO: sketch-api: implement
-            artifact_id: 0,
-            // TODO: sketch-api: implement
-            source: SourceRef::Simple(SourceRange::default()),
-        };
-        let end_point = Point {
-            position: new_end_position,
-            ctor: None,
-            owner: Some(segment_id),
-            freedom: new_end_freedom,
-            // TODO: sketch-api: implement
-            constraints: Vec::new(),
-        };
-        let end_point_object = Object {
-            id: ObjectId(self.id_generator.next_id()),
-            kind: ObjectKind::Segment(Segment::Point(end_point)),
-            label: Default::default(),
-            comments: Default::default(),
-            // TODO: sketch-api: implement
-            artifact_id: 0,
-            // TODO: sketch-api: implement
-            source: SourceRef::Simple(SourceRange::default()),
-        };
+        // Make sure to only set this if there are no errors.
+        self.program = new_program.clone();
 
-        // Look up existing sketch.
-        let sketch_object = self.scene_graph.objects.get_mut(sketch_id.0).ok_or_else(|| Error {
-            msg: format!("Sketch not found: {sketch:?}"),
+        // Execute.
+        let outcome = self.ctx.run_mock(&new_program, true).await.map_err(|err| {
+            // TODO: sketch-api: Yeah, this needs to change. We need to
+            // return the full error.
+            Error {
+                msg: err.error.message().to_owned(),
+            }
         })?;
-        let ObjectKind::Sketch(sketch) = &mut sketch_object.kind else {
+
+        let segment_id = outcome
+            .source_range_to_object
+            .get(&line_source_range)
+            .copied()
+            .ok_or_else(|| Error {
+                msg: format!("Source range of line not found: {line_source_range:?}"),
+            })?;
+        let segment_object = self.scene_graph.objects.get(segment_id.0).ok_or_else(|| Error {
+            msg: format!("Segment not found: {segment_id:?}"),
+        })?;
+        let ObjectKind::Segment(segment) = &segment_object.kind else {
             return Err(Error {
-                msg: format!("Object is not a sketch: {sketch_object:?}"),
+                msg: format!("Object is not a segment: {segment_object:?}"),
             });
         };
-
-        let line_ctor = LineCtor { start, end };
-        let segment = Segment::Line(Line {
-            start: start_point_object.id,
-            end: end_point_object.id,
-            ctor: SegmentCtor::Line(line_ctor),
-            ctor_applicable: true,
-        });
-        // TODO: sketch-api: implement
-        let artifact_id = 0;
-        // TODO: sketch-api: implement
-        let source_range = SourceRange::default();
-        // Create a new line segment.
-        let segment_object = Object {
-            id: segment_id,
-            kind: ObjectKind::Segment(segment),
-            artifact_id,
-            source: SourceRef::Simple(source_range),
-            label: Default::default(),
-            comments: Default::default(),
+        let Segment::Line(line) = segment else {
+            return Err(Error {
+                msg: format!("Segment is not a line: {segment:?}"),
+            });
         };
-        // Add the line segment to the scene.
-        let new_objects = vec![segment_object, start_point_object, end_point_object];
-        let new_object_ids = new_objects.iter().map(|o| o.id).collect::<Vec<_>>();
-        // Add to the sketch first since we're mutably borrowing it.
-        for object_id in &new_object_ids {
-            sketch.segments.push(*object_id);
-        }
-        for object in new_objects {
-            self.scene_graph.objects.push(object);
-        }
+        let new_object_ids = vec![segment_id, line.start, line.end];
+
         let src_delta = SourceDelta {};
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
