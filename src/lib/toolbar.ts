@@ -10,8 +10,6 @@ import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
-import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
 
 export type ToolbarModeName = 'modeling' | 'sketching' | 'sketchSolve'
 
@@ -118,23 +116,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       'break',
       {
         id: 'extrude',
-        // TODO: ughhhhh make this less gross
-        onClick: () => {
-          stringToKclExpression(KCL_DEFAULT_LENGTH + '')
-            .then((length) => {
-              commandBarActor.send({
-                type: 'Find and select command',
-                data: {
-                  name: 'Extrude',
-                  groupId: 'modeling',
-                  argDefaultValues: { length },
-                },
-              })
-            })
-            .catch((e) => {
-              console.error(`Error: ${e.message || e.toString()}`)
-            })
-        },
+        onClick: () =>
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Extrude', groupId: 'modeling' },
+          }),
         icon: 'extrude',
         status: 'available',
         title: 'Extrude',
