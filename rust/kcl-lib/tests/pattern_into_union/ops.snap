@@ -1038,8 +1038,7 @@ description: Operations executed pattern_into_union.kcl
           }
         ]
       },
-      "sourceRange": [],
-      "isError": true
+      "sourceRange": []
     }
   ],
   "std::appearance": [],
