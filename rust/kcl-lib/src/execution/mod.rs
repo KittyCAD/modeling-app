@@ -249,6 +249,16 @@ impl From<&Expr> for Metadata {
     }
 }
 
+impl Metadata {
+    pub fn to_source_ref(meta: &[Metadata]) -> kcl_api::SourceRef {
+        if meta.len() == 1 {
+            let meta = &meta[0];
+            return kcl_api::SourceRef::Simple(meta.source_range);
+        }
+        kcl_api::SourceRef::BackTrace(meta.iter().map(|m| m.source_range).collect())
+    }
+}
+
 /// The type of ExecutorContext being used
 #[derive(PartialEq, Debug, Default, Clone)]
 pub enum ContextType {

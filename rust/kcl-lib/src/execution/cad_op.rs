@@ -188,6 +188,9 @@ pub enum OpKclValue {
     Face {
         artifact_id: ArtifactId,
     },
+    Segment {
+        artifact_id: ArtifactId,
+    },
     Sketch {
         value: Box<OpSketch>,
     },
@@ -263,6 +266,22 @@ impl From<&KclValue> for OpKclValue {
             },
             KclValue::Face { value } => Self::Face {
                 artifact_id: value.artifact_id,
+            },
+            KclValue::Segment { value } => match &value.repr {
+                crate::execution::geometry::SegmentRepr::Unsolved { .. } => {
+                    debug_assert!(false, "Unsolved segment cannot be represented in operations");
+                    Self::KclNone {}
+                }
+                crate::execution::geometry::SegmentRepr::Solved { .. } => {
+                    debug_assert!(
+                        false,
+                        "Solved segment not sent to the engine cannot be represented in operations"
+                    );
+                    Self::KclNone {}
+                }
+                crate::execution::geometry::SegmentRepr::InEngine { id, .. } => Self::Segment {
+                    artifact_id: ArtifactId::new(*id),
+                },
             },
             KclValue::Sketch { value } => Self::Sketch {
                 value: Box::new(OpSketch {

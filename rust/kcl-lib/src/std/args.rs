@@ -7,7 +7,7 @@ use serde::Serialize;
 use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
 use crate::{
-    CompilationError, ModuleId, SourceRange,
+    CompilationError, MetaSettings, ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch, SketchSurface,
@@ -37,6 +37,13 @@ pub struct TyF64 {
 impl TyF64 {
     pub fn new(n: f64, ty: NumericType) -> Self {
         Self { n, ty }
+    }
+
+    pub fn from_number(n: kcl_api::Number, settings: &MetaSettings) -> Self {
+        Self {
+            n: n.value,
+            ty: NumericType::from_parsed(n.units, settings),
+        }
     }
 
     pub fn to_mm(&self) -> f64 {
@@ -98,6 +105,21 @@ impl TyF64 {
     pub fn map_value(mut self, n: f64) -> Self {
         self.n = n;
         self
+    }
+
+    // This can't be a TryFrom impl because `Point2d` is defined in another
+    // crate.
+    pub fn to_point2d(value: &[TyF64; 2]) -> Result<kcl_api::sketch::Point2d<kcl_api::Number>, ()> {
+        Ok(kcl_api::sketch::Point2d {
+            x: kcl_api::Number {
+                value: value[0].n,
+                units: value[0].ty.try_into()?,
+            },
+            y: kcl_api::Number {
+                value: value[1].n,
+                units: value[1].ty.try_into()?,
+            },
+        })
     }
 }
 

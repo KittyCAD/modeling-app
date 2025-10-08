@@ -84,7 +84,7 @@ pub struct SketchArgs {
     pub on: Plane,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, rename = "ApiPoint")]
 pub struct Point {
     pub position: Point2d<Number>,
@@ -94,7 +94,7 @@ pub struct Point {
     pub constraints: Vec<ObjectId>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub enum Freedom {
     Free,
@@ -102,7 +102,7 @@ pub enum Freedom {
     Fixed,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, rename = "ApiSegment")]
 pub enum Segment {
     Point(Point),
@@ -111,7 +111,7 @@ pub enum Segment {
     Circle(Circle),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub enum SegmentCtor {
     Point(Point2d<Expr>),
@@ -124,14 +124,14 @@ pub enum SegmentCtor {
     ThreePointCircle(ThreePointCircleCtor),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, rename = "ApiPoint2d")]
 pub struct Point2d<U: std::fmt::Debug + Clone + ts_rs::TS> {
     pub x: U,
     pub y: U,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, rename = "ApiLine")]
 pub struct Line {
     pub start: ObjectId,
@@ -146,28 +146,28 @@ pub struct Line {
     pub ctor_applicable: bool,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct LineCtor {
     pub start: Point2d<Expr>,
     pub end: Point2d<Expr>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct MidPointLineCtor {
     pub midpoint: Point2d<Expr>,
     pub start_or_end: StartOrEnd<Point2d<Expr>>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, rename = "ApiStartOrEnd")]
 pub enum StartOrEnd<T> {
     Start(T),
     End(T),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, rename = "ApiArc")]
 pub struct Arc {
     pub start: ObjectId,
@@ -178,7 +178,7 @@ pub struct Arc {
     pub ctor_applicable: bool,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct ArcCtor {
     pub start: Point2d<Expr>,
@@ -186,7 +186,7 @@ pub struct ArcCtor {
     pub center: Point2d<Expr>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct ThreePointArcCtor {
     pub start: Point2d<Expr>,
@@ -194,7 +194,7 @@ pub struct ThreePointArcCtor {
     pub interior: Point2d<Expr>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct TangentArcCtor {
     pub start: Point2d<Expr>,
@@ -202,7 +202,7 @@ pub struct TangentArcCtor {
     pub tangent: StartOrEnd<ObjectId>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, rename = "ApiCircle")]
 pub struct Circle {
     pub start: ObjectId,
@@ -212,14 +212,14 @@ pub struct Circle {
     pub ctor_applicable: bool,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct CircleCtor {
     pub center: Point2d<Expr>,
     pub radius: Expr,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct ThreePointCircleCtor {
     pub p1: Point2d<Expr>,

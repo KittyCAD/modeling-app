@@ -43,6 +43,15 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Function)
     }
 
+    pub fn segment() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Segment)
+    }
+
+    /// `[Segment; 1+]`
+    pub fn segments() -> Self {
+        RuntimeType::Array(Box::new(Self::segment()), ArrayLen::Minimum(1))
+    }
+
     pub fn sketch() -> Self {
         RuntimeType::Primitive(PrimitiveType::Sketch)
     }
@@ -404,6 +413,7 @@ pub enum PrimitiveType {
     TaggedFace,
     TagDecl,
     GdtAnnotation,
+    Segment,
     Sketch,
     Solid,
     Plane,
@@ -426,6 +436,7 @@ impl PrimitiveType {
             PrimitiveType::String => "strings".to_owned(),
             PrimitiveType::Boolean => "bools".to_owned(),
             PrimitiveType::GdtAnnotation => "GD&T Annotations".to_owned(),
+            PrimitiveType::Segment => "Segments".to_owned(),
             PrimitiveType::Sketch => "Sketches".to_owned(),
             PrimitiveType::Solid => "Solids".to_owned(),
             PrimitiveType::Plane => "Planes".to_owned(),
@@ -468,6 +479,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::TaggedEdge => write!(f, "tagged edge"),
             PrimitiveType::TaggedFace => write!(f, "tagged face"),
             PrimitiveType::GdtAnnotation => write!(f, "GD&T Annotation"),
+            PrimitiveType::Segment => write!(f, "Segment"),
             PrimitiveType::Sketch => write!(f, "Sketch"),
             PrimitiveType::Solid => write!(f, "Solid"),
             PrimitiveType::Plane => write!(f, "Plane"),
@@ -939,6 +951,29 @@ impl From<UnitAngle> for NumericType {
     }
 }
 
+impl TryFrom<NumericType> for NumericSuffix {
+    type Error = ();
+
+    fn try_from(value: NumericType) -> Result<Self, Self::Error> {
+        match value {
+            NumericType::Known(UnitType::Count) => Ok(NumericSuffix::Count),
+            NumericType::Known(UnitType::Length(UnitLength::Millimeters)) => Ok(NumericSuffix::Mm),
+            NumericType::Known(UnitType::Length(UnitLength::Centimeters)) => Ok(NumericSuffix::Cm),
+            NumericType::Known(UnitType::Length(UnitLength::Meters)) => Ok(NumericSuffix::M),
+            NumericType::Known(UnitType::Length(UnitLength::Inches)) => Ok(NumericSuffix::Inch),
+            NumericType::Known(UnitType::Length(UnitLength::Feet)) => Ok(NumericSuffix::Ft),
+            NumericType::Known(UnitType::Length(UnitLength::Yards)) => Ok(NumericSuffix::Yd),
+            NumericType::Known(UnitType::GenericLength) => Ok(NumericSuffix::Length),
+            NumericType::Known(UnitType::Angle(UnitAngle::Degrees)) => Ok(NumericSuffix::Deg),
+            NumericType::Known(UnitType::Angle(UnitAngle::Radians)) => Ok(NumericSuffix::Rad),
+            NumericType::Known(UnitType::GenericAngle) => Ok(NumericSuffix::Angle),
+            NumericType::Default { .. } => Ok(NumericSuffix::None),
+            NumericType::Unknown => Ok(NumericSuffix::Unknown),
+            NumericType::Any => Err(()),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -1167,6 +1202,10 @@ impl KclValue {
             },
             PrimitiveType::GdtAnnotation => match self {
                 KclValue::GdtAnnotation { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
+            PrimitiveType::Segment => match self {
+                KclValue::Segment { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
             PrimitiveType::Sketch => match self {
@@ -1545,6 +1584,7 @@ impl KclValue {
             KclValue::Sketch { .. } => Some(RuntimeType::Primitive(PrimitiveType::Sketch)),
             KclValue::Solid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Solid)),
             KclValue::Face { .. } => Some(RuntimeType::Primitive(PrimitiveType::Face)),
+            KclValue::Segment { .. } => Some(RuntimeType::Primitive(PrimitiveType::Segment)),
             KclValue::Helix { .. } => Some(RuntimeType::Primitive(PrimitiveType::Helix)),
             KclValue::ImportedGeometry(..) => Some(RuntimeType::Primitive(PrimitiveType::ImportedGeometry)),
             KclValue::Tuple { value, .. } => Some(RuntimeType::Tuple(
