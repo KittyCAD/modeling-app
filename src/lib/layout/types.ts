@@ -42,10 +42,12 @@ const SplitSchema = z
     orientation: OrientationSchema,
     type: z.literal('splits'),
   })
-  .refine(
-    (data) => data.sizes.reduce((a: number, b: number) => a + b, 0) <= 100
-  )
-  .refine((data) => data.sizes.length === data.children.length)
+  .refine((data) => data.sizes.reduce((a, b) => a + b, 0) <= 100, {
+    error: 'Sizes must add up to 100',
+  })
+  .refine((data) => data.sizes.length === data.children.length, {
+    error: 'Must have same number of sizes as children',
+  })
 export type SplitLayout = z.infer<typeof SplitSchema>
 
 const TabSchema = z
@@ -57,7 +59,8 @@ const TabSchema = z
     activeIndex: z.number(),
   })
   .refine(
-    (data) => data.activeIndex > 0 && data.activeIndex < data.children.length
+    (data) => data.activeIndex >= 0 && data.activeIndex < data.children.length,
+    { error: 'activeIndex must be valid to index into children' }
   )
 export type TabLayout = z.infer<typeof TabSchema>
 
@@ -83,13 +86,21 @@ const PaneSchema = z
     actions: z.optional(z.array(ActionSchema)),
     onExpandSize: z.optional(z.number()),
   })
-  .refine((data) => data.activeIndices.length === data.sizes.length)
-  .refine((data) => data.sizes.reduce((a, b) => a + b, 0) < 100)
+  .refine((data) => data.activeIndices.length === data.sizes.length, {
+    error: 'Active indices and sizes arrays must match in length',
+  })
+  .refine((data) => data.sizes.reduce((a, b) => a + b, 0) <= 100, {
+    error: 'Sizes must add up to 100',
+  })
   // GOTCHA: using data.children in any refinements other than the last one breaks the types due to circularity?
   .refine(
     (data) =>
-      data.activeIndices.every((a) => a > 0 && a < data.children.length) &&
-      data.paneIcons.length === data.children.length
+      data.activeIndices.every((a) => a >= 0 && a < data.children.length) &&
+      data.paneIcons.length === data.children.length,
+    {
+      error:
+        'Active indices must each be a valid index into children, and paneIcons must equal children length',
+    }
   )
 
 export interface Closeable {
@@ -111,6 +122,7 @@ const LayoutSchema = z.discriminatedUnion('type', [
 export type Layout = z.infer<typeof LayoutSchema>
 
 export const LayoutWithMetadataSchema = z.object({
-  id: z.literal('v1'),
+  version: z.literal('v1'),
+  name: z.string(),
   layout: LayoutSchema,
 })

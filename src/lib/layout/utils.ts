@@ -15,10 +15,14 @@ import { throttle } from '@src/lib/utils'
 import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
 import { basicLayout } from '@src/lib/layout/basicLayout'
 
-const LAYOUT_PERSIST_PREFIX = 'layout-'
 const LAYOUT_SAVE_THROTTLE = 500
+const LAYOUT_PERSIST_PREFIX = 'layout-'
+/** in future, we can let users name layouts and load and save them */
+const LAYOUT_NAME = 'default'
+const LAYOUT_PERSIST_KEY = `${LAYOUT_PERSIST_PREFIX}${LAYOUT_NAME}`
+const LAYOUT_VERSION = 'v1'
 
-export const defaultLayout = loadLayout('basic') || basicLayout
+export const defaultLayout = loadLayout(LAYOUT_NAME) || basicLayout
 
 /**
  * A split area must have the same number of sizes as children.
@@ -217,17 +221,21 @@ export function findAndUpdateSplitSizes({
   return rootLayout
 }
 
-export function loadLayout(id: string): Layout | undefined {
-  const layoutString = localStorage.getItem(`${LAYOUT_PERSIST_PREFIX}${id}`)
+export function loadLayout(name: string): Layout | undefined {
+  const layoutString = localStorage.getItem(`${LAYOUT_PERSIST_PREFIX}${name}`)
   const parsed = layoutString ? parseLayout(layoutString) : undefined
   console.log('loaded layout', parsed)
   return parsed
 }
-function saveLayoutInner(layout: Layout) {
+function saveLayoutInner({
+  layout,
+  name = LAYOUT_NAME,
+}: { layout: Layout; name?: string }) {
   return localStorage.setItem(
-    `${LAYOUT_PERSIST_PREFIX}${layout.id}`,
+    LAYOUT_PERSIST_KEY,
     JSON.stringify({
-      version: 'v1',
+      version: LAYOUT_VERSION,
+      name,
       layout,
     } satisfies LayoutWithMetadata)
   )
@@ -371,11 +379,17 @@ export function shouldEnableResizeHandle(
 }
 
 export function parseLayout(layoutString: string): Layout {
-  const layoutWithMetadata = LayoutWithMetadataSchema.safeParse(layoutString)
+  try {
+    const layoutJson = JSON.parse(layoutString)
+    const layoutWithMetadata = LayoutWithMetadataSchema.safeParse(layoutJson)
 
-  console.log('layoutWithMetadata', layoutWithMetadata)
+    console.log('layoutWithMetadata', layoutWithMetadata)
 
-  return layoutWithMetadata.success
-    ? layoutWithMetadata.data.layout
-    : basicLayout
+    return layoutWithMetadata.success
+      ? layoutWithMetadata.data.layout
+      : basicLayout
+  } catch (e) {
+    console.error(e)
+    return basicLayout
+  }
 }

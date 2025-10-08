@@ -11,14 +11,14 @@ import { type Layout } from '@src/lib/layout/types'
  *   - Text-to-CAD
  */
 export const basicLayout: Layout = {
-  id: 'basic',
+  id: crypto.randomUUID(),
   label: 'root',
   type: 'splits',
   orientation: 'inline',
   sizes: [30, 50, 20],
   children: [
     {
-      id: 'b',
+      id: crypto.randomUUID(),
       label: 'left-toolbar',
       type: 'panes',
       side: 'inline-start',
@@ -28,19 +28,19 @@ export const basicLayout: Layout = {
       paneIcons: ['model', 'code', 'make-variable', 'logs'],
       children: [
         {
-          id: 'c',
+          id: crypto.randomUUID(),
           label: 'feature-tree',
           type: 'simple',
           areaType: 'featureTree',
         },
         {
-          id: 'd',
+          id: crypto.randomUUID(),
           label: 'code',
           type: 'simple',
           areaType: 'codeEditor',
         },
         {
-          id: 'e',
+          id: crypto.randomUUID(),
           label: 'variables',
           type: 'simple',
           areaType: 'variables',
@@ -54,25 +54,25 @@ export const basicLayout: Layout = {
       ],
       actions: [
         {
-          id: 'add-file-to-project',
+          id: crypto.randomUUID(),
           label: 'Add file to project',
           icon: 'importFile',
           actionType: 'addFileToProject',
         },
         {
-          id: 'export',
+          id: crypto.randomUUID(),
           label: 'Export part',
           icon: 'floppyDiskArrow',
           actionType: 'export',
         },
         {
-          id: 'make',
+          id: crypto.randomUUID(),
           label: 'Make part',
           icon: 'printer3d',
           actionType: 'make',
         },
         {
-          id: 'refresh',
+          id: crypto.randomUUID(),
           label: 'Refresh app',
           icon: 'exclamationMark',
           actionType: 'refreshApp',
@@ -80,13 +80,13 @@ export const basicLayout: Layout = {
       ],
     },
     {
-      id: 'f',
+      id: crypto.randomUUID(),
       label: 'modeling-scene',
       type: 'simple',
       areaType: 'modeling',
     },
     {
-      id: 'g',
+      id: crypto.randomUUID(),
       label: 'right-toolbar',
       type: 'panes',
       side: 'inline-end',
@@ -96,7 +96,7 @@ export const basicLayout: Layout = {
       paneIcons: ['sparkles'],
       children: [
         {
-          id: 'h',
+          id: crypto.randomUUID(),
           label: 'ttc',
           type: 'simple',
           areaType: 'ttc',

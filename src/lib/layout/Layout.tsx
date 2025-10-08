@@ -86,17 +86,19 @@ export const useLayoutState = () => useContext(LayoutStateContext)
 interface LayoutRootProps {
   areaLibrary?: LayoutState['areaLibrary']
   layout: Layout
+  layoutName?: string
   setLayout: Dispatch<SetStateAction<Layout>>
 }
 
 export function LayoutRoot({
   areaLibrary,
   layout,
+  layoutName,
   setLayout,
 }: LayoutRootProps) {
   useEffect(() => {
-    saveLayout(layout)
-  }, [layout])
+    saveLayout({ layout, name: layoutName })
+  }, [layout, layoutName])
 
   function updateLayoutNodeSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
     setLayout((rootLayout) =>
