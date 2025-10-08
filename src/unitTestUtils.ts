@@ -9,6 +9,16 @@ import {
 import { createArrayExpression } from '@src/lang/create'
 import { findKwArg, findKwArgAny } from '@src/lang/util'
 import type { CallExpressionKw, Expr } from '@src/lang/wasm'
+import { join } from 'path'
+import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import { ConnectionManager } from '@src/network/connectionManager'
+import RustContext from '@src/lib/rustContext'
+import { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import EditorManager from '@src/editor/manager'
+import CodeManager from '@src/lang/codeManager'
+import { KclManager } from '@src/lang/KclSingleton'
+import { err, reportRejection } from '@src/lib/trap'
+import env from '@src/env'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -38,5 +48,51 @@ export function findAngleLengthPair(call: CallExpressionKw): Expr | undefined {
   )
   if (angle && lengthLike) {
     return createArrayExpression([angle, lengthLike])
+  }
+}
+
+export async function buildTheWorldAndConnectToEngine() {
+  const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+  const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+  const engineCommandManager = new ConnectionManager()
+  const rustContext = new RustContext(engineCommandManager, instance)
+  const sceneInfra = new SceneInfra(engineCommandManager)
+  const editorManager = new EditorManager(engineCommandManager)
+  const codeManager = new CodeManager({ editorManager })
+  const kclManager = new KclManager(engineCommandManager, {
+    rustContext,
+    codeManager,
+    editorManager,
+    sceneInfra,
+  })
+  editorManager.kclManager = kclManager
+  editorManager.codeManager = codeManager
+  engineCommandManager.kclManager = kclManager
+  engineCommandManager.codeManager = codeManager
+  engineCommandManager.sceneInfra = sceneInfra
+  engineCommandManager.rustContext = rustContext
+  await new Promise((resolve) => {
+    engineCommandManager
+      .start({
+        token: env().VITE_KITTYCAD_API_TOKEN || '',
+        width: 256,
+        height: 256,
+        setStreamIsReady: () => {
+          console.log('no op for a unit test')
+        },
+        callbackOnUnitTestingConnection: () => {
+          resolve(true)
+        },
+      })
+      .catch(reportRejection)
+  })
+  return {
+    instance,
+    engineCommandManager,
+    rustContext,
+    sceneInfra,
+    editorManager,
+    codeManager,
+    kclManager,
   }
 }

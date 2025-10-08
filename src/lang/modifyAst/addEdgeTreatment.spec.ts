@@ -36,52 +36,9 @@ import CodeManager from '@src/lang/codeManager'
 import { createLiteral } from '@src/lang/create'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import env from '@src/env'
-const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+  const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 
-async function buildTheWorldAndConnectToEngine() {
-  const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-  const engineCommandManager = new ConnectionManager()
-  const rustContext = new RustContext(engineCommandManager, instance)
-  const sceneInfra = new SceneInfra(engineCommandManager)
-  const editorManager = new EditorManager(engineCommandManager)
-  const codeManager = new CodeManager({ editorManager })
-  const kclManager = new KclManager(engineCommandManager, {
-    rustContext,
-    codeManager,
-    editorManager,
-    sceneInfra,
-  })
-  editorManager.kclManager = kclManager
-  editorManager.codeManager = codeManager
-  engineCommandManager.kclManager = kclManager
-  engineCommandManager.codeManager = codeManager
-  engineCommandManager.sceneInfra = sceneInfra
-  engineCommandManager.rustContext = rustContext
-  await new Promise((resolve) => {
-    engineCommandManager
-      .start({
-        token: env().VITE_KITTYCAD_API_TOKEN || '',
-        width: 256,
-        height: 256,
-        setStreamIsReady: () => {
-          console.log('no op for a unit test')
-        },
-        callbackOnUnitTestingConnection: () => {
-          resolve(true)
-        },
-      })
-      .catch(reportRejection)
-  })
-  return {
-    instance,
-    engineCommandManager,
-    rustContext,
-    sceneInfra,
-    editorManager,
-    codeManager,
-    kclManager,
-  }
-}
 
 describe('addEdgeTreatment', () => {
   const runGetPathToExtrudeForSegmentSelectionTest = async (

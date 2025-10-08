@@ -126,11 +126,15 @@ export async function getCalculatedKclExpressionValue(
 
 export async function stringToKclExpression(
   value: string,
-  allowArrays?: boolean
+  allowArrays?: boolean,
+  instance?: ModuleType,
+  providedRustContext?: RustContext
 ) {
   const calculatedResult = await getCalculatedKclExpressionValue(
     value,
-    allowArrays
+    allowArrays,
+    instance,
+    providedRustContext
   )
   if (err(calculatedResult) || 'errors' in calculatedResult) {
     return calculatedResult
