@@ -7,6 +7,7 @@ on:
   pull_request:
   schedule:
     - cron: 0 * * * *  # hourly
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
