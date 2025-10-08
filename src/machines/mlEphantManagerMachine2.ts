@@ -199,16 +199,6 @@ export const mlEphantManagerMachine2 = setup({
     ): Promise<Partial<MlEphantManagerContext2>> {
       assertEvent(args.input.event, MlEphantManagerStates2.Setup)
 
-      const ws = await Socket(
-        WebSocket,
-        '/ws/ml/copilot' +
-          (args.input.event.conversationId
-            ? `?conversation_id=${args.input.event.conversationId}&replay=true`
-            : ''),
-        args.input.context.apiToken
-      )
-      ws.binaryType = 'arraybuffer'
-
       const addErrorIfInterrupted = (exchanges: Exchange[]) => {
         const lastExchange = exchanges.slice(-1)[0]
         const lastResponse = lastExchange?.responses.slice(-1)[0]
@@ -228,7 +218,22 @@ export const mlEphantManagerMachine2 = setup({
       let maybeReplayedExchanges: Exchange[] = []
 
       return await new Promise<Partial<MlEphantManagerContext2>>(
-        (onFulfilled, onRejected) => {
+        async (onFulfilled, onRejected) => {
+          if (!args.input.context.apiToken) {
+            onRejected()
+            return
+          }
+
+          const ws = await Socket(
+            WebSocket,
+            '/ws/ml/copilot' +
+              (args.input.event.conversationId
+                ? `?conversation_id=${args.input.event.conversationId}&replay=true`
+                : ''),
+            args.input.context.apiToken
+          )
+          ws.binaryType = 'arraybuffer'
+
           ws.addEventListener('message', function (event: MessageEvent<any>) {
             let response: unknown
             if (!isString(event.data)) {
