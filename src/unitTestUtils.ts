@@ -17,7 +17,7 @@ import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import EditorManager from '@src/editor/manager'
 import CodeManager from '@src/lang/codeManager'
 import { KclManager } from '@src/lang/KclSingleton'
-import { err, reportRejection } from '@src/lib/trap'
+import { reportRejection } from '@src/lib/trap'
 import env from '@src/env'
 
 /**

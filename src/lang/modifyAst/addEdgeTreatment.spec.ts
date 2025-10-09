@@ -9,7 +9,7 @@ import {
   recast,
   type SourceRange,
 } from '@src/lang/wasm'
-import { err, reportRejection } from '@src/lib/trap'
+import { err } from '@src/lib/trap'
 import { topLevelRange } from '@src/lang/util'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { isOverlap } from '@src/lib/utils'
@@ -24,21 +24,17 @@ import {
   hasValidEdgeTreatmentSelection,
   modifyAstWithEdgeTreatmentAndTag,
 } from '@src/lang/modifyAst/addEdgeTreatment'
-import { KclManager } from '@src/lang/KclSingleton'
+import type { KclManager } from '@src/lang/KclSingleton'
 import { join } from 'path'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { ConnectionManager } from '@src/network/connectionManager'
-import RustContext from '@src/lib/rustContext'
-import { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import EditorManager from '@src/editor/manager'
-import CodeManager from '@src/lang/codeManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type EditorManager from '@src/editor/manager'
+import type CodeManager from '@src/lang/codeManager'
 import { createLiteral } from '@src/lang/create'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import env from '@src/env'
-  const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-
 
 describe('addEdgeTreatment', () => {
   const runGetPathToExtrudeForSegmentSelectionTest = async (

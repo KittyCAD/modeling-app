@@ -2,7 +2,6 @@ import {
   type Artifact,
   assertParse,
   type CodeRef,
-  type PathToNode,
   type Program,
   recast,
   type Name,
@@ -14,13 +13,6 @@ import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err, reportRejection } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import {
-  addAppearance,
-  addClone,
-  addRotate,
-  addScale,
-  addTranslate,
-} from '@src/lang/modifyAst/transforms'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   engineCommandManager,

@@ -74,6 +74,10 @@ export default class RustContext {
     return ctxInstance
   }
 
+  getRustInstance() {
+    return this.rustInstance || undefined
+  }
+
   createFromInstance(instance: ModuleType) {
     this.rustInstance = instance
 
