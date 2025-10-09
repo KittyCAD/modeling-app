@@ -435,7 +435,7 @@ pub(crate) async fn do_post_extrude<'a>(
             let new_path = clone_id_map.unwrap().get(&path.get_base().geo_meta.id)?;
             let new_face_id = face_id_map.get(new_path);
             if new_face_id.is_some() {
-                clone_surface_of(path, *new_path, new_face_id.unwrap())
+                clone_surface_of(path, *new_path, new_face_id.unwrap().unwrap())
             } else {
                 None
             }
