@@ -433,16 +433,13 @@ pub(crate) async fn do_post_extrude<'a>(
             fake_extrude_surface(exec_state, path)
         } else if sketch.clone.is_some() && clone_id_map.is_some() {
             let new_path = clone_id_map.unwrap().get(&path.get_base().geo_meta.id)?;
-                let new_face_id = face_id_map.get(new_path);
-                if new_face_id.is_some() {
-                    clone_surface_of(path, *new_path, new_face_id.unwrap().unwrap())
-                }
-            else {
+            let new_face_id = face_id_map.get(new_path);
+            if new_face_id.is_some() {
+                clone_surface_of(path, *new_path, new_face_id.unwrap())
+            } else {
                 None
             }
-
-        }
-        else {
+        } else {
             println!(
                 "No face ID found for path ID {:?}, and not in no-engine-commands mode, so skipping it",
                 path.get_base().geo_meta.id
@@ -609,7 +606,6 @@ fn surface_of(path: &Path, actual_face_id: Uuid) -> Option<ExtrudeSurface> {
         }
     }
 }
-
 
 fn clone_surface_of(path: &Path, clone_path_id: Uuid, actual_face_id: Uuid) -> Option<ExtrudeSurface> {
     match path {
