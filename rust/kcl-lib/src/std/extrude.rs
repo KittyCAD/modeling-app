@@ -313,6 +313,7 @@ async fn inner_extrude(
                 exec_state,
                 &args,
                 None,
+                None,
             )
             .await?,
         );
@@ -337,6 +338,7 @@ pub(crate) async fn do_post_extrude<'a>(
     exec_state: &mut ExecState,
     args: &Args,
     edge_id: Option<Uuid>,
+    clone_id_map: Option<&HashMap<Uuid, Uuid>>, // old sketch id -> new sketch id
 ) -> Result<Solid, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
@@ -423,12 +425,34 @@ pub(crate) async fn do_post_extrude<'a>(
         if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
             surface_of(path, *actual_face_id)
         } else if no_engine_commands {
+            println!(
+                "No face ID found for path ID {:?}, but in no-engine-commands mode, so faking it",
+                path.get_base().geo_meta.id
+            );
             // Only pre-populate the extrude surface if we are in mock mode.
             fake_extrude_surface(exec_state, path)
-        } else {
+        } else if sketch.clone.is_some() && clone_id_map.is_some() {
+            let new_path = clone_id_map.unwrap().get(&path.get_base().geo_meta.id)?;
+                let new_face_id = face_id_map.get(new_path);
+                if new_face_id.is_some() {
+                    clone_surface_of(path, *new_path, new_face_id.unwrap().unwrap())
+                }
+            else {
+                None
+            }
+
+        }
+        else {
+            println!(
+                "No face ID found for path ID {:?}, and not in no-engine-commands mode, so skipping it",
+                path.get_base().geo_meta.id
+            );
             None
         }
     });
+    // if (outer_surfaces.len() < 1) && sketch.clone.is_some() {
+    //     // surface_of(path, actual_face_id)
+    // }
     new_value.extend(outer_surfaces);
     let inner_surfaces = sketch.inner_paths.iter().flat_map(|path| {
         if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
@@ -578,6 +602,52 @@ fn surface_of(path: &Path, actual_face_id: Uuid) -> Option<ExtrudeSurface> {
                 tag: path.get_base().tag.clone(),
                 geo_meta: GeoMeta {
                     id: path.get_base().geo_meta.id,
+                    metadata: path.get_base().geo_meta.metadata,
+                },
+            });
+            Some(extrude_surface)
+        }
+    }
+}
+
+
+fn clone_surface_of(path: &Path, clone_path_id: Uuid, actual_face_id: Uuid) -> Option<ExtrudeSurface> {
+    match path {
+        Path::Arc { .. }
+        | Path::TangentialArc { .. }
+        | Path::TangentialArcTo { .. }
+        // TODO: (bc) fix me
+        | Path::Ellipse { .. }
+        | Path::Conic {.. }
+        | Path::Circle { .. }
+        | Path::CircleThreePoint { .. } => {
+            let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
+                face_id: actual_face_id,
+                tag: path.get_base().tag.clone(),
+                geo_meta: GeoMeta {
+                    id: clone_path_id,
+                    metadata: path.get_base().geo_meta.metadata,
+                },
+            });
+            Some(extrude_surface)
+        }
+        Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
+            let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
+                face_id: actual_face_id,
+                tag: path.get_base().tag.clone(),
+                geo_meta: GeoMeta {
+                    id: clone_path_id,
+                    metadata: path.get_base().geo_meta.metadata,
+                },
+            });
+            Some(extrude_surface)
+        }
+        Path::ArcThreePoint { .. } => {
+            let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
+                face_id: actual_face_id,
+                tag: path.get_base().tag.clone(),
+                geo_meta: GeoMeta {
+                    id: clone_path_id,
                     metadata: path.get_base().geo_meta.metadata,
                 },
             });

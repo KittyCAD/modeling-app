@@ -111,6 +111,7 @@ async fn fix_tags_and_references(
     match new_geometry {
         GeometryWithImportedGeometry::ImportedGeometry(_) => {}
         GeometryWithImportedGeometry::Sketch(sketch) => {
+            sketch.clone = Some(old_geometry_id);
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
@@ -154,6 +155,7 @@ async fn fix_tags_and_references(
                 kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
                 exec_state,
                 args,
+                None,
                 None,
             )
             .await?;
