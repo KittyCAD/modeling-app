@@ -6,7 +6,7 @@ on:
       - main
   pull_request:
   schedule:
-    - cron: 0 * * * *  # hourly
+    - cron: 0 * * * * # hourly
   workflow_dispatch:
   workflow_call:
 
@@ -20,13 +20,13 @@ permissions:
   actions: read
 
 jobs:
-
   prepare-wasm:
-
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-
       - uses: actions/checkout@v5
+        with:
+          # To share this workflow with other repos this must be hard-coded
+          repository: kittycad/modeling-app
 
       - id: filter
         name: Check for Rust changes
@@ -38,8 +38,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm install
@@ -89,7 +89,7 @@ jobs:
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: './rust'
+          workspaces: "./rust"
 
       - name: Build Wasm
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
@@ -110,7 +110,6 @@ jobs:
     name: e2e:snapshots
 
     steps:
-
       - uses: actions/create-github-app-token@v2
         id: app-token
         with:
@@ -120,6 +119,8 @@ jobs:
 
       - uses: actions/checkout@v5
         with:
+          # To share this workflow with other repos this must be hard-coded
+          repository: kittycad/modeling-app
           token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/download-artifact@v4
@@ -134,8 +135,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm install
@@ -193,11 +194,11 @@ jobs:
         shell: bash
         id: git-check
         run: |
-            git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
-            if git status | grep --quiet "Changes to be committed"
-            then echo "modified=true" >> $GITHUB_OUTPUT
-            else echo "modified=false" >> $GITHUB_OUTPUT
-            fi
+          git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
+          if git status | grep --quiet "Changes to be committed"
+          then echo "modified=true" >> $GITHUB_OUTPUT
+          else echo "modified=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Commit changes
         if: ${{ always() && steps.git-check.outputs.modified == 'true' }}
@@ -230,7 +231,6 @@ jobs:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
     steps:
-
       - uses: actions/create-github-app-token@v2
         id: app-token
         with:
@@ -240,6 +240,8 @@ jobs:
 
       - uses: actions/checkout@v5
         with:
+          # To share this workflow with other repos this must be hard-coded
+          repository: kittycad/modeling-app
           token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/download-artifact@v4
@@ -254,8 +256,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm install
@@ -353,6 +355,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          # To share this workflow with other repos this must be hard-coded
+          repository: kittycad/modeling-app
 
       - uses: actions/download-artifact@v4
         name: prepared-wasm
@@ -366,8 +371,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install dependencies
         id: deps-install
@@ -402,7 +407,7 @@ jobs:
 
       - name: npm run test:e2e:desktop
         id: retry
-        if:  ${{ !cancelled() && steps.deps-install.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.deps-install.outcome == 'success' }}
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
