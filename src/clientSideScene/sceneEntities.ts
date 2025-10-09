@@ -133,8 +133,8 @@ import {
   codeRefFromRange,
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
+
 import {
   addCallExpressionsToPipe,
   addCloseToPipe,
@@ -159,9 +159,7 @@ import {
   updateRectangleSketch,
 } from '@src/lib/rectangleTool'
 import type RustContext from '@src/lib/rustContext'
-import { updateExtraSegments } from '@src/lib/selections'
-import type { Selections } from '@src/lib/selections'
-import { getEventForSegmentSelection } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { Themes, getResolvedTheme } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
@@ -180,6 +178,14 @@ import type {
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { ActorRefFrom } from 'xstate'
+import {
+  type updateExtraSegments as updateExtraSegmentsFn,
+  type getEventForSegmentSelection as getEventForSegmentSelectionFn,
+} from '@src/lib/selections'
+
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -189,12 +195,13 @@ type Vec3Array = [number, number, number]
 // That mostly mean sketch elements.
 // Cameras, controls, raycasters, etc are handled by sceneInfra
 export class SceneEntities {
-  readonly engineCommandManager: EngineCommandManager
+  readonly engineCommandManager: ConnectionManager
   readonly sceneInfra: SceneInfra
   readonly editorManager: EditorManager
   readonly codeManager: CodeManager
   readonly kclManager: KclManager
   readonly rustContext: RustContext
+  commandBarActor?: ActorRefFrom<typeof commandBarMachine>
   activeSegments: { [key: string]: Group } = {}
   readonly intersectionPlane: Mesh
   axisGroup: Group | null = null
@@ -203,10 +210,8 @@ export class SceneEntities {
 
   getSettings: (() => SettingsType) | null = null
 
-  private canvasResizeObserver: ResizeObserver
-
   constructor(
-    engineCommandManager: EngineCommandManager,
+    engineCommandManager: ConnectionManager,
     sceneInfra: SceneInfra,
     editorManager: EditorManager,
     codeManager: CodeManager,
@@ -225,12 +230,6 @@ export class SceneEntities {
 
     this.sceneInfra.camControls.cameraChange.add(this.onCamChange)
     this.sceneInfra.baseUnitChange.add(this.onCamChange)
-
-    const canvas = this.sceneInfra.renderer.domElement
-    this.canvasResizeObserver = new ResizeObserver(() => {
-      this.onCamChange()
-    })
-    this.canvasResizeObserver.observe(canvas)
   }
 
   onCamChange = () => {
@@ -416,7 +415,6 @@ export class SceneEntities {
     // This makes sure axis lines are picked after segment lines in case of overlapping
     xAxisMesh.position.z = -0.1
     yAxisMesh.position.z = -0.1
-
     xAxisMesh.userData = {
       type: X_AXIS,
       baseColor: baseXColor,
@@ -989,6 +987,10 @@ export class SceneEntities {
           maybeModdedAst,
           this.kclManager
         )
+        if (!this.commandBarActor) {
+          console.error('command bar actor not found.')
+          return
+        }
         const result = initSegment({
           prevSegment: sketch.paths[index - 1],
           callExpName,
@@ -1001,6 +1003,8 @@ export class SceneEntities {
           isSelected,
           sceneInfra: this.sceneInfra,
           selection,
+          commandBarActor: this.commandBarActor,
+          kclManager: this.kclManager,
         })
         if (err(result)) return
         const { group: _group, updateOverlaysCallback } = result
@@ -1048,7 +1052,9 @@ export class SceneEntities {
     modifiedAst: Node<Program> | Error,
     forward: [number, number, number],
     up: [number, number, number],
-    origin: [number, number, number]
+    origin: [number, number, number],
+    getEventForSegmentSelection: typeof getEventForSegmentSelectionFn,
+    updateExtraSegments: typeof updateExtraSegmentsFn
   ) => {
     if (trap(modifiedAst)) return Promise.reject(modifiedAst)
     const nextAst = await this.kclManager.updateAst(modifiedAst, false)
@@ -1068,6 +1074,8 @@ export class SceneEntities {
       sketchEntryNodePath,
       sketchNodePaths,
       planeNodePath,
+      getEventForSegmentSelection,
+      updateExtraSegments,
     })
     return nextAst
   }
@@ -2621,6 +2629,8 @@ export class SceneEntities {
     up,
     forward,
     position,
+    getEventForSegmentSelection,
+    updateExtraSegments,
   }: {
     sketchEntryNodePath: PathToNode
     sketchNodePaths: PathToNode[]
@@ -2628,6 +2638,8 @@ export class SceneEntities {
     forward: [number, number, number]
     up: [number, number, number]
     position?: [number, number, number]
+    getEventForSegmentSelection: typeof getEventForSegmentSelectionFn
+    updateExtraSegments: typeof updateExtraSegmentsFn
   }) => {
     let addingNewSegmentStatus: 'nothing' | 'pending' | 'added' = 'nothing'
     this.sceneInfra.setCallbacks({
@@ -2650,6 +2662,8 @@ export class SceneEntities {
             up,
             forward,
             position,
+            getEventForSegmentSelection,
+            updateExtraSegments,
           })
         }
         await this.codeManager.writeToFile()
@@ -2762,7 +2776,7 @@ export class SceneEntities {
         if (!event) return
         this.sceneInfra.modelingSend(event)
       },
-      ...this.mouseEnterLeaveCallbacks(),
+      ...this.mouseEnterLeaveCallbacks(updateExtraSegments),
     })
   }
   prepareTruncatedAst = (
@@ -3465,7 +3479,7 @@ export class SceneEntities {
     this.activeSegments = {}
   }
 
-  mouseEnterLeaveCallbacks() {
+  mouseEnterLeaveCallbacks(updateExtraSegments: typeof updateExtraSegmentsFn) {
     return {
       onMouseEnter: ({ selected }: OnMouseEnterLeaveArgs) => {
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
@@ -3852,6 +3866,13 @@ function prepareTruncatedAst(
     Number(sketchNodePaths[sketchNodePaths.length - 1]?.[1]?.[0]) ||
     ast.body.length
   const _ast = structuredClone(ast)
+
+  if (!sketchNodePaths.length) {
+    return {
+      truncatedAst: _ast,
+      variableDeclarationName: '',
+    }
+  }
 
   const _node = getNodeFromPath<Node<VariableDeclaration>>(
     _ast,

@@ -424,6 +424,7 @@ description: Operations executed split-washer-spring-version.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

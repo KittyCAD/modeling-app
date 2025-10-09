@@ -1412,6 +1412,7 @@ description: Operations executed gingerbread-man.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -383,6 +383,7 @@ description: Artifact commands out_of_band_sketches.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

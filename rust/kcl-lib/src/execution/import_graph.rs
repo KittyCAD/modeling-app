@@ -256,7 +256,10 @@ mod tests {
                 digest: None,
             }),
             ModuleId::default(),
-            ModulePath::Local { value: "".into() },
+            ModulePath::Local {
+                value: "".into(),
+                original_import_path: None,
+            },
             ModuleRepr::Kcl(program, None),
         )
     }

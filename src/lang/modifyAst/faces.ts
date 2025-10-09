@@ -14,6 +14,7 @@ import {
 } from '@src/lang/modifyAst'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
+  getEdgeCutMeta,
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
   retrieveSelectionsFromOpArg,
@@ -23,7 +24,7 @@ import {
   getArtifactOfTypes,
   getCapCodeRef,
   getFaceCodeRef,
-  getSweepArtifactFromSelection,
+  getSweepFromSuspectedSweepSurface,
 } from '@src/lang/std/artifactGraph'
 import type {
   Artifact,
@@ -35,8 +36,12 @@ import type {
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import type { Selection, Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import type {
+  Selection,
+  Selections,
+  EdgeCutInfo,
+} from '@src/machines/modelingSharedTypes'
 
 export function addShell({
   ast,
@@ -126,7 +131,10 @@ export function addOffsetPlane({
   // 2. Prepare unlabeled and labeled arguments
   let planeExpr: Expr | undefined
   const hasFaceToOffset = plane.graphSelections.some(
-    (sel) => sel.artifact?.type === 'cap' || sel.artifact?.type === 'wall'
+    (sel) =>
+      sel.artifact?.type === 'cap' ||
+      sel.artifact?.type === 'wall' ||
+      sel.artifact?.type === 'edgeCut'
   )
   if (hasFaceToOffset) {
     const result = buildSolidsAndFacesExprs(
@@ -193,20 +201,30 @@ function getFacesExprsFromSelection(
     const artifact = face.artifact
     if (artifact.type === 'cap') {
       return createLiteral(artifact.subType)
-    } else if (artifact.type === 'wall') {
-      const key = artifact.segId
-      const segmentArtifact = getArtifactOfTypes(
-        { key, types: ['segment'] },
-        artifactGraph
-      )
-      if (err(segmentArtifact) || segmentArtifact.type !== 'segment') {
-        console.warn('No segment found for face', face)
-        return []
+    } else if (artifact.type === 'wall' || artifact.type === 'edgeCut') {
+      let targetArtifact: Artifact | undefined
+      let edgeCutMeta: EdgeCutInfo | null = null
+      if (artifact.type === 'wall') {
+        const key = artifact.segId
+        const segmentArtifact = getArtifactOfTypes(
+          { key, types: ['segment'] },
+          artifactGraph
+        )
+        if (err(segmentArtifact) || segmentArtifact.type !== 'segment') {
+          console.warn('No segment found for face', face)
+          return []
+        }
+
+        targetArtifact = segmentArtifact
+      } else {
+        targetArtifact = artifact
+        edgeCutMeta = getEdgeCutMeta(artifact, ast, artifactGraph)
       }
 
       const tagResult = mutateAstWithTagForSketchSegment(
         ast,
-        segmentArtifact.codeRef.pathToNode
+        targetArtifact.codeRef.pathToNode,
+        edgeCutMeta
       )
       if (err(tagResult)) {
         console.warn(
@@ -218,7 +236,7 @@ function getFacesExprsFromSelection(
 
       return createLocalName(tagResult.tag)
     } else {
-      console.warn('Face was not a cap or wall', face)
+      console.warn('Face was not a cap or wall or chamfer', face)
       return []
     }
   })
@@ -288,13 +306,27 @@ export function retrieveFaceSelectionsFromOpArgs(
   const graphSelections: Selection[] = []
   for (const v of faceValues) {
     if (v.type === 'String' && v.value && candidates.has(v.value)) {
-      graphSelections.push(candidates.get(v.value)!)
+      const result = candidates.get(v.value)
+      if (result) {
+        graphSelections.push(result)
+      } else {
+        console.warn(
+          'retrieveFaceSelectionsFromOpArgs result is missing and not a selection'
+        )
+      }
     } else if (
       v.type === 'TagIdentifier' &&
       v.artifact_id &&
       candidates.has(v.artifact_id)
     ) {
-      graphSelections.push(candidates.get(v.artifact_id)!)
+      const result = candidates.get(v.artifact_id)
+      if (result) {
+        graphSelections.push(result)
+      } else {
+        console.warn(
+          'retrieveFaceSelectionsFromOpArgs result from artifact_id is missing and not a selection'
+        )
+      }
     } else {
       console.warn('Face value is not a String or TagIdentifier', v)
       continue
@@ -338,7 +370,7 @@ export function retrieveNonDefaultPlaneSelectionFromOpArg(
     }
   } else if (planeArtifact.type === 'planeOfFace') {
     const faceArtifact = getArtifactOfTypes(
-      { key: planeArtifact.faceId, types: ['cap', 'wall'] },
+      { key: planeArtifact.faceId, types: ['cap', 'wall', 'edgeCut'] },
       artifactGraph
     )
     if (err(faceArtifact)) {
@@ -372,7 +404,11 @@ function buildSolidsAndFacesExprs(
 ) {
   const solids: Selections = {
     graphSelections: faces.graphSelections.flatMap((f) => {
-      const sweep = getSweepArtifactFromSelection(f, artifactGraph)
+      if (!f.artifact) return []
+      const sweep = getSweepFromSuspectedSweepSurface(
+        f.artifact.id,
+        artifactGraph
+      )
       if (err(sweep) || !sweep) return []
       return {
         artifact: sweep as Artifact,

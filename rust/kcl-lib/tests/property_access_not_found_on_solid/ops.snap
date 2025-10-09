@@ -139,6 +139,7 @@ description: Operations executed property_access_not_found_on_solid.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

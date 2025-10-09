@@ -147,6 +147,45 @@ test.describe('Sketch tests', () => {
     ).toBeVisible()
   })
 
+  test('delete startProfile removes profile statement', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 600 })
+
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0.0, 0.0])`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await editor.expectEditor.toContain('startProfile(')
+
+    // Open feature tree and select the first sketch
+    await page.getByRole('button', { name: 'Feature Tree' }).click()
+    await page.getByRole('button', { name: 'sketch001' }).dblclick()
+    await page.waitForTimeout(600)
+
+    // Select the profile by clicking the origin in the canvas, then press Delete
+    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, { format: 'ratio' })
+    await clickCenter()
+
+    await page.waitForTimeout(200)
+
+    await page.keyboard.press('Delete')
+
+    await editor.expectEditor.not.toContain('startProfile(')
+  })
+
   test('Can exit selection of face', async ({ page, homePage }) => {
     // Load the app with the code panes
     await page.addInitScript(async () => {
@@ -292,7 +331,7 @@ test.describe('Sketch tests', () => {
   test(
     'Can edit a sketch that has been extruded in the same pipe',
     { tag: '@web' },
-    async ({ page, homePage, editor, toolbar, scene, cmdBar }) => {
+    async ({ page, editor, toolbar, scene, cmdBar }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -306,7 +345,6 @@ sketch001 = startSketchOn(XZ)
         )
       })
 
-      await homePage.goToModelingScene()
       await toolbar.waitForFeatureTreeToBeBuilt()
       await scene.settled(cmdBar)
 
@@ -405,11 +443,11 @@ sketch001 = startSketchOn(XZ)
 
       const code = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(-XZ)
-profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOff(
-        scale * 34.8
+profile001 = startProfile(sketch001, at = [${roundOff(scale * 76.94)}, ${roundOff(
+        scale * 35.11
       )}])
-    |> xLine(length = ${roundOff(scale * 154.22)})
-    |> yLine(length = -${roundOff(scale * 139.2)})
+    |> xLine(length = ${roundOff(scale * 153.87)})
+    |> yLine(length = -${roundOff(scale * 139.66)})
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()`
 
@@ -921,6 +959,52 @@ profile001 = startProfile(sketch001, at = [0, 0])
 `,
       { shouldNormalise: true }
     )
+  })
+
+  test('Select-all delete removes segments and circle in sketch mode (seeded code)', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    toolbar,
+    editor,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 600 })
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-0.26, 0])
+  |> xLine(length = 0.11)
+  |> line(end = [0.12, -0.11])
+
+profile002 = circle(sketch001, center = [0.03, -0.03], radius = 0.08)
+// testcomment2`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    // Enter sketch mode on first sketch via Feature Tree
+    await toolbar.openFeatureTreePane()
+    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+    await page.waitForTimeout(600)
+    await editor.expectEditor.toContain('startSketchOn(XZ)')
+    await editor.expectEditor.toContain('startProfile(')
+    await editor.expectEditor.toContain('circle(')
+
+    // Select all and delete
+    await page.keyboard.press('ControlOrMeta+A')
+    await page.keyboard.press('Delete')
+
+    // Expect that only the sketch declaration remains
+    await editor.expectEditor.toContain('startSketchOn(XZ)')
+    await editor.expectEditor.not.toContain('startProfile(')
+    await editor.expectEditor.not.toContain('|> xLine(')
+    await editor.expectEditor.not.toContain('circle(')
+    await editor.expectEditor.toContain('testcomment2')
   })
 })
 

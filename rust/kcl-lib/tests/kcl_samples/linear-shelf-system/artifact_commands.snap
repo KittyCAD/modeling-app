@@ -1969,6 +1969,7 @@ description: Artifact commands linear-shelf-system.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

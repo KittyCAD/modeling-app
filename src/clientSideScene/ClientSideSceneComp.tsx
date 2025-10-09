@@ -43,6 +43,10 @@ import { commandBarActor } from '@src/lib/singletons'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { throttle, toSync } from '@src/lib/utils'
 import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
+import {
+  removeSingleConstraint,
+  transformAstSketchLines,
+} from '@src/lang/std/sketchcombos'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -119,6 +123,7 @@ export const ClientSideScene = ({
       // This is called initially too, not just on resize
       sceneInfra.onCanvasResized()
       sceneInfra.camControls.onWindowResize()
+      sceneEntitiesManager.onCamChange()
     })
     observer.observe(container)
 
@@ -416,7 +421,7 @@ const SegmentMenu = ({
                   : ''
               }
               onClick={() => {
-                send({ type: 'Delete segment', data: pathToNode })
+                send({ type: 'Delete segments', data: [pathToNode] })
               }}
             >
               Delete Segment
@@ -589,7 +594,9 @@ const ConstraintSymbol = ({
                 shallowPath,
                 argPosition,
                 kclManager.ast,
-                kclManager.variables
+                kclManager.variables,
+                removeSingleConstraint,
+                transformAstSketchLines
               )
 
               if (!transform) return

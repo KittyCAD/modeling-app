@@ -36,6 +36,7 @@ description: Operations executed complex_expr_as_array_index.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

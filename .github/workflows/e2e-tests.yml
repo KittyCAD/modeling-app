@@ -7,6 +7,8 @@ on:
   pull_request:
   schedule:
     - cron: 0 * * * *  # hourly
+  workflow_dispatch:
+  workflow_call:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -78,7 +80,7 @@ jobs:
         with:
           cache: false # Configured below.
 
-      - uses: taiki-e/install-action@c07504cae06f832dc8de08911c9a9c5cddb0d2d3
+      - uses: taiki-e/install-action@5ab30948b991e8d6aa5a6c1e33c6aea130c6de65
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
@@ -157,7 +159,7 @@ jobs:
           max_attempts: 5
         env:
           VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -169,7 +171,7 @@ jobs:
         run: npm run test:snapshots -- --last-failed --update-snapshots
         env:
           VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -284,7 +286,7 @@ jobs:
           max_attempts: 5
         env:
           VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -410,7 +412,7 @@ jobs:
         env:
           FAIL_ON_CONSOLE_ERRORS: true
           VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
-          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
