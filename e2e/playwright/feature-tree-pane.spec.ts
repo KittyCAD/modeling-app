@@ -268,6 +268,7 @@ test.describe('Feature Tree pane', () => {
           `renamedExtrude = extrude(sketch001, length = ${initialInput})`,
         ],
       })
+      await cmdBar.clickOptionalArgument('length')
       await cmdBar.expectState({
         commandName: 'Extrude',
         stage: 'arguments',
