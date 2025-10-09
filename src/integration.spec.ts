@@ -169,6 +169,27 @@ const executeCode = async (code: string) => {
   return { ast, artifactGraph }
 }
 
+function createSelectionFromArtifacts(
+  artifacts: Artifact[],
+  artifactGraph: ArtifactGraph
+): Selections {
+  const graphSelections = artifacts.flatMap((artifact) => {
+    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
+    if (!codeRefs || codeRefs.length === 0) {
+      return []
+    }
+
+    return {
+      codeRef: codeRefs[0],
+      artifact,
+    } as Selection
+  })
+  return {
+    graphSelections,
+    otherSelections: [],
+  }
+}
+
 function createSelectionFromPathArtifact(
   artifacts: (Artifact & { codeRef: CodeRef })[]
 ): Selections {
@@ -195,14 +216,27 @@ async function ENGINELESS_getAstAndSketchSelections(code: string) {
   return { artifactGraph, ast, sketches }
 }
 
-async function getAstAndSketchSelections(code: string) {
+async function getAstAndSketchSelections(
+  code: string,
+  count: number | undefined = undefined
+) {
   const { ast, artifactGraph } = await getAstAndArtifactGraph(code)
   const artifacts = [...artifactGraph.values()].filter((a) => a.type === 'path')
   if (artifacts.length === 0) {
     throw new Error('Artifact not found in the graph')
   }
-  const sketches = createSelectionFromPathArtifact(artifacts)
+
+  const sketches = createSelectionFromPathArtifact(
+    artifacts.slice(count ? -count : undefined)
+  )
   return { artifactGraph, ast, sketches }
+}
+
+function getFacesFromBox(artifactGraph: ArtifactGraph, count: number) {
+  const twoWalls = [...artifactGraph.values()]
+    .filter((a) => a.type === 'wall')
+    .slice(0, count)
+  return createSelectionFromArtifacts(twoWalls, artifactGraph)
 }
 
 async function getKclCommandValue(value: string) {
@@ -1134,6 +1168,41 @@ extrude001 = extrude(profile001, length = 2)`)
       )
       await runNewAstAndCheckForSweep(result.modifiedAst)
     })
+
+    it('should add an extrude call to a wall', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> angledLine(angle = 0deg, length = 0.07, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 0.07)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1)
+plane001 = offsetPlane(XZ, offset = 1)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        code,
+        1
+      )
+      const to = getFacesFromBox(artifactGraph, 1)
+      console.log('sketches', sketches)
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        to,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst)
+      expect(newCode).toContain(
+        `extrude002 = extrude(profile002, to = planeOf(extrude001, face = rectangleSegmentA001))`
+      )
+    })
+
+    // TODO: add test: to wall without tag
+    // TODO: add test: to cap
+    // TODO: add test: to chamfer
   })
 
   describe('Testing addSweep', () => {
@@ -2838,13 +2907,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       (a) => a.type === 'cap' && a.subType === 'end'
     )
     return createSelectionFromArtifacts([endFace!], artifactGraph)
-  }
-
-  function getFacesFromBox(artifactGraph: ArtifactGraph, count: number) {
-    const twoWalls = [...artifactGraph.values()]
-      .filter((a) => a.type === 'wall')
-      .slice(0, count)
-    return createSelectionFromArtifacts(twoWalls, artifactGraph)
   }
 
   describe('Testing addShell', () => {
