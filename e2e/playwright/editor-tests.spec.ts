@@ -1066,11 +1066,12 @@ sketch001 = startSketchOn(XZ)
       currentArgValue: '5',
       headerArguments: {
         Profiles: '1 profile',
-        Length: '',
       },
       highlightedHeaderArg: 'length',
       commandName: 'Extrude',
     })
+    await cmdBar.progressCmdBar()
+    await cmdBar.clickOptionalArgument('length')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',

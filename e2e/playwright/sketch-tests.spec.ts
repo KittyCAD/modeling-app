@@ -576,11 +576,8 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 76.94)}, ${roundOf
     // otherwise the cmdbar would be waiting for a selection.
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
-      stage: 'arguments',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: { Profiles: '1 profile', Length: '' },
-      highlightedHeaderArg: 'length',
+      stage: 'review',
+      headerArguments: { Profiles: '1 profile' },
       commandName: 'Extrude',
     })
   })

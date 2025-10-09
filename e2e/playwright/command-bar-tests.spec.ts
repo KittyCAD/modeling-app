@@ -247,13 +247,13 @@ test.describe('Command bar tests', () => {
       currentArgValue: '',
       headerArguments: {
         Profiles: '',
-        Length: '',
       },
       highlightedHeaderArg: 'Profiles',
     })
     // Select a face
     await editor.selectText('startProfile(at = [-6.95, 10.98])')
     await cmdBar.progressCmdBar()
+    await cmdBar.clickOptionalArgument('length')
 
     // Assert that we're on the distance step
     await cmdBar.expectState({
