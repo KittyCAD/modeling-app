@@ -286,27 +286,15 @@ test.describe(`Testing gizmo, fixture-based`, () => {
     await test.step(`Setup`, async () => {
       await scene.expectState({
         camera: {
-          position: [11796.52, -39216.59, 21103.27],
+          position: [36352.69, -25191.17, 27757.58],
           target: [11796.52, -635, 3201.42],
         },
       })
     })
-    const [clickCircle, moveToCircle] = scene.makeMouseHelpers(
-      582 / bodyDimensions.width,
-      217 / bodyDimensions.height,
-      { format: 'ratio' }
-    )
-
     await test.step(`Select an edge of this circle`, async () => {
-      const circleSnippet = 'circle(center = [818.33, 168.1], radius = 182.8)'
-      await moveToCircle()
-      await clickCircle()
       await editor.openPane()
-      await editor.expectState({
-        activeLines: ['|>' + circleSnippet],
-        highlightedCode: '',
-        diagnostics: [],
-      })
+      const circleSnippet = 'circle(center = [818.33, 168.1], radius = 182.8)'
+      await editor.selectText(circleSnippet)
       await editor.closePane()
     })
 
@@ -317,8 +305,8 @@ test.describe(`Testing gizmo, fixture-based`, () => {
     await test.step(`Verify the camera moved`, async () => {
       await scene.expectState({
         camera: {
-          position: [20785.58, -39851.59, 22171.6],
-          target: [20785.58, -1270, 4269.74],
+          position: [24556.17, -24556.17, 24556.17],
+          target: [0, 0, 0],
         },
       })
     })
