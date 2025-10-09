@@ -3691,6 +3691,7 @@ description: Operations executed pipe-flange-assembly.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

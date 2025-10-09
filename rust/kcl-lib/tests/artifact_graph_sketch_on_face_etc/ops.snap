@@ -331,6 +331,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

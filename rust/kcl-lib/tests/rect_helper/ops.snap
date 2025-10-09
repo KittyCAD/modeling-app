@@ -38,6 +38,7 @@ description: Operations executed rect_helper.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

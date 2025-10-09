@@ -22,6 +22,7 @@ import type { UpdateUnitsParams } from '@rust/kcl-lib/bindings/UpdateUnitsParams
 import type { UpdateUnitsResponse } from '@rust/kcl-lib/bindings/UpdateUnitsResponse'
 
 import { copilotPluginEvent } from '@src/editor/plugins/lsp/copilot'
+import { processCodeMirrorRanges } from '@src/lib/selections'
 
 const changesDelay = 600
 
@@ -56,7 +57,7 @@ export class KclPlugin implements PluginValue {
       return
     }
 
-    editorManager.handleOnViewUpdate(this.viewUpdate)
+    editorManager.handleOnViewUpdate(this.viewUpdate, processCodeMirrorRanges)
   }, 50)
 
   update(viewUpdate: ViewUpdate) {

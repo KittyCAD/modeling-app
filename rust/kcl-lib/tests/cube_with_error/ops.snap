@@ -297,6 +297,7 @@ description: Operations executed cube_with_error.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

@@ -959,6 +959,7 @@ description: Operations executed sheet-metal-bracket.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

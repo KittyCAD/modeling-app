@@ -435,13 +435,18 @@ impl GlobalState {
                 id: root_id,
                 path: ModulePath::Local {
                     value: root_path.clone(),
+                    original_import_path: None,
                 },
                 repr: ModuleRepr::Root,
             },
         );
-        global
-            .path_to_source_id
-            .insert(ModulePath::Local { value: root_path }, root_id);
+        global.path_to_source_id.insert(
+            ModulePath::Local {
+                value: root_path.clone(),
+                original_import_path: None,
+            },
+            root_id,
+        );
         global
     }
 

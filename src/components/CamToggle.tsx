@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 
-import { EngineCommandManagerEvents } from '@src/lang/std/engineConnection'
 import { engineCommandManager, sceneInfra } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { isReducedMotion, throttle } from '@src/lib/utils'
+import { EngineCommandManagerEvents } from '@src/network/utils'
 
 const updateDollyZoom = throttle(
   (newFov: number) => sceneInfra.camControls.dollyZoom(newFov),
@@ -16,6 +16,7 @@ export const CamToggle = () => {
   const [enableRotate, setEnableRotate] = useState(true)
 
   useEffect(() => {
+    // TODO: We do not remove the event listener for this. Add the removeEventListener call.
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.SceneReady,
       () => {

@@ -1777,6 +1777,7 @@ description: Artifact commands propellant-line-brackets.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

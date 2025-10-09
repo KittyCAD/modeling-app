@@ -2,13 +2,13 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing import_cycle1.kcl
 ---
-KCL Internal error
+KCL ImportCycle error
 
-  × internal: Module tests/import_cycle1/input.kcl not found in universe
-   ╭─[3:1]
+  × import cycle: circular import of modules not allowed: import_cycle2.kcl,
+  │ import_cycle3.kcl, input.kcl
+   ╭─[1:1]
+ 1 │ @settings(defaultLengthUnit = in)
+   · ▲
+   · ╰── tests/import_cycle1/input.kcl
  2 │ 
- 3 │ import one from "input.kcl"
-   · ─────────────┬─────────────
-   ·              ╰── tests/import_cycle1/import_cycle3.kcl
- 4 │ 
    ╰────

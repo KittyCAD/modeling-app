@@ -1,5 +1,4 @@
 import type { EnvironmentConfigurationRuntime } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
 
 export function generateDomainsFromBaseDomain(baseDomain: string) {
   return {
@@ -120,7 +119,12 @@ export default (): EnvironmentVariables => {
    * A built binary will allow the user to sign into different environments on the desktop
    */
   const environment = getEnvironmentFromThisFile(BASE_DOMAIN)
-  if (isDesktop() && environment && environment.domain) {
+  if (
+    typeof window !== 'undefined' &&
+    window.electron &&
+    environment &&
+    environment.domain
+  ) {
     const environmentDomains = generateDomainsFromBaseDomain(environment.domain)
     API_URL = environmentDomains.API_URL
     SITE_URL = environmentDomains.SITE_URL

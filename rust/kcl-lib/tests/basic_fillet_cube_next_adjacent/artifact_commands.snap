@@ -222,6 +222,7 @@ description: Artifact commands basic_fillet_cube_next_adjacent.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

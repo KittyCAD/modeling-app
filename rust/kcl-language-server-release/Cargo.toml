@@ -1,6 +1,6 @@
 [package]
 name = "kcl-language-server-release"
-version = "0.1.100"
+version = "0.1.102"
 edition = "2021"
 authors = ["KittyCAD Inc <kcl@kittycad.io>"]
 publish = false
@@ -14,7 +14,7 @@ bench = false
 [dependencies]
 anyhow = { workspace = true }
 clap = { workspace = true, features = ["cargo", "derive", "env", "unicode"] }
-flate2 = "1.1.2"
+flate2 = "1.1.4"
 lazy_static = { workspace = true }
 log = { version = "0.4.28", features = ["serde"] }
 slog = { workspace = true }

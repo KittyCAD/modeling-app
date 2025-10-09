@@ -8,7 +8,7 @@ description: Operations executed nested_main_kcl.kcl
       "type": "GroupBegin",
       "group": {
         "type": "ModuleInstance",
-        "name": "main.kcl",
+        "name": "nested/foo/bar/main.kcl",
         "moduleId": 0
       },
       "nodePath": {
@@ -130,6 +130,7 @@ description: Operations executed nested_main_kcl.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",

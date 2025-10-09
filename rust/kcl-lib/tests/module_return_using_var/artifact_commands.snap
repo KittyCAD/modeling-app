@@ -241,6 +241,7 @@ description: Artifact commands module_return_using_var.kcl
   ],
   "std::appearance": [],
   "std::array": [],
+  "std::gdt": [],
   "std::math": [],
   "std::prelude": [],
   "std::sketch": [],

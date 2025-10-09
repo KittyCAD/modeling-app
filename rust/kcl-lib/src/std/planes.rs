@@ -60,6 +60,11 @@ pub(crate) async fn inner_plane_of(
         });
     }
 
+    // Flush the batch for our fillets/chamfers if there are any.
+    exec_state
+        .flush_batch_for_solids(args.into(), std::slice::from_ref(&solid))
+        .await?;
+
     // Query the engine to learn what plane, if any, this face is on.
     let face_id = face.get_face_id(&solid, exec_state, args, true).await?;
     let plane_id = exec_state.id_generator().next_uuid();
