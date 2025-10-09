@@ -220,6 +220,7 @@ export type CommandArgumentConfig<
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: C
           ) => string)
+      preferred?: boolean
     }
   | {
       inputType: 'string' | 'color' | 'tagDeclarator'
@@ -395,6 +396,7 @@ export type CommandArgument<
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: ContextFrom<T>
           ) => string)
+      preferred?: boolean
     }
   | {
       inputType: 'string' | 'color' | 'tagDeclarator'

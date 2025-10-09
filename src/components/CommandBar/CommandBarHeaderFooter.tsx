@@ -120,16 +120,24 @@ function CommandBarHeaderFooter({
             </p>
             {Object.entries(nonHiddenArgs || {}).flatMap(
               ([argName, arg], i) => {
-                const { value: argValue, isRequired } = evaluateCommandBarArg(
-                  argName,
-                  arg,
-                  commandBarState.context
-                )
+                const {
+                  value: argValue,
+                  isRequired,
+                  isPreferred,
+                } = evaluateCommandBarArg(argName, arg, commandBarState.context)
                 const isCurrentArg = argName === currentArgument?.name
                 const isSkipFalse = arg.skip === false
 
                 // We actually want to show non-hidden optional args that have a value set already
-                if (!(argValue || isCurrentArg || isSkipFalse || isRequired)) {
+                if (
+                  !(
+                    argValue ||
+                    isPreferred ||
+                    isCurrentArg ||
+                    isSkipFalse ||
+                    isRequired
+                  )
+                ) {
                   return []
                 }
 

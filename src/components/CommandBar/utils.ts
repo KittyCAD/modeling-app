@@ -19,6 +19,8 @@ export function evaluateCommandBarArg(
     typeof arg.required === 'function'
       ? arg.required(commandBarContext)
       : arg.required
+  const isPreferred =
+    arg.inputType === 'kcl' && arg.preferred ? arg.preferred : false
 
-  return { value, isHidden, isRequired }
+  return { value, isHidden, isRequired, isPreferred }
 }
