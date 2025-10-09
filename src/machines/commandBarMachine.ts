@@ -1,4 +1,3 @@
-import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import type {
   Command,
@@ -152,12 +151,8 @@ export const commandBarMachine = setup({
             typeof argConfig.required === 'function'
               ? argConfig.required(context)
               : argConfig.required
-          const argIsPreferred =
-            argConfig.inputType === 'kcl' && argConfig.preferred
-              ? argConfig.preferred
-              : false
 
-          if (argIsRequired || argIsPreferred) {
+          if (argIsRequired) {
             lastRequiredArg = {
               ...argConfig,
               name: argName,
@@ -168,7 +163,6 @@ export const commandBarMachine = setup({
             (argIsRequired || argConfig.skip === false) &&
             (!context.argumentsToSubmit.hasOwnProperty(argName) ||
               context.argumentsToSubmit[argName] === undefined ||
-              argIsPreferred ||
               (rejectedArg &&
                 typeof rejectedArg === 'object' &&
                 'name' in rejectedArg &&
@@ -384,11 +378,6 @@ export const commandBarMachine = setup({
                   ? argConfig.required(input)
                   : argConfig.required
 
-              const isPreferred =
-                argConfig.inputType === 'kcl' && argConfig.preferred
-                  ? argConfig.preferred
-                  : false
-
               const resolvedDefaultValue =
                 'defaultValue' in argConfig
                   ? typeof argConfig.defaultValue === 'function'
@@ -407,7 +396,7 @@ export const commandBarMachine = setup({
                 )
               const hasInvalidKclValue =
                 argConfig.inputType === 'kcl' &&
-                (isRequired || isPreferred) &&
+                isRequired &&
                 !(argValue as Partial<KclCommandValue> | undefined)?.valueAst
               const hasInvalidOptionsValue =
                 isRequired &&

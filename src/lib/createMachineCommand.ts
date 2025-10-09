@@ -216,7 +216,6 @@ export function buildCommandArgument<
       createVariable: arg.createVariable,
       variableName: arg.variableName,
       defaultValue: arg.defaultValue,
-      preferred: arg.preferred,
       ...baseCommandArgument,
     } satisfies CommandArgument<O, T> & { inputType: 'kcl' }
   } else if (arg.inputType === 'vector3d') {
