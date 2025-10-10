@@ -1245,7 +1245,6 @@ extrude002 = extrude(profile002, to = planeOf(extrude001, face = seg01))`)
 
     it('should add an extrude call to an end cap', async () => {
       const code = `sketch001 = startSketchOn(XY)
-sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
 plane001 = offsetPlane(XY, offset = 2)
