@@ -5,13 +5,12 @@ use std::collections::HashMap;
 use anyhow::Result;
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{
-    each_cmd as mcmd,
+    ModelingCmd, each_cmd as mcmd,
     length_unit::LengthUnit,
     ok_response::OkModelingCmdResponse,
     output::ExtrusionFaceInfo,
     shared::{ExtrudeReference, ExtrusionFaceCapType, Opposite},
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
-    ModelingCmd,
 };
 use kittycad_modeling_cmds::{
     self as kcmc,
@@ -19,15 +18,15 @@ use kittycad_modeling_cmds::{
 };
 use uuid::Uuid;
 
-use super::{args::TyF64, utils::point_to_mm, DEFAULT_TOLERANCE_MM};
+use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        types::{PrimitiveType, RuntimeType},
         ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid,
+        types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
-    std::{axis_or_reference::Point3dAxis3dOrGeometryReference, Args},
+    std::{Args, axis_or_reference::Point3dAxis3dOrGeometryReference},
 };
 
 /// Extrudes by a given amount.
