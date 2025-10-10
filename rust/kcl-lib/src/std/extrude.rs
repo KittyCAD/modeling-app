@@ -5,12 +5,13 @@ use std::collections::HashMap;
 use anyhow::Result;
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{
-    ModelingCmd, each_cmd as mcmd,
+    each_cmd as mcmd,
     length_unit::LengthUnit,
     ok_response::OkModelingCmdResponse,
     output::ExtrusionFaceInfo,
     shared::{ExtrudeReference, ExtrusionFaceCapType, Opposite},
     websocket::{ModelingCmdReq, OkWebSocketResponseData},
+    ModelingCmd,
 };
 use kittycad_modeling_cmds::{
     self as kcmc,
@@ -18,15 +19,15 @@ use kittycad_modeling_cmds::{
 };
 use uuid::Uuid;
 
-use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
+use super::{args::TyF64, utils::point_to_mm, DEFAULT_TOLERANCE_MM};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid,
         types::{PrimitiveType, RuntimeType},
+        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid,
     },
     parsing::ast::types::TagNode,
-    std::{Args, axis_or_reference::Point3dAxis3dOrGeometryReference},
+    std::{axis_or_reference::Point3dAxis3dOrGeometryReference, Args},
 };
 
 /// Extrudes by a given amount.
@@ -434,8 +435,8 @@ pub(crate) async fn do_post_extrude<'a>(
         } else if sketch.clone.is_some() && clone_id_map.is_some() {
             let new_path = clone_id_map.unwrap().get(&path.get_base().geo_meta.id)?;
             let new_face_id = face_id_map.get(new_path);
-            if new_face_id.is_some() {
-                clone_surface_of(path, *new_path, new_face_id.unwrap().unwrap())
+            if let Some(face_id) = new_face_id {
+                clone_surface_of(path, *new_path, face_id.unwrap())
             } else {
                 None
             }
