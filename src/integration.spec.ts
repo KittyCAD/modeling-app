@@ -1200,7 +1200,44 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
       )
     })
 
-    // TODO: add test: to wall without tag
+    it('should add an extrude call to an untagged wall', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 1)
+  |> line(endAbsolute = [0, 1])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1)
+plane001 = offsetPlane(XZ, offset = 1)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        code,
+        1
+      )
+      const to = getFacesFromBox(artifactGraph, 1)
+      console.log('sketches', sketches)
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        to,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst)
+      expect(newCode).toContain(`sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 1, tag = $seg01)
+  |> line(endAbsolute = [0, 1])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1)
+plane001 = offsetPlane(XZ, offset = 1)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
+extrude002 = extrude(profile002, to = planeOf(extrude001, face = seg01))`)
+    })
+
     // TODO: add test: to cap
     // TODO: add test: to chamfer
   })
