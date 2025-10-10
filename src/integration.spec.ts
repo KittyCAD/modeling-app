@@ -1266,7 +1266,61 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
       expect(newCode).toContain(`${code}
 extrude002 = extrude(profile002, to = planeOf(extrude001, face = END))`)
     })
-    // TODO: add test: to chamfer
+
+    // TODO: this isn't producing the right results yet
+    // https://github.com/KittyCAD/engine/issues/3855
+    it('should add an extrude call to a chamfer face', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 1, tag = $seg01)
+  |> line(endAbsolute = [0, 1])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 0.5,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )
+plane001 = offsetPlane(XY, offset = 2)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        code,
+        1
+      )
+      const to = createSelectionFromArtifacts(
+        [...artifactGraph.values()].filter((a) => a.type === 'edgeCut'),
+        artifactGraph
+      )
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        to,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst)
+      expect(newCode).toContain(`sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 1, tag = $seg01)
+  |> line(endAbsolute = [0, 1])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 0.5,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+       tag = $seg02,
+     )
+plane001 = offsetPlane(XY, offset = 2)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
+extrude002 = extrude(profile002, to = planeOf(extrude001, face = seg02))`)
+    })
   })
 
   describe('Testing addSweep', () => {
