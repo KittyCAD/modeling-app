@@ -239,6 +239,13 @@ function getFacesFromBox(artifactGraph: ArtifactGraph, count: number) {
   return createSelectionFromArtifacts(twoWalls, artifactGraph)
 }
 
+function getCapFromCylinder(artifactGraph: ArtifactGraph) {
+  const endFace = [...artifactGraph.values()].find(
+    (a) => a.type === 'cap' && a.subType === 'end'
+  )
+  return createSelectionFromArtifacts([endFace!], artifactGraph)
+}
+
 async function getKclCommandValue(value: string) {
   const result = await stringToKclExpression(value)
   if (err(result) || 'errors' in result) {
@@ -1186,7 +1193,6 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
         1
       )
       const to = getFacesFromBox(artifactGraph, 1)
-      console.log('sketches', sketches)
       const result = addExtrude({
         ast,
         artifactGraph,
@@ -1216,7 +1222,6 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
         1
       )
       const to = getFacesFromBox(artifactGraph, 1)
-      console.log('sketches', sketches)
       const result = addExtrude({
         ast,
         artifactGraph,
@@ -1238,7 +1243,30 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
 extrude002 = extrude(profile002, to = planeOf(extrude001, face = seg01))`)
     })
 
-    // TODO: add test: to cap
+    it('should add an extrude call to an end cap', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+plane001 = offsetPlane(XY, offset = 2)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        code,
+        1
+      )
+      const to = getCapFromCylinder(artifactGraph)
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        to,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst)
+      expect(newCode).toContain(`${code}
+extrude002 = extrude(profile002, to = planeOf(extrude001, face = END))`)
+    })
     // TODO: add test: to chamfer
   })
 
@@ -2938,13 +2966,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
          getCommonEdge(faces = [seg01, seg02])
        ],
      )`
-
-  function getCapFromCylinder(artifactGraph: ArtifactGraph) {
-    const endFace = [...artifactGraph.values()].find(
-      (a) => a.type === 'cap' && a.subType === 'end'
-    )
-    return createSelectionFromArtifacts([endFace!], artifactGraph)
-  }
 
   describe('Testing addShell', () => {
     it('should add a basic shell call on cylinder end cap', async () => {
