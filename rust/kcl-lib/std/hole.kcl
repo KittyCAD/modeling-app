@@ -99,7 +99,7 @@ fn holeTypeHeight(body, holeType) {
     br = body.diameter / 2
     // Ugly trigonometry that I calculated with pen and paper
     up = (tr - br) / tan(t)
-up
+    up
   } else {
     assert(holeType.feature, isLessThanOrEqual = holeTypeCountersink, error = "unknown holeType feature")
   }
