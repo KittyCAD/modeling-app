@@ -29,7 +29,7 @@ test.describe('Point-and-click tests', () => {
 
     await test.step(`Edit first extrude via feature tree`, async () => {
       await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
-      await cmdBar.clickOptionalArgument('length')
+      await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
@@ -55,6 +55,7 @@ test.describe('Point-and-click tests', () => {
 
     await test.step(`Edit second extrude via feature tree`, async () => {
       await (await toolbar.getFeatureTreeOperation('Extrude', 1)).dblclick()
+      await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
@@ -82,6 +83,7 @@ test.describe('Point-and-click tests', () => {
 
     await test.step(`Edit third extrude via feature tree`, async () => {
       await (await toolbar.getFeatureTreeOperation('Extrude', 2)).dblclick()
+      await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
@@ -183,7 +185,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
 
     await test.step(`Edit first extrude via feature tree`, async () => {
       await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
-      await cmdBar.clickOptionalArgument('length')
+      await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
