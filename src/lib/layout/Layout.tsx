@@ -58,6 +58,8 @@ import {
 } from '@src/components/ContextMenu'
 import { isArray } from '@src/lib/utils'
 
+const ENABLE_CONTEXT_MENUS = false
+
 type WithoutRootLayout<T> = Omit<T, 'rootLayout'>
 interface LayoutState {
   areaLibrary: Record<
@@ -88,16 +90,18 @@ interface LayoutRootProps {
   areaLibrary?: LayoutState['areaLibrary']
   layout: Layout
   setLayout: Dispatch<SetStateAction<Layout>>
+  layoutName?: string
 }
 
 export function LayoutRoot({
   areaLibrary,
   layout,
   setLayout,
+  layoutName = 'default',
 }: LayoutRootProps) {
   useEffect(() => {
-    saveLayout(layout)
-  }, [layout])
+    saveLayout({ layout, layoutName })
+  }, [layout, layoutName])
 
   function updateLayoutNodeSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
     setLayout((rootLayout) =>
@@ -431,7 +435,12 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
             )
           )
         })}
-        <PaneLayoutContextMenu layout={layout} menuTargetElement={paneBarRef} />
+        {ENABLE_CONTEXT_MENUS && (
+          <PaneLayoutContextMenu
+            layout={layout}
+            menuTargetElement={paneBarRef}
+          />
+        )}
       </ul>
       {activePanes.length === 0 ? (
         <></>

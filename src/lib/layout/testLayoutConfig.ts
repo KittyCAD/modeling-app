@@ -1,6 +1,6 @@
 import { LayoutType, type Layout } from '@src/lib/layout/types'
 
-export const testLayout: Layout = {
+export const initialTestLayout: Layout = {
   id: 'test',
   label: 'root',
   type: LayoutType.Splits,

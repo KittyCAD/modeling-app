@@ -1,4 +1,3 @@
-import type { LayoutWithMetadata } from '@src/lib/layout/types'
 import { LayoutType, type Layout } from '@src/lib/layout/types'
 
 /**
@@ -11,15 +10,15 @@ import { LayoutType, type Layout } from '@src/lib/layout/types'
  * - a right (in LTR languages) sidebar with:
  *   - Text-to-CAD
  */
-export const basicLayout: Layout = {
-  id: 'basic',
+export const initialDefaultLayout: Layout = {
+  id: crypto.randomUUID(),
   label: 'root',
   type: LayoutType.Splits,
   orientation: 'inline',
   sizes: [30, 50, 20],
   children: [
     {
-      id: 'b',
+      id: crypto.randomUUID(),
       label: 'left-toolbar',
       type: LayoutType.Panes,
       side: 'inline-start',
@@ -28,21 +27,21 @@ export const basicLayout: Layout = {
       splitOrientation: 'block',
       children: [
         {
-          id: 'c',
+          id: crypto.randomUUID(),
           label: 'feature-tree',
           type: LayoutType.Simple,
           areaType: 'featureTree',
           icon: 'model',
         },
         {
-          id: 'd',
+          id: crypto.randomUUID(),
           label: 'code',
           type: LayoutType.Simple,
           areaType: 'codeEditor',
           icon: 'code',
         },
         {
-          id: 'e',
+          id: crypto.randomUUID(),
           label: 'variables',
           type: LayoutType.Simple,
           areaType: 'variables',
@@ -50,7 +49,7 @@ export const basicLayout: Layout = {
         },
         {
           id: crypto.randomUUID(),
-          label: 'logs',
+          label: crypto.randomUUID(),
           type: LayoutType.Simple,
           areaType: 'logs',
           icon: 'logs',
@@ -58,25 +57,25 @@ export const basicLayout: Layout = {
       ],
       actions: [
         {
-          id: 'add-file-to-project',
+          id: crypto.randomUUID(),
           label: 'Add file to project',
           icon: 'importFile',
           actionType: 'addFileToProject',
         },
         {
-          id: 'export',
+          id: crypto.randomUUID(),
           label: 'Export part',
           icon: 'floppyDiskArrow',
           actionType: 'export',
         },
         {
-          id: 'make',
+          id: crypto.randomUUID(),
           label: 'Make part',
           icon: 'printer3d',
           actionType: 'make',
         },
         {
-          id: 'refresh',
+          id: crypto.randomUUID(),
           label: 'Refresh app',
           icon: 'exclamationMark',
           actionType: 'refreshApp',
@@ -84,13 +83,13 @@ export const basicLayout: Layout = {
       ],
     },
     {
-      id: 'f',
+      id: crypto.randomUUID(),
       label: 'modeling-scene',
       type: LayoutType.Simple,
       areaType: 'modeling',
     },
     {
-      id: 'g',
+      id: crypto.randomUUID(),
       label: 'right-toolbar',
       type: LayoutType.Panes,
       side: 'inline-end',
@@ -99,7 +98,7 @@ export const basicLayout: Layout = {
       splitOrientation: 'block',
       children: [
         {
-          id: 'h',
+          id: crypto.randomUUID(),
           label: 'ttc',
           type: LayoutType.Simple,
           areaType: 'ttc',
@@ -108,9 +107,4 @@ export const basicLayout: Layout = {
       ],
     },
   ],
-}
-
-export const basicLayoutPersisted: LayoutWithMetadata = {
-  version: 'v1',
-  layout: basicLayout,
 }
