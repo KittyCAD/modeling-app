@@ -220,7 +220,7 @@ export fn holeGeometry(@solid, face, holeBottom, holeBody, holeType, cutAt) {
 ///        cutAt = [0, 5],
 ///        holeBottom = hole::drill(pointAngle = 110deg),
 ///        holeBody = hole::blind(depth = 5, diameter = 8),
-///        holeType = hole::countersink(diameter = 14, angle = 100deg),
+///        holeType = hole::counterbore(diameter = 12, depth = 3.5),
 ///      )
 /// ```
 export fn hole(@solid, face, holeBottom, holeBody, holeType, cutAt) {
