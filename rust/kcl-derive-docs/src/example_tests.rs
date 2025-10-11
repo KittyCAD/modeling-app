@@ -276,4 +276,5 @@ pub const TEST_NAMES: &[&str] = &[
     "std-vector-magnitude-0",
     "std-vector-normalize-0",
     "std-hole-hole-0",
+    "std-hole-hole-1",
 ];
