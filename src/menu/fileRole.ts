@@ -3,6 +3,7 @@ import type { BrowserWindow } from 'electron'
 
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 const isMac = os.platform() === 'darwin'
 
@@ -47,6 +48,7 @@ export const projectFileRole = (
       {
         label: 'Create with Zoo Text-To-CAD',
         id: 'Design.Create with Zoo Text-To-CAD',
+        enabled: !IS_STAGING_OR_DEBUG,
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Design.Create with Zoo Text-To-CAD',

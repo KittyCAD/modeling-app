@@ -183,18 +183,6 @@ const Home = () => {
           groupId: 'application',
         },
       })
-    } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
-      commandBarActor.send({
-        type: 'Find and select command',
-        data: {
-          name: 'Text-to-CAD',
-          groupId: 'application',
-          argDefaultValues: {
-            method: 'newProject',
-            newProjectName: settings.projects.defaultProjectName.current,
-          },
-        },
-      })
     }
   }
   useMenuListener(cb)
