@@ -80,7 +80,7 @@ export const MemoryPane = () => {
   )
 }
 
-export const processMemory = (variables: VariableMap) => {
+export function processMemory(variables: VariableMap) {
   const processedMemory: Record<
     string,
     string | number | boolean | object | undefined
@@ -102,6 +102,10 @@ export const processMemory = (variables: VariableMap) => {
       processedMemory[key] = '__function__'
     } else if (val.type === 'Number') {
       processedMemory[key] = humanDisplayNumber(val.value, val.ty)
+    } else if (val.type === 'SketchVar') {
+      const sketchVar = val.value
+      processedMemory[key] =
+        `var ${humanDisplayNumber(sketchVar.initialValue, sketchVar.ty)}`
     } else {
       processedMemory[key] = val.value
     }
