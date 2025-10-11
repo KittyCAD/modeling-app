@@ -1169,6 +1169,7 @@ pub(crate) async fn inner_start_profile(
         inner_paths: vec![],
         units,
         mirror: Default::default(),
+        clone: Default::default(),
         meta: vec![args.source_range.into()],
         tags: if let Some(tag) = &tag {
             let mut tag_identifier: TagIdentifier = tag.into();
