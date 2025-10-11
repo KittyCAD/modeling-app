@@ -13,6 +13,33 @@ export fn simple() {
 }
 
 /// Cut a straight vertical counterbore at the top of the hole.
+/// ```
+/// // `hole` module is still experimental, so enable experimental features here.
+/// @settings(experimentalFeatures = allow) 
+///
+/// // Model a cube
+/// cubeLen = 20
+/// bigCube = startSketchOn(XY)
+///   |> startProfile(at = [-cubeLen / 2, -cubeLen / 2 + 10])
+///   |> line(end = [cubeLen, 0], tag = $a)
+///   |> line(end = [0, cubeLen], tag = $b)
+///   |> line(end = [-cubeLen, 0], tag = $c)
+///   |> line(end = [0, -cubeLen], tag = $d)
+///   |> close()
+///   |> extrude(length = cubeLen, symmetric = true)
+///   |> translate(x = 5)
+///
+/// // Add a hole to the cube.
+/// // It'll have a drilled end, and a counterbore (vertical hole that emerges from a larger hole)
+/// bigCube
+///   |> hole::hole(
+///        face = a,
+///        cutAt = [0, 5],
+///        holeBottom = hole::drill(pointAngle = 110deg),
+///        holeBody = hole::blind(depth = 5, diameter = 8),
+///        holeType = hole::counterbore(diameter = 12, depth = 3.5),
+///      )
+/// ```
 export fn counterbore(diameter, depth) {
   return {
     diameter = diameter,
@@ -22,6 +49,33 @@ export fn counterbore(diameter, depth) {
 }
 
 /// Cut an angled countersink at the top of the hole.
+/// ```
+/// // `hole` module is still experimental, so enable experimental features here.
+/// @settings(experimentalFeatures = allow) 
+///
+/// // Model a cube
+/// cubeLen = 20
+/// bigCube = startSketchOn(XY)
+///   |> startProfile(at = [-cubeLen / 2, -cubeLen / 2 + 10])
+///   |> line(end = [cubeLen, 0], tag = $a)
+///   |> line(end = [0, cubeLen], tag = $b)
+///   |> line(end = [-cubeLen, 0], tag = $c)
+///   |> line(end = [0, -cubeLen], tag = $d)
+///   |> close()
+///   |> extrude(length = cubeLen, symmetric = true)
+///   |> translate(x = 5)
+///
+/// // Add a hole to the cube.
+/// // It'll have a drilled end, and a countersink (angled tip at the start).
+/// bigCube
+///   |> hole::hole(
+///        face = a,
+///        cutAt = [0, 5],
+///        holeBottom = hole::drill(pointAngle = 110deg),
+///        holeBody = hole::blind(depth = 5, diameter = 8),
+///        holeType = hole::countersink(diameter = 14, angle = 100deg),
+///      )
+/// ```
 export fn countersink(diameter, angle) {
   return {
     diameter = diameter,
