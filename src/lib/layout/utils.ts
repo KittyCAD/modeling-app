@@ -1,6 +1,8 @@
 import type {
+  BasicLayout,
   Direction,
   Layout,
+  LayoutWithMetadata,
   Orientation,
   PaneLayout,
   Side,
@@ -15,12 +17,18 @@ import type { TooltipProps } from '@src/components/Tooltip'
 import { throttle } from '@src/lib/utils'
 import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
 import { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
-import { basicLayout } from '@src/lib/layout/basicLayout'
+import { initialDefaultLayout } from '@src/lib/layout/defaultLayout'
+import { isErr } from '@src/lib/trap'
+import { isCustomIconName } from '@src/components/CustomIcon'
 
 const LAYOUT_PERSIST_PREFIX = 'layout-'
 const LAYOUT_SAVE_THROTTLE = 500
 
-export const defaultLayout = loadLayout('basic') || basicLayout
+// Attempt to load a persisted layout
+const defaultLayoutLoadResult = loadLayout('default')
+export const defaultLayout = isErr(defaultLayoutLoadResult)
+  ? initialDefaultLayout
+  : defaultLayoutLoadResult
 
 /**
  * A split area must have the same number of sizes as children.
@@ -35,7 +43,7 @@ export function hasValidSizes(area: SplitLayout | PaneLayout) {
 }
 
 export function getOppositeOrientation(o: Orientation): Orientation {
-  return o === 'inline' ? 'block' : 'inlin'
+  return o === 'inline' ? 'block' : 'inline'
 }
 export function getOppositeSide(side: Side): Side {
   switch (side) {
@@ -219,24 +227,26 @@ export function findAndUpdateSplitSizes({
   return rootLayout
 }
 
-export function loadLayout(id: string): Layout | undefined {
+export function loadLayout(id: string): Layout | Error {
   const layoutString = localStorage.getItem(`${LAYOUT_PERSIST_PREFIX}${id}`)
-  const parsed = layoutString ? parseLayoutString(layoutString) : undefined
-  console.log('loaded layout', parsed)
-  return parsed
+  if (!layoutString) {
+    return new Error('No persisted layout found')
+  }
+  return parseLayoutFromJsonString(layoutString)
 }
-function saveLayoutInner(layout: Layout) {
+function saveLayoutInner({
+  layout,
+  layoutName = 'default',
+}: { layout: Layout; layoutName?: string }) {
   return localStorage.setItem(
-    `${LAYOUT_PERSIST_PREFIX}${layout.id}`,
-    JSON.stringify(layout)
+    `${LAYOUT_PERSIST_PREFIX}${layoutName}`,
+    JSON.stringify({
+      version: 'v1',
+      layout,
+    } satisfies LayoutWithMetadata)
   )
 }
 export const saveLayout = throttle(saveLayoutInner, LAYOUT_SAVE_THROTTLE)
-
-function parseLayoutString(layoutString: string) {
-  // TODO: validate this JSON
-  return JSON.parse(layoutString) as Layout
-}
 
 /** Have the panes not been resized at all, just divided evenly? */
 export function areSplitSizesNatural(sizes: number[]) {
@@ -374,7 +384,9 @@ export function shouldEnableResizeHandle(
   return !(isLastPane || nextIsCollapsed || thisIsCollapsed)
 }
 
-export function parseLayout(layoutString: string): Layout | Error {
+export function parseLayoutFromJsonString(
+  layoutString: string
+): Layout | Error {
   try {
     const layoutWithMetadata = JSON.parse(layoutString)
     if (
@@ -385,57 +397,68 @@ export function parseLayout(layoutString: string): Layout | Error {
         layoutWithMetadata.layout
       )
     ) {
-      return basicLayout
+      return new Error('Invalid layout persistence metadata')
     }
 
-    return validateLayout(layoutWithMetadata.layout)
-      ? layoutWithMetadata
-      : new Error('invalid layout')
+    const parseResult = parseLayoutInner(layoutWithMetadata.layout)
+
+    return !isErr(parseResult) ? parseResult : new Error('invalid layout')
   } catch (e) {
     return new Error(`Failed to parse layout from disk ${String(e)}`)
   }
-export enum LayoutValidationError {
-  SplitSizesChildrenMismatch = 'sizes-children-mismatch',
-  PaneSizesActiveIndicesMismatch = 'panes-sizes-activeIndices-mismatch',
-  SizesOverOneHundred = 'sizes-over-one-hundred',
-  ActiveIndicesChildrenMismatch = 'activeIndices-children-mismatch',
-  UnregisteredAreaType = 'unregistered-areaType',
-  UnregisteredActionType = 'unregistered-actionType',
 }
 
-export function validateLayout(l: unknown): l is Layout {
-  if (validateBasicLayout(l)) {
-    switch (l.type) {
-      case LayoutType.Simple:
-        return validateSimpleLayout(l)
-      case LayoutType.Splits:
-        return validateSplitLayout(l)
-      case LayoutType.Tabs:
-        return validateTabLayout(l)
-      case LayoutType.Panes:
-        return validatePaneLayout(l)
-    }
+export function parseLayoutInner(l: unknown): Layout | Error {
+  const basicResult = parseBasicLayout(l)
+  if (isErr(basicResult)) {
+    console.error(basicResult)
+    return basicResult
   }
 
-  return false
+  switch (basicResult.type) {
+    case LayoutType.Simple:
+      return parseSimpleLayout(basicResult)
+    case LayoutType.Splits:
+      return parseSplitLayout(basicResult)
+    case LayoutType.Tabs:
+      return parseTabLayout(basicResult)
+    case LayoutType.Panes:
+      return parsePaneLayout(basicResult)
+  }
 }
 
 function validateLayoutType(l: string): l is LayoutType {
   return Object.values(LayoutType).includes(l as LayoutType)
 }
 
-function validateBasicLayout(layout: unknown): layout is Layout {
-  return (
-    typeof layout === 'object' &&
-    layout !== null &&
-    'id' in layout &&
-    typeof layout.id === 'string' &&
-    'label' in layout &&
-    typeof layout.label === 'string' &&
+function parseBasicLayout(layout: unknown) {
+  const isObject = typeof layout === 'object' && layout !== null
+  if (!isObject) {
+    return new Error('Invalid layout')
+  }
+
+  // Heal an invalid ID
+  const hasValidId = 'id' in layout && typeof layout.id === 'string'
+  if (!hasValidId) {
+    layout.id = crypto.randomUUID()
+  }
+
+  // Heal invalid label
+  const hasValidLabel = 'label' in layout && typeof layout.label === 'string'
+  if (!hasValidLabel) {
+    layout.label = 'Unlabeled area'
+  }
+
+  // Invalid layout type is fatal
+  const hasValidType =
     'type' in layout &&
     typeof layout.type === 'string' &&
     validateLayoutType(layout.type)
-  )
+  if (!hasValidType) {
+    return new Error('Layout has invalid type')
+  }
+
+  return layout as BasicLayout
 }
 
 function validateAreaType(a: unknown): a is keyof typeof areaTypeRegistry {
@@ -443,42 +466,67 @@ function validateAreaType(a: unknown): a is keyof typeof areaTypeRegistry {
     a as keyof typeof areaTypeRegistry
   )
 }
-export function validateSimpleLayout(layout: unknown): layout is SimpleLayout {
-  return (
-    validateBasicLayout(layout) &&
-    'areaType' in layout &&
-    validateAreaType(layout.areaType)
-  )
+
+export function parseSimpleLayout(layout: BasicLayout): SimpleLayout | Error {
+  // Must have a registered areaType, fatal if not
+  const hasValidAreaType =
+    'areaType' in layout && validateAreaType(layout.areaType)
+  if (!hasValidAreaType) {
+    return new Error('Invalid area type in simple layout')
+  }
+
+  return layout as SimpleLayout
 }
 
 function validateOrientation(o: unknown): o is Orientation {
-  return typeof o === 'string' && (o === 'horizontal' || o === 'vertical')
+  return typeof o === 'string' && (o === 'block' || o === 'inline')
 }
-export function validateSplitLayout(layout: unknown): layout is SplitLayout {
-  const isBasicLayout = validateBasicLayout(layout)
-  if (!isBasicLayout) {
-    return false
+export function parseSplitLayout(layout: BasicLayout): SplitLayout | Error {
+  // No children is fatal
+  const hasChildren = 'children' in layout && isArray(layout.children)
+  if (!hasChildren) {
+    return new Error('Split layout with no children, invalid')
   }
-  const hasValidType = 'type' in layout && layout.type === LayoutType.Splits
+
+  // Invalid orientation is healable
   const hasValidOrientation =
     'orientation' in layout && validateOrientation(layout.orientation)
-  const hasValidChildren =
-    'children' in layout &&
-    isArray(layout.children) &&
-    layout.children.every(validateLayout)
+  if (!hasValidOrientation) {
+    layout.orientation = 'inline'
+  }
+
+  // Invalid sizes is healable, divide space evenly
   const hasValidSizes =
     'sizes' in layout &&
     isArray(layout.sizes) &&
+    isArray(layout.children) &&
     layout.sizes.length === layout.children.length &&
-    layout.sizes.every(Number.isFinite)
+    layout.sizes.every(Number.isFinite) &&
+    layout.sizes.reduce((a, b) => a + b, 0) === 100
+  if (!hasValidSizes) {
+    const length = isArray(layout.children) ? layout.children.length : 1
+    layout.sizes = new Array(length).fill(100 / length)
+  }
 
-  return (
-    isBasicLayout &&
-    hasValidType &&
-    hasValidOrientation &&
-    hasValidChildren &&
-    hasValidSizes
-  )
+  // Drop catastrophically erroring children
+  // TODO: propogate errors as warnings
+  if (
+    'children' in layout &&
+    isArray(layout.children) &&
+    'sizes' in layout &&
+    isArray(layout.sizes)
+  ) {
+    // Iterate in reverse so we can remove without messing up indices
+    for (let i = layout.children.length - 1; i >= 0; i--) {
+      const parsedChild = parseLayoutInner(layout.children[i])
+      if (isErr(parsedChild)) {
+        console.error(parsedChild)
+        layout.children.splice(i, 1)
+        layout.sizes.splice(i, 1)
+      }
+    }
+  }
+  return layout as SplitLayout
 }
 
 function validateSide(s: unknown): s is Side {
@@ -488,51 +536,120 @@ function validateSide(s: unknown): s is Side {
   )
 }
 
-function validateTabLayout(l: unknown): l is TabLayout {
-  const isBasicLayout = validateBasicLayout(l)
-  if (!isBasicLayout) {
-    return false
+function parseTabLayout(layout: BasicLayout): TabLayout | Error {
+  // No children is fatal
+  const hasChildren = 'children' in layout && isArray(layout.children)
+  if (!hasChildren) {
+    return new Error('Tab layout with no children, invalid')
   }
-  const hasValidType = 'type' in l && l.type === LayoutType.Tabs
-  const hasValidSide = 'side' in l && validateSide(l.side)
-  const hasValidChildren =
-    'children' in l && isArray(l.children) && l.children.every(validateLayout)
-  const hasValidActiveIndex =
-    'activeIndex' in l &&
-    typeof l.activeIndex === 'number' &&
-    Number.isSafeInteger(l.activeIndex) &&
-    l.activeIndex >= 0 &&
-    l.activeIndex < l.children.length
 
-  return hasValidType && hasValidSide && hasValidChildren && hasValidActiveIndex
+  // Invalid side is healable, default to the block-start (top in LTR)
+  const hasValidSide = 'side' in layout && validateSide(layout.side)
+  if (!hasValidSide) {
+    layout.side = 'block-start'
+  }
+
+  // Drop catastrophically erroring children
+  // TODO: propogate errors as warnings
+  if ('children' in layout && isArray(layout.children)) {
+    // Iterate in reverse so we can remove without messing up indices
+    for (let i = layout.children.length - 1; i >= 0; i--) {
+      const parsedChild = parseLayoutInner(layout.children[i])
+      if (isErr(parsedChild)) {
+        console.error(parsedChild)
+        layout.children.splice(i, 1)
+      }
+    }
+  }
+
+  // Invalid activeIndex is healable, default to 0
+  const hasValidActiveIndex =
+    'activeIndex' in layout &&
+    typeof layout.activeIndex === 'number' &&
+    isArray(layout.children) &&
+    Number.isSafeInteger(layout.activeIndex) &&
+    layout.activeIndex >= 0 &&
+    layout.activeIndex < layout.children.length
+  if (!hasValidActiveIndex) {
+    layout.activeIndex = 0
+  }
+
+  return layout as TabLayout
 }
 
-function validatePaneLayout(l: unknown): l is PaneLayout {
-  const isBasicLayout = validateBasicLayout(l)
-  if (!isBasicLayout) {
-    return false
+function parsePaneLayout(layout: BasicLayout): PaneLayout | Error {
+  // No children is fatal
+  const hasChildren = 'children' in layout && isArray(layout.children)
+  if (!hasChildren) {
+    return new Error('Tab layout with no children, invalid')
   }
-  const hasValidType = 'type' in l && l.type === LayoutType.Panes
-  const hasValidSide = 'side' in l && validateSide(l.side)
-  const hasValidChildren =
-    'children' in l && isArray(l.children) && l.children.every(validateLayout)
-  const hasValidActiveIndices =
-    'activeIndices' in l &&
-    isArray(l.activeIndices) &&
-    l.activeIndices.every(Number.isSafeInteger) &&
-    l.activeIndices.every((a) => a >= 0 && a < l.children.length)
-  const hasValidSizes =
-    hasValidActiveIndices &&
-    'sizes' in l &&
-    isArray(l.sizes) &&
-    l.sizes.length === l.activeIndices.length &&
-    l.sizes.every(Number.isFinite)
 
-  return (
-    hasValidType &&
-    hasValidSide &&
-    hasValidChildren &&
-    hasValidActiveIndices &&
-    hasValidSizes
-  )
+  // Invalid side is healable, default to the inline-start (left in LTR)
+  const hasValidSide = 'side' in layout && validateSide(layout.side)
+  if (!hasValidSide) {
+    layout.side = 'block-start'
+  }
+
+  // Invalid orientation is healable
+  const hasValidSplitOrientation =
+    'splitOrientation' in layout && validateOrientation(layout.splitOrientation)
+  if (!hasValidSplitOrientation) {
+    layout.orientation = 'block'
+  }
+
+  // Invalid sizes is healable, divide space evenly
+  const hasValidSizes =
+    'sizes' in layout &&
+    isArray(layout.sizes) &&
+    'activeIndices' in layout &&
+    isArray(layout.activeIndices) &&
+    layout.sizes.length === layout.activeIndices.length &&
+    layout.sizes.every(Number.isFinite)
+  if (!hasValidSizes) {
+    const length = isArray(layout.children) ? layout.children.length : 1
+    layout.sizes = new Array(length).fill(100 / length)
+  }
+
+  // Drop catastrophically erroring children
+  // TODO: propogate errors as warnings
+  if (
+    'children' in layout &&
+    isArray(layout.children) &&
+    'sizes' in layout &&
+    isArray(layout.sizes)
+  ) {
+    // Iterate in reverse so we can remove without messing up indices
+    for (let i = layout.children.length - 1; i >= 0; i--) {
+      const child = layout.children[i]
+      //
+      // Having an invalid icon is fatal
+      const childHasValidIcon =
+        child instanceof Object &&
+        'icon' in child &&
+        typeof child.icon === 'string' &&
+        isCustomIconName(child.icon)
+      if (!childHasValidIcon) {
+        layout.children.splice(i, 1)
+        layout.sizes.splice(i, 1)
+      } else {
+        const parsedChild = parseLayoutInner(child)
+        if (isErr(parsedChild)) {
+          console.error(`LAYOUT PARSE ERROR ${parsedChild.message}`)
+          layout.children.splice(i, 1)
+          layout.sizes.splice(i, 1)
+        }
+      }
+    }
+  }
+
+  const hasValidActiveIndices =
+    'activeIndices' in layout &&
+    isArray(layout.activeIndices) &&
+    layout.activeIndices.every(Number.isSafeInteger) &&
+    layout.activeIndices.every((a) => a >= 0 && a < layout.children.length)
+  if (!hasValidActiveIndices) {
+    layout.activeIndices = [0]
+  }
+
+  return layout
 }
