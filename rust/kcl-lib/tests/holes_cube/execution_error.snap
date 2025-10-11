@@ -1,0 +1,19 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing holes_cube.kcl
+---
+KCL Semantic error
+
+  × semantic: cannot call this because it isn't a function
+    ╭─[50:6]
+ 49 │          )
+ 50 │ ╭─▶   |> hole(
+ 51 │ │          face = b,
+ 52 │ │          cutAt = [0, 10],
+ 53 │ │          holeBottom = hole::drill(pointAngle = 60deg),
+ 54 │ │          holeBody = hole::blind(depth = cubeLen * 0.1, diameter = 4),
+ 55 │ │          holeType = hole::simple(),
+ 56 │ ├─▶      )
+    · ╰──── tests/holes_cube/input.kcl
+ 57 │       // Make it look like copper
+    ╰────
