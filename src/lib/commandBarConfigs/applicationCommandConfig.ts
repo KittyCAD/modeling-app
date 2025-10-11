@@ -31,6 +31,7 @@ import {
   SystemIOMachineEvents,
   determineProjectFilePathFromPrompt,
 } from '@src/machines/systemIO/utils'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
 
@@ -583,11 +584,11 @@ export function createApplicationCommands({
 
   return isDesktop()
     ? [
-        textToCADCommand,
+        ...(IS_STAGING_OR_DEBUG ? [] : [textToCADCommand]),
         addKCLFileToProject,
         createASampleDesktopOnly,
         switchEnvironmentsCommand,
         choosePoolCommand,
       ]
-    : [textToCADCommand, addKCLFileToProject]
+    : [...(IS_STAGING_OR_DEBUG ? [] : [textToCADCommand]), addKCLFileToProject]
 }
