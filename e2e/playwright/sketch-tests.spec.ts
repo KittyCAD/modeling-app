@@ -447,7 +447,7 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOf
         scale * 34.8
       )}])
     |> xLine(length = ${roundOff(scale * 154.22)})
-    |> yLine(length = -${roundOff(scale * -139.2)})
+    |> yLine(length = -${roundOff(scale * 139.2)})
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()`
 
