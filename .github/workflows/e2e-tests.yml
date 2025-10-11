@@ -36,7 +36,7 @@ jobs:
             rust:
               - 'rust/**'
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: ".nvmrc"
           cache: "npm"
@@ -123,7 +123,7 @@ jobs:
           repository: kittycad/modeling-app
           token: ${{ steps.app-token.outputs.token }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         name: prepared-wasm
 
       - name: Copy prepared Wasm
@@ -133,7 +133,7 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: ".nvmrc"
           cache: "npm"
@@ -244,7 +244,7 @@ jobs:
           repository: kittycad/modeling-app
           token: ${{ steps.app-token.outputs.token }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         name: prepared-wasm
 
       - name: Copy prepared Wasm
@@ -254,7 +254,7 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: ".nvmrc"
           cache: "npm"
@@ -359,7 +359,7 @@ jobs:
           # To share this workflow with other repos this must be hard-coded
           repository: kittycad/modeling-app
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         name: prepared-wasm
 
       - name: Copy prepared Wasm
@@ -369,7 +369,7 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version-file: ".nvmrc"
           cache: "npm"
@@ -398,7 +398,7 @@ jobs:
       - name: Build app
         run: npm run tronb:vite:dev
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         if: ${{ !cancelled() && (success() || failure()) }}
         continue-on-error: true
         with:
