@@ -349,6 +349,10 @@ fn assert_artifact_snapshots(
     let module_operations = module_state
         .iter()
         .map(|(path, s)| (path, &s.operations))
+        // Remove empty modules, to save filespace,
+        // and so that adding a new module without any operations
+        // doesn't generate a massive diff.
+        .filter(|(_path, s)| !s.is_empty())
         .collect::<IndexMap<_, _>>();
     let result1 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Operations executed", || {
@@ -362,6 +366,10 @@ fn assert_artifact_snapshots(
     let module_commands = module_state
         .iter()
         .map(|(path, s)| (path, &s.commands))
+        // Remove empty modules, to save filespace,
+        // and so that adding a new module without any operations
+        // doesn't generate a massive diff.
+        .filter(|(_path, s)| !s.is_empty())
         .collect::<IndexMap<_, _>>();
     let result2 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Artifact commands", || {
