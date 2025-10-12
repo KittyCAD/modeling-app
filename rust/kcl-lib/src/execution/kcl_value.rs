@@ -91,7 +91,8 @@ pub enum KclValue {
     Function {
         #[serde(serialize_with = "function_value_stub")]
         #[ts(type = "null")]
-        value: Box<FunctionSource>,
+        // usize is the epoch at which the function was added to the value
+        value: Vec<(usize, FunctionSource)>,
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
@@ -115,7 +116,7 @@ pub enum KclValue {
     },
 }
 
-fn function_value_stub<S>(_value: &FunctionSource, serializer: S) -> Result<S::Ok, S::Error>
+fn function_value_stub<S>(_value: &Vec<(usize, FunctionSource)>, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,
 {
@@ -500,13 +501,16 @@ impl KclValue {
 
     pub(crate) fn map_env_ref(&self, old_env: usize, new_env: usize) -> Self {
         let mut result = self.clone();
-        if let KclValue::Function { ref mut value, .. } = result
-            && let FunctionSource {
-                body: FunctionBody::Kcl(memory),
-                ..
-            } = &mut **value
-        {
-            memory.replace_env(old_env, new_env);
+        if let KclValue::Function { ref mut value, .. } = result {
+            for value in value {
+                if let FunctionSource {
+                    body: FunctionBody::Kcl(memory),
+                    ..
+                } = &mut value.1
+                {
+                    memory.replace_env(old_env, new_env);
+                }
+            }
         }
 
         result
@@ -728,8 +732,8 @@ impl KclValue {
         }
     }
 
-    /// If this value is of type function, return it.
-    pub fn as_function(&self) -> Option<&FunctionSource> {
+    /// If this value is of type function, return the function definitions.
+    pub fn as_function(&self) -> Option<&[FunctionSource]> {
         match self {
             KclValue::Function { value, .. } => Some(value),
             _ => None,
