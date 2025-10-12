@@ -4010,6 +4010,8 @@ mod sketch_block_failed_unit_conversion {
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, false).await
+    }
+}
 mod holes_cube {
     const TEST_NAME: &str = "holes_cube";
 
