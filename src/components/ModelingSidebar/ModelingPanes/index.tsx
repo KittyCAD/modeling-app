@@ -158,7 +158,7 @@ const textToCadPane: SidebarPane = {
 
 const textToCadPane2: SidebarPane = {
   id: 'text-to-cad-2',
-  icon: 'elephant',
+  icon: 'sparkles',
   keybinding: 'Ctrl + T',
   sidebarName: 'Text-to-CAD',
   cssClassOverrides: {
@@ -176,8 +176,8 @@ const textToCadPane2: SidebarPane = {
       <>
         <ModelingPaneHeader
           id={props.id}
-          icon="elephant"
-          title="Mel the ML-ephant"
+          icon="sparkles"
+          title="Text-to-CAD"
           Menu={MLEphantConversationPaneMenu2}
           onClose={props.onClose}
         />
