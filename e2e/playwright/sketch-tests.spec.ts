@@ -443,11 +443,11 @@ sketch001 = startSketchOn(XZ)
 
       const code = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(-XZ)
-profile001 = startProfile(sketch001, at = [${roundOff(scale * 76.94)}, ${roundOff(
-        scale * 35.11
+profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOff(
+        scale * 34.8
       )}])
-    |> xLine(length = ${roundOff(scale * 153.87)})
-    |> yLine(length = -${roundOff(scale * 139.66)})
+    |> xLine(length = ${roundOff(scale * 154.22)})
+    |> yLine(length = -${roundOff(scale * 139.2)})
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()`
 

@@ -1,4 +1,3 @@
-import os from 'node:os'
 import { modelingDesignRole } from '@src/menu/designRole'
 import { modelingEditRole, projectEditRole } from '@src/menu/editRole'
 import { modelingFileRole, projectFileRole } from '@src/menu/fileRole'
@@ -7,8 +6,7 @@ import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
 import { modelingViewRole, projectViewRole } from '@src/menu/viewRole'
 import type { BrowserWindow } from 'electron'
 import { Menu, app } from 'electron'
-
-const isMac = os.platform() === 'darwin'
+import { isMac } from '@src/menu/utils'
 
 /**
  * Gotcha
