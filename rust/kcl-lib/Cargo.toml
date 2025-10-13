@@ -99,7 +99,7 @@ sha2 = "0.10.9"
 tabled = { version = "0.20.0", optional = true }
 tempfile = "3.23"
 thiserror = "2.0.17"
-toml = "0.9.7"
+toml = "0.9.8"
 ts-rs = { version = "11.0.1", features = [
   "uuid-impl",
   "url-impl",
