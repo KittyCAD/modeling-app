@@ -40,7 +40,7 @@ pyo3 = { version = "0.25.1" }
 pyo3-stub-gen = "0.13.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
-slog = "2.8.0"
+slog = "2.8.2"
 slog-async = "2.8.0"
 slog-json = "2.6.1"
 slog-term = "2.9.2"
