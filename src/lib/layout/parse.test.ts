@@ -1,5 +1,12 @@
-import { LayoutType, type Layout, type Action } from '@src/lib/layout/types'
-import { parseLayoutInner, parseAction } from '@src/lib/layout/utils'
+import type {
+  Layout,
+  Action,
+  SplitLayout,
+  PaneLayout,
+  SimpleLayout,
+} from '@src/lib/layout/types'
+import { LayoutType } from '@src/lib/layout/types'
+import { parseLayoutInner, parseAction } from '@src/lib/layout/parse'
 import { defaultLayoutConfig } from '@src/lib/layout/defaultLayoutConfig'
 import { testLayoutConfig } from '@src/lib/layout/testLayoutConfig'
 
@@ -8,7 +15,7 @@ const validSimpleLayout = {
   id: crypto.randomUUID(),
   label: 'Test simple',
   areaType: 'featureTree',
-} satisfies Layout
+} satisfies SimpleLayout
 
 const validSplitLayout = {
   type: LayoutType.Splits,
@@ -20,7 +27,7 @@ const validSplitLayout = {
     structuredClone(validSimpleLayout),
     structuredClone(validSimpleLayout),
   ],
-} satisfies Layout
+} satisfies SplitLayout
 
 const validAction = {
   id: crypto.randomUUID(),
@@ -44,21 +51,20 @@ const validPaneLayout = {
     { ...validSimpleLayout, icon: 'logs' },
   ],
   actions: [structuredClone(validAction)],
-} satisfies Layout
+} satisfies PaneLayout
 
 describe('Layout utils', () => {
   describe('Layout parsing', () => {
     describe('simple layouts', () => {
       it('should parse valid simple layout with no change', () => {
         // Nothing should be altered if the layout is valid
-        expect(parseLayoutInner(validSimpleLayout)).toBe(validSimpleLayout)
+        expect(parseLayoutInner(validSimpleLayout)).toStrictEqual(
+          validSimpleLayout
+        )
       })
 
       it('should error on missing or bad areaType', () => {
-        // Now validate some unhappy paths
-        const missingAreaType = structuredClone(validSimpleLayout)
-        // @ts-expect-error: We're breaking a valid Layout
-        delete missingAreaType.areaType
+        const { areaType: _, ...missingAreaType } = validSimpleLayout
 
         const badAreaType = {
           ...validSimpleLayout,
@@ -70,9 +76,7 @@ describe('Layout utils', () => {
       })
 
       it('should heal a missing label', () => {
-        const missingLabel = structuredClone(validSimpleLayout)
-        // @ts-expect-error: We're breaking a valid Layout
-        delete missingLabel.label
+        const { label: _, ...missingLabel } = structuredClone(validSimpleLayout)
 
         expect(parseLayoutInner(missingLabel)).toHaveProperty('label')
       })
@@ -81,7 +85,9 @@ describe('Layout utils', () => {
     describe('split layouts', () => {
       it('should parse valid split layout', () => {
         // Nothing should be altered if the layout is valid
-        expect(parseLayoutInner(validSplitLayout)).toBe(validSplitLayout)
+        expect(parseLayoutInner(validSplitLayout)).toStrictEqual(
+          validSplitLayout
+        )
       })
 
       it('should heal missing or invalid sizes', () => {
@@ -90,9 +96,7 @@ describe('Layout utils', () => {
         const hasHigherThanOneHundredSizes = structuredClone(validSplitLayout)
         hasHigherThanOneHundredSizes.sizes = [50, 75]
 
-        const missingSizes = structuredClone(validSplitLayout)
-        // @ts-expect-error: We're breaking a valid Layout
-        delete missingSizes.sizes
+        const { sizes: _, ...missingSizes } = structuredClone(validSplitLayout)
 
         expect(parseLayoutInner(hasTooManySizes)).toHaveProperty(
           'sizes',
@@ -109,9 +113,8 @@ describe('Layout utils', () => {
         const hasBadOrientation = structuredClone(validSplitLayout)
         hasBadOrientation.orientation = 'bad-bad' as 'inline'
 
-        const missingOrientation = structuredClone(validSplitLayout)
-        // @ts-expect-error: We're breaking a valid Layout
-        delete missingOrientation.orientation
+        const { orientation: _, ...missingOrientation } =
+          structuredClone(validSplitLayout)
 
         expect(parseLayoutInner(hasBadOrientation)).not.toBeInstanceOf(Error)
         expect(parseLayoutInner(hasBadOrientation)).toHaveProperty(
@@ -126,30 +129,24 @@ describe('Layout utils', () => {
     describe('actions', () => {
       it('should parse valid action', () => {
         // Nothing should be altered if the layout is valid
-        expect(parseAction(validAction)).toBe(validAction)
+        expect(parseAction(validAction)).toStrictEqual(validAction)
       })
 
       it('should heal a missing label', () => {
-        const missingLabel = structuredClone(validAction)
-        // @ts-expect-error: We're breaking a valid Action
-        delete missingLabel.label
+        const { label: _, ...missingLabel } = structuredClone(validAction)
 
         expect(parseAction(missingLabel)).toHaveProperty('label')
       })
 
       it('should heal a missing id', () => {
-        const missingID = structuredClone(validAction)
-        // @ts-expect-error: We're breaking a valid Action
-        delete missingID.id
+        const { id: _, ...missingID } = structuredClone(validAction)
 
         expect(parseAction(missingID)).not.toBeInstanceOf(Error)
         expect(parseAction(missingID)).toHaveProperty('id')
       })
 
       it('should fail on missing or bad icon', () => {
-        const missingIcon = structuredClone(validAction)
-        // @ts-expect-error: We're breaking a valid Action
-        delete missingIcon.icon
+        const { icon: _, ...missingIcon } = structuredClone(validAction)
         const badIcon = {
           ...validAction,
           icon: 'bad-bad',
@@ -162,7 +159,7 @@ describe('Layout utils', () => {
     describe('pane layouts', () => {
       it('should parse valid pane layout', () => {
         // Nothing should be altered if the layout is valid
-        expect(parseLayoutInner(validSplitLayout)).toBe(validSplitLayout)
+        expect(parseLayoutInner(validPaneLayout)).toStrictEqual(validPaneLayout)
       })
 
       it('should heal missing or invalid sizes', () => {
@@ -171,9 +168,7 @@ describe('Layout utils', () => {
         const hasHigherThanOneHundredSizes = structuredClone(validPaneLayout)
         hasHigherThanOneHundredSizes.sizes = [50, 75]
 
-        const missingSizes = structuredClone(validPaneLayout)
-        // @ts-expect-error: We're breaking a valid Layout
-        delete missingSizes.sizes
+        const { sizes: _, ...missingSizes } = structuredClone(validPaneLayout)
 
         expect(parseLayoutInner(hasTooFewSizes)).toHaveProperty(
           'sizes',
@@ -190,9 +185,8 @@ describe('Layout utils', () => {
         const hasBadOrientation = structuredClone(validPaneLayout)
         hasBadOrientation.splitOrientation = 'bad-bad' as 'inline'
 
-        const missingOrientation = structuredClone(validPaneLayout)
-        // @ts-expect-error: We're breaking a valid Layout
-        delete missingOrientation.splitOrientation
+        const { splitOrientation: _, ...missingOrientation } =
+          structuredClone(validPaneLayout)
 
         expect(parseLayoutInner(hasBadOrientation)).not.toBeInstanceOf(Error)
         expect(parseLayoutInner(hasBadOrientation)).toHaveProperty(
@@ -227,7 +221,6 @@ describe('Layout utils', () => {
 
       it('should drop invalid actions', () => {
         const hasInvalidAction = structuredClone(validPaneLayout)
-        // @ts-expect-error: We're breaking a valid Layout
         hasInvalidAction.actions = [
           structuredClone(validAction),
           structuredClone(validAction),
@@ -243,6 +236,17 @@ describe('Layout utils', () => {
         }
         expect(parsedLayout.actions).toHaveLength(1)
       })
+    })
+
+    it('parses onExpandedSize for those pane layouts that have it', () => {
+      const paneChildWithOnExpandSize: PaneLayout =
+        structuredClone(validPaneLayout)
+      paneChildWithOnExpandSize.onExpandSize = 30
+
+      expect(parseLayoutInner(paneChildWithOnExpandSize)).toHaveProperty(
+        'onExpandSize',
+        30
+      )
     })
 
     it('validates the defaultLayoutConfig', () => {
