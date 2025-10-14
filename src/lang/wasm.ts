@@ -393,9 +393,13 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
   )
 }
 
-export const kclLint = async (ast: Program): Promise<Array<Discovered>> => {
+export const kclLint = async (
+  ast: Program,
+  instance?: ModuleType
+): Promise<Array<Discovered>> => {
   try {
-    const discoveredFindings: Array<Discovered> = await kcl_lint(
+    const theKclLint = instance ? instance.kcl_lint : kcl_lint
+    const discoveredFindings: Array<Discovered> = await theKclLint(
       JSON.stringify(ast)
     )
     return discoveredFindings
@@ -752,11 +756,12 @@ export function base64Decode(base64: string): ArrayBuffer | Error {
  * returns null.
  */
 export function kclSettings(
-  kcl: string | Node<Program>
+  kcl: string | Node<Program>,
+  instance?: ModuleType
 ): MetaSettings | null | Error {
   let program: Node<Program>
   if (typeof kcl === 'string') {
-    const parseResult = parse(kcl)
+    const parseResult = parse(kcl, instance)
     if (err(parseResult)) return parseResult
     if (!resultIsOk(parseResult)) {
       return new Error(`parse result had errors`, { cause: parseResult })
@@ -766,7 +771,8 @@ export function kclSettings(
     program = kcl
   }
   try {
-    return kcl_settings(JSON.stringify(program))
+    const theKclSettings = instance ? instance.kcl_settings : kcl_settings
+    return theKclSettings(JSON.stringify(program))
   } catch (e) {
     return new Error('Caught error getting kcl settings', { cause: e })
   }

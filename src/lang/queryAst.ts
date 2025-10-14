@@ -62,6 +62,7 @@ import type {
   Selections,
   EdgeCutInfo,
 } from '@src/machines/modelingSharedTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -961,9 +962,10 @@ export function doesSketchPipeNeedSplitting(
  * Given KCL, returns the settings annotation object if it exists.
  */
 export function getSettingsAnnotation(
-  kcl: string | Node<Program>
+  kcl: string | Node<Program>,
+  instance?: ModuleType
 ): KclSettingsAnnotation | Error {
-  const metaSettings = kclSettings(kcl)
+  const metaSettings = kclSettings(kcl, instance)
   if (err(metaSettings)) return metaSettings
 
   const settings: KclSettingsAnnotation = {}

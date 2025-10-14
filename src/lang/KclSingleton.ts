@@ -501,6 +501,7 @@ export class KclManager extends EventTarget {
         await lintAst({
           ast,
           sourceCode: this.singletons.codeManager.code,
+          instance: this.singletons.rustContext.getRustInstance(),
         })
       )
       await setSelectionFilterToDefault(this.engineCommandManager)
@@ -514,9 +515,11 @@ export class KclManager extends EventTarget {
       return
     }
 
-    let fileSettings = getSettingsAnnotation(ast)
+    let fileSettings = getSettingsAnnotation(
+      ast,
+      this.singletons.rustContext.getRustInstance()
+    )
     if (err(fileSettings)) {
-      console.error(fileSettings)
       fileSettings = {}
     }
     this.fileSettings = fileSettings

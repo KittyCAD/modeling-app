@@ -51,14 +51,14 @@ export default class RustContext {
   constructor(engineCommandManager: ConnectionManager, instance?: ModuleType) {
     this.engineCommandManager = engineCommandManager
 
-    this.ensureWasmInit()
-      .then(() => {
-        this.ctxInstance = this.create()
-      })
-      .catch(reportRejection)
-
     if (instance) {
       this.createFromInstance(instance)
+    } else {
+      this.ensureWasmInit()
+        .then(() => {
+          this.ctxInstance = this.create()
+        })
+        .catch(reportRejection)
     }
   }
 
