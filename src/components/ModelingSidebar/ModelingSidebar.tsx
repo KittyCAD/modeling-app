@@ -2,7 +2,7 @@ import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { type settings } from '@src/lib/settings/initialSettings'
 import { useSelector } from '@xstate/react'
 import { Resizable } from 're-resizable'
-import type { HTMLProps, MouseEventHandler, ComponentProps, Ref } from 'react'
+import type { ComponentProps, Ref } from 'react'
 import {
   useCallback,
   useContext,
@@ -15,7 +15,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import { useAppState } from '@src/AppState'
 import { ActionIcon } from '@src/components/ActionIcon'
-import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
+import { type CustomIconName } from '@src/components/CustomIcon'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
 import type {
@@ -425,7 +425,7 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
                 key={pane.id}
                 icon={pane.icon}
                 title={pane.sidebarName}
-                onClose={() => {}}
+                onClose={() => { }}
                 id={`${pane.id}-pane`}
               >
                 {pane.Content instanceof Function ? (
@@ -541,7 +541,7 @@ function ModelingPaneButton({
         >
           <span className="sr-only">&nbsp;has&nbsp;</span>
           {typeof showBadge.value === 'number' ||
-          typeof showBadge.value === 'string' ? (
+            typeof showBadge.value === 'string' ? (
             <span>{showBadge.value}</span>
           ) : (
             <span className="sr-only">a</span>
