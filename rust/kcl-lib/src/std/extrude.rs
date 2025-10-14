@@ -425,31 +425,34 @@ pub(crate) async fn do_post_extrude<'a>(
         if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
             surface_of(path, *actual_face_id)
         } else if no_engine_commands {
-            println!(
+            crate::log::logln!(
                 "No face ID found for path ID {:?}, but in no-engine-commands mode, so faking it",
                 path.get_base().geo_meta.id
             );
             // Only pre-populate the extrude surface if we are in mock mode.
             fake_extrude_surface(exec_state, path)
-        } else if sketch.clone.is_some() && clone_id_map.is_some() {
-            let new_path = clone_id_map.unwrap().get(&path.get_base().geo_meta.id)?;
-            let new_face_id = face_id_map.get(new_path);
-            if let Some(face_id) = new_face_id {
-                clone_surface_of(path, *new_path, face_id.unwrap())
+        } else if sketch.clone.is_some()
+            && let Some(clone_map) = clone_id_map
+        {
+            let new_path = clone_map.get(&path.get_base().geo_meta.id)?;
+            if let Some(new_face_id) = face_id_map.get(new_path) {
+                if let Some(face_id) = new_face_id {
+                    clone_surface_of(path, *new_path, *face_id)
+                } else {
+                    None
+                }
             } else {
                 None
             }
         } else {
-            println!(
+            crate::log::logln!(
                 "No face ID found for path ID {:?}, and not in no-engine-commands mode, so skipping it",
                 path.get_base().geo_meta.id
             );
             None
         }
     });
-    // if (outer_surfaces.len() < 1) && sketch.clone.is_some() {
-    //     // surface_of(path, actual_face_id)
-    // }
+
     new_value.extend(outer_surfaces);
     let inner_surfaces = sketch.inner_paths.iter().flat_map(|path| {
         if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
