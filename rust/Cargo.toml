@@ -38,6 +38,7 @@ miette = "7.6.0"
 pyo3 = { version = "0.25.1" }
 # Build with Python >= 3.10 (set PYO3_PYTHON accordingly)
 pyo3-stub-gen = "0.13.1"
+rayon = "1.11.0"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 slog = "2.8.2"
