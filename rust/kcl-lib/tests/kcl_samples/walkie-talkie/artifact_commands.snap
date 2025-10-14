@@ -1205,7 +1205,6 @@ description: Artifact commands walkie-talkie.kcl
       }
     }
   ],
-  "public/kcl-samples/walkie-talkie/button.kcl": [],
   "public/kcl-samples/walkie-talkie/case.kcl": [
     {
       "cmdId": "[uuid]",
@@ -11125,7 +11124,6 @@ description: Artifact commands walkie-talkie.kcl
       }
     }
   ],
-  "public/kcl-samples/walkie-talkie/parameters.kcl": [],
   "public/kcl-samples/walkie-talkie/talk-button.kcl": [
     {
       "cmdId": "[uuid]",
@@ -11396,20 +11394,5 @@ description: Artifact commands walkie-talkie.kcl
         "ambient_occlusion": 0.0
       }
     }
-  ],
-  "public/kcl-samples/walkie-talkie/zoo-logo.kcl": [],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

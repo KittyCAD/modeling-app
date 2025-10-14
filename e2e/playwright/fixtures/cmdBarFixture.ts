@@ -241,6 +241,13 @@ export class CmdBarFixture {
   }
 
   /**
+   * Select an argument in header from the command bar
+   */
+  clickHeaderArgument = async (argName: string) => {
+    await this.page.getByTestId(`arg-name-${argName}`).click()
+  }
+
+  /**
    * Clicks the Create new variable button for kcl input
    */
   createNewVariable = async () => {

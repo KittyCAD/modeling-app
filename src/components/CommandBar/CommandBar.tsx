@@ -13,6 +13,7 @@ import { engineCommandManager } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import toast from 'react-hot-toast'
 import { EngineConnectionStateType } from '@src/network/utils'
+import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
@@ -21,7 +22,7 @@ export const CommandBar = () => {
   const commandBarState = useCommandBarState()
   const { immediateState } = useNetworkContext()
   const {
-    context: { selectedCommand, currentArgument, commands, argumentsToSubmit },
+    context: { selectedCommand, currentArgument, commands },
   } = commandBarState
   const isArgumentThatShouldBeHardToDismiss =
     currentArgument?.inputType === 'selection' ||
@@ -72,16 +73,12 @@ export const CommandBar = () => {
   function stepBack() {
     const entries = Object.entries(selectedCommand?.args || {}).filter(
       ([argName, arg]) => {
-        const argValue =
-          (typeof argumentsToSubmit[argName] === 'function'
-            ? argumentsToSubmit[argName](commandBarState.context)
-            : argumentsToSubmit[argName]) || ''
-        const isRequired =
-          typeof arg.required === 'function'
-            ? arg.required(commandBarState.context)
-            : arg.required
-
-        return !arg.hidden && (argValue || isRequired)
+        const { value, isRequired, isHidden } = evaluateCommandBarArg(
+          argName,
+          arg,
+          commandBarState.context
+        )
+        return !isHidden && (value || isRequired)
       }
     )
 
@@ -108,7 +105,8 @@ export const CommandBar = () => {
       )
 
       if (index === 0) {
-        commandBarActor.send({ type: 'Deselect command' })
+        // We're on the first entry, just close
+        commandBarActor.send({ type: 'Close' })
       } else {
         commandBarActor.send({
           type: 'Change current argument',
@@ -174,7 +172,7 @@ export const CommandBar = () => {
                 <CommandBarReview stepBack={stepBack} />
               )
             )}
-            <div className="flex flex-col gap-2 !absolute left-auto right-full top-[-3px] m-2.5 p-0 border-none bg-transparent hover:bg-transparent">
+            <div className="flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent">
               <button
                 data-testid="command-bar-close-button"
                 onClick={() => commandBarActor.send({ type: 'Close' })}
