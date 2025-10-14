@@ -458,7 +458,7 @@ impl KclValue {
     pub(crate) fn from_sketch_var_literal(
         literal: &Node<NumericLiteral>,
         id: SketchVarId,
-        exec_state: &mut ExecState,
+        exec_state: &ExecState,
     ) -> Self {
         let meta = vec![literal.metadata()];
         let ty = NumericType::from_parsed(literal.suffix, &exec_state.mod_local.settings);

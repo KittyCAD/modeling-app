@@ -1100,7 +1100,7 @@ impl SketchBlock {
 
 impl Node<SketchVar> {
     pub async fn get_result(&self, exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+        let Some(sketch_block_state) = &exec_state.mod_local.sketch_block else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Cannot use a sketch variable outside of a sketch block".to_owned(),
                 vec![SourceRange::from(self)],
