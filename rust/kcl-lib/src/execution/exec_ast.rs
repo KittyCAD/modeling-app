@@ -963,10 +963,12 @@ impl Node<SketchBlock> {
         })?;
         // Propagate warnings.
         for warning in &solve_outcome.warnings {
-            exec_state.warn(
-                CompilationError::err(range, format!("Warning from constraint solver: {:?}", warning)),
-                annotations::WARN_SOLVER,
-            );
+            let message = if let Some(index) = warning.about_constraint.as_ref() {
+                format!("{}; constraint index {}", &warning.content, index)
+            } else {
+                format!("{}", &warning.content)
+            };
+            exec_state.warn(CompilationError::err(range, message), annotations::WARN_SOLVER);
         }
         // Substitute solutions back into sketch variables.
         let variables =
