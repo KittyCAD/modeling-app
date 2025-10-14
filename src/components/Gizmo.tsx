@@ -121,13 +121,13 @@ export default function Gizmo() {
         raycasterIntersect.current = null // Clear intersection
       }
       renderer.render(scene, camera)
-      requestAnimationFrame(animate)
     }
-    animate()
+    window.addEventListener('gizmo:animate', animate)
 
     return () => {
       renderer.dispose()
       disposeMouseEvents()
+      window.removeEventListener('gizmo:animate', animate)
     }
   }, [])
 
