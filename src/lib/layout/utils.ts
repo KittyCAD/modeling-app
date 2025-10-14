@@ -440,36 +440,42 @@ function validateActionType(a: unknown): a is keyof typeof actionTypeRegistry {
   )
 }
 
-function parseBasicLayout(layout: unknown) {
+function parseBasicLayout(layout: unknown): Error | BasicLayout {
   const isObject = typeof layout === 'object' && layout !== null
   if (!isObject) {
     return new Error('Invalid layout')
   }
 
-  // Heal an invalid ID
-  const hasValidId = 'id' in layout && typeof layout.id === 'string'
-  if (!hasValidId) {
-    layout.id = crypto.randomUUID()
-  }
-
-  // Heal invalid label
-  const hasValidLabel = 'label' in layout && typeof layout.label === 'string'
-  if (!hasValidLabel) {
-    layout.label = 'Unlabeled area'
-  }
-
   // Invalid layout type is fatal
+  const hasType = 'type' in layout && typeof layout.type === 'string'
+  if (!hasType) {
+    return new Error('Layout is missing type')
+  }
+
   const hasValidType =
     'type' in layout &&
     typeof layout.type === 'string' &&
     validateLayoutType(layout.type)
-  if (!hasValidType) {
-    return new Error(
-      `Layout has ${layout.type ? 'invalid' : 'missing'} type ${layout.type ?? ''}`
-    )
+  if (hasType && !hasValidType) {
+    return new Error(`Layout has invalid type "${layout.type}"`)
   }
 
-  return layout as BasicLayout
+  // Heal an invalid ID
+  const id =
+    'id' in layout && typeof layout.id === 'string'
+      ? layout.id
+      : crypto.randomUUID()
+  // Heal an invalid label
+  const label =
+    'label' in layout && typeof layout.label === 'string'
+      ? layout.label
+      : 'Unlabeled area'
+
+  return {
+    ...layout,
+    id,
+    label,
+  }
 }
 
 export function parseSimpleLayout(layout: BasicLayout): SimpleLayout | Error {
