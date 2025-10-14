@@ -57,7 +57,7 @@ describe('Layout utils', () => {
       it('should error on missing or bad areaType', () => {
         // Now validate some unhappy paths
         const missingAreaType = structuredClone(validSimpleLayout)
-        // @ts-ignore
+        // @ts-expect-error: We're breaking a valid Layout
         delete missingAreaType.areaType
 
         const badAreaType = {
@@ -71,7 +71,7 @@ describe('Layout utils', () => {
 
       it('should heal a missing label', () => {
         const missingLabel = structuredClone(validSimpleLayout)
-        // @ts-ignore
+        // @ts-expect-error: We're breaking a valid Layout
         delete missingLabel.label
 
         expect(parseLayoutInner(missingLabel)).toHaveProperty('label')
@@ -91,7 +91,7 @@ describe('Layout utils', () => {
         hasHigherThanOneHundredSizes.sizes = [50, 75]
 
         const missingSizes = structuredClone(validSplitLayout)
-        // @ts-ignore
+        // @ts-expect-error: We're breaking a valid Layout
         delete missingSizes.sizes
 
         expect(parseLayoutInner(hasTooManySizes)).toHaveProperty(
@@ -110,7 +110,7 @@ describe('Layout utils', () => {
         hasBadOrientation.orientation = 'bad-bad' as 'inline'
 
         const missingOrientation = structuredClone(validSplitLayout)
-        // @ts-ignore
+        // @ts-expect-error: We're breaking a valid Layout
         delete missingOrientation.orientation
 
         expect(parseLayoutInner(hasBadOrientation)).not.toBeInstanceOf(Error)
@@ -131,7 +131,7 @@ describe('Layout utils', () => {
 
       it('should heal a missing label', () => {
         const missingLabel = structuredClone(validAction)
-        // @ts-ignore
+        // @ts-expect-error: We're breaking a valid Action
         delete missingLabel.label
 
         expect(parseAction(missingLabel)).toHaveProperty('label')
@@ -139,7 +139,7 @@ describe('Layout utils', () => {
 
       it('should heal a missing id', () => {
         const missingID = structuredClone(validAction)
-        // @ts-ignore
+        // @ts-expect-error: We're breaking a valid Action
         delete missingID.id
 
         expect(parseAction(missingID)).not.toBeInstanceOf(Error)
@@ -148,7 +148,7 @@ describe('Layout utils', () => {
 
       it('should fail on missing or bad icon', () => {
         const missingIcon = structuredClone(validAction)
-        // @ts-ignore
+        // @ts-expect-error: We're breaking a valid Action
         delete missingIcon.icon
         const badIcon = {
           ...validAction,
@@ -172,7 +172,7 @@ describe('Layout utils', () => {
         hasHigherThanOneHundredSizes.sizes = [50, 75]
 
         const missingSizes = structuredClone(validPaneLayout)
-        // @ts-ignore
+        // @ts-expect-error: We're breaking a valid Layout
         delete missingSizes.sizes
 
         expect(parseLayoutInner(hasTooFewSizes)).toHaveProperty(
@@ -191,7 +191,7 @@ describe('Layout utils', () => {
         hasBadOrientation.splitOrientation = 'bad-bad' as 'inline'
 
         const missingOrientation = structuredClone(validPaneLayout)
-        // @ts-ignore
+        // @ts-expect-error: We're breaking a valid Layout
         delete missingOrientation.splitOrientation
 
         expect(parseLayoutInner(hasBadOrientation)).not.toBeInstanceOf(Error)
@@ -205,9 +205,9 @@ describe('Layout utils', () => {
 
       it('should drop invalid children', () => {
         const hasInvalidChild = structuredClone(validPaneLayout)
-        // @ts-ignore
+        // @ts-expect-error: We're breaking a valid Layout
         hasInvalidChild.children[1].type = 'bad-type'
-        // @ts-ignore
+        // @ts-expect-error: We're breaking a valid Layout
         hasInvalidChild.children[0].icon = 'bad-icon'
 
         const parsedLayout = parseLayoutInner(hasInvalidChild)
@@ -227,12 +227,12 @@ describe('Layout utils', () => {
 
       it('should drop invalid actions', () => {
         const hasInvalidAction = structuredClone(validPaneLayout)
-        // @ts-ignore
+        // @ts-expect-error: We're breaking a valid Layout
         hasInvalidAction.actions = [
           structuredClone(validAction),
           structuredClone(validAction),
         ]
-        // @ts-ignore
+        // @ts-expect-error: We're breaking a valid Layout
         hasInvalidAction.actions[1].icon = 'bad-icon'
 
         const parsedLayout = parseLayoutInner(hasInvalidAction)
