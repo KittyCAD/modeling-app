@@ -435,14 +435,9 @@ pub(crate) async fn do_post_extrude<'a>(
             && let Some(clone_map) = clone_id_map
         {
             let new_path = clone_map.get(&path.get_base().geo_meta.id)?;
-            if let Some(new_face_id) = face_id_map.get(new_path) {
-                if let Some(face_id) = new_face_id {
-                    clone_surface_of(path, *new_path, *face_id)
-                } else {
-                    None
-                }
-            } else {
-                None
+            match face_id_map.get(new_path) {
+                Some(Some(actual_face_id)) => clone_surface_of(path, *new_path, *actual_face_id),
+                _ => None,
             }
         } else {
             crate::log::logln!(
