@@ -7,8 +7,8 @@ on:
   pull_request:
   schedule:
     - cron: 0 * * * * # hourly
-  workflow_dispatch:
   workflow_call:
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -25,13 +25,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          # To share this workflow with other repos this must be hard-coded
-          repository: kittycad/modeling-app
+          repository: kittycad/modeling-app # required for 'workflow_call'
 
       - id: filter
         name: Check for Rust changes
         uses: dorny/paths-filter@v3
-        continue-on-error: true
+        continue-on-error: true # this step fails when invoked as 'workflow_call'
         with:
           filters: |
             rust:
@@ -47,7 +46,7 @@ jobs:
 
       - name: Download Wasm cache
         id: download-wasm
-        if: ${{ github.event_name != 'schedule' && steps.filter.outputs.rust == 'false' }}
+        if: ${{ github.event_name != 'schedule' && (steps.filter.outputs.rust || 'false') == 'false' }}
         uses: dawidd6/action-download-artifact@v11
         continue-on-error: true
         with:
@@ -61,9 +60,9 @@ jobs:
         id: wasm
         run: |
           set -euox pipefail
-          # Build wasm if this is a scheduled run, called by another workflow,
-          # the filter step failed, there are Rust changes, or downloading from the wasm cache failed.
-          if [[ ${{github.event_name}} == 'schedule' || ${{github.event_name}} == 'workflow_call' || ${{steps.filter.outcome}} == 'failure' || ${{steps.filter.outputs.rust}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
+          # Build wasm if this is a scheduled run, there are Rust changes, or
+          # downloading from the wasm cache failed.
+          if [[ ${{github.event_name}} == 'schedule' || ${{steps.filter.outputs.rust || 'false'}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
             echo "should-build-wasm=true" >> $GITHUB_OUTPUT
           else
             echo "should-build-wasm=false" >> $GITHUB_OUTPUT
@@ -120,8 +119,7 @@ jobs:
 
       - uses: actions/checkout@v5
         with:
-          # To share this workflow with other repos this must be hard-coded
-          repository: kittycad/modeling-app
+          repository: kittycad/modeling-app # required for 'workflow_call'
           token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/download-artifact@v4
@@ -243,8 +241,7 @@ jobs:
 
       - uses: actions/checkout@v5
         with:
-          # To share this workflow with other repos this must be hard-coded
-          repository: kittycad/modeling-app
+          repository: kittycad/modeling-app # required for 'workflow_call'
           token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/download-artifact@v4
@@ -361,8 +358,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          # To share this workflow with other repos this must be hard-coded
-          repository: kittycad/modeling-app
+          repository: kittycad/modeling-app # required for 'workflow_call'
 
       - uses: actions/download-artifact@v4
         with:
