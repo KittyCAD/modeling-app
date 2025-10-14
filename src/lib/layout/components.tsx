@@ -280,8 +280,6 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
       layout.activeIndices.push(i)
       layout.activeIndices.sort()
 
-      console.log('sizes?', layout.sizes)
-
       if (layout.sizes.length > 1) {
         const newActiveIndex = layout.activeIndices.indexOf(i)
 

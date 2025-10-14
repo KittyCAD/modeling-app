@@ -7,8 +7,8 @@ import type {
 } from '@src/lib/layout/types'
 import { LayoutType } from '@src/lib/layout/types'
 import { parseLayoutInner, parseAction } from '@src/lib/layout/parse'
-import { defaultLayoutConfig } from '@src/lib/layout/defaultLayoutConfig'
-import { testLayoutConfig } from '@src/lib/layout/testLayoutConfig'
+import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
+import { testLayoutConfig } from '@src/lib/layout/configs/test'
 
 const validSimpleLayout = {
   type: LayoutType.Simple,

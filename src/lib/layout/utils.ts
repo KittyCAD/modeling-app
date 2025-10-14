@@ -13,7 +13,7 @@ import { capitaliseFC } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
 import { throttle } from '@src/lib/utils'
 import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
-import { defaultLayoutConfig } from '@src/lib/layout/defaultLayoutConfig'
+import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import { isErr } from '@src/lib/trap'
 import { parseLayoutFromJsonString } from '@src/lib/layout/parse'
 
@@ -277,12 +277,8 @@ interface ISaveLayout {
  * Wrap the layout data in a versioned object
  * and save it to persisted storage.
  */
-function saveLayoutInner({
-  layout,
-  layoutName = 'default',
-  saveFn = localStorage.setItem,
-}: ISaveLayout) {
-  return saveFn(
+function saveLayoutInner({ layout, layoutName = 'default' }: ISaveLayout) {
+  return localStorage.setItem(
     `${LAYOUT_PERSIST_PREFIX}${layoutName}`,
     JSON.stringify({
       version: 'v1',

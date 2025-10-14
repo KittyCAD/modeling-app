@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { testLayoutConfig } from '@src/lib/layout/testLayoutConfig'
+import { testLayoutConfig } from '@src/lib/layout/configs/test'
 import { loadLayout } from '@src/lib/layout/utils'
-import { LayoutRootNode } from '@src/lib/layout/Layout'
+import { LayoutRootNode } from '@src/lib/layout/components'
 import { testAreaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 import { isErr } from '@src/lib/trap'
 
