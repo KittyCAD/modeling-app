@@ -61,9 +61,9 @@ jobs:
         id: wasm
         run: |
           set -euox pipefail
-          # Build wasm if this is a scheduled run, there are Rust changes, or
-          # downloading from the wasm cache failed.
-          if [[ ${{github.event_name}} == 'schedule' || ${{steps.filter.outputs.rust}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
+          # Build wasm if this is a scheduled run, called by another workflow,
+          # the filter step failed, there are Rust changes, or downloading from the wasm cache failed.
+          if [[ ${{github.event_name}} == 'schedule' || ${{github.event_name}} == 'workflow_call' || ${{steps.filter.outcome}} == 'failure' || ${{steps.filter.outputs.rust}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
             echo "should-build-wasm=true" >> $GITHUB_OUTPUT
           else
             echo "should-build-wasm=false" >> $GITHUB_OUTPUT
@@ -125,7 +125,9 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/download-artifact@v4
-        name: prepared-wasm
+        with:
+          name: prepared-wasm
+          path: prepared-wasm
 
       - name: Copy prepared Wasm
         run: |
@@ -246,7 +248,9 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/download-artifact@v4
-        name: prepared-wasm
+        with:
+          name: prepared-wasm
+          path: prepared-wasm
 
       - name: Copy prepared Wasm
         run: |
@@ -361,7 +365,9 @@ jobs:
           repository: kittycad/modeling-app
 
       - uses: actions/download-artifact@v4
-        name: prepared-wasm
+        with:
+          name: prepared-wasm
+          path: prepared-wasm
 
       - name: Copy prepared Wasm
         run: |
