@@ -1,5 +1,5 @@
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import { type settings } from '@src/lib/settings/initialSettings'
+import type { settings } from '@src/lib/settings/initialSettings'
 import { useSelector } from '@xstate/react'
 import { Resizable } from 're-resizable'
 import type { ComponentProps, Ref } from 'react'
@@ -15,7 +15,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import { useAppState } from '@src/AppState'
 import { ActionIcon } from '@src/components/ActionIcon'
-import { type CustomIconName } from '@src/components/CustomIcon'
+import type { CustomIconName } from '@src/components/CustomIcon'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
 import type {
@@ -44,7 +44,7 @@ import { settingsActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
 import { EngineConnectionStateType } from '@src/network/utils'
-import type { ResizeHandle } from '@src/components/ResizeHandle'
+import { ResizeHandle } from '@src/components/ResizeHandle'
 import {
   Alignment,
   type BadgeInfoComputed,

@@ -200,7 +200,7 @@ const textToCadPane2 = Object.freeze({
   },
 } satisfies SidebarPane)
 
-export const sidebarPanesLeft = Object.freeze([
+export const sidebarPanesLeft: SidebarPane[] = [
   {
     id: 'feature-tree',
     icon: 'model',
@@ -476,7 +476,7 @@ export const sidebarPanesLeft = Object.freeze([
     hide: ({ settings }) => !settings.app.showDebugPanel.current,
   },
   ...(isPlaywright() ? [textToCadPane2] : []),
-] satisfies SidebarPane[])
+]
 
 export const sidebarPanesRight: SidebarPane[] = [
   ...(IS_STAGING_OR_DEBUG && !isPlaywright() ? [textToCadPane2] : []),

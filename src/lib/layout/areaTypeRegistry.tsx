@@ -36,14 +36,18 @@ function TestArea({ name }: { name: string }) {
     <div className="self-stretch flex-1 grid place-content-center">{name}</div>
   )
 }
-export const testAreaTypeRegistry = Object.freeze(
-  Object.fromEntries(
-    Object.keys(areaTypeRegistry).map((key) => [
-      key,
-      () => <TestArea name={key} />,
-    ])
-  )
-)
+
+export const testAreaTypeRegistry = Object.freeze({
+  featureTree: () => <TestArea name="featureTree" />,
+  modeling: () => <TestArea name="featureTree" />,
+  ttc: () => <TestArea name="ttc" />,
+  codeEditor: () => <TestArea name="codeEditor" />,
+  logs: () => <TestArea name="logs" />,
+  variables: () => <TestArea name="variables" />,
+} satisfies Record<
+  keyof typeof areaTypeRegistry,
+  (props: Partial<Closeable>) => JSX.Element
+>)
 
 function ModelingArea() {
   const authToken = useToken()
