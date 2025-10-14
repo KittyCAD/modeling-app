@@ -127,6 +127,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: prepared-wasm
+          path: prepared-wasm
 
       - name: Copy prepared Wasm
         run: |
@@ -249,6 +250,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: prepared-wasm
+          path: prepared-wasm
 
       - name: Copy prepared Wasm
         run: |
@@ -365,6 +367,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: prepared-wasm
+          path: prepared-wasm
 
       - name: Copy prepared Wasm
         run: |
