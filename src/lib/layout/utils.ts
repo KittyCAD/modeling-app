@@ -9,7 +9,6 @@ import type {
   Side,
   SimpleLayout,
   SplitLayout,
-  TabLayout,
 } from '@src/lib/layout/types'
 import { LayoutType } from '@src/lib/layout/types'
 import type React from 'react'
@@ -422,8 +421,6 @@ export function parseLayoutInner(l: unknown): Layout | Error {
       return parseSimpleLayout(basicResult)
     case LayoutType.Splits:
       return parseSplitLayout(basicResult)
-    case LayoutType.Tabs:
-      return parseTabLayout(basicResult)
     case LayoutType.Panes:
       return parsePaneLayout(basicResult)
   }
@@ -544,47 +541,6 @@ function validateSide(s: unknown): s is Side {
     typeof s === 'string' &&
     ['inline-start', 'inline-end', 'block-start', 'block-end'].includes(s)
   )
-}
-
-function parseTabLayout(layout: BasicLayout): TabLayout | Error {
-  // No children is fatal
-  const hasChildren = 'children' in layout && isArray(layout.children)
-  if (!hasChildren) {
-    return new Error('Tab layout with no children, invalid')
-  }
-
-  // Invalid side is healable, default to the block-start (top in LTR)
-  const hasValidSide = 'side' in layout && validateSide(layout.side)
-  if (!hasValidSide) {
-    layout.side = 'block-start'
-  }
-
-  // Drop catastrophically erroring children
-  // TODO: propogate errors as warnings
-  if ('children' in layout && isArray(layout.children)) {
-    // Iterate in reverse so we can remove without messing up indices
-    for (let i = layout.children.length - 1; i >= 0; i--) {
-      const parsedChild = parseLayoutInner(layout.children[i])
-      if (isErr(parsedChild)) {
-        console.error(parsedChild)
-        layout.children.splice(i, 1)
-      }
-    }
-  }
-
-  // Invalid activeIndex is healable, default to 0
-  const hasValidActiveIndex =
-    'activeIndex' in layout &&
-    typeof layout.activeIndex === 'number' &&
-    isArray(layout.children) &&
-    Number.isSafeInteger(layout.activeIndex) &&
-    layout.activeIndex >= 0 &&
-    layout.activeIndex < layout.children.length
-  if (!hasValidActiveIndex) {
-    layout.activeIndex = 0
-  }
-
-  return layout as TabLayout
 }
 
 export function parseAction(action: unknown): Action | Error {

@@ -2,7 +2,6 @@ import { LayoutType } from '@src/lib/layout/types'
 import type {
   SplitLayout as SplitLayoutType,
   PaneLayout as PaneLayoutType,
-  TabLayout as TabLayoutType,
   Closeable,
   Direction,
   Layout,
@@ -14,7 +13,7 @@ import {
   PanelResizeHandle,
 } from 'react-resizable-panels'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { Tab, Switch } from '@headlessui/react'
+import { Switch } from '@headlessui/react'
 import {
   createContext,
   type Dispatch,
@@ -165,7 +164,7 @@ export function LayoutRootNode({
 }
 
 /*
- * A layout is a nested set of Areas (Splits, Tabs, or Toolbars),
+ * A layout is a nested set of Areas (Splits or Panes),
  * ending in leaf nodes that contain UI components.
  */
 function LayoutNode({
@@ -176,8 +175,6 @@ function LayoutNode({
   switch (layout.type) {
     case LayoutType.Splits:
       return <SplitLayout layout={layout} />
-    case LayoutType.Tabs:
-      return <TabLayout layout={layout} />
     case LayoutType.Panes:
       return <PaneLayout layout={layout} />
     default:
@@ -254,37 +251,6 @@ function SplitLayoutContents({
         })}
       </PanelGroup>
     )
-  )
-}
-
-/**
- * Use headless UI tabs
- */
-function TabLayout({ layout }: { layout: TabLayoutType }) {
-  return (
-    <Tab.Group
-      as="div"
-      className={`flex-1 flex ${sideToTailwindLayoutDirection(layout.side)}`}
-    >
-      <Tab.List className={`flex ${sideToTailwindTabDirection(layout.side)}`}>
-        {layout.children.map((tab) => {
-          return (
-            <Tab key={tab.id} className="ui-selected:bg-default">
-              {tab.label}
-            </Tab>
-          )
-        })}
-      </Tab.List>
-      <Tab.Panels className="flex-1">
-        {layout.children.map((tab) => {
-          return (
-            <Tab.Panel key={tab.id}>
-              <LayoutNode layout={tab} />
-            </Tab.Panel>
-          )
-        })}
-      </Tab.Panels>
-    </Tab.Group>
   )
 }
 
@@ -474,8 +440,6 @@ function ResizeHandle({
   direction,
   id,
   disabled,
-  layout,
-  currentIndex,
 }: {
   direction: Direction
   id: string

@@ -4,7 +4,8 @@ import type { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
 
 export enum LayoutType {
   Splits = 'split',
-  Tabs = 'tabs',
+  // @TODO: bring the tabs type back when we need it for file buffers, etc
+  // Tabs = 'tabs',
   Panes = 'panes',
   Simple = 'simple',
 }
@@ -36,12 +37,6 @@ export type SplitLayout = BasicLayout &
   WithOrientation & {
     type: LayoutType.Splits
   }
-export type TabLayout = BasicLayout &
-  WithChildren &
-  WithSide & {
-    type: LayoutType.Tabs
-    activeIndex: number
-  }
 export type Action = HasIdAndLabel &
   WithIcon & {
     actionType: keyof typeof actionTypeRegistry
@@ -66,7 +61,7 @@ export type SimpleLayout = BasicLayout & {
   type: LayoutType.Simple
   areaType: keyof typeof areaTypeRegistry
 }
-export type Layout = SimpleLayout | SplitLayout | TabLayout | PaneLayout
+export type Layout = SimpleLayout | SplitLayout | PaneLayout
 
 /** add more fields as needed */
 export type LayoutWithMetadata = {
