@@ -212,6 +212,12 @@ pub type BoxNode<T> = Box<Node<T>>;
 pub type NodeList<T> = Vec<Node<T>>;
 pub type NodeRef<'a, T> = &'a Node<T>;
 
+/// A way to abstract over blocks of code.
+pub trait CodeBlock {
+    fn body(&self) -> &[BodyItem];
+    fn to_source_range(&self) -> SourceRange;
+}
+
 /// A KCL program top level, or function body.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -244,6 +250,16 @@ impl From<Node<Block>> for Node<Program> {
             block.end,
             block.module_id,
         )
+    }
+}
+
+impl CodeBlock for Node<Program> {
+    fn body(&self) -> &[BodyItem] {
+        &self.body
+    }
+
+    fn to_source_range(&self) -> SourceRange {
+        SourceRange::new(self.start, self.end, self.module_id)
     }
 }
 
@@ -1348,6 +1364,16 @@ impl From<Program> for Block {
             inner_attrs: program.inner_attrs,
             digest: None,
         }
+    }
+}
+
+impl CodeBlock for Node<Block> {
+    fn body(&self) -> &[BodyItem] {
+        &self.items
+    }
+
+    fn to_source_range(&self) -> SourceRange {
+        SourceRange::new(self.start, self.end, self.module_id)
     }
 }
 

@@ -27,6 +27,13 @@ impl Context {
         fs_manager: kcl_lib::wasm_engine::FileSystemManager,
     ) -> Result<Self, JsValue> {
         console_error_panic_hook::set_once();
+        // Initialize the thread pool for rayon. For some reason, this wasn't
+        // happening automatically. It may return an error if it was already
+        // initialized, so ignore the result.
+        let _ = rayon::ThreadPoolBuilder::new()
+            .num_threads(1)
+            .use_current_thread()
+            .build_global();
 
         let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
         Ok(Self {
