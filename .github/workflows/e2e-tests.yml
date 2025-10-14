@@ -125,7 +125,8 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/download-artifact@v4
-        name: prepared-wasm
+        with:
+          name: prepared-wasm
 
       - name: Copy prepared Wasm
         run: |
@@ -246,7 +247,8 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/download-artifact@v4
-        name: prepared-wasm
+        with:
+          name: prepared-wasm
 
       - name: Copy prepared Wasm
         run: |
@@ -361,7 +363,8 @@ jobs:
           repository: kittycad/modeling-app
 
       - uses: actions/download-artifact@v4
-        name: prepared-wasm
+        with:
+          name: prepared-wasm
 
       - name: Copy prepared Wasm
         run: |
