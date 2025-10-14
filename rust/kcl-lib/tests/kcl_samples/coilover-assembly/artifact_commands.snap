@@ -2647,7 +2647,6 @@ description: Artifact commands coilover-assembly.kcl
       }
     }
   ],
-  "public/kcl-samples/coilover-assembly/parameters.kcl": [],
   "public/kcl-samples/coilover-assembly/spring.kcl": [
     {
       "cmdId": "[uuid]",
@@ -2839,18 +2838,5 @@ description: Artifact commands coilover-assembly.kcl
         "ambient_occlusion": 0.0
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

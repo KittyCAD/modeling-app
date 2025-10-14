@@ -77,6 +77,54 @@ export class CmdBarFixture {
         commandName: commandName || '',
       }
     }
+
+    const vector3dInputsExist = await this.page
+      .getByTestId('vector3d-x-input')
+      .isVisible()
+      .catch(() => false)
+    if (vector3dInputsExist) {
+      // Validate that all three vector3d inputs are present
+      const inputsPresent = await Promise.all([
+        this.page.getByTestId('vector3d-x-input').isVisible(),
+        this.page.getByTestId('vector3d-y-input').isVisible(),
+        this.page.getByTestId('vector3d-z-input').isVisible(),
+      ])
+
+      if (!inputsPresent.every(Boolean)) {
+        throw new Error('Not all vector3d inputs are present')
+      }
+
+      const [
+        headerArguments,
+        highlightedHeaderArg,
+        commandName,
+        xValue,
+        yValue,
+        zValue,
+      ] = await Promise.all([
+        getHeaderArgs(),
+        this.page
+          .locator('[data-is-current-arg="true"]')
+          .locator('[data-test-name="arg-name"]')
+          .textContent(),
+        getCommandName(),
+        this.page.getByTestId('vector3d-x-input').inputValue(),
+        this.page.getByTestId('vector3d-y-input').inputValue(),
+        this.page.getByTestId('vector3d-z-input').inputValue(),
+      ])
+
+      const vectorValue = `[${xValue}, ${yValue}, ${zValue}]`
+
+      return {
+        stage: 'arguments',
+        currentArgKey: highlightedHeaderArg || '',
+        currentArgValue: vectorValue,
+        headerArguments,
+        highlightedHeaderArg: highlightedHeaderArg || '',
+        commandName: commandName || '',
+      }
+    }
+
     const [
       currentArgKey,
       currentArgValue,
@@ -190,6 +238,13 @@ export class CmdBarFixture {
    */
   clickOptionalArgument = async (argName: string) => {
     await this.page.getByTestId(`cmd-bar-add-optional-arg-${argName}`).click()
+  }
+
+  /**
+   * Select an argument in header from the command bar
+   */
+  clickHeaderArgument = async (argName: string) => {
+    await this.page.getByTestId(`arg-name-${argName}`).click()
   }
 
   /**

@@ -327,8 +327,6 @@ description: Operations executed hex-nut.kcl
       "type": "GroupEnd"
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -434,14 +432,5 @@ description: Operations executed hex-nut.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

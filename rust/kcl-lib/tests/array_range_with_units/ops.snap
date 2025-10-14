@@ -3,9 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed array_range_with_units.kcl
 ---
 {
-  "rust/kcl-lib/tests/array_range_with_units/input.kcl": [],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -111,14 +108,5 @@ description: Operations executed array_range_with_units.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

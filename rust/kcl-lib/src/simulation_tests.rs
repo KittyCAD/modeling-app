@@ -117,7 +117,7 @@ impl ExecState {
 fn relative_module_path(module_path: &ModulePath, abs_project_directory: &Path) -> Result<String, std::io::Error> {
     match module_path {
         ModulePath::Main => Ok("main".to_owned()),
-        ModulePath::Local { value: path } => {
+        ModulePath::Local { value: path, .. } => {
             let abs_path = path.canonicalize()?;
             abs_path
                 .strip_prefix(abs_project_directory)
@@ -349,6 +349,10 @@ fn assert_artifact_snapshots(
     let module_operations = module_state
         .iter()
         .map(|(path, s)| (path, &s.operations))
+        // Remove empty modules, to save filespace,
+        // and so that adding a new module without any operations
+        // doesn't generate a massive diff.
+        .filter(|(_path, s)| !s.is_empty())
         .collect::<IndexMap<_, _>>();
     let result1 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Operations executed", || {
@@ -362,6 +366,10 @@ fn assert_artifact_snapshots(
     let module_commands = module_state
         .iter()
         .map(|(path, s)| (path, &s.commands))
+        // Remove empty modules, to save filespace,
+        // and so that adding a new module without any operations
+        // doesn't generate a massive diff.
+        .filter(|(_path, s)| !s.is_empty())
         .collect::<IndexMap<_, _>>();
     let result2 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Artifact commands", || {
@@ -3922,6 +3930,27 @@ mod subtract_self_multiple_tools {
 }
 mod union_self {
     const TEST_NAME: &str = "union_self";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod plane_of_chamfer {
+    const TEST_NAME: &str = "plane_of_chamfer";
 
     /// Test parsing KCL.
     #[test]

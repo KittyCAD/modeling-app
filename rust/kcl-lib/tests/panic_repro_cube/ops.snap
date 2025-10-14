@@ -237,8 +237,6 @@ description: Operations executed panic_repro_cube.kcl
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -344,14 +342,5 @@ description: Operations executed panic_repro_cube.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

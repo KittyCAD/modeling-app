@@ -12,6 +12,7 @@ pub mod csg;
 pub mod edge;
 pub mod extrude;
 pub mod fillet;
+pub mod gdt;
 pub mod helix;
 pub mod loft;
 pub mod math;
@@ -62,6 +63,14 @@ impl StdFnProps {
 
 pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProps) {
     match (path, fn_name) {
+        ("gdt", "datum") => (
+            |e, a| Box::pin(crate::std::gdt::datum(e, a)),
+            StdFnProps::default("std::gdt::datum").include_in_feature_tree(),
+        ),
+        ("gdt", "flatness") => (
+            |e, a| Box::pin(crate::std::gdt::flatness(e, a)),
+            StdFnProps::default("std::gdt::flatness").include_in_feature_tree(),
+        ),
         ("math", "cos") => (
             |e, a| Box::pin(crate::std::math::cos(e, a)),
             StdFnProps::default("std::math::cos"),
@@ -479,6 +488,10 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
         ("types", "Solid") => (PrimitiveType::Solid, StdFnProps::default("std::types::Solid")),
         ("types", "Plane") => (PrimitiveType::Plane, StdFnProps::default("std::types::Plane")),
         ("types", "Face") => (PrimitiveType::Face, StdFnProps::default("std::types::Face")),
+        ("types", "GdtAnnotation") => (
+            PrimitiveType::GdtAnnotation,
+            StdFnProps::default("std::types::GdtAnnotation"),
+        ),
         ("types", "Helix") => (PrimitiveType::Helix, StdFnProps::default("std::types::Helix")),
         ("types", "Edge") => (PrimitiveType::Edge, StdFnProps::default("std::types::Edge")),
         ("types", "Axis2d") => (PrimitiveType::Axis2d, StdFnProps::default("std::types::Axis2d")),

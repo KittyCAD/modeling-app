@@ -122,6 +122,7 @@ export const PromptCardStatus = (props: {
   const thinker = (
     <Thinking
       thoughts={props.thoughts}
+      isDone={props.thoughts?.some((t) => 'end_of_stream' in t) || false}
       onlyShowImmediateThought={props.onlyShowImmediateThought}
     />
   )

@@ -1313,18 +1313,5 @@ description: Artifact commands telemetry-antenna.kcl
         "extra_face_ids": []
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

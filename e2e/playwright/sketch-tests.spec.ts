@@ -147,6 +147,45 @@ test.describe('Sketch tests', () => {
     ).toBeVisible()
   })
 
+  test('delete startProfile removes profile statement', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 600 })
+
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0.0, 0.0])`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await editor.expectEditor.toContain('startProfile(')
+
+    // Open feature tree and select the first sketch
+    await page.getByRole('button', { name: 'Feature Tree' }).click()
+    await page.getByRole('button', { name: 'sketch001' }).dblclick()
+    await page.waitForTimeout(600)
+
+    // Select the profile by clicking the origin in the canvas, then press Delete
+    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, { format: 'ratio' })
+    await clickCenter()
+
+    await page.waitForTimeout(200)
+
+    await page.keyboard.press('Delete')
+
+    await editor.expectEditor.not.toContain('startProfile(')
+  })
+
   test('Can exit selection of face', async ({ page, homePage }) => {
     // Load the app with the code panes
     await page.addInitScript(async () => {
@@ -291,7 +330,7 @@ test.describe('Sketch tests', () => {
   test(
     'Can edit a sketch that has been extruded in the same pipe',
     { tag: '@web' },
-    async ({ page, homePage, editor, toolbar, scene, cmdBar }) => {
+    async ({ page, editor, toolbar, scene, cmdBar }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -305,7 +344,6 @@ sketch001 = startSketchOn(XZ)
         )
       })
 
-      await homePage.goToModelingScene()
       await toolbar.waitForFeatureTreeToBeBuilt()
       await scene.settled(cmdBar)
 
@@ -537,11 +575,8 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOf
     // otherwise the cmdbar would be waiting for a selection.
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
-      stage: 'arguments',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: { Profiles: '1 profile', Length: '' },
-      highlightedHeaderArg: 'length',
+      stage: 'review',
+      headerArguments: { Profiles: '1 profile' },
       commandName: 'Extrude',
     })
   })
@@ -921,6 +956,52 @@ profile001 = startProfile(sketch001, at = [0, 0])
       { shouldNormalise: true }
     )
   })
+
+  test('Select-all delete removes segments and circle in sketch mode (seeded code)', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    toolbar,
+    editor,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 600 })
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-0.26, 0])
+  |> xLine(length = 0.11)
+  |> line(end = [0.12, -0.11])
+
+profile002 = circle(sketch001, center = [0.03, -0.03], radius = 0.08)
+// testcomment2`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    // Enter sketch mode on first sketch via Feature Tree
+    await toolbar.openFeatureTreePane()
+    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+    await page.waitForTimeout(600)
+    await editor.expectEditor.toContain('startSketchOn(XZ)')
+    await editor.expectEditor.toContain('startProfile(')
+    await editor.expectEditor.toContain('circle(')
+
+    // Select all and delete
+    await page.keyboard.press('ControlOrMeta+A')
+    await page.keyboard.press('Delete')
+
+    // Expect that only the sketch declaration remains
+    await editor.expectEditor.toContain('startSketchOn(XZ)')
+    await editor.expectEditor.not.toContain('startProfile(')
+    await editor.expectEditor.not.toContain('|> xLine(')
+    await editor.expectEditor.not.toContain('circle(')
+    await editor.expectEditor.toContain('testcomment2')
+  })
 })
 
 test.describe('multi-profile sketching', () => {
@@ -1024,6 +1105,9 @@ profile001 = startProfile(sketch001, at=[0, 0])
     page,
     homePage,
   }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem('persistCode', '@settings(defaultLengthUnit = mm)')
+    })
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
@@ -1032,19 +1116,19 @@ profile001 = startProfile(sketch001, at=[0, 0])
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
 
-    const [startProfile1] = scene.makeMouseHelpers(568, 150)
+    const [startProfile1] = scene.makeMouseHelpers(5)
     const [endLineStartTanArc] = scene.makeMouseHelpers(701, 158)
-    const [endArcStartLine] = scene.makeMouseHelpers(745, 189)
+    const [endArcStartLine] = scene.makeMouseHelpers(765, 210)
 
     const [startProfile2] = scene.makeMouseHelpers(782, 120)
-    const [profile2Point2] = scene.makeMouseHelpers(921, 130)
+    const [profile2Point2] = scene.makeMouseHelpers(921, 120)
     const [profile2Point3] = scene.makeMouseHelpers(953, 178)
 
     const [circle1Center] = scene.makeMouseHelpers(842, 147)
-    const [circle1Radius, circle1RadiusMove] = scene.makeMouseHelpers(870, 171)
+    const [circle1Radius, circle1RadiusMove] = scene.makeMouseHelpers(842, 171)
 
-    const [circle2Center, moveCircle2Center] = scene.makeMouseHelpers(850, 222)
-    const [circle2Radius] = scene.makeMouseHelpers(843, 230)
+    const [circle2Center, moveCircle2Center] = scene.makeMouseHelpers(300, 300)
+    const [circle2Radius] = scene.makeMouseHelpers(400, 400)
 
     const [crnRect1point1] = scene.makeMouseHelpers(583, 205)
     const [crnRect1point2] = scene.makeMouseHelpers(618, 320)
@@ -1093,7 +1177,12 @@ profile001 = startProfile(sketch001, at=[0, 0])
       await editor.expectEditor.toContain('profile001 = startProfile(')
 
       await endLineStartTanArc()
-      await editor.expectEditor.toContain(/profile001 = startProfile.*\|> line/)
+
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        /profile001 = startProfile.*\|> xLine/
+      )
+
       await toolbar.selectTangentialArc()
       await page.waitForTimeout(300)
       // Purposefully click in a bad spot to see the tan arc warning
@@ -1101,9 +1190,12 @@ profile001 = startProfile(sketch001, at=[0, 0])
       await page.waitForTimeout(300)
       await endLineStartTanArc({ delay: 544 })
 
+      await page.waitForTimeout(100)
       await endArcStartLine()
+
+      await page.waitForTimeout(100)
       await editor.expectEditor.toContain(
-        /profile001 = startProfile.*\|> line.*\|> tangentialArc/
+        /profile001 = startProfile.*\|> xLine.*\|> tangentialArc/
       )
 
       // Add a three-point arc segment
@@ -1134,7 +1226,6 @@ profile001 = startProfile(sketch001, at=[0, 0])
       // Verify the three-point arc was created correctly
       await editor.expectEditor.toContain('arc(')
       await editor.expectEditor.toContain('interiorAbsolute')
-      await editor.expectEditor.toContain('')
 
       // Switch back to line tool to continue
       await toolbar.lineBtn.click()
@@ -1148,7 +1239,10 @@ profile001 = startProfile(sketch001, at=[0, 0])
       await lineSegmentClick()
 
       await editor.expectEditor.toContain(/arc\(.*\|> line\(/)
+
+      await page.waitForTimeout(300)
       await startProfile1()
+
       await editor.expectEditor.toContain(
         `|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`,
@@ -1163,17 +1257,21 @@ profile001 = startProfile(sketch001, at=[0, 0])
       await editor.expectEditor.toContain(/profile002 = startProfile/)
       await profile2Point2()
       await page.waitForTimeout(300)
-      await editor.expectEditor.toContain(/profile002 = startProfile.*\|> line/)
+
+      await editor.expectEditor.toContain(
+        /profile002 = startProfile.*\|> xLine/
+      )
       await profile2Point3()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
-        /profile002 = startProfile.*\|> line.*\|> line/
+        /profile002 = startProfile.*\|> xLine.*\|> line/
       )
     })
 
     await test.step('create two circles in a row without unequip', async () => {
       await toolbar.circleBtn.click()
 
+      await page.waitForTimeout(300)
       await circle1Center()
       await page.waitForTimeout(300)
       await circle1RadiusMove()
@@ -1189,19 +1287,25 @@ profile001 = startProfile(sketch001, at=[0, 0])
       await moveCircle2Center()
       await circle2Center({ delay: 50 })
       await page.waitForTimeout(300)
+
       await circle2Radius()
       await editor.expectEditor.toContain(/profile004 = circle\(sketch001/)
       await page.waitForTimeout(300)
     })
+
     await test.step('create two corner rectangles in a row without unequip', async () => {
       await toolbar.rectangleBtn.click()
       await expect(toolbar.rectangleBtn).toHaveAttribute('aria-pressed', 'true')
+      await page.waitForTimeout(300)
 
       await crnRect1point1()
+
       await editor.expectEditor.toContain(
         /profile005 = startProfile\(sketch001/
       )
       await editor.closePane()
+
+      await page.waitForTimeout(300)
       await crnRect1point2()
       await editor.expectEditor.toContain(
         /profile005 = startProfile.*angledLine.*angledLine.*angledLine.*line.*close/
@@ -1219,6 +1323,7 @@ profile001 = startProfile(sketch001, at=[0, 0])
 
     await test.step('create two center rectangles in a row without unequip', async () => {
       await toolbar.selectCenterRectangle()
+      await page.waitForTimeout(300)
 
       await cntrRect1point1()
       await page.waitForTimeout(300)

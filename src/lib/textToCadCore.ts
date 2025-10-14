@@ -46,7 +46,7 @@ export async function getTextToCadCreateResult(
 ): Promise<TextToCadResponse | Error> {
   const client = createKCClient(token)
   const data = await kcCall(() =>
-    ml.get_text_to_cad_parts_for_user({ client, id })
+    ml.get_text_to_cad_part_for_user({ client, id })
   )
 
   return data
@@ -101,7 +101,10 @@ export async function textToCadMlPromptsBelongingToConversation(
     })
     promptsPagers.set(key, pager)
   }
-  const pager = promptsPagers.get(key) as PromptsPager
+  const pager = promptsPagers.get(key)
+  if (!pager) {
+    return new Error('pager is undefined')
+  }
   if (!pager.hasNext() && args.pageToken) {
     pager.reset()
   }

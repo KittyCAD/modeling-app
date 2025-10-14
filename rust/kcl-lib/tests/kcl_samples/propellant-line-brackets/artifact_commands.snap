@@ -1774,18 +1774,5 @@ description: Artifact commands propellant-line-brackets.kcl
         ]
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

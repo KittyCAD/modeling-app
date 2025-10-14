@@ -712,7 +712,7 @@ impl ExecutorContext {
     }
 
     #[async_recursion]
-    pub(super) async fn execute_expr<'a: 'async_recursion>(
+    pub(crate) async fn execute_expr<'a: 'async_recursion>(
         &self,
         init: &Expr,
         exec_state: &mut ExecState,

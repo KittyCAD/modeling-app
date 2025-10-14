@@ -8,7 +8,7 @@ description: Operations executed nested_windows_main_kcl.kcl
       "type": "GroupBegin",
       "group": {
         "type": "ModuleInstance",
-        "name": "main.kcl",
+        "name": "nested/foo/bar/main.kcl",
         "moduleId": 0
       },
       "nodePath": {
@@ -128,8 +128,6 @@ description: Operations executed nested_windows_main_kcl.kcl
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -235,14 +233,5 @@ description: Operations executed nested_windows_main_kcl.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

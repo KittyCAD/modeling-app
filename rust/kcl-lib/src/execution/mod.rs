@@ -60,7 +60,7 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
-enum StatementKind<'a> {
+pub(crate) enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,
 }
@@ -1043,7 +1043,10 @@ impl ExecutorContext {
             ModulePath::Main => {
                 // This should never happen.
             }
-            ModulePath::Local { value, .. } => {
+            ModulePath::Local {
+                value,
+                original_import_path,
+            } => {
                 // We only want to display the top-level module imports in
                 // the Feature Tree, not transitive imports.
                 if universe_map.contains_key(value) {
@@ -1058,11 +1061,12 @@ impl ExecutorContext {
                         NodePath::placeholder()
                     };
 
+                    let name = match original_import_path {
+                        Some(value) => value.to_string_lossy(),
+                        None => value.file_name().unwrap_or_default(),
+                    };
                     exec_state.push_op(Operation::GroupBegin {
-                        group: Group::ModuleInstance {
-                            name: value.file_name().unwrap_or_default(),
-                            module_id,
-                        },
+                        group: Group::ModuleInstance { name, module_id },
                         node_path,
                         source_range,
                     });

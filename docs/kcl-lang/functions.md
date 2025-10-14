@@ -27,8 +27,7 @@ fn add(left, right) {
 total = add(left = 1, right = 2)
 ```
 
-Functions can also declare one *unlabeled* arg. If you do want to declare an unlabeled arg, it must
-be the first arg declared.
+Functions can also declare one *unlabeled* arg. If you do want to declare an unlabeled arg, it must be the first arg and prefixed with @, like this:
 
 ```
 // The @ indicates an argument is used without a label.
@@ -43,4 +42,28 @@ fn add(@x, delta) {
 
 two = increment(1)
 three = add(1, delta = 2)
+```
+
+Below shows how a custom function must be called if it has a labeled argument, and another example with an unlabeled argument:
+
+```
+@settings(defaultLengthUnit = mm)
+
+// All args must be labeled when calling (no @ on first param)
+fn cube1(offsetX, offsetY, radius, length) {
+  return startSketchOn(XY)
+    |> polygon(radius = radius, numSides = 4, center = [offsetX, offsetY])
+    |> extrude(length = length)
+}
+
+// First arg may be unlabeled at call sites (because of @)
+fn cube2(@offsetX, offsetY, radius, length) {
+  return startSketchOn(XY)
+    |> polygon(radius = radius, numSides = 4, center = [offsetX, offsetY])
+    |> extrude(length = length)
+}
+
+// Function Calls
+testCube1 = cube1(offsetX = 0, offsetY = 6, radius = 5, length = 5)  // all labeled
+testCube2 = cube2(0,           offsetY = 10, radius = 5, length = 5)  // first unlabeled works here
 ```

@@ -3,9 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed pipe-flange-assembly.kcl
 ---
 {
-  "public/kcl-samples/pipe-flange-assembly/1120t74-pipe.kcl": [],
-  "public/kcl-samples/pipe-flange-assembly/68095k348-flange.kcl": [],
-  "public/kcl-samples/pipe-flange-assembly/91251a404-bolt.kcl": [],
   "public/kcl-samples/pipe-flange-assembly/9472k188-gasket.kcl": [
     {
       "type": "StdLibCall",
@@ -138,8 +135,6 @@ description: Operations executed pipe-flange-assembly.kcl
       "sourceRange": []
     }
   ],
-  "public/kcl-samples/pipe-flange-assembly/95479a127-hex-nut.kcl": [],
-  "public/kcl-samples/pipe-flange-assembly/98017a257-washer.kcl": [],
   "public/kcl-samples/pipe-flange-assembly/main.kcl": [
     {
       "type": "GroupBegin",
@@ -3689,8 +3684,6 @@ description: Operations executed pipe-flange-assembly.kcl
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -3796,14 +3789,5 @@ description: Operations executed pipe-flange-assembly.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

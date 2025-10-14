@@ -33,7 +33,7 @@ import type {
   VariableDeclarator,
   VariableMap,
 } from '@src/lang/wasm'
-import type { Selection } from '@src/lib/selections'
+import type { Selection } from '@src/machines/modelingSharedTypes'
 import { err, reportRejection } from '@src/lib/trap'
 import { isArray, roundOff } from '@src/lib/utils'
 

@@ -1038,12 +1038,9 @@ description: Operations executed pattern_into_union.kcl
           }
         ]
       },
-      "sourceRange": [],
-      "isError": true
+      "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -1149,14 +1146,5 @@ description: Operations executed pattern_into_union.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }
