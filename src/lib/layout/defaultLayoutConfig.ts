@@ -10,7 +10,7 @@ import { LayoutType, type Layout } from '@src/lib/layout/types'
  * - a right (in LTR languages) sidebar with:
  *   - Text-to-CAD
  */
-export const initialDefaultLayout: Layout = {
+export const defaultLayoutConfig: Layout = {
   id: crypto.randomUUID(),
   label: 'root',
   type: LayoutType.Splits,

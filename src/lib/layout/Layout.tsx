@@ -86,19 +86,19 @@ const LayoutStateContext = createContext<LayoutState>({
 
 export const useLayoutState = () => useContext(LayoutStateContext)
 
-interface LayoutRootProps {
+interface LayoutRootNodeProps {
   areaLibrary?: LayoutState['areaLibrary']
   layout: Layout
   setLayout: Dispatch<SetStateAction<Layout>>
   layoutName?: string
 }
 
-export function LayoutRoot({
+export function LayoutRootNode({
   areaLibrary,
   layout,
   setLayout,
   layoutName = 'default',
-}: LayoutRootProps) {
+}: LayoutRootNodeProps) {
   useEffect(() => {
     saveLayout({ layout, layoutName })
   }, [layout, layoutName])

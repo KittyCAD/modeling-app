@@ -59,8 +59,7 @@ import {
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
-import { LayoutRoot } from '@src/lib/layout/Layout'
-import { defaultLayout } from '@src/lib/layout/utils'
+import { LayoutRootNode, defaultLayout } from '@src/lib/layout'
 
 // CYCLIC REF
 
@@ -263,7 +262,7 @@ export function App() {
         </div>
         <ModalContainer />
         <section className="pointer-events-auto flex-1">
-          <LayoutRoot layout={layout} setLayout={setLayout} />
+          <LayoutRootNode layout={layout} setLayout={setLayout} />
         </section>
         {/* <CamToggle /> */}
         <StatusBar

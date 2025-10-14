@@ -17,7 +17,7 @@ import type { TooltipProps } from '@src/components/Tooltip'
 import { throttle } from '@src/lib/utils'
 import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
 import { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
-import { initialDefaultLayout } from '@src/lib/layout/defaultLayout'
+import { defaultLayoutConfig } from '@src/lib/layout/defaultLayoutConfig'
 import { isErr } from '@src/lib/trap'
 import { isCustomIconName } from '@src/components/CustomIcon'
 
@@ -27,7 +27,7 @@ const LAYOUT_SAVE_THROTTLE = 500
 // Attempt to load a persisted layout
 const defaultLayoutLoadResult = loadLayout('default')
 export const defaultLayout = isErr(defaultLayoutLoadResult)
-  ? initialDefaultLayout
+  ? defaultLayoutConfig
   : defaultLayoutLoadResult
 
 /**

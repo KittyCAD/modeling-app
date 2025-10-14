@@ -39,7 +39,7 @@ import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
 import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
-import { TestLayout } from '@src/lib/layout/TestLayout'
+import { TestLayout } from '@src/lib/layout'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
