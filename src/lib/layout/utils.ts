@@ -1,6 +1,6 @@
 import type {
   Action,
-  BasicLayout,
+  BaseLayout,
   Direction,
   Layout,
   LayoutWithMetadata,
@@ -410,7 +410,7 @@ export function parseLayoutFromJsonString(
 }
 
 export function parseLayoutInner(l: unknown): Layout | Error {
-  const basicResult = parseBasicLayout(l)
+  const basicResult = parseBaseLayout(l)
   if (isErr(basicResult)) {
     console.error(basicResult)
     return basicResult
@@ -440,23 +440,26 @@ function validateActionType(a: unknown): a is keyof typeof actionTypeRegistry {
   )
 }
 
-function parseBasicLayout(layout: unknown): Error | BasicLayout {
-  const isObject = typeof layout === 'object' && layout !== null
-  if (!isObject) {
+/** Basic record (object) type narrowing */
+function isRecord(x: unknown): x is Record<string, unknown> {
+  return typeof x === 'object' && x !== null
+}
+
+/**
+ * Healable properties: `id`, `label`
+ * Fatal: `type`
+ */
+function parseBaseLayout(layout: unknown): Error | BaseLayout {
+  if (!isRecord(layout)) {
     return new Error('Invalid layout')
   }
 
   // Invalid layout type is fatal
-  const hasType = 'type' in layout && typeof layout.type === 'string'
-  if (!hasType) {
+  if (typeof layout.type !== 'string') {
     return new Error('Layout is missing type')
   }
 
-  const hasValidType =
-    'type' in layout &&
-    typeof layout.type === 'string' &&
-    validateLayoutType(layout.type)
-  if (hasType && !hasValidType) {
+  if (!validateLayoutType(layout.type)) {
     return new Error(`Layout has invalid type "${layout.type}"`)
   }
 
@@ -472,13 +475,17 @@ function parseBasicLayout(layout: unknown): Error | BasicLayout {
       : 'Unlabeled area'
 
   return {
-    ...layout,
+    type: layout.type,
     id,
     label,
   }
 }
 
-export function parseSimpleLayout(layout: BasicLayout): SimpleLayout | Error {
+/**
+ * Healable properties: `id`, `label` from BaseLayout
+ * Fatal: `areaType`
+ */
+export function parseSimpleLayout(layout: BaseLayout): SimpleLayout | Error {
   // Must have a registered areaType, fatal if not
   const hasValidAreaType =
     'areaType' in layout && validateAreaType(layout.areaType)
@@ -489,59 +496,63 @@ export function parseSimpleLayout(layout: BasicLayout): SimpleLayout | Error {
   return layout as SimpleLayout
 }
 
-function validateOrientation(o: unknown): o is Orientation {
+/** For use in type narrowing */
+function isOrientation(o: unknown): o is Orientation {
   return typeof o === 'string' && (o === 'block' || o === 'inline')
 }
-export function parseSplitLayout(layout: BasicLayout): SplitLayout | Error {
+
+/**
+ * Healable properties:
+ *  - `children`: drop invalid children
+ *  - `sizes`: fall back to even division
+ * Fatal: `areaType`
+ */
+export function parseSplitLayout(
+  layout: BaseLayout & Partial<SplitLayout>
+): SplitLayout | Error {
   // No children is fatal
-  const hasChildren = 'children' in layout && isArray(layout.children)
-  if (!hasChildren) {
+  if (!isArray(layout.children)) {
     return new Error('Split layout with no children, invalid')
   }
 
   // Invalid orientation is healable
-  const hasValidOrientation =
-    'orientation' in layout && validateOrientation(layout.orientation)
-  if (!hasValidOrientation) {
-    layout.orientation = 'inline'
+  const orientation = isOrientation(layout.orientation)
+    ? layout.orientation
+    : 'inline'
+
+  // Drop catastrophically erroring children
+  const newChildren: Layout[] = []
+  const newSizes: number[] = []
+  // Iterate in reverse to not mess up size indices
+  for (let i = layout.children.length - 1; i >= 0; i--) {
+    const parsedChild = parseLayoutInner(layout.children[i])
+    if (!isErr(parsedChild)) {
+      newChildren.unshift(parsedChild)
+      if (isArray(layout.sizes)) {
+        newSizes.unshift(layout.sizes[i])
+      }
+    }
   }
 
   // Invalid sizes is healable, divide space evenly
   const hasValidSizes =
-    'sizes' in layout &&
-    isArray(layout.sizes) &&
-    isArray(layout.children) &&
-    layout.sizes.length === layout.children.length &&
-    layout.sizes.every(Number.isFinite) &&
-    layout.sizes.reduce((a, b) => a + b, 0) === 100
-  if (!hasValidSizes) {
-    const length = isArray(layout.children) ? layout.children.length : 1
-    layout.sizes = new Array(length).fill(100 / length)
-  }
+    isArray(newSizes) &&
+    newSizes.length === layout.children.length &&
+    newSizes.reduce((a, b) => a + b, 0) === 100
+  const length = layout.children.length || 1
+  const fallbackSizes: number[] = new Array(length).fill(100 / length)
+  const sizes =
+    isArray(layout.sizes) && hasValidSizes ? layout.sizes : fallbackSizes
 
-  // Drop catastrophically erroring children
-  // TODO: propogate errors as warnings
-  if (
-    'children' in layout &&
-    isArray(layout.children) &&
-    'sizes' in layout &&
-    isArray(layout.sizes)
-  ) {
-    // Iterate in reverse so we can remove without messing up indices
-    for (let i = layout.children.length - 1; i >= 0; i--) {
-      const parsedChild = parseLayoutInner(layout.children[i])
-      if (isErr(parsedChild)) {
-        console.error(parsedChild)
-        layout.children.splice(i, 1)
-        layout.sizes.splice(i, 1)
-      } else {
-        layout.children[i] = parsedChild
-      }
-    }
-  }
-  return layout as SplitLayout
+  return {
+    ...layout,
+    children: newChildren,
+    orientation,
+    sizes,
+  } satisfies SplitLayout
 }
 
+/** For type narrowing */
 function validateSide(s: unknown): s is Side {
   return (
     typeof s === 'string' &&
@@ -549,146 +560,135 @@ function validateSide(s: unknown): s is Side {
   )
 }
 
+/**
+ * Healable properties: `id`, `label`
+ * Fatal: `actionType`, `icon`
+ */
 export function parseAction(action: unknown): Action | Error {
-  const isObject = action instanceof Object && action !== null
-  if (!isObject) {
+  if (!isRecord(action)) {
     return new Error('Action is not object')
   }
 
   // Heal an invalid ID
-  const hasValidId = 'id' in action && typeof action.id === 'string'
-  if (!hasValidId) {
-    action.id = crypto.randomUUID()
-  }
+  const id = typeof action.id === 'string' ? action.id : crypto.randomUUID()
 
   // Heal invalid label
-  const hasValidLabel = 'label' in action && typeof action.label === 'string'
-  if (!hasValidLabel) {
-    action.label = 'Unlabeled area'
-  }
+  const label =
+    typeof action.label === 'string' ? action.label : 'Unlabeled action'
 
   // Invalid actionType is fatal
-  const hasValidActionType =
-    'actionType' in action &&
-    typeof action.actionType === 'string' &&
-    validateActionType(action.actionType)
-  if (!hasValidActionType) {
+  if (
+    !(
+      typeof action.actionType === 'string' &&
+      validateActionType(action.actionType)
+    )
+  ) {
     return new Error(
       `Layout has ${action.actionType ? 'invalid' : 'missing'} type ${action.actionType ?? ''}`
     )
   }
 
   // Having a missing or invalid icon is fatal
-  const hasValidIcon =
-    'icon' in action &&
-    typeof action.icon === 'string' &&
-    isCustomIconName(action.icon)
-  if (!hasValidIcon) {
+  if (!(typeof action.icon === 'string' && isCustomIconName(action.icon))) {
     return new Error(
       `Layout has ${action.actionType ? 'invalid' : 'missing'} type ${action.actionType ?? ''}`
     )
   }
 
-  return action as Action
+  return {
+    actionType: action.actionType,
+    icon: action.icon,
+    id,
+    label,
+  } satisfies Action
 }
 
-function parsePaneLayout(layout: BasicLayout): PaneLayout | Error {
+/**
+ * Healable properties:
+ *  - `children`: drop invalid children
+ *  - `sizes`: fall back to even division
+ * Fatal: `areaType`
+ */
+function parsePaneLayout(
+  layout: BaseLayout & Partial<PaneLayout>
+): PaneLayout | Error {
   // No children is fatal
-  const hasChildren = 'children' in layout && isArray(layout.children)
-  if (!hasChildren) {
+  if (!isArray(layout.children)) {
     return new Error('Pane layout with no children, invalid')
   }
 
   // Invalid side is healable, default to the inline-start (left in LTR)
-  const hasValidSide = 'side' in layout && validateSide(layout.side)
-  if (!hasValidSide) {
-    layout.side = 'block-start'
-  }
+  const side = validateSide(layout.side) ? layout.side : 'block-start'
 
   // Invalid orientation is healable
-  const hasValidSplitOrientation =
-    'splitOrientation' in layout && validateOrientation(layout.splitOrientation)
-  if (!hasValidSplitOrientation) {
-    layout.splitOrientation = 'block'
-  }
+  const splitOrientation = isOrientation(layout.splitOrientation)
+    ? layout.splitOrientation
+    : 'block'
 
   // Drop catastrophically erroring children
-  // TODO: propogate errors as warnings
-  if (
-    'children' in layout &&
-    isArray(layout.children) &&
-    'sizes' in layout &&
-    isArray(layout.sizes)
-  ) {
-    // Iterate in reverse so we can remove without messing up indices
-    for (let i = layout.children.length - 1; i >= 0; i--) {
-      const child = layout.children[i]
-      //
-      // Having an invalid icon is fatal
-      const childHasValidIcon =
-        child instanceof Object &&
-        'icon' in child &&
-        typeof child.icon === 'string' &&
-        isCustomIconName(child.icon)
-      if (!childHasValidIcon) {
-        layout.children.splice(i, 1)
-        layout.sizes.splice(i, 1)
-      } else {
-        const parsedChild = parseLayoutInner(child)
-        if (isErr(parsedChild)) {
-          console.error(`LAYOUT PARSE ERROR ${parsedChild.message}`)
-          layout.children.splice(i, 1)
-          layout.sizes.splice(i, 1)
-        } else {
-          // We assign over in case the parsing healed anything
-          layout.children[i] = parsedChild
-        }
+  const newChildren: PaneLayout['children'] = []
+  const newSizes: number[] = []
+  // Iterate in reverse to not mess up size indices
+  for (let i = layout.children.length - 1; i >= 0; i--) {
+    const child = layout.children[i]
+    const parsedChild = parseLayoutInner(child)
+    if (
+      !isErr(parsedChild) &&
+      typeof child.icon === 'string' &&
+      isCustomIconName(child.icon)
+    ) {
+      newChildren.unshift({
+        ...parsedChild,
+        icon: child.icon,
+      })
+      if (isArray(layout.sizes)) {
+        newSizes.unshift(layout.sizes[i])
       }
     }
   }
 
   // Invalid active indices is healable, just make the first active
-  const hasValidActiveIndices =
-    'activeIndices' in layout &&
+  const activeIndices =
     isArray(layout.activeIndices) &&
     layout.activeIndices.every(Number.isSafeInteger) &&
-    layout.activeIndices.every((a) => a >= 0 && a < layout.children.length)
-  if (!hasValidActiveIndices) {
-    layout.activeIndices = [0]
-  }
+    layout.activeIndices.every((a) => a >= 0 && a < newChildren.length)
+      ? layout.activeIndices
+      : [0]
 
-  // Invalid sizes is healable, divide space evenly among activeIndices
-  const hasValidSizes =
-    'sizes' in layout &&
-    isArray(layout.sizes) &&
-    'activeIndices' in layout &&
-    isArray(layout.activeIndices) &&
-    layout.sizes.length === layout.activeIndices.length &&
-    layout.sizes.every(Number.isFinite) &&
-    layout.sizes.reduce((a, b) => a + b, 0) === 100
-  if (!hasValidSizes) {
-    const length = isArray(layout.activeIndices)
-      ? layout.activeIndices.length
-      : 1
-    layout.sizes = new Array(length).fill(100 / length)
-  }
+  // Invalid sizes is healable, divide space evenly
+  const length = activeIndices.length || 1
+  const fallbackSizes: number[] = new Array(length).fill(100 / length)
+  const sizes =
+    isArray(newSizes) &&
+    newSizes.length === activeIndices.length &&
+    newSizes.reduce((a, b) => a + b, 0) === 100
+      ? newSizes
+      : fallbackSizes
 
   // Drop catastrophically erroring actions
   // TODO: propogate errors as warnings
+  const actions: NonNullable<PaneLayout['actions']> = []
   if ('actions' in layout && isArray(layout.actions)) {
     // Iterate in reverse so we can remove without messing up indices
     for (let i = layout.actions.length - 1; i >= 0; i--) {
       const action = layout.actions[i]
       const parsedAction = parseAction(action)
-      if (isErr(parsedAction)) {
-        console.error(`LAYOUT PARSE ERROR ${parsedAction.message}`)
-        layout.actions.splice(i, 1)
-      } else {
+      if (!isErr(parsedAction)) {
         // We assign over in case the parsing healed anything
-        layout.actions[i] = parsedAction
+        layout.actions.unshift(parsedAction)
+      } else {
+        console.error(`ACTION PARSE ERROR ${parsedAction.message}`)
       }
     }
   }
 
-  return layout
+  return {
+    ...layout,
+    actions,
+    activeIndices,
+    children: newChildren,
+    side,
+    sizes,
+    splitOrientation,
+  } satisfies PaneLayout
 }

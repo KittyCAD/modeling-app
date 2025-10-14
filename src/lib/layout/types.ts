@@ -14,7 +14,7 @@ type HasIdAndLabel = {
   id: string // uuid
   label: string
 }
-export type BasicLayout = HasIdAndLabel & {
+export type BaseLayout = HasIdAndLabel & {
   type: LayoutType
 }
 type WithChildren = { children: Layout[] }
@@ -31,7 +31,7 @@ type WithIcon = {
   icon: CustomIconName
 }
 
-export type SplitLayout = BasicLayout &
+export type SplitLayout = BaseLayout &
   WithChildren &
   WithSizes &
   WithOrientation & {
@@ -41,7 +41,7 @@ export type Action = HasIdAndLabel &
   WithIcon & {
     actionType: keyof typeof actionTypeRegistry
   }
-export type PaneLayout = BasicLayout &
+export type PaneLayout = BaseLayout &
   WithSizes &
   WithSide & {
     type: LayoutType.Panes
@@ -57,7 +57,7 @@ export type PaneLayout = BasicLayout &
 export interface Closeable {
   onClose: () => void
 }
-export type SimpleLayout = BasicLayout & {
+export type SimpleLayout = BaseLayout & {
   type: LayoutType.Simple
   areaType: keyof typeof areaTypeRegistry
 }
