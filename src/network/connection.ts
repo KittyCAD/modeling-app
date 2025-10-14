@@ -478,6 +478,7 @@ export class Connection extends EventTarget {
       connectionPromiseResolve: this.deferredConnection.resolve,
       // don't bind this, it was passed into the class
       handleOnDataChannelMessage: this.handleOnDataChannelMessage,
+      tearDownManager: this.tearDownManager.bind(this),
     })
 
     // Watch out human! The names of the next couple events are really similar!
