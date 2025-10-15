@@ -1301,6 +1301,7 @@ mod test {
                     crate::parsing::ast::types::FunctionExpression::dummy(),
                     sn2,
                     false,
+                    false,
                 )),
                 meta: Vec::new(),
             },

@@ -765,6 +765,7 @@ impl ExecutorContext {
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
                 let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
+                let experimental = attrs.map(|a| a.experimental).unwrap_or_default();
                 if let Some(attrs) = attrs
                     && (attrs.impl_ == annotations::Impl::Rust || attrs.impl_ == annotations::Impl::RustConstraint)
                 {
@@ -789,6 +790,7 @@ impl ExecutorContext {
                             function_expression.clone(),
                             exec_state.mut_stack().snapshot(),
                             matches!(&exec_state.mod_local.path, ModulePath::Std { .. }),
+                            experimental,
                         )),
                         meta: vec![metadata.to_owned()],
                     }
