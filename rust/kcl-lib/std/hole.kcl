@@ -16,6 +16,8 @@ export fn simple() {
 }
 
 /// Cut a straight vertical counterbore at the top of the hole.
+/// Typically used when a fastener (e.g. the head cap on a screw)
+/// needs to sit flush with the solid's surface.
 /// ```
 /// // `hole` module is still experimental, so enable experimental features here.
 /// @settings(experimentalFeatures = allow) 
@@ -53,6 +55,8 @@ export fn counterbore(diameter: number(Length), depth: number(Length)) {
 }
 
 /// Cut an angled countersink at the top of the hole.
+/// Typically used when a conical screw head has to sit flush
+/// with the surface being cut into.
 /// ```
 /// // `hole` module is still experimental, so enable experimental features here.
 /// @settings(experimentalFeatures = allow) 
@@ -105,12 +109,62 @@ export fn blind(depth: number(Length), diameter: number(Length)) {
 
 
 /// End the hole in an angle, like the end of a drill.
+/// ```
+/// // `hole` module is still experimental, so enable experimental features here.
+/// @settings(experimentalFeatures = allow)
+/// 
+/// // Sketch a cube, so we have something to drill into.
+/// cubeLen = 20
+/// bigCube = startSketchOn(XY)
+///   |> startProfile(at = [-cubeLen / 2, -cubeLen / 2 + 10])
+///   |> line(end = [cubeLen, 0], tag = $a)
+///   |> line(end = [0, cubeLen], tag = $b)
+///   |> line(end = [-cubeLen, 0], tag = $c)
+///   |> line(end = [0, -cubeLen], tag = $d)
+///   |> close()
+///   |> extrude(length = cubeLen, symmetric = true)
+/// 
+/// // Add a hole with a very pointy drilled bottom.
+/// bigCube
+///   |> hole::hole(
+///        face = a,
+///        cutAt = [0, 0],
+///        holeBottom = hole::drill(pointAngle = 25deg),
+///        holeBody = hole::blind(depth = 2, diameter = 8),
+///        holeType = hole::simple(),
+///      )
+/// ```
 @(experimental = true)
 export fn drill(pointAngle: number(Angle)) {
   return { drillBitAngle = pointAngle }
 }
 
 /// End the hole flat.
+/// ```
+/// // `hole` module is still experimental, so enable experimental features here.
+/// @settings(experimentalFeatures = allow)
+/// 
+/// // Sketch a cube, so we have something to drill into.
+/// cubeLen = 20
+/// bigCube = startSketchOn(XY)
+///   |> startProfile(at = [-cubeLen / 2, -cubeLen / 2 + 10])
+///   |> line(end = [cubeLen, 0], tag = $a)
+///   |> line(end = [0, cubeLen], tag = $b)
+///   |> line(end = [-cubeLen, 0], tag = $c)
+///   |> line(end = [0, -cubeLen], tag = $d)
+///   |> close()
+///   |> extrude(length = cubeLen, symmetric = true)
+/// 
+/// // Add a hole with a flat bottom.
+/// bigCube
+///   |> hole::hole(
+///        face = a,
+///        cutAt = [0, 0],
+///        holeBottom = hole::flat(),
+///        holeBody = hole::blind(depth = 2, diameter = 8),
+///        holeType = hole::simple(),
+///      )
+/// ```
 @(experimental = true)
 export fn flat() {
   return { drillBitAngle = 179.99deg }
