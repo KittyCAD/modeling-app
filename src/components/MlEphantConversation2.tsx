@@ -94,12 +94,9 @@ export interface MlCopilotToolsProps {
   children: ReactNode
 }
 const MlCopilotTools = (props: MlCopilotToolsProps) => {
-  const [show, setShow] = useState<boolean>(false)
-
   const tools = []
 
   const onClick = (tool: MlCopilotTool) => {
-    setShow(false)
     props.onAdd(tool)
   }
 
@@ -108,6 +105,7 @@ const MlCopilotTools = (props: MlCopilotToolsProps) => {
       <div
         tabIndex={0}
         role="button"
+        key={tool}
         onClick={() => onClick(tool)}
         className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md"
       >
@@ -119,32 +117,21 @@ const MlCopilotTools = (props: MlCopilotToolsProps) => {
 
   return (
     <div className="flex-none">
-      <div className={`relative ${show ? '' : 'hidden'}`}>
-        <div
-          className="flex flex-col gap-2 absolute bg-default mb-1 p-2 border border-chalkboard-70 text-sm rounded-md"
-          style={{ left: 1, bottom: 0 }}
+      <Popover className="relative">
+        <Popover.Button className="bg-default flex flex-row items-center gap-1 p-0 pr-2">
+          <CustomIcon name="settings" className="w-6 h-6" />
+          {props.children}
+          <CustomIcon name="plus" className="w-5 h-5" />
+        </Popover.Button>
+        <Popover.Panel
+          anchor="top left"
+          className="flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-sm rounded-md"
         >
           {tools}
-        </div>
-      </div>
-      <button
-        onClick={() => setShow(!show)}
-        className="bg-default flex flex-row items-center gap-1 p-0 pr-2"
-      >
-        <CustomIcon name="settings" className="w-6 h-6" />
-        {props.children}
-        <CustomIcon
-          onClick={() => setShow(!show)}
-          name="plus"
-          className="w-5 h-5"
-        />
-      </button>
+        </Popover.Panel>
+      </Popover>
     </div>
   )
-}
-
-const Dots = (props: { onClick: () => void }) => {
-  return <button onClick={props.onClick}>...</button>
 }
 
 export interface MlEphantExtraInputsProps {
@@ -157,30 +144,29 @@ export interface MlEphantExtraInputsProps {
   onAdd: (tool: MlCopilotTool) => void
 }
 export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
-  const [show, setShow] = useState<boolean>(false)
   const [overflow, setOverflow] = useState<boolean>(false)
   const widthFromBeforeCollapse = useRef<number>(0)
   const refWrap = useRef<HTMLDivElement>(null)
   const refTools = useRef<HTMLDivElement>(null)
 
-  for (let tool of ML_COPILOT_TOOLS) {
-    if (props.forcedTools.has(tool)) continue
-    if (props.excludedTools.has(tool)) continue
+  useEffect(() => {
+    for (let tool of ML_COPILOT_TOOLS) {
+      if (props.forcedTools.has(tool)) continue
+      if (props.excludedTools.has(tool)) continue
 
-    if (ML_COPILOT_TOOLS_META[tool].regexp.test(props.inputToMatch)) {
-      props.onAdd(tool)
+      if (ML_COPILOT_TOOLS_META[tool].regexp.test(props.inputToMatch)) {
+        props.onAdd(tool)
+      }
     }
-  }
+  }, [props.forcedTools, props.excludedTools, props.inputToMatch])
 
   const tools = Array.from(
     Array.from(props.forcedTools).filter(
       (tool) => !props.excludedTools.has(tool)
     )
-  ).map((tool) => <MlCopilotTool tool={tool} onRemove={props.onRemove} />)
-
-  if (show === true && tools.length === 0) {
-    setShow(false)
-  }
+  ).map((tool) => (
+    <MlCopilotTool key={tool} tool={tool} onRemove={props.onRemove} />
+  ))
 
   useEffect(() => {
     if (!refWrap.current) return
@@ -206,16 +192,20 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
     }
   }, [overflow, tools.length, props.context])
 
+  const popover = (
+    <Popover className="relative">
+      <Popover.Panel
+        anchor="bottom left"
+        className="flex whitespace-nowrap flex-col gap-2 hover:bg-2 bg-default mb-1 p-2 border b-3 text-sm rounded-md"
+      >
+        {tools}
+      </Popover.Panel>
+      <Popover.Button className="h-7">...</Popover.Button>
+    </Popover>
+  )
+
   return (
     <div ref={refWrap} className="flex-1 flex min-w-0 items-end">
-      <div className={`relative ${show ? '' : 'hidden'}`}>
-        <div
-          className="flex whitespace-nowrap flex-col gap-2 absolute hover:bg-2 bg-default mb-1 p-2 border b-3 text-sm rounded-md"
-          style={{ left: 1, bottom: 0 }}
-        >
-          {tools}
-        </div>
-      </div>
       <div ref={refTools} className="flex">
         {/* TODO: Generalize to a MlCopilotContexts component */}
         {props.context && (
@@ -227,7 +217,7 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           </div>
         </MlCopilotTools>
         <div className="overflow-hidden flex gap-1">
-          {overflow ? <Dots onClick={() => setShow(!show)} /> : tools}
+          {overflow ? popover : tools}
         </div>
       </div>
     </div>
@@ -440,7 +430,7 @@ export const MlEphantConversationInput = (
             data-testid="ml-ephant-conversation-input-button"
             disabled={props.disabled}
             onClick={onClick}
-            className="w-10 m-0 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
+            className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
           >
             <CustomIcon name="arrowUp" className="w-5 h-5 animate-bounce" />
           </button>
