@@ -3,7 +3,7 @@ import {
   coerceSelectionsToBody,
   getSweepArtifactFromSelection,
   type Artifact,
-} from './artifactGraph'
+} from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
 
