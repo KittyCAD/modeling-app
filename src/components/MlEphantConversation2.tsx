@@ -172,10 +172,6 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
       if (!refTools.current) return
       if (entries.length === 1) {
         const widthTools = refTools.current.getBoundingClientRect().width
-        console.log(
-          widthFromBeforeCollapse.current,
-          entries[0].contentRect.width
-        )
         if (widthTools > entries[0].contentRect.width && overflow === false) {
           widthFromBeforeCollapse.current = widthTools
           setOverflow(true)
