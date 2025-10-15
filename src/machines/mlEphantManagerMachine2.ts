@@ -215,8 +215,8 @@ export const mlEphantManagerMachine2 = setup({
         const lastResponse = lastExchange?.responses.slice(-1)[0]
         if (
           (lastExchange?.responses?.length > 0 &&
-          lastResponse !== undefined &&
-          !('end_of_stream' in lastResponse)) ||
+            lastResponse !== undefined &&
+            !('end_of_stream' in lastResponse)) ||
           lastExchange?.responses?.length === 0
         ) {
           lastExchange.responses.push({
