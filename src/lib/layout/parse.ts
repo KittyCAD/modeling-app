@@ -170,8 +170,10 @@ export function parseSplitLayout(
     isArray(newSizes) &&
     newSizes.length === layout.children.length &&
     newSizes.reduce((a, b) => a + b, 0) === 100
-  const length = layout.children.length || 1
-  const fallbackSizes: number[] = new Array(length).fill(100 / length)
+  const length = layout.children.length
+  const fallbackSizes: number[] = length
+    ? new Array(length).fill(100 / length)
+    : []
   const sizes =
     isArray(layout.sizes) && hasValidSizes ? layout.sizes : fallbackSizes
 
@@ -294,8 +296,10 @@ function parsePaneLayout(
       : [0]
 
   // Invalid sizes is healable, divide space evenly
-  const length = activeIndices.length || 1
-  const fallbackSizes: number[] = new Array(length).fill(100 / length)
+  const length = activeIndices.length
+  const fallbackSizes: number[] = length
+    ? new Array(length).fill(100 / length)
+    : []
   const sizes =
     isArray(newSizes) &&
     newSizes.length === activeIndices.length &&
