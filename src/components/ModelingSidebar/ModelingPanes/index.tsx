@@ -60,6 +60,7 @@ import { useFolders } from '@src/machines/systemIO/hooks'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import { useRouteLoaderData } from 'react-router-dom'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 export type SidebarId = (typeof VALID_PANE_IDS)[number]
 
@@ -157,7 +158,7 @@ const textToCadPane: SidebarPane = {
 
 const textToCadPane2: SidebarPane = {
   id: 'text-to-cad-2',
-  icon: 'elephant',
+  icon: 'sparkles',
   keybinding: 'Ctrl + T',
   sidebarName: 'Text-to-CAD',
   cssClassOverrides: {
@@ -175,8 +176,8 @@ const textToCadPane2: SidebarPane = {
       <>
         <ModelingPaneHeader
           id={props.id}
-          icon="elephant"
-          title="Mel the ML-ephant"
+          icon="sparkles"
+          title="Text-to-CAD"
           Menu={MLEphantConversationPaneMenu2}
           onClose={props.onClose}
         />
@@ -474,11 +475,12 @@ export const sidebarPanesLeft: SidebarPane[] = [
     keybinding: 'Shift + D',
     hide: ({ settings }) => !settings.app.showDebugPanel.current,
   },
-  ...(isPlaywright() ? [textToCadPane, textToCadPane2] : []),
+  ...(isPlaywright() ? [textToCadPane2] : []),
 ]
 
 export const sidebarPanesRight: SidebarPane[] = [
-  ...(!isPlaywright() ? [textToCadPane, textToCadPane2] : []),
+  ...(IS_STAGING_OR_DEBUG && !isPlaywright() ? [textToCadPane2] : []),
+  ...(!IS_STAGING_OR_DEBUG ? [textToCadPane] : []),
 ]
 
 /**

@@ -6,7 +6,9 @@ on:
       - main
   pull_request:
   schedule:
-    - cron: 0 * * * *  # hourly
+    - cron: 0 * * * * # hourly
+  workflow_call:
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -18,17 +20,17 @@ permissions:
   actions: read
 
 jobs:
-
   prepare-wasm:
-
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-
       - uses: actions/checkout@v5
+        with:
+          repository: kittycad/modeling-app # required for 'workflow_call'
 
       - id: filter
         name: Check for Rust changes
         uses: dorny/paths-filter@v3
+        continue-on-error: true # this step fails when invoked as 'workflow_call'
         with:
           filters: |
             rust:
@@ -36,15 +38,15 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm install
 
       - name: Download Wasm cache
         id: download-wasm
-        if: ${{ github.event_name != 'schedule' && steps.filter.outputs.rust == 'false' }}
+        if: ${{ github.event_name != 'schedule' && (steps.filter.outputs.rust || 'false') == 'false' }}
         uses: dawidd6/action-download-artifact@v11
         continue-on-error: true
         with:
@@ -60,7 +62,7 @@ jobs:
           set -euox pipefail
           # Build wasm if this is a scheduled run, there are Rust changes, or
           # downloading from the wasm cache failed.
-          if [[ ${{github.event_name}} == 'schedule' || ${{steps.filter.outputs.rust}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
+          if [[ ${{github.event_name}} == 'schedule' || ${{steps.filter.outputs.rust || 'false'}} == 'true' || ${{steps.download-wasm.outcome}} == 'failure' ]]; then
             echo "should-build-wasm=true" >> $GITHUB_OUTPUT
           else
             echo "should-build-wasm=false" >> $GITHUB_OUTPUT
@@ -87,7 +89,7 @@ jobs:
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         uses: Swatinem/rust-cache@v2
         with:
-          workspaces: './rust'
+          workspaces: "./rust"
 
       - name: Build Wasm
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
@@ -108,7 +110,6 @@ jobs:
     name: e2e:snapshots
 
     steps:
-
       - uses: actions/create-github-app-token@v2
         id: app-token
         with:
@@ -118,10 +119,13 @@ jobs:
 
       - uses: actions/checkout@v5
         with:
+          repository: kittycad/modeling-app # required for 'workflow_call'
           token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/download-artifact@v4
-        name: prepared-wasm
+        with:
+          name: prepared-wasm
+          path: prepared-wasm
 
       - name: Copy prepared Wasm
         run: |
@@ -132,8 +136,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm install
@@ -156,7 +160,7 @@ jobs:
           timeout_minutes: 5
           max_attempts: 5
         env:
-          VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
@@ -168,7 +172,7 @@ jobs:
         if: failure()
         run: npm run test:snapshots -- --last-failed --update-snapshots
         env:
-          VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
@@ -191,11 +195,11 @@ jobs:
         shell: bash
         id: git-check
         run: |
-            git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
-            if git status | grep --quiet "Changes to be committed"
-            then echo "modified=true" >> $GITHUB_OUTPUT
-            else echo "modified=false" >> $GITHUB_OUTPUT
-            fi
+          git add e2e/playwright/snapshot-tests.spec.ts-snapshots e2e/playwright/snapshots
+          if git status | grep --quiet "Changes to be committed"
+          then echo "modified=true" >> $GITHUB_OUTPUT
+          else echo "modified=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Commit changes
         if: ${{ always() && steps.git-check.outputs.modified == 'true' }}
@@ -228,7 +232,6 @@ jobs:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
     steps:
-
       - uses: actions/create-github-app-token@v2
         id: app-token
         with:
@@ -238,10 +241,13 @@ jobs:
 
       - uses: actions/checkout@v5
         with:
+          repository: kittycad/modeling-app # required for 'workflow_call'
           token: ${{ steps.app-token.outputs.token }}
 
       - uses: actions/download-artifact@v4
-        name: prepared-wasm
+        with:
+          name: prepared-wasm
+          path: prepared-wasm
 
       - name: Copy prepared Wasm
         run: |
@@ -252,8 +258,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm install
@@ -283,7 +289,7 @@ jobs:
           timeout_minutes: 5
           max_attempts: 5
         env:
-          VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
@@ -351,9 +357,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          repository: kittycad/modeling-app # required for 'workflow_call'
 
       - uses: actions/download-artifact@v4
-        name: prepared-wasm
+        with:
+          name: prepared-wasm
+          path: prepared-wasm
 
       - name: Copy prepared Wasm
         run: |
@@ -364,8 +374,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
+          node-version-file: ".nvmrc"
+          cache: "npm"
 
       - name: Install dependencies
         id: deps-install
@@ -400,7 +410,7 @@ jobs:
 
       - name: npm run test:e2e:desktop
         id: retry
-        if:  ${{ !cancelled() && steps.deps-install.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.deps-install.outcome == 'success' }}
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
@@ -409,7 +419,7 @@ jobs:
           max_attempts: 9
         env:
           FAIL_ON_CONSOLE_ERRORS: true
-          VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}

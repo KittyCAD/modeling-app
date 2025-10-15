@@ -1114,3 +1114,28 @@ export async function selectionBodyFace(
     faceId: faceId,
   }
 }
+
+export function selectAllInCurrentSketch(): Selections {
+  const graphSelections: Selection[] = []
+
+  const artifactGraph = kclManager.artifactGraph
+  Object.keys(sceneEntitiesManager.activeSegments).forEach((pathToNode) => {
+    const artifact = artifactGraph
+      .values()
+      .find(
+        (g) =>
+          'codeRef' in g && JSON.stringify(g.codeRef.pathToNode) === pathToNode
+      )
+    if (artifact && ['path', 'segment'].includes(artifact.type)) {
+      const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
+      if (codeRefs?.length) {
+        graphSelections.push({ artifact, codeRef: codeRefs[0] })
+      }
+    }
+  })
+
+  return {
+    graphSelections,
+    otherSelections: [],
+  }
+}

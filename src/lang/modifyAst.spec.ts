@@ -588,7 +588,7 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
       ast,
       execState.variables,
       code,
-      pathToNode,
+      [pathToNode],
       getConstraintInfoKw,
       removeSingleConstraint,
       transformAstSketchLines
@@ -676,7 +676,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65deg, length = ${
         ast,
         execState.variables,
         code,
-        pathToNode,
+        [pathToNode],
         getConstraintInfoKw,
         removeSingleConstraint,
         transformAstSketchLines

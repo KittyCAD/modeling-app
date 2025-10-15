@@ -3,7 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed gallows-bracket.kcl
 ---
 {
-  "public/kcl-samples/gallows-bracket/lib.kcl": [],
   "public/kcl-samples/gallows-bracket/main.kcl": [
     {
       "type": "GroupBegin",
@@ -2601,9 +2600,6 @@ description: Operations executed gallows-bracket.kcl
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -2709,14 +2705,5 @@ description: Operations executed gallows-bracket.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

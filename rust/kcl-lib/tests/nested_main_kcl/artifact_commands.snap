@@ -3,7 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands nested_main_kcl.kcl
 ---
 {
-  "rust/kcl-lib/tests/nested_main_kcl/input.kcl": [],
   "rust/kcl-lib/tests/nested_main_kcl/nested/foo/bar/main.kcl": [
     {
       "cmdId": "[uuid]",
@@ -157,19 +156,5 @@ description: Artifact commands nested_main_kcl.kcl
         "edge_id": "[uuid]"
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

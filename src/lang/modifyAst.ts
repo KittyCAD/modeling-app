@@ -674,7 +674,7 @@ export function deleteSegmentOrProfileFromPipeExpression(
   modifiedAst: Node<Program>,
   memVars: VariableMap,
   code: string,
-  pathToNode: PathToNode,
+  pathToNodes: PathToNode[],
   getConstraintInfoKw: typeof GetConstraintInfoKwFn,
   removeSingleConstraint: typeof RemoveSingleConstraintFn,
   transformAstSketchLines: typeof TransformAstSketchLinesFn
@@ -710,31 +710,45 @@ export function deleteSegmentOrProfileFromPipeExpression(
     _modifiedAst = transform.modifiedAst
   })
 
-  const pipeExpression = getNodeFromPath<PipeExpression | CallExpressionKw>(
-    _modifiedAst,
-    pathToNode,
-    'PipeExpression'
-  )
-  if (err(pipeExpression)) return pipeExpression
-
-  if (pipeExpression.node.type === 'CallExpressionKw') {
-    const topLevelDeleteResult = deleteTopLevelStatement(
+  for (const pathToNode of pathToNodes) {
+    const expr = getNodeFromPath<PipeExpression | CallExpressionKw>(
       _modifiedAst,
-      pathToNode
+      pathToNode,
+      'PipeExpression'
     )
-    if (topLevelDeleteResult instanceof Error) {
-      return topLevelDeleteResult
+    if (err(expr)) {
+      return expr
     }
-    return _modifiedAst
-  }
-  const pipeInPathIndex = pathToNode.findIndex(
-    ([_, desc]) => desc === 'PipeExpression'
-  )
-  const segmentIndexInPipe = pathToNode[pipeInPathIndex + 1]
-  pipeExpression.node.body.splice(segmentIndexInPipe[0] as number, 1)
 
-  // Move up to the next segment.
-  segmentIndexInPipe[0] = Math.max((segmentIndexInPipe[0] as number) - 1, 0)
+    if (expr.node.type === 'CallExpressionKw') {
+      const topLevelDeleteResult = deleteTopLevelStatement(
+        _modifiedAst,
+        pathToNode
+      )
+      if (topLevelDeleteResult instanceof Error) {
+        return topLevelDeleteResult
+      }
+    } else {
+      const pipeInPathIndex = pathToNode.findIndex(
+        ([_, desc]) => desc === 'PipeExpression'
+      )
+      const segmentIndexInPipe = pathToNode[pipeInPathIndex + 1]
+      expr.node.body.splice(segmentIndexInPipe[0] as number, 1) // Note that this mutates _modifiedAst
+      if (!expr.node.body.length) {
+        // this pipe is empty now, it should be deleted
+        const topLevelDeleteResult = deleteTopLevelStatement(
+          _modifiedAst,
+          pathToNode
+        )
+        if (topLevelDeleteResult instanceof Error) {
+          return topLevelDeleteResult
+        }
+      }
+
+      // Move up to the next segment.
+      segmentIndexInPipe[0] = Math.max((segmentIndexInPipe[0] as number) - 1, 0)
+    }
+  }
 
   return _modifiedAst
 }
@@ -758,6 +772,47 @@ export function deleteTopLevelStatement(
   }
   const statementIndex: number = pathStep[0]
   ast.body.splice(statementIndex, 1)
+
+  updateCommentIndicesAfterDelete(ast, statementIndex)
+}
+
+function updateCommentIndicesAfterDelete(
+  ast: Node<Program>,
+  deletedIndex: number
+) {
+  const nonCodeMeta = ast.nonCodeMeta
+  const nonCodeNodes = nonCodeMeta?.nonCodeNodes
+  if (nonCodeNodes) {
+    Object.keys(nonCodeNodes)
+      // Note: ascending order by key is assumed, which is the case currently.
+      .forEach((key) => {
+        const index = Number(key) // index points to the top level profile AFTER which to place the comment
+        const indexIsValid = index > 0 || index === 0
+        if (indexIsValid && index >= deletedIndex) {
+          const currentTarget = nonCodeNodes[index]
+          if (currentTarget) {
+            const newIndex = index - 1
+            if (newIndex >= 0) {
+              // Move index up by one, if there is already one, just add to it
+              const newTarget = nonCodeNodes[index - 1]
+              if (newTarget) {
+                nonCodeNodes[index - 1] = [...newTarget, ...currentTarget]
+              } else {
+                // Just move up, nothing is there
+                nonCodeNodes[index - 1] = currentTarget
+              }
+            } else {
+              // the first top level statement was deleted -> move comment to nonCodeMeta.startNodes
+              if (!nonCodeMeta.startNodes) {
+                nonCodeMeta.startNodes = []
+              }
+              nonCodeMeta?.startNodes.push(...currentTarget)
+            }
+            delete nonCodeNodes[index]
+          }
+        }
+      })
+  }
 }
 
 export function removeSingleConstraintInfo(

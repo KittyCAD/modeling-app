@@ -311,6 +311,7 @@ export const createOnDataChannel = ({
   startPingPong,
   connectionPromiseResolve,
   handleOnDataChannelMessage,
+  tearDownManager,
 }: {
   setUnreliableDataChannel: (channel: RTCDataChannel) => void
   dispatchEvent: (event: Event) => boolean
@@ -321,6 +322,7 @@ export const createOnDataChannel = ({
   startPingPong: () => void
   connectionPromiseResolve: (value: unknown) => void
   handleOnDataChannelMessage: (event: MessageEvent<any>) => void
+  tearDownManager: (options?: ManagerTearDown) => void
 }) => {
   const onDataChannel = (event: RTCDataChannelEvent) => {
     dispatchEvent(
@@ -349,6 +351,7 @@ export const createOnDataChannel = ({
       onDataChannelOpen,
       onDataChannelError,
       onDataChannelMessage,
+      tearDownManager,
     })
 
     const metaClose = () => {
@@ -470,16 +473,23 @@ export const createOnDataChannelClose = ({
   onDataChannelOpen,
   onDataChannelError,
   onDataChannelMessage,
+  tearDownManager,
 }: {
   unreliableDataChannel: RTCDataChannel
   onDataChannelOpen: (event: Event) => void
   onDataChannelError: (event: Event) => void
   onDataChannelMessage: (event: MessageEvent<any>) => void
+  tearDownManager: (options?: ManagerTearDown) => void
 }) => {
   const onDataChannelClose = () => {
+    EngineDebugger.addLog({
+      label: 'onDataChannelClose',
+      message: 'RTCPeerConnection data channel processed a closed event.',
+    })
     unreliableDataChannel.removeEventListener('open', onDataChannelOpen)
     unreliableDataChannel.removeEventListener('error', onDataChannelError)
     unreliableDataChannel.removeEventListener('message', onDataChannelMessage)
+    tearDownManager({ dataChannelClosed: true })
   }
   return onDataChannelClose
 }

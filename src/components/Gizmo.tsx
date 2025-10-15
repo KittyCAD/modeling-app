@@ -44,11 +44,10 @@ export default function Gizmo() {
   const { state: modelingState } = useModelingContext()
   const settings = useSettings()
   const menuItems = useViewControlMenuItems()
-  const wrapperRef = useRef<HTMLDivElement | null>(null)
+  const wrapperRef = useRef<HTMLDivElement>(null!)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const raycasterIntersect = useRef<Intersection<Object3D> | null>(null)
   const cameraPassiveUpdateTimer = useRef(0)
-  const raycasterPassiveUpdateTimer = useRef(0)
   const disableOrbitRef = useRef(false)
 
   // Temporary fix for #4040:
@@ -84,13 +83,36 @@ export default function Gizmo() {
     scene.add(...gizmoAxes, ...gizmoAxisHeads)
 
     const raycaster = new Raycaster()
-    const { mouse, disposeMouseEvents } = initializeMouseEvents(
+    const raycasterObjects = [...gizmoAxisHeads]
+    const doRayCast = (mouse: Vector2) => {
+      // If orbits are disabled, skip click logic
+      if (!disableOrbitRef.current) {
+        updateRayCaster(
+          raycasterObjects,
+          raycaster,
+          mouse,
+          camera,
+          raycasterIntersect,
+          renderer,
+          scene
+        )
+      } else {
+        raycasterObjects.forEach((object) => object.scale.set(1, 1, 1)) // Reset scales
+        raycasterIntersect.current = null // Clear intersection
+      }
+    }
+
+    if (wrapperRef.current) {
+    }
+
+    const { disposeMouseEvents } = initializeMouseEvents(
       canvas,
       raycasterIntersect,
       sceneInfra,
-      disableOrbitRef
+      disableOrbitRef,
+      doRayCast,
+      wrapperRef
     )
-    const raycasterObjects = [...gizmoAxisHeads]
 
     const clock = new Clock()
     const clientCamera = sceneInfra.camControls.camera
@@ -105,29 +127,14 @@ export default function Gizmo() {
         delta,
         cameraPassiveUpdateTimer
       )
-      // If orbits are disabled, skip click logic
-      if (!disableOrbitRef.current) {
-        updateRayCaster(
-          raycasterObjects,
-          raycaster,
-          mouse,
-          camera,
-          raycasterIntersect,
-          delta,
-          raycasterPassiveUpdateTimer
-        )
-      } else {
-        raycasterObjects.forEach((object) => object.scale.set(1, 1, 1)) // Reset scales
-        raycasterIntersect.current = null // Clear intersection
-      }
       renderer.render(scene, camera)
-      requestAnimationFrame(animate)
     }
-    animate()
+    sceneInfra.camControls.cameraChange.add(animate)
 
     return () => {
       renderer.dispose()
       disposeMouseEvents()
+      sceneInfra.camControls.cameraChange.remove(animate)
     }
   }, [])
 
@@ -278,7 +285,9 @@ const initializeMouseEvents = (
   canvas: HTMLCanvasElement,
   raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>,
   sceneInfra: SceneInfra,
-  disableOrbitRef: MutableRefObject<boolean>
+  disableOrbitRef: MutableRefObject<boolean>,
+  doRayCast: (mouse: Vector2) => void,
+  wrapperRef: React.MutableRefObject<HTMLDivElement>
 ): { mouse: Vector2; disposeMouseEvents: () => void } => {
   const mouse = new Vector2()
   mouse.x = 1 // fix initial mouse position issue
@@ -287,6 +296,7 @@ const initializeMouseEvents = (
     const { left, top, width, height } = canvas.getBoundingClientRect()
     mouse.x = ((event.clientX - left) / width) * 2 - 1
     mouse.y = ((event.clientY - top) / height) * -2 + 1
+    doRayCast(mouse)
   }
 
   const handleClick = () => {
@@ -296,12 +306,14 @@ const initializeMouseEvents = (
     sceneInfra.camControls.updateCameraToAxis(axisName).catch(reportRejection)
   }
 
-  window.addEventListener('mousemove', handleMouseMove)
-  window.addEventListener('click', handleClick)
+  // Add the event listener to the div wrapper around the canvas
+  wrapperRef.current.addEventListener('mousemove', handleMouseMove)
+  wrapperRef.current.addEventListener('click', handleClick)
+  const wrapperRefClosure = wrapperRef.current
 
   const disposeMouseEvents = () => {
-    window.removeEventListener('mousemove', handleMouseMove)
-    window.removeEventListener('click', handleClick)
+    wrapperRefClosure.removeEventListener('mousemove', handleMouseMove)
+    wrapperRefClosure.removeEventListener('click', handleClick)
   }
 
   return { mouse, disposeMouseEvents }
@@ -313,19 +325,9 @@ const updateRayCaster = (
   mouse: Vector2,
   camera: Camera,
   raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>,
-  deltaTime: number,
-  raycasterPassiveUpdateTimer: MutableRefObject<number>
+  renderer: WebGLRenderer,
+  scene: Scene
 ) => {
-  raycasterPassiveUpdateTimer.current += deltaTime
-
-  // check if mouse is outside the canvas bounds and stop raycaster
-  if (raycasterPassiveUpdateTimer.current < 2) {
-    if (mouse.x < -1 || mouse.x > 1 || mouse.y < -1 || mouse.y > 1) {
-      raycasterIntersect.current = null
-      return
-    }
-  }
-
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(objects)
 
@@ -336,7 +338,6 @@ const updateRayCaster = (
   } else {
     raycasterIntersect.current = null
   }
-  if (raycasterPassiveUpdateTimer.current > 2) {
-    raycasterPassiveUpdateTimer.current = 0
-  }
+
+  renderer.render(scene, camera)
 }
