@@ -5,7 +5,6 @@ import {
   type Program,
   recast,
   type Name,
-  type PlaneArtifact,
   type CallExpressionKw,
 } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
@@ -17,7 +16,6 @@ import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement
 import {
   engineCommandManager,
   kclManager,
-  rustContext,
   codeManager,
 } from '@src/lib/singletons'
 import type { ArtifactGraph } from '@src/lang/wasm'
@@ -39,20 +37,11 @@ import {
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
-  addOffsetPlane,
-  addShell,
-  retrieveFaceSelectionsFromOpArgs,
-  retrieveNonDefaultPlaneSelectionFromOpArg,
-} from '@src/lang/modifyAst/faces'
-import type { DefaultPlaneStr } from '@src/lib/planes'
-import type { StdLibCallOp } from '@src/lang/queryAst'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
-import {
   createLiteral,
   createIdentifier,
   createVariableDeclaration,
 } from '@src/lang/create'
-import { getEdgeCutMeta, getNodeFromPath } from '@src/lang/queryAst'
+import { getNodeFromPath } from '@src/lang/queryAst'
 import { expect } from 'vitest'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { createActor } from 'xstate'
@@ -113,7 +102,7 @@ async function ENGINELESS_getAstAndSketchSelections(code: string) {
   if (artifacts.length === 0) {
     throw new Error('Artifact not found in the graph')
   }
-  const sketches = createSelectionFromPathArtifact(artifacts)
+  const sketches = createSelectionWithFirstMatchingArtifact(artifacts)
   return { artifactGraph, ast, sketches }
 }
 
@@ -2051,7 +2040,6 @@ helix001 = helix(
     })
   })
 })
-
 
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 describe('modelingMachine.test.ts', () => {
