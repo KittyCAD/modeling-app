@@ -8,7 +8,7 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
     machines: [],
     machineApiIp: null,
     currentMachine: null,
-    setCurrentMachine: () => {},
+    setCurrentMachine: () => { },
     noMachinesReason: () => undefined,
   },
   selection: [],
@@ -38,4 +38,47 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
   },
   planesInitialized: false,
   sketchSolveTool: null,
+}
+
+export function generateModelingMachineDefaultContext() {
+  const context: ModelingMachineContext = {
+    currentMode: 'modeling',
+    currentTool: 'none',
+    toastId: null,
+    machineManager: {
+      machines: [],
+      machineApiIp: null,
+      currentMachine: null,
+      setCurrentMachine: () => { },
+      noMachinesReason: () => undefined,
+    },
+    selection: [],
+    selectionRanges: {
+      graphSelections: [],
+      otherSelections: [],
+    },
+    sketchDetails: null,
+    sketchPlaneId: '',
+    sketchEnginePathId: '',
+    moveDescs: [],
+    mouseState: { type: 'idle' },
+    segmentOverlays: {},
+    segmentHoverMap: {},
+    store: {
+      openPanes: [],
+    },
+    defaultPlaneVisibility: {
+      xy: true,
+      xz: true,
+      yz: true,
+    },
+    savedDefaultPlaneVisibility: {
+      xy: true,
+      xz: true,
+      yz: true,
+    },
+    planesInitialized: false,
+    sketchSolveTool: null,
+  }
+  return context
 }

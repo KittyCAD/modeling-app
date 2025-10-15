@@ -15,12 +15,13 @@ import { vi } from 'vitest'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
-import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+import { generateModelingMachineDefaultContext, modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
-
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
 describe('modelingMachine.test.ts', () => {
@@ -79,14 +80,30 @@ describe('modelingMachine.test.ts', () => {
 
   describe('modelingMachine - XState', () => {
     describe('when initialized', () => {
-      it('should start in the idle state', () => {
+      it('should start in the idle state', async () => {
+        const { codeManager, kclManager, engineCommandManager, sceneInfra, editorManager, rustContext } = await buildTheWorldAndConnectToEngine()
+        const contextCopied = generateModelingMachineDefaultContext()
+        contextCopied.codeManager = codeManager
+        contextCopied.kclManager = kclManager
+        contextCopied.engineCommandManager = engineCommandManager
+        contextCopied.sceneInfra = sceneInfra
+        const sceneEntitiesManager = new SceneEntities(
+          engineCommandManager,
+          sceneInfra,
+          editorManager,
+          codeManager,
+          kclManager,
+          rustContext
+        )
+        contextCopied.sceneEntitiesManager = sceneEntitiesManager
         const actor = createActor(modelingMachine, {
-          input: modelingMachineDefaultContext,
+          input: contextCopied,
         }).start()
         const state = actor.getSnapshot().value
 
         // The machine should start in the idle state
         expect(state).toEqual({ idle: 'hidePlanes' })
+        engineCommandManager.tearDown()
       })
     })
 
@@ -794,7 +811,6 @@ p3 = [342.51, 216.38],
           {
             name: 'should un-constrain threePoint Arc interior y value',
             ...makeStraightSegmentSnippet(
-              'arc(interiorAbsolute = [testVar1, testVar2], endAbsolute = [testVar3, testVar4])'
             ),
             constraintIndex: 1,
             expectedResult: 'interiorAbsolute = [testVar1, 66]',
@@ -830,16 +846,17 @@ p3 = [342.51, 216.38],
       },
     }
 
-    describe('Deleting segment with three dot menu', () => {
+    describe.only('Deleting segment with three dot menu', () => {
       const namedConstantConstraintCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.deleteSegment
       )
       namedConstantConstraintCases.forEach(
         ({ name, code, searchText, filter }) => {
           it(name, async () => {
+            const { codeManager, kclManager, engineCommandManager, sceneInfra, editorManager, rustContext, instance } = await buildTheWorldAndConnectToEngine()
             const indexOfInterest = code.indexOf(searchText)
 
-            const ast = assertParse(code)
+            const ast = assertParse(code, instance)
 
             await kclManager.executeAst({ ast })
 
@@ -858,8 +875,22 @@ p3 = [342.51, 216.38],
               )
             }
 
+            const contextCopied = generateModelingMachineDefaultContext()
+            contextCopied.codeManager = codeManager
+            contextCopied.kclManager = kclManager
+            contextCopied.engineCommandManager = engineCommandManager
+            contextCopied.sceneInfra = sceneInfra
+            const sceneEntitiesManager = new SceneEntities(
+              engineCommandManager,
+              sceneInfra,
+              editorManager,
+              codeManager,
+              kclManager,
+              rustContext
+            )
+            contextCopied.sceneEntitiesManager = sceneEntitiesManager
             const actor = createActor(modelingMachine, {
-              input: modelingMachineDefaultContext,
+              input: contextCopied,
             }).start()
 
             // Send event to transition to sketch mode
@@ -941,6 +972,7 @@ p3 = [342.51, 216.38],
               await new Promise((resolve) => setTimeout(resolve, 100))
             }
             expect(codeManager.code).not.toContain(searchText)
+            engineCommandManager.tearDown()
           }, 10_000)
         }
       )

@@ -114,32 +114,32 @@ export const sceneEntitiesManager = new SceneEntities(
 )
 
 if (typeof window !== 'undefined') {
-  ;(window as any).engineCommandManager = engineCommandManager
-  ;(window as any).kclManager = kclManager
-  ;(window as any).sceneInfra = sceneInfra
-  ;(window as any).sceneEntitiesManager = sceneEntitiesManager
-  ;(window as any).editorManager = editorManager
-  ;(window as any).codeManager = codeManager
-  ;(window as any).rustContext = rustContext
-  ;(window as any).engineDebugger = EngineDebugger
-  ;(window as any).enableMousePositionLogs = () =>
-    document.addEventListener('mousemove', (e) =>
-      console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
-    )
-  ;(window as any).enableFillet = () => {
-    ;(window as any)._enableFillet = true
-  }
-  ;(window as any).zoomToFit = () =>
-    engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'zoom_to_fit',
-        object_ids: [], // leave empty to zoom to all objects
-        padding: 0.2, // padding around the objects
-        animated: false, // don't animate the zoom for now
-      },
-    })
+  ; (window as any).engineCommandManager = engineCommandManager
+    ; (window as any).kclManager = kclManager
+    ; (window as any).sceneInfra = sceneInfra
+    ; (window as any).sceneEntitiesManager = sceneEntitiesManager
+    ; (window as any).editorManager = editorManager
+    ; (window as any).codeManager = codeManager
+    ; (window as any).rustContext = rustContext
+    ; (window as any).engineDebugger = EngineDebugger
+    ; (window as any).enableMousePositionLogs = () =>
+      document.addEventListener('mousemove', (e) =>
+        console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
+      )
+    ; (window as any).enableFillet = () => {
+      ; (window as any)._enableFillet = true
+    }
+    ; (window as any).zoomToFit = () =>
+      engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'zoom_to_fit',
+          object_ids: [], // leave empty to zoom to all objects
+          padding: 0.2, // padding around the objects
+          animated: false, // don't animate the zoom for now
+        },
+      })
 }
 const { AUTH, SETTINGS, SYSTEM_IO, MLEPHANT_MANAGER, COMMAND_BAR, BILLING } =
   ACTOR_IDS
