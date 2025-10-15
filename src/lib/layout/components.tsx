@@ -50,6 +50,7 @@ import Tooltip from '@src/components/Tooltip'
 import { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
 import {
   ContextMenu,
+  ContextMenuDivider,
   ContextMenuItem,
   type ContextMenuProps,
 } from '@src/components/ContextMenu'
@@ -464,18 +465,7 @@ function PaneLayoutContextMenu({
         >
           Set to bottom side
         </ContextMenuItem>,
-        <ContextMenuItem
-          key="close-all"
-          icon="collapse"
-          onClick={() =>
-            replaceLayoutNode({
-              targetNodeId: layout.id,
-              newNode: { ...layout, activeIndices: [], sizes: [] },
-            })
-          }
-        >
-          Close all panes
-        </ContextMenuItem>,
+        <ContextMenuDivider />,
         <ContextMenuItem
           key="orient-inline"
           icon={
