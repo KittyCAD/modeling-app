@@ -1499,9 +1499,6 @@ export class CameraControls {
     }
     this.deferReactUpdate(this.reactCameraProperties)
     this.cameraChange.dispatch()
-
-    const evt = new CustomEvent('gizmo:animate')
-    window.dispatchEvent(evt)
   }
   getInteractionType = (
     event: PointerEvent | WheelEvent | MouseEvent

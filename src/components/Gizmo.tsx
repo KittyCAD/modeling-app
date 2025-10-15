@@ -122,12 +122,12 @@ export default function Gizmo() {
       }
       renderer.render(scene, camera)
     }
-    window.addEventListener('gizmo:animate', animate)
+    sceneInfra.camControls.cameraChange.add(animate)
 
     return () => {
       renderer.dispose()
       disposeMouseEvents()
-      window.removeEventListener('gizmo:animate', animate)
+      sceneInfra.camControls.cameraChange.remove(animate)
     }
   }, [])
 
