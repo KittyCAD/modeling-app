@@ -1,7 +1,6 @@
 import type {
   Direction,
   Layout,
-  LayoutWithMetadata,
   Orientation,
   PaneLayout,
   Side,
@@ -11,7 +10,6 @@ import { LayoutType } from '@src/lib/layout/types'
 import type React from 'react'
 import { capitaliseFC } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
-import { throttle } from '@src/lib/utils'
 import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
 import {
   DEBUG_PANE_ID,
@@ -23,9 +21,7 @@ import { isErr } from '@src/lib/trap'
 import { parseLayoutFromJsonString } from '@src/lib/layout/parse'
 import { useEffect } from 'react'
 import { useSettings } from '@src/lib/singletons'
-
-const LAYOUT_PERSIST_PREFIX = 'layout-'
-const LAYOUT_SAVE_THROTTLE = 500
+import { LAYOUT_PERSIST_PREFIX } from '@src/lib/constants'
 
 // Attempt to load a persisted layout
 const defaultLayoutLoadResult = loadLayout('default')
@@ -277,27 +273,6 @@ export function loadLayout(id: string): Layout | Error {
   }
   return parseLayoutFromJsonString(layoutString)
 }
-
-interface ISaveLayout {
-  layout: Layout
-  layoutName?: string
-  saveFn?: (key: string, value: string) => void | Promise<void>
-}
-
-/**
- * Wrap the layout data in a versioned object
- * and save it to persisted storage.
- */
-function saveLayoutInner({ layout, layoutName = 'default' }: ISaveLayout) {
-  return localStorage.setItem(
-    `${LAYOUT_PERSIST_PREFIX}${layoutName}`,
-    JSON.stringify({
-      version: 'v1',
-      layout,
-    } satisfies LayoutWithMetadata)
-  )
-}
-export const saveLayout = throttle(saveLayoutInner, LAYOUT_SAVE_THROTTLE)
 
 /**
  * Have the panes not been resized at all, just divided evenly?

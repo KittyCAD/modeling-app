@@ -17,15 +17,7 @@ import {
 } from 'react-resizable-panels'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Switch } from '@headlessui/react'
-import {
-  createContext,
-  type Dispatch,
-  Fragment,
-  type SetStateAction,
-  useContext,
-  useEffect,
-  useRef,
-} from 'react'
+import { createContext, Fragment, useContext, useEffect, useRef } from 'react'
 import {
   getOppositeSide,
   getOppositionDirection,
@@ -35,7 +27,6 @@ import {
   sideToTailwindLayoutDirection,
   sideToTailwindTabDirection,
   findAndUpdateSplitSizes,
-  saveLayout,
   findAndReplaceLayoutChildNode,
   shouldEnableResizeHandle,
   orientationToReactCss,
@@ -43,7 +34,9 @@ import {
   orientationToDirection,
   togglePaneLayoutNode,
   shouldDisableFlex,
+  defaultLayout,
 } from '@src/lib/layout/utils'
+import { saveLayout } from '@src/lib/layout/save'
 import type {
   IUpdateNodeSizes,
   IReplaceLayoutChildNode,
@@ -84,22 +77,26 @@ export const useLayoutState = () => useContext(LayoutStateContext)
 interface LayoutRootNodeProps {
   areaLibrary?: LayoutState['areaLibrary']
   layout: Layout
-  setLayout: Dispatch<SetStateAction<Layout>>
+  getLayout: () => Layout | undefined
+  setLayout: (layout: Layout) => void
   layoutName?: string
 }
 
 export function LayoutRootNode({
   areaLibrary,
   layout,
+  getLayout,
   setLayout,
   layoutName = 'default',
 }: LayoutRootNodeProps) {
+  const getLayoutWithFallback = () => getLayout() || defaultLayout
   useEffect(() => {
     saveLayout({ layout, layoutName })
   }, [layout, layoutName])
 
   function updateSplitSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
-    setLayout((rootLayout) =>
+    const rootLayout = getLayoutWithFallback()
+    setLayout(
       findAndUpdateSplitSizes({
         rootLayout: structuredClone(rootLayout),
         ...props,
@@ -110,7 +107,8 @@ export function LayoutRootNode({
   function replaceLayoutNode(
     props: WithoutRootLayout<IReplaceLayoutChildNode>
   ) {
-    setLayout((rootLayout) =>
+    const rootLayout = getLayoutWithFallback()
+    setLayout(
       findAndReplaceLayoutChildNode({
         rootLayout: structuredClone(rootLayout),
         ...props,
@@ -119,7 +117,8 @@ export function LayoutRootNode({
   }
 
   function togglePane(props: WithoutRootLayout<ITogglePane>) {
-    setLayout((rootLayout) =>
+    const rootLayout = getLayoutWithFallback()
+    setLayout(
       togglePaneLayoutNode({
         rootLayout: structuredClone(rootLayout),
         ...props,

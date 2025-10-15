@@ -137,3 +137,5 @@ function PaneToArea({
     </ModelingPane>
   )
 }
+
+export type AreaType = keyof typeof areaTypeRegistry
