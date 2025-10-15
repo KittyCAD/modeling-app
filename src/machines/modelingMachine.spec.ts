@@ -15,7 +15,10 @@ import { vi } from 'vitest'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
-import { generateModelingMachineDefaultContext, modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+import {
+  generateModelingMachineDefaultContext,
+  modelingMachineDefaultContext,
+} from '@src/machines/modelingSharedContext'
 import {
   removeSingleConstraint,
   transformAstSketchLines,
@@ -81,7 +84,14 @@ describe('modelingMachine.test.ts', () => {
   describe('modelingMachine - XState', () => {
     describe('when initialized', () => {
       it('should start in the idle state', async () => {
-        const { codeManager, kclManager, engineCommandManager, sceneInfra, editorManager, rustContext } = await buildTheWorldAndConnectToEngine()
+        const {
+          codeManager,
+          kclManager,
+          engineCommandManager,
+          sceneInfra,
+          editorManager,
+          rustContext,
+        } = await buildTheWorldAndConnectToEngine()
         const contextCopied = generateModelingMachineDefaultContext()
         contextCopied.codeManager = codeManager
         contextCopied.kclManager = kclManager
@@ -810,8 +820,7 @@ p3 = [342.51, 216.38],
           },
           {
             name: 'should un-constrain threePoint Arc interior y value',
-            ...makeStraightSegmentSnippet(
-            ),
+            ...makeStraightSegmentSnippet(),
             constraintIndex: 1,
             expectedResult: 'interiorAbsolute = [testVar1, 66]',
             filter: ARG_INTERIOR_ABSOLUTE,
@@ -853,7 +862,15 @@ p3 = [342.51, 216.38],
       namedConstantConstraintCases.forEach(
         ({ name, code, searchText, filter }) => {
           it(name, async () => {
-            const { codeManager, kclManager, engineCommandManager, sceneInfra, editorManager, rustContext, instance } = await buildTheWorldAndConnectToEngine()
+            const {
+              codeManager,
+              kclManager,
+              engineCommandManager,
+              sceneInfra,
+              editorManager,
+              rustContext,
+              instance,
+            } = await buildTheWorldAndConnectToEngine()
             const indexOfInterest = code.indexOf(searchText)
 
             const ast = assertParse(code, instance)

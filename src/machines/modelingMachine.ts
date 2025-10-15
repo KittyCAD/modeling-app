@@ -161,36 +161,36 @@ import {
 
 export type ModelingMachineEvent =
   | {
-    type: 'Enter sketch'
-    data?: {
-      forceNewSketch?: boolean
+      type: 'Enter sketch'
+      data?: {
+        forceNewSketch?: boolean
+      }
     }
-  }
   | { type: 'Sketch On Face' }
   | {
-    type: 'Select sketch plane'
-    data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
-  }
+      type: 'Select sketch plane'
+      data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
+    }
   | {
-    type: 'Select sketch solve plane'
-    data: ArtifactId
-  }
+      type: 'Select sketch solve plane'
+      data: ArtifactId
+    }
   | {
-    type: 'Set selection'
-    data: SetSelections
-  }
+      type: 'Set selection'
+      data: SetSelections
+    }
   | {
-    type: 'Delete selection'
-  }
+      type: 'Delete selection'
+    }
   | { type: 'Sketch no face' }
   | { type: 'Cancel'; cleanup?: () => void }
   | {
-    type: 'Add start point' | 'Continue existing profile'
-    data: {
-      sketchNodePaths: PathToNode[]
-      sketchEntryNodePath: PathToNode
+      type: 'Add start point' | 'Continue existing profile'
+      data: {
+        sketchNodePaths: PathToNode[]
+        sketchEntryNodePath: PathToNode
+      }
     }
-  }
   | { type: 'Close sketch' }
   | { type: 'Make segment horizontal' }
   | { type: 'Make segment vertical' }
@@ -205,33 +205,33 @@ export type ModelingMachineEvent =
   | { type: 'Constrain snap to X' }
   | { type: 'Constrain snap to Y' }
   | {
-    type: 'Constrain length'
-    data: ModelingCommandSchema['Constrain length']
-  }
+      type: 'Constrain length'
+      data: ModelingCommandSchema['Constrain length']
+    }
   | { type: 'Constrain equal length' }
   | { type: 'Constrain parallel' }
   | { type: 'Constrain remove constraints'; data?: PathToNode }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | {
-    type: 'Boolean Subtract'
-    data: ModelingCommandSchema['Boolean Subtract']
-  }
+      type: 'Boolean Subtract'
+      data: ModelingCommandSchema['Boolean Subtract']
+    }
   | {
-    type: 'Boolean Union'
-    data: ModelingCommandSchema['Boolean Union']
-  }
+      type: 'Boolean Union'
+      data: ModelingCommandSchema['Boolean Union']
+    }
   | {
-    type: 'Boolean Intersect'
-    data: ModelingCommandSchema['Boolean Intersect']
-  }
+      type: 'Boolean Intersect'
+      data: ModelingCommandSchema['Boolean Intersect']
+    }
   | {
-    type: 'Pattern Circular 3D'
-    data: ModelingCommandSchema['Pattern Circular 3D']
-  }
+      type: 'Pattern Circular 3D'
+      data: ModelingCommandSchema['Pattern Circular 3D']
+    }
   | {
-    type: 'Pattern Linear 3D'
-    data: ModelingCommandSchema['Pattern Linear 3D']
-  }
+      type: 'Pattern Linear 3D'
+      data: ModelingCommandSchema['Pattern Linear 3D']
+    }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
   | { type: 'Sweep'; data?: ModelingCommandSchema['Sweep'] }
@@ -244,83 +244,83 @@ export type ModelingMachineEvent =
   | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
-    type: 'Delete selection'
-    data: ModelingCommandSchema['Delete selection']
-  }
+      type: 'Delete selection'
+      data: ModelingCommandSchema['Delete selection']
+    }
   | {
-    type: 'Update sketch details'
-    data: Partial<SketchDetails>
-  }
+      type: 'Update sketch details'
+      data: Partial<SketchDetails>
+    }
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | {
-    type:
-    | 'Add circle origin'
-    | 'Add circle center'
-    | 'Add center rectangle origin'
-    | 'click in scene'
-    | 'Add first point'
-    data: [x: number, y: number]
-  }
-  | {
-    type: 'Add second point'
-    data: {
-      p1: [x: number, y: number]
-      p2: [x: number, y: number]
+      type:
+        | 'Add circle origin'
+        | 'Add circle center'
+        | 'Add center rectangle origin'
+        | 'click in scene'
+        | 'Add first point'
+      data: [x: number, y: number]
     }
-  }
   | {
-    type: 'xstate.done.actor.animate-to-face'
-    output: SketchDetails
-  }
+      type: 'Add second point'
+      data: {
+        p1: [x: number, y: number]
+        p2: [x: number, y: number]
+      }
+    }
+  | {
+      type: 'xstate.done.actor.animate-to-face'
+      output: SketchDetails
+    }
   | { type: 'xstate.done.actor.animate-to-sketch'; output: SketchDetails }
   | { type: `xstate.done.actor.do-constrain${string}`; output: SetSelections }
   | {
-    type:
-    | 'xstate.done.actor.set-up-draft-circle'
-    | 'xstate.done.actor.set-up-draft-rectangle'
-    | 'xstate.done.actor.set-up-draft-center-rectangle'
-    | 'xstate.done.actor.set-up-draft-circle-three-point'
-    | 'xstate.done.actor.set-up-draft-arc'
-    | 'xstate.done.actor.set-up-draft-arc-three-point'
-    | 'xstate.done.actor.split-sketch-pipe-if-needed'
-    | 'xstate.done.actor.actor-circle-three-point'
-    | 'xstate.done.actor.reeval-node-paths'
+      type:
+        | 'xstate.done.actor.set-up-draft-circle'
+        | 'xstate.done.actor.set-up-draft-rectangle'
+        | 'xstate.done.actor.set-up-draft-center-rectangle'
+        | 'xstate.done.actor.set-up-draft-circle-three-point'
+        | 'xstate.done.actor.set-up-draft-arc'
+        | 'xstate.done.actor.set-up-draft-arc-three-point'
+        | 'xstate.done.actor.split-sketch-pipe-if-needed'
+        | 'xstate.done.actor.actor-circle-three-point'
+        | 'xstate.done.actor.reeval-node-paths'
 
-    output: SketchDetailsUpdate
-  }
+      output: SketchDetailsUpdate
+    }
   | {
-    type: 'xstate.done.actor.setup-client-side-sketch-segments9'
-  }
+      type: 'xstate.done.actor.setup-client-side-sketch-segments9'
+    }
   | { type: 'Set mouse state'; data: MouseState }
   | { type: 'Set context'; data: Partial<Store> }
   | {
-    type: 'Set Segment Overlays'
-    data: SegmentOverlayPayload
-  }
-  | {
-    type: 'Center camera on selection'
-  }
-  | {
-    type: 'Delete segment'
-    data: PathToNode
-  }
-  | {
-    type: 'code edit during sketch'
-  }
-  | {
-    type: 'Constrain with named value'
-    data: ModelingCommandSchema['Constrain with named value']
-  }
-  | {
-    type: 'change tool'
-    data: {
-      tool: SketchTool
+      type: 'Set Segment Overlays'
+      data: SegmentOverlayPayload
     }
-  }
+  | {
+      type: 'Center camera on selection'
+    }
+  | {
+      type: 'Delete segment'
+      data: PathToNode
+    }
+  | {
+      type: 'code edit during sketch'
+    }
+  | {
+      type: 'Constrain with named value'
+      data: ModelingCommandSchema['Constrain with named value']
+    }
+  | {
+      type: 'change tool'
+      data: {
+        tool: SketchTool
+      }
+    }
   | { type: 'Finish rectangle' }
   | { type: 'Finish center rectangle' }
   | { type: 'Finish circle' }
@@ -330,27 +330,27 @@ export type ModelingMachineEvent =
   | { type: 'Artifact graph emptied' }
   | { type: 'Artifact graph initialized' }
   | {
-    type: 'Toggle default plane visibility'
-    planeId: string
-    planeKey: keyof PlaneVisibilityMap
-  }
+      type: 'Toggle default plane visibility'
+      planeId: string
+      planeKey: keyof PlaneVisibilityMap
+    }
   | {
-    type: 'Save default plane visibility'
-    planeId: string
-    planeKey: keyof PlaneVisibilityMap
-  }
+      type: 'Save default plane visibility'
+      planeId: string
+      planeKey: keyof PlaneVisibilityMap
+    }
   | {
-    type: 'Restore default plane visibility'
-  }
+      type: 'Restore default plane visibility'
+    }
   | {
-    type: 'equip tool'
-    data: { tool: EquipTool }
-  }
+      type: 'equip tool'
+      data: { tool: EquipTool }
+    }
   | { type: 'unequip tool' }
   | {
-    type: 'sketch solve tool changed'
-    data: { tool: EquipTool | null }
-  }
+      type: 'sketch solve tool changed'
+      data: { tool: EquipTool | null }
+    }
 
 // export type MoveDesc = { line: number; snippet: string }
 
@@ -563,8 +563,8 @@ export const modelingMachine = setup({
       const pathToNodes = event.data
         ? [event.data]
         : selectionRanges.graphSelections.map(({ codeRef }) => {
-          return codeRef.pathToNode
-        })
+            return codeRef.pathToNode
+          })
       const info = removeConstrainingValuesInfo(pathToNodes)
       if (err(info)) return false
       return info.enabled
@@ -688,60 +688,78 @@ export const modelingMachine = setup({
         sketchDetails: event.output,
       }
     }),
-    'set up draft line': assign(({ context: { sketchDetails, codeManager: providedCodeManager }, event }) => {
-      if (!sketchDetails) return {}
-      if (event.type !== 'Add start point') return {}
+    'set up draft line': assign(
+      ({
+        context: { sketchDetails, codeManager: providedCodeManager },
+        event,
+      }) => {
+        if (!sketchDetails) return {}
+        if (event.type !== 'Add start point') return {}
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager
-        .setupDraftSegment(
-          event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
-          event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          'line'
-        )
-        .then(() => {
-          const theCodeManager = providedCodeManager ? providedCodeManager : codeManager
-          return theCodeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-        })
-      return {
-        sketchDetails: {
-          ...sketchDetails,
-          sketchEntryNodePath: event.data.sketchEntryNodePath,
-          sketchNodePaths: event.data.sketchNodePaths,
-        },
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        sceneEntitiesManager
+          .setupDraftSegment(
+            event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
+            event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            'line'
+          )
+          .then(() => {
+            const theCodeManager = providedCodeManager
+              ? providedCodeManager
+              : codeManager
+            return theCodeManager.updateEditorWithAstAndWriteToFile(
+              kclManager.ast
+            )
+          })
+        return {
+          sketchDetails: {
+            ...sketchDetails,
+            sketchEntryNodePath: event.data.sketchEntryNodePath,
+            sketchNodePaths: event.data.sketchNodePaths,
+          },
+        }
       }
-    }),
-    'set up draft arc': assign(({ context: { sketchDetails, codeManager: providedCodeManager }, event }) => {
-      if (!sketchDetails) return {}
-      if (event.type !== 'Continue existing profile') return {}
+    ),
+    'set up draft arc': assign(
+      ({
+        context: { sketchDetails, codeManager: providedCodeManager },
+        event,
+      }) => {
+        if (!sketchDetails) return {}
+        if (event.type !== 'Continue existing profile') return {}
 
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager
-        .setupDraftSegment(
-          event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
-          event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
-          sketchDetails.planeNodePath,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          'tangentialArc'
-        )
-        .then(() => {
-          const theCodeManager = providedCodeManager ? providedCodeManager : codeManager
-          return theCodeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-        })
-      return {
-        sketchDetails: {
-          ...sketchDetails,
-          sketchEntryNodePath: event.data.sketchEntryNodePath,
-          sketchNodePaths: event.data.sketchNodePaths,
-        },
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        sceneEntitiesManager
+          .setupDraftSegment(
+            event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
+            event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
+            sketchDetails.planeNodePath,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            'tangentialArc'
+          )
+          .then(() => {
+            const theCodeManager = providedCodeManager
+              ? providedCodeManager
+              : codeManager
+            return theCodeManager.updateEditorWithAstAndWriteToFile(
+              kclManager.ast
+            )
+          })
+        return {
+          sketchDetails: {
+            ...sketchDetails,
+            sketchEntryNodePath: event.data.sketchEntryNodePath,
+            sketchNodePaths: event.data.sketchNodePaths,
+          },
+        }
       }
-    }),
+    ),
     'listen for rectangle origin': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
@@ -1042,7 +1060,9 @@ export const modelingMachine = setup({
           ),
       })
     },
-    'add axis n grid': ({ context: { sketchDetails, codeManager: providedCodeManager } }) => {
+    'add axis n grid': ({
+      context: { sketchDetails, codeManager: providedCodeManager },
+    }) => {
       if (!sketchDetails) return
       if (localStorage.getItem('disableAxis')) return
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -1052,7 +1072,9 @@ export const modelingMachine = setup({
         sketchDetails.origin
       )
 
-      const theCodeManager = providedCodeManager ? providedCodeManager : codeManager
+      const theCodeManager = providedCodeManager
+        ? providedCodeManager
+        : codeManager
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       theCodeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
     },
@@ -1072,7 +1094,10 @@ export const modelingMachine = setup({
     'set selection filter to defaults': () => {
       kclManager.defaultSelectionFilter()
     },
-    'Delete segment': ({ context: { sketchDetails, codeManager: providedCodeManager }, event }) => {
+    'Delete segment': ({
+      context: { sketchDetails, codeManager: providedCodeManager },
+      event,
+    }) => {
       if (event.type !== 'Delete segment') return
       if (!sketchDetails || !event.data) return
 
@@ -1081,7 +1106,9 @@ export const modelingMachine = setup({
         pathToNode: event.data,
         sketchDetails,
       }).then(() => {
-        const theCodeManager = providedCodeManager ? providedCodeManager : codeManager
+        const theCodeManager = providedCodeManager
+          ? providedCodeManager
+          : codeManager
         return theCodeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
       })
     },
@@ -1187,8 +1214,8 @@ export const modelingMachine = setup({
         },
       }
     }),
-    'enable copilot': () => { },
-    'disable copilot': () => { },
+    'enable copilot': () => {},
+    'disable copilot': () => {},
     'Set selection': assign(
       ({ context: { selectionRanges, sketchDetails }, event }) => {
         // this was needed for ts after adding 'Set selection' action to on done modal events
@@ -1394,11 +1421,11 @@ export const modelingMachine = setup({
         return {}
       }
     ),
-    'Set mouse state': () => { },
-    'Set Segment Overlays': () => { },
-    'Center camera on selection': () => { },
-    'Submit to Text-to-CAD API': () => { },
-    'Set sketchDetails': () => { },
+    'Set mouse state': () => {},
+    'Set Segment Overlays': () => {},
+    'Center camera on selection': () => {},
+    'Submit to Text-to-CAD API': () => {},
+    'Set sketchDetails': () => {},
     'debug-action': (data) => {
       console.log('re-eval debug-action', data)
     },
@@ -1496,7 +1523,7 @@ export const modelingMachine = setup({
             if (
               !engineCommandManager.started &&
               engineCommandManager.connection?.websocket?.readyState ===
-              WebSocket.CLOSED
+                WebSocket.CLOSED
             )
               return
 
@@ -1544,8 +1571,12 @@ export const modelingMachine = setup({
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
 
-        const theCodeManager = providedCodeManager ? providedCodeManager : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        const theCodeManager = providedCodeManager
+          ? providedCodeManager
+          : codeManager
+        await theCodeManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
 
         return {
           selectionType: 'completeSelection',
@@ -1559,9 +1590,16 @@ export const modelingMachine = setup({
     ),
     'do-constrain-horizontally': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, codeManager: providedCodeManager },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          codeManager: providedCodeManager,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails' | 'codeManager'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'codeManager'
+        >
       }) => {
         const constraint = applyConstraintHorzVert(
           selectionRanges,
@@ -1585,8 +1623,12 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager ? providedCodeManager : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        const theCodeManager = providedCodeManager
+          ? providedCodeManager
+          : codeManager
+        await theCodeManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
@@ -1599,9 +1641,16 @@ export const modelingMachine = setup({
     ),
     'do-constrain-vertically': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, codeManager: providedCodeManager },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          codeManager: providedCodeManager,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails' | 'codeManager'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'codeManager'
+        >
       }) => {
         const constraint = applyConstraintHorzVert(
           selectionRanges,
@@ -1625,8 +1674,12 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager ? providedCodeManager : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        const theCodeManager = providedCodeManager
+          ? providedCodeManager
+          : codeManager
+        await theCodeManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
@@ -1639,9 +1692,16 @@ export const modelingMachine = setup({
     ),
     'do-constrain-horizontally-align': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, codeManager: providedCodeManager },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          codeManager: providedCodeManager,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails' | 'codeManager'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'codeManager'
+        >
       }) => {
         const constraint = applyConstraintHorzVertAlign({
           selectionRanges: selectionRanges,
@@ -1663,8 +1723,12 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager ? providedCodeManager : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        const theCodeManager = providedCodeManager
+          ? providedCodeManager
+          : codeManager
+        await theCodeManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1678,9 +1742,16 @@ export const modelingMachine = setup({
     ),
     'do-constrain-vertically-align': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, codeManager: providedCodeManager },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          codeManager: providedCodeManager,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails' | 'codeManager'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'codeManager'
+        >
       }) => {
         const constraint = applyConstraintHorzVertAlign({
           selectionRanges: selectionRanges,
@@ -1702,8 +1773,12 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager ? providedCodeManager : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        const theCodeManager = providedCodeManager
+          ? providedCodeManager
+          : codeManager
+        await theCodeManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1717,9 +1792,16 @@ export const modelingMachine = setup({
     ),
     'do-constrain-snap-to-x': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, codeManager: providedCodeManager },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          codeManager: providedCodeManager,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails' | 'codeManager'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'codeManager'
+        >
       }) => {
         const constraint = applyConstraintAxisAlign({
           selectionRanges,
@@ -1741,8 +1823,12 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager ? providedCodeManager : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        const theCodeManager = providedCodeManager
+          ? providedCodeManager
+          : codeManager
+        await theCodeManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1756,9 +1842,16 @@ export const modelingMachine = setup({
     ),
     'do-constrain-snap-to-y': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, codeManager: providedCodeManager },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          codeManager: providedCodeManager,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails' | 'codeManager'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'codeManager'
+        >
       }) => {
         const constraint = applyConstraintAxisAlign({
           selectionRanges,
@@ -1780,8 +1873,12 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager ? providedCodeManager : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        const theCodeManager = providedCodeManager
+          ? providedCodeManager
+          : codeManager
+        await theCodeManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1795,9 +1892,16 @@ export const modelingMachine = setup({
     ),
     'do-constrain-parallel': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, codeManager: providedCodeManager },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          codeManager: providedCodeManager,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails' | 'codeManager'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'codeManager'
+        >
       }) => {
         const constraint = applyConstraintEqualAngle({
           selectionRanges,
@@ -1826,8 +1930,12 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager ? providedCodeManager : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        const theCodeManager = providedCodeManager
+          ? providedCodeManager
+          : codeManager
+        await theCodeManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
 
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
@@ -1842,9 +1950,16 @@ export const modelingMachine = setup({
     ),
     'do-constrain-equal-length': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, codeManager: providedCodeManager },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          codeManager: providedCodeManager,
+        },
       }: {
-        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails' | 'codeManager'>
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails' | 'codeManager'
+        >
       }) => {
         const constraint = applyConstraintEqualLength({
           selectionRanges,
@@ -1865,8 +1980,12 @@ export const modelingMachine = setup({
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
-        const theCodeManager = providedCodeManager ? providedCodeManager : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        const theCodeManager = providedCodeManager
+          ? providedCodeManager
+          : codeManager
+        await theCodeManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -2228,8 +2347,12 @@ export const modelingMachine = setup({
         )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
-        const theCodeManager = input.codeManager ? input.codeManager : codeManager
-        await theCodeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        await theCodeManager.updateEditorWithAstAndWriteToFile(
+          updatedAst.newAst
+        )
 
         const selection = updateSelections(
           { 0: result.pathToReplaced },
@@ -2310,7 +2433,7 @@ export const modelingMachine = setup({
         input,
       }: {
         input: ModelingCommandSchema['Prompt-to-edit']
-      }) => { }
+      }) => {}
     ),
 
     /* Below are recent modeling codemods that are using updateModelinState,
@@ -2943,12 +3066,12 @@ export const modelingMachine = setup({
       }
     ),
     exportFromEngine: fromPromise(
-      async ({ }: { input?: ModelingCommandSchema['Export'] }) => {
+      async ({}: { input?: ModelingCommandSchema['Export'] }) => {
         return undefined as Error | undefined
       }
     ),
     makeFromEngine: fromPromise(
-      async ({ }: {
+      async ({}: {
         input?: {
           machineManager: MachineManager
         } & ModelingCommandSchema['Make']
@@ -3937,7 +4060,14 @@ export const modelingMachine = setup({
           invoke: {
             src: 'Apply named value constraint',
             id: 'astConstrainNamedValue',
-            input: ({ context: { selectionRanges, sketchDetails, codeManager: providedCodeManager }, event }) => {
+            input: ({
+              context: {
+                selectionRanges,
+                sketchDetails,
+                codeManager: providedCodeManager,
+              },
+              event,
+            }) => {
               if (event.type !== 'Constrain with named value') {
                 return {
                   selectionRanges,
@@ -3949,7 +4079,7 @@ export const modelingMachine = setup({
                 selectionRanges,
                 sketchDetails,
                 data: event.data,
-                codeManager: providedCodeManager
+                codeManager: providedCodeManager,
               }
             },
             onError: 'SketchIdle',
@@ -3964,7 +4094,14 @@ export const modelingMachine = setup({
           invoke: {
             src: 'do-constrain-remove-constraint',
             id: 'do-constrain-remove-constraint',
-            input: ({ context: { selectionRanges, sketchDetails, codeManager: providedCodeManager }, event }) => {
+            input: ({
+              context: {
+                selectionRanges,
+                sketchDetails,
+                codeManager: providedCodeManager,
+              },
+              event,
+            }) => {
               return {
                 selectionRanges,
                 sketchDetails,
@@ -3972,7 +4109,7 @@ export const modelingMachine = setup({
                   event.type === 'Constrain remove constraints'
                     ? event.data
                     : undefined,
-                providedCodeManager: providedCodeManager
+                providedCodeManager: providedCodeManager,
               }
             },
             onDone: {
@@ -3986,10 +4123,16 @@ export const modelingMachine = setup({
           invoke: {
             src: 'do-constrain-horizontally',
             id: 'do-constrain-horizontally',
-            input: ({ context: { selectionRanges, sketchDetails, codeManager: providedCodeManager } }) => ({
+            input: ({
+              context: {
+                selectionRanges,
+                sketchDetails,
+                codeManager: providedCodeManager,
+              },
+            }) => ({
               selectionRanges,
               sketchDetails,
-              codeManager: providedCodeManager
+              codeManager: providedCodeManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -4002,10 +4145,16 @@ export const modelingMachine = setup({
           invoke: {
             src: 'do-constrain-vertically',
             id: 'do-constrain-vertically',
-            input: ({ context: { selectionRanges, sketchDetails, codeManager: providedCodeManager } }) => ({
+            input: ({
+              context: {
+                selectionRanges,
+                sketchDetails,
+                codeManager: providedCodeManager,
+              },
+            }) => ({
               selectionRanges,
               sketchDetails,
-              codeManager: providedCodeManager
+              codeManager: providedCodeManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -4021,7 +4170,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              codeManager: context.codeManager
+              codeManager: context.codeManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -4037,7 +4186,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              codeManager: context.codeManager
+              codeManager: context.codeManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -4053,7 +4202,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              codeManager: context.codeManager
+              codeManager: context.codeManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -4069,7 +4218,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              codeManager: context.codeManager
+              codeManager: context.codeManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -4085,7 +4234,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              codeManager: context.codeManager
+              codeManager: context.codeManager,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -4101,7 +4250,7 @@ export const modelingMachine = setup({
             input: ({ context }) => ({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
-              codeManager: context.codeManager
+              codeManager: context.codeManager,
             }),
             onDone: {
               target: 'SketchIdle',
