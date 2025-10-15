@@ -222,13 +222,15 @@ function SplitLayoutContents({
               >
                 <LayoutNode layout={a} onClose={() => onClose?.(i)} />
               </Panel>
-              <ResizeHandle
-                direction={direction}
-                id={`handle-${a.id}`}
-                disabled={disableResize}
-                layout={layout}
-                currentIndex={i}
-              />
+              {i < layout.sizes.length - 1 ? (
+                <ResizeHandle
+                  direction={direction}
+                  id={`handle-${a.id}`}
+                  disabled={disableResize}
+                  layout={layout}
+                  currentIndex={i}
+                />
+              ) : null}
             </Fragment>
           )
         })}
