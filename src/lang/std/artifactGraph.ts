@@ -886,6 +886,12 @@ export function coerceSelectionsToBody(
 
   for (const selection of selections.graphSelections) {
     if (!selection.artifact) {
+      // Handle selections without artifacts (e.g., imported modules)
+      // TODO: coerce to body when we have ranges for imports
+      // TODO: coerce edges and faces of imported bodies
+      if (selection.codeRef.range[1] - selection.codeRef.range[0] !== 0) {
+        bodySelections.push(selection)
+      }
       continue
     }
 
