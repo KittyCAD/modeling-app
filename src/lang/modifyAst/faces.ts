@@ -110,16 +110,16 @@ export function addHole({
   artifactGraph,
   face,
   cutAt,
-  depth,
-  diameter,
+  blindDepth,
+  blindDiameter,
   nodeToEdit,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   face: Selections
   cutAt: KclCommandValue
-  depth: KclCommandValue
-  diameter: KclCommandValue
+  blindDepth: KclCommandValue
+  blindDiameter: KclCommandValue
   nodeToEdit?: PathToNode
 }):
   | {
@@ -143,8 +143,8 @@ export function addHole({
 
   // TODO: support other hole types than blind
   const holeBody = createCallExpressionStdLibKw('hole::blind', null, [
-    createLabeledArg('depth', valueOrVariable(depth)),
-    createLabeledArg('diameter', valueOrVariable(diameter)),
+    createLabeledArg('depth', valueOrVariable(blindDepth)),
+    createLabeledArg('diameter', valueOrVariable(blindDiameter)),
   ])
   // TODO: support other holeBottom than flat
   const holeBottom = createCallExpressionStdLibKw('hole::flat', null, [])
@@ -165,11 +165,11 @@ export function addHole({
   if ('variableName' in cutAt && cutAt.variableName) {
     insertVariableAndOffsetPathToNode(cutAt, modifiedAst, nodeToEdit)
   }
-  if ('variableName' in depth && depth.variableName) {
-    insertVariableAndOffsetPathToNode(depth, modifiedAst, nodeToEdit)
+  if ('variableName' in blindDepth && blindDepth.variableName) {
+    insertVariableAndOffsetPathToNode(blindDepth, modifiedAst, nodeToEdit)
   }
-  if ('variableName' in diameter && diameter.variableName) {
-    insertVariableAndOffsetPathToNode(diameter, modifiedAst, nodeToEdit)
+  if ('variableName' in blindDiameter && blindDiameter.variableName) {
+    insertVariableAndOffsetPathToNode(blindDiameter, modifiedAst, nodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,

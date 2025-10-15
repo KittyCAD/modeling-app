@@ -619,8 +619,11 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
   const argDefaultValues: ModelingCommandSchema['Hole'] = {
     face,
     cutAt,
-    diameter,
-    depth,
+    holeBody: 'blind',
+    blindDiameter: diameter,
+    blindDepth: depth,
+    holeType: 'simple',
+    holeBottom: 'flat',
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
