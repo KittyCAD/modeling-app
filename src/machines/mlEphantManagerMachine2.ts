@@ -209,13 +209,15 @@ export const mlEphantManagerMachine2 = setup({
       )
       ws.binaryType = 'arraybuffer'
 
+      // TODO: Get the server side to instead insert "interrupt"...
       const addErrorIfInterrupted = (exchanges: Exchange[]) => {
         const lastExchange = exchanges.slice(-1)[0]
         const lastResponse = lastExchange?.responses.slice(-1)[0]
         if (
-          lastExchange?.responses?.length > 0 &&
+          (lastExchange?.responses?.length > 0 &&
           lastResponse !== undefined &&
-          !('end_of_stream' in lastResponse)
+          !('end_of_stream' in lastResponse)) ||
+          lastExchange?.responses?.length === 0
         ) {
           lastExchange.responses.push({
             error: {
