@@ -17,14 +17,14 @@ describe('@src/env', () => {
         VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
         VITE_KITTYCAD_API_WEBSOCKET_URL:
           'wss://api.dev.zoo.dev/ws/modeling/commands',
-        VITE_KITTYCAD_API_TOKEN: 'redacted',
+        VITE_ZOO_API_TOKEN: 'redacted',
         VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
         VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
         POOL: '',
       }
       const actual = env()
       //@ts-ignore I do not want this token in our logs for any reason.
-      actual.VITE_KITTYCAD_API_TOKEN = 'redacted'
+      actual.VITE_ZOO_API_TOKEN = 'redacted'
       expect(actual).toStrictEqual(expected)
     })
   })
@@ -52,7 +52,7 @@ describe('@src/env', () => {
               VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
               VITE_KITTYCAD_API_WEBSOCKET_URL:
                 'wss://api.dev.zoo.dev/ws/modeling/commands',
-              VITE_KITTYCAD_API_TOKEN: 'redacted',
+              VITE_ZOO_API_TOKEN: 'redacted',
               VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
               VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
             },
@@ -63,7 +63,7 @@ describe('@src/env', () => {
           VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
           VITE_KITTYCAD_API_WEBSOCKET_URL:
             'wss://api.dev.zoo.dev/ws/modeling/commands',
-          VITE_KITTYCAD_API_TOKEN: 'redacted',
+          VITE_ZOO_API_TOKEN: 'redacted',
           VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
           VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
         }
