@@ -432,3 +432,77 @@ export function shouldEnableResizeHandle(
 
   return !(isLastPane || nextIsCollapsed || thisIsCollapsed)
 }
+
+export interface ITogglePane extends IRootAndTargetLayouts {
+  expandOrCollapse: boolean
+  paneIndex: number
+}
+export function togglePaneLayoutNode({
+  rootLayout,
+  targetNode,
+  expandOrCollapse,
+  paneIndex,
+}: ITogglePane): Layout {
+  const layout = findLayoutChildNode({ rootLayout, targetNode })
+  if (!layout || layout.type !== LayoutType.Panes) {
+    console.error(
+      `targetNode not found, pane toggling didn't occur. Target ID: ${targetNode.id}`
+    )
+    return rootLayout
+  }
+  const indexInActiveItems = layout.activeIndices.indexOf(paneIndex)
+  const isInActiveItems = indexInActiveItems >= 0
+
+  if (expandOrCollapse && !isInActiveItems) {
+    layout.activeIndices.push(paneIndex)
+    layout.activeIndices.sort()
+
+    if (layout.sizes.length > 1) {
+      const newActiveIndex = layout.activeIndices.indexOf(paneIndex)
+
+      if (areSplitSizesNatural(layout.sizes)) {
+        layout.sizes = Array(layout.activeIndices.length).fill(
+          100 / layout.activeIndices.length
+        )
+      } else {
+        const activeIndexToSplit = newActiveIndex === 0 ? 1 : newActiveIndex - 1
+        const halfSize = (layout.sizes[activeIndexToSplit] || 2) / 2
+        layout.sizes[activeIndexToSplit] = halfSize
+        layout.sizes.splice(newActiveIndex, 0, halfSize)
+      }
+    } else if (layout.sizes.length === 1) {
+      layout.sizes = [50, 50]
+    } else {
+      layout.sizes = [100]
+      return expandSplitChildPaneNode({ rootLayout, targetNode: layout })
+    }
+
+    return findAndReplaceLayoutChildNode({
+      rootLayout,
+      targetNodeId: layout.id,
+      newNode: layout,
+    })
+  } else if (!expandOrCollapse && isInActiveItems) {
+    layout.activeIndices.splice(indexInActiveItems, 1)
+
+    if (layout.sizes.length > 1) {
+      const removedSize = layout.sizes.splice(indexInActiveItems, 1)
+      layout.sizes[indexInActiveItems === 0 ? 0 : indexInActiveItems - 1] +=
+        removedSize[0]
+    } else {
+      layout.activeIndices = []
+      layout.sizes = []
+      return collapseSplitChildPaneNode({ rootLayout, targetNode: layout })
+    }
+
+    return findAndReplaceLayoutChildNode({
+      rootLayout,
+      targetNodeId: layout.id,
+      newNode: layout,
+    })
+  }
+  console.warn(
+    `Toggle pane seemed to be called unnecessarily: pane layout ${layout.id}`
+  )
+  return rootLayout
+}

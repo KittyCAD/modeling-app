@@ -285,8 +285,6 @@ function parsePaneLayout(
     }
   }
 
-  console.log(`FRANK sizes: ${layout.sizes}, newSizes: ${newSizes}`)
-
   // Invalid active indices is healable, just make the first active
   const activeIndices =
     isArray(layout.activeIndices) &&

@@ -34,18 +34,16 @@ import {
   findAndUpdateSplitSizes,
   saveLayout,
   findAndReplaceLayoutChildNode,
-  areSplitSizesNatural,
-  collapseSplitChildPaneNode,
-  expandSplitChildPaneNode,
   shouldEnableResizeHandle,
   orientationToReactCss,
   sideToOrientation,
   orientationToDirection,
+  togglePaneLayoutNode,
 } from '@src/lib/layout/utils'
 import type {
   IUpdateNodeSizes,
   IReplaceLayoutChildNode,
-  IRootAndTargetLayouts,
+  ITogglePane,
 } from '@src/lib/layout/utils'
 import { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 import Tooltip from '@src/components/Tooltip'
@@ -65,22 +63,16 @@ interface LayoutState {
     keyof typeof areaTypeRegistry,
     (props: Partial<Closeable>) => React.ReactElement
   >
-  updateLayoutNodeSizes: (props: WithoutRootLayout<IUpdateNodeSizes>) => void
+  updateSplitSizes: (props: WithoutRootLayout<IUpdateNodeSizes>) => void
   replaceLayoutNode: (props: WithoutRootLayout<IReplaceLayoutChildNode>) => void
-  collapsePaneInParentSplit: (
-    props: WithoutRootLayout<IRootAndTargetLayouts>
-  ) => void
-  expandPaneInParentSplit: (
-    props: WithoutRootLayout<IRootAndTargetLayouts>
-  ) => void
+  togglePane: (props: WithoutRootLayout<ITogglePane>) => void
 }
 
 const LayoutStateContext = createContext<LayoutState>({
   areaLibrary: areaTypeRegistry,
-  updateLayoutNodeSizes: () => {},
+  updateSplitSizes: () => {},
   replaceLayoutNode: () => {},
-  collapsePaneInParentSplit: () => {},
-  expandPaneInParentSplit: () => {},
+  togglePane: () => {},
 })
 
 export const useLayoutState = () => useContext(LayoutStateContext)
@@ -102,7 +94,7 @@ export function LayoutRootNode({
     saveLayout({ layout, layoutName })
   }, [layout, layoutName])
 
-  function updateLayoutNodeSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
+  function updateSplitSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
     setLayout((rootLayout) =>
       findAndUpdateSplitSizes({
         rootLayout: structuredClone(rootLayout),
@@ -122,25 +114,9 @@ export function LayoutRootNode({
     )
   }
 
-  function collapsePaneInParentSplit(
-    props: WithoutRootLayout<IRootAndTargetLayouts>
-  ) {
-    setLayout((rootLayout) => {
-      console.log('oldLayout is', rootLayout)
-      const newLayout = collapseSplitChildPaneNode({
-        rootLayout: structuredClone(rootLayout),
-        ...props,
-      })
-      console.log('newLayout is', newLayout)
-      return newLayout
-    })
-  }
-
-  function expandPaneInParentSplit(
-    props: WithoutRootLayout<IRootAndTargetLayouts>
-  ) {
+  function togglePane(props: WithoutRootLayout<ITogglePane>) {
     setLayout((rootLayout) =>
-      expandSplitChildPaneNode({
+      togglePaneLayoutNode({
         rootLayout: structuredClone(rootLayout),
         ...props,
       })
@@ -151,11 +127,10 @@ export function LayoutRootNode({
     <LayoutStateContext.Provider
       value={{
         areaLibrary: areaLibrary || areaTypeRegistry,
-        updateLayoutNodeSizes,
+        updateSplitSizes,
         replaceLayoutNode,
-        collapsePaneInParentSplit,
-        expandPaneInParentSplit,
-        // More API here
+        togglePane,
+        // More API here if needed within nested layout components
       }}
     >
       <LayoutNode layout={layout} />
@@ -194,6 +169,11 @@ function SplitLayout({ layout }: { layout: SplitLayoutType }) {
   )
 }
 
+/**
+ * A Split layout is a flexbox container with N areas and
+ * drag handles at the interior boundaries between them,
+ * which the user can drag to resize.
+ */
 function SplitLayoutContents({
   layout,
   direction,
@@ -203,7 +183,7 @@ function SplitLayoutContents({
   layout: Layout
   onClose?: (index: number) => void
 }) {
-  const { updateLayoutNodeSizes } = useLayoutState()
+  const { updateSplitSizes } = useLayoutState()
   const hasValidChildren = 'children' in layout && isArray(layout.children)
   const hasValidSizes =
     'sizes' in layout &&
@@ -215,7 +195,7 @@ function SplitLayoutContents({
   }
 
   function onSplitDrag(newSizes: number[]) {
-    updateLayoutNodeSizes({ targetNode: layout, newSizes })
+    updateSplitSizes({ targetNode: layout, newSizes })
   }
   return (
     layout.children.length && (
@@ -255,15 +235,18 @@ function SplitLayoutContents({
 }
 
 /**
- * Use headless UI tabs if they can have multiple active items
- * with resizable panes
+ * A Pane layout is a wrapper around a Split layout that
+ * includes a toolbar that can allow a user to set how many
+ * active splits there are in the internal Split layout.
+ *
+ * The toolbar can be on any side of the layout container,
+ * the split direction can be set independently of toolbar side.
+ *
+ * The toolbar can specify an array of "actions" that appear after
+ * the pane UI buttons and invoke fire-and-forget actions.
  */
 function PaneLayout({ layout }: { layout: PaneLayoutType }) {
-  const {
-    replaceLayoutNode,
-    collapsePaneInParentSplit,
-    expandPaneInParentSplit,
-  } = useLayoutState()
+  const { togglePane } = useLayoutState()
   const paneBarRef = useRef<HTMLUListElement>(null)
   const barBorderWidthProp = `border${orientationToReactCss(sideToOrientation(layout.side))}Width`
   const buttonBorderWidthProp = `border${sideToReactCss(getOppositeSide(layout.side))}Width`
@@ -272,59 +255,9 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
     .filter((item) => item !== undefined)
 
   const onToggleItem = (checked: boolean, i: number) => {
-    console.log('toggley toggley', checked, i)
-    const indexInActiveItems = layout.activeIndices.indexOf(i)
-    const isInActiveItems = indexInActiveItems >= 0
-
-    if (checked && !isInActiveItems) {
-      layout.activeIndices.push(i)
-      layout.activeIndices.sort()
-
-      if (layout.sizes.length > 1) {
-        const newActiveIndex = layout.activeIndices.indexOf(i)
-
-        if (areSplitSizesNatural(layout.sizes)) {
-          layout.sizes = Array(layout.activeIndices.length).fill(
-            100 / layout.activeIndices.length
-          )
-        } else {
-          const activeIndexToSplit =
-            newActiveIndex === 0 ? 1 : newActiveIndex - 1
-          const halfSize = (layout.sizes[activeIndexToSplit] || 2) / 2
-          layout.sizes[activeIndexToSplit] = halfSize
-          layout.sizes.splice(newActiveIndex, 0, halfSize)
-        }
-      } else if (layout.sizes.length === 1) {
-        layout.sizes = [50, 50]
-      } else {
-        layout.sizes = [100]
-        expandPaneInParentSplit({ targetNode: layout })
-        return
-      }
-
-      console.log('gonna pop in this pane real quick')
-      replaceLayoutNode({ targetNodeId: layout.id, newNode: layout })
-    } else if (!checked && isInActiveItems) {
-      layout.activeIndices.splice(indexInActiveItems, 1)
-
-      if (layout.sizes.length > 1) {
-        const removedSize = layout.sizes.splice(indexInActiveItems, 1)
-        layout.sizes[indexInActiveItems === 0 ? 0 : indexInActiveItems - 1] +=
-          removedSize[0]
-      } else {
-        console.log(
-          'this was our only opened pane that we are closing, collapse!'
-        )
-        layout.activeIndices = []
-        layout.sizes = []
-        collapsePaneInParentSplit({ targetNode: layout })
-        return
-      }
-
-      console.log('gonna pop out this pane real quick')
-      replaceLayoutNode({ targetNodeId: layout.id, newNode: layout })
-    }
+    togglePane({ targetNode: layout, expandOrCollapse: checked, paneIndex: i })
   }
+
   return (
     <div
       className={`flex-1 flex ${sideToTailwindLayoutDirection(layout.side)}`}
@@ -434,6 +367,9 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
   )
 }
 
+/**
+ * Our custom styling atop of the react-resizable-panels headless component
+ */
 function ResizeHandle({
   direction,
   id,
@@ -464,6 +400,10 @@ function ResizeHandle({
   )
 }
 
+/**
+ * A context menu that lets the user set the toolbar side and
+ * split direction of a Pane type layout.
+ */
 function PaneLayoutContextMenu({
   layout,
   ...props
