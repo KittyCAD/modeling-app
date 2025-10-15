@@ -289,7 +289,21 @@ export fn holeGeometry(@solid, face, holeBottom, holeBody, holeType, cutAt) {
 ///      )
 /// ```
 @(experimental = true)
-export fn hole(@solid, face, holeBottom, holeBody, holeType, cutAt) {
+export fn hole(
+  /// Which solid to add a hole to.
+  @solid: Solid,
+  /// Which face of the solid to add the hole to.
+  face: TaggedFace,
+  /// Define bottom feature of the hole. E.g. drilled or flat.
+  holeBottom,
+  /// Define the main length of the hole. E.g. a blind distance.
+  holeBody,
+  /// Define the top feature of the hole. E.g. countersink, counterbore, simple.
+  holeType,
+  /// Where to place the cut on the given face of the solid.
+  /// This controls how far up/down/left/right the hole is placed.
+  cutAt: [number(Length); 2],
+) {
   drilled = holeGeometry(solid, face, holeBottom, holeBody, holeType, cutAt)
   return subtract(solid, tools = [drilled])
 }
