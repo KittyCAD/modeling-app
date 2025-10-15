@@ -349,6 +349,10 @@ fn assert_artifact_snapshots(
     let module_operations = module_state
         .iter()
         .map(|(path, s)| (path, &s.operations))
+        // Remove empty modules, to save filespace,
+        // and so that adding a new module without any operations
+        // doesn't generate a massive diff.
+        .filter(|(_path, s)| !s.is_empty())
         .collect::<IndexMap<_, _>>();
     let result1 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Operations executed", || {
@@ -362,6 +366,10 @@ fn assert_artifact_snapshots(
     let module_commands = module_state
         .iter()
         .map(|(path, s)| (path, &s.commands))
+        // Remove empty modules, to save filespace,
+        // and so that adding a new module without any operations
+        // doesn't generate a massive diff.
+        .filter(|(_path, s)| !s.is_empty())
         .collect::<IndexMap<_, _>>();
     let result2 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Artifact commands", || {
@@ -3943,6 +3951,69 @@ mod union_self {
 }
 mod plane_of_chamfer {
     const TEST_NAME: &str = "plane_of_chamfer";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod sketch_block_basic_fixed_constraints {
+    const TEST_NAME: &str = "sketch_block_basic_fixed_constraints";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod sketch_block_failed_unit_conversion {
+    const TEST_NAME: &str = "sketch_block_failed_unit_conversion";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod holes_cube {
+    const TEST_NAME: &str = "holes_cube";
 
     /// Test parsing KCL.
     #[test]

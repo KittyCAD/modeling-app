@@ -130,14 +130,32 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // 2. Convert the length argument from a string to a KCL expression
-  const length = await stringToKclExpression(
-    codeManager.code.slice(
-      operation.labeledArgs?.['length']?.sourceRange[0],
-      operation.labeledArgs?.['length']?.sourceRange[1]
+  let length: KclCommandValue | undefined
+  if ('length' in operation.labeledArgs && operation.labeledArgs.length) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs?.['length']?.sourceRange[0],
+        operation.labeledArgs?.['length']?.sourceRange[1]
+      )
     )
-  )
-  if (err(length) || 'errors' in length) {
-    return { reason: "Couldn't retrieve length argument" }
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve length argument" }
+    }
+
+    length = result
+  }
+
+  let to: Selections | undefined
+  if ('to' in operation.labeledArgs && operation.labeledArgs.to) {
+    const result = retrieveNonDefaultPlaneSelectionFromOpArg(
+      operation.labeledArgs.to,
+      kclManager.artifactGraph
+    )
+    if (err(result)) {
+      return { reason: result.message }
+    }
+
+    to = result
   }
 
   // symmetric argument from a string to boolean
@@ -259,6 +277,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   const argDefaultValues: ModelingCommandSchema['Extrude'] = {
     sketches,
     length,
+    to,
     symmetric,
     bidirectionalLength,
     tagStart,

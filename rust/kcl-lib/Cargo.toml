@@ -68,6 +68,7 @@ itertools = "0.14.0"
 kcl-api = { version = "0.1", path = "../kcl-api" }
 kcl-derive-docs = { version = "0.1", path = "../kcl-derive-docs" }
 kcl-error = { version = "0.1", path = "../kcl-error" }
+kcl-ezpz = { workspace = true }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 lazy_static = { workspace = true }
@@ -79,7 +80,8 @@ nalgebra-glm = "0.20.0"
 parse-display = "0.10.0"
 pyo3 = { workspace = true, optional = true }
 pyo3-stub-gen = { workspace = true, optional = true }
-regex = "1.11.3"
+rayon = { workspace = true }
+regex = "1.12.1"
 reqwest = { version = "0.12", default-features = false, features = [
   "stream",
   "rustls-tls",
@@ -99,7 +101,7 @@ sha2 = "0.10.9"
 tabled = { version = "0.20.0", optional = true }
 tempfile = "3.23"
 thiserror = "2.0.17"
-toml = "0.9.7"
+toml = "0.9.8"
 ts-rs = { version = "11.0.1", features = [
   "uuid-impl",
   "url-impl",
@@ -130,7 +132,7 @@ futures-lite = "2.6.1"
 js-sys = { version = "0.3.72" }
 tokio = { workspace = true, features = ["sync", "time"] }
 tower-lsp = { workspace = true, features = ["runtime-agnostic"] }
-typed-path = "0.11.0"
+typed-path = "0.12.0"
 wasm-bindgen = "0.2.99"
 wasm-bindgen-futures = "0.4.49"
 wasm-timer = { package = "zduny-wasm-timer", version = "0.2.5" }

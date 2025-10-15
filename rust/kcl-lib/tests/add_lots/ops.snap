@@ -176,18 +176,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           }
         ]
       },
@@ -227,18 +215,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -556,18 +532,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -608,18 +572,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -925,18 +877,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -977,18 +917,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -1282,18 +1210,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -1334,18 +1250,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -1627,18 +1531,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -1679,18 +1571,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -1960,18 +1840,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -2012,18 +1880,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -2281,18 +2137,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -2333,18 +2177,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -2590,18 +2422,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -2642,18 +2462,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -2887,18 +2695,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -2939,18 +2735,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -3172,18 +2956,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -3224,18 +2996,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -3445,18 +3205,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -3497,18 +3245,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -3706,18 +3442,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -3758,18 +3482,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -3955,18 +3667,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -4007,18 +3707,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -4192,18 +3880,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -4244,18 +3920,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -4417,18 +4081,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -4469,18 +4121,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -4630,18 +4270,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -4682,18 +4310,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -4831,18 +4447,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -4883,18 +4487,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -5020,18 +4612,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -5072,18 +4652,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -5197,18 +4765,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -5249,18 +4805,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -5362,18 +4906,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -5414,18 +4946,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -5515,18 +5035,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -5567,18 +5075,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -5656,18 +5152,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -5708,18 +5192,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -5785,18 +5257,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -5837,18 +5297,6 @@ description: Operations executed add_lots.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
           },
           {
             "type": "BinaryLeft"
@@ -5902,18 +5350,6 @@ description: Operations executed add_lots.kcl
             "type": "BinaryLeft"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -5956,204 +5392,6 @@ description: Operations executed add_lots.kcl
             "type": "VariableDeclarationInit"
           },
           {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryRight"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "f",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Number",
-            "value": 48.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryRight"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "f",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Number",
-            "value": 49.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryRight"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "f",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Number",
-            "value": 50.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "BinaryLeft"
-          },
-          {
-            "type": "BinaryRight"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "f",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Number",
-            "value": 51.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
             "type": "BinaryRight"
           }
         ]
@@ -6168,7 +5406,7 @@ description: Operations executed add_lots.kcl
       "name": "x",
       "value": {
         "type": "Number",
-        "value": 2652.0,
+        "value": 2256.0,
         "ty": {
           "type": "Default",
           "len": "mm",
@@ -6193,9 +5431,6 @@ description: Operations executed add_lots.kcl
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -6301,14 +5536,5 @@ description: Operations executed add_lots.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

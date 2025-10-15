@@ -9,7 +9,6 @@ import {
 } from 'react-router-dom'
 
 import { App } from '@src/App'
-import { Auth } from '@src/Auth'
 import RootLayout from '@src/Root'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
 import { ErrorPage } from '@src/components/ErrorPage'
@@ -75,16 +74,14 @@ const router = createRouter([
         path: PATHS.FILE + '/:id',
         errorElement: <ErrorPage />,
         element: (
-          <Auth>
-            <ModelingPageProvider>
-              <ModelingMachineProvider>
-                <CoreDump />
-                <Outlet />
-                <App />
-                <CommandBar />
-              </ModelingMachineProvider>
-            </ModelingPageProvider>
-          </Auth>
+          <ModelingPageProvider>
+            <ModelingMachineProvider>
+              <CoreDump />
+              <Outlet />
+              <App />
+              <CommandBar />
+            </ModelingMachineProvider>
+          </ModelingPageProvider>
         ),
         children: [
           {
@@ -116,11 +113,11 @@ const router = createRouter([
         path: PATHS.HOME,
         errorElement: <ErrorPage />,
         element: (
-          <Auth>
+          <>
             <Outlet />
             <Home />
             <CommandBar />
-          </Auth>
+          </>
         ),
         id: PATHS.HOME,
         loader: homeLoader,
