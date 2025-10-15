@@ -1,13 +1,13 @@
 ---
 title: "hole::counterbore"
 subtitle: "Function in std::hole"
-excerpt: "Cut a straight vertical counterbore at the top of the hole."
+excerpt: "Cut a straight vertical counterbore at the top of the hole. Typically used when a fastener (e.g. the head cap on a screw) needs to sit flush with the solid's surface."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-Cut a straight vertical counterbore at the top of the hole.
+Cut a straight vertical counterbore at the top of the hole. Typically used when a fastener (e.g. the head cap on a screw) needs to sit flush with the solid's surface.
 
 ```kcl
 hole::counterbore(
