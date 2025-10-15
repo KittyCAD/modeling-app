@@ -939,6 +939,10 @@ export class ConnectionManager extends EventTarget {
       this.dispatchEvent(
         new CustomEvent(EngineCommandManagerEvents.peerConnectionFailed, {})
       )
+    } else if (options?.dataChannelClosed) {
+      this.dispatchEvent(
+        new CustomEvent(EngineCommandManagerEvents.dataChannelClose, {})
+      )
     }
 
     if (this.connection) {

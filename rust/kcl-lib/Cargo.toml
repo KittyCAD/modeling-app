@@ -68,6 +68,7 @@ itertools = "0.14.0"
 kcl-api = { version = "0.1", path = "../kcl-api" }
 kcl-derive-docs = { version = "0.1", path = "../kcl-derive-docs" }
 kcl-error = { version = "0.1", path = "../kcl-error" }
+kcl-ezpz = { workspace = true }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 lazy_static = { workspace = true }
@@ -79,6 +80,7 @@ nalgebra-glm = "0.20.0"
 parse-display = "0.10.0"
 pyo3 = { workspace = true, optional = true }
 pyo3-stub-gen = { workspace = true, optional = true }
+rayon = { workspace = true }
 regex = "1.12.1"
 reqwest = { version = "0.12", default-features = false, features = [
   "stream",
