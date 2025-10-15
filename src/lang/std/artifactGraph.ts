@@ -889,57 +889,57 @@ export function coerceSelectionsToBody(
       continue
     }
 
-    let bodyArtifact: Artifact | null = null
-    let bodyCodeRef: CodeRef | null = null
-
     // If it's already a body type, use it directly
     if (
       selection.artifact.type === 'sweep' ||
       selection.artifact.type === 'compositeSolid' ||
       selection.artifact.type === 'path'
     ) {
-      bodyArtifact = selection.artifact
-      bodyCodeRef = selection.codeRef
+      if (!seenBodyIds.has(selection.artifact.id)) {
+        seenBodyIds.add(selection.artifact.id)
+        bodySelections.push({
+          artifact: selection.artifact,
+          codeRef: selection.codeRef,
+        })
+      }
     } else {
       // Get the parent body (sweep) from faces, edges, or edgeCuts
-      // getSweepArtifactFromSelection handles all common types: sweepEdge, segment, wall, cap, edgeCut
-      const sweep = getSweepArtifactFromSelection(selection, artifactGraph)
+      const maybeSweep = getSweepArtifactFromSelection(selection, artifactGraph)
 
-      if (err(sweep)) {
+      if (err(maybeSweep)) {
         return new Error(
           `Unable to find parent body for selected artifact: ${selection.artifact.type}`
         )
       }
 
       // Prefer the path over the sweep for the final selection
-      // The engine selects the path (not the sweep) when the object filter is active,
-      // so we follow the same convention for consistency
-      const sweepArtifact = sweep as Artifact
-      if ('pathId' in sweepArtifact && sweepArtifact.pathId) {
-        const path = getArtifactOfTypes(
-          { key: sweepArtifact.pathId, types: ['path'] },
-          artifactGraph
-        )
-        if (!err(path)) {
-          bodyArtifact = path
-          bodyCodeRef = path.codeRef
-        } else {
-          bodyArtifact = sweepArtifact
-          bodyCodeRef = sweep.codeRef
+      const maybePath = getArtifactOfTypes(
+        { key: maybeSweep.pathId, types: ['path'] },
+        artifactGraph
+      )
+      if (!err(maybePath)) {
+        // Successfully got the path from the sweep
+        if (!seenBodyIds.has(maybePath.id)) {
+          seenBodyIds.add(maybePath.id)
+          bodySelections.push({
+            artifact: maybePath,
+            codeRef: maybePath.codeRef,
+          })
         }
       } else {
-        bodyArtifact = sweepArtifact
-        bodyCodeRef = sweep.codeRef
+        // Couldn't get path, use the sweep itself
+        const sweepWithType = getArtifactOfTypes(
+          { key: maybeSweep.id, types: ['sweep'] },
+          artifactGraph
+        )
+        if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
+          seenBodyIds.add(sweepWithType.id)
+          bodySelections.push({
+            artifact: sweepWithType,
+            codeRef: maybeSweep.codeRef,
+          })
+        }
       }
-    }
-
-    // Add to the result, avoiding duplicates
-    if (bodyArtifact && bodyCodeRef && !seenBodyIds.has(bodyArtifact.id)) {
-      seenBodyIds.add(bodyArtifact.id)
-      bodySelections.push({
-        artifact: bodyArtifact,
-        codeRef: bodyCodeRef,
-      })
     }
   }
 
