@@ -167,7 +167,7 @@ export fn drill(pointAngle: number(Angle)) {
 /// ```
 @(experimental = true)
 export fn flat() {
-  return { drillBitAngle = 179.99deg }
+  return { drillBitAngle = 180deg }
 }
 
 // Defining the hole
@@ -233,7 +233,14 @@ fn sketchHoleProfile(@sketchOn, holeBottom, holeBody, holeType, shift) {
   bottom = holeBottom
   // Calculate the drill bit height
   radius = body.diameter / 2
-  theta = bottom.drillBitAngle / 2
+  // if drill bit angle is exactly 180 degrees, it causes a divide by zero
+  // (because tan(theta = 90) = 0).
+  // So, if it would be 180deg, change it to be 179.99deg.
+  theta = if abs(bottom.drillBitAngle - 180deg) < 0.01deg {
+    179.99deg / 2
+  } else {
+    bottom.drillBitAngle / 2
+  }
   drillHeight = radius / tan(theta)
 
   // Calculate total model height from holeType to bottom
