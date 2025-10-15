@@ -12,7 +12,7 @@ import { capitaliseFC } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
 import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
 import {
-  DEBUG_PANE_ID,
+  DefaultLayoutPaneID,
   debugPaneConfig,
   defaultLayoutConfig,
   LEFT_TOOLBAR_ID,
@@ -20,7 +20,7 @@ import {
 import { isErr } from '@src/lib/trap'
 import { parseLayoutFromJsonString } from '@src/lib/layout/parse'
 import { useEffect } from 'react'
-import { useSettings } from '@src/lib/singletons'
+import { setLayout, useLayout, useSettings } from '@src/lib/singletons'
 import { LAYOUT_PERSIST_PREFIX } from '@src/lib/constants'
 
 // Attempt to load a persisted layout
@@ -519,13 +519,14 @@ export function togglePaneLayoutNode({
  *
  * TODO: move the state for the layout higher up and do this listening work somewhere else.
  */
-export function useToggleDebugPaneVisibility(
-  rootLayout: Layout,
-  setLayout: (l: Layout) => void
-) {
+export function useToggleDebugPaneVisibility() {
+  const rootLayout = useLayout()
   const settings = useSettings()
   const showDebugPane = settings.app.showDebugPanel.current
   return useEffect(() => {
+    if (!rootLayout) {
+      return
+    }
     const leftSidebar = findLayoutChildNode({
       rootLayout,
       targetNodeId: LEFT_TOOLBAR_ID,
@@ -534,13 +535,12 @@ export function useToggleDebugPaneVisibility(
       return
     }
     const debugChildPaneIndex = leftSidebar?.children.findIndex(
-      (pane) => pane.id === DEBUG_PANE_ID
+      (pane) => pane.id === DefaultLayoutPaneID.Debug
     )
     const hasDebugPane = debugChildPaneIndex >= 0
 
     if (showDebugPane && !hasDebugPane) {
       leftSidebar.children.push(debugPaneConfig)
-      console.log('FRANK ADD THE DEBUG PANE!', rootLayout)
       setLayout(structuredClone(rootLayout))
     }
 
@@ -548,5 +548,5 @@ export function useToggleDebugPaneVisibility(
       leftSidebar.children.splice(debugChildPaneIndex, 1)
       setLayout(structuredClone(rootLayout))
     }
-  }, [showDebugPane, rootLayout, setLayout])
+  }, [showDebugPane, rootLayout])
 }

@@ -2,13 +2,21 @@ import { LayoutType, type Layout, type PaneLayout } from '@src/lib/layout/types'
 
 /** Temporary ID for getting the left toolbar of the layout */
 export const LEFT_TOOLBAR_ID = 'left-toolbar'
-export const DEBUG_PANE_ID = 'debug'
+
+export enum DefaultLayoutPaneID {
+  Debug = 'debug',
+  Code = 'code',
+  FeatureTree = 'feature-tree',
+  TTC = 'ttc',
+  Variables = 'variables',
+  Logs = 'logs',
+}
 
 /**
  * Temporary config for the special debug pane we have in the app.
  */
 export const debugPaneConfig: PaneLayout['children'][number] = {
-  id: DEBUG_PANE_ID,
+  id: DefaultLayoutPaneID.Debug,
   label: 'debug',
   icon: 'bug',
   type: LayoutType.Simple,
@@ -26,7 +34,7 @@ export const debugPaneConfig: PaneLayout['children'][number] = {
  *   - Text-to-CAD
  */
 export const defaultLayoutConfig: Layout = {
-  id: crypto.randomUUID(),
+  id: 'default',
   label: 'root',
   type: LayoutType.Splits,
   orientation: 'inline',
@@ -42,28 +50,28 @@ export const defaultLayoutConfig: Layout = {
       splitOrientation: 'block',
       children: [
         {
-          id: crypto.randomUUID(),
+          id: DefaultLayoutPaneID.FeatureTree,
           label: 'feature-tree',
           type: LayoutType.Simple,
           areaType: 'featureTree',
           icon: 'model',
         },
         {
-          id: crypto.randomUUID(),
+          id: DefaultLayoutPaneID.Code,
           label: 'code',
           type: LayoutType.Simple,
           areaType: 'codeEditor',
           icon: 'code',
         },
         {
-          id: crypto.randomUUID(),
+          id: DefaultLayoutPaneID.Variables,
           label: 'variables',
           type: LayoutType.Simple,
           areaType: 'variables',
           icon: 'make-variable',
         },
         {
-          id: crypto.randomUUID(),
+          id: DefaultLayoutPaneID.Logs,
           label: 'Logs',
           type: LayoutType.Simple,
           areaType: 'logs',
@@ -113,7 +121,7 @@ export const defaultLayoutConfig: Layout = {
       splitOrientation: 'block',
       children: [
         {
-          id: crypto.randomUUID(),
+          id: DefaultLayoutPaneID.TTC,
           label: 'ttc',
           type: LayoutType.Simple,
           areaType: 'ttc',
