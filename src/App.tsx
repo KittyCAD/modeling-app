@@ -45,7 +45,10 @@ import {
   editorManager,
   getSettings,
   kclManager,
+  useLayout,
+  setLayout,
   settingsActor,
+  getLayout,
 } from '@src/lib/singletons'
 import { useSettings, useToken } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
@@ -59,7 +62,7 @@ import {
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
-import { LayoutRootNode, defaultLayout } from '@src/lib/layout'
+import { LayoutRootNode } from '@src/lib/layout'
 
 // CYCLIC REF
 
@@ -70,7 +73,7 @@ if (window.electron) {
 }
 
 export function App() {
-  const [layout, setLayout] = useState(defaultLayout)
+  const layout = useLayout()
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -262,7 +265,11 @@ export function App() {
         </div>
         <ModalContainer />
         <section className="pointer-events-auto flex-1">
-          <LayoutRootNode layout={layout} setLayout={setLayout} />
+          <LayoutRootNode
+            layout={layout}
+            getLayout={getLayout}
+            setLayout={setLayout}
+          />
         </section>
         {/* <CamToggle /> */}
         <StatusBar

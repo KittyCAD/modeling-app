@@ -81,13 +81,15 @@ export const useLayoutState = () => useContext(LayoutStateContext)
 interface LayoutRootNodeProps {
   areaLibrary?: LayoutState['areaLibrary']
   layout: Layout
-  setLayout: Dispatch<SetStateAction<Layout>>
+  getLayout: () => Layout
+  setLayout: (layout: Layout) => void
   layoutName?: string
 }
 
 export function LayoutRootNode({
   areaLibrary,
   layout,
+  getLayout,
   setLayout,
   layoutName = 'default',
 }: LayoutRootNodeProps) {
@@ -96,7 +98,8 @@ export function LayoutRootNode({
   }, [layout, layoutName])
 
   function updateSplitSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
-    setLayout((rootLayout) =>
+    const rootLayout = getLayout()
+    setLayout(
       findAndUpdateSplitSizes({
         rootLayout: structuredClone(rootLayout),
         ...props,
@@ -107,7 +110,8 @@ export function LayoutRootNode({
   function replaceLayoutNode(
     props: WithoutRootLayout<IReplaceLayoutChildNode>
   ) {
-    setLayout((rootLayout) =>
+    const rootLayout = getLayout()
+    setLayout(
       findAndReplaceLayoutChildNode({
         rootLayout: structuredClone(rootLayout),
         ...props,
@@ -116,7 +120,8 @@ export function LayoutRootNode({
   }
 
   function togglePane(props: WithoutRootLayout<ITogglePane>) {
-    setLayout((rootLayout) =>
+    const rootLayout = getLayout()
+    setLayout(
       togglePaneLayoutNode({
         rootLayout: structuredClone(rootLayout),
         ...props,
