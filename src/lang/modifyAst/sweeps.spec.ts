@@ -4,7 +4,7 @@ import {
   type CodeRef,
   recast,
   type Program,
-  Name,
+  type Name,
 } from '@src/lang/wasm'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
