@@ -221,8 +221,7 @@ function SplitLayoutContents({
                 id={a.id}
                 order={i}
                 defaultSize={layout.sizes[i]}
-                className="flex bg-default"
-                style={disableFlex ? { flex: 'none' } : {}}
+                className={`flex bg-default ${disableFlex ? '!flex-none' : ''}`}
               >
                 <LayoutNode layout={a} onClose={() => onClose?.(i)} />
               </Panel>
@@ -421,11 +420,53 @@ function PaneButton({
           </kbd>
         ) : null}
       </Tooltip>
+      <NotificationBadge pane={pane} />
     </Switch>
   )
 }
 
+function NotificationBadge({ pane }: { pane: PaneChild }) {
+  const paneIsSimpleArea = pane.type === LayoutType.Simple
+  const resolvedAreaType = paneIsSimpleArea
+    ? areaTypeRegistry[pane.areaType]
+    : undefined
+  const notifications = resolvedAreaType?.useNotifications()
+  const { value, onClick, title } = notifications || {
+    value: undefined,
+    onClick: () => {},
+    title: undefined,
+  }
+
+  return value ? (
+    <p
+      id={`${pane.id}-badge`}
+      className={
+        'absolute m-0 p-0 top-0 right-0 min-w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-bl border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
+      }
+      onClick={onClick}
+      title={
+        title
+          ? title
+          : `Click to view ${value} notification${Number(value) > 1 ? 's' : ''}`
+      }
+    >
+      <span className="sr-only">&nbsp;has&nbsp;</span>
+      {typeof value === 'number' || typeof value === 'string' ? (
+        <span>{value}</span>
+      ) : (
+        <span className="sr-only">a</span>
+      )}
+      {typeof value === 'number' && (
+        <span className="sr-only">
+          &nbsp;notification{Number(value) > 1 ? 's' : ''}
+        </span>
+      )}
+    </p>
+  ) : null
+}
+
 function ActionButton({ action, side }: { action: Action; side: Side }) {
+  const platform = usePlatform()
   const resolvedAction = actionTypeRegistry[action.actionType]
   const disabledReason = resolvedAction.useDisabled()
   const hidden = resolvedAction.useHidden()
@@ -463,9 +504,7 @@ function ActionButton({ action, side }: { action: Action; side: Side }) {
             ) : null}
           </div>
           {disabledReason !== undefined && (
-            <>
-              <span className="text-3">{disabledReason}</span>
-            </>
+            <span className="text-3">{disabledReason}</span>
           )}
         </Tooltip>
       </button>

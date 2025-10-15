@@ -127,7 +127,7 @@ export const defaultLayoutConfig: Layout = {
       areaType: 'modeling',
     },
     {
-      id: crypto.randomUUID(),
+      id: DefaultLayoutToolbarID.Right,
       label: DefaultLayoutToolbarID.Right,
       type: LayoutType.Panes,
       side: 'inline-end',

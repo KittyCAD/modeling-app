@@ -303,15 +303,19 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [props.settings.app.showDebugPanel])
 
-  const togglePane = useCallback((newPane: SidebarId) => {
-    const openPanes = getOpenPanes()
-    setOpenPanes(
-      structuredClone(getLayout() || defaultLayout),
-      openPanes.includes(newPane)
-        ? openPanes.filter((pane) => pane !== newPane)
-        : [...openPanes, newPane]
-    )
-  }, [])
+  const togglePane = useCallback(
+    (newPane: SidebarId) => {
+      send({
+        type: 'Set context',
+        data: {
+          openPanes: context.store?.openPanes.includes(newPane)
+            ? context.store?.openPanes.filter((pane) => pane !== newPane)
+            : [...context.store?.openPanes, newPane],
+        },
+      })
+    },
+    [context.store?.openPanes, send]
+  )
 
   const css = {
     handle:

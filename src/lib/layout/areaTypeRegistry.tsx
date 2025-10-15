@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom'
-import { useToken } from '@src/lib/singletons'
+import { editorManager, getLayout, useToken } from '@src/lib/singletons'
 import env from '@src/env'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import Gizmo from '@src/components/Gizmo'
@@ -14,12 +14,28 @@ import {
 import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
 import type { Closeable } from '@src/lib/layout/types'
 import { isDesktop } from '@src/lib/isDesktop'
+import { useKclContext } from '@src/lang/KclProvider'
+import { kclErrorsByFilename } from '@src/lang/errors'
+import type { MouseEventHandler } from 'react'
+import {
+  defaultLayout,
+  getOpenPanes,
+  setOpenPanes,
+} from '@src/lib/layout/utils'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 export type AreaTypeDefinition = {
   hide: () => boolean
   shortcut?: string
   /** I decided this is where impure stuff like the TTC button's custom styling should live */
   cssClassOverrides?: SidebarCssOverrides
+  useNotifications: () =>
+    | {
+        value: string | number
+        onClick: MouseEventHandler
+        title?: string
+      }
+    | undefined
   Component: (props: Partial<Closeable>) => React.ReactElement
 }
 
@@ -33,10 +49,12 @@ export const areaTypeRegistry = Object.freeze({
     shortcut: 'Shift + T',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[0], ...props }),
+    useNotifications: () => undefined,
   },
   modeling: {
     hide: () => false,
     Component: ModelingArea,
+    useNotifications: () => undefined,
   },
   ttc: {
     hide: () => false,
@@ -47,36 +65,72 @@ export const areaTypeRegistry = Object.freeze({
     },
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesRight[0], ...props }),
+    useNotifications: () => undefined,
   },
   codeEditor: {
     hide: () => false,
     shortcut: 'Shift + C',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[1], ...props }),
+    useNotifications() {
+      const kclContext = useKclContext()
+      const value = kclContext.diagnostics.filter(
+        (diagnostic) => diagnostic.severity === 'error'
+      ).length
+      const onClick: MouseEventHandler = (e) => {
+        e.preventDefault()
+        setOpenPanes(
+          getLayout() || defaultLayout,
+          Array.from(new Set(getOpenPanes()).add(DefaultLayoutPaneID.Code))
+        )
+        editorManager.scrollToFirstErrorDiagnosticIfExists()
+      }
+      return { value, onClick, title: undefined }
+    },
   },
   files: {
     hide: () => !isDesktop(),
     shortcut: 'Shift + F',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[2], ...props }),
+    useNotifications() {
+      const title = 'Project files have runtime errors'
+      const kclContext = useKclContext()
+      // Only compute runtime errors! Compilation errors are not tracked here.
+      const errors = kclErrorsByFilename(kclContext.errors)
+      const value = errors.size > 0 ? 'x' : ''
+      const onClick: MouseEventHandler = (e) => {
+        e.preventDefault()
+        // TODO: When we have generic file open
+        // If badge is pressed
+        // Open the first error in the array of errors
+        // Then scroll to error
+        // Do you automatically open the project files
+        // editorManager.scrollToFirstErrorDiagnosticIfExists()
+      }
+      return { value, onClick, title }
+    },
   },
   variables: {
     hide: () => false,
     shortcut: 'Shift + V',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[3], ...props }),
+    useNotifications: () => undefined,
   },
   logs: {
     hide: () => false,
     shortcut: 'Shift + L',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[4], ...props }),
+    useNotifications: () => undefined,
   },
   debug: {
     hide: () => false,
     shortcut: 'Shift + D',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[5], ...props }),
+    useNotifications: () => undefined,
   },
 } satisfies Record<string, AreaTypeDefinition>)
 
