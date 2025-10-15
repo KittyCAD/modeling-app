@@ -599,6 +599,8 @@ export function setOpenPanes(rootLayout: Layout, paneIDs: string[]): Layout {
     if (!parentOfPane || parentOfPane.type !== LayoutType.Panes) {
       continue
     }
+    parentOfPane.activeIndices = []
+    parentOfPane.sizes = []
     const paneIndex = parentOfPane.children.findIndex((p) => p.id === id)
     togglePaneLayoutNode({
       rootLayout,
