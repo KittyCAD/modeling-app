@@ -309,10 +309,11 @@ const initializeMouseEvents = (
   // Add the event listener to the div wrapper around the canvas
   wrapperRef.current.addEventListener('mousemove', handleMouseMove)
   wrapperRef.current.addEventListener('click', handleClick)
+  const wrapperRefClosure = wrapperRef.current
 
   const disposeMouseEvents = () => {
-    wrapperRef.current.removeEventListener('mousemove', handleMouseMove)
-    wrapperRef.current.removeEventListener('click', handleClick)
+    wrapperRefClosure.removeEventListener('mousemove', handleMouseMove)
+    wrapperRefClosure.removeEventListener('click', handleClick)
   }
 
   return { mouse, disposeMouseEvents }
