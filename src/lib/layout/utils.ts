@@ -444,6 +444,23 @@ export function shouldEnableResizeHandle(
   return !(isLastPane || nextIsCollapsed || thisIsCollapsed)
 }
 
+export function shouldDisableFlex(
+  currentSplitChild: Layout,
+  parentLayout: Layout
+): boolean {
+  const isCollapsedPaneLayout =
+    currentSplitChild.type === LayoutType.Panes &&
+    currentSplitChild.onExpandSize !== undefined
+  const isParentSplit = parentLayout.type === LayoutType.Splits
+  // Only need to collapse if the child pane node is on a side that is the same
+  // as its parent's orientation.
+  const isAlignedPaneChild =
+    isCollapsedPaneLayout &&
+    isParentSplit &&
+    currentSplitChild.side.includes(parentLayout.orientation)
+  return isAlignedPaneChild
+}
+
 export interface ITogglePane extends IRootAndTargetID {
   expandOrCollapse: boolean
   paneIndex: number

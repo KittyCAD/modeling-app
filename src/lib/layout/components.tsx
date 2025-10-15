@@ -42,6 +42,7 @@ import {
   sideToOrientation,
   orientationToDirection,
   togglePaneLayoutNode,
+  shouldDisableFlex,
 } from '@src/lib/layout/utils'
 import type {
   IUpdateNodeSizes,
@@ -210,6 +211,7 @@ function SplitLayoutContents({
       >
         {layout.children.map((a, i, arr) => {
           const disableResize = !shouldEnableResizeHandle(a, i, arr)
+          const disableFlex = shouldDisableFlex(a, layout)
           return (
             <Fragment
               key={`${a.id}${a.type === 'panes' ? a.activeIndices : ''}`}
@@ -219,6 +221,7 @@ function SplitLayoutContents({
                 order={i}
                 defaultSize={layout.sizes[i]}
                 className="flex bg-default"
+                style={disableFlex ? { flex: 'none' } : {}}
               >
                 <LayoutNode layout={a} onClose={() => onClose?.(i)} />
               </Panel>
