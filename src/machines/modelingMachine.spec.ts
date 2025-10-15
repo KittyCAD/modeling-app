@@ -1,41 +1,7 @@
-import {
-  type Artifact,
-  assertParse,
-  type CodeRef,
-  type Program,
-  recast,
-  type Name,
-  type CallExpressionKw,
-} from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import { enginelessExecutor } from '@src/lib/testHelpers'
-import { err, reportRejection } from '@src/lib/trap'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { assertParse, recast, type CallExpressionKw } from '@src/lang/wasm'
+import { err } from '@src/lib/trap'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import {
-  engineCommandManager,
-  kclManager,
-  codeManager,
-} from '@src/lib/singletons'
-import type { ArtifactGraph } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
-import env from '@src/env'
-import {
-  addExtrude,
-  addLoft,
-  addRevolve,
-  addSweep,
-  getAxisExpressionAndIndex,
-  retrieveAxisOrEdgeSelectionsFromOpArg,
-} from '@src/lang/modifyAst/sweeps'
-import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import {
-  addPatternCircular3D,
-  addPatternLinear3D,
-} from '@src/lang/modifyAst/pattern3D'
-import type { KclCommandValue } from '@src/lib/commandTypes'
-import { addHelix } from '@src/lang/modifyAst/geometry'
+import { kclManager, codeManager } from '@src/lib/singletons'
 import {
   createLiteral,
   createIdentifier,
@@ -55,111 +21,8 @@ import {
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
 
-// Unfortunately, we need the real engine here it seems to get sweep faces populated
-beforeAll(async () => {
-  await initPromise
-  await new Promise((resolve) => {
-    engineCommandManager
-      .start({
-        token: env().VITE_KITTYCAD_API_TOKEN || '',
-        width: 256,
-        height: 256,
-        setStreamIsReady: () => {
-          console.log('no op for a unit test')
-        },
-        callbackOnUnitTestingConnection: () => {
-          resolve(true)
-        },
-      })
-      .catch(reportRejection)
-  })
-}, 30_000)
-
-afterAll(() => {
-  engineCommandManager.tearDown()
-})
-
-// TODO: two different methods for the same thing. Why?
-async function ENGLINELESS_getAstAndArtifactGraph(code: string) {
-  const ast = assertParse(code)
-  if (err(ast)) throw ast
-
-  const { artifactGraph } = await enginelessExecutor(ast)
-  return { ast, artifactGraph }
-}
-
-const executeCode = async (code: string) => {
-  const ast = assertParse(code)
-  await kclManager.executeAst({ ast })
-  const artifactGraph = kclManager.artifactGraph
-  await new Promise((resolve) => setTimeout(resolve, 100))
-  return { ast, artifactGraph }
-}
-
-async function ENGINELESS_getAstAndSketchSelections(code: string) {
-  const { ast, artifactGraph } = await ENGLINELESS_getAstAndArtifactGraph(code)
-  const artifacts = [...artifactGraph.values()].filter((a) => a.type === 'path')
-  if (artifacts.length === 0) {
-    throw new Error('Artifact not found in the graph')
-  }
-  return { artifactGraph, ast, sketches }
-}
-
-async function runNewAstAndCheckForSweep(ast: Node<Program>) {
-  const { artifactGraph } = await enginelessExecutor(ast)
-  const sweepArtifact = artifactGraph.values().find((a) => a.type === 'sweep')
-  expect(sweepArtifact).toBeDefined()
-}
-const createSelectionWithFirstMatchingArtifact = async (
-  artifactGraph: ArtifactGraph,
-  artifactType: string,
-  subType?: string
-) => {
-  // Check if any artifacts of this type exist at all
-  const allArtifactsOfType = [...artifactGraph].filter(([, artifact]) => {
-    if (artifact.type !== artifactType) return false
-    // If subType is specified, check for that too
-    if (subType && 'subType' in artifact && artifact.subType !== subType)
-      return false
-    return true
-  })
-
-  // get first artifact of this type
-  const firstArtifactsOfType = allArtifactsOfType[0][1]
-  if (!firstArtifactsOfType) {
-    return new Error(`No artifacts of type ${artifactType} found`)
-  }
-
-  // get codeRef
-  let codeRef = null
-
-  if (firstArtifactsOfType.type === 'segment') {
-    codeRef = firstArtifactsOfType.codeRef
-  } else if (firstArtifactsOfType.type === 'sweepEdge') {
-    // find the parent segment
-    const segment = [...artifactGraph].filter(([, artifact]) => {
-      if (artifact.id !== firstArtifactsOfType.segId) return false
-      return true
-    })
-    if ('codeRef' in segment[0][1]) {
-      codeRef = segment[0][1].codeRef
-    }
-  }
-
-  if (!codeRef) {
-    return new Error('No codeRef found for artifact')
-  }
-
-  // Create selection from found artifact
-  const selection: Selection = {
-    artifact: firstArtifactsOfType,
-    codeRef: codeRef,
-  }
-
-  return { selection }
-}
-
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
+
 describe('modelingMachine.test.ts', () => {
   // Define mock implementations that will be referenced in vi.mock calls
   vi.mock('@src/components/SetHorVertDistanceModal', () => ({

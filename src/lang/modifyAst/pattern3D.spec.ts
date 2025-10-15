@@ -93,7 +93,7 @@ describe('pattern3D.test.ts', () => {
 
   describe('Testing addPatternCircular3D', () => {
     it('should add patternCircular3d with named axis', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -134,10 +134,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('arcDegrees = 360')
       expect(newCode).toContain('rotateDuplicates = true')
       expect(newCode).toContain('useOriginal = false')
+      engineCommandManager.tearDown()
     })
 
     it('should add patternCircular3d with array axis', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -176,10 +177,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('center = [10, -20, 0]')
       expect(newCode).toContain('arcDegrees = 360')
       expect(newCode).toContain('rotateDuplicates = true')
+      engineCommandManager.tearDown()
     })
 
     it('should add patternCircular3d with minimal required parameters', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -217,10 +219,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).not.toContain('arcDegrees')
       expect(newCode).not.toContain('rotateDuplicates')
       expect(newCode).not.toContain('useOriginal')
+      engineCommandManager.tearDown()
     })
 
     it('should handle all optional parameters', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -261,10 +264,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('arcDegrees = 180')
       expect(newCode).toContain('rotateDuplicates = true')
       expect(newCode).toContain('useOriginal = false')
+      engineCommandManager.tearDown()
     })
 
     it('should handle variable references for parameters', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 myInstances = 8
@@ -307,10 +311,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('instances = myInstances')
       expect(newCode).toContain('axis = myAxis')
       expect(newCode).toContain('center = myCenter')
+      engineCommandManager.tearDown()
     })
 
     it('should handle decimal values for all parameters', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -351,10 +356,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('axis = [1, -1, 0.5]')
       expect(newCode).toContain('center = [7.5, 3.2, 0]')
       expect(newCode).toContain('arcDegrees = 180.5')
+      engineCommandManager.tearDown()
     })
 
     it('should handle mathematical expressions for parameters', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 myCount = 10
@@ -412,10 +418,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('axis = [mySpacing * 2, 0, 1]')
       expect(newCode).toContain('center = [mySpacing + myOffset, 0, 0]')
       expect(newCode).toContain('arcDegrees = myAngle * 2')
+      engineCommandManager.tearDown()
     })
 
     it('should prioritize array values over variable names when both exist', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -470,10 +477,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('axis = [1, 0, 0]')
       expect(newCode).not.toContain('axis = someVariable')
       expect(newCode).toContain('center = [0, 0, 0]')
+      engineCommandManager.tearDown()
     })
 
     it('should create new pattern variable when selection is piped into named variable', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -512,10 +520,11 @@ exampleSketch = startSketchOn(XZ)
       expect(newCode).toContain('|> extrude(length = 5)')
       expect(newCode).toContain('pattern001 = patternCircular3d(')
       expect(newCode).toContain('exampleSketch,') // References the original variable
+      engineCommandManager.tearDown()
     })
 
     it('should extend pipeline when selection is from unnamed pipeline', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 sketch001 = startSketchOn(XZ)
@@ -555,10 +564,11 @@ startSketchOn(XY)
       expect(newCode).toContain('startSketchOn(XY)')
       expect(newCode).toContain('|> extrude(length = 3)')
       expect(newCode).toContain('|> patternCircular3d(')
+      engineCommandManager.tearDown()
     })
 
     it('should pipe pattern when selection is from unnamed standalone expression', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -596,12 +606,13 @@ extrude(exampleSketch, length = -5)
       // Should pipe directly onto the unnamed expression
       expect(newCode).toContain('extrude(exampleSketch, length = -5)')
       expect(newCode).toContain('|> patternCircular3d(')
+      engineCommandManager.tearDown()
     })
   })
 
   describe('Testing addPatternLinear3D', () => {
     it('should add patternLinear3d with named axis', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -638,10 +649,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('axis = X')
       expect(newCode).toContain('distance = 6')
       expect(newCode).toContain('useOriginal = false')
+      engineCommandManager.tearDown()
     })
 
     it('should add patternLinear3d with array axis', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -678,10 +690,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('axis = [1, 0, 1]')
       expect(newCode).toContain('distance = 10')
       expect(newCode).toContain('useOriginal = true')
+      engineCommandManager.tearDown()
     })
 
     it('should add patternLinear3d with minimal required parameters', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -717,10 +730,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('axis = Y')
       expect(newCode).toContain('distance = 4')
       expect(newCode).not.toContain('useOriginal')
+      engineCommandManager.tearDown()
     })
 
     it('should handle all optional parameters', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -757,10 +771,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('axis = Y')
       expect(newCode).toContain('distance = 8')
       expect(newCode).toContain('useOriginal = true')
+      engineCommandManager.tearDown()
     })
 
     it('should handle variable references for parameters', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 myInstances = 8
@@ -803,10 +818,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('instances = myInstances')
       expect(newCode).toContain('axis = myAxis')
       expect(newCode).toContain('distance = myDistance')
+      engineCommandManager.tearDown()
     })
 
     it('should handle decimal values for all parameters', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -841,10 +857,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('instances = 2.5')
       expect(newCode).toContain('axis = [1, -1, 0.5]')
       expect(newCode).toContain('distance = 7.5')
+      engineCommandManager.tearDown()
     })
 
     it('should handle mathematical expressions for parameters', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 myCount = 10
@@ -895,10 +912,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('instances = myCount - myOffset')
       expect(newCode).toContain('axis = [mySpacing * 2, 0, 1]')
       expect(newCode).toContain('distance = mySpacing + myOffset')
+      engineCommandManager.tearDown()
     })
 
     it('should prioritize array values over variable names when both exist', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -953,10 +971,11 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('axis = [1, 0, 0]')
       expect(newCode).not.toContain('axis = someVariable')
       expect(newCode).toContain('distance = 8')
+      engineCommandManager.tearDown()
     })
 
     it('should create new pattern variable when selection is piped into named variable', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -995,10 +1014,11 @@ exampleSketch = startSketchOn(XZ)
       expect(newCode).toContain('|> extrude(length = 5)')
       expect(newCode).toContain('pattern001 = patternLinear3d(')
       expect(newCode).toContain('exampleSketch,') // References the original variable
+      engineCommandManager.tearDown()
     })
 
     it('should extend pipeline when selection is from unnamed pipeline', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 sketch001 = startSketchOn(XZ)
@@ -1038,10 +1058,11 @@ startSketchOn(XY)
       expect(newCode).toContain('startSketchOn(XY)')
       expect(newCode).toContain('|> extrude(length = 3)')
       expect(newCode).toContain('|> patternLinear3d(')
+      engineCommandManager.tearDown()
     })
 
     it('should pipe pattern when selection is from unnamed standalone expression', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, kclManager, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
@@ -1079,6 +1100,7 @@ extrude(exampleSketch, length = -5)
       // Should pipe directly onto the unnamed expression
       expect(newCode).toContain('extrude(exampleSketch, length = -5)')
       expect(newCode).toContain('|> patternLinear3d(')
+      engineCommandManager.tearDown()
     })
   })
 })

@@ -30,7 +30,8 @@ async function getAstAndArtifactGraph(
 describe('geometry.test.ts', () => {
   describe('Testing addHelix', () => {
     it('should add a standalone call on default axis selection', async () => {
-      const { instance, rustContext } = await buildTheWorldAndConnectToEngine()
+      const { instance, rustContext, engineCommandManager } =
+        await buildTheWorldAndConnectToEngine()
       const expectedNewLine = `helix001 = helix(
   axis = X,
   revolutions = 1,
@@ -76,10 +77,12 @@ describe('geometry.test.ts', () => {
       await enginelessExecutor(ast, undefined, undefined, rustContext)
       const newCode = recast(result.modifiedAst, instance)
       expect(newCode).toContain(expectedNewLine)
+      engineCommandManager.tearDown()
     })
 
     it('should add a standalone call on default axis selection with ccw true', async () => {
-      const { instance, rustContext } = await buildTheWorldAndConnectToEngine()
+      const { instance, rustContext, engineCommandManager } =
+        await buildTheWorldAndConnectToEngine()
       const expectedNewLine = `helix001 = helix(
   axis = X,
   revolutions = 1,
@@ -127,10 +130,12 @@ describe('geometry.test.ts', () => {
       await enginelessExecutor(ast, undefined, undefined, rustContext)
       const newCode = recast(result.modifiedAst, instance)
       expect(newCode).toContain(expectedNewLine)
+      engineCommandManager.tearDown()
     })
 
     it('should edit a standalone call with default axis selection', async () => {
-      const { instance, rustContext } = await buildTheWorldAndConnectToEngine()
+      const { instance, rustContext, engineCommandManager } =
+        await buildTheWorldAndConnectToEngine()
       const code = `helix001 = helix(
   axis = X,
   revolutions = 1,
@@ -185,6 +190,7 @@ describe('geometry.test.ts', () => {
       const newCode = recast(result.modifiedAst, instance)
       expect(newCode).not.toContain(code)
       expect(newCode).toContain(expectedNewLine)
+      engineCommandManager.tearDown()
     })
 
     const segmentInPath = `sketch001 = startSketchOn(XZ)
@@ -209,7 +215,8 @@ helix001 = helix(
 `
 
     it('should add a standalone call on segment selection', async () => {
-      const { instance, rustContext } = await buildTheWorldAndConnectToEngine()
+      const { instance, rustContext, engineCommandManager } =
+        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         segmentInPath,
         instance,
@@ -254,10 +261,12 @@ helix001 = helix(
       await enginelessExecutor(ast, undefined, undefined, rustContext)
       const newCode = recast(result.modifiedAst, instance)
       expect(newCode).toBe(helixFromSegmentInPath)
+      engineCommandManager.tearDown()
     })
 
     it('should edit a standalone call on segment selection', async () => {
-      const { instance, rustContext } = await buildTheWorldAndConnectToEngine()
+      const { instance, rustContext, engineCommandManager } =
+        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         helixFromSegmentInPath,
         instance,
@@ -310,6 +319,7 @@ helix001 = helix(
   radius = 6,
   ccw = true,
 )`)
+      engineCommandManager.tearDown()
     })
 
     // For now to avoid setting up an engine connection, the sweepEdge case is done in e2e (point-click.spec.ts)
@@ -328,7 +338,8 @@ helix001 = helix(
 `
 
     it('should add a standalone call on cylinder selection', async () => {
-      const { instance, rustContext } = await buildTheWorldAndConnectToEngine()
+      const { instance, rustContext, engineCommandManager } =
+        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         cylinderExtrude,
         instance,
@@ -366,10 +377,12 @@ helix001 = helix(
       await enginelessExecutor(ast, undefined, undefined, rustContext)
       const newCode = recast(result.modifiedAst, instance)
       expect(newCode).toBe(helixFromCylinder)
+      engineCommandManager.tearDown()
     })
 
     it('should edit a standalone call on cylinder selection', async () => {
-      const { instance, rustContext } = await buildTheWorldAndConnectToEngine()
+      const { instance, rustContext, engineCommandManager } =
+        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         helixFromCylinder,
         instance,
@@ -410,6 +423,7 @@ helix001 = helix(
       expect(newCode).toContain(
         `helix001 = helix(cylinder = extrude001, revolutions = 11, angleStart = 22`
       )
+      engineCommandManager.tearDown()
     })
   })
 })

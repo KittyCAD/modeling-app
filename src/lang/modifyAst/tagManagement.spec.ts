@@ -103,7 +103,8 @@ extrude001 = extrude(sketch001, length = 15)
 
     // Handle EDGE selections (commonEdge approach)
     it('should tag a segment and capStart using commonEdge approach', async () => {
-      const { instance, kclManager } = await buildTheWorldAndConnectToEngine()
+      const { instance, engineCommandManager, kclManager } =
+        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
         instance,
@@ -133,9 +134,11 @@ extrude001 = extrude(sketch001, length = 15)
       expect(newCode).toContain('tag = $seg01')
       expect(newCode).toContain('tagStart = $capStart001')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
+      engineCommandManager.tearDown()
     }, 5_000)
     it('should tag 2 segments using commonEdge approach', async () => {
-      const { instance, kclManager } = await buildTheWorldAndConnectToEngine()
+      const { instance, engineCommandManager, kclManager } =
+        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
         instance,
@@ -165,9 +168,11 @@ extrude001 = extrude(sketch001, length = 15)
       expect(newCode).toContain('tag = $seg01')
       expect(newCode).toContain('tag = $seg02')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
+      engineCommandManager.tearDown()
     }, 5_000)
     it('should tag a segment and capEnd using commonEdge approach', async () => {
-      const { instance, kclManager } = await buildTheWorldAndConnectToEngine()
+      const { instance, engineCommandManager, kclManager } =
+        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
         instance,
@@ -197,10 +202,12 @@ extrude001 = extrude(sketch001, length = 15)
       expect(newCode).toContain('tag = $seg01')
       expect(newCode).toContain('tagEnd = $capEnd001')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
+      engineCommandManager.tearDown()
     }, 5_000)
     // Handle EDGE selections (getOpposite/AdjacentEdge approach)
     it('should tag a segment using legacy oppositeAndAdjacentEdges approach for base edge selection', async () => {
-      const { instance, kclManager } = await buildTheWorldAndConnectToEngine()
+      const { instance, engineCommandManager, kclManager } =
+        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
         instance,
@@ -230,9 +237,11 @@ extrude001 = extrude(sketch001, length = 15)
       expect(tags.length).toBe(1) // Should add one tag
       expect(newCode).toContain('tag = $seg01')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
+      engineCommandManager.tearDown()
     }, 5_000)
     it('should tag a segment using legacy oppositeAndAdjacentEdges approach for adjacent edge selection', async () => {
-      const { instance, kclManager } = await buildTheWorldAndConnectToEngine()
+      const { instance, engineCommandManager, kclManager } =
+        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
         instance,
@@ -261,9 +270,11 @@ extrude001 = extrude(sketch001, length = 15)
       expect(tags.length).toBe(1) // Should add one tag
       expect(newCode).toContain('tag = $seg01')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
+      engineCommandManager.tearDown()
     }, 5_000)
     it('should tag a segment using legacy oppositeAndAdjacentEdges approach for opposite edge selection', async () => {
-      const { instance, kclManager } = await buildTheWorldAndConnectToEngine()
+      const { instance, engineCommandManager, kclManager } =
+        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
         instance,
@@ -293,6 +304,7 @@ extrude001 = extrude(sketch001, length = 15)
       expect(tags.length).toBe(1) // Should add one tag
       expect(newCode).toContain('tag = $seg01')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
+      engineCommandManager.tearDown()
     }, 5_000)
 
     // TODO: Add handling for FACE selections

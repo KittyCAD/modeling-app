@@ -179,7 +179,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
   describe('Testing addShell', () => {
     it('should add a basic shell call on cylinder end cap', async () => {
-      const { kclManager, instance, rustContext } =
+      const { kclManager, instance, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         cylinder,
@@ -204,10 +204,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         `shell001 = shell(extrude001, faces = END, thickness = 1)`
       )
       await enginelessExecutor(ast, undefined, undefined, rustContext)
+      engineCommandManager.tearDown()
     })
 
     it('should add a shell call on variable-less extrude', async () => {
-      const { kclManager, instance, rustContext } =
+      const { kclManager, instance, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       // Note: this was code from https://github.com/KittyCAD/modeling-app/issues/7640
       const code = `sketch001 = startSketchOn(XY)
@@ -240,10 +241,11 @@ extrude(p, length = 1000)`
       expect(newCode).toContain(`${code}
   |> shell(faces = END, thickness = 1)`)
       await enginelessExecutor(ast, undefined, undefined, rustContext)
+      engineCommandManager.tearDown()
     })
 
     it('should edit a basic shell call on cylinder end cap with new thickness', async () => {
-      const { kclManager, instance, rustContext } =
+      const { kclManager, instance, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `${cylinder}
 shell001 = shell(extrude001, faces = END, thickness = 1)
@@ -278,10 +280,11 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
         `shell001 = shell(extrude001, faces = END, thickness = 2)`
       )
       await enginelessExecutor(ast, undefined, undefined, rustContext)
+      engineCommandManager.tearDown()
     })
 
     it('should add a shell call on box for 2 walls', async () => {
-      const { kclManager, instance, rustContext } =
+      const { kclManager, instance, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         box,
@@ -304,10 +307,11 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
       expect(newCode).toContain(`${boxWithTwoTags}
 shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`)
       await enginelessExecutor(ast, undefined, undefined, rustContext)
+      engineCommandManager.tearDown()
     })
 
     it('should edit a shell call on box for 2 walls to a new thickness', async () => {
-      const { kclManager, instance, rustContext } =
+      const { kclManager, instance, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         `${boxWithTwoTags}
@@ -338,10 +342,11 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`,
       expect(newCode).toContain(`${boxWithTwoTags}
 shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
       await enginelessExecutor(ast, undefined, undefined, rustContext)
+      engineCommandManager.tearDown()
     })
 
     it('should add a shell on two related sweeps end faces', async () => {
-      const { kclManager, instance, rustContext } =
+      const { kclManager, instance, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       // Code from https://github.com/KittyCAD/modeling-app/blob/21f11c369e1e4bcb6d2514d1150ba5e13138fe32/docs/kcl-std/functions/std-solid-shell.md#L154-L155
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
@@ -368,12 +373,14 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
       const newCode = recast(result.modifiedAst, instance)
       expect(newCode).toContain(multiSolidsShell)
       await enginelessExecutor(ast, undefined, undefined, rustContext)
+      engineCommandManager.tearDown()
     })
   })
 
   describe('Testing retrieveFaceSelectionsFromOpArgs', () => {
     it('should find the solid and face of basic shell on cylinder cap', async () => {
-      const { kclManager, instance } = await buildTheWorldAndConnectToEngine()
+      const { kclManager, instance, engineCommandManager } =
+        await buildTheWorldAndConnectToEngine()
       const circleProfileInVar = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
@@ -417,10 +424,12 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       }
       expect(face.artifact.subType).toEqual('end')
       expect(face.artifact.sweepId).toEqual(solid.artifact.id)
+      engineCommandManager.tearDown()
     })
 
     it('should find the sweeps and faces of complex shell', async () => {
-      const { kclManager, instance } = await buildTheWorldAndConnectToEngine()
+      const { kclManager, instance, engineCommandManager } =
+        await buildTheWorldAndConnectToEngine()
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
         multiSolidsShell,
         instance,
@@ -458,12 +467,14 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       expect(selections.faces.graphSelections).toHaveLength(2)
       expect(selections.faces.graphSelections[0].artifact!.type).toEqual('cap')
       expect(selections.faces.graphSelections[1].artifact!.type).toEqual('cap')
+      engineCommandManager.tearDown()
     })
   })
 
   describe('Testing retrieveNonDefaultPlaneSelectionFromOpArg', () => {
     it('should find an offset plane on an offset plane', async () => {
-      const { kclManager, instance } = await buildTheWorldAndConnectToEngine()
+      const { kclManager, instance, engineCommandManager } =
+        await buildTheWorldAndConnectToEngine()
       const code = `plane001 = offsetPlane(XY, offset = 1)
 plane002 = offsetPlane(plane001, offset = 2)`
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
@@ -485,10 +496,12 @@ plane002 = offsetPlane(plane001, offset = 2)`
         (selections.graphSelections[0].artifact as PlaneArtifact).codeRef
           .pathToNode[1][0]
       ).toEqual(0)
+      engineCommandManager.tearDown()
     })
 
     it('should find an offset plane on a sweep face', async () => {
-      const { kclManager, instance } = await buildTheWorldAndConnectToEngine()
+      const { kclManager, instance, engineCommandManager } =
+        await buildTheWorldAndConnectToEngine()
       const code = `${cylinder}
 plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
@@ -511,10 +524,12 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
         (a) => a.type === 'cap' && a.subType === 'end'
       )
       expect(selections.graphSelections[0].artifact!.id).toEqual(cap!.id)
+      engineCommandManager.tearDown()
     })
 
     it('should find an offset plane on a chamfer face', async () => {
-      const { kclManager, instance } = await buildTheWorldAndConnectToEngine()
+      const { kclManager, instance, engineCommandManager } =
+        await buildTheWorldAndConnectToEngine()
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
         boxWithOneTagAndChamferAndPlane,
         instance,
@@ -531,6 +546,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
 
       expect(selections.graphSelections).toHaveLength(1)
       expect(selections.graphSelections[0].artifact!.type).toEqual('edgeCut')
+      engineCommandManager.tearDown()
     })
   })
 
@@ -538,7 +554,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
     it.each<DefaultPlaneStr>(['XY', 'XZ', 'YZ'])(
       'should add a basic offset plane call on default plane %s and then edit it',
       async (name) => {
-        const { kclManager, instance, rustContext } =
+        const { kclManager, instance, rustContext, engineCommandManager } =
           await buildTheWorldAndConnectToEngine()
         const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
           '',
@@ -603,11 +619,12 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
           undefined,
           rustContext
         )
+        engineCommandManager.tearDown()
       }
     )
 
     it('should add an offset plane call on offset plane and then edit it', async () => {
-      const { kclManager, instance, rustContext } =
+      const { kclManager, instance, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const code = `plane001 = offsetPlane(XY, offset = 1)`
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
@@ -677,10 +694,11 @@ plane002 = offsetPlane(plane001, offset = 3)`)
         undefined,
         rustContext
       )
+      engineCommandManager.tearDown()
     })
 
     it('should add an offset plane call on cylinder end cap and allow edits', async () => {
-      const { kclManager, instance, rustContext } =
+      const { kclManager, instance, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
         cylinder,
@@ -738,10 +756,11 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 3)`)
         undefined,
         rustContext
       )
+      engineCommandManager.tearDown()
     })
 
     it('should add an offset plane call on box wall and allow edits', async () => {
-      const { kclManager, instance, rustContext } =
+      const { kclManager, instance, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
         box,
@@ -799,10 +818,11 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
         undefined,
         rustContext
       )
+      engineCommandManager.tearDown()
     })
 
     it('should add an offset plane call on chamfer face and allow edits', async () => {
-      const { kclManager, instance, rustContext } =
+      const { kclManager, instance, rustContext, engineCommandManager } =
         await buildTheWorldAndConnectToEngine()
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
         boxWithOneTagAndChamfer,
@@ -863,12 +883,14 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
         undefined,
         rustContext
       )
+      engineCommandManager.tearDown()
     })
   })
 
   describe('Testing getEdgeCutMeta', () => {
     it('should find the edge cut meta info on a wall-cap chamfer', async () => {
-      const { kclManager, instance } = await buildTheWorldAndConnectToEngine()
+      const { kclManager, instance, engineCommandManager } =
+        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         boxWithOneTagAndChamfer,
         instance,
@@ -881,10 +903,12 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       expect(result?.type).toEqual('edgeCut')
       expect(result?.subType).toEqual('opposite')
       expect(result?.tagName).toEqual('seg01')
+      engineCommandManager.tearDown()
     })
 
     it('should find the edge cut meta info on a wall-wall chamfer', async () => {
-      const { kclManager, instance } = await buildTheWorldAndConnectToEngine()
+      const { kclManager, instance, engineCommandManager } =
+        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         boxWithTwoTagsAndChamfer,
         instance,
@@ -897,6 +921,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       expect(result?.type).toEqual('edgeCut')
       expect(result?.subType).toEqual('adjacent')
       expect(result?.tagName).toEqual('seg01')
+      engineCommandManager.tearDown()
     })
   })
 })

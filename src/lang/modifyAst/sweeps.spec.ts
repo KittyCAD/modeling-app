@@ -159,7 +159,7 @@ profile002 = rectangle(
 
   describe('Testing addExtrude', () => {
     it('should add a basic extrude call', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, engineCommandManager, kclManager, rustContext } =
         await buildTheWorldAndConnectToEngine()
       const { ast, sketches } = await getAstAndSketchSelections(
         circleProfileCode,
@@ -173,10 +173,12 @@ profile002 = rectangle(
       expect(newCode).toContain(circleProfileCode)
       expect(newCode).toContain(`extrude001 = extrude(profile001, length = 1)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
+      engineCommandManager.tearDown()
     })
 
     it('should add a basic multi-profile extrude call', async () => {
-      const { instance, rustContext } = await buildTheWorldAndConnectToEngine()
+      const { instance, engineCommandManager, rustContext } =
+        await buildTheWorldAndConnectToEngine()
       const { ast, sketches } = await getAstAndSketchSelectionsEngineless(
         circleAndRectProfilesCode,
         instance,
@@ -191,10 +193,11 @@ profile002 = rectangle(
         `extrude001 = extrude([profile001, profile002], length = 1)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
+      engineCommandManager.tearDown()
     })
 
     it('should add an extrude call with symmetric true', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, engineCommandManager, kclManager, rustContext } =
         await buildTheWorldAndConnectToEngine()
       const { ast, sketches } = await getAstAndSketchSelections(
         circleProfileCode,
@@ -210,10 +213,11 @@ profile002 = rectangle(
         `extrude001 = extrude(profile001, length = 1, symmetric = true)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
+      engineCommandManager.tearDown()
     })
 
     it('should add an extrude call with bidirectional length and twist angle', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, engineCommandManager, kclManager, rustContext } =
         await buildTheWorldAndConnectToEngine()
       const { ast, sketches } = await getAstAndSketchSelections(
         circleProfileCode,
@@ -244,10 +248,12 @@ profile002 = rectangle(
   bidirectionalLength = 20,
   twistAngle = 30,
 )`)
+      engineCommandManager.tearDown()
     })
 
     it('should edit an extrude call from symmetric true to false and new length', async () => {
-      const { instance, rustContext } = await buildTheWorldAndConnectToEngine()
+      const { instance, engineCommandManager, rustContext } =
+        await buildTheWorldAndConnectToEngine()
       const extrudeCode = `${circleProfileCode}
 extrude001 = extrude(profile001, length = 1, symmetric = true)`
       const { ast, sketches } = await getAstAndSketchSelectionsEngineless(
@@ -270,10 +276,11 @@ extrude001 = extrude(profile001, length = 1, symmetric = true)`
       expect(newCode).toContain(`${circleProfileCode}
 extrude001 = extrude(profile001, length = 2)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
+      engineCommandManager.tearDown()
     })
 
     it('should add an extrude call with method NEW', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, engineCommandManager, kclManager, rustContext } =
         await buildTheWorldAndConnectToEngine()
       const { ast, sketches } = await getAstAndSketchSelections(
         circleProfileCode,
@@ -289,6 +296,7 @@ extrude001 = extrude(profile001, length = 2)`)
         `extrude001 = extrude(profile001, length = 1, method = NEW)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
+      engineCommandManager.tearDown()
     })
   })
 
@@ -326,7 +334,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
     }
 
     it('should add a basic sweep call', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, engineCommandManager, kclManager, rustContext } =
         await buildTheWorldAndConnectToEngine()
       const { ast, sketches, path } = await getAstAndSketchesForSweep(
         circleAndLineCode,
@@ -341,10 +349,11 @@ profile002 = startProfile(sketch002, at = [0, 0])
       expect(newCode).toContain(
         `sweep001 = sweep(profile001, path = profile002)`
       )
+      engineCommandManager.tearDown()
     })
 
     it('should add a sweep call with sectional true and relativeTo setting', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, engineCommandManager, kclManager, rustContext } =
         await buildTheWorldAndConnectToEngine()
       const { ast, sketches, path } = await getAstAndSketchesForSweep(
         circleAndLineCode,
@@ -364,10 +373,11 @@ profile002 = startProfile(sketch002, at = [0, 0])
   sectional = true,
   relativeTo = 'sketchPlane',
 )`)
+      engineCommandManager.tearDown()
     })
 
     it('should edit sweep call with sectional from true to false and relativeTo setting change', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, engineCommandManager, kclManager, rustContext } =
         await buildTheWorldAndConnectToEngine()
       const circleAndLineCodeWithSweep = `${circleAndLineCode}
 sweep001 = sweep(
@@ -399,10 +409,11 @@ sweep001 = sweep(
       expect(newCode).toContain(
         `sweep001 = sweep(profile001, path = profile002, relativeTo = 'trajectoryCurve')`
       )
+      engineCommandManager.tearDown()
     })
 
     it('should add a muli-profile sweep call', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, engineCommandManager, kclManager, rustContext } =
         await buildTheWorldAndConnectToEngine()
       const circleAndLineAndRectProfilesCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
@@ -441,6 +452,7 @@ profile003 = startProfile(sketch002, at = [0, 0])
       expect(newCode).toContain(
         `sweep001 = sweep([profile001, profile002], path = profile003)`
       )
+      engineCommandManager.tearDown()
     })
 
     // Note: helix sweep will be done in e2e since helix artifacts aren't created by the engineless executor
@@ -454,7 +466,8 @@ sketch002 = startSketchOn(plane001)
 profile002 = circle(sketch002, center = [0, 0], radius = 20)
 `
     it('should add a basic loft call', async () => {
-      const { instance, kclManager } = await buildTheWorldAndConnectToEngine()
+      const { instance, engineCommandManager, kclManager } =
+        await buildTheWorldAndConnectToEngine()
       const { ast, sketches } = await getAstAndSketchSelections(
         twoCirclesCode,
         instance,
@@ -470,10 +483,11 @@ profile002 = circle(sketch002, center = [0, 0], radius = 20)
       expect(newCode).toContain(twoCirclesCode)
       expect(newCode).toContain(`loft001 = loft([profile001, profile002]`)
       // Don't think we can find the artifact here for loft?
+      engineCommandManager.tearDown()
     })
 
     it('should edit a loft call with vDegree', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, engineCommandManager, kclManager, rustContext } =
         await buildTheWorldAndConnectToEngine()
       const twoCirclesCodeWithLoft = `${twoCirclesCode}
 loft001 = loft([profile001, profile002])`
@@ -498,6 +512,7 @@ loft001 = loft([profile001, profile002])`
         `loft001 = loft([profile001, profile002], vDegree = 3)`
       )
       // Don't think we can find the artifact here for loft?
+      engineCommandManager.tearDown()
     })
   })
 
@@ -506,7 +521,7 @@ loft001 = loft([profile001, profile002])`
 profile001 = circle(sketch001, center = [3, 0], radius = 1)`
 
     it('should add basic revolve call', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, engineCommandManager, kclManager, rustContext } =
         await buildTheWorldAndConnectToEngine()
       const { ast, sketches } = await getAstAndSketchSelections(
         circleCode,
@@ -524,10 +539,11 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
       expect(newCode).toContain(
         `revolve001 = revolve(profile001, angle = 10, axis = X)`
       )
+      engineCommandManager.tearDown()
     })
 
     it('should add basic revolve call with symmetric true', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, engineCommandManager, kclManager, rustContext } =
         await buildTheWorldAndConnectToEngine()
       const { ast, sketches } = await getAstAndSketchSelections(
         circleCode,
@@ -555,10 +571,11 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
   axis = X,
   symmetric = true,
 )`)
+      engineCommandManager.tearDown()
     })
 
     it('should add a basic multi-profile revolve call', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, engineCommandManager, kclManager, rustContext } =
         await buildTheWorldAndConnectToEngine()
       const { ast, sketches } = await getAstAndSketchSelections(
         circleAndRectProfilesCode,
@@ -580,10 +597,11 @@ profile001 = circle(sketch001, center = [3, 0], radius = 1)`
         `revolve001 = revolve([profile001, profile002], angle = 10, axis = X)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
+      engineCommandManager.tearDown()
     })
 
     it('should add revolve call around edge', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, engineCommandManager, kclManager, rustContext } =
         await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [-102.57, 101.72])
@@ -616,10 +634,11 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       expect(newCode).toContain(
         `revolve001 = revolve(sketch002, angle = 20, axis = rectangleSegmentA001`
       )
+      engineCommandManager.tearDown()
     })
 
     it('should add revolve call around line segment from sketch', async () => {
-      const { instance, kclManager, rustContext } =
+      const { instance, engineCommandManager, kclManager, rustContext } =
         await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(-XY)
   |> startProfile(at = [-0.48, 1.25])
@@ -659,10 +678,12 @@ sketch002 = startSketchOn(XY)
   |> startProfile(at = [-2.02, 1.79])
   |> xLine(length = 2.6, tag = $seg01)
 revolve001 = revolve(sketch002, angle = 360, axis = seg01)`)
+      engineCommandManager.tearDown()
     })
 
     it('should edit revolve call, changing axis and setting both lengths', async () => {
-      const { instance, rustContext } = await buildTheWorldAndConnectToEngine()
+      const { instance, engineCommandManager, rustContext } =
+        await buildTheWorldAndConnectToEngine()
       const code = `${circleCode}
 revolve001 = revolve(profile001, angle = 10, axis = X)`
       const { ast, sketches } = await getAstAndSketchSelectionsEngineless(
@@ -697,6 +718,7 @@ revolve001 = revolve(profile001, angle = 10, axis = X)`
   axis = Y,
   bidirectionalAngle = 30,
 )`)
+      engineCommandManager.tearDown()
     })
   })
 
@@ -714,7 +736,8 @@ revolve001 = revolve(profile001, angle = 10, axis = X)`
     )
 
     it('should return a generated axis pointing to the selected segment', async () => {
-      const { instance, kclManager } = await buildTheWorldAndConnectToEngine()
+      const { instance, engineCommandManager, kclManager } =
+        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
@@ -731,6 +754,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
       expect(result.generatedAxis.type).toEqual('Name')
       expect((result.generatedAxis as Node<Name>).name.name).toEqual('seg01')
       expect(recast(ast, instance)).toContain(`xLine(length = 1, tag = $seg01)`)
+      engineCommandManager.tearDown()
     })
 
     it('should error if nothing is provided', async () => {
@@ -748,7 +772,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     it.each(['X', 'Y', 'Z'])(
       'should return axis selection from axis op argument %s',
       async (axis) => {
-        const { instance, rustContext } =
+        const { instance, engineCommandManager, rustContext } =
           await buildTheWorldAndConnectToEngine()
         const helixCode = `helix001 = helix(
   axis = ${axis},
@@ -779,11 +803,13 @@ profile001 = startProfile(sketch001, at = [0, 0])
         expect(result.axisOrEdge).toEqual('Axis')
         expect(result.axis).toEqual(axis)
         expect(result.edge).toBeUndefined()
+        engineCommandManager.tearDown()
       }
     )
 
     it('should return edge selection from axis op argument', async () => {
-      const { instance, rustContext } = await buildTheWorldAndConnectToEngine()
+      const { instance, engineCommandManager, rustContext } =
+        await buildTheWorldAndConnectToEngine()
       const helixCode = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> yLine(length = 1, tag = $seg01)
@@ -818,6 +844,7 @@ helix001 = helix(
       expect(result.edge).toBeDefined()
       expect(result.edge!.graphSelections[0].codeRef).toEqual(segId!.codeRef)
       expect(result.axis).toBeUndefined()
+      engineCommandManager.tearDown()
     })
   })
 })
