@@ -51,6 +51,9 @@ export function findAngleLengthPair(call: CallExpressionKw): Expr | undefined {
   }
 }
 
+// Initialize all the singletons, the WASM blob, and open an engine connection
+// Most likely a lite engine connection because this function should only run in vitest
+// if this runs in vitest the engineCommandManager will run a lite connection mode.
 export async function buildTheWorldAndConnectToEngine() {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
@@ -86,6 +89,38 @@ export async function buildTheWorldAndConnectToEngine() {
       })
       .catch(reportRejection)
   })
+  return {
+    instance,
+    engineCommandManager,
+    rustContext,
+    sceneInfra,
+    editorManager,
+    codeManager,
+    kclManager,
+  }
+}
+
+// Initialize all the singletons and the WASM blob but do not connect to the engine
+export async function buildTheWorldAndNoEngineConnection() {
+  const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+  const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+  const engineCommandManager = new ConnectionManager()
+  const rustContext = new RustContext(engineCommandManager, instance)
+  const sceneInfra = new SceneInfra(engineCommandManager)
+  const editorManager = new EditorManager(engineCommandManager)
+  const codeManager = new CodeManager({ editorManager })
+  const kclManager = new KclManager(engineCommandManager, {
+    rustContext,
+    codeManager,
+    editorManager,
+    sceneInfra,
+  })
+  editorManager.kclManager = kclManager
+  editorManager.codeManager = codeManager
+  engineCommandManager.kclManager = kclManager
+  engineCommandManager.codeManager = codeManager
+  engineCommandManager.sceneInfra = sceneInfra
+  engineCommandManager.rustContext = rustContext
   return {
     instance,
     engineCommandManager,
