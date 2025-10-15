@@ -236,6 +236,13 @@ describe('Layout utils', () => {
         }
         expect(parsedLayout.actions).toHaveLength(1)
       })
+
+      it('should clear sizes if there are no activeIndices', () => {
+        const hasNoActiveIndices = structuredClone(validPaneLayout)
+        hasNoActiveIndices.activeIndices = []
+
+        expect(parseLayoutInner(hasNoActiveIndices)).toHaveProperty('sizes', [])
+      })
     })
 
     it('parses onExpandSize for those pane layouts that have it', () => {
