@@ -6,6 +6,7 @@ import Gizmo from '@src/components/Gizmo'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { Toolbar } from '@src/Toolbar'
 import {
+  type SidebarCssOverrides,
   type SidebarPane,
   sidebarPanesLeft,
   sidebarPanesRight,
@@ -17,6 +18,8 @@ import { isDesktop } from '@src/lib/isDesktop'
 export type AreaTypeDefinition = {
   useHidden: () => boolean
   shortcut?: string
+  /** I decided this is where impure stuff like the TTC button's custom styling should live */
+  cssClassOverrides?: SidebarCssOverrides
   Component: (props: Partial<Closeable>) => React.ReactElement
 }
 
@@ -38,6 +41,10 @@ export const areaTypeRegistry = Object.freeze({
   ttc: {
     useHidden: () => false,
     shortcut: 'Ctrl + T',
+    cssClassOverrides: {
+      button:
+        'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
+    },
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesRight[0], ...props }),
   },

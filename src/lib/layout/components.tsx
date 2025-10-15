@@ -48,10 +48,8 @@ import type {
   IReplaceLayoutChildNode,
   ITogglePane,
 } from '@src/lib/layout/utils'
-import {
-  AreaTypeDefinition,
-  areaTypeRegistry,
-} from '@src/lib/layout/areaTypeRegistry'
+import type { AreaTypeDefinition } from '@src/lib/layout/areaTypeRegistry'
+import { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 import Tooltip from '@src/components/Tooltip'
 import { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
 import {
@@ -391,18 +389,12 @@ function PaneButton({
       enabled: !!resolvedAreaType?.shortcut,
     }
   )
-  useEffect(() => {
-    console.log('MOUNTED COMPONENT', pane.id, {
-      pane,
-      resolvedAreaType,
-    })
-  }, [resolvedAreaType])
   return (
     <Switch
       key={pane.id}
       checked={parentActiveIndices.includes(childIndex)}
       onChange={(checked) => onChange(checked)}
-      className="ui-checked:border-primary dark:ui-checked:border-primary hover:b-3 border-transparent dark:border-transparent p-2 m-0 rounded-none border-0 hover:bg-2"
+      className={`ui-checked:border-primary dark:ui-checked:border-primary hover:b-3 border-transparent dark:border-transparent p-2 m-0 rounded-none border-0 hover:bg-2 ${resolvedAreaType?.cssClassOverrides?.button || ''}`}
       style={{ [buttonBorderWidthProp]: '2px' }}
     >
       <CustomIcon name={pane.icon} className="w-5 h-5" />
