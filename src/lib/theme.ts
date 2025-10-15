@@ -64,21 +64,40 @@ export function getOppositeTheme(theme: Themes) {
  * @param theme
  * @returns { r: number, g: number, b: number, a: number }
  */
-export function getThemeColorForEngine(theme: Themes) {
+export function getVolumeColorForEngine(theme: Themes) {
   const resolvedTheme = getResolvedTheme(theme)
-  const dark = 28 / 255
-  const light = 249 / 255
+  const dark = DARK_BASE_VOLUME_COLOR / 255
+  const light = LIGHT_BASE_VOLUME_COLOR / 255
   return resolvedTheme === Themes.Dark
     ? { r: dark, g: dark, b: dark, a: 1 }
     : { r: light, g: light, b: light, a: 1 }
 }
 
 /**
+ * Color used for the edges of geometry.
+ * @param theme
+ * @returns { r: number, g: number, b: number, a: number }
+ */
+export function getEdgeColorForEngine(theme: Themes) {
+  const resolvedTheme = getResolvedTheme(theme)
+  const dark = DARK_EDGE_COLOR / 255
+  const light = LIGHT_EDGE_COLOR / 255
+  return resolvedTheme === Themes.Dark
+    ? { r: dark, g: dark, b: dark, a: 1 }
+    : { r: light, g: light, b: light, a: 1 }
+}
+
+const DARK_BASE_VOLUME_COLOR = 28
+const LIGHT_BASE_VOLUME_COLOR = 249
+const DARK_EDGE_COLOR = 0
+const LIGHT_EDGE_COLOR = 28
+
+/**
  * ThreeJS uses hex values for colors
  * @param theme
  * @returns
  */
-export function getThemeColorForThreeJs(theme: Themes) {
+export function getVolumeColorForThreeJs(theme: Themes) {
   const resolvedTheme = getResolvedTheme(theme)
   const dark = 0x1c1c1c
   const light = 0xf9f9f9
