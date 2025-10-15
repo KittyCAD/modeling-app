@@ -10,6 +10,7 @@ type Action = {
   execute: () => void | (() => Promise<void>)
   /** A custom hook for the Action to detect if it should be enabled */
   useDisabled: () => string | undefined
+  shortcut?: string
   useHidden: () => boolean
 }
 /**
@@ -23,6 +24,7 @@ export const actionTypeRegistry = Object.freeze({
       const engineIsReady = useReliesOnEngine()
       return engineIsReady ? 'Need engine connection to export' : undefined
     },
+    shortcut: 'Ctrl + Shift + E',
     execute: () =>
       commandBarActor.send({
         type: 'Find and select command',
@@ -32,6 +34,7 @@ export const actionTypeRegistry = Object.freeze({
   addFileToProject: {
     useHidden: () => false,
     useDisabled: () => undefined,
+    shortcut: 'Mod + Alt + L',
     execute: () => {
       const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
@@ -52,6 +55,7 @@ export const actionTypeRegistry = Object.freeze({
     execute: () => {
       refreshPage('Sidebar button').catch(reportRejection)
     },
+    shortcut: undefined,
     useDisabled: () => undefined,
     useHidden: () => false,
   },
@@ -60,6 +64,7 @@ export const actionTypeRegistry = Object.freeze({
       const machineManager = useContext(MachineManagerContext)
       return machineManager.noMachinesReason()
     },
+    shortcut: 'Ctrl + Shift + M',
     execute: () =>
       commandBarActor.send({
         type: 'Find and select command',

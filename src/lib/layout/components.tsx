@@ -414,9 +414,9 @@ function ActionButton({ action, side }: { action: Action; side: Side }) {
   const resolvedAction = actionTypeRegistry[action.actionType]
   const disabledReason = resolvedAction.useDisabled()
   const hidden = resolvedAction.useHidden()
-  useHotkeys(action.shortcut || '', () => resolvedAction.execute(), {
+  useHotkeys(resolvedAction.shortcut || '', () => resolvedAction.execute(), {
     scopes: ['modeling'],
-    enabled: !!action.shortcut?.length,
+    enabled: !!resolvedAction.shortcut?.length,
   })
 
   return (
