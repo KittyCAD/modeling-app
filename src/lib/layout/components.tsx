@@ -5,6 +5,9 @@ import type {
   Closeable,
   Direction,
   Layout,
+  PaneChild,
+  Action,
+  Side,
 } from '@src/lib/layout/types'
 import {
   getResizeHandleElement,
@@ -45,7 +48,10 @@ import type {
   IReplaceLayoutChildNode,
   ITogglePane,
 } from '@src/lib/layout/utils'
-import { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
+import {
+  AreaTypeDefinition,
+  areaTypeRegistry,
+} from '@src/lib/layout/areaTypeRegistry'
 import Tooltip from '@src/components/Tooltip'
 import { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
 import {
@@ -55,15 +61,13 @@ import {
   type ContextMenuProps,
 } from '@src/components/ContextMenu'
 import { isArray } from '@src/lib/utils'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 const ENABLE_CONTEXT_MENUS = false
 
 type WithoutRootLayout<T> = Omit<T, 'rootLayout'>
 interface LayoutState {
-  areaLibrary: Record<
-    keyof typeof areaTypeRegistry,
-    (props: Partial<Closeable>) => React.ReactElement
-  >
+  areaLibrary: Record<keyof typeof areaTypeRegistry, AreaTypeDefinition>
   updateSplitSizes: (props: WithoutRootLayout<IUpdateNodeSizes>) => void
   replaceLayoutNode: (props: WithoutRootLayout<IReplaceLayoutChildNode>) => void
   togglePane: (props: WithoutRootLayout<ITogglePane>) => void
@@ -154,7 +158,7 @@ function LayoutNode({
     case LayoutType.Panes:
       return <PaneLayout layout={layout} />
     default:
-      return areaLibrary[layout.areaType]({ onClose })
+      return areaLibrary[layout.areaType].Component({ onClose })
   }
 }
 
@@ -196,7 +200,7 @@ function SplitLayoutContents({
   }
 
   function onSplitDrag(newSizes: number[]) {
-    updateSplitSizes({ targetNode: layout, newSizes })
+    updateSplitSizes({ targetNodeId: layout.id, newSizes })
   }
   return (
     layout.children.length && (
@@ -250,13 +254,16 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
   const { togglePane } = useLayoutState()
   const paneBarRef = useRef<HTMLUListElement>(null)
   const barBorderWidthProp = `border${orientationToReactCss(sideToOrientation(layout.side))}Width`
-  const buttonBorderWidthProp = `border${sideToReactCss(getOppositeSide(layout.side))}Width`
   const activePanes = layout.activeIndices
     .map((itemIndex) => layout.children[itemIndex])
     .filter((item) => item !== undefined)
 
   const onToggleItem = (checked: boolean, i: number) => {
-    togglePane({ targetNode: layout, expandOrCollapse: checked, paneIndex: i })
+    togglePane({
+      targetNodeId: layout.id,
+      expandOrCollapse: checked,
+      paneIndex: i,
+    })
   }
 
   return (
@@ -269,70 +276,24 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
         style={{ [barBorderWidthProp]: '1px' }}
         data-pane-toolbar
       >
-        {layout.children.map((tab, i) => {
-          return (
-            <Switch
-              key={tab.id}
-              checked={layout.activeIndices.includes(i)}
-              onChange={(checked) => onToggleItem(checked, i)}
-              className="ui-checked:border-primary dark:ui-checked:border-primary hover:b-3 border-transparent dark:border-transparent p-2 m-0 rounded-none border-0 hover:bg-2"
-              style={{ [buttonBorderWidthProp]: '2px' }}
-            >
-              <CustomIcon name={tab.icon} className="w-5 h-5" />
-              <Tooltip
-                position={logicalSideToTooltipPosition(
-                  getOppositeSide(layout.side)
-                )}
-              >
-                {tab.label}
-              </Tooltip>
-            </Switch>
-          )
-        })}
+        {layout.children.map((pane, i) => (
+          <PaneButton
+            key={`pane-${pane.id}`}
+            pane={pane}
+            childIndex={i}
+            parentActiveIndices={layout.activeIndices}
+            side={layout.side}
+            onChange={(checked) => onToggleItem(checked, i)}
+          />
+        ))}
         {layout.children.length && layout.actions?.length ? (
           <hr
             className={`bg-3 border-none ${sideToSplitDirection(layout.side) === 'vertical' ? 'w-[1px] h-full' : 'h-[1px] w-full'}`}
           />
         ) : null}
-        {layout.actions?.map((action) => {
-          const resolvedAction = actionTypeRegistry[action.actionType]
-          const disabledReason = resolvedAction.useDisabled()
-          const hidden = resolvedAction.useHidden()
-
-          return (
-            !hidden && (
-              <button
-                key={action.id}
-                type="button"
-                className="hover:b-3 border-transparent p-2 m-0 rounded-none border-0 hover:bg-2"
-                disabled={disabledReason !== undefined}
-                onClick={() => resolvedAction.execute()}
-              >
-                <CustomIcon name={action.icon} className="w-5 h-5" />
-                <Tooltip
-                  position={logicalSideToTooltipPosition(
-                    getOppositeSide(layout.side)
-                  )}
-                  contentClassName={
-                    layout.side === 'inline-start'
-                      ? 'text-left'
-                      : layout.side === 'inline-end'
-                        ? 'text-right'
-                        : ''
-                  }
-                >
-                  {action.label}
-                  {disabledReason !== undefined && (
-                    <>
-                      <br />
-                      <span className="text-3">{disabledReason}</span>
-                    </>
-                  )}
-                </Tooltip>
-              </button>
-            )
-          )
-        })}
+        {layout.actions?.map((action) => (
+          <ActionButton key={action.id} action={action} side={layout.side} />
+        ))}
         {ENABLE_CONTEXT_MENUS ? (
           <PaneLayoutContextMenu
             layout={layout}
@@ -401,6 +362,99 @@ function ResizeHandle({
   )
 }
 
+function PaneButton({
+  pane,
+  parentActiveIndices,
+  side,
+  childIndex,
+  onChange,
+}: {
+  pane: PaneChild
+  parentActiveIndices: number[]
+  side: Side
+  childIndex: number
+  onChange: (checked: boolean) => void
+}) {
+  const { areaLibrary } = useLayoutState()
+  const buttonBorderWidthProp = `border${sideToReactCss(getOppositeSide(side))}Width`
+  const isActiveIndex = parentActiveIndices.indexOf(childIndex) >= 0
+  const resolvedAreaType =
+    pane.type === LayoutType.Simple ? areaLibrary[pane.areaType] : undefined
+  useHotkeys(
+    resolvedAreaType?.shortcut || '',
+    () => {
+      console.log('FIRE!', { pane, isActiveIndex })
+      onChange(!isActiveIndex)
+    },
+    {
+      scopes: ['modeling'],
+      enabled: !!resolvedAreaType?.shortcut,
+    }
+  )
+  useEffect(() => {
+    console.log('MOUNTED COMPONENT', pane.id, {
+      pane,
+      resolvedAreaType,
+    })
+  }, [resolvedAreaType])
+  return (
+    <Switch
+      key={pane.id}
+      checked={parentActiveIndices.includes(childIndex)}
+      onChange={(checked) => onChange(checked)}
+      className="ui-checked:border-primary dark:ui-checked:border-primary hover:b-3 border-transparent dark:border-transparent p-2 m-0 rounded-none border-0 hover:bg-2"
+      style={{ [buttonBorderWidthProp]: '2px' }}
+    >
+      <CustomIcon name={pane.icon} className="w-5 h-5" />
+      <Tooltip position={logicalSideToTooltipPosition(getOppositeSide(side))}>
+        {pane.label}
+      </Tooltip>
+    </Switch>
+  )
+}
+
+function ActionButton({ action, side }: { action: Action; side: Side }) {
+  const resolvedAction = actionTypeRegistry[action.actionType]
+  const disabledReason = resolvedAction.useDisabled()
+  const hidden = resolvedAction.useHidden()
+  useHotkeys(action.shortcut || '', () => resolvedAction.execute(), {
+    scopes: ['modeling'],
+    enabled: !!action.shortcut?.length,
+  })
+
+  return (
+    !hidden && (
+      <button
+        key={action.id}
+        type="button"
+        className="hover:b-3 border-transparent p-2 m-0 rounded-none border-0 hover:bg-2"
+        disabled={disabledReason !== undefined}
+        onClick={() => resolvedAction.execute()}
+      >
+        <CustomIcon name={action.icon} className="w-5 h-5" />
+        <Tooltip
+          position={logicalSideToTooltipPosition(getOppositeSide(side))}
+          contentClassName={
+            side === 'inline-start'
+              ? 'text-left'
+              : side === 'inline-end'
+                ? 'text-right'
+                : ''
+          }
+        >
+          {action.label}
+          {disabledReason !== undefined && (
+            <>
+              <br />
+              <span className="text-3">{disabledReason}</span>
+            </>
+          )}
+        </Tooltip>
+      </button>
+    )
+  )
+}
+
 /**
  * A context menu that lets the user set the toolbar side and
  * split direction of a Pane type layout.
@@ -465,7 +519,7 @@ function PaneLayoutContextMenu({
         >
           Set to bottom side
         </ContextMenuItem>,
-        <ContextMenuDivider />,
+        <ContextMenuDivider key="pane-menu-divider" />,
         <ContextMenuItem
           key="orient-inline"
           icon={

@@ -60,6 +60,7 @@ import {
 } from '@src/routes/Onboarding/utils'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { LayoutRootNode, defaultLayout } from '@src/lib/layout'
+import { useToggleDebugPaneVisibility } from '@src/lib/layout/utils'
 
 // CYCLIC REF
 
@@ -71,6 +72,7 @@ if (window.electron) {
 
 export function App() {
   const [layout, setLayout] = useState(defaultLayout)
+  useToggleDebugPaneVisibility(layout, setLayout)
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData

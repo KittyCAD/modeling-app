@@ -12,24 +12,66 @@ import {
 } from '@src/components/ModelingSidebar/ModelingPanes'
 import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
 import type { Closeable } from '@src/lib/layout/types'
+import { isDesktop } from '@src/lib/isDesktop'
+
+export type AreaTypeDefinition = {
+  useHidden: () => boolean
+  shortcut?: string
+  Component: (props: Partial<Closeable>) => React.ReactElement
+}
 
 /**
  * For now we have strict area types but in future
  * we should make it possible to register your own in an extension.
  */
 export const areaTypeRegistry = Object.freeze({
-  featureTree: (props: Partial<Closeable>) =>
-    PaneToArea({ pane: sidebarPanesLeft[0], ...props }),
-  modeling: ModelingArea,
-  ttc: (props: Partial<Closeable>) =>
-    PaneToArea({ pane: sidebarPanesRight[0], ...props }),
-  variables: (props: Partial<Closeable>) =>
-    PaneToArea({ pane: sidebarPanesLeft[3], ...props }),
-  codeEditor: (props: Partial<Closeable>) =>
-    PaneToArea({ pane: sidebarPanesLeft[1], ...props }),
-  logs: (props: Partial<Closeable>) =>
-    PaneToArea({ pane: sidebarPanesLeft[4], ...props }),
-})
+  featureTree: {
+    useHidden: () => false,
+    shortcut: 'Shift + T',
+    Component: (props: Partial<Closeable>) =>
+      PaneToArea({ pane: sidebarPanesLeft[0], ...props }),
+  },
+  modeling: {
+    useHidden: () => false,
+    Component: ModelingArea,
+  },
+  ttc: {
+    useHidden: () => false,
+    shortcut: 'Ctrl + T',
+    Component: (props: Partial<Closeable>) =>
+      PaneToArea({ pane: sidebarPanesRight[0], ...props }),
+  },
+  codeEditor: {
+    useHidden: () => false,
+    shortcut: 'Shift + C',
+    Component: (props: Partial<Closeable>) =>
+      PaneToArea({ pane: sidebarPanesLeft[1], ...props }),
+  },
+  files: {
+    useHidden: () => !isDesktop(),
+    shortcut: 'Shift + F',
+    Component: (props: Partial<Closeable>) =>
+      PaneToArea({ pane: sidebarPanesLeft[2], ...props }),
+  },
+  variables: {
+    useHidden: () => false,
+    shortcut: 'Shift + V',
+    Component: (props: Partial<Closeable>) =>
+      PaneToArea({ pane: sidebarPanesLeft[3], ...props }),
+  },
+  logs: {
+    useHidden: () => false,
+    shortcut: 'Shift + L',
+    Component: (props: Partial<Closeable>) =>
+      PaneToArea({ pane: sidebarPanesLeft[4], ...props }),
+  },
+  debug: {
+    useHidden: () => false,
+    shortcut: 'Shift + D',
+    Component: (props: Partial<Closeable>) =>
+      PaneToArea({ pane: sidebarPanesLeft[5], ...props }),
+  },
+} satisfies Record<string, AreaTypeDefinition>)
 
 function TestArea({ name }: { name: string }) {
   return (
@@ -42,8 +84,10 @@ export const testAreaTypeRegistry = Object.freeze({
   modeling: () => <TestArea name="featureTree" />,
   ttc: () => <TestArea name="ttc" />,
   codeEditor: () => <TestArea name="codeEditor" />,
+  files: () => <TestArea name="files" />,
   logs: () => <TestArea name="logs" />,
   variables: () => <TestArea name="variables" />,
+  debug: () => <TestArea name="debug" />,
 } satisfies Record<
   keyof typeof areaTypeRegistry,
   (props: Partial<Closeable>) => JSX.Element

@@ -1,4 +1,19 @@
-import { LayoutType, type Layout } from '@src/lib/layout/types'
+import { LayoutType, type Layout, type PaneLayout } from '@src/lib/layout/types'
+
+/** Temporary ID for getting the left toolbar of the layout */
+export const LEFT_TOOLBAR_ID = 'left-toolbar'
+export const DEBUG_PANE_ID = 'debug'
+
+/**
+ * Temporary config for the special debug pane we have in the app.
+ */
+export const debugPaneConfig: PaneLayout['children'][number] = {
+  id: DEBUG_PANE_ID,
+  label: 'debug',
+  icon: 'bug',
+  type: LayoutType.Simple,
+  areaType: 'debug',
+}
 
 /**
  * The default layout has:
@@ -18,7 +33,7 @@ export const defaultLayoutConfig: Layout = {
   sizes: [30, 50, 20],
   children: [
     {
-      id: crypto.randomUUID(),
+      id: LEFT_TOOLBAR_ID,
       label: 'left-toolbar',
       type: LayoutType.Panes,
       side: 'inline-start',
@@ -49,7 +64,7 @@ export const defaultLayoutConfig: Layout = {
         },
         {
           id: crypto.randomUUID(),
-          label: crypto.randomUUID(),
+          label: 'Logs',
           type: LayoutType.Simple,
           areaType: 'logs',
           icon: 'logs',

@@ -13,9 +13,16 @@ import { capitaliseFC } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
 import { throttle } from '@src/lib/utils'
 import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
-import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
+import {
+  DEBUG_PANE_ID,
+  debugPaneConfig,
+  defaultLayoutConfig,
+  LEFT_TOOLBAR_ID,
+} from '@src/lib/layout/configs/default'
 import { isErr } from '@src/lib/trap'
 import { parseLayoutFromJsonString } from '@src/lib/layout/parse'
+import { useEffect } from 'react'
+import { useSettings } from '@src/lib/singletons'
 
 const LAYOUT_PERSIST_PREFIX = 'layout-'
 const LAYOUT_SAVE_THROTTLE = 500
@@ -147,7 +154,11 @@ export function orientationToReactCss(orientation: Orientation): string {
   return capitaliseFC(orientation)
 }
 
-export interface IRootAndTargetLayouts {
+export interface IRootAndTargetID {
+  rootLayout: Layout
+  targetNodeId: string
+}
+interface IRootAndTargetLayout {
   rootLayout: Layout
   targetNode: Layout
 }
@@ -157,15 +168,15 @@ export interface IRootAndTargetLayouts {
  */
 export function findLayoutChildNode({
   rootLayout,
-  targetNode,
-}: IRootAndTargetLayouts): Layout | undefined {
-  if (rootLayout.id === targetNode.id) {
+  targetNodeId,
+}: IRootAndTargetID): Layout | undefined {
+  if (rootLayout.id === targetNodeId) {
     return rootLayout
   }
 
   if ('children' in rootLayout && rootLayout.children) {
     for (const child of rootLayout.children) {
-      const found = findLayoutChildNode({ rootLayout: child, targetNode })
+      const found = findLayoutChildNode({ rootLayout: child, targetNodeId })
       if (found) {
         return found
       }
@@ -180,19 +191,19 @@ export function findLayoutChildNode({
  */
 export function findLayoutParentNode({
   rootLayout,
-  targetNode,
-}: IRootAndTargetLayouts): Layout | undefined {
-  if (rootLayout.id === targetNode.id) {
+  targetNodeId,
+}: IRootAndTargetID): Layout | undefined {
+  if (rootLayout.id === targetNodeId) {
     // There is no parent because our target is the root
     return undefined
   }
 
   if ('children' in rootLayout && rootLayout.children) {
     for (const child of rootLayout.children) {
-      if (child.id === targetNode.id) {
+      if (child.id === targetNodeId) {
         return rootLayout
       }
-      const found = findLayoutParentNode({ rootLayout: child, targetNode })
+      const found = findLayoutParentNode({ rootLayout: child, targetNodeId })
       if (found) {
         return found
       }
@@ -236,7 +247,7 @@ export function findAndReplaceLayoutChildNode({
   return rootLayout
 }
 
-export interface IUpdateNodeSizes extends IRootAndTargetLayouts {
+export interface IUpdateNodeSizes extends IRootAndTargetID {
   newSizes: number[]
 }
 
@@ -245,10 +256,10 @@ export interface IUpdateNodeSizes extends IRootAndTargetLayouts {
  */
 export function findAndUpdateSplitSizes({
   rootLayout,
-  targetNode,
+  targetNodeId,
   newSizes,
 }: IUpdateNodeSizes) {
-  const foundNode = findLayoutChildNode({ rootLayout, targetNode })
+  const foundNode = findLayoutChildNode({ rootLayout, targetNodeId })
   if (foundNode && 'sizes' in foundNode) {
     foundNode.sizes = newSizes
   }
@@ -306,14 +317,14 @@ export function areSplitSizesNatural(sizes: number[]) {
 export function expandSplitChildPaneNode({
   rootLayout,
   targetNode: panesLayoutNode,
-}: IRootAndTargetLayouts) {
+}: IRootAndTargetLayout) {
   if (!panesLayoutNode || panesLayoutNode.type !== LayoutType.Panes) {
     return rootLayout
   }
 
   const splitsLayoutNode = findLayoutParentNode({
     rootLayout,
-    targetNode: panesLayoutNode,
+    targetNodeId: panesLayoutNode.id,
   })
   if (!splitsLayoutNode || splitsLayoutNode.type !== LayoutType.Splits) {
     return rootLayout
@@ -360,14 +371,14 @@ export function expandSplitChildPaneNode({
 export function collapseSplitChildPaneNode({
   rootLayout,
   targetNode: panesLayoutNode,
-}: IRootAndTargetLayouts) {
+}: IRootAndTargetLayout) {
   if (!panesLayoutNode || panesLayoutNode.type !== LayoutType.Panes) {
     return rootLayout
   }
 
   const splitsLayoutNode = findLayoutParentNode({
     rootLayout,
-    targetNode: panesLayoutNode,
+    targetNodeId: panesLayoutNode.id,
   })
   if (!splitsLayoutNode || splitsLayoutNode.type !== LayoutType.Splits) {
     return rootLayout
@@ -433,20 +444,20 @@ export function shouldEnableResizeHandle(
   return !(isLastPane || nextIsCollapsed || thisIsCollapsed)
 }
 
-export interface ITogglePane extends IRootAndTargetLayouts {
+export interface ITogglePane extends IRootAndTargetID {
   expandOrCollapse: boolean
   paneIndex: number
 }
 export function togglePaneLayoutNode({
   rootLayout,
-  targetNode,
+  targetNodeId,
   expandOrCollapse,
   paneIndex,
 }: ITogglePane): Layout {
-  const layout = findLayoutChildNode({ rootLayout, targetNode })
+  const layout = findLayoutChildNode({ rootLayout, targetNodeId })
   if (!layout || layout.type !== LayoutType.Panes) {
     console.error(
-      `targetNode not found, pane toggling didn't occur. Target ID: ${targetNode.id}`
+      `targetNode not found, pane toggling didn't occur. Target ID: ${targetNodeId}`
     )
     return rootLayout
   }
@@ -482,7 +493,9 @@ export function togglePaneLayoutNode({
       targetNodeId: layout.id,
       newNode: layout,
     })
-  } else if (!expandOrCollapse && isInActiveItems) {
+  }
+
+  if (!expandOrCollapse && isInActiveItems) {
     layout.activeIndices.splice(indexInActiveItems, 1)
 
     if (layout.sizes.length > 1) {
@@ -501,8 +514,47 @@ export function togglePaneLayoutNode({
       newNode: layout,
     })
   }
+
   console.warn(
     `Toggle pane seemed to be called unnecessarily: pane layout ${layout.id}`
   )
   return rootLayout
+}
+
+/**
+ * Custom React hook to update a layout configuration to include the debug pane
+ * based on the `showDebugPanel` setting value.
+ *
+ * TODO: move the state for the layout higher up and do this listening work somewhere else.
+ */
+export function useToggleDebugPaneVisibility(
+  rootLayout: Layout,
+  setLayout: (l: Layout) => void
+) {
+  const settings = useSettings()
+  const showDebugPane = settings.app.showDebugPanel.current
+  return useEffect(() => {
+    const leftSidebar = findLayoutChildNode({
+      rootLayout,
+      targetNodeId: LEFT_TOOLBAR_ID,
+    })
+    if (!leftSidebar || leftSidebar.type !== LayoutType.Panes) {
+      return
+    }
+    const debugChildPaneIndex = leftSidebar?.children.findIndex(
+      (pane) => pane.id === DEBUG_PANE_ID
+    )
+    const hasDebugPane = debugChildPaneIndex >= 0
+
+    if (showDebugPane && !hasDebugPane) {
+      leftSidebar.children.push(debugPaneConfig)
+      console.log('FRANK ADD THE DEBUG PANE!', rootLayout)
+      setLayout(structuredClone(rootLayout))
+    }
+
+    if (!showDebugPane && hasDebugPane) {
+      leftSidebar.children.splice(debugChildPaneIndex, 1)
+      setLayout(structuredClone(rootLayout))
+    }
+  }, [showDebugPane, rootLayout, setLayout])
 }

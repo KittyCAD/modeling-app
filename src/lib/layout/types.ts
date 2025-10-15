@@ -41,12 +41,13 @@ export type Action = HasIdAndLabel &
   WithIcon & {
     actionType: keyof typeof actionTypeRegistry
   }
+export type PaneChild = Layout & WithIcon
 export type PaneLayout = BaseLayout &
   WithSizes &
   WithSide & {
     type: LayoutType.Panes
     activeIndices: number[]
-    children: (Layout & WithIcon)[]
+    children: PaneChild[]
     splitOrientation: Orientation
     actions?: Action[]
     /** if the pane layout is a split layout's child in the same axis, it will onExpandSize
