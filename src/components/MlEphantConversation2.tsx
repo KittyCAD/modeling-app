@@ -450,33 +450,6 @@ export const MlEphantConversationInput = (
   )
 }
 
-const MLEphantConversationStarter = () => {
-  return (
-    <div className="p-8 text-sm">
-      <h2 className="text-lg font-bold">
-        Welcome to{' '}
-        <span className="dark:text-ml-green light:underline decoration-ml-green underline-offset-4">
-          Text-to-CAD
-        </span>
-      </h2>
-      <p className="my-4">Here are some tips for effective prompts:</p>
-      <ul className="list-disc pl-4">
-        <li className="my-4">
-          Be as explicit as possible when describing geometry. Use dimensions,
-          use spatial relationships.
-        </li>
-        <li className="my-4">
-          Try using Text-to-CAD to make a model parametric, it's cool.
-        </li>
-        <li className="my-4">
-          Text-to-CAD is now conversational, so you can refer to previous
-          prompts and iterate.
-        </li>
-      </ul>
-    </div>
-  )
-}
-
 export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState<boolean>(true)
@@ -541,7 +514,7 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
               {props.isLoading === false ? (
-                <MLEphantConversationStarter />
+                <></>
               ) : (
                 <div className="text-center p-4 text-3 text-md animate-pulse">
                   Loading history
