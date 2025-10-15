@@ -13,14 +13,20 @@ import type { TooltipProps } from '@src/components/Tooltip'
 import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
 import {
   DefaultLayoutPaneID,
+  DefaultLayoutToolbarID,
   debugPaneConfig,
   defaultLayoutConfig,
-  LEFT_TOOLBAR_ID,
+  isDefaultLayoutPaneID,
 } from '@src/lib/layout/configs/default'
 import { isErr } from '@src/lib/trap'
 import { parseLayoutFromJsonString } from '@src/lib/layout/parse'
 import { useEffect } from 'react'
-import { setLayout, useLayout, useSettings } from '@src/lib/singletons'
+import {
+  getLayout,
+  setLayout,
+  useLayout,
+  useSettings,
+} from '@src/lib/singletons'
 import { LAYOUT_PERSIST_PREFIX } from '@src/lib/constants'
 
 // Attempt to load a persisted layout
@@ -440,6 +446,11 @@ export interface ITogglePane extends IRootAndTargetID {
   expandOrCollapse: boolean
   paneIndex: number
 }
+
+/**
+ * Mutates a layout by toggling a Pane layout child either opened or closed,
+ * and making any adjustments to a parent Split layout needed if there is one.
+ */
 export function togglePaneLayoutNode({
   rootLayout,
   targetNodeId,
@@ -529,7 +540,7 @@ export function useToggleDebugPaneVisibility() {
     }
     const leftSidebar = findLayoutChildNode({
       rootLayout,
-      targetNodeId: LEFT_TOOLBAR_ID,
+      targetNodeId: DefaultLayoutToolbarID.Left,
     })
     if (!leftSidebar || leftSidebar.type !== LayoutType.Panes) {
       return
@@ -549,4 +560,52 @@ export function useToggleDebugPaneVisibility() {
       setLayout(structuredClone(rootLayout))
     }
   }, [showDebugPane, rootLayout])
+}
+
+export function getOpenPanes(): string[] {
+  const rootLayout = getLayout()
+  if (!rootLayout) {
+    return []
+  }
+  const openPanes: string[] = []
+  const left = findLayoutChildNode({
+    rootLayout,
+    targetNodeId: DefaultLayoutToolbarID.Left,
+  })
+  if (left?.type === LayoutType.Panes) {
+    for (const activeIndex of left.activeIndices) {
+      openPanes.push(left.children[activeIndex].id)
+    }
+  }
+  const right = findLayoutChildNode({
+    rootLayout,
+    targetNodeId: DefaultLayoutToolbarID.Right,
+  })
+  if (right?.type === LayoutType.Panes) {
+    for (const activeIndex of right.activeIndices) {
+      openPanes.push(right.children[activeIndex].id)
+    }
+  }
+  return openPanes
+}
+
+/**
+ * Mutate a Layout to find and open any panes within their parent Pane layout
+ */
+export function setOpenPanes(rootLayout: Layout, paneIDs: string[]): Layout {
+  const validPaneIDs = paneIDs.filter(isDefaultLayoutPaneID)
+  for (const id of validPaneIDs) {
+    const parentOfPane = findLayoutParentNode({ rootLayout, targetNodeId: id })
+    if (!parentOfPane || parentOfPane.type !== LayoutType.Panes) {
+      continue
+    }
+    const paneIndex = parentOfPane.children.findIndex((p) => p.id === id)
+    togglePaneLayoutNode({
+      rootLayout,
+      targetNodeId: parentOfPane.id,
+      expandOrCollapse: true,
+      paneIndex,
+    })
+  }
+  return rootLayout
 }

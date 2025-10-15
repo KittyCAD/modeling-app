@@ -1,15 +1,23 @@
 import { LayoutType, type Layout, type PaneLayout } from '@src/lib/layout/types'
 
 /** Temporary ID for getting the left toolbar of the layout */
-export const LEFT_TOOLBAR_ID = 'left-toolbar'
+export enum DefaultLayoutToolbarID {
+  Left = 'left-toolbar',
+  Right = 'right-toolbar',
+}
 
 export enum DefaultLayoutPaneID {
   Debug = 'debug',
   Code = 'code',
   FeatureTree = 'feature-tree',
+  Files = 'files',
   TTC = 'ttc',
   Variables = 'variables',
   Logs = 'logs',
+}
+
+export function isDefaultLayoutPaneID(s: string): s is DefaultLayoutPaneID {
+  return Object.values(DefaultLayoutPaneID).includes(s as DefaultLayoutPaneID)
 }
 
 /**
@@ -41,7 +49,7 @@ export const defaultLayoutConfig: Layout = {
   sizes: [30, 50, 20],
   children: [
     {
-      id: LEFT_TOOLBAR_ID,
+      id: DefaultLayoutToolbarID.Left,
       label: 'left-toolbar',
       type: LayoutType.Panes,
       side: 'inline-start',
@@ -69,6 +77,13 @@ export const defaultLayoutConfig: Layout = {
           type: LayoutType.Simple,
           areaType: 'variables',
           icon: 'make-variable',
+        },
+        {
+          id: DefaultLayoutPaneID.Files,
+          label: 'File Explorer',
+          type: LayoutType.Simple,
+          areaType: 'files',
+          icon: 'folder',
         },
         {
           id: DefaultLayoutPaneID.Logs,
@@ -113,7 +128,7 @@ export const defaultLayoutConfig: Layout = {
     },
     {
       id: crypto.randomUUID(),
-      label: 'right-toolbar',
+      label: DefaultLayoutToolbarID.Right,
       type: LayoutType.Panes,
       side: 'inline-end',
       activeIndices: [0],

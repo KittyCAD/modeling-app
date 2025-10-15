@@ -38,7 +38,11 @@ import { useKclContext } from '@src/lang/KclProvider'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
-import { mlEphantManagerActor, useSettings } from '@src/lib/singletons'
+import {
+  getLayout,
+  mlEphantManagerActor,
+  useSettings,
+} from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { settingsActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
@@ -49,6 +53,11 @@ import {
   Alignment,
   type BadgeInfoComputed,
 } from '@src/components/ModelingSidebar/types'
+import {
+  defaultLayout,
+  getOpenPanes,
+  setOpenPanes,
+} from '@src/lib/layout/utils'
 
 function getPlatformString(): 'web' | 'desktop' {
   return isDesktop() ? 'desktop' : 'web'
@@ -171,16 +180,12 @@ export function ModelingSidebarRight() {
       return
     }
 
-    const newPanes = new Set(
-      modelingContext.store.openPanes.concat('text-to-cad')
-    )
+    const newPanes = new Set(getOpenPanes().concat('text-to-cad'))
 
-    modelingContextSend({
-      type: 'Set context',
-      data: {
-        openPanes: Array.from(newPanes),
-      },
-    })
+    setOpenPanes(
+      structuredClone(getLayout() || defaultLayout),
+      Array.from(newPanes)
+    )
     // React doesn't realize that we are updating `modelingContext.store.openPanes` here
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [promptsBelongingToConversation, actuallyNew])
@@ -288,31 +293,25 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
     })
 
     if (panesToReset.length > 0) {
-      send({
-        type: 'Set context',
-        data: {
-          openPanes: context.store?.openPanes.filter(
-            (pane) => !panesToReset.includes(pane)
-          ),
-        },
-      })
+      setOpenPanes(
+        structuredClone(getLayout() || defaultLayout),
+        getOpenPanes().filter(
+          (pane) => !(panesToReset as string[]).includes(pane)
+        )
+      )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [props.settings.app.showDebugPanel])
 
-  const togglePane = useCallback(
-    (newPane: SidebarId) => {
-      send({
-        type: 'Set context',
-        data: {
-          openPanes: context.store?.openPanes.includes(newPane)
-            ? context.store?.openPanes.filter((pane) => pane !== newPane)
-            : [...context.store?.openPanes, newPane],
-        },
-      })
-    },
-    [context.store?.openPanes, send]
-  )
+  const togglePane = useCallback((newPane: SidebarId) => {
+    const openPanes = getOpenPanes()
+    setOpenPanes(
+      structuredClone(getLayout() || defaultLayout),
+      openPanes.includes(newPane)
+        ? openPanes.filter((pane) => pane !== newPane)
+        : [...openPanes, newPane]
+    )
+  }, [])
 
   const css = {
     handle:

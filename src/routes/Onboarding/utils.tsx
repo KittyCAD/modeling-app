@@ -32,11 +32,18 @@ import {
   onboardingStartPath,
 } from '@src/lib/onboardingPaths'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
-import { commandBarActor, systemIOActor } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  getLayout,
+  setLayout,
+  systemIOActor,
+} from '@src/lib/singletons'
 import { settingsActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
+import type { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { defaultLayout, setOpenPanes } from '@src/lib/layout/utils'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
@@ -502,27 +509,20 @@ export function useOnboardingHighlight(elementId: string) {
  * Utility hook to set the pane state on mount and unmount.
  */
 export function useOnboardingPanes(
-  onMount: SidebarId[] | undefined = [],
-  onUnmount: SidebarId[] | undefined = []
+  onMount: DefaultLayoutPaneID[] | undefined = [],
+  onUnmount: DefaultLayoutPaneID[] | undefined = []
 ) {
-  const { send } = useModelingContext()
   useEffect(() => {
-    send({
-      type: 'Set context',
-      data: {
-        openPanes: onMount,
-      },
-    })
+    setLayout(
+      setOpenPanes(structuredClone(getLayout() || defaultLayout), onMount)
+    )
 
     return () =>
-      send({
-        type: 'Set context',
-        data: {
-          openPanes: onUnmount,
-        },
-      })
+      setLayout(
+        setOpenPanes(structuredClone(getLayout() || defaultLayout), onUnmount)
+      )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [send])
+  }, [onMount, onUnmount])
 }
 
 export function isModelingCmdGroupReady(

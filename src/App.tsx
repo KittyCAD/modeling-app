@@ -63,7 +63,7 @@ import {
 } from '@src/routes/Onboarding/utils'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
-import { useToggleDebugPaneVisibility } from './lib/layout/utils'
+import { useToggleDebugPaneVisibility } from '@src/lib/layout/utils'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)

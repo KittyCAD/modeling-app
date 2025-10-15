@@ -50,7 +50,12 @@ import { err, reportRejection, trap, reject } from '@src/lib/trap'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 
-import { commandBarActor, settingsActor } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  getLayout,
+  setLayout,
+  settingsActor,
+} from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { platform, uuidv4 } from '@src/lib/utils'
 
@@ -123,6 +128,12 @@ import {
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import {
+  defaultLayout,
+  getOpenPanes,
+  setOpenPanes,
+} from '@src/lib/layout/utils'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -1295,58 +1306,57 @@ export const ModelingMachineProvider = ({
 
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
-    const openPanes = modelingActor.getSnapshot().context.store.openPanes
+    const openPanes = getOpenPanes()
     if (data.menuLabel === 'View.Panes.Feature tree') {
-      const featureTree: SidebarId = 'feature-tree'
-      const alwaysAddFeatureTree: SidebarId[] = [
-        ...new Set([...openPanes, featureTree]),
+      const alwaysAddFeatureTree: string[] = [
+        ...new Set([...openPanes, DefaultLayoutPaneID.FeatureTree]),
       ]
-      modelingSend({
-        type: 'Set context',
-        data: {
-          openPanes: alwaysAddFeatureTree,
-        },
-      })
+      setLayout(
+        setOpenPanes(
+          structuredClone(getLayout() || defaultLayout),
+          alwaysAddFeatureTree
+        )
+      )
     } else if (data.menuLabel === 'View.Panes.KCL code') {
-      const code: SidebarId = 'code'
-      const alwaysAddCode: SidebarId[] = [...new Set([...openPanes, code])]
-      modelingSend({
-        type: 'Set context',
-        data: {
-          openPanes: alwaysAddCode,
-        },
-      })
+      const alwaysAddCode: string[] = [
+        ...new Set([...openPanes, DefaultLayoutPaneID.Code]),
+      ]
+      setLayout(
+        setOpenPanes(
+          structuredClone(getLayout() || defaultLayout),
+          alwaysAddCode
+        )
+      )
     } else if (data.menuLabel === 'View.Panes.Project files') {
-      const projectFiles: SidebarId = 'files'
-      const alwaysAddProjectFiles: SidebarId[] = [
-        ...new Set([...openPanes, projectFiles]),
+      const alwaysAddProjectFiles: string[] = [
+        ...new Set([...openPanes, DefaultLayoutPaneID.Files]),
       ]
-      modelingSend({
-        type: 'Set context',
-        data: {
-          openPanes: alwaysAddProjectFiles,
-        },
-      })
+      setLayout(
+        setOpenPanes(
+          structuredClone(getLayout() || defaultLayout),
+          alwaysAddProjectFiles
+        )
+      )
     } else if (data.menuLabel === 'View.Panes.Variables') {
-      const variables: SidebarId = 'variables'
-      const alwaysAddVariables: SidebarId[] = [
-        ...new Set([...openPanes, variables]),
+      const alwaysAddVariables: string[] = [
+        ...new Set([...openPanes, DefaultLayoutPaneID.Variables]),
       ]
-      modelingSend({
-        type: 'Set context',
-        data: {
-          openPanes: alwaysAddVariables,
-        },
-      })
+      setLayout(
+        setOpenPanes(
+          structuredClone(getLayout() || defaultLayout),
+          alwaysAddVariables
+        )
+      )
     } else if (data.menuLabel === 'View.Panes.Logs') {
-      const logs: SidebarId = 'logs'
-      const alwaysAddLogs: SidebarId[] = [...new Set([...openPanes, logs])]
-      modelingSend({
-        type: 'Set context',
-        data: {
-          openPanes: alwaysAddLogs,
-        },
-      })
+      const alwaysAddLogs: string[] = [
+        ...new Set([...openPanes, DefaultLayoutPaneID.Logs]),
+      ]
+      setLayout(
+        setOpenPanes(
+          structuredClone(getLayout() || defaultLayout),
+          alwaysAddLogs
+        )
+      )
     } else if (data.menuLabel === 'Design.Start sketch') {
       modelingSend({
         type: 'Enter sketch',
