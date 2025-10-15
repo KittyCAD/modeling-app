@@ -123,9 +123,7 @@ const MlCopilotTools = (props: MlCopilotToolsProps) => {
           {props.children}
           <CustomIcon name="plus" className="w-5 h-5" />
         </Popover.Button>
-        <Popover.Panel
-          className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md"
-        >
+        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
           {tools}
         </Popover.Panel>
       </Popover>
@@ -157,6 +155,7 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
         props.onAdd(tool)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [props.forcedTools, props.excludedTools, props.inputToMatch])
 
   const tools = Array.from(
@@ -173,7 +172,10 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
       if (!refTools.current) return
       if (entries.length === 1) {
         const widthTools = refTools.current.getBoundingClientRect().width
-        console.log(widthFromBeforeCollapse.current, entries[0].contentRect.width)
+        console.log(
+          widthFromBeforeCollapse.current,
+          entries[0].contentRect.width
+        )
         if (widthTools > entries[0].contentRect.width && overflow === false) {
           widthFromBeforeCollapse.current = widthTools
           setOverflow(true)
@@ -194,10 +196,10 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
 
   const popover = (
     <Popover className="relative">
-      <Popover.Button className="h-7 flex items-center justify-content">...</Popover.Button>
-      <Popover.Panel
-        className="absolute bottom-full left-0 whitespace-nowrap flex flex-col gap-2 hover:bg-2 bg-default mb-1 p-2 border b-3 text-sm rounded-md"
-      >
+      <Popover.Button className="h-7 flex items-center justify-content">
+        ...
+      </Popover.Button>
+      <Popover.Panel className="absolute bottom-full left-0 whitespace-nowrap flex flex-col gap-2 hover:bg-2 bg-default mb-1 p-2 border b-3 text-sm rounded-md">
         {tools}
       </Popover.Panel>
     </Popover>
@@ -215,9 +217,7 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
             {tools.length} Tool{tools.length !== 1 ? 's' : ''}
           </div>
         </MlCopilotTools>
-        <div className="flex gap-1">
-          {overflow ? popover : tools}
-        </div>
+        <div className="flex gap-1">{overflow ? popover : tools}</div>
       </div>
     </div>
   )
