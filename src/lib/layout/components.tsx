@@ -52,8 +52,10 @@ import {
   ContextMenuItem,
   type ContextMenuProps,
 } from '@src/components/ContextMenu'
-import { isArray } from '@src/lib/utils'
+import { isArray, platform } from '@src/lib/utils'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { hotkeyDisplay } from '../hotkeyWrapper'
+import usePlatform from '@src/hooks/usePlatform'
 
 const ENABLE_CONTEXT_MENUS = false
 
@@ -256,8 +258,13 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
   const { togglePane } = useLayoutState()
   const paneBarRef = useRef<HTMLUListElement>(null)
   const barBorderWidthProp = `border${orientationToReactCss(sideToOrientation(layout.side))}Width`
+  const nonHiddenChildren = layout.children.filter(
+    (item) =>
+      item.type !== LayoutType.Simple ||
+      !areaTypeRegistry[item.areaType]?.hide()
+  )
   const activePanes = layout.activeIndices
-    .map((itemIndex) => layout.children[itemIndex])
+    .map((itemIndex) => nonHiddenChildren[itemIndex])
     .filter((item) => item !== undefined)
 
   const onToggleItem = (checked: boolean, i: number) => {
@@ -278,7 +285,7 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
         style={{ [barBorderWidthProp]: '1px' }}
         data-pane-toolbar
       >
-        {layout.children.map((pane, i) => (
+        {nonHiddenChildren.map((pane, i) => (
           <PaneButton
             key={`pane-${pane.id}`}
             pane={pane}
@@ -288,7 +295,7 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
             onChange={(checked) => onToggleItem(checked, i)}
           />
         ))}
-        {layout.children.length && layout.actions?.length ? (
+        {nonHiddenChildren.length && layout.actions?.length ? (
           <hr
             className={`bg-3 border-none ${sideToSplitDirection(layout.side) === 'vertical' ? 'w-[1px] h-full' : 'h-[1px] w-full'}`}
           />
@@ -377,6 +384,7 @@ function PaneButton({
   childIndex: number
   onChange: (checked: boolean) => void
 }) {
+  const platform = usePlatform()
   const { areaLibrary } = useLayoutState()
   const buttonBorderWidthProp = `border${sideToReactCss(getOppositeSide(side))}Width`
   const isActiveIndex = parentActiveIndices.indexOf(childIndex) >= 0
@@ -402,8 +410,16 @@ function PaneButton({
       style={{ [buttonBorderWidthProp]: '2px' }}
     >
       <CustomIcon name={pane.icon} className="w-5 h-5" />
-      <Tooltip position={logicalSideToTooltipPosition(getOppositeSide(side))}>
-        {pane.label}
+      <Tooltip
+        position={logicalSideToTooltipPosition(getOppositeSide(side))}
+        contentClassName="max-w-none flex items-center gap-4"
+      >
+        <span className="flex-1">{pane.label}</span>
+        {resolvedAreaType?.shortcut ? (
+          <kbd className="hotkey text-xs capitalize">
+            {hotkeyDisplay(resolvedAreaType.shortcut, platform)}
+          </kbd>
+        ) : null}
       </Tooltip>
     </Switch>
   )
@@ -430,18 +446,24 @@ function ActionButton({ action, side }: { action: Action; side: Side }) {
         <CustomIcon name={action.icon} className="w-5 h-5" />
         <Tooltip
           position={logicalSideToTooltipPosition(getOppositeSide(side))}
-          contentClassName={
+          contentClassName={`max-w-none flex flex-col gap-2 ${
             side === 'inline-start'
               ? 'text-left'
               : side === 'inline-end'
                 ? 'text-right'
                 : ''
-          }
+          }`}
         >
-          {action.label}
+          <div className="flex items-center gap-4">
+            <span className="flex-1">{action.label}</span>
+            {resolvedAction?.shortcut ? (
+              <kbd className="hotkey text-xs capitalize">
+                {hotkeyDisplay(resolvedAction.shortcut, platform)}
+              </kbd>
+            ) : null}
+          </div>
           {disabledReason !== undefined && (
             <>
-              <br />
               <span className="text-3">{disabledReason}</span>
             </>
           )}

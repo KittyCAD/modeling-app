@@ -16,7 +16,7 @@ import type { Closeable } from '@src/lib/layout/types'
 import { isDesktop } from '@src/lib/isDesktop'
 
 export type AreaTypeDefinition = {
-  useHidden: () => boolean
+  hide: () => boolean
   shortcut?: string
   /** I decided this is where impure stuff like the TTC button's custom styling should live */
   cssClassOverrides?: SidebarCssOverrides
@@ -29,17 +29,17 @@ export type AreaTypeDefinition = {
  */
 export const areaTypeRegistry = Object.freeze({
   featureTree: {
-    useHidden: () => false,
+    hide: () => false,
     shortcut: 'Shift + T',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[0], ...props }),
   },
   modeling: {
-    useHidden: () => false,
+    hide: () => false,
     Component: ModelingArea,
   },
   ttc: {
-    useHidden: () => false,
+    hide: () => false,
     shortcut: 'Ctrl + T',
     cssClassOverrides: {
       button:
@@ -49,31 +49,31 @@ export const areaTypeRegistry = Object.freeze({
       PaneToArea({ pane: sidebarPanesRight[0], ...props }),
   },
   codeEditor: {
-    useHidden: () => false,
+    hide: () => false,
     shortcut: 'Shift + C',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[1], ...props }),
   },
   files: {
-    useHidden: () => !isDesktop(),
+    hide: () => !isDesktop(),
     shortcut: 'Shift + F',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[2], ...props }),
   },
   variables: {
-    useHidden: () => false,
+    hide: () => false,
     shortcut: 'Shift + V',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[3], ...props }),
   },
   logs: {
-    useHidden: () => false,
+    hide: () => false,
     shortcut: 'Shift + L',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[4], ...props }),
   },
   debug: {
-    useHidden: () => false,
+    hide: () => false,
     shortcut: 'Shift + D',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[5], ...props }),

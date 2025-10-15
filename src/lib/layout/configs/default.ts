@@ -59,24 +59,17 @@ export const defaultLayoutConfig: Layout = {
       children: [
         {
           id: DefaultLayoutPaneID.FeatureTree,
-          label: 'feature-tree',
+          label: 'Feature Tree',
           type: LayoutType.Simple,
           areaType: 'featureTree',
           icon: 'model',
         },
         {
           id: DefaultLayoutPaneID.Code,
-          label: 'code',
+          label: 'Code Editor',
           type: LayoutType.Simple,
           areaType: 'codeEditor',
           icon: 'code',
-        },
-        {
-          id: DefaultLayoutPaneID.Variables,
-          label: 'variables',
-          type: LayoutType.Simple,
-          areaType: 'variables',
-          icon: 'make-variable',
         },
         {
           id: DefaultLayoutPaneID.Files,
@@ -84,6 +77,13 @@ export const defaultLayoutConfig: Layout = {
           type: LayoutType.Simple,
           areaType: 'files',
           icon: 'folder',
+        },
+        {
+          id: DefaultLayoutPaneID.Variables,
+          label: 'Variables',
+          type: LayoutType.Simple,
+          areaType: 'variables',
+          icon: 'make-variable',
         },
         {
           id: DefaultLayoutPaneID.Logs,
