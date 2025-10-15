@@ -105,6 +105,92 @@ export function addShell({
   }
 }
 
+export function addHole({
+  ast,
+  artifactGraph,
+  face,
+  cutAt,
+  depth,
+  diameter,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  face: Selections
+  cutAt: KclCommandValue
+  depth: KclCommandValue
+  diameter: KclCommandValue
+  nodeToEdit?: PathToNode
+}):
+  | {
+      modifiedAst: Node<Program>
+      pathToNode: PathToNode
+    }
+  | Error {
+  // 1. Clone the ast so we can edit it
+  const modifiedAst = structuredClone(ast)
+
+  // 2. Prepare unlabeled and labeled arguments
+  const result = buildSolidsAndFacesExprs(
+    face,
+    artifactGraph,
+    modifiedAst,
+    nodeToEdit
+  )
+  if (err(result)) {
+    return result
+  }
+
+  // TODO: support other hole types than blind
+  const holeBody = createCallExpressionStdLibKw('hole::blind', null, [
+    createLabeledArg('depth', valueOrVariable(depth)),
+    createLabeledArg('diameter', valueOrVariable(diameter)),
+  ])
+  // TODO: support other holeBottom than flat
+  const holeBottom = createCallExpressionStdLibKw('hole::flat', null, [])
+  // TODO: support other holeType than simple
+  const holeType = createCallExpressionStdLibKw('hole::simple', null, [])
+
+  const { solidsExpr, facesExpr, pathIfPipe } = result
+  // TODO: should there be a createCallExpression for modules?
+  const call = createCallExpressionStdLibKw('hole::hole', solidsExpr, [
+    createLabeledArg('face', facesExpr),
+    createLabeledArg('cutAt', valueOrVariable(cutAt)),
+    createLabeledArg('holeBottom', holeBottom),
+    createLabeledArg('holeBody', holeBody),
+    createLabeledArg('holeType', holeType),
+  ])
+
+  // Insert variables for labeled arguments if provided
+  if ('variableName' in cutAt && cutAt.variableName) {
+    insertVariableAndOffsetPathToNode(cutAt, modifiedAst, nodeToEdit)
+  }
+  if ('variableName' in depth && depth.variableName) {
+    insertVariableAndOffsetPathToNode(depth, modifiedAst, nodeToEdit)
+  }
+  if ('variableName' in diameter && diameter.variableName) {
+    insertVariableAndOffsetPathToNode(diameter, modifiedAst, nodeToEdit)
+  }
+
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: pathIfPipe,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HOLE,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
 export function addOffsetPlane({
   ast,
   artifactGraph,

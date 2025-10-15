@@ -139,6 +139,18 @@ export type ModelingCommandSchema = {
     faces: Selections
     thickness: KclCommandValue
   }
+  Hole: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments, note that we'll be inferring solids from faces here
+    face: Selections
+    cutAt: KclCommandValue
+    // TODO: holeBody, not just blind
+    depth: KclCommandValue
+    diameter: KclCommandValue
+    // TODO: different holeBottom
+    // TODO: different holeType
+  }
   Fillet: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
@@ -689,6 +701,44 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
       },
+    },
+  },
+  Hole: {
+    description: 'Standard holes that could be drilled or cut into a 3D solid.',
+    icon: 'hole',
+    needsReview: true,
+    reviewMessage:
+      'Note: cutAt specifies where to place the cut on the given face of the solid, given as absolute coordinates in the global scene. It will be selection-based in the future, and more hole bottoms and hole types are coming soon.',
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      face: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        multiple: false,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      cutAt: {
+        inputType: 'kcl',
+        allowArrays: true,
+        required: true,
+        defaultValue: '[0, 0]',
+      },
+      // TODO: holeBody, not just blind
+      depth: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: KCL_DEFAULT_LENGTH,
+      },
+      diameter: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue: '0.1',
+      },
+      // TODO: holeType
+      // TODO: holeBottom
     },
   },
   'Boolean Subtract': {
