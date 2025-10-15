@@ -912,6 +912,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.waitForTimeout(100)
       // press arrow down then enter to accept xLine
       await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('ArrowDown')
       await page.keyboard.press('Enter')
       // finish line with comment
       await page.keyboard.type('5')
@@ -982,6 +983,7 @@ sketch001 = startSketchOn(XZ)
       await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
       await page.waitForTimeout(100)
       // press arrow down then tab to accept xLine
+      await page.keyboard.press('ArrowDown')
       await page.keyboard.press('ArrowDown')
       // finish line with comment
       await page.keyboard.press('Tab')

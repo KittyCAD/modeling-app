@@ -160,14 +160,14 @@ impl FunctionSource {
         }
     }
 
-    pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, is_std: bool) -> Self {
+    pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, is_std: bool, experimental: bool) -> Self {
         let (input_arg, named_args) = Self::args_from_ast(&ast);
         FunctionSource {
             input_arg,
             named_args,
             return_type: ast.return_type.clone(),
             deprecated: false,
-            experimental: false,
+            experimental,
             include_in_feature_tree: true,
             is_std,
             body: FunctionBody::Kcl(memory),
