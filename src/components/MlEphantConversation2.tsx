@@ -109,7 +109,7 @@ const MlCopilotTools = (props: MlCopilotToolsProps) => {
         onClick={() => onClick(tool)}
         className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md"
       >
-        {ML_COPILOT_TOOLS_META[tool].icon({ className: 'w-7 h-7' })}
+        {ML_COPILOT_TOOLS_META[tool].icon({ className: 'w-5 h-5' })}
         {ML_COPILOT_TOOLS_META[tool].pretty}
       </div>
     )
@@ -118,14 +118,13 @@ const MlCopilotTools = (props: MlCopilotToolsProps) => {
   return (
     <div className="flex-none">
       <Popover className="relative">
-        <Popover.Button className="bg-default flex flex-row items-center gap-1 p-0 pr-2">
+        <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 p-0 pr-2">
           <CustomIcon name="settings" className="w-6 h-6" />
           {props.children}
           <CustomIcon name="plus" className="w-5 h-5" />
         </Popover.Button>
         <Popover.Panel
-          anchor="top left"
-          className="flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-sm rounded-md"
+          className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md"
         >
           {tools}
         </Popover.Panel>
@@ -174,6 +173,7 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
       if (!refTools.current) return
       if (entries.length === 1) {
         const widthTools = refTools.current.getBoundingClientRect().width
+        console.log(widthFromBeforeCollapse.current, entries[0].contentRect.width)
         if (widthTools > entries[0].contentRect.width && overflow === false) {
           widthFromBeforeCollapse.current = widthTools
           setOverflow(true)
@@ -194,19 +194,18 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
 
   const popover = (
     <Popover className="relative">
+      <Popover.Button className="h-7 flex items-center justify-content">...</Popover.Button>
       <Popover.Panel
-        anchor="bottom left"
-        className="flex whitespace-nowrap flex-col gap-2 hover:bg-2 bg-default mb-1 p-2 border b-3 text-sm rounded-md"
+        className="absolute bottom-full left-0 whitespace-nowrap flex flex-col gap-2 hover:bg-2 bg-default mb-1 p-2 border b-3 text-sm rounded-md"
       >
         {tools}
       </Popover.Panel>
-      <Popover.Button className="h-7">...</Popover.Button>
     </Popover>
   )
 
   return (
     <div ref={refWrap} className="flex-1 flex min-w-0 items-end">
-      <div ref={refTools} className="flex">
+      <div ref={refTools} className="flex flex-row w-fit-content items-end">
         {/* TODO: Generalize to a MlCopilotContexts component */}
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
@@ -216,7 +215,7 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
             {tools.length} Tool{tools.length !== 1 ? 's' : ''}
           </div>
         </MlCopilotTools>
-        <div className="overflow-hidden flex gap-1">
+        <div className="flex gap-1">
           {overflow ? popover : tools}
         </div>
       </div>
