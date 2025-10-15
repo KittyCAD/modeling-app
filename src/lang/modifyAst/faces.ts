@@ -57,9 +57,9 @@ export function addShell({
   nodeToEdit?: PathToNode
 }):
   | {
-      modifiedAst: Node<Program>
-      pathToNode: PathToNode
-    }
+    modifiedAst: Node<Program>
+    pathToNode: PathToNode
+  }
   | Error {
   // 1. Clone the ast so we can edit it
   const modifiedAst = structuredClone(ast)
@@ -121,9 +121,9 @@ export function addOffsetPlane({
   nodeToEdit?: PathToNode
 }):
   | {
-      modifiedAst: Node<Program>
-      pathToNode: PathToNode
-    }
+    modifiedAst: Node<Program>
+    pathToNode: PathToNode
+  }
   | Error {
   // 1. Clone the ast so we can edit it
   const modifiedAst = structuredClone(ast)
