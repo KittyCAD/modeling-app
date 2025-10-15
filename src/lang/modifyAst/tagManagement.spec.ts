@@ -1,12 +1,16 @@
-import type { ModuleType } from "@src/lib/wasm_lib_wrapper"
-import type { KclManager } from "@src/lang/KclSingleton"
-import { assertParse, recast, type ArtifactGraph } from "@src/lang/wasm"
-import { err } from "@src/lib/trap"
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { KclManager } from '@src/lang/KclSingleton'
+import { assertParse, recast, type ArtifactGraph } from '@src/lang/wasm'
+import { err } from '@src/lib/trap'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import type { Selection } from "@src/machines/modelingSharedTypes"
-import { buildTheWorldAndConnectToEngine } from "@src/unitTestUtils"
+import type { Selection } from '@src/machines/modelingSharedTypes'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 
-const executeCode = async (code: string, instance: ModuleType, kclManager: KclManager) => {
+const executeCode = async (
+  code: string,
+  instance: ModuleType,
+  kclManager: KclManager
+) => {
   const ast = assertParse(code, instance)
   await kclManager.executeAst({ ast })
   const artifactGraph = kclManager.artifactGraph
@@ -100,7 +104,11 @@ extrude001 = extrude(sketch001, length = 15)
     // Handle EDGE selections (commonEdge approach)
     it('should tag a segment and capStart using commonEdge approach', async () => {
       const { instance, kclManager } = await buildTheWorldAndConnectToEngine()
-      const { ast, artifactGraph } = await executeCode(basicExampleCode, instance, kclManager)
+      const { ast, artifactGraph } = await executeCode(
+        basicExampleCode,
+        instance,
+        kclManager
+      )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
         artifactGraph,
@@ -128,7 +136,11 @@ extrude001 = extrude(sketch001, length = 15)
     }, 5_000)
     it('should tag 2 segments using commonEdge approach', async () => {
       const { instance, kclManager } = await buildTheWorldAndConnectToEngine()
-      const { ast, artifactGraph } = await executeCode(basicExampleCode, instance, kclManager)
+      const { ast, artifactGraph } = await executeCode(
+        basicExampleCode,
+        instance,
+        kclManager
+      )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
         artifactGraph,
@@ -156,7 +168,11 @@ extrude001 = extrude(sketch001, length = 15)
     }, 5_000)
     it('should tag a segment and capEnd using commonEdge approach', async () => {
       const { instance, kclManager } = await buildTheWorldAndConnectToEngine()
-      const { ast, artifactGraph } = await executeCode(basicExampleCode, instance, kclManager)
+      const { ast, artifactGraph } = await executeCode(
+        basicExampleCode,
+        instance,
+        kclManager
+      )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
         artifactGraph,
@@ -185,7 +201,11 @@ extrude001 = extrude(sketch001, length = 15)
     // Handle EDGE selections (getOpposite/AdjacentEdge approach)
     it('should tag a segment using legacy oppositeAndAdjacentEdges approach for base edge selection', async () => {
       const { instance, kclManager } = await buildTheWorldAndConnectToEngine()
-      const { ast, artifactGraph } = await executeCode(basicExampleCode, instance, kclManager)
+      const { ast, artifactGraph } = await executeCode(
+        basicExampleCode,
+        instance,
+        kclManager
+      )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
         artifactGraph,
@@ -213,7 +233,11 @@ extrude001 = extrude(sketch001, length = 15)
     }, 5_000)
     it('should tag a segment using legacy oppositeAndAdjacentEdges approach for adjacent edge selection', async () => {
       const { instance, kclManager } = await buildTheWorldAndConnectToEngine()
-      const { ast, artifactGraph } = await executeCode(basicExampleCode, instance, kclManager)
+      const { ast, artifactGraph } = await executeCode(
+        basicExampleCode,
+        instance,
+        kclManager
+      )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
         artifactGraph,
@@ -240,7 +264,11 @@ extrude001 = extrude(sketch001, length = 15)
     }, 5_000)
     it('should tag a segment using legacy oppositeAndAdjacentEdges approach for opposite edge selection', async () => {
       const { instance, kclManager } = await buildTheWorldAndConnectToEngine()
-      const { ast, artifactGraph } = await executeCode(basicExampleCode, instance, kclManager)
+      const { ast, artifactGraph } = await executeCode(
+        basicExampleCode,
+        instance,
+        kclManager
+      )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
         artifactGraph,
