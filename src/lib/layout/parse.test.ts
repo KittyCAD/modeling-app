@@ -238,7 +238,7 @@ describe('Layout utils', () => {
       })
     })
 
-    it('parses onExpandedSize for those pane layouts that have it', () => {
+    it('parses onExpandSize for those pane layouts that have it', () => {
       const paneChildWithOnExpandSize: PaneLayout =
         structuredClone(validPaneLayout)
       paneChildWithOnExpandSize.onExpandSize = 30

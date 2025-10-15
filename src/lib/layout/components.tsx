@@ -355,11 +355,11 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
             </Switch>
           )
         })}
-        {layout.children.length && layout.actions?.length && (
+        {layout.children.length && layout.actions?.length ? (
           <hr
             className={`bg-3 border-none ${sideToSplitDirection(layout.side) === 'vertical' ? 'w-[1px] h-full' : 'h-[1px] w-full'}`}
           />
-        )}
+        ) : null}
         {layout.actions?.map((action) => {
           const resolvedAction = actionTypeRegistry[action.actionType]
           const disabledReason = resolvedAction.useDisabled()
@@ -399,12 +399,12 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
             )
           )
         })}
-        {ENABLE_CONTEXT_MENUS && (
+        {ENABLE_CONTEXT_MENUS ? (
           <PaneLayoutContextMenu
             layout={layout}
             menuTargetElement={paneBarRef}
           />
-        )}
+        ) : null}
       </ul>
       {activePanes.length === 0 ? (
         <></>
