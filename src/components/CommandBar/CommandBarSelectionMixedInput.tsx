@@ -6,14 +6,73 @@ import {
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
+  handleSelectionBatch,
 } from '@src/lib/selections'
 import { kclManager, engineCommandManager } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { uuidv4 } from '@src/lib/utils'
+import type { EntityType, ModelingCmdReq } from '@kittycad/lib'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
+
+/**
+ * Helper to set selection filter and restore selections in a single batch
+ * This prevents flickering by batching the filter change with selection restoration
+ */
+function setFilterAndRestoreSelection(
+  filter: EntityType[],
+  selectionsToRestore?: Selections
+) {
+  if (!selectionsToRestore) {
+    // No selections to restore, just set the filter
+    kclManager.setSelectionFilter(filter)
+    return
+  }
+
+  // Get the commands to restore selections
+  const { engineEvents } = handleSelectionBatch({
+    selections: selectionsToRestore,
+  })
+
+  if (!engineEvents || engineEvents.length === 0) {
+    // No restoration commands, just set the filter
+    kclManager.setSelectionFilter(filter)
+    return
+  }
+
+  // Build the batch request with filter + restoration commands
+  const modelingCmd: ModelingCmdReq[] = []
+  engineEvents.forEach((event) => {
+    if (event.type === 'modeling_cmd_req') {
+      modelingCmd.push({
+        cmd_id: uuidv4(),
+        cmd: event.cmd,
+      })
+    }
+  })
+
+  // Send as batch to prevent flickering
+  engineCommandManager
+    .sendSceneCommand({
+      type: 'modeling_cmd_batch_req',
+      batch_id: uuidv4(),
+      requests: [
+        {
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_selection_filter',
+            filter,
+          },
+        },
+        ...modelingCmd,
+      ],
+      responses: false,
+    })
+    .catch((error) => console.error('Failed to set filter and restore:', error))
+}
 
 export default function CommandBarSelectionMixedInput({
   arg,
@@ -127,13 +186,17 @@ export default function CommandBarSelectionMixedInput({
   // This runs after coercion completes and updates the selection
   useEffect(() => {
     if (arg.selectionFilter && hasCoercedSelections) {
-      // Pass the current selection to restore it after applying the filter
+      // Use our helper to batch the filter change with selection restoration
       // This is critical for body-only commands where we've coerced face/edge selections to bodies
-      kclManager.setSelectionFilter(arg.selectionFilter, selection)
+      setFilterAndRestoreSelection(arg.selectionFilter, selection)
     }
     return () => {
       if (arg.selectionFilter && hasCoercedSelections) {
-        kclManager.defaultSelectionFilter(selection)
+        // Restore default filter with selections on cleanup
+        setFilterAndRestoreSelection(
+          ['face', 'edge', 'solid2d', 'curve', 'object'],
+          selection
+        )
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Need to react to selection changes after coercion

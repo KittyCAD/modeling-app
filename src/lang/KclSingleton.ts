@@ -51,7 +51,7 @@ import type {
   PlaneVisibilityMap,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import { handleSelectionBatch as handleSelectionBatchFn } from '@src/lib/selections'
+import { type handleSelectionBatch as handleSelectionBatchFn } from '@src/lib/selections'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -793,12 +793,7 @@ export class KclManager extends EventTarget {
   }
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilter(filter: EntityType[], selectionsToRestore?: Selections) {
-    setSelectionFilter(
-      filter,
-      this.engineCommandManager,
-      selectionsToRestore,
-      handleSelectionBatchFn
-    )
+    setSelectionFilter(filter, this.engineCommandManager, selectionsToRestore)
   }
 
   // Determines if there is no KCL code which means it is executing a blank KCL file
