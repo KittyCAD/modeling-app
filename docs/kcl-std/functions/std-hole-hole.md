@@ -5,16 +5,18 @@ excerpt: "From the hole's parts (bottom, middle, top), cut the hole into the giv
 layout: manual
 ---
 
+**WARNING:** This function is experimental and may change or be removed.
+
 From the hole's parts (bottom, middle, top), cut the hole into the given solid, at the given 2D position on the given face.
 
 ```kcl
 hole::hole(
-  @solid,
-  face,
+  @solid: Solid,
+  face: TaggedFace,
   holeBottom,
   holeBody,
   holeType,
-  cutAt,
+  cutAt: [number(Length); 2],
 )
 ```
 
@@ -24,12 +26,12 @@ hole::hole(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solid` |  |  | Yes |
-| `face` |  |  | Yes |
-| `holeBottom` |  |  | Yes |
-| `holeBody` |  |  | Yes |
-| `holeType` |  |  | Yes |
-| `cutAt` |  |  | Yes |
+| `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | Which solid to add a hole to. | Yes |
+| `face` | [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) | Which face of the solid to add the hole to. | Yes |
+| `holeBottom` |  | Define bottom feature of the hole. E.g. drilled or flat. | Yes |
+| `holeBody` |  | Define the main length of the hole. E.g. a blind distance. | Yes |
+| `holeType` |  | Define the top feature of the hole. E.g. countersink, counterbore, simple. | Yes |
+| `cutAt` | [`[number(Length); 2]`](/docs/kcl-std/types/std-types-number) | Where to place the cut on the given face of the solid. This controls how far up/down/left/right the hole is placed. | Yes |
 
 
 ### Examples

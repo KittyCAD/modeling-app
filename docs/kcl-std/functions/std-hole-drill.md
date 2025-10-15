@@ -5,10 +5,12 @@ excerpt: "End the hole in an angle, like the end of a drill."
 layout: manual
 ---
 
+**WARNING:** This function is experimental and may change or be removed.
+
 End the hole in an angle, like the end of a drill.
 
 ```kcl
-hole::drill(pointAngle)
+hole::drill(pointAngle: number(Angle))
 ```
 
 
@@ -17,7 +19,7 @@ hole::drill(pointAngle)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `pointAngle` |  |  | Yes |
+| `pointAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 
 

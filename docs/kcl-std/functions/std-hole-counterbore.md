@@ -5,12 +5,14 @@ excerpt: "Cut a straight vertical counterbore at the top of the hole."
 layout: manual
 ---
 
+**WARNING:** This function is experimental and may change or be removed.
+
 Cut a straight vertical counterbore at the top of the hole.
 
 ```kcl
 hole::counterbore(
-  diameter,
-  depth,
+  diameter: number(Length),
+  depth: number(Length),
 )
 ```
 
@@ -20,8 +22,8 @@ hole::counterbore(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `diameter` |  |  | Yes |
-| `depth` |  |  | Yes |
+| `diameter` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `depth` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 
 ### Examples

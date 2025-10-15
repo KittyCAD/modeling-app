@@ -5,12 +5,14 @@ excerpt: "Cut an angled countersink at the top of the hole."
 layout: manual
 ---
 
+**WARNING:** This function is experimental and may change or be removed.
+
 Cut an angled countersink at the top of the hole.
 
 ```kcl
 hole::countersink(
-  diameter,
-  angle,
+  diameter: number(Length),
+  angle: number(Angle),
 )
 ```
 
@@ -20,8 +22,8 @@ hole::countersink(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `diameter` |  |  | Yes |
-| `angle` |  |  | Yes |
+| `diameter` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 
 ### Examples

@@ -44,7 +44,7 @@ export fn simple() {
 ///      )
 /// ```
 @(experimental = true)
-export fn counterbore(diameter, depth) {
+export fn counterbore(diameter: number(Length), depth: number(Length)) {
   return {
     diameter = diameter,
     depth = depth,
@@ -81,7 +81,7 @@ export fn counterbore(diameter, depth) {
 ///      )
 /// ```
 @(experimental = true)
-export fn countersink(diameter, angle) {
+export fn countersink(diameter: number(Length), angle: number(Angle)) {
   return {
     diameter = diameter,
     angle = angle,
@@ -94,7 +94,7 @@ export fn countersink(diameter, angle) {
 
 /// The hole has the given blind depth.
 @(experimental = true)
-export fn blind(depth, diameter) {
+export fn blind(depth: number(Length), diameter: number(Length)) {
   return {
     blindDepth = depth,
     diameter = diameter
@@ -106,7 +106,7 @@ export fn blind(depth, diameter) {
 
 /// End the hole in an angle, like the end of a drill.
 @(experimental = true)
-export fn drill(pointAngle) {
+export fn drill(pointAngle: number(Angle)) {
   return { drillBitAngle = pointAngle }
 }
 
@@ -174,7 +174,7 @@ fn holeTypeHeight(body, holeType) {
 /// Profile for the end of the hole. Only really intended for advanced uses.
 /// You can use this and `revolveHole` to do tricky custom hole cutting.
 @(experimental = true)
-export fn sketchHoleProfile(@sketchOn, holeBottom, holeBody, holeType, shift) {
+fn sketchHoleProfile(@sketchOn, holeBottom, holeBody, holeType, shift) {
   body = holeBody
   bottom = holeBottom
   // Calculate the drill bit height
@@ -204,7 +204,7 @@ export fn sketchHoleProfile(@sketchOn, holeBottom, holeBody, holeType, shift) {
 /// Given a hole profile, revolve it into a 3D hole solid geometry.
 /// This can be subtracted from a solid to form a hole in it.
 @(experimental = true)
-export fn revolveHole(@holeProfile, edge) {
+fn revolveHole(@holeProfile, edge) {
   return holeProfile
     |> revolve(axis = edge)
     |> appearance(color = "#ff0000")
@@ -213,7 +213,7 @@ export fn revolveHole(@holeProfile, edge) {
 /// Build a hole's geometry from its top, bottom and depth.
 /// Can be subtracted from a solid to cut a hole into it.
 @(experimental = true)
-export fn holeGeometry(@solid, face, holeBottom, holeBody, holeType, cutAt) {
+fn holeGeometry(@solid, face, holeBottom, holeBody, holeType, cutAt) {
   intoSolid = startSketchOn(
     solid,
     normalToFace = face,
@@ -312,7 +312,21 @@ export fn hole(
 /// at each of the given 2D positions on the given face.
 /// Basically like function `hole` but it takes multiple 2D positions in `cutsAt`.
 @(experimental = true)
-export fn holes(@solid, face, holeBottom, holeBody, holeType, cutsAt) {
+export fn holes(
+  /// Which solid to add a hole to.
+  @solid: Solid,
+  /// Which face of the solid to add the hole to.
+  face: TaggedFace,
+  /// Define bottom feature of the hole. E.g. drilled or flat.
+  holeBottom,
+  /// Define the main length of the hole. E.g. a blind distance.
+  holeBody,
+  /// Define the top feature of the hole. E.g. countersink, counterbore, simple.
+  holeType,
+  /// Where to place the holes on the given solid face.
+  /// This controls how far up/down/left/right each hole is placed.
+  cutsAt: [[number(Length); 2]],
+) {
   drilled = map(cutsAt, f = fn(@cutAt) {
     return holeGeometry(solid, face, holeBottom, holeBody, holeType, cutAt)
   })
@@ -323,7 +337,28 @@ export fn holes(@solid, face, holeBottom, holeBody, holeType, cutsAt) {
 /// Basically like function `hole` but cuts multiple holes in a line.
 /// Works like linear patterns.
 @(experimental = true)
-export fn holesLinear(@solid, face, holeBottom, holeBody, holeType, cutAt, instances, distance, axis) {
+export fn holesLinear(
+  /// Which solid to add a hole to.
+  @solid: Solid,
+  /// Which face of the solid to add the hole to.
+  face: TaggedFace,
+  /// Define bottom feature of the hole. E.g. drilled or flat.
+  holeBottom,
+  /// Define the main length of the hole. E.g. a blind distance.
+  holeBody,
+  /// Define the top feature of the hole. E.g. countersink, counterbore, simple.
+  holeType,
+  /// Where to place the first cut in the linear pattern,
+  /// i.e. where on the given face of the solid.
+  /// This controls how far up/down/left/right the hole is placed.
+  cutAt: [number(Length); 2],
+  /// How many holes to cut.
+  instances: number(_),
+  /// How far between each hole
+  distance,
+  /// Along which axis should the holes be cut?
+  axis: Axis2d | Point2d,
+) {
   drilled = holeGeometry(solid, face, holeBottom, holeBody, holeType, cutAt)
   |> patternLinear3d(instances, distance, axis)
 
