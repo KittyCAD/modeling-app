@@ -205,7 +205,7 @@ export const ResponsesCard = forwardRef((props: ResponsesCardProp) => {
     <ChatBubble
       side={'left'}
       wfull={true}
-      userAvatar={<AvatarUser src="/public/mleyphun.jpg" />}
+      userAvatar={<AvatarUser src="/mleyphun.jpg" />}
       dataTestId="ml-response-chat-bubble"
       placeholderTestId="ml-response-chat-bubble-thinking"
     >
