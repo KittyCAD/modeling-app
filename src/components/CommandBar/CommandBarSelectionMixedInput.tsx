@@ -57,26 +57,24 @@ export default function CommandBarSelectionMixedInput({
       (type) => type === 'sweep' || type === 'compositeSolid' || type === 'path'
     )
 
-    if (onlyAcceptsBodies && arg.machineActor) {
-      const coercedSelections = coerceSelectionsToBody(
-        selection,
-        kclManager.artifactGraph
-      )
+    if (!onlyAcceptsBodies) return // Command accepts non-body types
+    if (!arg.machineActor) return // No state machine to update
 
-      if (!err(coercedSelections)) {
-        // Immediately update the modeling machine state with coerced selection
-        // This needs to happen BEFORE the selection filter is applied
-        if (arg.machineActor) {
-          arg.machineActor.send({
-            type: 'Set selection',
-            data: {
-              selectionType: 'completeSelection',
-              selection: coercedSelections,
-            },
-          })
-        }
-      }
-    }
+    const coercedSelections = coerceSelectionsToBody(
+      selection,
+      kclManager.artifactGraph
+    )
+    if (err(coercedSelections)) return // Coercion failed, skip update
+
+    // Immediately update the modeling machine state with coerced selection
+    // This needs to happen BEFORE the selection filter is applied
+    arg.machineActor.send({
+      type: 'Set selection',
+      data: {
+        selectionType: 'completeSelection',
+        selection: coercedSelections,
+      },
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
   }, [])
 
