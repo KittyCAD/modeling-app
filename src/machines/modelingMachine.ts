@@ -809,35 +809,45 @@ export const modelingMachine = setup({
         }
       }
     ),
-    'listen for rectangle origin': ({ context: { sketchDetails } }) => {
+    'listen for rectangle origin': ({
+      context: {
+        sketchDetails,
+        sceneEntitiesManager: providedSceneEntitiesManager,
+        sceneInfra: providedSceneInfra,
+      },
+    }) => {
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
         new Vector3(...sketchDetails.yAxis),
         new Vector3(...sketchDetails.zAxis)
       )
 
+      const theSceneEntitiesManager = providedSceneEntitiesManager
+        ? providedSceneEntitiesManager
+        : sceneEntitiesManager
+      const theSceneInfra = providedSceneInfra ? providedSceneInfra : sceneInfra
       // Position the click raycast plane
 
-      sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+      theSceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
         quaternion
       )
-      sceneEntitiesManager.intersectionPlane.position.copy(
+      theSceneEntitiesManager.intersectionPlane.position.copy(
         new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
       )
 
-      sceneInfra.setCallbacks({
+      theSceneInfra.setCallbacks({
         onMove: (args) => {
           listenForOriginMove(args, sketchDetails)
         },
         onClick: (args) => {
-          sceneEntitiesManager.removeDraftPoint()
+          theSceneEntitiesManager.removeDraftPoint()
           if (!args) return
           if (args.mouseEvent.which !== 1) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
-            sceneInfra.modelingSend({
+            theSceneInfra.modelingSend({
               type: 'click in scene',
-              data: sceneEntitiesManager.getSnappedDragPoint(
+              data: theSceneEntitiesManager.getSnappedDragPoint(
                 twoD,
                 args.intersects,
                 args.mouseEvent
@@ -850,35 +860,44 @@ export const modelingMachine = setup({
       })
     },
 
-    'listen for center rectangle origin': ({ context: { sketchDetails } }) => {
+    'listen for center rectangle origin': ({
+      context: {
+        sketchDetails,
+        sceneEntitiesManager: providedSceneEntitiesManager,
+        sceneInfra: providedSceneInfra,
+      },
+    }) => {
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
         new Vector3(...sketchDetails.yAxis),
         new Vector3(...sketchDetails.zAxis)
       )
-
+      const theSceneEntitiesManager = providedSceneEntitiesManager
+        ? providedSceneEntitiesManager
+        : sceneEntitiesManager
+      const theSceneInfra = providedSceneInfra ? providedSceneInfra : sceneInfra
       // Position the click raycast plane
 
-      sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+      theSceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
         quaternion
       )
-      sceneEntitiesManager.intersectionPlane.position.copy(
+      theSceneEntitiesManager.intersectionPlane.position.copy(
         new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
       )
 
-      sceneInfra.setCallbacks({
+      theSceneInfra.setCallbacks({
         onMove: (args) => {
           listenForOriginMove(args, sketchDetails)
         },
         onClick: (args) => {
-          sceneEntitiesManager.removeDraftPoint()
+          theSceneEntitiesManager.removeDraftPoint()
           if (!args) return
           if (args.mouseEvent.which !== 1) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
-            sceneInfra.modelingSend({
+            theSceneInfra.modelingSend({
               type: 'Add center rectangle origin',
-              data: sceneEntitiesManager.getSnappedDragPoint(
+              data: theSceneEntitiesManager.getSnappedDragPoint(
                 twoD,
                 args.intersects,
                 args.mouseEvent
@@ -891,23 +910,32 @@ export const modelingMachine = setup({
       })
     },
 
-    'listen for circle origin': ({ context: { sketchDetails } }) => {
+    'listen for circle origin': ({
+      context: {
+        sketchDetails,
+        sceneEntitiesManager: providedSceneEntitiesManager,
+        sceneInfra: providedSceneInfra,
+      },
+    }) => {
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
         new Vector3(...sketchDetails.yAxis),
         new Vector3(...sketchDetails.zAxis)
       )
-
+      const theSceneEntitiesManager = providedSceneEntitiesManager
+        ? providedSceneEntitiesManager
+        : sceneEntitiesManager
+      const theSceneInfra = providedSceneInfra ? providedSceneInfra : sceneInfra
       // Position the click raycast plane
 
-      sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+      theSceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
         quaternion
       )
-      sceneEntitiesManager.intersectionPlane.position.copy(
+      theSceneEntitiesManager.intersectionPlane.position.copy(
         new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
       )
 
-      sceneInfra.setCallbacks({
+      theSceneInfra.setCallbacks({
         onMove: (args) => {
           listenForOriginMove(args, sketchDetails)
         },
@@ -918,9 +946,9 @@ export const modelingMachine = setup({
           if (!intersectionPoint?.twoD) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
-            sceneInfra.modelingSend({
+            theSceneInfra.modelingSend({
               type: 'Add circle origin',
-              data: sceneEntitiesManager.getSnappedDragPoint(
+              data: theSceneEntitiesManager.getSnappedDragPoint(
                 twoD,
                 args.intersects,
                 args.mouseEvent
@@ -932,23 +960,32 @@ export const modelingMachine = setup({
         },
       })
     },
-    'listen for circle first point': ({ context: { sketchDetails } }) => {
+    'listen for circle first point': ({
+      context: {
+        sketchDetails,
+        sceneEntitiesManager: providedSceneEntitiesManager,
+        sceneInfra: providedSceneInfra,
+      },
+    }) => {
       if (!sketchDetails) return
       const quaternion = quaternionFromUpNForward(
         new Vector3(...sketchDetails.yAxis),
         new Vector3(...sketchDetails.zAxis)
       )
-
+      const theSceneEntitiesManager = providedSceneEntitiesManager
+        ? providedSceneEntitiesManager
+        : sceneEntitiesManager
+      const theSceneInfra = providedSceneInfra ? providedSceneInfra : sceneInfra
       // Position the click raycast plane
 
-      sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+      theSceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
         quaternion
       )
-      sceneEntitiesManager.intersectionPlane.position.copy(
+      theSceneEntitiesManager.intersectionPlane.position.copy(
         new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
       )
 
-      sceneInfra.setCallbacks({
+      theSceneInfra.setCallbacks({
         onMove: (args) => {
           listenForOriginMove(args, sketchDetails)
         },
@@ -959,9 +996,9 @@ export const modelingMachine = setup({
           if (!intersectionPoint?.twoD) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
-            sceneInfra.modelingSend({
+            theSceneInfra.modelingSend({
               type: 'Add first point',
-              data: sceneEntitiesManager.getSnappedDragPoint(
+              data: sceneEntitiesMtheSceneEntitiesManageranager.getSnappedDragPoint(
                 twoD,
                 args.intersects,
                 args.mouseEvent
@@ -974,7 +1011,11 @@ export const modelingMachine = setup({
       })
     },
     'listen for circle second point': ({
-      context: { sketchDetails },
+      context: {
+        sketchDetails,
+        sceneEntitiesManager: providedSceneEntitiesManager,
+        sceneInfra: providedSceneInfra,
+      },
       event,
     }) => {
       if (!sketchDetails) return
@@ -983,31 +1024,34 @@ export const modelingMachine = setup({
         new Vector3(...sketchDetails.yAxis),
         new Vector3(...sketchDetails.zAxis)
       )
-
+      const theSceneEntitiesManager = providedSceneEntitiesManager
+        ? providedSceneEntitiesManager
+        : sceneEntitiesManager
+      const theSceneInfra = providedSceneInfra ? providedSceneInfra : sceneInfra
       // Position the click raycast plane
 
-      sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+      theSceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
         quaternion
       )
-      sceneEntitiesManager.intersectionPlane.position.copy(
+      theSceneEntitiesManager.intersectionPlane.position.copy(
         new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
       )
 
       const dummy = new Mesh()
       dummy.position.set(0, 0, 0)
-      const scale = sceneInfra.getClientSceneScaleFactor(dummy)
+      const scale = theSceneInfra.getClientSceneScaleFactor(dummy)
       const position = new Vector3(event.data[0], event.data[1], 0)
       position.applyQuaternion(quaternion)
       const draftPoint = createProfileStartHandle({
         isDraft: true,
         from: event.data,
         scale,
-        theme: sceneInfra.theme,
+        theme: theSceneInfra.theme,
       })
       draftPoint.position.copy(position)
-      sceneInfra.scene.add(draftPoint)
+      theSceneInfra.scene.add(draftPoint)
 
-      sceneInfra.setCallbacks({
+      theSceneInfra.setCallbacks({
         onMove: (args) => {
           listenForOriginMove(args, sketchDetails)
         },
@@ -1018,11 +1062,11 @@ export const modelingMachine = setup({
           if (!intersectionPoint?.twoD) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
-            sceneInfra.modelingSend({
+            theSceneInfra.modelingSend({
               type: 'Add second point',
               data: {
                 p1: event.data,
-                p2: sceneEntitiesManager.getSnappedDragPoint(
+                p2: theSceneEntitiesManager.getSnappedDragPoint(
                   twoD,
                   args.intersects,
                   args.mouseEvent
