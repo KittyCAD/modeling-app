@@ -6,12 +6,17 @@ import {
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
+  handleSelectionBatch,
 } from '@src/lib/selections'
 import { kclManager, engineCommandManager } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import {
+  setSelectionFilter,
+  setSelectionFilterToDefault,
+} from '@src/lib/selectionFilterUtils'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
@@ -127,13 +132,23 @@ export default function CommandBarSelectionMixedInput({
   // This runs after coercion completes and updates the selection
   useEffect(() => {
     if (arg.selectionFilter && hasCoercedSelections) {
-      // Pass the current selection to restore it after applying the filter
+      // Batch the filter change with selection restoration
       // This is critical for body-only commands where we've coerced face/edge selections to bodies
-      kclManager.setSelectionFilter(arg.selectionFilter, selection)
+      setSelectionFilter(
+        arg.selectionFilter,
+        engineCommandManager,
+        selection,
+        handleSelectionBatch
+      )
     }
     return () => {
       if (arg.selectionFilter && hasCoercedSelections) {
-        kclManager.defaultSelectionFilter(selection)
+        // Restore default filter with selections on cleanup
+        setSelectionFilterToDefault(
+          engineCommandManager,
+          selection,
+          handleSelectionBatch
+        )
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- Need to react to selection changes after coercion

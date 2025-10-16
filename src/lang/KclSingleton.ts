@@ -1,5 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
-import type { EntityType, ModelingCmdReq } from '@kittycad/lib'
+import type { EntityType } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type EditorManager from '@src/editor/manager'
 import type CodeManager from '@src/lang/codeManager'
@@ -41,7 +41,7 @@ import type {
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
-import { deferExecution, uuidv4 } from '@src/lib/utils'
+import { deferExecution } from '@src/lib/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 import { EngineDebugger } from '@src/lib/debugger'
@@ -51,7 +51,11 @@ import type {
   PlaneVisibilityMap,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import { handleSelectionBatch as handleSelectionBatchFn } from '@src/lib/selections'
+import { type handleSelectionBatch as handleSelectionBatchFn } from '@src/lib/selections'
+import {
+  setSelectionFilter,
+  setSelectionFilterToDefault,
+} from '@src/lib/selectionFilterUtils'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -788,16 +792,27 @@ export class KclManager extends EventTarget {
   }
 
   /** TODO: this function is hiding unawaited asynchronous work */
-  defaultSelectionFilter(selectionsToRestore?: Selections) {
-    setSelectionFilterToDefault(this.engineCommandManager, selectionsToRestore)
+  setSelectionFilterToDefault(
+    selectionsToRestore?: Selections,
+    handleSelectionBatch?: typeof handleSelectionBatchFn
+  ) {
+    setSelectionFilterToDefault(
+      this.engineCommandManager,
+      selectionsToRestore,
+      handleSelectionBatch
+    )
   }
   /** TODO: this function is hiding unawaited asynchronous work */
-  setSelectionFilter(filter: EntityType[], selectionsToRestore?: Selections) {
+  setSelectionFilter(
+    filter: EntityType[],
+    selectionsToRestore?: Selections,
+    handleSelectionBatch?: typeof handleSelectionBatchFn
+  ) {
     setSelectionFilter(
       filter,
       this.engineCommandManager,
       selectionsToRestore,
-      handleSelectionBatchFn
+      handleSelectionBatch
     )
   }
 
@@ -828,81 +843,4 @@ export class KclManager extends EventTarget {
       settings?.defaultLengthUnit || DEFAULT_DEFAULT_LENGTH_UNIT
     )
   }
-}
-
-const defaultSelectionFilter: EntityType[] = [
-  'face',
-  'edge',
-  'solid2d',
-  'curve',
-  'object',
-]
-
-/** TODO: This function is not synchronous but is currently treated as such */
-function setSelectionFilterToDefault(
-  engineCommandManager: ConnectionManager,
-  selectionsToRestore?: Selections,
-  handleSelectionBatch?: typeof handleSelectionBatchFn
-) {
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  setSelectionFilter(
-    defaultSelectionFilter,
-    engineCommandManager,
-    selectionsToRestore,
-    handleSelectionBatch
-  )
-}
-
-/** TODO: This function is not synchronous but is currently treated as such */
-function setSelectionFilter(
-  filter: EntityType[],
-  engineCommandManager: ConnectionManager,
-  selectionsToRestore?: Selections,
-  handleSelectionBatch?: typeof handleSelectionBatchFn
-) {
-  const { engineEvents } =
-    selectionsToRestore && handleSelectionBatch
-      ? handleSelectionBatch({
-          selections: selectionsToRestore,
-        })
-      : { engineEvents: undefined }
-  if (!selectionsToRestore || !engineEvents) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'set_selection_filter',
-        filter,
-      },
-    })
-    return
-  }
-  const modelingCmd: ModelingCmdReq[] = []
-  engineEvents.forEach((event) => {
-    if (event.type === 'modeling_cmd_req') {
-      modelingCmd.push({
-        cmd_id: uuidv4(),
-        cmd: event.cmd,
-      })
-    }
-  })
-  // batch is needed other wise the selection flickers.
-  engineCommandManager
-    .sendSceneCommand({
-      type: 'modeling_cmd_batch_req',
-      batch_id: uuidv4(),
-      requests: [
-        {
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'set_selection_filter',
-            filter,
-          },
-        },
-        ...modelingCmd,
-      ],
-      responses: false,
-    })
-    .catch(reportError)
 }

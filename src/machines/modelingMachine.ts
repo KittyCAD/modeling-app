@@ -1067,7 +1067,7 @@ export const modelingMachine = setup({
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to defaults': () => {
-      kclManager.defaultSelectionFilter()
+      kclManager.setSelectionFilterToDefault()
     },
     'Delete segments': ({ context: { sketchDetails }, event }) => {
       if (event.type !== 'Delete segments') return
