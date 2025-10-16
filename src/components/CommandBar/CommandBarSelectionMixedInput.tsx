@@ -46,7 +46,7 @@ export default function CommandBarSelectionMixedInput({
     // Only run once per component mount
     if (hasCoercedSelections) return
 
-    // Mark as attempted to prevent infinite loops
+    // Signal that coercion phase is complete - allows second useEffect to set selection filter
     setHasCoercedSelections(true)
 
     if (!selection || selection.graphSelections.length === 0) return
