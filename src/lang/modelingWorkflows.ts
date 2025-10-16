@@ -14,7 +14,6 @@ import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
 import type { PathToNode, Program } from '@src/lang/wasm'
 import type { ExecutionType } from '@src/lib/constants'
-import { rustContext } from '@src/lib/singletons'
 import {
   EXECUTION_TYPE_MOCK,
   EXECUTION_TYPE_NONE,
@@ -69,12 +68,10 @@ export async function updateModelingState(
   // Step 0: Mock execute shit so we know it aint broke
   const { errors } = await executeAstMock({
     ast,
-    rustContext,
+    rustContext: dependencies.rustContext,
   })
   if (errors.length > 0) {
-    return Promise.reject(
-      new Error(errors.map((e) => e.message).join('\n'))
-    )
+    return Promise.reject(new Error(errors.map((e) => e.message).join('\n')))
   }
 
   // Step 1: Update AST without executing (prepare selections)
