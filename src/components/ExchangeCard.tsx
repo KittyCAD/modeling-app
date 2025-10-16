@@ -6,7 +6,7 @@ import {
   isMlCopilotUserRequest,
 } from '@src/machines/mlEphantManagerMachine2'
 import ms from 'ms'
-import { forwardRef, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -73,11 +73,11 @@ export const ExchangeCardStatus = (props: {
 
 export const AvatarUser = (props: { src?: string }) => {
   return (
-    <div className="rounded-full border overflow-hidden">
+    <div className="rounded-sm overflow-hidden">
       {props.src ? (
         <img
           src={props.src || ''}
-          className="h-7 w-7 rounded-full"
+          className="h-7 w-7 rounded-sm"
           referrerPolicy="no-referrer"
           alt="user avatar"
         />
@@ -183,7 +183,7 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
   ) : null
 
 // This can be used to show `delta` or `tool_output`
-export const ResponsesCard = forwardRef((props: ResponsesCardProp) => {
+export const ResponsesCard = (props: ResponsesCardProp) => {
   const items = props.items.map(
     (response: MlCopilotServerMessage, index: number) => {
       if ('delta' in response) {
@@ -205,14 +205,14 @@ export const ResponsesCard = forwardRef((props: ResponsesCardProp) => {
     <ChatBubble
       side={'left'}
       wfull={true}
-      userAvatar={<AvatarUser src="/public/mleyphun.jpg" />}
+      userAvatar={<AvatarUser src="/mleyphun.jpg" />}
       dataTestId="ml-response-chat-bubble"
       placeholderTestId="ml-response-chat-bubble-thinking"
     >
       {itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null}
     </ChatBubble>
   )
-})
+}
 
 export const ExchangeCard = (props: ExchangeCardProps) => {
   let [startedAt] = useState<Date>(new Date())
