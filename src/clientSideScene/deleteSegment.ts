@@ -36,16 +36,16 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 export async function deleteSegmentOrProfile({
   pathToNode,
   sketchDetails,
-  dependencies
+  dependencies,
 }: {
   pathToNode: PathToNode
-  sketchDetails: SketchDetails | null,
+  sketchDetails: SketchDetails | null
   dependencies: {
-    kclManager: KclManager,
-    codeManager: CodeManager,
-    wasmInstance?: ModuleType,
-    rustContext: RustContext,
-    sceneEntitiesManager: SceneEntities,
+    kclManager: KclManager
+    codeManager: CodeManager
+    wasmInstance?: ModuleType
+    rustContext: RustContext
+    sceneEntitiesManager: SceneEntities
     sceneInfra: SceneInfra
   }
 }) {
@@ -55,9 +55,9 @@ export async function deleteSegmentOrProfile({
 
   const shouldContinueSegDelete = dependentRanges.length
     ? await confirmModal({
-      text: `At least ${dependentRanges.length} segment rely on the segment you're deleting.\nDo you want to continue and unconstrain these segments?`,
-      isOpen: true,
-    })
+        text: `At least ${dependentRanges.length} segment rely on the segment you're deleting.\nDo you want to continue and unconstrain these segments?`,
+        isOpen: true,
+      })
     : true
 
   if (!shouldContinueSegDelete) return

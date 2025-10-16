@@ -106,7 +106,7 @@ export async function buildTheWorldAndConnectToEngine() {
     editorManager,
     codeManager,
     kclManager,
-    sceneEntitiesManager
+    sceneEntitiesManager,
   }
 }
 

@@ -22,7 +22,7 @@ export const codeManagerUpdateEvent = codeManagerUpdateAnnotation.of(true)
 
 export default class CodeManager {
   private _code: string = bracket
-  #updateState: (arg: string) => void = () => { }
+  #updateState: (arg: string) => void = () => {}
   private _currentFilePath: string | null = null
   private _hotkeys: { [key: string]: () => void } = {}
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
