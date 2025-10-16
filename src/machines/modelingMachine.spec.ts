@@ -898,6 +898,7 @@ p3 = [342.51, 216.38],
             contextCopied.engineCommandManager = engineCommandManager
             contextCopied.sceneInfra = sceneInfra
             contextCopied.editorManager = editorManager
+            contextCopied.wasmInstance = instance
             const sceneEntitiesManager = new SceneEntities(
               engineCommandManager,
               sceneInfra,

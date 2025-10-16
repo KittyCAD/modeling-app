@@ -162,7 +162,7 @@ import type CodeManager from '@src/lang/codeManager'
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 export type ModelingMachineEvent =
   | {
@@ -574,10 +574,14 @@ export const modelingMachine = setup({
       if (err(info)) return false
       return info.enabled
     },
-    'Can convert to named value': ({ event }) => {
+    'Can convert to named value': ({ context, event }) => {
       if (event.type !== 'Constrain with named value') return false
       if (!event.data) return false
-      const ast = parse(recast(kclManager.ast))
+
+      const theKclManager = context.kclManager ? context.kclManager : kclManager
+      const wasmInstance = context.wasmInstance
+
+      const ast = parse(recast(theKclManager.ast, wasmInstance), wasmInstance)
       if (err(ast) || !ast.program || ast.errors.length > 0) return false
       const isSafeRetVal = isNodeSafeToReplacePath(
         ast.program,
@@ -621,7 +625,7 @@ export const modelingMachine = setup({
         toast.error(event.error.message)
       }
     },
-    toastErrorAndExitSketch: ({ event }) => {
+    toastErrorAndExitSketch: ({ event, context }) => {
       if ('output' in event && event.output instanceof Error) {
         console.error(event.output)
         toast.error(event.output.message)
@@ -633,10 +637,13 @@ export const modelingMachine = setup({
         toast.error(event.error.message)
       }
 
+      const theSceneEntitiesManager = context.sceneEntitiesManager
+        ? context.sceneEntitiesManager
+        : sceneEntitiesManager
       // Clean up the THREE.js sketch scene
-      sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-      sceneEntitiesManager.removeSketchGrid()
-      sceneEntitiesManager.resetOverlays()
+      theSceneEntitiesManager.tearDownSketch({ removeAxis: false })
+      theSceneEntitiesManager.removeSketchGrid()
+      theSceneEntitiesManager.resetOverlays()
     },
     'assign tool in context': assign({
       currentTool: ({ event }) =>
@@ -698,14 +705,25 @@ export const modelingMachine = setup({
     }),
     'set up draft line': assign(
       ({
-        context: { sketchDetails, codeManager: providedCodeManager },
+        context: {
+          sketchDetails,
+          codeManager: providedCodeManager,
+          sceneEntitiesManager: providedSceneEntitiesManager,
+          kclManager: providedKclManager,
+        },
         event,
       }) => {
         if (!sketchDetails) return {}
         if (event.type !== 'Add start point') return {}
+        const theSceneEntitiesManager = providedSceneEntitiesManager
+          ? providedSceneEntitiesManager
+          : sceneEntitiesManager
+        const theKclManager = providedKclManager
+          ? providedKclManager
+          : kclManager
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        sceneEntitiesManager
+        theSceneEntitiesManager
           .setupDraftSegment(
             event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
             event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
@@ -720,7 +738,7 @@ export const modelingMachine = setup({
               ? providedCodeManager
               : codeManager
             return theCodeManager.updateEditorWithAstAndWriteToFile(
-              kclManager.ast
+              theKclManager.ast
             )
           })
         return {
@@ -1933,11 +1951,12 @@ export const modelingMachine = setup({
           selectionRanges,
           sketchDetails,
           codeManager: providedCodeManager,
+          wasmInstance,
         },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails' | 'codeManager'
+          'selectionRanges' | 'sketchDetails' | 'codeManager' | 'wasmInstance'
         >
       }) => {
         const constraint = applyConstraintEqualAngle({
@@ -1951,7 +1970,7 @@ export const modelingMachine = setup({
           return
         }
 
-        const recastAst = parse(recast(modifiedAst))
+        const recastAst = parse(recast(modifiedAst, wasmInstance), wasmInstance)
         if (err(recastAst) || !resultIsOk(recastAst)) return
 
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
@@ -2164,9 +2183,9 @@ export const modelingMachine = setup({
       }: {
         input: {
           selectionRanges: Selections
-          kclManager: KclManager
-          engineCommandManager: ConnectionManager
-          sceneEntitiesManager: SceneEntities
+          kclManager?: KclManager
+          engineCommandManager?: ConnectionManager
+          sceneEntitiesManager?: SceneEntities
         }
       }): Promise<ModelingMachineContext['sketchDetails']> => {
         const theKclManager = providedKclManager
@@ -2295,7 +2314,7 @@ export const modelingMachine = setup({
       }: {
         input: Pick<
           ModelingMachineContext,
-          'sketchDetails' | 'selectionRanges' | 'codeManager'
+          'sketchDetails' | 'selectionRanges' | 'codeManager' | 'wasmInstance'
         > & {
           data?: ModelingCommandSchema['Constrain with named value']
         }
@@ -2307,7 +2326,10 @@ export const modelingMachine = setup({
         if (!data) {
           return Promise.reject(new Error('No data from command flow'))
         }
-        let pResult = parse(recast(kclManager.ast))
+        let pResult = parse(
+          recast(kclManager.ast, input.wasmInstance),
+          input.wasmInstance
+        )
         if (trap(pResult) || !resultIsOk(pResult))
           return Promise.reject(new Error('Unexpected compilation error'))
         let parsed = pResult.program
@@ -2338,8 +2360,10 @@ export const modelingMachine = setup({
               insertNamedConstant({
                 node: astAfterReplacement.modifiedAst,
                 newExpression: data.namedValue,
-              })
-            )
+              }),
+              input.wasmInstance
+            ),
+            input.wasmInstance
           )
           result.exprInsertIndex = data.namedValue.insertIndex
 
@@ -2373,7 +2397,10 @@ export const modelingMachine = setup({
           result = astAfterReplacement
         }
 
-        pResult = parse(recast(result.modifiedAst))
+        pResult = parse(
+          recast(result.modifiedAst, input.wasmInstance),
+          input.wasmInstance
+        )
         if (trap(pResult) || !resultIsOk(pResult))
           return Promise.reject(new Error('Unexpected compilation error'))
         parsed = pResult.program
@@ -4394,6 +4421,7 @@ export const modelingMachine = setup({
                 selectionRanges,
                 sketchDetails,
                 codeManager: providedCodeManager,
+                wasmInstance,
               },
               event,
             }) => {
@@ -4409,6 +4437,7 @@ export const modelingMachine = setup({
                 sketchDetails,
                 data: event.data,
                 codeManager: providedCodeManager,
+                wasmInstance,
               }
             },
             onError: 'SketchIdle',
@@ -4580,6 +4609,7 @@ export const modelingMachine = setup({
               selectionRanges: context.selectionRanges,
               sketchDetails: context.sketchDetails,
               codeManager: context.codeManager,
+              wasmInstance: context.wasmInstance,
             }),
             onDone: {
               target: 'SketchIdle',
@@ -5046,7 +5076,6 @@ export const modelingMachine = setup({
 
         input: ({ context }) => ({
           selectionRanges: context.selectionRanges,
-          sketchDetails: context.sketchDetails,
           kclManager: context.kclManager,
           engineCommandManager: context.engineCommandManager,
           sceneEntitiesManager: context.sceneEntitiesManager,

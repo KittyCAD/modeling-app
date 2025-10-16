@@ -15,6 +15,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import EditorManager from '@src/editor/manager'
+import { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -249,6 +250,7 @@ export interface ModelingMachineContext {
   sceneInfra?: SceneInfra
   sceneEntitiesManager?: SceneEntities
   editorManager?: EditorManager
+  wasmInstance?: ModuleType
 }
 
 export type PlaneVisibilityMap = {
