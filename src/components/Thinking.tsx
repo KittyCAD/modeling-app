@@ -348,12 +348,10 @@ const fromDataToComponent = (
       }
       case 'markdown': {
         return (
-          <>
-            <NothingInParticular
-              key={options.key}
-              content={(thought.reasoning as { content: string }).content}
-            />
-          </>
+          <NothingInParticular
+            key={options.key}
+            content={(thought.reasoning as { content: string }).content}
+          />
         )
       }
       case 'kcl_code_examples': {
@@ -481,7 +479,7 @@ export const Thinking = (props: {
   })
 
   if (props.isDone) {
-    componentThoughts.push(<End />)
+    componentThoughts.push(<End key={reasoningThoughts.length} />)
   }
 
   const lastTextualThought = reasoningThoughts.findLast(

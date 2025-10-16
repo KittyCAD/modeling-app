@@ -1517,6 +1517,7 @@ export const modelingMachine = setup({
         sceneEntitiesManager.removeSketchGrid()
         sceneInfra.camControls.syncDirection = 'engineToClient'
         sceneEntitiesManager.resetOverlays()
+        sceneInfra.stop()
       }
     ),
     /* Below are all the do-constrain sketch actors,
@@ -3231,10 +3232,20 @@ export const modelingMachine = setup({
         'Enter sketch': [
           {
             target: 'animating to existing sketch',
+            actions: [
+              () => {
+                sceneInfra.animate()
+              },
+            ],
             guard: 'Selection is on face',
           },
           {
             target: 'Sketch no face',
+            actions: [
+              () => {
+                sceneInfra.animate()
+              },
+            ],
             guard: 'no kcl errors',
           },
         ],
@@ -4986,6 +4997,9 @@ export const modelingMachine = setup({
         'reset sketch metadata',
         'enable copilot',
         'enter modeling mode',
+        () => {
+          sceneInfra.stop()
+        },
       ],
     },
 
