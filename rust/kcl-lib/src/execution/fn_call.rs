@@ -243,13 +243,15 @@ impl FunctionSource {
         // Don't early return until the stack frame is popped!
         self.body.prep_mem(exec_state);
 
-        let op = if self.include_in_feature_tree {
+        let in_stdlib = exec_state.mod_local.inside_stdlib;
+        let op = if !in_stdlib && self.include_in_feature_tree {
             let op_labeled_args = args
                 .labeled
                 .iter()
                 .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                 .collect();
 
+            // If you're calling a stdlib function, track that call as an operation.
             if self.is_std {
                 Some(Operation::StdLibCall {
                     name: fn_name.clone().unwrap_or_else(|| "unknown function".to_owned()),
@@ -262,6 +264,7 @@ impl FunctionSource {
                     is_error: false,
                 })
             } else {
+                // Otherwise, you're calling a user-defined function, track that call as an operation.
                 exec_state.push_op(Operation::GroupBegin {
                     group: Group::FunctionCall {
                         name: fn_name.clone(),
@@ -281,6 +284,15 @@ impl FunctionSource {
             None
         };
 
+        let is_calling_into_stdlib = match &self.body {
+            FunctionBody::Rust(_) => true,
+            FunctionBody::Kcl(_) => self.is_std,
+        };
+
+        let prev_inside_stdlib = std::mem::replace(&mut exec_state.mod_local.inside_stdlib, is_calling_into_stdlib);
+        // Do not early return via ? or something until we've
+        // - put this `prev_inside_stdlib` value back.
+        // - called the pop_env.
         let mut result = match &self.body {
             FunctionBody::Rust(f) => f(exec_state, args).await.map(Some),
             FunctionBody::Kcl(_) => {
@@ -300,7 +312,7 @@ impl FunctionSource {
                     })
             }
         };
-
+        exec_state.mod_local.inside_stdlib = prev_inside_stdlib;
         exec_state.mut_stack().pop_env();
 
         if let Some(mut op) = op {
@@ -311,7 +323,7 @@ impl FunctionSource {
             // return value. The call takes ownership of the args,
             // so we need to build the op before the call.
             exec_state.push_op(op);
-        } else if !self.is_std {
+        } else if !is_calling_into_stdlib && !self.is_std {
             exec_state.push_op(Operation::GroupEnd);
         }
 
