@@ -31,7 +31,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
  * For now we have strict area types but in future
  * we should make it possible to register your own in an extension.
  */
-export const areaTypeRegistry = Object.freeze({
+export const defaultAreaLibrary = Object.freeze({
   featureTree: {
     hide: () => false,
     shortcut: 'Shift + T',
@@ -69,7 +69,11 @@ export const areaTypeRegistry = Object.freeze({
         e.preventDefault()
         setOpenPanes(
           getLayout() || defaultLayout,
-          Array.from(new Set(getOpenPanes()).add(DefaultLayoutPaneID.Code))
+          Array.from(
+            new Set(getOpenPanes({ rootLayout: getLayout() })).add(
+              DefaultLayoutPaneID.Code
+            )
+          )
         )
         editorManager.scrollToFirstErrorDiagnosticIfExists()
       }
@@ -133,7 +137,7 @@ function testArea(name: string): AreaTypeDefinition {
   }
 }
 
-export const testAreaTypeRegistry = Object.freeze({
+export const testAreaLibrary = Object.freeze({
   featureTree: testArea('Feature Tree'),
   modeling: testArea('Modeling Scene'),
   ttc: testArea('TTC'),

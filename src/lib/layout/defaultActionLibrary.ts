@@ -11,7 +11,7 @@ import type { ActionType, ActionTypeDefinition } from '@src/lib/layout/types'
  * For now we have strict action types but in future
  * we should make it possible to register your own in an extension.
  */
-export const actionTypeRegistry = Object.freeze({
+export const defaultActionLibrary = Object.freeze({
   export: {
     useHidden: () => false,
     useDisabled: () => {
@@ -66,4 +66,4 @@ export const actionTypeRegistry = Object.freeze({
       }),
     useHidden: () => !isDesktop(),
   },
-} satisfies Record<ActionType, Action>)
+} satisfies Record<ActionType, ActionTypeDefinition>)

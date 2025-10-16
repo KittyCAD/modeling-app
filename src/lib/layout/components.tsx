@@ -37,10 +37,10 @@ import {
   sideToOrientation,
   orientationToDirection,
   togglePaneLayoutNode,
+  saveLayout,
   shouldDisableFlex,
   defaultLayout,
 } from '@src/lib/layout/utils'
-import { saveLayout } from '@src/lib/layout/save'
 import type {
   IUpdateNodeSizes,
   IReplaceLayoutChildNode,
@@ -55,7 +55,7 @@ import {
 } from '@src/components/ContextMenu'
 import { isArray } from '@src/lib/utils'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 import usePlatform from '@src/hooks/usePlatform'
 
 const ENABLE_CONTEXT_MENUS = false

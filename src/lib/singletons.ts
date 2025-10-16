@@ -70,8 +70,7 @@ import { initPromise } from '@src/lang/wasmUtils'
 // Initialize KCL version
 import { setKclVersion } from '@src/lib/kclVersion'
 import { AppMachineEventType } from '@src/lib/types'
-import { saveLayout } from '@src/lib/layout/save'
-import type { Layout } from '@src/lib/layout/types'
+import { defaultLayout, saveLayout, type Layout } from '@src/lib/layout'
 
 initPromise
   .then(() => {
@@ -160,6 +159,7 @@ const appMachine = setup({
     engineCommandManager: engineCommandManager,
     sceneInfra: sceneInfra,
     sceneEntitiesManager: sceneEntitiesManager,
+    layout: defaultLayout,
   },
   entry: [
     /**
@@ -199,6 +199,12 @@ const appMachine = setup({
       actions: [
         assign({ layout: ({ event }) => event.layout }),
         ({ event }) => saveLayout({ layout: event.layout }),
+      ],
+    },
+    [AppMachineEventType.ResetLayout]: {
+      actions: [
+        assign({ layout: defaultLayout }),
+        ({ context }) => saveLayout({ layout: context.layout }),
       ],
     },
   },

@@ -127,7 +127,7 @@ import {
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
-import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
 import {
   defaultLayout,
   getOpenPanes,
@@ -1305,7 +1305,7 @@ export const ModelingMachineProvider = ({
 
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
-    const openPanes = getOpenPanes()
+    const openPanes = getOpenPanes({ rootLayout: getLayout() })
     if (data.menuLabel === 'View.Panes.Feature tree') {
       const alwaysAddFeatureTree: string[] = [
         ...new Set([...openPanes, DefaultLayoutPaneID.FeatureTree]),

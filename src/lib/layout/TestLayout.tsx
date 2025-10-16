@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { testLayoutConfig } from '@src/lib/layout/configs/test'
 import { loadLayout } from '@src/lib/layout/utils'
 import { LayoutRootNode } from '@src/lib/layout/components'
-import { testAreaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
+import { testAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { isErr } from '@src/lib/trap'
 
 // Attempt to load a persisted layout
@@ -18,7 +18,7 @@ export function TestLayout() {
       getLayout={() => layout}
       setLayout={setLayout}
       layoutName="test"
-      areaLibrary={testAreaTypeRegistry}
+      areaLibrary={testAreaLibrary}
     />
   )
 }

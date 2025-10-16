@@ -1,6 +1,6 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
-import type { MouseEventHandler } from 'react'
 import type { SidebarCssOverrides } from '@src/components/ModelingSidebar/ModelingPanes'
+import type { MouseEventHandler } from 'react'
 
 export enum AreaType {
   TTC = 'ttc',

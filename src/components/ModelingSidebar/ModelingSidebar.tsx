@@ -36,7 +36,7 @@ import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import usePlatform from '@src/hooks/usePlatform'
 import { useKclContext } from '@src/lang/KclProvider'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
-import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   getLayout,
@@ -178,7 +178,9 @@ export function ModelingSidebarRight() {
       return
     }
 
-    const newPanes = new Set(getOpenPanes().concat('text-to-cad'))
+    const newPanes = new Set(
+      getOpenPanes({ rootLayout: getLayout() }).concat('text-to-cad')
+    )
 
     setOpenPanes(
       structuredClone(getLayout() || defaultLayout),
@@ -293,7 +295,7 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
     if (panesToReset.length > 0) {
       setOpenPanes(
         structuredClone(getLayout() || defaultLayout),
-        getOpenPanes().filter(
+        getOpenPanes({ rootLayout: getLayout() }).filter(
           (pane) => !(panesToReset as string[]).includes(pane)
         )
       )

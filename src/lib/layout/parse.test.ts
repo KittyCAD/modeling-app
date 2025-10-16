@@ -5,7 +5,7 @@ import type {
   PaneLayout,
   SimpleLayout,
 } from '@src/lib/layout/types'
-import { AreaType, LayoutType } from '@src/lib/layout/types'
+import { ActionType, AreaType, LayoutType } from '@src/lib/layout/types'
 import { parseLayoutInner, parseAction } from '@src/lib/layout/parse'
 import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import { testLayoutConfig } from '@src/lib/layout/configs/test'
@@ -33,7 +33,7 @@ const validAction = {
   id: crypto.randomUUID(),
   label: 'Test action',
   icon: 'refresh',
-  actionType: 'refreshApp',
+  actionType: ActionType.Refresh,
 } satisfies Action
 
 const validPaneLayout = {

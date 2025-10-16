@@ -62,10 +62,13 @@ import {
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
-import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
-import { useToggleDebugPaneVisibility } from '@src/lib/layout/utils'
-import { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
-import { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
+import {
+  defaultLayout,
+  LayoutRootNode,
+  useToggleDebugPaneVisibility,
+} from '@src/lib/layout'
+import { defaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
+import { defaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -74,8 +77,6 @@ if (window.electron) {
 }
 
 export function App() {
-  const layout = useLayout()
-  useToggleDebugPaneVisibility()
   const { state: modelingState } = useModelingContext()
   useQueryParamEffects()
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -105,6 +106,8 @@ export function App() {
 
   const settings = useSettings()
   const authToken = useToken()
+  const layout = useLayout()
+  useToggleDebugPaneVisibility({ rootLayout: layout, settings, setLayout })
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -271,8 +274,8 @@ export function App() {
             layout={layout || defaultLayout}
             getLayout={getLayout}
             setLayout={setLayout}
-            areaLibrary={areaTypeRegistry}
-            actionLibrary={actionTypeRegistry}
+            areaLibrary={defaultAreaLibrary}
+            actionLibrary={defaultActionLibrary}
           />
         </section>
         {/* <CamToggle /> */}

@@ -1,6 +1,7 @@
 import type {
   Direction,
   Layout,
+  LayoutWithMetadata,
   Orientation,
   PaneLayout,
   Side,
@@ -8,7 +9,7 @@ import type {
 } from '@src/lib/layout/types'
 import { LayoutType } from '@src/lib/layout/types'
 import type React from 'react'
-import { capitaliseFC } from '@src/lib/utils'
+import { capitaliseFC, throttle } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
 import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
 import {
@@ -21,13 +22,8 @@ import {
 import { isErr } from '@src/lib/trap'
 import { parseLayoutFromJsonString } from '@src/lib/layout/parse'
 import { useEffect } from 'react'
-import {
-  getLayout,
-  setLayout,
-  useLayout,
-  useSettings,
-} from '@src/lib/singletons'
-import { LAYOUT_PERSIST_PREFIX } from '@src/lib/constants'
+import { LAYOUT_PERSIST_PREFIX, LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 
 // Attempt to load a persisted layout
 const defaultLayoutLoadResult = loadLayout('default')
@@ -280,6 +276,27 @@ export function loadLayout(id: string): Layout | Error {
   return parseLayoutFromJsonString(layoutString)
 }
 
+interface ISaveLayout {
+  layout: Layout
+  layoutName?: string
+  saveFn?: (key: string, value: string) => void | Promise<void>
+}
+
+/**
+ * Wrap the layout data in a versioned object
+ * and save it to persisted storage.
+ */
+function saveLayoutInner({ layout, layoutName = 'default' }: ISaveLayout) {
+  return localStorage.setItem(
+    `${LAYOUT_PERSIST_PREFIX}${layoutName}`,
+    JSON.stringify({
+      version: 'v1',
+      layout,
+    } satisfies LayoutWithMetadata)
+  )
+}
+export const saveLayout = throttle(saveLayoutInner, LAYOUT_SAVE_THROTTLE)
+
 /**
  * Have the panes not been resized at all, just divided evenly?
  * @example - [25, 25, 25, 25] --> true
@@ -530,9 +547,15 @@ export function togglePaneLayoutNode({
  *
  * TODO: move the state for the layout higher up and do this listening work somewhere else.
  */
-export function useToggleDebugPaneVisibility() {
-  const rootLayout = useLayout()
-  const settings = useSettings()
+export function useToggleDebugPaneVisibility({
+  rootLayout,
+  settings,
+  setLayout,
+}: {
+  rootLayout: Layout
+  settings: SettingsType
+  setLayout: (l: Layout) => void
+}) {
   const showDebugPane = settings.app.showDebugPanel.current
   return useEffect(() => {
     if (!rootLayout) {
@@ -559,11 +582,10 @@ export function useToggleDebugPaneVisibility() {
       leftSidebar.children.splice(debugChildPaneIndex, 1)
       setLayout(structuredClone(rootLayout))
     }
-  }, [showDebugPane, rootLayout])
+  }, [showDebugPane, rootLayout, setLayout])
 }
 
-export function getOpenPanes(): string[] {
-  const rootLayout = getLayout()
+export function getOpenPanes({ rootLayout }: { rootLayout: Layout }): string[] {
   if (!rootLayout) {
     return []
   }

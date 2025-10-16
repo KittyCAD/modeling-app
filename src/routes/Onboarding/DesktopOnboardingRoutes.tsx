@@ -26,7 +26,7 @@ import {
 } from '@src/routes/Onboarding/utils'
 import { useEffect, useState } from 'react'
 import { type RouteObject, useRouteLoaderData } from 'react-router-dom'
-import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths

@@ -40,8 +40,11 @@ import { settingsActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
-import type { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import { defaultLayout, setOpenPanes } from '@src/lib/layout/utils'
+import {
+  defaultLayout,
+  setOpenPanes,
+  type DefaultLayoutPaneID,
+} from '@src/lib/layout'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'

@@ -27,7 +27,7 @@ import {
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { useEffect, useState } from 'react'
 import { type RouteObject, useRouteLoaderData } from 'react-router-dom'
-import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
 
 type BrowserOnboaringRoute = RouteObject & {
   path: keyof typeof browserOnboardingPaths

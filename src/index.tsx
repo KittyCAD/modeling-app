@@ -20,8 +20,6 @@ import {
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
-import { AppMachineEventType } from '@src/lib/types'
-import { defaultLayout } from '@src/lib/layout'
 
 markOnce('code/willAuth')
 initializeWindowExceptionHandler()
@@ -31,10 +29,6 @@ initializeWindowExceptionHandler()
 initPromise
   .then(() => {
     appActor.start()
-    appActor.send({
-      type: AppMachineEventType.SetLayout,
-      layout: defaultLayout,
-    })
     // Application commands must be created after the initPromise because
     // it calls WASM functions to file extensions, this dependency is not available during initialization, it is an async dependency
     commandBarActor.send({
