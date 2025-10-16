@@ -8,7 +8,7 @@ import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
 
 describe('getSweepArtifactFromSelection', () => {
-  it('should return sweep from edgeCut selection', () => {
+  it('should return sweep from edgeCut -> segment selection', () => {
     const artifactGraph: ArtifactGraph = new Map()
 
     // Create path -> sweep -> segment -> edgeCut chain
@@ -64,6 +64,65 @@ describe('getSweepArtifactFromSelection', () => {
     artifactGraph.set('path-1', path)
     artifactGraph.set('sweep-1', sweep)
     artifactGraph.set('segment-1', segment)
+    artifactGraph.set('edge-cut-1', edgeCut)
+
+    const selection: Selection = {
+      artifact: edgeCut,
+      codeRef: { range: [0, 0, 0], pathToNode: [] },
+    }
+
+    const result = getSweepArtifactFromSelection(selection, artifactGraph)
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect('type' in result ? result.type : undefined).toBe('sweep')
+      expect(result.id).toBe('sweep-1')
+    }
+  })
+
+  it('should return sweep from edgeCut -> sweepEdge selection', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+
+    // Create sweep -> sweepEdge -> edgeCut chain
+    const sweep: Artifact = {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        range: [0, 0, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: ['sweep-edge-1'],
+    }
+
+    const sweepEdge: Artifact = {
+      type: 'sweepEdge',
+      id: 'sweep-edge-1',
+      subType: 'opposite',
+      sweepId: 'sweep-1',
+      segId: 'segment-1',
+      cmdId: 'cmd-1',
+      commonSurfaceIds: [],
+    }
+
+    const edgeCut: Artifact = {
+      type: 'edgeCut',
+      id: 'edge-cut-1',
+      consumedEdgeId: 'sweep-edge-1', // Points to sweepEdge, not segment
+      subType: 'fillet',
+      edgeIds: [],
+      codeRef: {
+        range: [0, 0, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+
+    artifactGraph.set('sweep-1', sweep)
+    artifactGraph.set('sweep-edge-1', sweepEdge)
     artifactGraph.set('edge-cut-1', edgeCut)
 
     const selection: Selection = {
