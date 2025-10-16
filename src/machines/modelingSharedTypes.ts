@@ -18,6 +18,7 @@ import type EditorManager from '@src/editor/manager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { kclEditorMachine } from './kclEditorMachine'
 import { ActorRefFrom } from 'xstate'
+import RustContext from '@src/lib/rustContext'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -40,46 +41,46 @@ export type Selections = {
 
 export type SetSelections =
   | {
-      selectionType: 'singleCodeCursor'
-      selection?: Selection
-      scrollIntoView?: boolean
-    }
+    selectionType: 'singleCodeCursor'
+    selection?: Selection
+    scrollIntoView?: boolean
+  }
   | {
-      selectionType: 'axisSelection'
-      selection: Axis
-    }
+    selectionType: 'axisSelection'
+    selection: Axis
+  }
   | {
-      selectionType: 'defaultPlaneSelection'
-      selection: DefaultPlaneSelection
-    }
+    selectionType: 'defaultPlaneSelection'
+    selection: DefaultPlaneSelection
+  }
   | {
-      selectionType: 'completeSelection'
-      selection: Selections
-      updatedSketchEntryNodePath?: PathToNode
-      updatedSketchNodePaths?: PathToNode[]
-      updatedPlaneNodePath?: PathToNode
-    }
+    selectionType: 'completeSelection'
+    selection: Selections
+    updatedSketchEntryNodePath?: PathToNode
+    updatedSketchNodePaths?: PathToNode[]
+    updatedPlaneNodePath?: PathToNode
+  }
   | {
-      selectionType: 'mirrorCodeMirrorSelections'
-      selection: Selections
-    }
+    selectionType: 'mirrorCodeMirrorSelections'
+    selection: Selections
+  }
 
 export type MouseState =
   | {
-      type: 'idle'
-    }
+    type: 'idle'
+  }
   | {
-      type: 'isHovering'
-      on: any
-    }
+    type: 'isHovering'
+    on: any
+  }
   | {
-      type: 'isDragging'
-      on: any
-    }
+    type: 'isDragging'
+    on: any
+  }
   | {
-      type: 'timeoutEnd'
-      pathToNodeString: string
-    }
+    type: 'timeoutEnd'
+    pathToNodeString: string
+  }
 
 export interface SketchDetails {
   // there is no artifactGraph in sketch mode, so this is only used as vital information when entering sketch mode
@@ -137,11 +138,11 @@ export type ExtrudeFacePlane = {
   sketchPathToNode: PathToNode
   extrudePathToNode: PathToNode
   faceInfo:
-    | {
-        type: 'wall'
-      }
-    | CapInfo
-    | EdgeCutInfo
+  | {
+    type: 'wall'
+  }
+  | CapInfo
+  | EdgeCutInfo
   faceId: string
   zAxis: [number, number, number]
   yAxis: [number, number, number]
@@ -167,19 +168,19 @@ export type OffsetPlane = {
 
 export type SegmentOverlayPayload =
   | {
-      type: 'set-one'
-      pathToNodeString: string
-      seg: SegmentOverlay[]
-    }
+    type: 'set-one'
+    pathToNodeString: string
+    seg: SegmentOverlay[]
+  }
   | {
-      type: 'delete-one'
-      pathToNodeString: string
-    }
+    type: 'delete-one'
+    pathToNodeString: string
+  }
   | { type: 'clear' }
   | {
-      type: 'set-many'
-      overlays: SegmentOverlays
-    }
+    type: 'set-many'
+    overlays: SegmentOverlays
+  }
 
 export interface Store {
   videoElement?: HTMLVideoElement
@@ -254,6 +255,7 @@ export interface ModelingMachineContext {
   editorManager?: EditorManager
   wasmInstance?: ModuleType
   kclEditorMachine?: ActorRefFrom<typeof kclEditorMachine>
+  rustContext?: RustContext
 }
 
 export type PlaneVisibilityMap = {

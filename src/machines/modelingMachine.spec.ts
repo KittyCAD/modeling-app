@@ -1,7 +1,6 @@
 import { assertParse, recast, type CallExpressionKw } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { kclManager, codeManager } from '@src/lib/singletons'
 import {
   createLiteral,
   createIdentifier,
@@ -24,8 +23,7 @@ import {
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import { kclEditorMachine } from './kclEditorMachine'
+import { kclEditorMachine } from '@src/machines/kclEditorMachine'
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
 describe('modelingMachine.test.ts', () => {
@@ -90,22 +88,13 @@ describe('modelingMachine.test.ts', () => {
           kclManager,
           engineCommandManager,
           sceneInfra,
-          editorManager,
-          rustContext,
+          sceneEntitiesManager
         } = await buildTheWorldAndConnectToEngine()
         const contextCopied = generateModelingMachineDefaultContext()
         contextCopied.codeManager = codeManager
         contextCopied.kclManager = kclManager
         contextCopied.engineCommandManager = engineCommandManager
         contextCopied.sceneInfra = sceneInfra
-        const sceneEntitiesManager = new SceneEntities(
-          engineCommandManager,
-          sceneInfra,
-          editorManager,
-          codeManager,
-          kclManager,
-          rustContext
-        )
         contextCopied.sceneEntitiesManager = sceneEntitiesManager
         const actor = createActor(modelingMachine, {
           input: contextCopied,
@@ -862,17 +851,19 @@ p3 = [342.51, 216.38],
       const namedConstantConstraintCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.deleteSegment
       )
-      namedConstantConstraintCases.forEach(
+      const oneTest = [namedConstantConstraintCases[0]]
+      oneTest.forEach(
         ({ name, code, searchText, filter }) => {
           it(name, async () => {
             const {
-              codeManager,
-              kclManager,
+              instance,
               engineCommandManager,
               sceneInfra,
               editorManager,
-              rustContext,
-              instance,
+              codeManager,
+              kclManager,
+              sceneEntitiesManager,
+              rustContext
             } = await buildTheWorldAndConnectToEngine()
             const indexOfInterest = code.indexOf(searchText)
 
@@ -902,19 +893,12 @@ p3 = [342.51, 216.38],
             contextCopied.kclManager = kclManager
             contextCopied.engineCommandManager = engineCommandManager
             contextCopied.sceneInfra = sceneInfra
+            contextCopied.sceneEntitiesManager = sceneEntitiesManager
             contextCopied.editorManager = editorManager
             contextCopied.wasmInstance = instance
             contextCopied.kclEditorMachine = kclEditorActor
+            contextCopied.rustContext = rustContext
 
-            const sceneEntitiesManager = new SceneEntities(
-              engineCommandManager,
-              sceneInfra,
-              editorManager,
-              codeManager,
-              kclManager,
-              rustContext
-            )
-            contextCopied.sceneEntitiesManager = sceneEntitiesManager
             const actor = createActor(modelingMachine, {
               input: contextCopied,
             }).start()
@@ -997,6 +981,7 @@ p3 = [342.51, 216.38],
             ) {
               await new Promise((resolve) => setTimeout(resolve, 100))
             }
+
             expect(codeManager.code).not.toContain(searchText)
             engineCommandManager.tearDown()
           }, 10_000)

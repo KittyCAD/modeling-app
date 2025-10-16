@@ -19,6 +19,7 @@ import CodeManager from '@src/lang/codeManager'
 import { KclManager } from '@src/lang/KclSingleton'
 import { reportRejection } from '@src/lib/trap'
 import env from '@src/env'
+import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -74,6 +75,14 @@ export async function buildTheWorldAndConnectToEngine() {
   engineCommandManager.codeManager = codeManager
   engineCommandManager.sceneInfra = sceneInfra
   engineCommandManager.rustContext = rustContext
+  const sceneEntitiesManager = new SceneEntities(
+    engineCommandManager,
+    sceneInfra,
+    editorManager,
+    codeManager,
+    kclManager,
+    rustContext
+  )
   await new Promise((resolve) => {
     engineCommandManager
       .start({
@@ -97,6 +106,7 @@ export async function buildTheWorldAndConnectToEngine() {
     editorManager,
     codeManager,
     kclManager,
+    sceneEntitiesManager
   }
 }
 

@@ -13,6 +13,7 @@ import { bracket } from '@src/lib/exampleKcl'
 import { isDesktop } from '@src/lib/isDesktop'
 import { err, reportRejection } from '@src/lib/trap'
 import type EditorManager from '@src/editor/manager'
+import { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const PERSIST_CODE_KEY = 'persistCode'
 
@@ -21,7 +22,7 @@ export const codeManagerUpdateEvent = codeManagerUpdateAnnotation.of(true)
 
 export default class CodeManager {
   private _code: string = bracket
-  #updateState: (arg: string) => void = () => {}
+  #updateState: (arg: string) => void = () => { }
   private _currentFilePath: string | null = null
   private _hotkeys: { [key: string]: () => void } = {}
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
@@ -174,7 +175,8 @@ export default class CodeManager {
 
   async updateEditorWithAstAndWriteToFile(
     ast: Program,
-    options?: Partial<{ isDeleting: boolean }>
+    options?: Partial<{ isDeleting: boolean }>,
+    wasmInstance?: ModuleType
   ) {
     // We clear the AST when it cannot be parsed. If we are trying to write an
     // empty AST, it's probably because of an earlier error. That's a bad state
@@ -182,11 +184,11 @@ export default class CodeManager {
     // permanently delete the user's code accidentally.
     // if you want to clear the scene, pass in the `isDeleting` option.
     if (ast.body.length === 0 && !options?.isDeleting) return
-    const newCode = recast(ast)
+    const newCode = recast(ast, wasmInstance)
     if (err(newCode)) return
     // Test to see if we can parse the recast code, and never update the editor with bad code.
     // This should never happen ideally and should mean there is a bug in recast.
-    const result = parse(newCode)
+    const result = parse(newCode, wasmInstance)
     if (err(result)) {
       console.log('Recast code could not be parsed:', result, ast)
       return
