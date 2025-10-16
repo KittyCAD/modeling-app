@@ -165,6 +165,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           { kclManager, editorManager, codeManager, rustContext },
           {
             focusPath: [pathToNode],
+            skipErrorsOnMockExecution: true,
           }
         ).catch(reportRejection)
       },

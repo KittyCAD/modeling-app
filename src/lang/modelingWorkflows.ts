@@ -58,6 +58,7 @@ export async function updateModelingState(
   options?: {
     focusPath?: Array<PathToNode>
     isDeleting?: boolean
+    skipErrorsOnMockExecution?: boolean
   }
 ): Promise<void> {
   let updatedAst: {
@@ -70,7 +71,7 @@ export async function updateModelingState(
     ast,
     rustContext: dependencies.rustContext,
   })
-  if (errors.length > 0) {
+  if (errors.length > 0 && !options?.skipErrorsOnMockExecution) {
     return Promise.reject(new Error(errors.map((e) => e.message).join('\n')))
   }
 
