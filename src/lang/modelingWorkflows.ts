@@ -73,7 +73,7 @@ export async function updateModelingState(
   })
   if (errors.length > 0) {
     return Promise.reject(
-      new Error(JSON.stringify(errors.map((e) => e.message)))
+      new Error(errors.map((e) => e.message).join('\n'))
     )
   }
 
