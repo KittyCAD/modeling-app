@@ -4,13 +4,9 @@ import {
   type CodeRef,
   recast,
 } from '@src/lang/wasm'
-import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import {
-  buildTheWorldAndConnectToEngine,
-  buildTheWorldAndNoEngineConnection,
-} from '@src/unitTestUtils'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclSingleton'

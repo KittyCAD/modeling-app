@@ -820,7 +820,9 @@ p3 = [342.51, 216.38],
           },
           {
             name: 'should un-constrain threePoint Arc interior y value',
-            ...makeStraightSegmentSnippet(),
+            ...makeStraightSegmentSnippet(
+              'arc(interiorAbsolute = [testVar1, testVar2], endAbsolute = [testVar3, testVar4])'
+            ),
             constraintIndex: 1,
             expectedResult: 'interiorAbsolute = [testVar1, 66]',
             filter: ARG_INTERIOR_ABSOLUTE,

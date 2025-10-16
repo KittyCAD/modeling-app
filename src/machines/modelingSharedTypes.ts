@@ -14,8 +14,8 @@ import type { KclManager } from '@src/lang/KclSingleton'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import EditorManager from '@src/editor/manager'
-import { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type EditorManager from '@src/editor/manager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 

@@ -447,8 +447,15 @@ export const modelingMachine = setup({
       const theKclManager = context.kclManager ? context.kclManager : kclManager
       return !theKclManager.hasErrors()
     },
-    'is editing existing sketch': ({ context: { sketchDetails } }) =>
-      isEditingExistingSketch({ sketchDetails }),
+    'is editing existing sketch': ({
+      context: { sketchDetails, kclManager: providedKclManager },
+    }) => {
+      const theKclManager = providedKclManager ? providedKclManager : kclManager
+      return isEditingExistingSketch({
+        sketchDetails,
+        kclManager: theKclManager,
+      })
+    },
     'Can make selection horizontal': ({ context: { selectionRanges } }) => {
       const info = horzVertInfo(selectionRanges, 'horizontal')
       if (err(info)) return false
@@ -603,10 +610,15 @@ export const modelingMachine = setup({
       if (err(isSafeRetVal)) return false
       return isSafeRetVal.isSafe
     },
-    'next is tangential arc': ({ context: { sketchDetails, currentTool } }) =>
-      currentTool === 'tangentialArc' &&
-      isEditingExistingSketch({ sketchDetails }),
-
+    'next is tangential arc': ({
+      context: { sketchDetails, currentTool, kclManager: providedKclManager },
+    }) => {
+      const theKclManager = providedKclManager ? providedKclManager : kclManager
+      return (
+        currentTool === 'tangentialArc' &&
+        isEditingExistingSketch({ sketchDetails, kclManager: theKclManager })
+      )
+    },
     'next is rectangle': ({ context: { currentTool } }) =>
       currentTool === 'rectangle',
     'next is center rectangle': ({ context: { currentTool } }) =>
@@ -840,7 +852,7 @@ export const modelingMachine = setup({
 
       theSceneInfra.setCallbacks({
         onMove: (args) => {
-          listenForOriginMove(args, sketchDetails)
+          listenForOriginMove(args, sketchDetails, theSceneEntitiesManager)
         },
         onClick: (args) => {
           theSceneEntitiesManager.removeDraftPoint()
@@ -890,7 +902,7 @@ export const modelingMachine = setup({
 
       theSceneInfra.setCallbacks({
         onMove: (args) => {
-          listenForOriginMove(args, sketchDetails)
+          listenForOriginMove(args, sketchDetails, theSceneEntitiesManager)
         },
         onClick: (args) => {
           theSceneEntitiesManager.removeDraftPoint()
@@ -940,7 +952,7 @@ export const modelingMachine = setup({
 
       theSceneInfra.setCallbacks({
         onMove: (args) => {
-          listenForOriginMove(args, sketchDetails)
+          listenForOriginMove(args, sketchDetails, theSceneEntitiesManager)
         },
         onClick: (args) => {
           if (!args) return
@@ -990,7 +1002,7 @@ export const modelingMachine = setup({
 
       theSceneInfra.setCallbacks({
         onMove: (args) => {
-          listenForOriginMove(args, sketchDetails)
+          listenForOriginMove(args, sketchDetails, theSceneEntitiesManager)
         },
         onClick: (args) => {
           if (!args) return
@@ -1001,7 +1013,7 @@ export const modelingMachine = setup({
           if (twoD) {
             theSceneInfra.modelingSend({
               type: 'Add first point',
-              data: sceneEntitiesMtheSceneEntitiesManageranager.getSnappedDragPoint(
+              data: theSceneEntitiesManager.getSnappedDragPoint(
                 twoD,
                 args.intersects,
                 args.mouseEvent
@@ -1056,7 +1068,7 @@ export const modelingMachine = setup({
 
       theSceneInfra.setCallbacks({
         onMove: (args) => {
-          listenForOriginMove(args, sketchDetails)
+          listenForOriginMove(args, sketchDetails, theSceneEntitiesManager)
         },
         onClick: (args) => {
           if (!args) return
@@ -6022,7 +6034,8 @@ export const modelingMachine = setup({
 
 function listenForOriginMove(
   args: OnMoveCallbackArgs,
-  sketchDetails: SketchDetails
+  sketchDetails: SketchDetails,
+  sceneEntitiesManager: SceneEntities
 ) {
   if (!args) return
   const { intersectionPoint } = args
@@ -6046,8 +6059,10 @@ function listenForOriginMove(
 
 export function isEditingExistingSketch({
   sketchDetails,
+  kclManager,
 }: {
   sketchDetails: SketchDetails | null
+  kclManager: KclManager
 }): boolean {
   // should check that the variable declaration is a pipeExpression
   // and that the pipeExpression contains a "startProfile" callExpression
@@ -6091,8 +6106,10 @@ export function isEditingExistingSketch({
 
 export function pipeHasCircle({
   sketchDetails,
+  kclManager,
 }: {
   sketchDetails: SketchDetails | null
+  kclManager: KclManager
 }): boolean {
   if (!sketchDetails?.sketchEntryNodePath) return false
   const variableDeclaration = getNodeFromPath<VariableDeclarator>(
