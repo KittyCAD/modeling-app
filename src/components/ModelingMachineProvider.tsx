@@ -1264,6 +1264,7 @@ export const ModelingMachineProvider = ({
                 kclManager,
                 editorManager,
                 codeManager,
+                rustContext,
               })
             }
             return {
