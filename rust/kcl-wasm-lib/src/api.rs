@@ -1,5 +1,6 @@
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_api::{Error, File, FileId, LifecycleApi, ProjectId};
+use kcl_api::sketch::{SegmentCtor, SketchApi, SketchApiStub};
+use kcl_api::{Error, File, FileId, LifecycleApi, ObjectId, ProjectId, Version};
 use wasm_bindgen::prelude::*;
 
 use crate::Context;
@@ -70,5 +71,28 @@ impl Context {
             .refresh(ProjectId(project))
             .await
             .map_err(|e: Error| JsValue::from_serde(&e).unwrap())
+    }
+
+    #[wasm_bindgen]
+    pub async fn add_segment(
+        &self,
+        version: usize,
+        sketch: usize,
+        segment: &str,
+        label: Option<String>,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let segment: SegmentCtor = serde_json::from_str(segment)
+            .map_err(|e| JsValue::from_serde(&Error::deserialize("segment", e)).unwrap())?;
+
+        // For now, use the stub implementation
+        let sketch_api = SketchApiStub;
+        let result = sketch_api
+            .add_segment(Version(version), ObjectId(sketch), segment, label)
+            .await
+            .map_err(|e: Error| JsValue::from_serde(&e).unwrap())?;
+
+        Ok(JsValue::from_str(&serde_json::to_string(&result).unwrap()))
     }
 }
