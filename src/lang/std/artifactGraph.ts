@@ -526,22 +526,12 @@ export function getSweepArtifactFromSelection(
     )
     if (err(segOrEdge)) return segOrEdge
 
-    // If it's a segment, traverse through path to get sweep
-    if (segOrEdge.type === 'segment') {
-      const path = getArtifactOfTypes(
-        { key: segOrEdge.pathId, types: ['path'] },
-        artifactGraph
-      )
-      if (err(path)) return path
-      if (!path.sweepId) return new Error('Path does not have a sweepId')
-      return getArtifactOfTypes(
-        { key: path.sweepId, types: ['sweep'] },
-        artifactGraph
-      )
-    }
-    // Otherwise it's a sweepEdge, get sweep directly
-    return getArtifactOfTypes(
-      { key: segOrEdge.sweepId, types: ['sweep'] },
+    // Recursively resolve segment or sweepEdge to sweep
+    return getSweepArtifactFromSelection(
+      {
+        artifact: segOrEdge,
+        codeRef: selection.codeRef,
+      },
       artifactGraph
     )
   }
