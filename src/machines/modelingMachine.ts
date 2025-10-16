@@ -2523,7 +2523,11 @@ export const modelingMachine = setup({
       }: {
         input: Pick<
           ModelingMachineContext,
-          'sketchDetails' | 'selectionRanges' | 'codeManager' | 'wasmInstance'
+          | 'sketchDetails'
+          | 'selectionRanges'
+          | 'codeManager'
+          | 'wasmInstance'
+          | 'kclManager'
         > & {
           data?: ModelingCommandSchema['Constrain with named value']
         }
@@ -2535,8 +2539,9 @@ export const modelingMachine = setup({
         if (!data) {
           return Promise.reject(new Error('No data from command flow'))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
         let pResult = parse(
-          recast(kclManager.ast, input.wasmInstance),
+          recast(theKclManager.ast, input.wasmInstance),
           input.wasmInstance
         )
         if (trap(pResult) || !resultIsOk(pResult))
@@ -2749,8 +2754,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const { ast } = kclManager
+        const { ast } = theKclManager
         const astResult = addExtrude({
           ast,
           ...input.data,
@@ -2763,7 +2769,6 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -2797,8 +2802,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const { ast } = kclManager
+        const { ast } = theKclManager
         const astResult = addSweep({
           ...input.data,
           ast,
@@ -2811,7 +2817,6 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -2845,8 +2850,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-
-        const { ast } = kclManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const { ast } = theKclManager
         const astResult = addLoft({ ast, ...input.data })
         if (err(astResult)) {
           return Promise.reject(astResult)
@@ -2856,7 +2861,7 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
+
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -2890,8 +2895,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const { ast } = kclManager
+        const { ast } = theKclManager
         const astResult = addRevolve({
           ast,
           ...input.data,
@@ -2904,7 +2910,6 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -2938,8 +2943,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const { ast, artifactGraph, variables } = kclManager
+        const { ast, artifactGraph, variables } = theKclManager
         const astResult = addOffsetPlane({
           ...input.data,
           ast,
@@ -2954,7 +2960,6 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -2988,8 +2993,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const { ast, artifactGraph } = kclManager
+        const { ast, artifactGraph } = theKclManager
         const astResult = addHelix({
           ...input.data,
           ast,
@@ -3003,7 +3009,6 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3037,8 +3042,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const { ast, artifactGraph } = kclManager
+        const { ast, artifactGraph } = theKclManager
         const astResult = addShell({
           ...input.data,
           ast,
@@ -3052,7 +3058,6 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3087,9 +3092,10 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
         // Extract inputs
-        const ast = kclManager.ast
+        const ast = theKclManager.ast
         let modifiedAst = structuredClone(ast)
         let focusPath: PathToNode[] = []
         const { nodeToEdit, selection, radius } = input.data
@@ -3102,7 +3108,6 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3128,7 +3133,7 @@ export const modelingMachine = setup({
           // to get the edgeCut artifact from the selection
           const firstSelection = selection.graphSelections[0]
           const edgeCutArtifact = Array.from(
-            kclManager.artifactGraph.values()
+            theKclManager.artifactGraph.values()
           ).find(
             (artifact) =>
               artifact.type === 'edgeCut' &&
@@ -3201,7 +3206,9 @@ export const modelingMachine = setup({
         }
 
         // Extract inputs
-        const ast = kclManager.ast
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+
+        const ast = theKclManager.ast
         let modifiedAst = structuredClone(ast)
         let focusPath: PathToNode[] = []
         const { nodeToEdit, selection, length } = input.data
@@ -3213,7 +3220,6 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3239,7 +3245,7 @@ export const modelingMachine = setup({
           // to get the edgeCut artifact from the selection
           const firstSelection = selection.graphSelections[0]
           const edgeCutArtifact = Array.from(
-            kclManager.artifactGraph.values()
+            theKclManager.artifactGraph.values()
           ).find(
             (artifact) =>
               artifact.type === 'edgeCut' &&
@@ -3337,8 +3343,8 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-
-        const ast = kclManager.ast
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const ast = theKclManager.ast
         const artifactGraph = kclManager.artifactGraph
         const result = addAppearance({
           ...input.data,
@@ -3351,7 +3357,6 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3385,8 +3390,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const ast = kclManager.ast
+        const ast = theKclManager.ast
         const artifactGraph = kclManager.artifactGraph
         const result = addTranslate({
           ...input.data,
@@ -3399,7 +3405,6 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3434,8 +3439,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const ast = kclManager.ast
+        const ast = theKclManager.ast
         const artifactGraph = kclManager.artifactGraph
         const result = addRotate({
           ...input.data,
@@ -3449,7 +3455,6 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3484,9 +3489,10 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const ast = theKclManager.ast
+        const artifactGraph = theKclManager.artifactGraph
         const result = addScale({
           ...input.data,
           ast,
@@ -3499,7 +3505,6 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3533,9 +3538,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const ast = theKclManager.ast
+        const artifactGraph = theKclManager.artifactGraph
         const result = addClone({
           ...input.data,
           ast,
@@ -3547,7 +3552,6 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3595,9 +3599,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const ast = theKclManager.ast
+        const artifactGraph = theKclManager.artifactGraph
         const result = addSubtract({
           ...input.data,
           ast,
@@ -3609,7 +3613,7 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
+
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3643,9 +3647,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const ast = theKclManager.ast
+        const artifactGraph = theKclManager.artifactGraph
         const result = addUnion({
           ...input.data,
           ast,
@@ -3657,7 +3661,7 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
+
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3691,9 +3695,10 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const ast = theKclManager.ast
+        const artifactGraph = theKclManager.artifactGraph
         const result = addIntersect({
           ...input.data,
           ast,
@@ -3705,7 +3710,6 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3740,9 +3744,9 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const ast = theKclManager.ast
+        const artifactGraph = theKclManager.artifactGraph
         const result = addPatternCircular3D({
           ...input.data,
           ast,
@@ -3754,7 +3758,7 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
+
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3789,9 +3793,10 @@ export const modelingMachine = setup({
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const ast = kclManager.ast
-        const artifactGraph = kclManager.artifactGraph
+        const ast = theKclManager.ast
+        const artifactGraph = theKclManager.artifactGraph
         const result = addPatternLinear3D({
           ...input.data,
           ast,
@@ -3803,7 +3808,6 @@ export const modelingMachine = setup({
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
-        const theKclManager = input.kclManager ? input.kclManager : kclManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
@@ -3825,18 +3829,21 @@ export const modelingMachine = setup({
     /* Pierre: looks like somewhat of a one-off */
     'reeval-node-paths': fromPromise(
       async ({
-        input: { sketchDetails },
+        input: { sketchDetails, kclManager: providedKclManager },
       }: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'>
+        input: Pick<ModelingMachineContext, 'sketchDetails' | 'kclManager'>
       }) => {
         const errorMessage =
           'Unable to maintain sketch mode - code changes affected sketch references. Please re-enter.'
         if (!sketchDetails) {
           return Promise.reject(new Error(errorMessage))
         }
+        const theKclManager = providedKclManager
+          ? providedKclManager
+          : kclManager
 
         // hasErrors is for parse errors, errors is for runtime errors
-        if (kclManager.errors.length > 0 || kclManager.hasErrors()) {
+        if (theKclManager.errors.length > 0 || theKclManager.hasErrors()) {
           // if there's an error in the execution, we don't actually want to disable sketch mode
           // instead we'll give the user the chance to fix their error
           return {
@@ -3847,25 +3854,25 @@ export const modelingMachine = setup({
         }
 
         const updatedPlaneNodePath = updatePathToNodesAfterEdit(
-          kclManager._lastAst,
-          kclManager.ast,
+          theKclManager._lastAst,
+          theKclManager.ast,
           sketchDetails.planeNodePath
         )
 
         if (err(updatedPlaneNodePath)) {
           return Promise.reject(new Error(errorMessage))
         }
-        const maybePlaneArtifact = [...kclManager.artifactGraph.values()].find(
-          (artifact) => {
-            const codeRef = getFaceCodeRef(artifact)
-            if (!codeRef) return false
+        const maybePlaneArtifact = [
+          ...theKclManager.artifactGraph.values(),
+        ].find((artifact) => {
+          const codeRef = getFaceCodeRef(artifact)
+          if (!codeRef) return false
 
-            return (
-              stringifyPathToNode(codeRef.pathToNode) ===
-              stringifyPathToNode(updatedPlaneNodePath)
-            )
-          }
-        )
+          return (
+            stringifyPathToNode(codeRef.pathToNode) ===
+            stringifyPathToNode(updatedPlaneNodePath)
+          )
+        })
         if (
           !maybePlaneArtifact ||
           (maybePlaneArtifact.type !== 'plane' &&
@@ -3877,7 +3884,9 @@ export const modelingMachine = setup({
         if (maybePlaneArtifact.type === 'plane') {
           planeArtifact = maybePlaneArtifact
         } else {
-          const face = kclManager.artifactGraph.get(maybePlaneArtifact.faceId)
+          const face = theKclManager.artifactGraph.get(
+            maybePlaneArtifact.faceId
+          )
           if (face) {
             planeArtifact = face
           }
@@ -3893,8 +3902,8 @@ export const modelingMachine = setup({
 
         const newPaths = getPathsFromPlaneArtifact(
           planeArtifact,
-          kclManager.artifactGraph,
-          kclManager.ast
+          theKclManager.artifactGraph,
+          theKclManager.ast
         )
 
         return {
@@ -4660,8 +4669,9 @@ export const modelingMachine = setup({
           invoke: {
             src: 'reeval-node-paths',
             id: 'reeval-node-paths',
-            input: ({ context: { sketchDetails } }) => ({
+            input: ({ context: { sketchDetails, kclManager } }) => ({
               sketchDetails,
+              kclManager,
             }),
 
             onDone: {
@@ -4686,6 +4696,7 @@ export const modelingMachine = setup({
                 sketchDetails,
                 codeManager: providedCodeManager,
                 wasmInstance,
+                kclManager,
               },
               event,
             }) => {
@@ -4702,6 +4713,7 @@ export const modelingMachine = setup({
                 data: event.data,
                 codeManager: providedCodeManager,
                 wasmInstance,
+                kclManager,
               }
             },
             onError: 'SketchIdle',
