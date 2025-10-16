@@ -13,11 +13,19 @@ lint-fix:
 
 # Run the stdlib docs generation
 redo-kcl-stdlib-docs-no-imgs:
+    rm -f ../docs/kcl-std/types/*
+    rm -f ../docs/kcl-std/functions/*
+    rm -f ../docs/kcl-std/modules/*
+    rm -f ../docs/kcl-std/consts/*
     EXPECTORATE=overwrite {{cnr}} {{kcl_lib_flags}} docs::gen_std_tests::test_generate_stdlib
 
 # Generate the stdlib image artifacts
 # Then run the stdlib docs generation
 redo-kcl-stdlib-docs:
+    rm -f ../docs/kcl-std/types/*
+    rm -f ../docs/kcl-std/functions/*
+    rm -f ../docs/kcl-std/modules/*
+    rm -f ../docs/kcl-std/consts/*
     TWENTY_TWENTY=overwrite {{cnr}} {{kcl_lib_flags}} -- kcl_test_example
     TWENTY_TWENTY=overwrite {{cnr}} {{kcl_lib_flags}} docs::kcl_doc::test::kcl_test_examples
     EXPECTORATE=overwrite {{cnr}} {{kcl_lib_flags}} -- docs::gen_std_tests::test_generate_stdlib
