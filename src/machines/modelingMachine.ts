@@ -1120,31 +1120,46 @@ export const modelingMachine = setup({
       }
     }),
     'show default planes': assign({
-      defaultPlaneVisibility: () => {
+      defaultPlaneVisibility: ({ context }) => {
+        const theKclManager = context.kclManager
+          ? context.kclManager
+          : kclManager
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.showPlanes()
+        theKclManager.showPlanes()
         return { xy: true, xz: true, yz: true }
       },
     }),
     'show default planes if no errors': assign({
       defaultPlaneVisibility: ({ context }) => {
-        if (!kclManager.hasErrors()) {
+        const theKclManager = context.kclManager
+          ? context.kclManager
+          : kclManager
+        if (!theKclManager.hasErrors()) {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          kclManager.showPlanes()
+          theKclManager.showPlanes()
           return { xy: true, xz: true, yz: true }
         }
         return { ...context.defaultPlaneVisibility }
       },
     }),
     'setup noPoints onClick listener': ({
-      context: { sketchDetails, currentTool },
+      context: {
+        sketchDetails,
+        currentTool,
+        sceneEntitiesManager: providedSceneEntitiesManager,
+        sceneInfra: providedSceneInfra,
+      },
     }) => {
       if (!sketchDetails) return
-      sceneEntitiesManager.setupNoPointsListener({
+      const theSceneEntitiesManager = providedSceneEntitiesManager
+        ? providedSceneEntitiesManager
+        : sceneEntitiesManager
+      const theSceneInfra = providedSceneInfra ? providedSceneInfra : sceneInfra
+      theSceneEntitiesManager.setupNoPointsListener({
         sketchDetails,
         currentTool,
         afterClick: (_, data) =>
-          sceneInfra.modelingSend(
+          theSceneInfra.modelingSend(
             currentTool === 'tangentialArc'
               ? { type: 'Continue existing profile', data }
               : currentTool === 'arc'
@@ -1154,12 +1169,21 @@ export const modelingMachine = setup({
       })
     },
     'add axis n grid': ({
-      context: { sketchDetails, codeManager: providedCodeManager },
+      context: {
+        sketchDetails,
+        codeManager: providedCodeManager,
+        sceneEntitiesManager: providedSceneEntitiesManager,
+        kclManager: providedKclManager,
+      },
     }) => {
       if (!sketchDetails) return
       if (localStorage.getItem('disableAxis')) return
+      const theSceneEntitiesManager = providedSceneEntitiesManager
+        ? providedSceneEntitiesManager
+        : sceneEntitiesManager
+      const theKclManager = providedKclManager ? providedKclManager : kclManager
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sceneEntitiesManager.createSketchAxis(
+      theSceneEntitiesManager.createSketchAxis(
         sketchDetails.zAxis,
         sketchDetails.yAxis,
         sketchDetails.origin
@@ -1169,30 +1193,39 @@ export const modelingMachine = setup({
         ? providedCodeManager
         : codeManager
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      theCodeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+      theCodeManager.updateEditorWithAstAndWriteToFile(theKclManager.ast)
     },
-    'reset client scene mouse handlers': () => {
+    'reset client scene mouse handlers': ({ context }) => {
       // when not in sketch mode we don't need any mouse listeners
       // (note the orbit controls are always active though)
-      sceneInfra.resetMouseListeners()
+      const theSceneInfra = context.sceneInfra ? context.sceneInfra : sceneInfra
+      theSceneInfra.resetMouseListeners()
     },
-    'clientToEngine cam sync direction': () => {
-      sceneInfra.camControls.syncDirection = 'clientToEngine'
-    },
-    /** TODO: this action is hiding unawaited asynchronous code */
-    'set selection filter to faces only': () => {
-      kclManager.setSelectionFilter(['face', 'object'])
+    'clientToEngine cam sync direction': ({ context }) => {
+      const theSceneInfra = context.sceneInfra ? context.sceneInfra : sceneInfra
+      theSceneInfra.camControls.syncDirection = 'clientToEngine'
     },
     /** TODO: this action is hiding unawaited asynchronous code */
-    'set selection filter to defaults': () => {
-      kclManager.defaultSelectionFilter()
+    'set selection filter to faces only': ({ context }) => {
+      const theKclManger = context.kclManager ? context.kclManager : kclManager
+      theKclManger.setSelectionFilter(['face', 'object'])
+    },
+    /** TODO: this action is hiding unawaited asynchronous code */
+    'set selection filter to defaults': ({ context }) => {
+      const theKclManger = context.kclManager ? context.kclManager : kclManager
+      theKclManger.defaultSelectionFilter()
     },
     'Delete segment': ({
-      context: { sketchDetails, codeManager: providedCodeManager },
+      context: {
+        sketchDetails,
+        codeManager: providedCodeManager,
+        kclManager: providedKclManager,
+      },
       event,
     }) => {
       if (event.type !== 'Delete segment') return
       if (!sketchDetails || !event.data) return
+      const theKclManger = providedKclManager ? providedKclManager : kclManager
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deleteSegmentOrProfile({
@@ -1202,7 +1235,9 @@ export const modelingMachine = setup({
         const theCodeManager = providedCodeManager
           ? providedCodeManager
           : codeManager
-        return theCodeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        return theCodeManager.updateEditorWithAstAndWriteToFile(
+          theKclManger.ast
+        )
       })
     },
     'Set context': assign({
