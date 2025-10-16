@@ -7,11 +7,14 @@
  */
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
+import type RustContext from '@src/lib/rustContext'
+import { executeAstMock } from '@src/lang/langHelpers'
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
 import type { PathToNode, Program } from '@src/lang/wasm'
 import type { ExecutionType } from '@src/lib/constants'
+import { rustContext } from '@src/lib/singletons'
 import {
   EXECUTION_TYPE_MOCK,
   EXECUTION_TYPE_NONE,
@@ -51,6 +54,7 @@ export async function updateModelingState(
     kclManager: KclManager
     editorManager: EditorManager
     codeManager: CodeManager
+    rustContext: RustContext
   },
   options?: {
     focusPath?: Array<PathToNode>
@@ -61,6 +65,18 @@ export async function updateModelingState(
     newAst: Node<Program>
     selections?: Selections
   } = { newAst: ast }
+
+  // Step 0: Mock execute shit so we know it aint broke
+  const { errors } = await executeAstMock({
+    ast,
+    rustContext,
+  })
+  if (errors.length > 0) {
+    return Promise.reject(
+      new Error(JSON.stringify(errors.map((e) => e.message)))
+    )
+  }
+
   // Step 1: Update AST without executing (prepare selections)
   updatedAst = await dependencies.kclManager.updateAst(
     ast,
@@ -97,6 +113,6 @@ export async function updateModelingState(
       // No execution.
     }
   } catch (e) {
-    console.error('Engine execution error (UI is still updated):', e)
+    console.error('KCL execution error (UI is still updated):', e)
   }
 }

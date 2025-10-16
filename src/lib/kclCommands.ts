@@ -18,7 +18,12 @@ import {
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { copyFileShareLink } from '@src/lib/links'
 import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
-import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import {
+  codeManager,
+  editorManager,
+  kclManager,
+  rustContext,
+} from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
@@ -157,7 +162,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          { kclManager, editorManager, codeManager },
+          { kclManager, editorManager, codeManager, rustContext },
           {
             focusPath: [pathToNode],
           }
@@ -225,6 +230,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           kclManager,
           editorManager,
           codeManager,
+          rustContext,
         }).catch(reportRejection)
       },
     },
@@ -333,6 +339,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           codeManager,
           editorManager,
           kclManager,
+          rustContext,
         }).catch(reportRejection)
       },
     },
