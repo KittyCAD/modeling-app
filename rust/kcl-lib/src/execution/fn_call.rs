@@ -323,7 +323,7 @@ impl FunctionSource {
             // return value. The call takes ownership of the args,
             // so we need to build the op before the call.
             exec_state.push_op(op);
-        } else if !is_calling_into_stdlib && !self.is_std {
+        } else if !is_calling_into_stdlib {
             exec_state.push_op(Operation::GroupEnd);
         }
 
