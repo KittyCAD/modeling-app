@@ -29,7 +29,10 @@ import {
   quaternionFromUpNForward,
 } from '@src/clientSideScene/helpers'
 import { DRAFT_DASHED_LINE } from '@src/clientSideScene/sceneConstants'
-import type { OnMoveCallbackArgs } from '@src/clientSideScene/sceneInfra'
+import type {
+  OnMoveCallbackArgs,
+  SceneInfra,
+} from '@src/clientSideScene/sceneInfra'
 import { DRAFT_POINT } from '@src/clientSideScene/sceneUtils'
 import { createProfileStartHandle } from '@src/clientSideScene/segments'
 import type { MachineManager } from '@src/components/MachineManagerProvider'
@@ -2315,34 +2318,52 @@ export const modelingMachine = setup({
     ),
     'setup-client-side-sketch-segments': fromPromise(
       async ({
-        input: { sketchDetails, selectionRanges },
+        input: {
+          sketchDetails,
+          selectionRanges,
+          sceneInfra: providedSceneInfra,
+          sceneEntitiesManger: providedSceneEntitiesManager,
+          kclManager: providedKclManager,
+        },
       }: {
         input: {
           sketchDetails: SketchDetails | null
           selectionRanges: Selections
+          sceneInfra?: SceneInfra
+          sceneEntitiesManger?: SceneEntities
+          kclManager?: KclManager
         }
       }) => {
         if (!sketchDetails) return
+        const theSceneInfra = providedSceneInfra
+          ? providedSceneInfra
+          : sceneInfra
+        const theSceneEntitiesManager = providedSceneEntitiesManager
+          ? providedSceneEntitiesManager
+          : sceneEntitiesManager
+        const theKclManager = providedKclManager
+          ? providedKclManager
+          : kclManager
         if (!sketchDetails.sketchEntryNodePath?.length) {
           // When unequipping eg. the three-point arc tool during placement of the 3rd point, sketchEntryNodePath is
           // empty if its the first profile in a sketch, but we still need to tear down and cancel the current tool properly.
-          sceneInfra.resetMouseListeners()
-          sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+          theSceneInfra.resetMouseListeners()
+          theSceneEntitiesManager.tearDownSketch({ removeAxis: false })
           return
         }
         sceneInfra.resetMouseListeners()
-        await sceneEntitiesManager.setupSketch({
+        await theSceneEntitiesManager.setupSketch({
           sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
           sketchNodePaths: sketchDetails.sketchNodePaths,
           forward: sketchDetails.zAxis,
           up: sketchDetails.yAxis,
           position: sketchDetails.origin,
-          maybeModdedAst: kclManager.ast,
+          maybeModdedAst: theKclManager.ast,
           selectionRanges,
         })
-        sceneInfra.resetMouseListeners()
+        theSceneInfra.resetMouseListeners()
 
-        sceneEntitiesManager.setupSketchIdleCallbacks({
+        theSceneEntitiesManager.setupSketchIdleCallbacks({
           sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
           forward: sketchDetails.zAxis,
           up: sketchDetails.yAxis,
@@ -4163,9 +4184,20 @@ export const modelingMachine = setup({
               invoke: {
                 src: 'setup-client-side-sketch-segments',
                 id: 'setup-client-side-sketch-segments3',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra,
+                    sceneEntitiesManager,
+                    kclManager,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra,
+                  sceneEntitiesManager,
+                  kclManager,
                 }),
                 onDone: [
                   {
@@ -4343,9 +4375,20 @@ export const modelingMachine = setup({
                 id: 'setup-client-side-sketch-segments7',
                 onDone: 'Init',
                 onError: 'Init',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra,
+                    sceneEntitiesManager,
+                    kclManager,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra,
+                  sceneEntitiesManager,
+                  kclManager,
                 }),
               },
             },
@@ -4407,9 +4450,20 @@ export const modelingMachine = setup({
                 id: 'setup-client-side-sketch-segments6',
                 onDone: 'Init',
                 onError: 'Init',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra,
+                    sceneEntitiesManager,
+                    kclManager,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra,
+                  sceneEntitiesManager,
+                  kclManager,
                 }),
               },
             },
@@ -4471,9 +4525,20 @@ export const modelingMachine = setup({
                 src: 'setup-client-side-sketch-segments',
                 id: 'setup-client-side-sketch-segments',
                 onDone: 'Awaiting origin',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra,
+                    sceneEntitiesManager,
+                    kclManager,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra,
+                  sceneEntitiesManager,
+                  kclManager,
                 }),
               },
             },
@@ -4539,9 +4604,20 @@ export const modelingMachine = setup({
                 src: 'setup-client-side-sketch-segments',
                 id: 'setup-client-side-sketch-segments2',
                 onDone: 'Awaiting origin',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra,
+                    sceneEntitiesManager,
+                    kclManager,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra,
+                  sceneEntitiesManager,
+                  kclManager,
                 }),
               },
             },
@@ -4896,9 +4972,20 @@ export const modelingMachine = setup({
                 src: 'setup-client-side-sketch-segments',
                 id: 'setup-client-side-sketch-segments4',
                 onDone: 'Awaiting origin',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra,
+                    sceneEntitiesManager,
+                    kclManager,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra,
+                  sceneEntitiesManager,
+                  kclManager,
                 }),
               },
             },
@@ -4953,9 +5040,20 @@ export const modelingMachine = setup({
                 id: 'setup-client-side-sketch-segments',
                 onDone: '#Modeling.Sketch.Change Tool ifs',
                 onError: '#Modeling.Sketch.SketchIdle',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra,
+                    sceneEntitiesManager,
+                    kclManager,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra,
+                  sceneEntitiesManager,
+                  kclManager,
                 }),
               },
             },
@@ -5021,9 +5119,20 @@ export const modelingMachine = setup({
                 src: 'setup-client-side-sketch-segments',
                 id: 'setup-client-side-sketch-segments5',
                 onDone: 'Awaiting first point',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra,
+                    sceneEntitiesManager,
+                    kclManager,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra,
+                  sceneEntitiesManager,
+                  kclManager,
                 }),
               },
             },
@@ -5092,9 +5201,20 @@ export const modelingMachine = setup({
                 src: 'setup-client-side-sketch-segments',
                 id: 'setup-client-side-sketch-segments8',
                 onDone: 'Awaiting start point',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra,
+                    sceneEntitiesManager,
+                    kclManager,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra,
+                  sceneEntitiesManager,
+                  kclManager,
                 }),
               },
             },
@@ -5179,9 +5299,20 @@ export const modelingMachine = setup({
                   target: 'Awaiting for circle center',
                   reenter: true,
                 },
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra,
+                    sceneEntitiesManager,
+                    kclManager,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra,
+                  sceneEntitiesManager,
+                  kclManager,
                 }),
               },
             },
@@ -5191,9 +5322,20 @@ export const modelingMachine = setup({
                 src: 'setup-client-side-sketch-segments',
                 id: 'setup-client-side-sketch-segments10',
                 onDone: 'Awaiting start point',
-                input: ({ context: { sketchDetails, selectionRanges } }) => ({
+                input: ({
+                  context: {
+                    sketchDetails,
+                    selectionRanges,
+                    sceneInfra,
+                    sceneEntitiesManager,
+                    kclManager,
+                  },
+                }) => ({
                   sketchDetails,
                   selectionRanges,
+                  sceneInfra,
+                  sceneEntitiesManager,
+                  kclManager,
                 }),
               },
             },
