@@ -284,13 +284,11 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
   const { togglePane, areaLibrary } = useLayoutState()
   const paneBarRef = useRef<HTMLUListElement>(null)
   const barBorderWidthProp = `border${orientationToReactCss(sideToOrientation(layout.side))}Width`
-  const nonHiddenChildren = layout.children.filter(
-    (item) =>
-      item.type !== LayoutType.Simple || !areaLibrary[item.areaType]?.hide()
-  )
+  const shouldHide = (l: PaneChild) =>
+    l.type === LayoutType.Simple && areaLibrary[l.areaType]?.hide()
   const activePanes = layout.activeIndices
-    .map((itemIndex) => nonHiddenChildren[itemIndex])
-    .filter((item) => item !== undefined)
+    .map((itemIndex) => layout.children[itemIndex])
+    .filter((item) => item !== undefined && !shouldHide(item))
 
   const onToggleItem = (checked: boolean, i: number) => {
     togglePane({
@@ -310,17 +308,19 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
         style={{ [barBorderWidthProp]: '1px' }}
         data-pane-toolbar
       >
-        {nonHiddenChildren.map((pane, i) => (
-          <PaneButton
-            key={`pane-${pane.id}`}
-            pane={pane}
-            childIndex={i}
-            parentActiveIndices={layout.activeIndices}
-            side={layout.side}
-            onChange={(checked) => onToggleItem(checked, i)}
-          />
-        ))}
-        {nonHiddenChildren.length && layout.actions?.length ? (
+        {layout.children.map((pane, i) =>
+          shouldHide(pane) ? null : (
+            <PaneButton
+              key={`pane-${pane.id}`}
+              pane={pane}
+              childIndex={i}
+              parentActiveIndices={layout.activeIndices}
+              side={layout.side}
+              onChange={(checked) => onToggleItem(checked, i)}
+            />
+          )
+        )}
+        {layout.children.length && layout.actions?.length ? (
           <hr
             className={`bg-3 border-none ${sideToSplitDirection(layout.side) === 'vertical' ? 'w-[1px] h-full' : 'h-[1px] w-full'}`}
           />
@@ -350,9 +350,7 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
           }
           layout={{
             ...layout,
-            children: layout.children.filter(
-              (_, i) => layout.activeIndices.indexOf(i) >= 0
-            ),
+            children: activePanes,
           }}
           onClose={(index: number) =>
             onToggleItem(false, layout.activeIndices[index])

@@ -70,7 +70,12 @@ import { initPromise } from '@src/lang/wasmUtils'
 // Initialize KCL version
 import { setKclVersion } from '@src/lib/kclVersion'
 import { AppMachineEventType } from '@src/lib/types'
-import { defaultLayout, saveLayout, type Layout } from '@src/lib/layout'
+import {
+  defaultLayout,
+  defaultLayoutConfig,
+  saveLayout,
+  type Layout,
+} from '@src/lib/layout'
 
 initPromise
   .then(() => {
@@ -203,7 +208,7 @@ const appMachine = setup({
     },
     [AppMachineEventType.ResetLayout]: {
       actions: [
-        assign({ layout: defaultLayout }),
+        assign({ layout: defaultLayoutConfig }),
         ({ context }) => saveLayout({ layout: context.layout }),
       ],
     },

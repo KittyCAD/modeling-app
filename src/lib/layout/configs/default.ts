@@ -52,7 +52,7 @@ export const defaultLayoutConfig: Layout = {
   label: 'root',
   type: LayoutType.Splits,
   orientation: 'inline',
-  sizes: [30, 50, 20],
+  sizes: [20, 50, 30],
   children: [
     {
       id: DefaultLayoutToolbarID.Left,
