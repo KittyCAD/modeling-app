@@ -273,65 +273,6 @@ description: Operations executed any_type.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "GroupEnd"
     },
     {

@@ -1083,38 +1083,6 @@ description: Operations executed gallows-bracket.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "subtract",
       "unlabeledArg": {
@@ -1146,38 +1114,6 @@ description: Operations executed gallows-bracket.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "subtract",
       "unlabeledArg": {
@@ -1207,38 +1143,6 @@ description: Operations executed gallows-bracket.kcl
     },
     {
       "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
     },
     {
       "type": "StdLibCall",

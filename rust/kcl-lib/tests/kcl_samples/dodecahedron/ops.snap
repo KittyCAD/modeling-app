@@ -37,74 +37,6 @@ description: Operations executed dodecahedron.kcl
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
         "name": "createFaceTemplate",
         "functionSourceRange": [],
         "unlabeledArg": {
@@ -430,74 +362,6 @@ description: Operations executed dodecahedron.kcl
     },
     {
       "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 116.565,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.1,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
     },
     {
       "type": "GroupBegin",
@@ -833,74 +697,6 @@ description: Operations executed dodecahedron.kcl
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 116.565,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 72.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.2,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
         "name": "createFaceTemplate",
         "functionSourceRange": [],
         "unlabeledArg": {
@@ -1226,74 +1022,6 @@ description: Operations executed dodecahedron.kcl
     },
     {
       "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 116.565,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 144.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.3,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
     },
     {
       "type": "GroupBegin",
@@ -1629,74 +1357,6 @@ description: Operations executed dodecahedron.kcl
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 116.565,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 216.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.4,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
         "name": "createFaceTemplate",
         "functionSourceRange": [],
         "unlabeledArg": {
@@ -2022,74 +1682,6 @@ description: Operations executed dodecahedron.kcl
     },
     {
       "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 116.565,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 288.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.5,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
     },
     {
       "type": "GroupBegin",
@@ -2425,74 +2017,6 @@ description: Operations executed dodecahedron.kcl
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 180.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.6,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
         "name": "createFaceTemplate",
         "functionSourceRange": [],
         "unlabeledArg": {
@@ -2818,74 +2342,6 @@ description: Operations executed dodecahedron.kcl
     },
     {
       "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 63.435,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 36.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.7,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
     },
     {
       "type": "GroupBegin",
@@ -3221,74 +2677,6 @@ description: Operations executed dodecahedron.kcl
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 63.435,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 108.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.8,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
         "name": "createFaceTemplate",
         "functionSourceRange": [],
         "unlabeledArg": {
@@ -3614,74 +3002,6 @@ description: Operations executed dodecahedron.kcl
     },
     {
       "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 63.435,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 180.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.9,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
     },
     {
       "type": "GroupBegin",
@@ -4017,74 +3337,6 @@ description: Operations executed dodecahedron.kcl
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 63.435,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 252.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.11,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
         "name": "createFaceTemplate",
         "functionSourceRange": [],
         "unlabeledArg": {
@@ -4410,74 +3662,6 @@ description: Operations executed dodecahedron.kcl
     },
     {
       "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 63.435,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 324.0,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.12,
-                "ty": {
-                  "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
-                }
-              }
-            ]
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 3
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
     },
     {
       "type": "GroupBegin",
@@ -5031,709 +4215,37 @@ description: Operations executed dodecahedron.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Number",
-              "value": 1.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Number",
-              "value": 2.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Number",
-              "value": 3.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Number",
-              "value": 4.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Number",
-              "value": 5.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Number",
-              "value": 6.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Number",
-              "value": 7.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Number",
-              "value": 8.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Number",
-              "value": 9.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Number",
-              "value": 10.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Number",
-              "value": 11.0,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 4
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
     },
     {
       "type": "GroupEnd"
@@ -5784,32 +4296,29 @@ description: Operations executed dodecahedron.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
+      "type": "StdLibCall",
+      "name": "intersect",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
               "type": "Solid",
               "value": {
                 "artifactId": "[uuid]"
               }
             },
-            "sourceRange": []
-          }
-        }
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
       },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -5827,7 +4336,20 @@ description: Operations executed dodecahedron.kcl
           },
           {
             "type": "FunctionExpressionBodyItem",
-            "index": 4
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
           },
           {
             "type": "ReturnStatementArg"
@@ -5835,6 +4357,9 @@ description: Operations executed dodecahedron.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -5903,32 +4428,29 @@ description: Operations executed dodecahedron.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
+      "type": "StdLibCall",
+      "name": "intersect",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
               "type": "Solid",
               "value": {
                 "artifactId": "[uuid]"
               }
             },
-            "sourceRange": []
-          }
-        }
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
       },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -5946,7 +4468,20 @@ description: Operations executed dodecahedron.kcl
           },
           {
             "type": "FunctionExpressionBodyItem",
-            "index": 4
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
           },
           {
             "type": "ReturnStatementArg"
@@ -5954,6 +4489,9 @@ description: Operations executed dodecahedron.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -6022,32 +4560,29 @@ description: Operations executed dodecahedron.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
+      "type": "StdLibCall",
+      "name": "intersect",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
               "type": "Solid",
               "value": {
                 "artifactId": "[uuid]"
               }
             },
-            "sourceRange": []
-          }
-        }
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
       },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -6065,7 +4600,20 @@ description: Operations executed dodecahedron.kcl
           },
           {
             "type": "FunctionExpressionBodyItem",
-            "index": 4
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
           },
           {
             "type": "ReturnStatementArg"
@@ -6073,6 +4621,9 @@ description: Operations executed dodecahedron.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -6141,32 +4692,29 @@ description: Operations executed dodecahedron.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
+      "type": "StdLibCall",
+      "name": "intersect",
+      "unlabeledArg": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
               "type": "Solid",
               "value": {
                 "artifactId": "[uuid]"
               }
             },
-            "sourceRange": []
-          }
-        }
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
       },
+      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
@@ -6184,7 +4732,20 @@ description: Operations executed dodecahedron.kcl
           },
           {
             "type": "FunctionExpressionBodyItem",
-            "index": 4
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
           },
           {
             "type": "ReturnStatementArg"
@@ -6192,6 +4753,9 @@ description: Operations executed dodecahedron.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -6260,59 +4824,6 @@ description: Operations executed dodecahedron.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 4
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "intersect",
       "unlabeledArg": {
@@ -6379,59 +4890,6 @@ description: Operations executed dodecahedron.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 4
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "intersect",
       "unlabeledArg": {
@@ -6496,535 +4954,6 @@ description: Operations executed dodecahedron.kcl
     },
     {
       "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 4
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "intersect",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 4
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "intersect",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 4
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "intersect",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 4
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "intersect",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 4
-          },
-          {
-            "type": "ReturnStatementArg"
-          }
-        ]
-      },
-      "sourceRange": []
     },
     {
       "type": "StdLibCall",
