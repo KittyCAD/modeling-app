@@ -29,6 +29,7 @@ import {
 import type {
   Artifact,
   ArtifactGraph,
+  CallExpressionKw,
   Expr,
   PathToNode,
   Program,
@@ -110,16 +111,32 @@ export function addHole({
   artifactGraph,
   face,
   cutAt,
+  holeBody,
   blindDepth,
   blindDiameter,
+  holeType,
+  counterboreDepth,
+  counterboreDiameter,
+  countersinkAngle,
+  countersinkDiameter,
+  holeBottom,
+  drillPointAngle,
   nodeToEdit,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   face: Selections
   cutAt: KclCommandValue
+  holeBody: 'blind'
   blindDepth: KclCommandValue
   blindDiameter: KclCommandValue
+  holeType: 'simple' | 'counterbore' | 'countersink'
+  counterboreDepth?: KclCommandValue
+  counterboreDiameter?: KclCommandValue
+  countersinkAngle?: KclCommandValue
+  countersinkDiameter?: KclCommandValue
+  holeBottom: 'flat' | 'drill'
+  drillPointAngle?: KclCommandValue
   nodeToEdit?: PathToNode
 }):
   | {
@@ -141,35 +158,118 @@ export function addHole({
     return result
   }
 
-  // TODO: support other hole types than blind
-  const holeBody = createCallExpressionStdLibKw('hole::blind', null, [
-    createLabeledArg('depth', valueOrVariable(blindDepth)),
-    createLabeledArg('diameter', valueOrVariable(blindDiameter)),
-  ])
-  // TODO: support other holeBottom than flat
-  const holeBottom = createCallExpressionStdLibKw('hole::flat', null, [])
-  // TODO: support other holeType than simple
-  const holeType = createCallExpressionStdLibKw('hole::simple', null, [])
+  let holeBodyNode: Node<CallExpressionKw> | undefined
+  if (holeBody === 'blind') {
+    holeBodyNode = createCallExpressionStdLibKw('hole::blind', null, [
+      createLabeledArg('depth', valueOrVariable(blindDepth)),
+      createLabeledArg('diameter', valueOrVariable(blindDiameter)),
+    ])
+  } else {
+    return new Error('Unsupported hole body type')
+  }
+
+  let holeBottomNode: Node<CallExpressionKw> | undefined
+  if (holeBottom === 'flat') {
+    holeBottomNode = createCallExpressionStdLibKw('hole::flat', null, [])
+  } else if (holeBottom === 'drill' && drillPointAngle) {
+    holeBottomNode = createCallExpressionStdLibKw('hole::drill', null, [
+      createLabeledArg('pointAngle', valueOrVariable(drillPointAngle)),
+    ])
+  } else {
+    return new Error('Unsupported hole bottom type or missing parameters')
+  }
+
+  let holeTypeNode: Node<CallExpressionKw> | undefined
+  if (holeType === 'simple') {
+    holeTypeNode = createCallExpressionStdLibKw('hole::simple', null, [])
+  } else if (
+    holeType === 'counterbore' &&
+    counterboreDepth &&
+    counterboreDiameter
+  ) {
+    holeTypeNode = createCallExpressionStdLibKw('hole::counterbore', null, [
+      createLabeledArg('depth', valueOrVariable(counterboreDepth)),
+      createLabeledArg('diameter', valueOrVariable(counterboreDiameter)),
+    ])
+  } else if (
+    holeType === 'countersink' &&
+    countersinkAngle &&
+    countersinkDiameter
+  ) {
+    holeTypeNode = createCallExpressionStdLibKw('hole::countersink', null, [
+      createLabeledArg('angle', valueOrVariable(countersinkAngle)),
+      createLabeledArg('diameter', valueOrVariable(countersinkDiameter)),
+    ])
+  } else {
+    return new Error('Unsupported hole type or missing parameters')
+  }
 
   const { solidsExpr, facesExpr, pathIfPipe } = result
   // TODO: should there be a createCallExpression for modules?
   const call = createCallExpressionStdLibKw('hole::hole', solidsExpr, [
     createLabeledArg('face', facesExpr),
     createLabeledArg('cutAt', valueOrVariable(cutAt)),
-    createLabeledArg('holeBottom', holeBottom),
-    createLabeledArg('holeBody', holeBody),
-    createLabeledArg('holeType', holeType),
+    createLabeledArg('holeBottom', holeBottomNode),
+    createLabeledArg('holeBody', holeBodyNode),
+    createLabeledArg('holeType', holeTypeNode),
   ])
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in cutAt && cutAt.variableName) {
     insertVariableAndOffsetPathToNode(cutAt, modifiedAst, nodeToEdit)
   }
-  if ('variableName' in blindDepth && blindDepth.variableName) {
+  if (blindDepth && 'variableName' in blindDepth && blindDepth.variableName) {
     insertVariableAndOffsetPathToNode(blindDepth, modifiedAst, nodeToEdit)
   }
-  if ('variableName' in blindDiameter && blindDiameter.variableName) {
+  if (
+    blindDiameter &&
+    'variableName' in blindDiameter &&
+    blindDiameter.variableName
+  ) {
     insertVariableAndOffsetPathToNode(blindDiameter, modifiedAst, nodeToEdit)
+  }
+  if (
+    counterboreDepth &&
+    'variableName' in counterboreDepth &&
+    counterboreDepth.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(counterboreDepth, modifiedAst, nodeToEdit)
+  }
+  if (
+    counterboreDiameter &&
+    'variableName' in counterboreDiameter &&
+    counterboreDiameter.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(
+      counterboreDiameter,
+      modifiedAst,
+      nodeToEdit
+    )
+  }
+  if (
+    countersinkAngle &&
+    'variableName' in countersinkAngle &&
+    countersinkAngle.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(countersinkAngle, modifiedAst, nodeToEdit)
+  }
+  if (
+    countersinkDiameter &&
+    'variableName' in countersinkDiameter &&
+    countersinkDiameter.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(
+      countersinkDiameter,
+      modifiedAst,
+      nodeToEdit
+    )
+  }
+  if (
+    drillPointAngle &&
+    'variableName' in drillPointAngle &&
+    drillPointAngle.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(drillPointAngle, modifiedAst, nodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
