@@ -14,6 +14,7 @@ import type { KclManager } from '@src/lang/KclSingleton'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import EditorManager from '@src/editor/manager'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -247,6 +248,7 @@ export interface ModelingMachineContext {
   engineCommandManager?: ConnectionManager
   sceneInfra?: SceneInfra
   sceneEntitiesManager?: SceneEntities
+  editorManager?: EditorManager
 }
 
 export type PlaneVisibilityMap = {

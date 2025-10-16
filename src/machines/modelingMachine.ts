@@ -158,6 +158,11 @@ import {
   type EquipTool,
   sketchSolveMachine,
 } from '@src/machines/sketchSolve/sketchSolveMode'
+import type CodeManager from '@src/lang/codeManager'
+import type EditorManager from '@src/editor/manager'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 export type ModelingMachineEvent =
   | {
@@ -665,9 +670,12 @@ export const modelingMachine = setup({
       sketchEnginePathId: '',
       sketchPlaneId: '',
     }),
-    'reset camera position': () => {
+    'reset camera position': (context) => {
+      const theEngineCommandManager = context.context.engineCommandManager
+        ? context.context.engineCommandManager
+        : engineCommandManager
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      engineCommandManager.sendSceneCommand({
+      theEngineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
         cmd: {
@@ -1217,7 +1225,14 @@ export const modelingMachine = setup({
     'enable copilot': () => {},
     'disable copilot': () => {},
     'Set selection': assign(
-      ({ context: { selectionRanges, sketchDetails }, event }) => {
+      ({
+        context: {
+          selectionRanges,
+          sketchDetails,
+          engineCommandManager: providedEngineCommandManager,
+        },
+        event,
+      }) => {
         // this was needed for ts after adding 'Set selection' action to on done modal events
         const setSelections =
           ('data' in event &&
@@ -1344,9 +1359,12 @@ export const modelingMachine = setup({
           // If there are engine commands that need sent off, send them
           // TODO: This should be handled outside of an action as its own
           // actor, so that the system state is more controlled.
+          const theEngineCommandManager = providedEngineCommandManager
+            ? providedEngineCommandManager
+            : engineCommandManager
           engineEvents &&
             engineEvents.forEach((event) => {
-              engineCommandManager
+              theEngineCommandManager
                 .sendSceneCommand(event)
                 .catch(reportRejection)
             })
@@ -1495,34 +1513,48 @@ export const modelingMachine = setup({
   actors: {
     sketchSolveMachine,
     sketchExit: fromPromise(
-      async (args: { input: { context: { store: Store } } }) => {
-        const store = args.input.context.store
+      async (args: { input: { context: ModelingMachineContext } }) => {
+        const context = args.input.context
+        const store = context.store
+
+        const theEngineCommandManager = context.engineCommandManager
+          ? context.engineCommandManager
+          : engineCommandManager
+        const theSceneInfra = context.sceneInfra
+          ? context.sceneInfra
+          : sceneInfra
+        const theKclManager = context.kclManager
+          ? context.kclManager
+          : kclManager
+        const theSceneEntitiesManager = context.sceneEntitiesManager
+          ? context.sceneEntitiesManager
+          : sceneEntitiesManager
 
         // When cancelling the sketch mode we should disable sketch mode within the engine.
-        await engineCommandManager.sendSceneCommand({
+        await theEngineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: { type: 'sketch_mode_disable' },
         })
 
-        sceneInfra.camControls.syncDirection = 'clientToEngine'
+        theSceneInfra.camControls.syncDirection = 'clientToEngine'
 
         if (store.cameraProjection?.current === 'perspective') {
-          await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+          await theSceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
         }
 
-        sceneInfra.camControls.syncDirection = 'engineToClient'
+        theSceneInfra.camControls.syncDirection = 'engineToClient'
 
         // TODO: Re-evaluate if this pause/play logic is needed.
         // TODO: Do I need this video element?
         store.videoElement?.pause()
 
-        await kclManager
+        await theKclManager
           .executeCode()
           .then(() => {
             if (
-              !engineCommandManager.started &&
-              engineCommandManager.connection?.websocket?.readyState ===
+              !theEngineCommandManager.started &&
+              theEngineCommandManager.connection?.websocket?.readyState ===
                 WebSocket.CLOSED
             )
               return
@@ -1533,21 +1565,26 @@ export const modelingMachine = setup({
           })
           .catch(reportRejection)
 
-        sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-        sceneEntitiesManager.removeSketchGrid()
-        sceneInfra.camControls.syncDirection = 'engineToClient'
-        sceneEntitiesManager.resetOverlays()
+        theSceneEntitiesManager.tearDownSketch({ removeAxis: false })
+        theSceneEntitiesManager.removeSketchGrid()
+        theSceneInfra.camControls.syncDirection = 'engineToClient'
+        theSceneEntitiesManager.resetOverlays()
       }
     ),
     /* Below are all the do-constrain sketch actors,
      * which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
     'do-constrain-remove-constraint': fromPromise(
       async ({
-        input: { selectionRanges, sketchDetails, data, providedCodeManager },
+        input: {
+          selectionRanges,
+          sketchDetails,
+          data,
+          codeManager: providedCodeManager,
+        },
       }: {
         input: Pick<
           ModelingMachineContext,
-          'selectionRanges' | 'sketchDetails'
+          'selectionRanges' | 'sketchDetails' | 'codeManager'
         > & { data?: PathToNode }
       }) => {
         const constraint = applyRemoveConstrainingValues({
@@ -2118,14 +2155,34 @@ export const modelingMachine = setup({
     ),
     'animate-to-sketch': fromPromise(
       async ({
-        input: { selectionRanges },
+        input: {
+          selectionRanges,
+          kclManager: providedKclManager,
+          engineCommandManager: providedEngineCommandManager,
+          sceneEntitiesManager: providedSceneEntitiesManager,
+        },
       }: {
         input: {
           selectionRanges: Selections
+          kclManager: KclManager
+          engineCommandManager: ConnectionManager
+          sceneEntitiesManager: SceneEntities
         }
       }): Promise<ModelingMachineContext['sketchDetails']> => {
+        const theKclManager = providedKclManager
+          ? providedKclManager
+          : kclManager
+        const theEngineCommandManager = providedEngineCommandManager
+          ? providedEngineCommandManager
+          : engineCommandManager
+        const theSceneEntitiesManager = providedSceneEntitiesManager
+          ? providedSceneEntitiesManager
+          : sceneEntitiesManager
         const artifact = selectionRanges.graphSelections[0].artifact
-        const plane = getPlaneFromArtifact(artifact, kclManager.artifactGraph)
+        const plane = getPlaneFromArtifact(
+          artifact,
+          theKclManager.artifactGraph
+        )
         if (err(plane)) return Promise.reject(plane)
         // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plane
         // but still works if the user selected a plane/face by defaulting to the first path
@@ -2136,7 +2193,9 @@ export const modelingMachine = setup({
         let sketch: KclValue | null = null
         let planeVar: Plane | null = null
 
-        for (const variable of Object.values(kclManager.execState.variables)) {
+        for (const variable of Object.values(
+          theKclManager.execState.variables
+        )) {
           // find programMemory that matches path artifact
           if (
             variable?.type === 'Sketch' &&
@@ -2173,11 +2232,11 @@ export const modelingMachine = setup({
               point.z,
             ]
             const planPath = getNodePathFromSourceRange(
-              kclManager.ast,
+              theKclManager.ast,
               planeCodeRef.range
             )
             await letEngineAnimateAndSyncCamAfter(
-              engineCommandManager,
+              theEngineCommandManager,
               artifact.id
             )
             const normal = crossProduct(planeVar.xAxis, planeVar.yAxis)
@@ -2192,29 +2251,29 @@ export const modelingMachine = setup({
           }
           return Promise.reject(new Error('No sketch'))
         }
-        const info = await sceneEntitiesManager.getSketchOrientationDetails(
+        const info = await theSceneEntitiesManager.getSketchOrientationDetails(
           sketch.value
         )
         await letEngineAnimateAndSyncCamAfter(
-          engineCommandManager,
+          theEngineCommandManager,
           info?.sketchDetails?.faceId || ''
         )
 
-        const sketchArtifact = kclManager.artifactGraph.get(mainPath)
+        const sketchArtifact = theKclManager.artifactGraph.get(mainPath)
         if (sketchArtifact?.type !== 'path')
           return Promise.reject(new Error('No sketch artifact'))
         const sketchPaths = getPathsFromArtifact({
-          artifact: kclManager.artifactGraph.get(plane.id),
+          artifact: theKclManager.artifactGraph.get(plane.id),
           sketchPathToNode: sketchArtifact?.codeRef?.pathToNode,
-          artifactGraph: kclManager.artifactGraph,
-          ast: kclManager.ast,
+          artifactGraph: theKclManager.artifactGraph,
+          ast: theKclManager.ast,
         })
         if (err(sketchPaths)) return Promise.reject(sketchPaths)
         let codeRef = getFaceCodeRef(plane)
         if (!codeRef) return Promise.reject(new Error('No plane codeRef'))
         // codeRef.pathToNode is not always populated correctly
         const planeNodePath = getNodePathFromSourceRange(
-          kclManager.ast,
+          theKclManager.ast,
           codeRef.range
         )
         return {
@@ -2442,29 +2501,43 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Extrude'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Extrude'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const { ast } = kclManager
         const astResult = addExtrude({
           ast,
-          ...input,
+          ...input.data,
         })
         if (err(astResult)) {
           return Promise.reject(new Error("Couldn't add extrude statement"))
         }
 
         const { modifiedAst, pathToNode } = astResult
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [pathToNode],
@@ -2476,15 +2549,22 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Sweep'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Sweep'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const { ast } = kclManager
         const astResult = addSweep({
-          ...input,
+          ...input.data,
           ast,
         })
         if (err(astResult)) {
@@ -2492,13 +2572,20 @@ export const modelingMachine = setup({
         }
 
         const { modifiedAst, pathToNode } = astResult
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [pathToNode],
@@ -2510,26 +2597,40 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Loft'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Loft'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const { ast } = kclManager
-        const astResult = addLoft({ ast, ...input })
+        const astResult = addLoft({ ast, ...input.data })
         if (err(astResult)) {
           return Promise.reject(astResult)
         }
 
         const { modifiedAst, pathToNode } = astResult
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [pathToNode],
@@ -2541,29 +2642,43 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Revolve'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Revolve'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const { ast } = kclManager
         const astResult = addRevolve({
           ast,
-          ...input,
+          ...input.data,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
         }
 
         const { modifiedAst, pathToNode } = astResult
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [pathToNode],
@@ -2575,15 +2690,22 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Offset plane'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Offset plane'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const { ast, artifactGraph, variables } = kclManager
         const astResult = addOffsetPlane({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
           variables,
@@ -2593,13 +2715,20 @@ export const modelingMachine = setup({
         }
 
         const { modifiedAst, pathToNode } = astResult
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [pathToNode],
@@ -2611,15 +2740,22 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Helix'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Helix'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const { ast, artifactGraph } = kclManager
         const astResult = addHelix({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
         })
@@ -2628,13 +2764,20 @@ export const modelingMachine = setup({
         }
 
         const { modifiedAst, pathToNode } = astResult
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [pathToNode],
@@ -2646,15 +2789,22 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Shell'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Shell'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const { ast, artifactGraph } = kclManager
         const astResult = addShell({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
         })
@@ -2663,13 +2813,20 @@ export const modelingMachine = setup({
         }
 
         const { modifiedAst, pathToNode } = astResult
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [pathToNode],
@@ -2681,9 +2838,17 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Fillet'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Fillet'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+              engineCommandManager?: ConnectionManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
@@ -2691,18 +2856,29 @@ export const modelingMachine = setup({
         const ast = kclManager.ast
         let modifiedAst = structuredClone(ast)
         let focusPath: PathToNode[] = []
-        const { nodeToEdit, selection, radius } = input
+        const { nodeToEdit, selection, radius } = input.data
 
         const parameters: FilletParameters = {
           type: EdgeTreatmentType.Fillet,
           radius,
         }
 
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
+        const theEngineCommandManager = input.engineCommandManager
+          ? input.engineCommandManager
+          : engineCommandManager
+
         const dependencies = {
-          kclManager,
-          engineCommandManager,
-          editorManager,
-          codeManager,
+          kclManager: theKclManager,
+          engineCommandManager: theEngineCommandManager,
+          editorManager: theEditorManager,
+          codeManager: theCodeManager,
         }
 
         // Apply or edit fillet
@@ -2760,9 +2936,9 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: focusPath,
@@ -2774,9 +2950,17 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Chamfer'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Chamfer'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+              engineCommandManager?: ConnectionManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
@@ -2784,17 +2968,28 @@ export const modelingMachine = setup({
         const ast = kclManager.ast
         let modifiedAst = structuredClone(ast)
         let focusPath: PathToNode[] = []
-        const { nodeToEdit, selection, length } = input
+        const { nodeToEdit, selection, length } = input.data
 
         const parameters: ChamferParameters = {
           type: EdgeTreatmentType.Chamfer,
           length,
         }
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
+        const theEngineCommandManager = input.engineCommandManager
+          ? input.engineCommandManager
+          : engineCommandManager
+
         const dependencies = {
-          kclManager,
-          engineCommandManager,
-          editorManager,
-          codeManager,
+          kclManager: theKclManager,
+          engineCommandManager: theEngineCommandManager,
+          editorManager: theEditorManager,
+          codeManager: theCodeManager,
         }
 
         // Apply or edit chamfer
@@ -2852,9 +3047,9 @@ export const modelingMachine = setup({
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: focusPath,
@@ -2894,30 +3089,43 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Appearance'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Appearance'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const ast = kclManager.ast
         const artifactGraph = kclManager.artifactGraph
         const result = addAppearance({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
         }
-
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [result.pathToNode],
@@ -2929,30 +3137,44 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Translate'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Translate'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const ast = kclManager.ast
         const artifactGraph = kclManager.artifactGraph
         const result = addTranslate({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
         }
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
 
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [result.pathToNode],
@@ -2964,16 +3186,23 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Rotate'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Rotate'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const ast = kclManager.ast
         const artifactGraph = kclManager.artifactGraph
         const result = addRotate({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
         })
@@ -2981,13 +3210,21 @@ export const modelingMachine = setup({
           return Promise.reject(result)
         }
 
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
+
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [result.pathToNode],
@@ -2999,16 +3236,23 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Scale'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Scale'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const ast = kclManager.ast
         const artifactGraph = kclManager.artifactGraph
         const result = addScale({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
         })
@@ -3016,13 +3260,20 @@ export const modelingMachine = setup({
           return Promise.reject(result)
         }
 
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [result.pathToNode],
@@ -3034,30 +3285,43 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Clone'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Clone'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const ast = kclManager.ast
         const artifactGraph = kclManager.artifactGraph
         const result = addClone({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
         }
-
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [result.pathToNode],
@@ -3083,30 +3347,43 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Boolean Subtract'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Boolean Subtract'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const ast = kclManager.ast
         const artifactGraph = kclManager.artifactGraph
         const result = addSubtract({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
         }
-
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [result.pathToNode],
@@ -3118,30 +3395,43 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Boolean Union'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Boolean Union'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const ast = kclManager.ast
         const artifactGraph = kclManager.artifactGraph
         const result = addUnion({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
         }
-
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [result.pathToNode],
@@ -3153,30 +3443,43 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Boolean Union'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Boolean Intersect'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const ast = kclManager.ast
         const artifactGraph = kclManager.artifactGraph
         const result = addIntersect({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
-
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [result.pathToNode],
@@ -3189,30 +3492,43 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Pattern Circular 3D'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Pattern Circular 3D'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const ast = kclManager.ast
         const artifactGraph = kclManager.artifactGraph
         const result = addPatternCircular3D({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
         }
-
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [result.pathToNode],
@@ -3225,30 +3541,43 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Pattern Linear 3D'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Pattern Linear 3D'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
         const ast = kclManager.ast
         const artifactGraph = kclManager.artifactGraph
         const result = addPatternLinear3D({
-          ...input,
+          ...input.data,
           ast,
           artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
         }
-
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
           },
           {
             focusPath: [result.pathToNode],
@@ -4109,7 +4438,7 @@ export const modelingMachine = setup({
                   event.type === 'Constrain remove constraints'
                     ? event.data
                     : undefined,
-                providedCodeManager: providedCodeManager,
+                codeManager: providedCodeManager,
               }
             },
             onDone: {
@@ -4718,6 +5047,9 @@ export const modelingMachine = setup({
         input: ({ context }) => ({
           selectionRanges: context.selectionRanges,
           sketchDetails: context.sketchDetails,
+          kclManager: context.kclManager,
+          engineCommandManager: context.engineCommandManager,
+          sceneEntitiesManager: context.sceneEntitiesManager,
         }),
 
         onDone: {
@@ -4765,7 +5097,12 @@ export const modelingMachine = setup({
         id: 'extrudeAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'Extrude') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4779,9 +5116,14 @@ export const modelingMachine = setup({
       invoke: {
         src: 'sweepAstMod',
         id: 'sweepAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Sweep') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4795,9 +5137,14 @@ export const modelingMachine = setup({
       invoke: {
         src: 'loftAstMod',
         id: 'loftAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Loft') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4811,9 +5158,14 @@ export const modelingMachine = setup({
       invoke: {
         src: 'revolveAstMod',
         id: 'revolveAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Revolve') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4827,9 +5179,14 @@ export const modelingMachine = setup({
       invoke: {
         src: 'offsetPlaneAstMod',
         id: 'offsetPlaneAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Offset plane') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4843,9 +5200,14 @@ export const modelingMachine = setup({
       invoke: {
         src: 'helixAstMod',
         id: 'helixAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Helix') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4859,9 +5221,14 @@ export const modelingMachine = setup({
       invoke: {
         src: 'shellAstMod',
         id: 'shellAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Shell') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4875,9 +5242,15 @@ export const modelingMachine = setup({
       invoke: {
         src: 'filletAstMod',
         id: 'filletAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Fillet') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+            engineCommandManager: context.engineCommandManager,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4891,9 +5264,15 @@ export const modelingMachine = setup({
       invoke: {
         src: 'chamferAstMod',
         id: 'chamferAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Chamfer') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+            engineCommandManager: context.engineCommandManager,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4949,9 +5328,14 @@ export const modelingMachine = setup({
       invoke: {
         src: 'appearanceAstMod',
         id: 'appearanceAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Appearance') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4965,9 +5349,14 @@ export const modelingMachine = setup({
       invoke: {
         src: 'translateAstMod',
         id: 'translateAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Translate') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4981,9 +5370,14 @@ export const modelingMachine = setup({
       invoke: {
         src: 'rotateAstMod',
         id: 'rotateAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Rotate') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -4997,9 +5391,14 @@ export const modelingMachine = setup({
       invoke: {
         src: 'scaleAstMod',
         id: 'scaleAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Scale') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -5013,9 +5412,14 @@ export const modelingMachine = setup({
       invoke: {
         src: 'cloneAstMod',
         id: 'cloneAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Clone') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
         },
         onDone: ['idle'],
         onError: {
@@ -5058,8 +5462,15 @@ export const modelingMachine = setup({
       invoke: {
         src: 'boolSubtractAstMod',
         id: 'boolSubtractAstMod',
-        input: ({ event }) =>
-          event.type !== 'Boolean Subtract' ? undefined : event.data,
+        input: ({ event, context }) => {
+          if (event.type !== 'Boolean Subtract') return undefined
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
+        },
         onDone: 'idle',
         onError: {
           target: 'idle',
@@ -5072,8 +5483,15 @@ export const modelingMachine = setup({
       invoke: {
         src: 'boolUnionAstMod',
         id: 'boolUnionAstMod',
-        input: ({ event }) =>
-          event.type !== 'Boolean Union' ? undefined : event.data,
+        input: ({ event, context }) => {
+          if (event.type !== 'Boolean Union') return undefined
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
+        },
         onDone: 'idle',
         onError: {
           target: 'idle',
@@ -5086,8 +5504,15 @@ export const modelingMachine = setup({
       invoke: {
         src: 'boolIntersectAstMod',
         id: 'boolIntersectAstMod',
-        input: ({ event }) =>
-          event.type !== 'Boolean Intersect' ? undefined : event.data,
+        input: ({ event, context }) => {
+          if (event.type !== 'Boolean Intersect') return undefined
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
+        },
         onDone: 'idle',
         onError: {
           target: 'idle',
@@ -5100,8 +5525,15 @@ export const modelingMachine = setup({
       invoke: {
         src: 'patternCircular3dAstMod',
         id: 'patternCircular3dAstMod',
-        input: ({ event }) =>
-          event.type !== 'Pattern Circular 3D' ? undefined : event.data,
+        input: ({ event, context }) => {
+          if (event.type !== 'Pattern Circular 3D') return undefined
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
+        },
         onDone: 'idle',
         onError: {
           target: 'idle',
@@ -5114,8 +5546,15 @@ export const modelingMachine = setup({
       invoke: {
         src: 'patternLinear3dAstMod',
         id: 'patternLinear3dAstMod',
-        input: ({ event }) =>
-          event.type !== 'Pattern Linear 3D' ? undefined : event.data,
+        input: ({ event, context }) => {
+          if (event.type !== 'Pattern Linear 3D') return undefined
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
+        },
         onDone: 'idle',
         onError: {
           target: 'idle',
