@@ -166,36 +166,36 @@ import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 
 export type ModelingMachineEvent =
   | {
-      type: 'Enter sketch'
-      data?: {
-        forceNewSketch?: boolean
-      }
+    type: 'Enter sketch'
+    data?: {
+      forceNewSketch?: boolean
     }
+  }
   | { type: 'Sketch On Face' }
   | {
-      type: 'Select sketch plane'
-      data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
-    }
+    type: 'Select sketch plane'
+    data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
+  }
   | {
-      type: 'Select sketch solve plane'
-      data: ArtifactId
-    }
+    type: 'Select sketch solve plane'
+    data: ArtifactId
+  }
   | {
-      type: 'Set selection'
-      data: SetSelections
-    }
+    type: 'Set selection'
+    data: SetSelections
+  }
   | {
-      type: 'Delete selection'
-    }
+    type: 'Delete selection'
+  }
   | { type: 'Sketch no face' }
   | { type: 'Cancel'; cleanup?: () => void }
   | {
-      type: 'Add start point' | 'Continue existing profile'
-      data: {
-        sketchNodePaths: PathToNode[]
-        sketchEntryNodePath: PathToNode
-      }
+    type: 'Add start point' | 'Continue existing profile'
+    data: {
+      sketchNodePaths: PathToNode[]
+      sketchEntryNodePath: PathToNode
     }
+  }
   | { type: 'Close sketch' }
   | { type: 'Make segment horizontal' }
   | { type: 'Make segment vertical' }
@@ -210,33 +210,33 @@ export type ModelingMachineEvent =
   | { type: 'Constrain snap to X' }
   | { type: 'Constrain snap to Y' }
   | {
-      type: 'Constrain length'
-      data: ModelingCommandSchema['Constrain length']
-    }
+    type: 'Constrain length'
+    data: ModelingCommandSchema['Constrain length']
+  }
   | { type: 'Constrain equal length' }
   | { type: 'Constrain parallel' }
   | { type: 'Constrain remove constraints'; data?: PathToNode }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | {
-      type: 'Boolean Subtract'
-      data: ModelingCommandSchema['Boolean Subtract']
-    }
+    type: 'Boolean Subtract'
+    data: ModelingCommandSchema['Boolean Subtract']
+  }
   | {
-      type: 'Boolean Union'
-      data: ModelingCommandSchema['Boolean Union']
-    }
+    type: 'Boolean Union'
+    data: ModelingCommandSchema['Boolean Union']
+  }
   | {
-      type: 'Boolean Intersect'
-      data: ModelingCommandSchema['Boolean Intersect']
-    }
+    type: 'Boolean Intersect'
+    data: ModelingCommandSchema['Boolean Intersect']
+  }
   | {
-      type: 'Pattern Circular 3D'
-      data: ModelingCommandSchema['Pattern Circular 3D']
-    }
+    type: 'Pattern Circular 3D'
+    data: ModelingCommandSchema['Pattern Circular 3D']
+  }
   | {
-      type: 'Pattern Linear 3D'
-      data: ModelingCommandSchema['Pattern Linear 3D']
-    }
+    type: 'Pattern Linear 3D'
+    data: ModelingCommandSchema['Pattern Linear 3D']
+  }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
   | { type: 'Sweep'; data?: ModelingCommandSchema['Sweep'] }
@@ -249,83 +249,83 @@ export type ModelingMachineEvent =
   | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
-      type: 'Delete selection'
-      data: ModelingCommandSchema['Delete selection']
-    }
+    type: 'Delete selection'
+    data: ModelingCommandSchema['Delete selection']
+  }
   | {
-      type: 'Update sketch details'
-      data: Partial<SketchDetails>
-    }
+    type: 'Update sketch details'
+    data: Partial<SketchDetails>
+  }
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
   | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | {
-      type:
-        | 'Add circle origin'
-        | 'Add circle center'
-        | 'Add center rectangle origin'
-        | 'click in scene'
-        | 'Add first point'
-      data: [x: number, y: number]
-    }
+    type:
+    | 'Add circle origin'
+    | 'Add circle center'
+    | 'Add center rectangle origin'
+    | 'click in scene'
+    | 'Add first point'
+    data: [x: number, y: number]
+  }
   | {
-      type: 'Add second point'
-      data: {
-        p1: [x: number, y: number]
-        p2: [x: number, y: number]
-      }
+    type: 'Add second point'
+    data: {
+      p1: [x: number, y: number]
+      p2: [x: number, y: number]
     }
+  }
   | {
-      type: 'xstate.done.actor.animate-to-face'
-      output: SketchDetails
-    }
+    type: 'xstate.done.actor.animate-to-face'
+    output: SketchDetails
+  }
   | { type: 'xstate.done.actor.animate-to-sketch'; output: SketchDetails }
   | { type: `xstate.done.actor.do-constrain${string}`; output: SetSelections }
   | {
-      type:
-        | 'xstate.done.actor.set-up-draft-circle'
-        | 'xstate.done.actor.set-up-draft-rectangle'
-        | 'xstate.done.actor.set-up-draft-center-rectangle'
-        | 'xstate.done.actor.set-up-draft-circle-three-point'
-        | 'xstate.done.actor.set-up-draft-arc'
-        | 'xstate.done.actor.set-up-draft-arc-three-point'
-        | 'xstate.done.actor.split-sketch-pipe-if-needed'
-        | 'xstate.done.actor.actor-circle-three-point'
-        | 'xstate.done.actor.reeval-node-paths'
+    type:
+    | 'xstate.done.actor.set-up-draft-circle'
+    | 'xstate.done.actor.set-up-draft-rectangle'
+    | 'xstate.done.actor.set-up-draft-center-rectangle'
+    | 'xstate.done.actor.set-up-draft-circle-three-point'
+    | 'xstate.done.actor.set-up-draft-arc'
+    | 'xstate.done.actor.set-up-draft-arc-three-point'
+    | 'xstate.done.actor.split-sketch-pipe-if-needed'
+    | 'xstate.done.actor.actor-circle-three-point'
+    | 'xstate.done.actor.reeval-node-paths'
 
-      output: SketchDetailsUpdate
-    }
+    output: SketchDetailsUpdate
+  }
   | {
-      type: 'xstate.done.actor.setup-client-side-sketch-segments9'
-    }
+    type: 'xstate.done.actor.setup-client-side-sketch-segments9'
+  }
   | { type: 'Set mouse state'; data: MouseState }
   | { type: 'Set context'; data: Partial<Store> }
   | {
-      type: 'Set Segment Overlays'
-      data: SegmentOverlayPayload
-    }
+    type: 'Set Segment Overlays'
+    data: SegmentOverlayPayload
+  }
   | {
-      type: 'Center camera on selection'
-    }
+    type: 'Center camera on selection'
+  }
   | {
-      type: 'Delete segment'
-      data: PathToNode
-    }
+    type: 'Delete segment'
+    data: PathToNode
+  }
   | {
-      type: 'code edit during sketch'
-    }
+    type: 'code edit during sketch'
+  }
   | {
-      type: 'Constrain with named value'
-      data: ModelingCommandSchema['Constrain with named value']
-    }
+    type: 'Constrain with named value'
+    data: ModelingCommandSchema['Constrain with named value']
+  }
   | {
-      type: 'change tool'
-      data: {
-        tool: SketchTool
-      }
+    type: 'change tool'
+    data: {
+      tool: SketchTool
     }
+  }
   | { type: 'Finish rectangle' }
   | { type: 'Finish center rectangle' }
   | { type: 'Finish circle' }
@@ -335,27 +335,27 @@ export type ModelingMachineEvent =
   | { type: 'Artifact graph emptied' }
   | { type: 'Artifact graph initialized' }
   | {
-      type: 'Toggle default plane visibility'
-      planeId: string
-      planeKey: keyof PlaneVisibilityMap
-    }
+    type: 'Toggle default plane visibility'
+    planeId: string
+    planeKey: keyof PlaneVisibilityMap
+  }
   | {
-      type: 'Save default plane visibility'
-      planeId: string
-      planeKey: keyof PlaneVisibilityMap
-    }
+    type: 'Save default plane visibility'
+    planeId: string
+    planeKey: keyof PlaneVisibilityMap
+  }
   | {
-      type: 'Restore default plane visibility'
-    }
+    type: 'Restore default plane visibility'
+  }
   | {
-      type: 'equip tool'
-      data: { tool: EquipTool }
-    }
+    type: 'equip tool'
+    data: { tool: EquipTool }
+  }
   | { type: 'unequip tool' }
   | {
-      type: 'sketch solve tool changed'
-      data: { tool: EquipTool | null }
-    }
+    type: 'sketch solve tool changed'
+    data: { tool: EquipTool | null }
+  }
 
 // export type MoveDesc = { line: number; snippet: string }
 
@@ -577,8 +577,8 @@ export const modelingMachine = setup({
       const pathToNodes = event.data
         ? [event.data]
         : selectionRanges.graphSelections.map(({ codeRef }) => {
-            return codeRef.pathToNode
-          })
+          return codeRef.pathToNode
+        })
       const info = removeConstrainingValuesInfo(pathToNodes)
       if (err(info)) return false
       return info.enabled
@@ -1262,14 +1262,15 @@ export const modelingMachine = setup({
         return result
       },
     }),
-    'remove draft entities': () => {
-      const draftPoint = sceneInfra.scene.getObjectByName(DRAFT_POINT)
+    'remove draft entities': ({ context }) => {
+      const theSceneInfra = context.sceneInfra ? context.sceneInfra : sceneInfra
+      const draftPoint = theSceneInfra.scene.getObjectByName(DRAFT_POINT)
       if (draftPoint) {
-        sceneInfra.scene.remove(draftPoint)
+        theSceneInfra.scene.remove(draftPoint)
       }
-      const draftLine = sceneInfra.scene.getObjectByName(DRAFT_DASHED_LINE)
+      const draftLine = theSceneInfra.scene.getObjectByName(DRAFT_DASHED_LINE)
       if (draftLine) {
-        sceneInfra.scene.remove(draftLine)
+        theSceneInfra.scene.remove(draftLine)
       }
     },
     'add draft line': ({ event, context }) => {
@@ -1279,6 +1280,9 @@ export const modelingMachine = setup({
       )
         return
 
+      const theSceneEntitiesManager = context.sceneEntitiesManager ? context.sceneEntitiesManager : sceneEntitiesManager
+      const theSceneInfra = context.sceneInfra ? context.sceneInfra : sceneInfra
+      const theKclManager = context.kclManager ? context.kclManager : kclManager
       let sketchEntryNodePath: PathToNode | undefined
 
       if (event.type === 'Add start point') {
@@ -1291,43 +1295,43 @@ export const modelingMachine = setup({
       }
       if (!sketchEntryNodePath) return
       const varDec = getNodeFromPath<VariableDeclaration>(
-        kclManager.ast,
+        theKclManager.ast,
         sketchEntryNodePath,
         'VariableDeclaration'
       )
       if (err(varDec)) return
       const varName = varDec.node.declaration.id.name
-      const sg = sketchFromKclValue(kclManager.variables[varName], varName)
+      const sg = sketchFromKclValue(theKclManager.variables[varName], varName)
       if (err(sg)) return
       const lastSegment = sg.paths[sg.paths.length - 1] || sg.start
       const to = lastSegment.to
 
-      const { group, updater } = sceneEntitiesManager.drawDashedLine({
+      const { group, updater } = theSceneEntitiesManager.drawDashedLine({
         from: to,
         to: [to[0] + 0.001, to[1] + 0.001],
       })
-      sceneInfra.scene.add(group)
-      const orthoFactor = orthoScale(sceneInfra.camControls.camera)
-      sceneInfra.setCallbacks({
+      theSceneInfra.scene.add(group)
+      const orthoFactor = orthoScale(theSceneInfra.camControls.camera)
+      theSceneInfra.setCallbacks({
         onMove: (args) => {
           const { intersectionPoint } = args
           if (!intersectionPoint?.twoD) return
           if (!context.sketchDetails) return
           const { snappedPoint, isSnapped } =
-            sceneEntitiesManager.getSnappedDragPoint(
+            theSceneEntitiesManager.getSnappedDragPoint(
               intersectionPoint.twoD,
               args.intersects,
               args.mouseEvent
             )
           if (isSnapped) {
-            sceneEntitiesManager.positionDraftPoint({
+            theSceneEntitiesManager.positionDraftPoint({
               snappedPoint: new Vector2(...snappedPoint),
               origin: context.sketchDetails.origin,
               yAxis: context.sketchDetails.yAxis,
               zAxis: context.sketchDetails.zAxis,
             })
           } else {
-            sceneEntitiesManager.removeDraftPoint()
+            theSceneEntitiesManager.removeDraftPoint()
           }
           updater(group, snappedPoint, orthoFactor)
         },
@@ -1342,14 +1346,15 @@ export const modelingMachine = setup({
         },
       }
     }),
-    'enable copilot': () => {},
-    'disable copilot': () => {},
+    'enable copilot': () => { },
+    'disable copilot': () => { },
     'Set selection': assign(
       ({
         context: {
           selectionRanges,
           sketchDetails,
           engineCommandManager: providedEngineCommandManager,
+          editorManager: providedEditorManager
         },
         event,
       }) => {
@@ -1365,13 +1370,14 @@ export const modelingMachine = setup({
             event.output) ||
           null
         if (!setSelections) return {}
+        const theEditorManager = providedEditorManager ? providedEditorManager : editorManager
 
         let selections: Selections = {
           graphSelections: [],
           otherSelections: [],
         }
         if (setSelections.selectionType === 'singleCodeCursor') {
-          if (!setSelections.selection && editorManager.isShiftDown) {
+          if (!setSelections.selection && theEditorManager.isShiftDown) {
             // if the user is holding shift, but they didn't select anything
             // don't nuke their other selections (frustrating to have one bad click ruin your
             // whole selection)
@@ -1379,17 +1385,17 @@ export const modelingMachine = setup({
               graphSelections: selectionRanges.graphSelections,
               otherSelections: selectionRanges.otherSelections,
             }
-          } else if (!setSelections.selection && !editorManager.isShiftDown) {
+          } else if (!setSelections.selection && !theEditorManager.isShiftDown) {
             selections = {
               graphSelections: [],
               otherSelections: [],
             }
-          } else if (setSelections.selection && !editorManager.isShiftDown) {
+          } else if (setSelections.selection && !theEditorManager.isShiftDown) {
             selections = {
               graphSelections: [setSelections.selection],
               otherSelections: [],
             }
-          } else if (setSelections.selection && editorManager.isShiftDown) {
+          } else if (setSelections.selection && theEditorManager.isShiftDown) {
             // selecting and deselecting multiple objects
 
             /**
@@ -1505,7 +1511,7 @@ export const modelingMachine = setup({
           setSelections.selectionType === 'axisSelection' ||
           setSelections.selectionType === 'defaultPlaneSelection'
         ) {
-          if (editorManager.isShiftDown) {
+          if (theEditorManager.isShiftDown) {
             selections = {
               graphSelections: selectionRanges.graphSelections,
               otherSelections: [setSelections.selection],
@@ -1522,7 +1528,7 @@ export const modelingMachine = setup({
         }
 
         if (setSelections.selectionType === 'completeSelection') {
-          const codeMirrorSelection = editorManager.createEditorSelection(
+          const codeMirrorSelection = theEditorManager.createEditorSelection(
             setSelections.selection
           )
           kclEditorActor.send({
@@ -1559,11 +1565,11 @@ export const modelingMachine = setup({
         return {}
       }
     ),
-    'Set mouse state': () => {},
-    'Set Segment Overlays': () => {},
-    'Center camera on selection': () => {},
-    'Submit to Text-to-CAD API': () => {},
-    'Set sketchDetails': () => {},
+    'Set mouse state': () => { },
+    'Set Segment Overlays': () => { },
+    'Center camera on selection': () => { },
+    'Submit to Text-to-CAD API': () => { },
+    'Set sketchDetails': () => { },
     'debug-action': (data) => {
       console.log('re-eval debug-action', data)
     },
@@ -1675,7 +1681,7 @@ export const modelingMachine = setup({
             if (
               !theEngineCommandManager.started &&
               theEngineCommandManager.connection?.websocket?.readyState ===
-                WebSocket.CLOSED
+              WebSocket.CLOSED
             )
               return
 
@@ -2621,7 +2627,7 @@ export const modelingMachine = setup({
         input,
       }: {
         input: ModelingCommandSchema['Prompt-to-edit']
-      }) => {}
+      }) => { }
     ),
 
     /* Below are recent modeling codemods that are using updateModelinState,
@@ -2631,13 +2637,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Extrude'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Extrude'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -2679,13 +2685,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Sweep'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Sweep'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -2727,13 +2733,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Loft'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Loft'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -2772,13 +2778,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Revolve'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Revolve'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -2820,13 +2826,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Offset plane'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Offset plane'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -2870,13 +2876,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Helix'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Helix'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -2919,13 +2925,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Shell'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Shell'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -2968,14 +2974,14 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Fillet'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-              engineCommandManager?: ConnectionManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Fillet'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+          engineCommandManager?: ConnectionManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -3080,14 +3086,14 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Chamfer'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-              engineCommandManager?: ConnectionManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Chamfer'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+          engineCommandManager?: ConnectionManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -3219,13 +3225,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Appearance'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Appearance'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -3267,13 +3273,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Translate'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Translate'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -3316,13 +3322,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Rotate'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Rotate'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -3366,13 +3372,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Scale'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Scale'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -3415,13 +3421,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Clone'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Clone'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -3459,12 +3465,12 @@ export const modelingMachine = setup({
       }
     ),
     exportFromEngine: fromPromise(
-      async ({}: { input?: ModelingCommandSchema['Export'] }) => {
+      async ({ }: { input?: ModelingCommandSchema['Export'] }) => {
         return undefined as Error | undefined
       }
     ),
     makeFromEngine: fromPromise(
-      async ({}: {
+      async ({ }: {
         input?: {
           machineManager: MachineManager
         } & ModelingCommandSchema['Make']
@@ -3477,13 +3483,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Boolean Subtract'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Boolean Subtract'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -3525,13 +3531,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Boolean Union'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Boolean Union'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -3573,13 +3579,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Boolean Intersect'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Boolean Intersect'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -3622,13 +3628,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Pattern Circular 3D'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Pattern Circular 3D'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
@@ -3671,13 +3677,13 @@ export const modelingMachine = setup({
         input,
       }: {
         input:
-          | {
-              data: ModelingCommandSchema['Pattern Linear 3D'] | undefined
-              codeManager?: CodeManager
-              kclManager?: KclManager
-              editorManager?: EditorManager
-            }
-          | undefined
+        | {
+          data: ModelingCommandSchema['Pattern Linear 3D'] | undefined
+          codeManager?: CodeManager
+          kclManager?: KclManager
+          editorManager?: EditorManager
+        }
+        | undefined
       }) => {
         if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
