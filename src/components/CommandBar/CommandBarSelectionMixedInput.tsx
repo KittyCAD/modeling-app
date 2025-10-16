@@ -149,7 +149,6 @@ export default function CommandBarSelectionMixedInput({
         )
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- engineCommandManager (singleton) and handleSelectionBatch (imported function) are stable references that ESLint correctly identifies as unnecessary dependencies
   }, [arg.selectionFilter, selection, hasCoercedSelections])
 
   // Watch for outside teardowns of this component
