@@ -1308,12 +1308,20 @@ export class SceneEntities {
           return
         }
 
-        await updateModelingState(modifiedAst, EXECUTION_TYPE_MOCK, {
-          kclManager: this.kclManager,
-          editorManager: this.editorManager,
-          codeManager: this.codeManager,
-          rustContext: this.rustContext,
-        })
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_MOCK,
+          {
+            kclManager: this.kclManager,
+            editorManager: this.editorManager,
+            codeManager: this.codeManager,
+            rustContext: this.rustContext,
+          },
+          {
+            // TODO: understand why this is needed
+            skipErrorsOnMockExecution: true,
+          }
+        )
 
         if (intersectsProfileStart) {
           this.sceneInfra.modelingSend({ type: 'Close sketch' })
