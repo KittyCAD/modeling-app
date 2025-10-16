@@ -1,4 +1,9 @@
-import { LayoutType, type Layout, type PaneLayout } from '@src/lib/layout/types'
+import {
+  AreaType,
+  LayoutType,
+  type Layout,
+  type PaneLayout,
+} from '@src/lib/layout/types'
 
 /** Temporary ID for getting the left toolbar of the layout */
 export enum DefaultLayoutToolbarID {
@@ -28,7 +33,7 @@ export const debugPaneConfig: PaneLayout['children'][number] = {
   label: 'debug',
   icon: 'bug',
   type: LayoutType.Simple,
-  areaType: 'debug',
+  areaType: AreaType.Debug,
 }
 
 /**
@@ -61,35 +66,35 @@ export const defaultLayoutConfig: Layout = {
           id: DefaultLayoutPaneID.FeatureTree,
           label: 'Feature Tree',
           type: LayoutType.Simple,
-          areaType: 'featureTree',
+          areaType: AreaType.FeatureTree,
           icon: 'model',
         },
         {
           id: DefaultLayoutPaneID.Code,
           label: 'Code Editor',
           type: LayoutType.Simple,
-          areaType: 'codeEditor',
+          areaType: AreaType.Code,
           icon: 'code',
         },
         {
           id: DefaultLayoutPaneID.Files,
           label: 'File Explorer',
           type: LayoutType.Simple,
-          areaType: 'files',
+          areaType: AreaType.Files,
           icon: 'folder',
         },
         {
           id: DefaultLayoutPaneID.Variables,
           label: 'Variables',
           type: LayoutType.Simple,
-          areaType: 'variables',
+          areaType: AreaType.Variables,
           icon: 'make-variable',
         },
         {
           id: DefaultLayoutPaneID.Logs,
           label: 'Logs',
           type: LayoutType.Simple,
-          areaType: 'logs',
+          areaType: AreaType.Logs,
           icon: 'logs',
         },
       ],
@@ -124,7 +129,7 @@ export const defaultLayoutConfig: Layout = {
       id: crypto.randomUUID(),
       label: 'modeling-scene',
       type: LayoutType.Simple,
-      areaType: 'modeling',
+      areaType: AreaType.ModelingScene,
     },
     {
       id: DefaultLayoutToolbarID.Right,
@@ -139,7 +144,7 @@ export const defaultLayoutConfig: Layout = {
           id: DefaultLayoutPaneID.TTC,
           label: 'ttc',
           type: LayoutType.Simple,
-          areaType: 'ttc',
+          areaType: AreaType.TTC,
           icon: 'sparkles',
         },
       ],

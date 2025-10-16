@@ -5,7 +5,7 @@ import type {
   PaneLayout,
   SimpleLayout,
 } from '@src/lib/layout/types'
-import { LayoutType } from '@src/lib/layout/types'
+import { AreaType, LayoutType } from '@src/lib/layout/types'
 import { parseLayoutInner, parseAction } from '@src/lib/layout/parse'
 import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import { testLayoutConfig } from '@src/lib/layout/configs/test'
@@ -14,7 +14,7 @@ const validSimpleLayout = {
   type: LayoutType.Simple,
   id: crypto.randomUUID(),
   label: 'Test simple',
-  areaType: 'featureTree',
+  areaType: AreaType.FeatureTree,
 } satisfies SimpleLayout
 
 const validSplitLayout = {

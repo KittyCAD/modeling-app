@@ -27,6 +27,7 @@ import {
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { useEffect, useState } from 'react'
 import { type RouteObject, useRouteLoaderData } from 'react-router-dom'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 type BrowserOnboaringRoute = RouteObject & {
   path: keyof typeof browserOnboardingPaths
@@ -201,7 +202,7 @@ function TextToCadPrompt() {
     'Design a fan housing for a CPU cooler for a 120mm diameter fan with four holes for retaining clips.'
 
   // Open the text-to-cad pane
-  useOnboardingPanes(['text-to-cad'], ['text-to-cad'])
+  useOnboardingPanes([DefaultLayoutPaneID.TTC], [DefaultLayoutPaneID.TTC])
 
   // Enter the text-to-cad flow with a prebaked prompt
   useEffect(() => {
@@ -250,7 +251,7 @@ function FeatureTreePane() {
   useOnboardingHighlight('feature-tree-pane-button')
 
   // Open the feature tree pane on mount, close on unmount
-  useOnboardingPanes(['feature-tree'])
+  useOnboardingPanes([DefaultLayoutPaneID.FeatureTree])
 
   // Overwrite the code with the "generated" KCL
   useEffect(() => {
@@ -297,7 +298,7 @@ function PromptToEdit() {
   const thisOnboardingStatus: BrowserOnboardingPath = '/browser/prompt-to-edit'
 
   // Open the text-to-cad pane
-  useOnboardingPanes(['text-to-cad'], ['text-to-cad'])
+  useOnboardingPanes([DefaultLayoutPaneID.TTC], [DefaultLayoutPaneID.TTC])
 
   // Make it so submitting the command just advances the onboarding
   useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus)
@@ -331,7 +332,7 @@ function PromptToEditPrompt() {
     'Change the housing to be for a 150 mm diameter fan, make it 30 mm tall, and change the color to purple.'
 
   // Open the text-to-cad pane
-  useOnboardingPanes(['text-to-cad'], ['text-to-cad'])
+  useOnboardingPanes([DefaultLayoutPaneID.TTC], [DefaultLayoutPaneID.TTC])
 
   // Fill in the prompt if available
   useEffect(() => {
@@ -403,7 +404,7 @@ function PromptToEditResult() {
     '/browser/prompt-to-edit-result'
 
   // Open the code pane on mount, close on unmount
-  useOnboardingPanes(['code'])
+  useOnboardingPanes([DefaultLayoutPaneID.Code])
 
   // Overwrite the code with the "generated" KCL
   useEffect(() => {

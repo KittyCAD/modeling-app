@@ -15,6 +15,7 @@ export function TestLayout() {
   return (
     <LayoutRootNode
       layout={layout}
+      getLayout={() => layout}
       setLayout={setLayout}
       layoutName="test"
       areaLibrary={testAreaTypeRegistry}

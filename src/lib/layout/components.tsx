@@ -8,7 +8,9 @@ import type {
   PaneChild,
   Action,
   Side,
+  AreaTypeDefinition,
 } from '@src/lib/layout/types'
+import { AreaType } from '@src/lib/layout/types'
 import {
   getResizeHandleElement,
   Panel,
@@ -42,8 +44,6 @@ import type {
   IReplaceLayoutChildNode,
   ITogglePane,
 } from '@src/lib/layout/utils'
-import type { AreaTypeDefinition } from '@src/lib/layout/areaTypeRegistry'
-import { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 import Tooltip from '@src/components/Tooltip'
 import { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
 import {
@@ -52,23 +52,36 @@ import {
   ContextMenuItem,
   type ContextMenuProps,
 } from '@src/components/ContextMenu'
-import { isArray, platform } from '@src/lib/utils'
+import { isArray } from '@src/lib/utils'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { hotkeyDisplay } from '../hotkeyWrapper'
+import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import usePlatform from '@src/hooks/usePlatform'
 
 const ENABLE_CONTEXT_MENUS = false
 
 type WithoutRootLayout<T> = Omit<T, 'rootLayout'>
 interface LayoutState {
-  areaLibrary: Record<keyof typeof areaTypeRegistry, AreaTypeDefinition>
+  areaLibrary: Record<AreaType, AreaTypeDefinition>
   updateSplitSizes: (props: WithoutRootLayout<IUpdateNodeSizes>) => void
   replaceLayoutNode: (props: WithoutRootLayout<IReplaceLayoutChildNode>) => void
   togglePane: (props: WithoutRootLayout<ITogglePane>) => void
 }
 
+const nullAreaLibrary = Object.fromEntries(
+  Object.values(AreaType).map((type) => [
+    type,
+    {
+      hide: () => false,
+      Component: () => <></>,
+    } satisfies AreaTypeDefinition,
+  ])
+  // TS is so annoying, I've held its hand the entire way to this type inference but Object.fromEntries widens the key to string
+) as unknown as Record<AreaType, AreaTypeDefinition>
+
+console.log('NULL AREA LIBRARY', nullAreaLibrary)
+
 const LayoutStateContext = createContext<LayoutState>({
-  areaLibrary: areaTypeRegistry,
+  areaLibrary: nullAreaLibrary,
   updateSplitSizes: () => {},
   replaceLayoutNode: () => {},
   togglePane: () => {},
@@ -131,7 +144,7 @@ export function LayoutRootNode({
   return (
     <LayoutStateContext.Provider
       value={{
-        areaLibrary: areaLibrary || areaTypeRegistry,
+        areaLibrary: areaLibrary || nullAreaLibrary,
         updateSplitSizes,
         replaceLayoutNode,
         togglePane,
@@ -254,13 +267,12 @@ function SplitLayoutContents({
  * the pane UI buttons and invoke fire-and-forget actions.
  */
 function PaneLayout({ layout }: { layout: PaneLayoutType }) {
-  const { togglePane } = useLayoutState()
+  const { togglePane, areaLibrary } = useLayoutState()
   const paneBarRef = useRef<HTMLUListElement>(null)
   const barBorderWidthProp = `border${orientationToReactCss(sideToOrientation(layout.side))}Width`
   const nonHiddenChildren = layout.children.filter(
     (item) =>
-      item.type !== LayoutType.Simple ||
-      !areaTypeRegistry[item.areaType]?.hide()
+      item.type !== LayoutType.Simple || !areaLibrary[item.areaType]?.hide()
   )
   const activePanes = layout.activeIndices
     .map((itemIndex) => nonHiddenChildren[itemIndex])
@@ -426,11 +438,12 @@ function PaneButton({
 }
 
 function NotificationBadge({ pane }: { pane: PaneChild }) {
+  const { areaLibrary } = useLayoutState()
   const paneIsSimpleArea = pane.type === LayoutType.Simple
   const resolvedAreaType = paneIsSimpleArea
-    ? areaTypeRegistry[pane.areaType]
+    ? areaLibrary[pane.areaType]
     : undefined
-  const notifications = resolvedAreaType?.useNotifications()
+  const notifications = resolvedAreaType?.useNotifications?.()
   const { value, onClick, title } = notifications || {
     value: undefined,
     onClick: () => {},

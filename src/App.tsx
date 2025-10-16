@@ -64,6 +64,7 @@ import {
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
 import { useToggleDebugPaneVisibility } from '@src/lib/layout/utils'
+import { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -269,6 +270,7 @@ export function App() {
             layout={layout || defaultLayout}
             getLayout={getLayout}
             setLayout={setLayout}
+            areaLibrary={areaTypeRegistry}
           />
         </section>
         {/* <CamToggle /> */}

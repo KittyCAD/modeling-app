@@ -1,6 +1,33 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
-import type { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 import type { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
+import type { MouseEventHandler } from 'react'
+import type { SidebarCssOverrides } from '@src/components/ModelingSidebar/ModelingPanes'
+
+export enum AreaType {
+  TTC = 'ttc',
+  Code = 'codeEditor',
+  FeatureTree = 'featureTree',
+  Files = 'files',
+  Variables = 'variables',
+  Logs = 'logs',
+  ModelingScene = 'modeling',
+  Debug = 'debug',
+}
+
+export type AreaTypeDefinition = {
+  hide: () => boolean
+  shortcut?: string
+  /** I decided this is where impure stuff like the TTC button's custom styling should live */
+  cssClassOverrides?: SidebarCssOverrides
+  useNotifications?: () =>
+    | {
+        value: string | number
+        onClick: MouseEventHandler
+        title?: string
+      }
+    | undefined
+  Component: (props: Partial<Closeable>) => React.ReactElement
+}
 
 export enum LayoutType {
   Splits = 'split',
@@ -60,7 +87,7 @@ export interface Closeable {
 }
 export type SimpleLayout = BaseLayout & {
   type: LayoutType.Simple
-  areaType: keyof typeof areaTypeRegistry
+  areaType: AreaType
 }
 export type Layout = SimpleLayout | SplitLayout | PaneLayout
 

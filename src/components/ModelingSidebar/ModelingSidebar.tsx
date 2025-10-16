@@ -158,8 +158,6 @@ export function ModelingSidebarLeft() {
 
 export function ModelingSidebarRight() {
   const settings = useSettings()
-  const { send: modelingContextSend, context: modelingContext } =
-    useModelingContext()
   const promptsBelongingToConversation = useSelector(
     mlEphantManagerActor,
     (actor) => {

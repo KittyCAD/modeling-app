@@ -71,6 +71,7 @@ import { initPromise } from '@src/lang/wasmUtils'
 import { setKclVersion } from '@src/lib/kclVersion'
 import { AppMachineEventType } from '@src/lib/types'
 import { saveLayout } from '@src/lib/layout/save'
+import type { Layout } from '@src/lib/layout/types'
 
 initPromise
   .then(() => {

@@ -8,9 +8,9 @@ import type {
   SimpleLayout,
   SplitLayout,
 } from '@src/lib/layout/types'
+import { AreaType } from '@src/lib/layout/types'
 import { LayoutType } from '@src/lib/layout/types'
 import { isArray } from '@src/lib/utils'
-import { areaTypeRegistry } from '@src/lib/layout/areaTypeRegistry'
 import { isErr } from '@src/lib/trap'
 import { isCustomIconName } from '@src/components/CustomIcon'
 import { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
@@ -59,10 +59,8 @@ export function parseLayoutInner(l: unknown): Layout | Error {
 function validateLayoutType(l: string): l is LayoutType {
   return Object.values(LayoutType).includes(l as LayoutType)
 }
-function validateAreaType(a: unknown): a is keyof typeof areaTypeRegistry {
-  return Object.keys(areaTypeRegistry).includes(
-    a as keyof typeof areaTypeRegistry
-  )
+function validateAreaType(a: unknown): a is AreaType {
+  return Object.values(AreaType).includes(a as AreaType)
 }
 function validateActionType(a: unknown): a is keyof typeof actionTypeRegistry {
   return Object.keys(actionTypeRegistry).includes(
@@ -306,7 +304,7 @@ function parsePaneLayout(
       : fallbackSizes
 
   // Drop catastrophically erroring actions
-  // TODO: propogate errors as warnings
+  // TODO: propagate errors as warnings
   const actions: NonNullable<PaneLayout['actions']> = []
   if ('actions' in layout && isArray(layout.actions)) {
     // Iterate in reverse so we can remove without messing up indices

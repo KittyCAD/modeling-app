@@ -6,13 +6,16 @@ import Gizmo from '@src/components/Gizmo'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { Toolbar } from '@src/Toolbar'
 import {
-  type SidebarCssOverrides,
   type SidebarPane,
   sidebarPanesLeft,
   sidebarPanesRight,
 } from '@src/components/ModelingSidebar/ModelingPanes'
 import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
-import type { Closeable } from '@src/lib/layout/types'
+import type {
+  AreaType,
+  AreaTypeDefinition,
+  Closeable,
+} from '@src/lib/layout/types'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
@@ -23,21 +26,6 @@ import {
   setOpenPanes,
 } from '@src/lib/layout/utils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-
-export type AreaTypeDefinition = {
-  hide: () => boolean
-  shortcut?: string
-  /** I decided this is where impure stuff like the TTC button's custom styling should live */
-  cssClassOverrides?: SidebarCssOverrides
-  useNotifications: () =>
-    | {
-        value: string | number
-        onClick: MouseEventHandler
-        title?: string
-      }
-    | undefined
-  Component: (props: Partial<Closeable>) => React.ReactElement
-}
 
 /**
  * For now we have strict area types but in future
@@ -132,27 +120,29 @@ export const areaTypeRegistry = Object.freeze({
       PaneToArea({ pane: sidebarPanesLeft[5], ...props }),
     useNotifications: () => undefined,
   },
-} satisfies Record<string, AreaTypeDefinition>)
+} satisfies Record<AreaType, AreaTypeDefinition>)
 
-function TestArea({ name }: { name: string }) {
-  return (
-    <div className="self-stretch flex-1 grid place-content-center">{name}</div>
-  )
+function testArea(name: string): AreaTypeDefinition {
+  return {
+    hide: () => false,
+    Component: () => (
+      <div className="self-stretch flex-1 grid place-content-center">
+        {name}
+      </div>
+    ),
+  }
 }
 
 export const testAreaTypeRegistry = Object.freeze({
-  featureTree: () => <TestArea name="featureTree" />,
-  modeling: () => <TestArea name="featureTree" />,
-  ttc: () => <TestArea name="ttc" />,
-  codeEditor: () => <TestArea name="codeEditor" />,
-  files: () => <TestArea name="files" />,
-  logs: () => <TestArea name="logs" />,
-  variables: () => <TestArea name="variables" />,
-  debug: () => <TestArea name="debug" />,
-} satisfies Record<
-  keyof typeof areaTypeRegistry,
-  (props: Partial<Closeable>) => JSX.Element
->)
+  featureTree: testArea('Feature Tree'),
+  modeling: testArea('Modeling Scene'),
+  ttc: testArea('TTC'),
+  codeEditor: testArea('Code Editor'),
+  files: testArea('File Explorer'),
+  logs: testArea('Logs'),
+  variables: testArea('Variables'),
+  debug: testArea('Debug'),
+} satisfies Record<AreaType, AreaTypeDefinition>)
 
 function ModelingArea() {
   const authToken = useToken()
@@ -191,5 +181,3 @@ function PaneToArea({
     </ModelingPane>
   )
 }
-
-export type AreaType = keyof typeof areaTypeRegistry
