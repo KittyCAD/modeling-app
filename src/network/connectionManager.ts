@@ -2,8 +2,9 @@ import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { Connection } from '@src/network/connection'
 import {
   darkModeMatcher,
+  getEdgeColorForEngine,
   getOppositeTheme,
-  getThemeColorForEngine,
+  getVolumeColorForEngine,
   Themes,
 } from '@src/lib/theme'
 import { withWebSocketURL } from '@src/lib/withBaseURL'
@@ -421,7 +422,7 @@ export class ConnectionManager extends EventTarget {
       metadata: {
         cmd: {
           type: 'set_background_color',
-          color: getThemeColorForEngine(theme),
+          color: getVolumeColorForEngine(theme),
         },
       },
     })
@@ -430,7 +431,7 @@ export class ConnectionManager extends EventTarget {
       type: 'modeling_cmd_req',
       cmd: {
         type: 'set_background_color',
-        color: getThemeColorForEngine(theme),
+        color: getVolumeColorForEngine(theme),
       },
     })
     EngineDebugger.addLog({
@@ -439,7 +440,7 @@ export class ConnectionManager extends EventTarget {
       metadata: {
         cmd: {
           type: 'set_background_color',
-          color: getThemeColorForEngine(theme),
+          color: getVolumeColorForEngine(theme),
         },
       },
     })
@@ -452,7 +453,7 @@ export class ConnectionManager extends EventTarget {
       metadata: {
         cmd: {
           type: 'set_default_system_properties',
-          color: getThemeColorForEngine(opposingTheme),
+          color: getEdgeColorForEngine(opposingTheme),
         },
       },
     })
@@ -461,7 +462,7 @@ export class ConnectionManager extends EventTarget {
       type: 'modeling_cmd_req',
       cmd: {
         type: 'set_default_system_properties',
-        color: getThemeColorForEngine(opposingTheme),
+        color: getEdgeColorForEngine(opposingTheme),
       },
     })
     EngineDebugger.addLog({
@@ -470,7 +471,7 @@ export class ConnectionManager extends EventTarget {
       metadata: {
         cmd: {
           type: 'set_default_system_properties',
-          color: getThemeColorForEngine(opposingTheme),
+          color: getEdgeColorForEngine(opposingTheme),
         },
       },
     })

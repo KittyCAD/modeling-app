@@ -81,7 +81,7 @@ import type { PathToNode } from '@src/lang/wasm'
 import { getTangentialArcToInfo } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { Themes } from '@src/lib/theme'
-import { getThemeColorForThreeJs } from '@src/lib/theme'
+import { getVolumeColorForThreeJs } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { isClockwise, normaliseAngle, roundOff } from '@src/lib/utils'
 import { getTangentPointFromPreviousArc } from '@src/lib/utils2d'
@@ -166,7 +166,7 @@ class StraightSegment implements SegmentUtils {
       return new Error('Invalid segment type')
     const { from, to } = input
     const baseColor =
-      callExpName === 'close' ? 0x444444 : getThemeColorForThreeJs(theme)
+      callExpName === 'close' ? 0x444444 : getVolumeColorForThreeJs(theme)
     const color = isSelected ? SEGMENT_BLUE : baseColor
     const meshType = isDraftSegment
       ? STRAIGHT_SEGMENT_DASH
@@ -419,7 +419,7 @@ class TangentialArcToSegment implements SegmentUtils {
       isDashed: isDraftSegment,
       scale,
     })
-    const baseColor = getThemeColorForThreeJs(theme)
+    const baseColor = getVolumeColorForThreeJs(theme)
     const color = isSelected ? SEGMENT_BLUE : baseColor
     const body = new MeshBasicMaterial({ color })
     const mesh = new Mesh(geometry, body)
@@ -608,7 +608,7 @@ class CircleSegment implements SegmentUtils {
       return new Error('Invalid segment type')
     }
     const { from, center, radius } = input
-    const baseColor = getThemeColorForThreeJs(theme)
+    const baseColor = getVolumeColorForThreeJs(theme)
     const color = isSelected ? SEGMENT_BLUE : baseColor
 
     const group = new Group()
@@ -862,7 +862,7 @@ class CircleThreePointSegment implements SegmentUtils {
       p3[1]
     )
     const center: [number, number] = [center_x, center_y]
-    const baseColor = getThemeColorForThreeJs(theme)
+    const baseColor = getVolumeColorForThreeJs(theme)
     const color = isSelected ? SEGMENT_BLUE : baseColor
 
     const group = new Group()
@@ -1072,7 +1072,7 @@ class ArcSegment implements SegmentUtils {
       return new Error('Invalid segment type')
     }
     const { from, to, center, radius, ccw } = input
-    const baseColor = getThemeColorForThreeJs(theme)
+    const baseColor = getVolumeColorForThreeJs(theme)
     const color = isSelected ? SEGMENT_BLUE : baseColor
 
     // Calculate start and end angles
@@ -1440,7 +1440,7 @@ class ThreePointArcSegment implements SegmentUtils {
       p3[1]
     )
     const center: [number, number] = [center_x, center_y]
-    const baseColor = getThemeColorForThreeJs(theme)
+    const baseColor = getVolumeColorForThreeJs(theme)
     const color = isSelected ? SEGMENT_BLUE : baseColor
 
     // Calculate start and end angles
@@ -1656,7 +1656,7 @@ export function createProfileStartHandle({
   const group = new Group()
 
   const geometry = new BoxGeometry(size, size, size) // in pixels scaled later
-  const baseColor = getThemeColorForThreeJs(theme)
+  const baseColor = getVolumeColorForThreeJs(theme)
   const color = isSelected ? SEGMENT_BLUE : baseColor
   const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
@@ -1677,7 +1677,7 @@ export function createProfileStartHandle({
 }
 
 function createArrowhead(scale = 1, theme: Themes, color?: number): Group {
-  const baseColor = getThemeColorForThreeJs(theme)
+  const baseColor = getVolumeColorForThreeJs(theme)
   const arrowMaterial = new MeshBasicMaterial({
     color: color || baseColor,
   })
@@ -1703,7 +1703,7 @@ function createCircleCenterHandle(
   const circleCenterGroup = new Group()
 
   const geometry = new BoxGeometry(12, 12, 12) // in pixels scaled later
-  const baseColor = getThemeColorForThreeJs(theme)
+  const baseColor = getVolumeColorForThreeJs(theme)
   const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
 
@@ -1726,7 +1726,7 @@ function createCircleThreePointHandle(
   const circleCenterGroup = new Group()
 
   const geometry = new BoxGeometry(12, 12, 12) // in pixels scaled later
-  const baseColor = getThemeColorForThreeJs(theme)
+  const baseColor = getVolumeColorForThreeJs(theme)
   const body = new MeshBasicMaterial({ color })
   const mesh = new Mesh(geometry, body)
 
@@ -1748,7 +1748,7 @@ function createExtraSegmentHandle(scale: number, theme: Themes): Group {
 
   const mat = new MeshBasicMaterial({
     transparent: true,
-    color: getThemeColorForThreeJs(theme),
+    color: getVolumeColorForThreeJs(theme),
     opacity: 0,
   })
   const sphereMesh = new Mesh(new SphereGeometry(6, 12, 12), mat) // sphere radius in pixels
@@ -1756,7 +1756,7 @@ function createExtraSegmentHandle(scale: number, theme: Themes): Group {
 
   const handleDiv = document.createElement('div')
   handleDiv.classList.add('extra-segment-handle')
-  handleDiv.style.color = `#${getThemeColorForThreeJs(theme).toString(16).padStart(6, '0')}`
+  handleDiv.style.color = `#${getVolumeColorForThreeJs(theme).toString(16).padStart(6, '0')}`
 
   const cssObject = new CSS2DObject(handleDiv)
   cssObject.userData.ignoreColorChange = true

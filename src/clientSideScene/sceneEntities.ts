@@ -162,7 +162,7 @@ import type RustContext from '@src/lib/rustContext'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { Themes, getResolvedTheme } from '@src/lib/theme'
-import { getThemeColorForThreeJs } from '@src/lib/theme'
+import { getVolumeColorForThreeJs } from '@src/lib/theme'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import {
@@ -3433,7 +3433,7 @@ export class SceneEntities {
    * latest value from `sceneInfra._theme`
    */
   updateSegmentBaseColor(newColor: Themes.Light | Themes.Dark) {
-    const newColorThreeJs = getThemeColorForThreeJs(newColor)
+    const newColorThreeJs = getVolumeColorForThreeJs(newColor)
     Object.values(this.activeSegments).forEach((group) => {
       group.userData.baseColor = newColorThreeJs
       group.traverse((child) => {
@@ -3662,7 +3662,7 @@ export class SceneEntities {
           isSelected
             ? SEGMENT_BLUE
             : parent?.userData?.baseColor ||
-                getThemeColorForThreeJs(this.sceneInfra.theme)
+                getVolumeColorForThreeJs(this.sceneInfra.theme)
         )
         updateExtraSegments(parent, 'hoveringLine', false)
         updateExtraSegments(parent, 'selected', isSelected)
@@ -3784,7 +3784,7 @@ export class SceneEntities {
   }
 
   drawDashedLine({ from, to }: { from: Coords2d; to: Coords2d }) {
-    const baseColor = getThemeColorForThreeJs(this.sceneInfra.theme)
+    const baseColor = getVolumeColorForThreeJs(this.sceneInfra.theme)
     const color = baseColor
     const meshType = STRAIGHT_SEGMENT_DASH
 
