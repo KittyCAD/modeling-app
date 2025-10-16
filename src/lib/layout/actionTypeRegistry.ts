@@ -5,14 +5,8 @@ import { useContext } from 'react'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
+import type { ActionType, ActionTypeDefinition } from '@src/lib/layout/types'
 
-type Action = {
-  execute: () => void | (() => Promise<void>)
-  /** A custom hook for the Action to detect if it should be enabled */
-  useDisabled: () => string | undefined
-  shortcut?: string
-  useHidden: () => boolean
-}
 /**
  * For now we have strict action types but in future
  * we should make it possible to register your own in an extension.
@@ -72,4 +66,4 @@ export const actionTypeRegistry = Object.freeze({
       }),
     useHidden: () => !isDesktop(),
   },
-} satisfies Record<string, Action>)
+} satisfies Record<ActionType, Action>)

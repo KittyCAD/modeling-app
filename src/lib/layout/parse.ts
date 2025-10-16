@@ -8,12 +8,12 @@ import type {
   SimpleLayout,
   SplitLayout,
 } from '@src/lib/layout/types'
+import { ActionType } from '@src/lib/layout/types'
 import { AreaType } from '@src/lib/layout/types'
 import { LayoutType } from '@src/lib/layout/types'
 import { isArray } from '@src/lib/utils'
 import { isErr } from '@src/lib/trap'
 import { isCustomIconName } from '@src/components/CustomIcon'
-import { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
 
 export function parseLayoutFromJsonString(
   layoutString: string
@@ -62,10 +62,8 @@ function validateLayoutType(l: string): l is LayoutType {
 function validateAreaType(a: unknown): a is AreaType {
   return Object.values(AreaType).includes(a as AreaType)
 }
-function validateActionType(a: unknown): a is keyof typeof actionTypeRegistry {
-  return Object.keys(actionTypeRegistry).includes(
-    a as keyof typeof actionTypeRegistry
-  )
+function validateActionType(a: unknown): a is ActionType {
+  return Object.values(ActionType).includes(a as ActionType)
 }
 
 /** Basic record (object) type narrowing */

@@ -1,5 +1,4 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
-import type { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
 import type { MouseEventHandler } from 'react'
 import type { SidebarCssOverrides } from '@src/components/ModelingSidebar/ModelingPanes'
 
@@ -27,6 +26,21 @@ export type AreaTypeDefinition = {
       }
     | undefined
   Component: (props: Partial<Closeable>) => React.ReactElement
+}
+
+export enum ActionType {
+  Export = 'export',
+  AddFile = 'addFileToProject',
+  Refresh = 'refreshApp',
+  Make = 'make',
+}
+
+export type ActionTypeDefinition = {
+  execute: () => void | (() => Promise<void>)
+  /** A custom hook for the Action to detect if it should be enabled */
+  useDisabled?: () => string | undefined
+  shortcut?: string
+  useHidden?: () => boolean
 }
 
 export enum LayoutType {
@@ -66,7 +80,7 @@ export type SplitLayout = BaseLayout &
   }
 export type Action = HasIdAndLabel &
   WithIcon & {
-    actionType: keyof typeof actionTypeRegistry
+    actionType: ActionType
   }
 export type PaneChild = Layout & WithIcon
 export type PaneLayout = BaseLayout &

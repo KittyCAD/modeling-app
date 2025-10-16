@@ -9,6 +9,8 @@ import type {
   Action,
   Side,
   AreaTypeDefinition,
+  ActionTypeDefinition,
+  ActionType,
 } from '@src/lib/layout/types'
 import { AreaType } from '@src/lib/layout/types'
 import {
@@ -45,7 +47,6 @@ import type {
   ITogglePane,
 } from '@src/lib/layout/utils'
 import Tooltip from '@src/components/Tooltip'
-import { actionTypeRegistry } from '@src/lib/layout/actionTypeRegistry'
 import {
   ContextMenu,
   ContextMenuDivider,
@@ -62,6 +63,7 @@ const ENABLE_CONTEXT_MENUS = false
 type WithoutRootLayout<T> = Omit<T, 'rootLayout'>
 interface LayoutState {
   areaLibrary: Record<AreaType, AreaTypeDefinition>
+  actionLibrary: Record<ActionType, ActionTypeDefinition>
   updateSplitSizes: (props: WithoutRootLayout<IUpdateNodeSizes>) => void
   replaceLayoutNode: (props: WithoutRootLayout<IReplaceLayoutChildNode>) => void
   togglePane: (props: WithoutRootLayout<ITogglePane>) => void
@@ -78,10 +80,19 @@ const nullAreaLibrary = Object.fromEntries(
   // TS is so annoying, I've held its hand the entire way to this type inference but Object.fromEntries widens the key to string
 ) as unknown as Record<AreaType, AreaTypeDefinition>
 
-console.log('NULL AREA LIBRARY', nullAreaLibrary)
+const nullActionLibrary = Object.fromEntries(
+  Object.values(AreaType).map((type) => [
+    type,
+    {
+      execute: () => {},
+    } satisfies ActionTypeDefinition,
+  ])
+  // TS is so annoying, I've held its hand the entire way to this type inference but Object.fromEntries widens the key to string
+) as unknown as Record<ActionType, ActionTypeDefinition>
 
 const LayoutStateContext = createContext<LayoutState>({
   areaLibrary: nullAreaLibrary,
+  actionLibrary: nullActionLibrary,
   updateSplitSizes: () => {},
   replaceLayoutNode: () => {},
   togglePane: () => {},
@@ -91,6 +102,7 @@ export const useLayoutState = () => useContext(LayoutStateContext)
 
 interface LayoutRootNodeProps {
   areaLibrary?: LayoutState['areaLibrary']
+  actionLibrary?: LayoutState['actionLibrary']
   layout: Layout
   getLayout: () => Layout | undefined
   setLayout: (layout: Layout) => void
@@ -99,6 +111,7 @@ interface LayoutRootNodeProps {
 
 export function LayoutRootNode({
   areaLibrary,
+  actionLibrary,
   layout,
   getLayout,
   setLayout,
@@ -145,6 +158,7 @@ export function LayoutRootNode({
     <LayoutStateContext.Provider
       value={{
         areaLibrary: areaLibrary || nullAreaLibrary,
+        actionLibrary: actionLibrary || nullActionLibrary,
         updateSplitSizes,
         replaceLayoutNode,
         togglePane,
@@ -479,10 +493,11 @@ function NotificationBadge({ pane }: { pane: PaneChild }) {
 }
 
 function ActionButton({ action, side }: { action: Action; side: Side }) {
+  const { actionLibrary } = useLayoutState()
   const platform = usePlatform()
-  const resolvedAction = actionTypeRegistry[action.actionType]
-  const disabledReason = resolvedAction.useDisabled()
-  const hidden = resolvedAction.useHidden()
+  const resolvedAction = actionLibrary[action.actionType]
+  const disabledReason = resolvedAction.useDisabled?.()
+  const hidden = resolvedAction.useHidden?.()
   useHotkeys(resolvedAction.shortcut || '', () => resolvedAction.execute(), {
     scopes: ['modeling'],
     enabled: !!resolvedAction.shortcut?.length,
