@@ -25,6 +25,7 @@ import {
 } from '@src/lang/std/sketchcombos'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import { kclEditorMachine } from './kclEditorMachine'
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
 describe('modelingMachine.test.ts', () => {
@@ -895,12 +896,16 @@ p3 = [342.51, 216.38],
             }
 
             const contextCopied = generateModelingMachineDefaultContext()
+            const kclEditorActor = createActor(kclEditorMachine).start()
+
             contextCopied.codeManager = codeManager
             contextCopied.kclManager = kclManager
             contextCopied.engineCommandManager = engineCommandManager
             contextCopied.sceneInfra = sceneInfra
             contextCopied.editorManager = editorManager
             contextCopied.wasmInstance = instance
+            contextCopied.kclEditorMachine = kclEditorActor
+
             const sceneEntitiesManager = new SceneEntities(
               engineCommandManager,
               sceneInfra,

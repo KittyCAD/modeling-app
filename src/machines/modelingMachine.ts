@@ -1372,6 +1372,7 @@ export const modelingMachine = setup({
           sketchDetails,
           engineCommandManager: providedEngineCommandManager,
           editorManager: providedEditorManager,
+          kclEditorMachine: providedKclEditorMachine,
         },
         event,
       }) => {
@@ -1390,6 +1391,9 @@ export const modelingMachine = setup({
         const theEditorManager = providedEditorManager
           ? providedEditorManager
           : editorManager
+        const theKclEditorMachine = providedKclEditorMachine
+          ? providedKclEditorMachine
+          : kclEditorActor
 
         let selections: Selections = {
           graphSelections: [],
@@ -1495,7 +1499,7 @@ export const modelingMachine = setup({
               selections,
             })
           if (codeMirrorSelection) {
-            kclEditorActor.send({
+            theKclEditorMachine.send({
               type: 'setLastSelectionEvent',
               data: {
                 codeMirrorSelection,
@@ -1553,7 +1557,7 @@ export const modelingMachine = setup({
           const codeMirrorSelection = theEditorManager.createEditorSelection(
             setSelections.selection
           )
-          kclEditorActor.send({
+          theKclEditorMachine.send({
             type: 'setLastSelectionEvent',
             data: {
               codeMirrorSelection,
