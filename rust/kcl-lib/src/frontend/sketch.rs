@@ -283,3 +283,174 @@ pub struct Parallel {
     lines: Vec<ObjectId>,
     distance: Option<Number>,
 }
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct SketchExecOutcome {
+    // The solved segments, including their locations so that they can be drawn.
+    pub segments: Vec<SolveSegment>,
+    // The interpreted constraints.
+    pub constraints: Vec<SolveConstraint>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub enum SolveSegment {
+    Point(SolvePointSegment),
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct SolvePointSegment {
+    pub object_id: String,
+    pub constrained_status: ConstrainedStatus,
+    pub handles: Vec<PointHandle>,
+    pub position: Point2d<Number>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub enum ConstrainedStatus {
+    None,
+    Partial,
+    Full,
+}
+
+// Handles, i.e. UI elements that the user can interact with.
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct PointHandle {
+    pub position: Point2d<Number>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub enum SolveConstraint {
+    // e.g. Make these things coincident.
+    Relation { kind: RelationKind, segment_ids: Vec<String> },
+    // If segment2 is given, it's the perpendicular distance between them.
+    Dimension {
+        segment1_id: String,
+        segment2_id: Option<String>,
+        value: Number,
+    },
+    Angle {
+        segment1_id: String,
+        segment2_id: Option<String>,
+        value: Number,
+    },
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub enum RelationKind {
+    Coincidence,
+    Horizontal,
+    Vertical,
+    Tangent,
+    Equal,
+    Fixed,
+}
+
+// Stub implementation of SketchApi for testing/development
+pub struct SketchApiStub;
+
+impl SketchApi for SketchApiStub {
+    async fn new_sketch(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _project: ProjectId,
+        _file: FileId,
+        _version: Version,
+        _args: SketchArgs,
+    ) -> Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
+        todo!("new_sketch not implemented")
+    }
+
+    async fn edit_sketch(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _project: ProjectId,
+        _file: FileId,
+        _version: Version,
+        _sketch: ObjectId,
+    ) -> Result<SceneGraphDelta> {
+        todo!("edit_sketch not implemented")
+    }
+
+    async fn exit_sketch(&mut self, _ctx: &ExecutorContext, _version: Version, _sketch: ObjectId) -> Result<SceneGraph> {
+        todo!("exit_sketch not implemented")
+    }
+
+    async fn add_segment(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _version: Version,
+        _sketch: ObjectId,
+        _segment: SegmentCtor,
+        _label: Option<String>,
+    ) -> Result<(SourceDelta, SketchExecOutcome)> {
+        // Return empty stub data
+        Ok((
+            SourceDelta {
+                text: String::new(),
+            },
+            SketchExecOutcome {
+                segments: Vec::new(),
+                constraints: Vec::new(),
+            },
+        ))
+    }
+
+    async fn edit_segment(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _version: Version,
+        _sketch: ObjectId,
+        _segment_id: ObjectId,
+        _segment: SegmentCtor,
+    ) -> Result<(SourceDelta, SceneGraphDelta)> {
+        todo!("edit_segment not implemented")
+    }
+
+    async fn delete_segment(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _version: Version,
+        _sketch: ObjectId,
+        _segment_id: ObjectId,
+    ) -> Result<(SourceDelta, SceneGraphDelta)> {
+        todo!("delete_segment not implemented")
+    }
+
+    async fn add_constraint(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _version: Version,
+        _sketch: ObjectId,
+        _constraint: Constraint,
+    ) -> Result<(SourceDelta, SceneGraphDelta)> {
+        todo!("add_constraint not implemented")
+    }
+
+    async fn edit_constraint(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _version: Version,
+        _sketch: ObjectId,
+        _constraint_id: ObjectId,
+        _constraint: Constraint,
+    ) -> Result<(SourceDelta, SceneGraphDelta)> {
+        todo!("edit_constraint not implemented")
+    }
+
+    async fn delete_constraint(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _version: Version,
+        _sketch: ObjectId,
+        _constraint_id: ObjectId,
+    ) -> Result<(SourceDelta, SceneGraphDelta)> {
+        todo!("delete_constraint not implemented")
+    }
+}
