@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::front::{Error, File, FileId, LifecycleApi, ProjectId, SketchApi};
+use kcl_lib::front::{Error, File, FileId, LifecycleApi, ObjectId, ProjectId, SegmentCtor, SketchApi, SketchApiStub, Version};
 use wasm_bindgen::prelude::*;
 
 use crate::{Context, TRUE_BUG};
@@ -169,6 +169,29 @@ impl Context {
 
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize add segment result. {TRUE_BUG} Details: {e}"))?)
+    }
+
+    #[wasm_bindgen]
+    pub async fn add_segment_stub(
+        &self,
+        version: usize,
+        sketch: usize,
+        segment: &str,
+        label: Option<String>,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let segment: SegmentCtor = serde_json::from_str(segment)
+            .map_err(|e| JsValue::from_serde(&Error::deserialize("segment", e)).unwrap())?;
+
+        // For now, use the stub implementation
+        let sketch_api = SketchApiStub;
+        let result = sketch_api
+            .add_segment(Version(version), ObjectId(sketch), segment, label)
+            .await
+            .map_err(|e: Error| JsValue::from_serde(&e).unwrap())?;
+
+        Ok(JsValue::from_str(&serde_json::to_string(&result).unwrap()))
     }
 
     /// Edit segment in sketch.
