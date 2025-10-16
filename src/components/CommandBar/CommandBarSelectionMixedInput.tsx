@@ -149,8 +149,13 @@ export default function CommandBarSelectionMixedInput({
         )
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Need to react to selection changes after coercion
-  }, [arg.selectionFilter, selection, hasCoercedSelections])
+  }, [
+    arg.selectionFilter,
+    selection,
+    hasCoercedSelections,
+    engineCommandManager,
+    handleSelectionBatch,
+  ])
 
   // Watch for outside teardowns of this component
   // (such as clicking another argument in the command palette header)
