@@ -83,6 +83,7 @@ export async function buildTheWorldAndConnectToEngine() {
     kclManager,
     rustContext
   )
+
   await new Promise((resolve) => {
     engineCommandManager
       .start({

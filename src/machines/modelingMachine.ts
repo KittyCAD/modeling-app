@@ -167,6 +167,7 @@ import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import { enableConsoleLogEverything } from '@e2e/playwright/test-utils'
 
 export type ModelingMachineEvent =
   | {
@@ -1234,13 +1235,13 @@ export const modelingMachine = setup({
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to faces only': ({ context }) => {
-      const theKclManger = context.kclManager ? context.kclManager : kclManager
-      theKclManger.setSelectionFilter(['face', 'object'])
+      const theKclManager = context.kclManager ? context.kclManager : kclManager
+      theKclManager.setSelectionFilter(['face', 'object'])
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to defaults': ({ context }) => {
-      const theKclManger = context.kclManager ? context.kclManager : kclManager
-      theKclManger.defaultSelectionFilter()
+      const theKclManager = context.kclManager ? context.kclManager : kclManager
+      theKclManager.defaultSelectionFilter()
     },
     'Delete segment': ({
       context: {
@@ -1256,7 +1257,7 @@ export const modelingMachine = setup({
     }) => {
       if (event.type !== 'Delete segment') return
       if (!sketchDetails || !event.data) return
-      const theKclManger = providedKclManager ? providedKclManager : kclManager
+      const theKclManager = providedKclManager ? providedKclManager : kclManager
       const theCodeManager = providedCodeManager
         ? providedCodeManager
         : codeManager
@@ -1272,7 +1273,7 @@ export const modelingMachine = setup({
         pathToNode: event.data,
         sketchDetails,
         dependencies: {
-          kclManager: theKclManger,
+          kclManager: theKclManager,
           codeManager: theCodeManager,
           wasmInstance,
           rustContext: theRustContext,
@@ -1281,7 +1282,7 @@ export const modelingMachine = setup({
         },
       }).then(() => {
         return theCodeManager.updateEditorWithAstAndWriteToFile(
-          theKclManger.ast,
+          theKclManager.ast,
           undefined,
           wasmInstance
         )
@@ -2404,7 +2405,7 @@ export const modelingMachine = setup({
           sketchDetails,
           selectionRanges,
           sceneInfra: providedSceneInfra,
-          sceneEntitiesManger: providedSceneEntitiesManager,
+          sceneEntitiesManager: providedSceneEntitiesManager,
           kclManager: providedKclManager,
         },
       }: {
@@ -2412,11 +2413,13 @@ export const modelingMachine = setup({
           sketchDetails: SketchDetails | null
           selectionRanges: Selections
           sceneInfra?: SceneInfra
-          sceneEntitiesManger?: SceneEntities
+          sceneEntitiesManager?: SceneEntities
           kclManager?: KclManager
         }
       }) => {
-        if (!sketchDetails) return
+        if (!sketchDetails) {
+          return
+        }
         const theSceneInfra = providedSceneInfra
           ? providedSceneInfra
           : sceneInfra
@@ -2570,8 +2573,9 @@ export const modelingMachine = setup({
         )
 
         const sketchArtifact = theKclManager.artifactGraph.get(mainPath)
-        if (sketchArtifact?.type !== 'path')
+        if (sketchArtifact?.type !== 'path') {
           return Promise.reject(new Error('No sketch artifact'))
+        }
         const sketchPaths = getPathsFromArtifact({
           artifact: theKclManager.artifactGraph.get(plane.id),
           sketchPathToNode: sketchArtifact?.codeRef?.pathToNode,
@@ -4281,16 +4285,16 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra,
-                    sceneEntitiesManager,
-                    kclManager,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra,
-                  sceneEntitiesManager,
-                  kclManager,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
                 }),
                 onDone: [
                   {
@@ -4472,16 +4476,16 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra,
-                    sceneEntitiesManager,
-                    kclManager,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra,
-                  sceneEntitiesManager,
-                  kclManager,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
                 }),
               },
             },
@@ -4547,16 +4551,16 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra,
-                    sceneEntitiesManager,
-                    kclManager,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra,
-                  sceneEntitiesManager,
-                  kclManager,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
                 }),
               },
             },
@@ -4622,16 +4626,16 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra,
-                    sceneEntitiesManager,
-                    kclManager,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra,
-                  sceneEntitiesManager,
-                  kclManager,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
                 }),
               },
             },
@@ -4701,16 +4705,16 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra,
-                    sceneEntitiesManager,
-                    kclManager,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra,
-                  sceneEntitiesManager,
-                  kclManager,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
                 }),
               },
             },
@@ -5083,16 +5087,16 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra,
-                    sceneEntitiesManager,
-                    kclManager,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra,
-                  sceneEntitiesManager,
-                  kclManager,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
                 }),
               },
             },
@@ -5151,16 +5155,16 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra,
-                    sceneEntitiesManager,
-                    kclManager,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra,
-                  sceneEntitiesManager,
-                  kclManager,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
                 }),
               },
             },
@@ -5230,16 +5234,16 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra,
-                    sceneEntitiesManager,
-                    kclManager,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra,
-                  sceneEntitiesManager,
-                  kclManager,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
                 }),
               },
             },
@@ -5312,16 +5316,16 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra,
-                    sceneEntitiesManager,
-                    kclManager,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra,
-                  sceneEntitiesManager,
-                  kclManager,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
                 }),
               },
             },
@@ -5410,16 +5414,16 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra,
-                    sceneEntitiesManager,
-                    kclManager,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra,
-                  sceneEntitiesManager,
-                  kclManager,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
                 }),
               },
             },
@@ -5433,16 +5437,16 @@ export const modelingMachine = setup({
                   context: {
                     sketchDetails,
                     selectionRanges,
-                    sceneInfra,
-                    sceneEntitiesManager,
-                    kclManager,
+                    sceneInfra: providedSeneInfra,
+                    sceneEntitiesManager: providedSceneEntitiesManager,
+                    kclManager: providedKclManager,
                   },
                 }) => ({
                   sketchDetails,
                   selectionRanges,
-                  sceneInfra,
-                  sceneEntitiesManager,
-                  kclManager,
+                  sceneInfra: providedSeneInfra,
+                  sceneEntitiesManager: providedSceneEntitiesManager,
+                  kclManager: providedKclManager,
                 }),
               },
             },

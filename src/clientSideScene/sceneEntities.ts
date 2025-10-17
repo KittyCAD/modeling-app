@@ -2783,13 +2783,14 @@ export class SceneEntities {
     sketchNodePaths: PathToNode[],
     ast?: Node<Program>,
     draftSegment?: DraftSegment
-  ) =>
-    prepareTruncatedAst(
+  ) => {
+    return prepareTruncatedAst(
       sketchNodePaths,
       ast || this.kclManager.ast,
       this.kclManager.lastSuccessfulVariables,
       draftSegment
     )
+  }
 
   getSnappedDragPoint(
     pos: Vector2,

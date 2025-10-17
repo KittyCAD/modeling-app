@@ -9,7 +9,7 @@ import {
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { expect } from 'vitest'
 import { modelingMachine } from '@src/machines/modelingMachine'
-import { createActor } from 'xstate'
+import { ActorRefFrom, createActor } from 'xstate'
 import { vi } from 'vitest'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
@@ -78,6 +78,40 @@ describe('modelingMachine.test.ts', () => {
 
     // Last attempt before failing
     return condition()
+  }
+
+  const waitForState = async ({
+    modelingMachineActor,
+    stateString,
+  }: {
+    modelingMachineActor: ActorRefFrom<typeof modelingMachine>
+    stateString: any
+  }) => {
+    // Check if already idle before setting up subscription
+    console.log(
+      'first check:',
+      modelingMachineActor.getSnapshot().value,
+      ' :: ',
+      stateString
+    )
+    const js1 = JSON.stringify(modelingMachineActor.getSnapshot().value)
+    const js2 = JSON.stringify(stateString)
+    if (js1 === js2) {
+      return Promise.resolve()
+    }
+
+    const waitForIdlePromise = new Promise((resolve) => {
+      const subscription = modelingMachineActor.subscribe((state) => {
+        console.log('polling:', state.value, ' :: ', stateString)
+        const js1 = JSON.stringify(state.value)
+        const js2 = JSON.stringify(stateString)
+        if (js1 === js2) {
+          subscription.unsubscribe()
+          resolve(undefined)
+        }
+      })
+    })
+    return waitForIdlePromise
   }
 
   describe('modelingMachine - XState', () => {
@@ -865,9 +899,9 @@ p3 = [342.51, 216.38],
             rustContext,
           } = await buildTheWorldAndConnectToEngine()
           const indexOfInterest = code.indexOf(searchText)
-
+          // You need to update this!!
+          codeManager.updateCodeStateEditor(code)
           const ast = assertParse(code, instance)
-
           await kclManager.executeAst({ ast })
 
           expect(kclManager.errors).toEqual([])
@@ -918,24 +952,20 @@ p3 = [342.51, 216.38],
           })
           actor.send({ type: 'Enter sketch' })
 
-          // Check that we're in the sketch state
-          let state = actor.getSnapshot()
-          expect(state.value).toBe('animating to existing sketch')
+          await waitForState({
+            modelingMachineActor: actor,
+            stateString: 'animating to existing sketch',
+          })
 
-          // wait for it to transition
-          await waitForCondition(() => {
-            const snapshot = actor.getSnapshot()
-            return snapshot.value !== 'animating to existing sketch'
-          }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
+          await waitForState({
+            modelingMachineActor: actor,
+            stateString: { Sketch: { SketchIdle: 'set up segments' } },
+          })
 
-          await waitForCondition(() => {
-            const snapshot = actor.getSnapshot()
-            const a1 = JSON.stringify(snapshot.value)
-            const a2 = JSON.stringify({
-              Sketch: { SketchIdle: 'scene drawn' },
-            })
-            return a1 !== a2
-          }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
+          await waitForState({
+            modelingMachineActor: actor,
+            stateString: { Sketch: { SketchIdle: 'scene drawn' } },
+          })
 
           const callExp = getNodeFromPath<Node<CallExpressionKw>>(
             kclManager.ast,
@@ -1223,7 +1253,6 @@ p3 = [342.51, 216.38],
               filter
             )
             const constraint = constraintInfo[constraintIndex]
-            console.log('constraint', constraint)
             if (!constraint.argPosition) {
               throw new Error(
                 `Constraint at index ${constraintIndex} does not have argPosition`

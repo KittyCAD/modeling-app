@@ -49,7 +49,6 @@ export async function deleteSegmentOrProfile({
     sceneInfra: SceneInfra
   }
 }) {
-  console.log('I GOT HERE!!')
   let modifiedAst: Node<Program> | Error = dependencies.kclManager.ast
   const dependentRanges = findUsesOfTagInPipe(modifiedAst, pathToNode)
 

@@ -1292,6 +1292,8 @@ export const ModelingMachineProvider = ({
     }
   )
 
+  window.dog = modelingActor
+
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
     const openPanes = modelingActor.getSnapshot().context.store.openPanes
