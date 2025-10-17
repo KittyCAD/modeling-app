@@ -9,13 +9,35 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
+
+let instanceInThisFile: ModuleType = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+let rustContextInThisFile: RustContext = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
+beforeAll(async () => {
+  const { instance, engineCommandManager, rustContext } =
+    await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  engineCommandManagerInThisFile = engineCommandManager
+  rustContextInThisFile = rustContext
+})
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
+})
 
 async function getAstAndArtifactGraph(
   code: string,
   instance: ModuleType,
   rustContext: RustContext
 ) {
-  const ast = assertParse(code, instance)
+  const ast = assertParse(code, instanceInThisFile)
   if (err(ast)) throw ast
 
   const { artifactGraph } = await enginelessExecutor(
@@ -30,8 +52,6 @@ async function getAstAndArtifactGraph(
 describe('geometry.test.ts', () => {
   describe('Testing addHelix', () => {
     it('should add a standalone call on default axis selection', async () => {
-      const { instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const expectedNewLine = `helix001 = helix(
   axis = X,
   revolutions = 1,
@@ -41,8 +61,8 @@ describe('geometry.test.ts', () => {
 )`
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         '',
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )
       const result = addHelix({
         ast,
@@ -51,38 +71,35 @@ describe('geometry.test.ts', () => {
         revolutions: (await stringToKclExpression(
           '1',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         angleStart: (await stringToKclExpression(
           '2',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         radius: (await stringToKclExpression(
           '3',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         length: (await stringToKclExpression(
           '4',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
       })
       if (err(result)) throw result
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
-      const newCode = recast(result.modifiedAst, instance)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(expectedNewLine)
-      engineCommandManager.tearDown()
     })
 
     it('should add a standalone call on default axis selection with ccw true', async () => {
-      const { instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const expectedNewLine = `helix001 = helix(
   axis = X,
   revolutions = 1,
@@ -93,8 +110,8 @@ describe('geometry.test.ts', () => {
 )`
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         '',
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )
       const result = addHelix({
         ast,
@@ -103,39 +120,36 @@ describe('geometry.test.ts', () => {
         revolutions: (await stringToKclExpression(
           '1',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         angleStart: (await stringToKclExpression(
           '2',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         radius: (await stringToKclExpression(
           '3',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         length: (await stringToKclExpression(
           '4',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         ccw: true,
       })
       if (err(result)) throw result
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
-      const newCode = recast(result.modifiedAst, instance)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(expectedNewLine)
-      engineCommandManager.tearDown()
     })
 
     it('should edit a standalone call with default axis selection', async () => {
-      const { instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `helix001 = helix(
   axis = X,
   revolutions = 1,
@@ -152,8 +166,8 @@ describe('geometry.test.ts', () => {
 )`
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )
       const result = addHelix({
         ast,
@@ -162,35 +176,34 @@ describe('geometry.test.ts', () => {
         revolutions: (await stringToKclExpression(
           '11',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         angleStart: (await stringToKclExpression(
           '12',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         radius: (await stringToKclExpression(
           '13',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         length: (await stringToKclExpression(
           '14',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         nodeToEdit: createPathToNodeForLastVariable(ast),
       })
       if (err(result)) throw result
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
-      const newCode = recast(result.modifiedAst, instance)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).not.toContain(code)
       expect(newCode).toContain(expectedNewLine)
-      engineCommandManager.tearDown()
     })
 
     const segmentInPath = `sketch001 = startSketchOn(XZ)
@@ -215,12 +228,10 @@ helix001 = helix(
 `
 
     it('should add a standalone call on segment selection', async () => {
-      const { instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         segmentInPath,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )
       const segment = [...artifactGraph.values()].find(
         (n) => n.type === 'segment'
@@ -241,36 +252,33 @@ helix001 = helix(
         revolutions: (await stringToKclExpression(
           '1',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         angleStart: (await stringToKclExpression(
           '2',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         radius: (await stringToKclExpression(
           '3',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
       })
       if (err(result)) throw result
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
-      const newCode = recast(result.modifiedAst, instance)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toBe(helixFromSegmentInPath)
-      engineCommandManager.tearDown()
     })
 
     it('should edit a standalone call on segment selection', async () => {
-      const { instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         helixFromSegmentInPath,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )
       const segment = [...artifactGraph.values()].find(
         (n) => n.type === 'segment'
@@ -291,27 +299,27 @@ helix001 = helix(
         revolutions: (await stringToKclExpression(
           '4',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         angleStart: (await stringToKclExpression(
           '5',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         radius: (await stringToKclExpression(
           '6',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         ccw: true,
         nodeToEdit: createPathToNodeForLastVariable(ast),
       })
       if (err(result)) throw result
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
-      const newCode = recast(result.modifiedAst, instance)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`helix001 = helix(
   axis = seg01,
   revolutions = 4,
@@ -319,7 +327,6 @@ helix001 = helix(
   radius = 6,
   ccw = true,
 )`)
-      engineCommandManager.tearDown()
     })
 
     // For now to avoid setting up an engine connection, the sweepEdge case is done in e2e (point-click.spec.ts)
@@ -338,12 +345,10 @@ helix001 = helix(
 `
 
     it('should add a standalone call on cylinder selection', async () => {
-      const { instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         cylinderExtrude,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )
       const sweep = [...artifactGraph.values()].find((n) => n.type === 'sweep')
       const cylinder: Selections = {
@@ -362,31 +367,28 @@ helix001 = helix(
         revolutions: (await stringToKclExpression(
           '1',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         angleStart: (await stringToKclExpression(
           '2',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         ccw: true,
       })
       if (err(result)) throw result
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
-      const newCode = recast(result.modifiedAst, instance)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toBe(helixFromCylinder)
-      engineCommandManager.tearDown()
     })
 
     it('should edit a standalone call on cylinder selection', async () => {
-      const { instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         helixFromCylinder,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )
       const sweep = [...artifactGraph.values()].find((n) => n.type === 'sweep')
       const cylinder: Selections = {
@@ -405,25 +407,24 @@ helix001 = helix(
         revolutions: (await stringToKclExpression(
           '11',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         angleStart: (await stringToKclExpression(
           '22',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue,
         ccw: false,
         nodeToEdit: createPathToNodeForLastVariable(ast),
       })
       if (err(result)) throw result
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
-      const newCode = recast(result.modifiedAst, instance)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
         `helix001 = helix(cylinder = extrude001, revolutions = 11, angleStart = 22`
       )
-      engineCommandManager.tearDown()
     })
   })
 })

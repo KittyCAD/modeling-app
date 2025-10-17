@@ -57,7 +57,7 @@ describe('faces.test.ts', () => {
     instance: ModuleType,
     kclManager: KclManager
   ) {
-    const ast = assertParse(code, instanceInThisFile)
+    const ast = assertParse(code, instance)
     await kclManager.executeAst({ ast })
     const {
       artifactGraph,
