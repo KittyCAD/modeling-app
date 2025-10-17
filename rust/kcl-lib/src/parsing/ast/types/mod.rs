@@ -1,12 +1,7 @@
 //! Data types for the AST.
 
 use std::{
-    cell::RefCell,
-    collections::{BTreeMap, HashMap},
-    fmt,
-    ops::{Deref, DerefMut, RangeInclusive},
-    rc::Rc,
-    sync::{Arc, Mutex},
+    cell::RefCell, collections::{BTreeMap, HashMap}, fmt, ops::{Deref, DerefMut, RangeInclusive}, rc::Rc, str::FromStr, sync::{Arc, Mutex}
 };
 
 use anyhow::Result;
@@ -362,9 +357,11 @@ impl Node<Program> {
         Ok(None)
     }
 
-    pub fn change_default_units(
+    pub fn change_kcl_settings(
         &self,
         length_units: Option<kittycad_modeling_cmds::units::UnitLength>,
+        experimental_features: Option<String>,
+        // TODO: shouldn't be String but WarningLevel
     ) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         let mut found = false;
@@ -374,6 +371,13 @@ impl Node<Program> {
                     node.inner.add_or_update(
                         annotations::SETTINGS_UNIT_LENGTH,
                         Expr::Name(Box::new(Name::new(&len.to_string()))),
+                    );
+                }
+                if let Some(exp) = experimental_features {
+                    node.inner.add_or_update(
+                        annotations::SETTINGS_EXPERIMENTAL_FEATURES,
+                        // TODO: use as_str from WarningLevel
+                        Expr::Name(Box::new(Name::new(&exp))),
                     );
                 }
                 // Previous source range no longer makes sense, but we want to
@@ -4416,7 +4420,7 @@ startSketchOn(XY)"#;
         assert_eq!(meta_settings.default_length_units, UnitLength::Inches);
 
         // Edit the ast.
-        let new_program = program.change_default_units(Some(UnitLength::Millimeters)).unwrap();
+        let new_program = program.change_kcl_settings(Some(UnitLength::Millimeters), None).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
@@ -4443,7 +4447,7 @@ startSketchOn(XY)
         assert!(result.is_none());
 
         // Edit the ast.
-        let new_program = program.change_default_units(Some(UnitLength::Millimeters)).unwrap();
+        let new_program = program.change_kcl_settings(Some(UnitLength::Millimeters), None).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
@@ -4476,7 +4480,7 @@ startSketchOn(XY)
 "#;
         let program = crate::parsing::top_level_parse(code).unwrap();
 
-        let new_program = program.change_default_units(Some(UnitLength::Centimeters)).unwrap();
+        let new_program = program.change_kcl_settings(Some(UnitLength::Centimeters), None).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());

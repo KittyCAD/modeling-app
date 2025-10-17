@@ -4,7 +4,7 @@ import toast from 'react-hot-toast'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { addModuleImport, insertNamedConstant } from '@src/lang/modifyAst'
 import {
-  changeDefaultUnits,
+  changeKclSettings,
   isPathToNode,
   type PathToNode,
   type SourceRange,
@@ -80,7 +80,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (typeof data === 'object' && 'unit' in data) {
-          const newCode = changeDefaultUnits(codeManager.code, data.unit)
+          const newCode = changeKclSettings(
+            codeManager.code,
+            data.unit,
+            'allow'
+          )
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)
           } else {

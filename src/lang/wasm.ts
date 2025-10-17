@@ -42,7 +42,7 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import {
   base64_decode,
-  change_default_units,
+  change_kcl_settings,
   coredump,
   default_app_settings,
   default_project_settings,
@@ -756,12 +756,13 @@ export function kclSettings(
  * Change the meta settings for the kcl file.
  * @returns the new kcl string with the updated settings.
  */
-export function changeDefaultUnits(
+export function changeKclSettings(
   kcl: string,
-  len: UnitLength | null
+  len: UnitLength | null,
+  exp: string | null = null // TODO: change to WarningLevel | null
 ): string | Error {
   try {
-    return change_default_units(kcl, JSON.stringify(len))
+    return change_kcl_settings(kcl, JSON.stringify(len), exp)
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })

@@ -63,6 +63,8 @@ pub(super) const WARN_VALUES: [&str; 8] = [
 ];
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub enum WarningLevel {
     Allow,
     Warn,
@@ -75,6 +77,14 @@ impl WarningLevel {
             WarningLevel::Allow => None,
             WarningLevel::Warn => Some(Severity::Warning),
             WarningLevel::Deny => Some(Severity::Error),
+        }
+    }
+
+    pub(crate) fn as_str(self) -> &'static str {
+        match self {
+            WarningLevel::Allow => WARN_ALLOW,
+            WarningLevel::Warn => WARN_WARN,
+            WarningLevel::Deny => WARN_DENY,
         }
     }
 }
