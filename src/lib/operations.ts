@@ -14,6 +14,7 @@ import {
   getNodeFromPath,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
+import type { StdLibCallOp } from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
@@ -63,6 +64,103 @@ interface StdLibCallInfo {
     | PrepareToEditFailurePayload
   supportsAppearance?: boolean
   supportsTransform?: boolean
+}
+
+// Helper functions for argument extraction
+async function extractKclArgument(
+  operation: StdLibCallOp,
+  argName: string,
+  isArray = false
+): Promise<KclCommandValue | { error: string }> {
+  const arg = operation.labeledArgs?.[argName]
+  if (!arg?.sourceRange) {
+    return { error: `Missing or invalid ${argName} argument` }
+  }
+
+  const result = await stringToKclExpression(
+    codeManager.code.slice(arg.sourceRange[0], arg.sourceRange[1]),
+    isArray
+  )
+
+  if (err(result) || 'errors' in result) {
+    return { error: `Failed to parse ${argName} argument as KCL expression` }
+  }
+
+  return result
+}
+
+function extractFaceSelections(facesArg: any): Selection[] | { error: string } {
+  const faceValues: any[] =
+    facesArg.value.type === 'Array' ? facesArg.value.value : [facesArg.value]
+
+  const graphSelections: Selection[] = []
+
+  for (const v of faceValues) {
+    if (v.type !== 'TagIdentifier' || !v.artifact_id) {
+      continue
+    }
+
+    const artifact = kclManager.artifactGraph.get(v.artifact_id)
+    if (!artifact) {
+      continue
+    }
+
+    let targetArtifact = artifact
+    let targetCodeRefs = getCodeRefsByArtifactId(
+      v.artifact_id,
+      kclManager.artifactGraph
+    )
+
+    if (artifact.type === 'segment') {
+      const wallArtifact = Array.from(kclManager.artifactGraph.values()).find(
+        (candidate) =>
+          candidate.type === 'wall' && candidate.segId === artifact.id
+      )
+
+      if (wallArtifact) {
+        targetArtifact = wallArtifact
+        const wallCodeRefs = getCodeRefsByArtifactId(
+          wallArtifact.id,
+          kclManager.artifactGraph
+        )
+
+        if (wallCodeRefs && wallCodeRefs.length > 0) {
+          targetCodeRefs = wallCodeRefs
+        } else {
+          const segArtifact = getArtifactOfTypes(
+            { key: artifact.id, types: ['segment'] },
+            kclManager.artifactGraph
+          )
+          if (!err(segArtifact)) {
+            targetCodeRefs = [segArtifact.codeRef]
+          }
+        }
+      }
+    }
+
+    if (targetCodeRefs && targetCodeRefs.length > 0) {
+      graphSelections.push({
+        artifact: targetArtifact,
+        codeRef: targetCodeRefs[0],
+      })
+    }
+  }
+
+  if (graphSelections.length === 0) {
+    return { error: 'No valid face selections found in TagIdentifier objects' }
+  }
+
+  return graphSelections
+}
+
+function extractStringArgument(
+  operation: StdLibCallOp,
+  argName: string
+): string | undefined {
+  const arg = operation.labeledArgs?.[argName]
+  return arg?.sourceRange
+    ? codeManager.code.slice(arg.sourceRange[0], arg.sourceRange[1])
+    : undefined
 }
 
 /**
@@ -1274,180 +1372,35 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
     return { reason: 'Wrong operation type' }
   }
 
-  // 1. Map the faces argument to face selections
   const facesArg = operation.labeledArgs?.['faces']
   if (!facesArg || !facesArg.sourceRange) {
     return { reason: 'Missing or invalid faces argument' }
   }
 
-  // Handle GDT faces which are stored as TagIdentifier objects
-  const faceValues: any[] = []
-  if (facesArg.value.type === 'Array') {
-    faceValues.push(...facesArg.value.value)
-  } else {
-    faceValues.push(facesArg.value)
-  }
-
-  const graphSelections: Selection[] = []
-  for (const v of faceValues) {
-    if (v.type === 'TagIdentifier' && v.artifact_id) {
-      const artifact = kclManager.artifactGraph.get(v.artifact_id)
-      if (artifact) {
-        let targetArtifact = artifact
-        let targetCodeRefs = getCodeRefsByArtifactId(
-          v.artifact_id,
-          kclManager.artifactGraph
-        )
-
-        // If this is a segment, find the corresponding wall face
-        if (artifact.type === 'segment') {
-          // Find wall artifacts that reference this segment
-          for (const wallCandidate of kclManager.artifactGraph.values()) {
-            if (
-              wallCandidate.type === 'wall' &&
-              wallCandidate.segId === artifact.id
-            ) {
-              targetArtifact = wallCandidate
-              const wallCodeRefs = getCodeRefsByArtifactId(
-                wallCandidate.id,
-                kclManager.artifactGraph
-              )
-              if (wallCodeRefs && wallCodeRefs.length > 0) {
-                targetCodeRefs = wallCodeRefs
-              } else {
-                // Use the segment's codeRef for the wall
-                const segArtifact = getArtifactOfTypes(
-                  { key: artifact.id, types: ['segment'] },
-                  kclManager.artifactGraph
-                )
-                if (!err(segArtifact)) {
-                  targetCodeRefs = [segArtifact.codeRef]
-                }
-              }
-              break
-            }
-          }
-        }
-
-        if (targetCodeRefs && targetCodeRefs.length > 0) {
-          graphSelections.push({
-            artifact: targetArtifact,
-            codeRef: targetCodeRefs[0],
-          })
-        }
-      }
-    }
-  }
-
-  if (graphSelections.length === 0) {
-    return { reason: "Couldn't retrieve face selections from TagIdentifiers" }
+  const graphSelections = extractFaceSelections(facesArg)
+  if ('error' in graphSelections) {
+    return { reason: graphSelections.error }
   }
 
   const faces = { graphSelections, otherSelections: [] }
 
-  // 2. Convert the tolerance argument from a string to a KCL expression
-  const toleranceArg = operation.labeledArgs?.['tolerance']
-  if (!toleranceArg || !toleranceArg.sourceRange) {
-    return { reason: 'Missing or invalid tolerance argument' }
+  const tolerance = await extractKclArgument(operation, 'tolerance')
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
   }
+  const optionalArgs = await Promise.all([
+    extractKclArgument(operation, 'precision'),
+    extractKclArgument(operation, 'framePosition', true),
+    extractKclArgument(operation, 'fontPointSize'),
+    extractKclArgument(operation, 'fontScale'),
+  ])
 
-  const tolerance = await stringToKclExpression(
-    codeManager.code.slice(
-      toleranceArg.sourceRange[0],
-      toleranceArg.sourceRange[1]
-    )
+  const [precision, framePosition, fontPointSize, fontScale] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
   )
-  if (err(tolerance) || 'errors' in tolerance) {
-    return { reason: "Couldn't retrieve tolerance argument" }
-  }
 
-  // 3. Convert optional precision argument from a string to a KCL expression
-  let precision: KclCommandValue | undefined
-  if ('precision' in operation.labeledArgs && operation.labeledArgs.precision) {
-    const result = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.precision.sourceRange[0],
-        operation.labeledArgs.precision.sourceRange[1]
-      )
-    )
-    if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve precision argument" }
-    }
-    precision = result
-  }
+  const framePlane = extractStringArgument(operation, 'framePlane')
 
-  // 4. Convert optional framePosition argument from a string to a KCL expression
-  // framePosition is configured as 'vector2d' inputType, so it should be treated as an array
-  let framePosition: KclCommandValue | undefined
-  if (
-    'framePosition' in operation.labeledArgs &&
-    operation.labeledArgs.framePosition
-  ) {
-    const result = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.framePosition.sourceRange[0],
-        operation.labeledArgs.framePosition.sourceRange[1]
-      ),
-      true
-    )
-    if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve framePosition argument" }
-    }
-    framePosition = result
-  }
-
-  // 5. Convert optional framePlane argument from a string to a string value
-  // framePlane is configured as 'options' inputType, so it should be a string, not a KCL expression
-  let framePlane: string | undefined
-  if (
-    'framePlane' in operation.labeledArgs &&
-    operation.labeledArgs.framePlane
-  ) {
-    framePlane = codeManager.code.slice(
-      operation.labeledArgs.framePlane.sourceRange[0],
-      operation.labeledArgs.framePlane.sourceRange[1]
-    )
-    if (!framePlane) {
-      return { reason: "Couldn't retrieve framePlane argument" }
-    }
-  }
-
-  // 6. Convert optional fontPointSize argument from a string to a KCL expression
-  let fontPointSize: KclCommandValue | undefined
-  if (
-    'fontPointSize' in operation.labeledArgs &&
-    operation.labeledArgs.fontPointSize
-  ) {
-    const result = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.fontPointSize.sourceRange[0],
-        operation.labeledArgs.fontPointSize.sourceRange[1]
-      )
-    )
-    if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve fontPointSize argument" }
-    }
-    fontPointSize = result
-  }
-
-  // 7. Convert optional fontScale argument from a string to a KCL expression
-  let fontScale: KclCommandValue | undefined
-  if ('fontScale' in operation.labeledArgs && operation.labeledArgs.fontScale) {
-    const result = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.fontScale.sourceRange[0],
-        operation.labeledArgs.fontScale.sourceRange[1]
-      )
-    )
-    if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve fontScale argument" }
-    }
-    fontScale = result
-  }
-
-  // 8. Assemble the default argument values for the command,
-  // with `nodeToEdit` set, which will let the actor know
-  // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['GDT Flatness'] = {
     faces,
     tolerance,
@@ -1458,6 +1411,7 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
     fontScale,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
+
   return {
     ...baseCommand,
     argDefaultValues,
