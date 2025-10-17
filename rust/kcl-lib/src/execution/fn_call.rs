@@ -243,8 +243,13 @@ impl FunctionSource {
         // Don't early return until the stack frame is popped!
         self.body.prep_mem(exec_state);
 
-        let in_stdlib = exec_state.mod_local.inside_stdlib;
-        let op = if !in_stdlib && self.include_in_feature_tree {
+        // Some function calls might get added to the feature tree.
+        // We do this by adding an "operation".
+        // Don't add operations if the KCL code being executed is inside the stdlib,
+        // because the stdlib internals aren't relevant to users, they would be pointless noise.
+        let caller_is_in_stdlib = exec_state.mod_local.inside_stdlib;
+        let should_track_operation = !caller_is_in_stdlib && self.include_in_feature_tree;
+        let op = if should_track_operation {
             let op_labeled_args = args
                 .labeled
                 .iter()
