@@ -2929,9 +2929,25 @@ describe('gdt.spec.ts', () => {
     return createSelectionFromArtifacts([endFace!], artifactGraph)
   }
 
+  function getWallsFromBox(artifactGraph: ArtifactGraph, count: number) {
+    const walls = [...artifactGraph.values()]
+      .filter((a) => a.type === 'wall')
+      .slice(0, count)
+    return createSelectionFromArtifacts(walls, artifactGraph)
+  }
+
   const cylinder = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 10)
 extrude001 = extrude(profile001, length = 10)`
+
+  const box = `sketch002 = startSketchOn(XY)
+profile002 = startProfile(sketch002, at = [0, 0])
+  |> xLine(length = 10)
+  |> yLine(length = 10)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(profile002, length = 10)`
 
   describe('Testing addFlatnessGdt', () => {
     it('should add a basic flatness annotation to a single face (cap)', async () => {
@@ -2950,6 +2966,30 @@ extrude001 = extrude(profile001, length = 10)`
       expect(newCode).toContain(
         'gdt::flatness(faces = [capEnd001], tolerance = 0.1mm)'
       )
+    })
+
+    it('should add flatness annotations to multiple faces', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(box)
+      const faces = getWallsFromBox(artifactGraph, 3)
+
+      const tolerance = await getKclCommandValue('0.1mm')
+      const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst)
+      if (err(newCode)) throw newCode
+
+      // Verify all three segments were tagged
+      expect(newCode).toContain('tag = $seg01')
+      expect(newCode).toContain('tag = $seg02')
+      expect(newCode).toContain('tag = $seg03')
+      // Should create three separate GDT annotations (one per face)
+      const gdtCalls = newCode.match(/gdt::flatness/g)
+      expect(gdtCalls).toHaveLength(3)
+      // Verify each face has its own annotation
+      expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
+      expect(newCode).toContain('faces = [seg02], tolerance = 0.1mm')
+      expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
     })
   })
 })
