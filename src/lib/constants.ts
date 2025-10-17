@@ -61,6 +61,9 @@ export const KCL_DEFAULT_LENGTH = `5`
 /** The default KCL tolerance expression */
 export const KCL_DEFAULT_TOLERANCE = `0.1mm`
 
+/** The default KCL precision expression */
+export const KCL_DEFAULT_PRECISION = `3`
+
 /** The default KCL instances expression */
 export const KCL_DEFAULT_INSTANCES = `3`
 
@@ -78,6 +81,12 @@ export const KCL_DEFAULT_ORIGIN_2D = `[0, 0]`
 
 /** The default KCL color expression */
 export const KCL_DEFAULT_COLOR = `#3c73ff`
+
+/** The default KCL font point size expression */
+export const KCL_DEFAULT_FONT_POINT_SIZE = `36`
+
+/** The default KCL font scale expression */
+export const KCL_DEFAULT_FONT_SCALE = `1.0`
 
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
@@ -169,6 +178,15 @@ export const VIEW_NAMES_SEMANTIC = {
   [AxisNames.NEG_Y]: 'Front',
   [AxisNames.NEG_Z]: 'Bottom',
 } as const
+
+/** Plane names in KCL for operations */
+export const KCL_PLANE_XY = 'XY'
+export const KCL_PLANE_XZ = 'XZ'
+export const KCL_PLANE_YZ = 'YZ'
+export const KCL_PLANE_XY_NEG = '-XY'
+export const KCL_PLANE_XZ_NEG = '-XZ'
+export const KCL_PLANE_YZ_NEG = '-YZ'
+
 /** The modeling sidebar buttons' IDs get a suffix to prevent collisions */
 export const SIDEBAR_BUTTON_SUFFIX = '-pane-button'
 
