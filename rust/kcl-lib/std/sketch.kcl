@@ -371,7 +371,7 @@ export fn ellipse(
   /// The major axis of the ellipse.
   majorAxis?: Point2d,
   /// Create a new tag which refers to this ellipse.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Extend a 2-dimensional sketch through a third dimension in order to
@@ -2155,7 +2155,7 @@ export fn conic(
   /// The tangent of the conic section at the end. Incompatible with `coefficients`.
   endTangent?: Point2d,
   /// Create a new tag which refers to this segment.
-  tag?: tag,
+  tag?: TagDecl,
   ): Sketch {}
 
 /// Add a parabolic segment to an existing sketch.
@@ -2186,7 +2186,7 @@ export fn parabolic(
   /// Any point between the segment's start and end. Requires `endAbsolute`. Incompatible with `coefficients` or `interior` or `end`.
   interiorAbsolute?: Point2d,
   /// Create a new tag which refers to this segment.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
  
 /// Calculate the point (x, y) on a parabola given x or y and the coefficients [a, b, c] of the parabola.
@@ -2239,7 +2239,7 @@ export fn hyperbolic(
   /// Where should this segment end? This point is relative to the start point. Requires `interior`. Incompatible with `interiorAbsolute` or `endAbsolute`.
   end?: Point2d,
   /// Create a new tag which refers to this arc.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Calculate the point (x, y) on a hyperbola given x or y and the semi major/minor values of the hyperbolic.
@@ -2296,7 +2296,7 @@ export fn elliptic(
   @(includeInSnippet = true)
   majorAxis?: Point2d,
   /// Create a new tag which refers to this arc.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Calculate the point (x, y) on an ellipse given x or y and the center and major/minor radii of the ellipse.
