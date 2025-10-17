@@ -287,7 +287,7 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta, segment_id))
     }
 
-    fn move_line_start(
+    async fn move_line_start(
         &mut self,
         sketch: ObjectId,
         _version: Version,
@@ -345,18 +345,26 @@ impl FrontendState {
         let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
         if !errors.is_empty() {
             return Err(Error {
-                msg: format!("Error parsing KCL source after adding line: {errors:?}"),
+                msg: format!("Error parsing KCL source after modifying line: {errors:?}"),
             });
         }
         let Some(new_program) = new_program else {
             return Err(Error {
-                msg: "No AST produced after adding line".to_string(),
+                msg: "No AST produced after modifying line".to_string(),
             });
         };
-        // TODO: sketch-api: make sure to only set this if there are no errors.
-        self.program = new_program;
 
-        // TODO: sketch-api: execute.
+        // TODO: sketch-api: make sure to only set this if there are no errors.
+        self.program = new_program.clone();
+
+        // Execute.
+        self.ctx.run_mock(&new_program, true).await.map_err(|err| {
+            // TODO: sketch-api: Yeah, this needs to change. We need to
+            // return the full error.
+            Error {
+                msg: err.error.message().to_owned(),
+            }
+        })?;
 
         let src_delta = SourceDelta {};
         let scene_graph_delta = SceneGraphDelta {
