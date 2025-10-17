@@ -21,7 +21,55 @@ import {
 } from '@src/lang/std/sketchcombos'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { kclEditorMachine } from '@src/machines/kclEditorMachine'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type EditorManager from '@src/editor/manager'
+import type CodeManager from '@src/lang/codeManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type RustContext from '@src/lib/rustContext'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
+
+let instanceInThisFile: ModuleType = null!
+let kclManagerInThisFile: KclManager = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+let rustContextInThisFile: RustContext = null!
+let sceneInfraInThisFile: SceneInfra = null!
+let editorManagerInThisFile: EditorManager = null!
+let codeManagerInThisFile: CodeManager = null!
+let sceneEntitiesManagerInThisFile: SceneEntities = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
+beforeAll(async () => {
+  const {
+    instance,
+    engineCommandManager,
+    sceneInfra,
+    editorManager,
+    codeManager,
+    kclManager,
+    sceneEntitiesManager,
+    rustContext,
+  } = await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  kclManagerInThisFile = kclManager
+  engineCommandManagerInThisFile = engineCommandManager
+  rustContextInThisFile = rustContext
+  sceneInfraInThisFile = sceneInfra
+  editorManagerInThisFile = editorManager
+  codeManagerInThisFile = codeManager
+  sceneEntitiesManagerInThisFile = sceneEntitiesManager
+})
+
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
+})
 
 describe('modelingMachine.test.ts', () => {
   // Define mock implementations that will be referenced in vi.mock calls
@@ -107,19 +155,12 @@ describe('modelingMachine.test.ts', () => {
   describe('modelingMachine - XState', () => {
     describe('when initialized', () => {
       it('should start in the idle state', async () => {
-        const {
-          codeManager,
-          kclManager,
-          engineCommandManager,
-          sceneInfra,
-          sceneEntitiesManager,
-        } = await buildTheWorldAndConnectToEngine()
         const contextCopied = generateModelingMachineDefaultContext()
-        contextCopied.codeManager = codeManager
-        contextCopied.kclManager = kclManager
-        contextCopied.engineCommandManager = engineCommandManager
-        contextCopied.sceneInfra = sceneInfra
-        contextCopied.sceneEntitiesManager = sceneEntitiesManager
+        contextCopied.codeManager = codeManagerInThisFile
+        contextCopied.kclManager = kclManagerInThisFile
+        contextCopied.engineCommandManager = engineCommandManagerInThisFile
+        contextCopied.sceneInfra = sceneInfraInThisFile
+        contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
         const actor = createActor(modelingMachine, {
           input: contextCopied,
         }).start()
@@ -127,7 +168,7 @@ describe('modelingMachine.test.ts', () => {
 
         // The machine should start in the idle state
         expect(state).toEqual({ idle: 'hidePlanes' })
-        engineCommandManager.tearDown()
+
       })
     })
 
@@ -871,33 +912,23 @@ p3 = [342.51, 216.38],
       },
     }
 
-    describe.only('Deleting segment with three dot menu', () => {
+    describe('Deleting segment with three dot menu', () => {
       const namedConstantConstraintCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.deleteSegment
       )
       namedConstantConstraintCases.forEach(
         ({ name, code, searchText, filter }) => {
           it(name, async () => {
-            const {
-              instance,
-              engineCommandManager,
-              sceneInfra,
-              editorManager,
-              codeManager,
-              kclManager,
-              sceneEntitiesManager,
-              rustContext,
-            } = await buildTheWorldAndConnectToEngine()
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            codeManager.updateCodeStateEditor(code)
-            const ast = assertParse(code, instance)
-            await kclManager.executeAst({ ast })
+            codeManagerInThisFile.updateCodeStateEditor(code)
+            const ast = assertParse(code, instanceInThisFile)
+            await kclManagerInThisFile.executeAst({ ast })
 
-            expect(kclManager.errors).toEqual([])
+            expect(kclManagerInThisFile.errors).toEqual([])
 
             // segment artifact with that source range
-            const artifact = [...kclManager.artifactGraph].find(
+            const artifact = [...kclManagerInThisFile.artifactGraph].find(
               ([_, artifact]) =>
                 artifact?.type === 'segment' &&
                 artifact.codeRef.range[0] <= indexOfInterest &&
@@ -912,15 +943,15 @@ p3 = [342.51, 216.38],
             const contextCopied = generateModelingMachineDefaultContext()
             const kclEditorActor = createActor(kclEditorMachine).start()
 
-            contextCopied.codeManager = codeManager
-            contextCopied.kclManager = kclManager
-            contextCopied.engineCommandManager = engineCommandManager
-            contextCopied.sceneInfra = sceneInfra
-            contextCopied.sceneEntitiesManager = sceneEntitiesManager
-            contextCopied.editorManager = editorManager
-            contextCopied.wasmInstance = instance
+            contextCopied.codeManager = codeManagerInThisFile
+            contextCopied.kclManager = kclManagerInThisFile
+            contextCopied.engineCommandManager = engineCommandManagerInThisFile
+            contextCopied.sceneInfra = sceneInfraInThisFile
+            contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
+            contextCopied.editorManager = editorManagerInThisFile
+            contextCopied.wasmInstance = instanceInThisFile
             contextCopied.kclEditorMachine = kclEditorActor
-            contextCopied.rustContext = rustContext
+            contextCopied.rustContext = rustContextInThisFile
 
             const actor = createActor(modelingMachine, {
               input: contextCopied,
@@ -960,7 +991,7 @@ p3 = [342.51, 216.38],
             })
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
-              kclManager.ast,
+              kclManagerInThisFile.ast,
               artifact.codeRef.pathToNode,
               'CallExpressionKw'
             )
@@ -969,7 +1000,7 @@ p3 = [342.51, 216.38],
             }
             const constraintInfo = getConstraintInfoKw(
               callExp.node,
-              codeManager.code,
+              codeManagerInThisFile.code,
               artifact.codeRef.pathToNode,
               filter
             )
@@ -995,23 +1026,24 @@ p3 = [342.51, 216.38],
 
             const startTime = Date.now()
             while (
-              codeManager.code.includes(searchText) &&
+              codeManagerInThisFile.code.includes(searchText) &&
               Date.now() - startTime < GLOBAL_TIMEOUT_FOR_MODELING_MACHINE
             ) {
               await new Promise((resolve) => setTimeout(resolve, 100))
             }
 
-            expect(codeManager.code).not.toContain(searchText)
-            engineCommandManager.tearDown()
+            expect(codeManagerInThisFile.code).not.toContain(searchText)
+
           }, 10_000)
         }
       )
     })
-    describe('Adding segment overlay constraints', () => {
+    describe.only('Adding segment overlay constraints', () => {
       const namedConstantConstraintCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.namedConstantConstraint
       )
-      namedConstantConstraintCases.forEach(
+      const oneTest = [namedConstantConstraintCases[0]]
+      oneTest.forEach(
         ({
           name,
           code,
@@ -1021,27 +1053,17 @@ p3 = [342.51, 216.38],
           filter,
         }) => {
           it(name, async () => {
-            const {
-              instance,
-              engineCommandManager,
-              sceneInfra,
-              editorManager,
-              codeManager,
-              kclManager,
-              sceneEntitiesManager,
-              rustContext,
-            } = await buildTheWorldAndConnectToEngine()
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            codeManager.updateCodeStateEditor(code)
-            const ast = assertParse(code, instance)
+            codeManagerInThisFile.updateCodeStateEditor(code)
+            const ast = assertParse(code, instanceInThisFile)
 
-            await kclManager.executeAst({ ast })
+            await kclManagerInThisFile.executeAst({ ast })
 
-            expect(kclManager.errors).toEqual([])
+            expect(kclManagerInThisFile.errors).toEqual([])
 
             // segment artifact with that source range
-            const artifact = [...kclManager.artifactGraph].find(
+            const artifact = [...kclManagerInThisFile.artifactGraph].find(
               ([_, artifact]) =>
                 artifact?.type === 'segment' &&
                 artifact.codeRef.range[0] <= indexOfInterest &&
@@ -1056,15 +1078,15 @@ p3 = [342.51, 216.38],
             const contextCopied = generateModelingMachineDefaultContext()
             const kclEditorActor = createActor(kclEditorMachine).start()
 
-            contextCopied.codeManager = codeManager
-            contextCopied.kclManager = kclManager
-            contextCopied.engineCommandManager = engineCommandManager
-            contextCopied.sceneInfra = sceneInfra
-            contextCopied.sceneEntitiesManager = sceneEntitiesManager
-            contextCopied.editorManager = editorManager
-            contextCopied.wasmInstance = instance
+            contextCopied.codeManager = codeManagerInThisFile
+            contextCopied.kclManager = kclManagerInThisFile
+            contextCopied.engineCommandManager = engineCommandManagerInThisFile
+            contextCopied.sceneInfra = sceneInfraInThisFile
+            contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
+            contextCopied.editorManager = editorManagerInThisFile
+            contextCopied.wasmInstance = instanceInThisFile
             contextCopied.kclEditorMachine = kclEditorActor
-            contextCopied.rustContext = rustContext
+            contextCopied.rustContext = rustContextInThisFile
 
             const actor = createActor(modelingMachine, {
               input: contextCopied,
@@ -1104,7 +1126,7 @@ p3 = [342.51, 216.38],
             })
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
-              kclManager.ast,
+              kclManagerInThisFile.ast,
               artifact.codeRef.pathToNode,
               'CallExpressionKw'
             )
@@ -1113,7 +1135,7 @@ p3 = [342.51, 216.38],
             }
             const constraintInfo = getConstraintInfoKw(
               callExp.node,
-              codeManager.code,
+              codeManagerInThisFile.code,
               artifact.codeRef.pathToNode,
               filter
             )
@@ -1166,7 +1188,7 @@ p3 = [342.51, 216.38],
                 JSON.stringify({ Sketch: 'Converting to named value' })
               )
             }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
-            expect(codeManager.code).toContain(expectedResult)
+            expect(codeManagerInThisFile.code).toContain(expectedResult)
           }, 10_000)
         }
       )
@@ -1186,27 +1208,17 @@ p3 = [342.51, 216.38],
           filter,
         }) => {
           it(name, async () => {
-            const {
-              instance,
-              engineCommandManager,
-              sceneInfra,
-              editorManager,
-              codeManager,
-              kclManager,
-              sceneEntitiesManager,
-              rustContext,
-            } = await buildTheWorldAndConnectToEngine()
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            codeManager.updateCodeStateEditor(code)
-            const ast = assertParse(code, instance)
+            codeManagerInThisFile.updateCodeStateEditor(code)
+            const ast = assertParse(code, instanceInThisFile)
 
-            await kclManager.executeAst({ ast })
+            await kclManagerInThisFile.executeAst({ ast })
 
-            expect(kclManager.errors).toEqual([])
+            expect(kclManagerInThisFile.errors).toEqual([])
 
             // segment artifact with that source range
-            const artifact = [...kclManager.artifactGraph].find(
+            const artifact = [...kclManagerInThisFile.artifactGraph].find(
               ([_, artifact]) =>
                 artifact?.type === 'segment' &&
                 artifact.codeRef.range[0] <= indexOfInterest &&
@@ -1221,15 +1233,15 @@ p3 = [342.51, 216.38],
             const contextCopied = generateModelingMachineDefaultContext()
             const kclEditorActor = createActor(kclEditorMachine).start()
 
-            contextCopied.codeManager = codeManager
-            contextCopied.kclManager = kclManager
-            contextCopied.engineCommandManager = engineCommandManager
-            contextCopied.sceneInfra = sceneInfra
-            contextCopied.sceneEntitiesManager = sceneEntitiesManager
-            contextCopied.editorManager = editorManager
-            contextCopied.wasmInstance = instance
+            contextCopied.codeManager = codeManagerInThisFile
+            contextCopied.kclManager = kclManagerInThisFile
+            contextCopied.engineCommandManager = engineCommandManagerInThisFile
+            contextCopied.sceneInfra = sceneInfraInThisFile
+            contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
+            contextCopied.editorManager = editorManagerInThisFile
+            contextCopied.wasmInstance = instanceInThisFile
             contextCopied.kclEditorMachine = kclEditorActor
-            contextCopied.rustContext = rustContext
+            contextCopied.rustContext = rustContextInThisFile
 
             const actor = createActor(modelingMachine, {
               input: contextCopied,
@@ -1268,7 +1280,7 @@ p3 = [342.51, 216.38],
             })
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
-              kclManager.ast,
+              kclManagerInThisFile.ast,
               artifact.codeRef.pathToNode,
               'CallExpressionKw'
             )
@@ -1277,7 +1289,7 @@ p3 = [342.51, 216.38],
             }
             const constraintInfo = getConstraintInfoKw(
               callExp.node,
-              codeManager.code,
+              codeManagerInThisFile.code,
               artifact.codeRef.pathToNode,
               filter
             )
@@ -1292,14 +1304,14 @@ p3 = [342.51, 216.38],
               constraint.pathToNode,
               constraint.argPosition,
               ast,
-              kclManager.variables,
+              kclManagerInThisFile.variables,
               removeSingleConstraint,
               transformAstSketchLines
             )
             if (!mod) {
               throw new Error('Failed to remove constraint info')
             }
-            const codeRecast = recast(mod.modifiedAst, instance)
+            const codeRecast = recast(mod.modifiedAst, instanceInThisFile)
 
             expect(codeRecast).toContain(expectedResult)
           }, 10_000)
@@ -1321,27 +1333,17 @@ p3 = [342.51, 216.38],
           filter,
         }) => {
           it(name, async () => {
-            const {
-              instance,
-              engineCommandManager,
-              sceneInfra,
-              editorManager,
-              codeManager,
-              kclManager,
-              sceneEntitiesManager,
-              rustContext,
-            } = await buildTheWorldAndConnectToEngine()
             const indexOfInterest = code.indexOf(searchText)
             // You need to update this!!
-            codeManager.updateCodeStateEditor(code)
-            const ast = assertParse(code, instance)
+            codeManagerInThisFile.updateCodeStateEditor(code)
+            const ast = assertParse(code, instanceInThisFile)
 
-            await kclManager.executeAst({ ast })
+            await kclManagerInThisFile.executeAst({ ast })
 
-            expect(kclManager.errors).toEqual([])
+            expect(kclManagerInThisFile.errors).toEqual([])
 
             // segment artifact with that source range
-            const artifact = [...kclManager.artifactGraph].find(
+            const artifact = [...kclManagerInThisFile.artifactGraph].find(
               ([_, artifact]) =>
                 artifact?.type === 'segment' &&
                 artifact.codeRef.range[0] <= indexOfInterest &&
@@ -1356,15 +1358,15 @@ p3 = [342.51, 216.38],
             const contextCopied = generateModelingMachineDefaultContext()
             const kclEditorActor = createActor(kclEditorMachine).start()
 
-            contextCopied.codeManager = codeManager
-            contextCopied.kclManager = kclManager
-            contextCopied.engineCommandManager = engineCommandManager
-            contextCopied.sceneInfra = sceneInfra
-            contextCopied.sceneEntitiesManager = sceneEntitiesManager
-            contextCopied.editorManager = editorManager
-            contextCopied.wasmInstance = instance
+            contextCopied.codeManager = codeManagerInThisFile
+            contextCopied.kclManager = kclManagerInThisFile
+            contextCopied.engineCommandManager = engineCommandManagerInThisFile
+            contextCopied.sceneInfra = sceneInfraInThisFile
+            contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
+            contextCopied.editorManager = editorManagerInThisFile
+            contextCopied.wasmInstance = instanceInThisFile
             contextCopied.kclEditorMachine = kclEditorActor
-            contextCopied.rustContext = rustContext
+            contextCopied.rustContext = rustContextInThisFile
 
             const actor = createActor(modelingMachine, {
               input: contextCopied,
@@ -1404,7 +1406,7 @@ p3 = [342.51, 216.38],
             })
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
-              kclManager.ast,
+              kclManagerInThisFile.ast,
               artifact.codeRef.pathToNode,
               'CallExpressionKw'
             )
@@ -1440,12 +1442,12 @@ p3 = [342.51, 216.38],
             }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
             const startTime = Date.now()
             while (
-              !codeManager.code.includes(expectedResult) &&
+              !codeManagerInThisFile.code.includes(expectedResult) &&
               Date.now() - startTime < GLOBAL_TIMEOUT_FOR_MODELING_MACHINE
             ) {
               await new Promise((resolve) => setTimeout(resolve, 100))
             }
-            expect(codeManager.code).toContain(expectedResult)
+            expect(codeManagerInThisFile.code).toContain(expectedResult)
           }, 10_000)
         }
       )

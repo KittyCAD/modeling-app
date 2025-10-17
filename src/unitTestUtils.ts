@@ -103,6 +103,7 @@ export async function buildTheWorldAndConnectToEngine() {
         },
         callbackOnUnitTestingConnection: () => {
           resolve(true)
+          console.log('unit test connected!')
         },
       })
       .catch(reportRejection)
