@@ -255,6 +255,7 @@ impl FunctionSource {
         // user-defined, or the calling code is user-defined,
         // because that's relevant to the user.
         let would_trace_stdlib_internals = exec_state.mod_local.inside_stdlib && self.is_std;
+        // self.include_in_feature_tree is set by the KCL annotation `@(feature_tree = true)`.
         let should_track_operation = !would_trace_stdlib_internals && self.include_in_feature_tree;
         let op = if should_track_operation {
             let op_labeled_args = args
