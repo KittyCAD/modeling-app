@@ -4,13 +4,14 @@ use anyhow::{anyhow, bail};
 use kcl_api::{
     Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, Settings, SourceDelta,
     SourceRef, Version,
-    sketch::{LineCtor, Point2d, Segment, SketchArgs},
+    sketch::{LineCtor, Point2d, Segment, SketchApi, SketchArgs},
 };
 use kcl_error::SourceRange;
+use tokio::sync::RwLock;
 
 use crate::{
-    ExecutorContext, Program, fmt::format_number_literal, frontend::traverse::dfs_mut, id::IncIdGenerator,
-    parsing::ast::types as ast, walk::NodeMut,
+    ExecutorContext, Program, fmt::format_number_literal, frontend::traverse::dfs_mut, parsing::ast::types as ast,
+    walk::NodeMut,
 };
 
 mod traverse;
@@ -20,17 +21,129 @@ const LINE_START_PARAM: &str = "start";
 const LINE_END_PARAM: &str = "end";
 
 #[derive(Debug, Clone)]
-pub(crate) struct FrontendState {
-    id_generator: IncIdGenerator<usize>,
+pub struct FrontendState {
+    inner: std::sync::Arc<RwLock<InnerFrontendState>>,
+}
+
+impl FrontendState {
+    pub fn new(ctx: ExecutorContext) -> Self {
+        Self {
+            inner: std::sync::Arc::new(RwLock::new(InnerFrontendState::new(ctx))),
+        }
+    }
+}
+
+impl SketchApi for FrontendState {
+    async fn new_sketch(
+        &self,
+        _project: ProjectId,
+        _file: FileId,
+        _version: Version,
+        args: SketchArgs,
+    ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
+        // TODO: Check version.
+        let mut guard = self.inner.write().await;
+        guard.new_sketch(args).await
+    }
+
+    async fn edit_sketch(
+        &self,
+        _project: ProjectId,
+        _file: FileId,
+        _version: Version,
+        _sketch: ObjectId,
+    ) -> kcl_api::Result<SceneGraphDelta> {
+        todo!()
+    }
+
+    async fn exit_sketch(&self, _version: Version, sketch: ObjectId) -> kcl_api::Result<SceneGraph> {
+        // TODO: Check version.
+        let mut guard = self.inner.write().await;
+        guard.exit_sketch(sketch)
+    }
+
+    async fn add_segment(
+        &self,
+        _version: Version,
+        sketch: ObjectId,
+        segment: kcl_api::sketch::SegmentCtor,
+        _label: Option<String>,
+    ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+        let mut guard = self.inner.write().await;
+        match segment {
+            kcl_api::sketch::SegmentCtor::Line(ctor) => guard.add_line(sketch, ctor).await,
+            _ => Err(Error {
+                msg: format!("segment ctor not implemented yet: {segment:?}"),
+            }),
+        }
+    }
+
+    async fn edit_segment(
+        &self,
+        _version: Version,
+        sketch: ObjectId,
+        segment_id: ObjectId,
+        segment: kcl_api::sketch::SegmentCtor,
+    ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+        let mut guard = self.inner.write().await;
+        match segment {
+            kcl_api::sketch::SegmentCtor::Line(ctor) => guard.edit_line(sketch, segment_id, ctor).await,
+            _ => Err(Error {
+                msg: format!("segment ctor not implemented yet: {segment:?}"),
+            }),
+        }
+    }
+
+    async fn delete_segment(
+        &self,
+        _version: Version,
+        _sketch: ObjectId,
+        _segment_id: ObjectId,
+    ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta)> {
+        todo!()
+    }
+
+    async fn add_constraint(
+        &self,
+        _version: Version,
+        _sketch: ObjectId,
+        _constraint: kcl_api::sketch::Constraint,
+    ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta)> {
+        todo!()
+    }
+
+    async fn edit_constraint(
+        &self,
+        _version: Version,
+        _sketch: ObjectId,
+        _constraint_id: ObjectId,
+        _constraint: kcl_api::sketch::Constraint,
+    ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta)> {
+        todo!()
+    }
+
+    async fn delete_constraint(
+        &self,
+        _version: Version,
+        _sketch: ObjectId,
+        _constraint_id: ObjectId,
+    ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta)> {
+        todo!()
+    }
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct InnerFrontendState {
     ctx: ExecutorContext,
     program: Program,
     scene_graph: SceneGraph,
 }
 
-impl FrontendState {
-    fn new(ctx: ExecutorContext) -> Self {
+impl InnerFrontendState {
+    pub(crate) fn new(ctx: ExecutorContext) -> Self {
         Self {
-            id_generator: IncIdGenerator::new(0),
             ctx,
             program: Program::empty(),
             scene_graph: SceneGraph {
@@ -44,13 +157,7 @@ impl FrontendState {
         }
     }
 
-    async fn new_sketch(
-        &mut self,
-        _project: ProjectId,
-        _file: FileId,
-        _version: Version,
-        args: SketchArgs,
-    ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
+    async fn new_sketch(&mut self, args: SketchArgs) -> kcl_api::Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
         // Create updated KCL source from args.
         let plane_ast = match &args.on {
             // TODO: sketch-api: implement ObjectId to source.
@@ -155,12 +262,7 @@ impl FrontendState {
         Ok(self.scene_graph.clone())
     }
 
-    async fn add_line(
-        &mut self,
-        sketch: ObjectId,
-        _version: Version,
-        ctor: LineCtor,
-    ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
+    async fn add_line(&mut self, sketch: ObjectId, ctor: LineCtor) -> kcl_api::Result<(SourceDelta, SceneGraphDelta)> {
         // Create updated KCL source from args.
         let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
@@ -297,13 +399,12 @@ impl FrontendState {
             invalidates_ids: false,
             new_objects: new_object_ids,
         };
-        Ok((src_delta, scene_graph_delta, segment_id))
+        Ok((src_delta, scene_graph_delta))
     }
 
     async fn edit_line(
         &mut self,
         sketch: ObjectId,
-        _version: Version,
         line: ObjectId,
         ctor: LineCtor,
     ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta)> {
