@@ -2669,12 +2669,6 @@ y = x[0mm + 1]
         parse_execute(&ast).await.unwrap();
     }
 
-    #[cfg(not(feature = "artifact-graph"))]
-    #[tokio::test(flavor = "multi_thread")]
-    async fn no_artifacts_from_within_hole_call() {
-        panic!("This test must be run with the 'artifact-graph' feature.")
-    }
-
     #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn no_artifacts_from_within_hole_call() {
