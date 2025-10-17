@@ -326,42 +326,6 @@ description: Operations executed involute_circular_units.kcl
       "sourceRange": []
     },
     {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 4.714209749659843,
-        "ty": {
-          "type": "Default",
-          "len": "cm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 1.4541411272450477,
-        "ty": {
-          "type": "Default",
-          "len": "cm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "polar",
       "unlabeledArg": null,

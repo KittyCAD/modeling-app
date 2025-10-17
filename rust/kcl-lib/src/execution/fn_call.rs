@@ -243,13 +243,27 @@ impl FunctionSource {
         // Don't early return until the stack frame is popped!
         self.body.prep_mem(exec_state);
 
-        let op = if self.include_in_feature_tree {
+        // Some function calls might get added to the feature tree.
+        // We do this by adding an "operation".
+        //
+        // Don't add operations if the KCL code being executed is
+        // just the KCL stdlib calling other KCL stdlib,
+        // because the stdlib internals aren't relevant to users,
+        // that would just be pointless noise.
+        //
+        // Do add operations if the KCL being executed is
+        // user-defined, or the calling code is user-defined,
+        // because that's relevant to the user.
+        let would_trace_stdlib_internals = exec_state.mod_local.inside_stdlib && self.is_std;
+        let should_track_operation = !would_trace_stdlib_internals && self.include_in_feature_tree;
+        let op = if should_track_operation {
             let op_labeled_args = args
                 .labeled
                 .iter()
                 .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
                 .collect();
 
+            // If you're calling a stdlib function, track that call as an operation.
             if self.is_std {
                 Some(Operation::StdLibCall {
                     name: fn_name.clone().unwrap_or_else(|| "unknown function".to_owned()),
@@ -262,6 +276,7 @@ impl FunctionSource {
                     is_error: false,
                 })
             } else {
+                // Otherwise, you're calling a user-defined function, track that call as an operation.
                 exec_state.push_op(Operation::GroupBegin {
                     group: Group::FunctionCall {
                         name: fn_name.clone(),
@@ -281,10 +296,20 @@ impl FunctionSource {
             None
         };
 
+        let is_calling_into_stdlib = match &self.body {
+            FunctionBody::Rust(_) => true,
+            FunctionBody::Kcl(_) => self.is_std,
+        };
+
+        let prev_inside_stdlib = std::mem::replace(&mut exec_state.mod_local.inside_stdlib, is_calling_into_stdlib);
+        // Do not early return via ? or something until we've
+        // - put this `prev_inside_stdlib` value back.
+        // - called the pop_env.
         let mut result = match &self.body {
             FunctionBody::Rust(f) => f(exec_state, args).await.map(Some),
             FunctionBody::Kcl(_) => {
                 if let Err(e) = assign_args_to_params_kw(self, args, exec_state) {
+                    exec_state.mod_local.inside_stdlib = prev_inside_stdlib;
                     exec_state.mut_stack().pop_env();
                     return Err(e);
                 }
@@ -300,19 +325,21 @@ impl FunctionSource {
                     })
             }
         };
-
+        exec_state.mod_local.inside_stdlib = prev_inside_stdlib;
         exec_state.mut_stack().pop_env();
 
-        if let Some(mut op) = op {
-            op.set_std_lib_call_is_error(result.is_err());
-            // Track call operation.  We do this after the call
-            // since things like patternTransform may call user code
-            // before running, and we will likely want to use the
-            // return value. The call takes ownership of the args,
-            // so we need to build the op before the call.
-            exec_state.push_op(op);
-        } else if !self.is_std {
-            exec_state.push_op(Operation::GroupEnd);
+        if should_track_operation {
+            if let Some(mut op) = op {
+                op.set_std_lib_call_is_error(result.is_err());
+                // Track call operation.  We do this after the call
+                // since things like patternTransform may call user code
+                // before running, and we will likely want to use the
+                // return value. The call takes ownership of the args,
+                // so we need to build the op before the call.
+                exec_state.push_op(op);
+            } else if !is_calling_into_stdlib {
+                exec_state.push_op(Operation::GroupEnd);
+            }
         }
 
         if self.is_std

@@ -396,7 +396,12 @@ impl ExecutorContext {
                         .mut_stack()
                         .add(var_name.clone(), rhs.clone(), source_range)?;
 
-                    if rhs.show_variable_in_feature_tree() {
+                    // Track operations, for the feature tree.
+                    // Don't track these operations if the KCL code being executed is in the stdlib,
+                    // because users shouldn't know about stdlib internals -- it's useless noise, to them.
+                    let should_show_in_feature_tree =
+                        !exec_state.mod_local.inside_stdlib && rhs.show_variable_in_feature_tree();
+                    if should_show_in_feature_tree {
                         exec_state.push_op(Operation::VariableDeclaration {
                             name: var_name.clone(),
                             value: OpKclValue::from(&rhs),
@@ -785,11 +790,12 @@ impl ExecutorContext {
                     // Snapshotting memory here is crucial for semantics so that we close
                     // over variables. Variables defined lexically later shouldn't
                     // be available to the function body.
+                    let is_std = matches!(&exec_state.mod_local.path, ModulePath::Std { .. });
                     KclValue::Function {
                         value: Box::new(FunctionSource::kcl(
                             function_expression.clone(),
                             exec_state.mut_stack().snapshot(),
-                            matches!(&exec_state.mod_local.path, ModulePath::Std { .. }),
+                            is_std,
                             experimental,
                         )),
                         meta: vec![metadata.to_owned()],
@@ -2659,10 +2665,33 @@ y = x[0mm + 1]
 
     #[tokio::test(flavor = "multi_thread")]
     async fn getting_property_of_plane() {
-        // let ast = include_str!("../../tests/inputs/planestuff.kcl");
         let ast = std::fs::read_to_string("tests/inputs/planestuff.kcl").unwrap();
-
         parse_execute(&ast).await.unwrap();
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn no_artifacts_from_within_hole_call() {
+        // Test that executing stdlib KCL, like the `hole` function
+        // (which is actually implemented in KCL not Rust)
+        // does not generate artifacts from within the stdlib code,
+        // only from the user code.
+        let ast = std::fs::read_to_string("tests/inputs/sample_hole.kcl").unwrap();
+        let out = parse_execute(&ast).await.unwrap();
+
+        // Get all the operations that occurred.
+        let actual_operations = out.exec_state.global.root_module_artifacts.operations;
+
+        // There should be 8, for sketching the cube and applying the hole.
+        // If the stdlib internal calls are being tracked, that's a bug,
+        // and the actual number of operations will be something like 35.
+        let expected = 8;
+        assert_eq!(
+            actual_operations.len(),
+            expected,
+            "expected {expected} operations, received {}:\n{actual_operations:#?}",
+            actual_operations.len(),
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
