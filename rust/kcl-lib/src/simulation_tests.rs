@@ -2807,27 +2807,27 @@ mod intersect_cubes {
     }
 }
 
-// mod pattern_into_union {
-//     const TEST_NAME: &str = "pattern_into_union";
+mod pattern_into_union {
+    const TEST_NAME: &str = "pattern_into_union";
 
-//     /// Test parsing KCL.
-//     #[test]
-//     fn parse() {
-//         super::parse(TEST_NAME)
-//     }
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
 
-//     /// Test that parsing and unparsing KCL produces the original KCL input.
-//     #[tokio::test(flavor = "multi_thread")]
-//     async fn unparse() {
-//         super::unparse(TEST_NAME).await
-//     }
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
 
-//     /// Test that KCL is executed correctly.
-//     #[tokio::test(flavor = "multi_thread")]
-//     async fn kcl_test_execute() {
-//         super::execute(TEST_NAME, true).await
-//     }
-// }
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod subtract_doesnt_need_brackets {
     const TEST_NAME: &str = "subtract_doesnt_need_brackets";
 
@@ -4014,6 +4014,27 @@ mod sketch_block_failed_unit_conversion {
 }
 mod holes_cube {
     const TEST_NAME: &str = "holes_cube";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod multi_body_multi_tool_subtract {
+    const TEST_NAME: &str = "multi_body_multi_tool_subtract";
 
     /// Test parsing KCL.
     #[test]
