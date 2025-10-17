@@ -15,6 +15,30 @@ import {
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type { ConnectionManager } from '@src/network/connectionManager'
+
+let instanceInThisFile: ModuleType = null!
+let kclManagerInThisFile: KclManager = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+let rustContextInThisFile: RustContext = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
+beforeAll(async () => {
+  const { instance, kclManager, engineCommandManager, rustContext } =
+    await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  kclManagerInThisFile = kclManager
+  engineCommandManagerInThisFile = engineCommandManager
+  rustContextInThisFile = rustContext
+})
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
+})
 
 async function getAstAndArtifactGraph(
   code: string,
@@ -89,8 +113,6 @@ describe('pattern3D.test.ts', () => {
 
   describe('Testing addPatternCircular3D', () => {
     it('should add patternCircular3d with named axis', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -100,18 +122,30 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternCircular3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('11', instance, rustContext),
+        instances: await getKclCommandValue(
+          '11',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         axis: 'X',
-        center: await getKclCommandValue('[10, -20, 0]', instance, rustContext),
-        arcDegrees: await getKclCommandValue('360', instance, rustContext),
+        center: await getKclCommandValue(
+          '[10, -20, 0]',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        arcDegrees: await getKclCommandValue(
+          '360',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         rotateDuplicates: true,
         useOriginal: false,
       })
@@ -121,7 +155,7 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternCircular3d(')
       expect(newCode).toContain('instances = 11')
@@ -130,12 +164,9 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('arcDegrees = 360')
       expect(newCode).toContain('rotateDuplicates = true')
       expect(newCode).toContain('useOriginal = false')
-      engineCommandManager.tearDown()
     })
 
     it('should add patternCircular3d with array axis', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -145,18 +176,34 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternCircular3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('11', instance, rustContext),
-        axis: await getKclCommandValue('[1, -1, 0]', instance, rustContext),
-        center: await getKclCommandValue('[10, -20, 0]', instance, rustContext),
-        arcDegrees: await getKclCommandValue('360', instance, rustContext),
+        instances: await getKclCommandValue(
+          '11',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        axis: await getKclCommandValue(
+          '[1, -1, 0]',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        center: await getKclCommandValue(
+          '[10, -20, 0]',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        arcDegrees: await getKclCommandValue(
+          '360',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         rotateDuplicates: true,
       })
 
@@ -165,7 +212,7 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternCircular3d(')
       expect(newCode).toContain('instances = 11')
@@ -173,12 +220,9 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('center = [10, -20, 0]')
       expect(newCode).toContain('arcDegrees = 360')
       expect(newCode).toContain('rotateDuplicates = true')
-      engineCommandManager.tearDown()
     })
 
     it('should add patternCircular3d with minimal required parameters', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -188,17 +232,25 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternCircular3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('5', instance, rustContext),
+        instances: await getKclCommandValue(
+          '5',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         axis: 'Z',
-        center: await getKclCommandValue('[0, 0, 0]', instance, rustContext),
+        center: await getKclCommandValue(
+          '[0, 0, 0]',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
       })
 
       if (err(result)) {
@@ -206,7 +258,7 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternCircular3d(')
       expect(newCode).toContain('instances = 5')
@@ -215,12 +267,9 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).not.toContain('arcDegrees')
       expect(newCode).not.toContain('rotateDuplicates')
       expect(newCode).not.toContain('useOriginal')
-      engineCommandManager.tearDown()
     })
 
     it('should handle all optional parameters', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -230,18 +279,30 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternCircular3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('6', instance, rustContext),
+        instances: await getKclCommandValue(
+          '6',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         axis: 'Y',
-        center: await getKclCommandValue('[0, 0, 0]', instance, rustContext),
-        arcDegrees: await getKclCommandValue('180', instance, rustContext),
+        center: await getKclCommandValue(
+          '[0, 0, 0]',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        arcDegrees: await getKclCommandValue(
+          '180',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         rotateDuplicates: true,
         useOriginal: false,
       })
@@ -251,7 +312,7 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternCircular3d(')
       expect(newCode).toContain('instances = 6')
@@ -260,12 +321,9 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('arcDegrees = 180')
       expect(newCode).toContain('rotateDuplicates = true')
       expect(newCode).toContain('useOriginal = false')
-      engineCommandManager.tearDown()
     })
 
     it('should handle variable references for parameters', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 myInstances = 8
 myAxis = [0, 0, 1]
@@ -279,8 +337,8 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternCircular3D({
@@ -289,11 +347,19 @@ example = extrude(exampleSketch, length = -5)
         solids: selections,
         instances: await getKclCommandValue(
           'myInstances',
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         ),
-        axis: await getKclCommandValue('myAxis', instance, rustContext),
-        center: await getKclCommandValue('myCenter', instance, rustContext),
+        axis: await getKclCommandValue(
+          'myAxis',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        center: await getKclCommandValue(
+          'myCenter',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
       })
 
       if (err(result)) {
@@ -301,18 +367,15 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternCircular3d(')
       expect(newCode).toContain('instances = myInstances')
       expect(newCode).toContain('axis = myAxis')
       expect(newCode).toContain('center = myCenter')
-      engineCommandManager.tearDown()
     })
 
     it('should handle decimal values for all parameters', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -322,22 +385,34 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternCircular3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('2.5', instance, rustContext),
-        axis: await getKclCommandValue('[1, -1, 0.5]', instance, rustContext),
+        instances: await getKclCommandValue(
+          '2.5',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        axis: await getKclCommandValue(
+          '[1, -1, 0.5]',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         center: await getKclCommandValue(
           '[7.5, 3.2, 0]',
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         ),
-        arcDegrees: await getKclCommandValue('180.5', instance, rustContext),
+        arcDegrees: await getKclCommandValue(
+          '180.5',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
       })
 
       if (err(result)) {
@@ -345,19 +420,16 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternCircular3d(')
       expect(newCode).toContain('instances = 2.5')
       expect(newCode).toContain('axis = [1, -1, 0.5]')
       expect(newCode).toContain('center = [7.5, 3.2, 0]')
       expect(newCode).toContain('arcDegrees = 180.5')
-      engineCommandManager.tearDown()
     })
 
     it('should handle mathematical expressions for parameters', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 myCount = 10
 mySpacing = 5
@@ -372,8 +444,8 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternCircular3D({
@@ -382,23 +454,23 @@ example = extrude(exampleSketch, length = -5)
         solids: selections,
         instances: await getKclCommandValue(
           'myCount - myOffset',
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         ),
         axis: await getKclCommandValue(
           '[mySpacing * 2, 0, 1]',
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         ),
         center: await getKclCommandValue(
           '[mySpacing + myOffset, 0, 0]',
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         ),
         arcDegrees: await getKclCommandValue(
           'myAngle * 2',
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         ),
       })
 
@@ -407,19 +479,16 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternCircular3d(')
       expect(newCode).toContain('instances = myCount - myOffset')
       expect(newCode).toContain('axis = [mySpacing * 2, 0, 1]')
       expect(newCode).toContain('center = [mySpacing + myOffset, 0, 0]')
       expect(newCode).toContain('arcDegrees = myAngle * 2')
-      engineCommandManager.tearDown()
     })
 
     it('should prioritize array values over variable names when both exist', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -429,15 +498,15 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       // Test the precedence by creating a mock axis that simulates the edge case
       const baseExpression = await getKclCommandValue(
         '[1, 0, 0]',
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )
       const mockAxisWithBothProperties = {
         ...baseExpression,
@@ -455,9 +524,17 @@ example = extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('5', instance, rustContext),
+        instances: await getKclCommandValue(
+          '5',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         axis: mockAxisWithBothProperties,
-        center: await getKclCommandValue('[0, 0, 0]', instance, rustContext),
+        center: await getKclCommandValue(
+          '[0, 0, 0]',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
       })
 
       if (err(result)) {
@@ -465,7 +542,7 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternCircular3d(')
       expect(newCode).toContain('instances = 5')
@@ -473,12 +550,9 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('axis = [1, 0, 0]')
       expect(newCode).not.toContain('axis = someVariable')
       expect(newCode).toContain('center = [0, 0, 0]')
-      engineCommandManager.tearDown()
     })
 
     it('should create new pattern variable when selection is piped into named variable', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -487,17 +561,25 @@ exampleSketch = startSketchOn(XZ)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternCircular3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('6', instance, rustContext),
+        instances: await getKclCommandValue(
+          '6',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         axis: 'Y',
-        center: await getKclCommandValue('[0, 0, 0]', instance, rustContext),
+        center: await getKclCommandValue(
+          '[0, 0, 0]',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
       })
 
       if (err(result)) {
@@ -505,7 +587,7 @@ exampleSketch = startSketchOn(XZ)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternCircular3d(')
       expect(newCode).toContain('instances = 6')
@@ -516,12 +598,9 @@ exampleSketch = startSketchOn(XZ)
       expect(newCode).toContain('|> extrude(length = 5)')
       expect(newCode).toContain('pattern001 = patternCircular3d(')
       expect(newCode).toContain('exampleSketch,') // References the original variable
-      engineCommandManager.tearDown()
     })
 
     it('should extend pipeline when selection is from unnamed pipeline', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 sketch001 = startSketchOn(XZ)
 
@@ -532,17 +611,25 @@ startSketchOn(XY)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternCircular3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('8', instance, rustContext),
+        instances: await getKclCommandValue(
+          '8',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         axis: 'Z',
-        center: await getKclCommandValue('[2, 2, 0]', instance, rustContext),
+        center: await getKclCommandValue(
+          '[2, 2, 0]',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
       })
 
       if (err(result)) {
@@ -550,7 +637,7 @@ startSketchOn(XY)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternCircular3d(')
       expect(newCode).toContain('instances = 8')
@@ -560,12 +647,9 @@ startSketchOn(XY)
       expect(newCode).toContain('startSketchOn(XY)')
       expect(newCode).toContain('|> extrude(length = 3)')
       expect(newCode).toContain('|> patternCircular3d(')
-      engineCommandManager.tearDown()
     })
 
     it('should pipe pattern when selection is from unnamed standalone expression', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -575,17 +659,29 @@ extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternCircular3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('4', instance, rustContext),
-        axis: await getKclCommandValue('[0, 1, 0]', instance, rustContext),
-        center: await getKclCommandValue('[5, 0, 0]', instance, rustContext),
+        instances: await getKclCommandValue(
+          '4',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        axis: await getKclCommandValue(
+          '[0, 1, 0]',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        center: await getKclCommandValue(
+          '[5, 0, 0]',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
       })
 
       if (err(result)) {
@@ -593,7 +689,7 @@ extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternCircular3d(')
       expect(newCode).toContain('instances = 4')
@@ -602,14 +698,11 @@ extrude(exampleSketch, length = -5)
       // Should pipe directly onto the unnamed expression
       expect(newCode).toContain('extrude(exampleSketch, length = -5)')
       expect(newCode).toContain('|> patternCircular3d(')
-      engineCommandManager.tearDown()
     })
   })
 
   describe('Testing addPatternLinear3D', () => {
     it('should add patternLinear3d with named axis', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -619,16 +712,24 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternLinear3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('7', instance, rustContext),
-        distance: await getKclCommandValue('6', instance, rustContext),
+        instances: await getKclCommandValue(
+          '7',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        distance: await getKclCommandValue(
+          '6',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         axis: 'X',
         useOriginal: false,
       })
@@ -638,19 +739,16 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternLinear3d(')
       expect(newCode).toContain('instances = 7')
       expect(newCode).toContain('axis = X')
       expect(newCode).toContain('distance = 6')
       expect(newCode).toContain('useOriginal = false')
-      engineCommandManager.tearDown()
     })
 
     it('should add patternLinear3d with array axis', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -660,17 +758,29 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternLinear3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('5', instance, rustContext),
-        distance: await getKclCommandValue('10', instance, rustContext),
-        axis: await getKclCommandValue('[1, 0, 1]', instance, rustContext),
+        instances: await getKclCommandValue(
+          '5',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        distance: await getKclCommandValue(
+          '10',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        axis: await getKclCommandValue(
+          '[1, 0, 1]',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         useOriginal: true,
       })
 
@@ -679,19 +789,16 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternLinear3d(')
       expect(newCode).toContain('instances = 5')
       expect(newCode).toContain('axis = [1, 0, 1]')
       expect(newCode).toContain('distance = 10')
       expect(newCode).toContain('useOriginal = true')
-      engineCommandManager.tearDown()
     })
 
     it('should add patternLinear3d with minimal required parameters', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -701,16 +808,24 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternLinear3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('3', instance, rustContext),
-        distance: await getKclCommandValue('4', instance, rustContext),
+        instances: await getKclCommandValue(
+          '3',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        distance: await getKclCommandValue(
+          '4',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         axis: 'Y',
       })
 
@@ -719,19 +834,16 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternLinear3d(')
       expect(newCode).toContain('instances = 3')
       expect(newCode).toContain('axis = Y')
       expect(newCode).toContain('distance = 4')
       expect(newCode).not.toContain('useOriginal')
-      engineCommandManager.tearDown()
     })
 
     it('should handle all optional parameters', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -741,16 +853,24 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternLinear3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('6', instance, rustContext),
-        distance: await getKclCommandValue('8', instance, rustContext),
+        instances: await getKclCommandValue(
+          '6',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        distance: await getKclCommandValue(
+          '8',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         axis: 'Y',
         useOriginal: true,
       })
@@ -760,19 +880,16 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternLinear3d(')
       expect(newCode).toContain('instances = 6')
       expect(newCode).toContain('axis = Y')
       expect(newCode).toContain('distance = 8')
       expect(newCode).toContain('useOriginal = true')
-      engineCommandManager.tearDown()
     })
 
     it('should handle variable references for parameters', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 myInstances = 8
 myAxis = [0, 0, 1]
@@ -786,8 +903,8 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternLinear3D({
@@ -796,11 +913,19 @@ example = extrude(exampleSketch, length = -5)
         solids: selections,
         instances: await getKclCommandValue(
           'myInstances',
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         ),
-        distance: await getKclCommandValue('myDistance', instance, rustContext),
-        axis: await getKclCommandValue('myAxis', instance, rustContext),
+        distance: await getKclCommandValue(
+          'myDistance',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        axis: await getKclCommandValue(
+          'myAxis',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
       })
 
       if (err(result)) {
@@ -808,18 +933,15 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternLinear3d(')
       expect(newCode).toContain('instances = myInstances')
       expect(newCode).toContain('axis = myAxis')
       expect(newCode).toContain('distance = myDistance')
-      engineCommandManager.tearDown()
     })
 
     it('should handle decimal values for all parameters', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -829,17 +951,29 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternLinear3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('2.5', instance, rustContext),
-        distance: await getKclCommandValue('7.5', instance, rustContext),
-        axis: await getKclCommandValue('[1, -1, 0.5]', instance, rustContext),
+        instances: await getKclCommandValue(
+          '2.5',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        distance: await getKclCommandValue(
+          '7.5',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        axis: await getKclCommandValue(
+          '[1, -1, 0.5]',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
       })
 
       if (err(result)) {
@@ -847,18 +981,15 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternLinear3d(')
       expect(newCode).toContain('instances = 2.5')
       expect(newCode).toContain('axis = [1, -1, 0.5]')
       expect(newCode).toContain('distance = 7.5')
-      engineCommandManager.tearDown()
     })
 
     it('should handle mathematical expressions for parameters', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 myCount = 10
 mySpacing = 5
@@ -872,8 +1003,8 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternLinear3D({
@@ -882,18 +1013,18 @@ example = extrude(exampleSketch, length = -5)
         solids: selections,
         instances: await getKclCommandValue(
           'myCount - myOffset',
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         ),
         distance: await getKclCommandValue(
           'mySpacing + myOffset',
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         ),
         axis: await getKclCommandValue(
           '[mySpacing * 2, 0, 1]',
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         ),
       })
 
@@ -902,18 +1033,15 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternLinear3d(')
       expect(newCode).toContain('instances = myCount - myOffset')
       expect(newCode).toContain('axis = [mySpacing * 2, 0, 1]')
       expect(newCode).toContain('distance = mySpacing + myOffset')
-      engineCommandManager.tearDown()
     })
 
     it('should prioritize array values over variable names when both exist', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -923,15 +1051,15 @@ example = extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       // Test the precedence by creating a mock axis that simulates the edge case
       const baseExpression = await getKclCommandValue(
         '[1, 0, 0]',
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )
       const mockAxisWithBothProperties = {
         ...baseExpression,
@@ -949,8 +1077,16 @@ example = extrude(exampleSketch, length = -5)
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('5', instance, rustContext),
-        distance: await getKclCommandValue('8', instance, rustContext),
+        instances: await getKclCommandValue(
+          '5',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        distance: await getKclCommandValue(
+          '8',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         axis: mockAxisWithBothProperties,
       })
 
@@ -959,7 +1095,7 @@ example = extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternLinear3d(')
       expect(newCode).toContain('instances = 5')
@@ -967,12 +1103,9 @@ example = extrude(exampleSketch, length = -5)
       expect(newCode).toContain('axis = [1, 0, 0]')
       expect(newCode).not.toContain('axis = someVariable')
       expect(newCode).toContain('distance = 8')
-      engineCommandManager.tearDown()
     })
 
     it('should create new pattern variable when selection is piped into named variable', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -981,16 +1114,24 @@ exampleSketch = startSketchOn(XZ)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternLinear3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('6', instance, rustContext),
-        distance: await getKclCommandValue('3', instance, rustContext),
+        instances: await getKclCommandValue(
+          '6',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        distance: await getKclCommandValue(
+          '3',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         axis: 'Y',
       })
 
@@ -999,7 +1140,7 @@ exampleSketch = startSketchOn(XZ)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternLinear3d(')
       expect(newCode).toContain('instances = 6')
@@ -1010,12 +1151,9 @@ exampleSketch = startSketchOn(XZ)
       expect(newCode).toContain('|> extrude(length = 5)')
       expect(newCode).toContain('pattern001 = patternLinear3d(')
       expect(newCode).toContain('exampleSketch,') // References the original variable
-      engineCommandManager.tearDown()
     })
 
     it('should extend pipeline when selection is from unnamed pipeline', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 sketch001 = startSketchOn(XZ)
 
@@ -1026,16 +1164,24 @@ startSketchOn(XY)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternLinear3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('4', instance, rustContext),
-        distance: await getKclCommandValue('2', instance, rustContext),
+        instances: await getKclCommandValue(
+          '4',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        distance: await getKclCommandValue(
+          '2',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
         axis: 'Z',
       })
 
@@ -1044,7 +1190,7 @@ startSketchOn(XY)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternLinear3d(')
       expect(newCode).toContain('instances = 4')
@@ -1054,12 +1200,9 @@ startSketchOn(XY)
       expect(newCode).toContain('startSketchOn(XY)')
       expect(newCode).toContain('|> extrude(length = 3)')
       expect(newCode).toContain('|> patternLinear3d(')
-      engineCommandManager.tearDown()
     })
 
     it('should pipe pattern when selection is from unnamed standalone expression', async () => {
-      const { instance, kclManager, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
@@ -1069,17 +1212,29 @@ extrude(exampleSketch, length = -5)
 
       const { ast, selections, artifactGraph } = await getAstAndSolidSelections(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
 
       const result = addPatternLinear3D({
         ast,
         artifactGraph,
         solids: selections,
-        instances: await getKclCommandValue('3', instance, rustContext),
-        distance: await getKclCommandValue('5', instance, rustContext),
-        axis: await getKclCommandValue('[0, 1, 0]', instance, rustContext),
+        instances: await getKclCommandValue(
+          '3',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        distance: await getKclCommandValue(
+          '5',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        axis: await getKclCommandValue(
+          '[0, 1, 0]',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
       })
 
       if (err(result)) {
@@ -1087,7 +1242,7 @@ extrude(exampleSketch, length = -5)
       }
 
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       expect(newCode).toContain('patternLinear3d(')
       expect(newCode).toContain('instances = 3')
@@ -1096,7 +1251,6 @@ extrude(exampleSketch, length = -5)
       // Should pipe directly onto the unnamed expression
       expect(newCode).toContain('extrude(exampleSketch, length = -5)')
       expect(newCode).toContain('|> patternLinear3d(')
-      engineCommandManager.tearDown()
     })
   })
 })
