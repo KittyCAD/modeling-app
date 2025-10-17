@@ -128,8 +128,8 @@ export function addHole({
   face: Selections
   cutAt: KclCommandValue
   holeBody: 'blind'
-  blindDepth: KclCommandValue
-  blindDiameter: KclCommandValue
+  blindDepth?: KclCommandValue
+  blindDiameter?: KclCommandValue
   holeType: 'simple' | 'counterbore' | 'countersink'
   counterboreDepth?: KclCommandValue
   counterboreDiameter?: KclCommandValue
@@ -167,7 +167,7 @@ export function addHole({
 
   // Prep the big label args
   let holeBodyNode: Node<CallExpressionKw> | undefined
-  if (holeBody === 'blind') {
+  if (holeBody === 'blind' && blindDepth && blindDiameter) {
     holeBodyNode = createCallExpressionStdLibKw('hole::blind', null, [
       createLabeledArg('depth', valueOrVariable(blindDepth)),
       createLabeledArg('diameter', valueOrVariable(blindDiameter)),
