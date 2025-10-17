@@ -278,9 +278,9 @@ function exprToKey(expr: Expr): string {
     return `literal:${JSON.stringify(expr.value)}`
   }
   if (expr.type === 'Name') {
-    return `name:${expr.name}`
+    // Name has a nested Identifier: expr.name.name is the actual string
+    return `name:${expr.name.name}`
   }
-  // For other complex expressions, use JSON stringify
-  // This is safe because we're only using it for comparison, not type checking
+  // Fallback for other expression types (though currently only Name is used)
   return JSON.stringify(expr)
 }
