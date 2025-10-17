@@ -3099,6 +3099,46 @@ extrude004 = extrude(profile004, length = 8)`
       expect(newCode).toContain('faces = [capEnd001], tolerance = 0.1mm')
       expect(newCode).toContain('faces = [capEnd001], tolerance = 0.2mm')
     })
+
+    it('should add flatness annotation with all optional parameters', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(cylinder)
+      const faces = getCapFromCylinder(artifactGraph)
+
+      // Create all parameter values
+      const tolerance = await getKclCommandValue('0.1mm')
+      const precision = await getKclCommandValue('3')
+      const framePosition = await getKclCommandValue('[10, 20]')
+      const framePlane = 'XY'
+      const fontPointSize = await getKclCommandValue('36')
+      const fontScale = await getKclCommandValue('1.5')
+
+      const result = addFlatnessGdt({
+        ast,
+        artifactGraph,
+        faces,
+        tolerance,
+        precision,
+        framePosition,
+        framePlane,
+        fontPointSize,
+        fontScale,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst)
+      if (err(newCode)) throw newCode
+
+      // Verify the extrude was tagged
+      expect(newCode).toContain('tagEnd = $capEnd001')
+      // Verify all parameters are in the GDT call
+      expect(newCode).toContain('faces = [capEnd001]')
+      expect(newCode).toContain('tolerance = 0.1mm')
+      expect(newCode).toContain('precision = 3')
+      expect(newCode).toContain('framePosition = [10, 20]')
+      expect(newCode).toContain('framePlane = XY')
+      expect(newCode).toContain('fontPointSize = 36')
+      expect(newCode).toContain('fontScale = 1.5')
+    })
   })
 })
 
