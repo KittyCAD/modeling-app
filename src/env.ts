@@ -155,7 +155,8 @@ export default (): EnvironmentVariables => {
       undefined,
     VITE_KITTYCAD_SITE_BASE_URL: SITE_URL || undefined,
     VITE_KITTYCAD_SITE_APP_URL: APP_URL || undefined,
-    POOL: pool, // TODO: Rename to ENGINE_POOL to be more descriptive
+    // POOL: pool, // TODO: Rename to ENGINE_POOL to be more descriptive
+    POOL: "pr-3836", // TODO: Rename to ENGINE_POOL to be more descriptive
   }
 
   return environmentVariables
