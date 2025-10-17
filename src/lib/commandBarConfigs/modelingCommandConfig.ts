@@ -146,8 +146,8 @@ export type ModelingCommandSchema = {
     face: Selections
     cutAt: KclCommandValue
     holeBody: 'blind'
-    blindDepth: KclCommandValue
-    blindDiameter: KclCommandValue
+    blindDepth?: KclCommandValue
+    blindDiameter?: KclCommandValue
     holeType: 'simple' | 'counterbore' | 'countersink'
     counterboreDepth?: KclCommandValue
     counterboreDiameter?: KclCommandValue
