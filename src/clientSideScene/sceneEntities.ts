@@ -186,6 +186,7 @@ import {
 } from '@src/lib/selections'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -1054,10 +1055,16 @@ export class SceneEntities {
     up: [number, number, number],
     origin: [number, number, number],
     getEventForSegmentSelection: typeof getEventForSegmentSelectionFn,
-    updateExtraSegments: typeof updateExtraSegmentsFn
+    updateExtraSegments: typeof updateExtraSegmentsFn,
+    wasmInstance?: ModuleType
   ) => {
     if (trap(modifiedAst)) return Promise.reject(modifiedAst)
-    const nextAst = await this.kclManager.updateAst(modifiedAst, false)
+    const nextAst = await this.kclManager.updateAst(
+      modifiedAst,
+      false,
+      undefined,
+      wasmInstance
+    )
     this.sceneInfra.resetMouseListeners()
     await this.setupSketch({
       sketchEntryNodePath,

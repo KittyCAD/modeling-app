@@ -16,9 +16,9 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type EditorManager from '@src/editor/manager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { kclEditorMachine } from './kclEditorMachine'
-import { ActorRefFrom } from 'xstate'
-import RustContext from '@src/lib/rustContext'
+import type { kclEditorMachine } from '@src/machines/kclEditorMachine'
+import type { ActorRefFrom } from 'xstate'
+import type RustContext from '@src/lib/rustContext'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 

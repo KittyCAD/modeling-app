@@ -167,7 +167,6 @@ import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import { enableConsoleLogEverything } from '@e2e/playwright/test-utils'
 
 export type ModelingMachineEvent =
   | {
@@ -1268,7 +1267,6 @@ export const modelingMachine = setup({
         ? providedSceneEntitiesManager
         : sceneEntitiesManager
       const theSceneInfra = providedSceneInfra ? providedSceneInfra : sceneInfra
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       deleteSegmentOrProfile({
         pathToNode: event.data,
         sketchDetails,
@@ -1280,13 +1278,17 @@ export const modelingMachine = setup({
           sceneEntitiesManager: theSceneEntitiesManager,
           sceneInfra: theSceneInfra,
         },
-      }).then(() => {
-        return theCodeManager.updateEditorWithAstAndWriteToFile(
-          theKclManager.ast,
-          undefined,
-          wasmInstance
-        )
       })
+        .then(() => {
+          return theCodeManager.updateEditorWithAstAndWriteToFile(
+            theKclManager.ast,
+            undefined,
+            wasmInstance
+          )
+        })
+        .catch((error) => {
+          console.error('unable to delete segement or profile', error)
+        })
     },
     'Set context': assign({
       store: ({ context: { store }, event }) => {

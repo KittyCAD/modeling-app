@@ -107,7 +107,8 @@ export async function deleteSegmentOrProfile({
     sketchDetails.yAxis,
     sketchDetails.origin,
     getEventForSegmentSelection,
-    updateExtraSegments
+    updateExtraSegments,
+    dependencies.wasmInstance
   )
 
   // Update the machine context.sketchDetails so subsequent interactions use fresh paths

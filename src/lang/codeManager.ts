@@ -13,7 +13,7 @@ import { bracket } from '@src/lib/exampleKcl'
 import { isDesktop } from '@src/lib/isDesktop'
 import { err, reportRejection } from '@src/lib/trap'
 import type EditorManager from '@src/editor/manager'
-import { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const PERSIST_CODE_KEY = 'persistCode'
 

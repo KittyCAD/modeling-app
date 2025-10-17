@@ -20,6 +20,8 @@ import { KclManager } from '@src/lang/KclSingleton'
 import { reportRejection } from '@src/lib/trap'
 import env from '@src/env'
 import { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import { commandBarMachine } from '@src/machines/commandBarMachine'
+import { createActor } from 'xstate'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -75,6 +77,11 @@ export async function buildTheWorldAndConnectToEngine() {
   engineCommandManager.codeManager = codeManager
   engineCommandManager.sceneInfra = sceneInfra
   engineCommandManager.rustContext = rustContext
+
+  const commandBarActor = createActor(commandBarMachine, {
+    input: { commands: [] },
+  }).start()
+
   const sceneEntitiesManager = new SceneEntities(
     engineCommandManager,
     sceneInfra,
@@ -83,6 +90,7 @@ export async function buildTheWorldAndConnectToEngine() {
     kclManager,
     rustContext
   )
+  sceneEntitiesManager.commandBarActor = commandBarActor
 
   await new Promise((resolve) => {
     engineCommandManager
@@ -108,6 +116,7 @@ export async function buildTheWorldAndConnectToEngine() {
     codeManager,
     kclManager,
     sceneEntitiesManager,
+    commandBarActor,
   }
 }
 
