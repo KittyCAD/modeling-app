@@ -85,6 +85,7 @@ import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import { isOverlap } from '@src/lib/utils'
 import { addSubtract } from '@src/lang/modifyAst/boolean'
+import { addFlatnessGdt } from '@src/lang/modifyAst/gdt'
 import type { NodePath } from '@rust/kcl-lib/bindings/NodePath'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { defaultSourceRange } from '@src/lang/sourceRange'
@@ -2882,6 +2883,72 @@ helix001 = helix(
       const newCode = recast(result.modifiedAst)
       expect(newCode).toContain(
         `helix001 = helix(cylinder = extrude001, revolutions = 11, angleStart = 22`
+      )
+    })
+  })
+})
+
+describe('gdt.spec.ts', () => {
+  async function getAstAndArtifactGraph(code: string) {
+    const ast = assertParse(code)
+    await kclManager.executeAst({ ast })
+    const {
+      artifactGraph,
+      execState: { operations },
+      variables,
+    } = kclManager
+    await new Promise((resolve) => setTimeout(resolve, 100))
+    return { ast, artifactGraph, operations, variables }
+  }
+
+  function createSelectionFromArtifacts(
+    artifacts: Artifact[],
+    artifactGraph: ArtifactGraph
+  ): Selections {
+    const graphSelections = artifacts.flatMap((artifact) => {
+      const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
+      if (!codeRefs || codeRefs.length === 0) {
+        return []
+      }
+
+      return {
+        codeRef: codeRefs[0],
+        artifact,
+      } as Selection
+    })
+    return {
+      graphSelections,
+      otherSelections: [],
+    }
+  }
+
+  function getCapFromCylinder(artifactGraph: ArtifactGraph) {
+    const endFace = [...artifactGraph.values()].find(
+      (a) => a.type === 'cap' && a.subType === 'end'
+    )
+    return createSelectionFromArtifacts([endFace!], artifactGraph)
+  }
+
+  const cylinder = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 10)
+extrude001 = extrude(profile001, length = 10)`
+
+  describe('Testing addFlatnessGdt', () => {
+    it('should add a basic flatness annotation to a single face (cap)', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(cylinder)
+      const faces = getCapFromCylinder(artifactGraph)
+      const tolerance = await getKclCommandValue('0.1mm')
+      const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst)
+      // Verify the extrude was tagged
+      expect(newCode).toContain('tagEnd = $capEnd001')
+      // Verify the GDT annotation was added
+      expect(newCode).toContain(
+        'gdt::flatness(faces = [capEnd001], tolerance = 0.1mm)'
       )
     })
   })
