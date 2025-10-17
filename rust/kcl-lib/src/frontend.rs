@@ -4,7 +4,7 @@ use anyhow::{anyhow, bail};
 use kcl_api::{
     Error, Expr, FileId, Number, NumericSuffix, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, Settings,
     SourceDelta, SourceRef, Version,
-    sketch::{Freedom, Point2d, Segment, SketchArgs},
+    sketch::{Freedom, LineCtor, Point2d, Segment, SketchArgs},
 };
 use kcl_error::SourceRange;
 
@@ -145,12 +145,11 @@ impl FrontendState {
         &mut self,
         sketch: ObjectId,
         _version: Version,
-        start: Point2d<Expr>,
-        end: Point2d<Expr>,
+        ctor: LineCtor,
     ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
         // Create updated KCL source from args.
-        let start_ast = to_ast_point2d(&start).map_err(|err| Error { msg: err.to_string() })?;
-        let end_ast = to_ast_point2d(&end).map_err(|err| Error { msg: err.to_string() })?;
+        let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
+        let end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
         let line_ast = ast::Expr::CallExpressionKw(Box::new(ast::CallExpressionKw::new(
             LINE_FN,
             None,
@@ -287,15 +286,16 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta, segment_id))
     }
 
-    async fn move_line_start(
+    async fn edit_line(
         &mut self,
         sketch: ObjectId,
         _version: Version,
         line: ObjectId,
-        start: Point2d<Expr>,
+        ctor: LineCtor,
     ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta)> {
         // Create updated KCL source from args.
-        let new_start_ast = to_ast_point2d(&start).map_err(|err| Error { msg: err.to_string() })?;
+        let new_start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
+        let new_end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
 
         // Look up existing sketch.
         let sketch_id = sketch;
@@ -328,10 +328,13 @@ impl FrontendState {
                 if call.callee.name.name != LINE_FN {
                     return ControlFlow::Continue(());
                 }
+                // Update the arguments.
                 for labeled_arg in &mut call.arguments {
                     if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(LINE_START_PARAM) {
                         labeled_arg.arg = new_start_ast.clone();
-                        break;
+                    }
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(LINE_END_PARAM) {
+                        labeled_arg.arg = new_end_ast.clone();
                     }
                 }
                 return ControlFlow::Break(());
