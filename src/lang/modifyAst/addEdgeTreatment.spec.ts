@@ -36,6 +36,36 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 
+let instanceInThisFile: ModuleType = null!
+let kclManagerInThisFile: KclManager = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+let codeManagerInThisFile: CodeManager = null!
+let editorManagerInThisFile: EditorManager = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
+beforeAll(async () => {
+  const {
+    instance,
+    kclManager,
+    engineCommandManager,
+    codeManager,
+    editorManager,
+  } = await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  kclManagerInThisFile = kclManager
+  engineCommandManagerInThisFile = engineCommandManager
+  codeManagerInThisFile = codeManager
+  editorManagerInThisFile = editorManager
+})
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
+})
+
 describe('addEdgeTreatment', () => {
   const runGetPathToExtrudeForSegmentSelectionTest = async (
     code: string,
@@ -158,8 +188,6 @@ describe('addEdgeTreatment', () => {
   }
   describe('Testing getPathToExtrudeForSegmentSelection', () => {
     it('should return the correct paths for a valid selection and extrusion', async () => {
-      const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
@@ -174,14 +202,11 @@ extrude001 = extrude(sketch001, length = -15)`
         code,
         selectedSegmentSnippet,
         expectedExtrudeSnippet,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
-      engineCommandManager.tearDown()
     }, 10_000)
     it('should return the correct paths when extrusion occurs within the sketch pipe', async () => {
-      const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
@@ -196,14 +221,11 @@ extrude001 = extrude(sketch001, length = -15)`
         code,
         selectedSegmentSnippet,
         expectedExtrudeSnippet,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
-      engineCommandManager.tearDown()
     }, 10_000)
     it('should return the correct paths for a valid selection and extrusion in case of several extrusions and sketches', async () => {
-      const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-30, 30])
   |> line(end = [15, 0])
@@ -234,14 +256,11 @@ extrude003 = extrude(sketch003, length = -15)`
         code,
         selectedSegmentSnippet,
         expectedExtrudeSnippet,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
-      engineCommandManager.tearDown()
     }, 10_000)
     it('should return the correct paths for a (piped) extrude based on the other body (face)', async () => {
-      const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-25, -25])
   |> yLine(length = 50)
@@ -264,14 +283,11 @@ sketch002 = startSketchOn(sketch001, face = 'END')
         code,
         selectedSegmentSnippet,
         expectedExtrudeSnippet,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
-      engineCommandManager.tearDown()
     }, 10_000)
     it('should return the correct paths for a (non-piped) extrude based on the other body (face)', async () => {
-      const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-25, -25])
   |> yLine(length = 50)
@@ -294,14 +310,11 @@ extrude002 = extrude(sketch002, length = 30)`
         code,
         selectedSegmentSnippet,
         expectedExtrudeSnippet,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
-      engineCommandManager.tearDown()
     }, 10_000)
     it('should not return any path for missing extrusion', async () => {
-      const { instance, kclManager, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-30, 30])
   |> line(end = [15, 0])
@@ -331,11 +344,10 @@ extrude003 = extrude(sketch003, length = -15)`
         code,
         selectedSegmentSnippet,
         expectedExtrudeSnippet,
-        instance,
-        kclManager,
+        instanceInThisFile,
+        kclManagerInThisFile,
         true
       )
-      engineCommandManager.tearDown()
     }, 10_000)
   })
 
@@ -388,9 +400,9 @@ extrude003 = extrude(sketch003, length = -15)`
       selection,
       parameters,
       {
-        kclManager,
-        engineCommandManager,
-        editorManager,
+        kclManager: kclManagerInThisFile,
+        engineCommandManager: engineCommandManagerInThisFile,
+        editorManager: editorManagerInThisFile,
         codeManager,
       }
     )
@@ -486,13 +498,6 @@ extrude003 = extrude(sketch003, length = -15)`
       // run tests
       describe(`Testing modifyAstCloneWithEdgeTreatmentAndTag with ${edgeTreatmentType}s`, () => {
         it(`should add a ${edgeTreatmentType} to a specific segment`, async () => {
-          const {
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager,
-            instance,
-          } = await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
@@ -522,22 +527,14 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
             segmentSnippets,
             parameters,
             expectedCode,
-            instance,
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager
+            instanceInThisFile,
+            kclManagerInThisFile,
+            engineCommandManagerInThisFile,
+            editorManagerInThisFile,
+            codeManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
         it(`should add a ${edgeTreatmentType} to the sketch pipe`, async () => {
-          const {
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager,
-            instance,
-          } = await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
@@ -567,22 +564,14 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
             segmentSnippets,
             parameters,
             expectedCode,
-            instance,
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager
+            instanceInThisFile,
+            kclManagerInThisFile,
+            engineCommandManagerInThisFile,
+            editorManagerInThisFile,
+            codeManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
         it(`should add a ${edgeTreatmentType} to "close" if last segment is missing`, async () => {
-          const {
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager,
-            instance,
-          } = await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
@@ -609,22 +598,14 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
             segmentSnippets,
             parameters,
             expectedCode,
-            instance,
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager
+            instanceInThisFile,
+            kclManagerInThisFile,
+            engineCommandManagerInThisFile,
+            editorManagerInThisFile,
+            codeManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
         it(`should add a ${edgeTreatmentType} to an already tagged segment`, async () => {
-          const {
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager,
-            instance,
-          } = await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
@@ -654,22 +635,14 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
             segmentSnippets,
             parameters,
             expectedCode,
-            instance,
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager
+            instanceInThisFile,
+            kclManagerInThisFile,
+            engineCommandManagerInThisFile,
+            editorManagerInThisFile,
+            codeManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
         it(`should add a ${edgeTreatmentType} with existing tag on other segment`, async () => {
-          const {
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager,
-            instance,
-          } = await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0], tag = $seg01)
@@ -699,22 +672,14 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
             segmentSnippets,
             parameters,
             expectedCode,
-            instance,
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager
+            instanceInThisFile,
+            kclManagerInThisFile,
+            engineCommandManagerInThisFile,
+            editorManagerInThisFile,
+            codeManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
         it(`should add a ${edgeTreatmentType} with existing fillet on other segment`, async () => {
-          const {
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager,
-            instance,
-          } = await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0], tag = $seg01)
@@ -756,22 +721,14 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
             segmentSnippets,
             parameters,
             expectedCode,
-            instance,
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager
+            instanceInThisFile,
+            kclManagerInThisFile,
+            engineCommandManagerInThisFile,
+            editorManagerInThisFile,
+            codeManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
         it(`should add a ${edgeTreatmentType} with existing chamfer on other segment`, async () => {
-          const {
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager,
-            instance,
-          } = await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0], tag = $seg01)
@@ -813,22 +770,14 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
             segmentSnippets,
             parameters,
             expectedCode,
-            instance,
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager
+            instanceInThisFile,
+            kclManagerInThisFile,
+            engineCommandManagerInThisFile,
+            editorManagerInThisFile,
+            codeManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
         it(`should add a ${edgeTreatmentType} to two segments of a single extrusion`, async () => {
-          const {
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager,
-            instance,
-          } = await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
@@ -862,22 +811,14 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
             segmentSnippets,
             parameters,
             expectedCode,
-            instance,
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager
+            instanceInThisFile,
+            kclManagerInThisFile,
+            engineCommandManagerInThisFile,
+            editorManagerInThisFile,
+            codeManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
         it(`should add ${edgeTreatmentType}s to two bodies`, async () => {
-          const {
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager,
-            instance,
-          } = await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
@@ -934,20 +875,17 @@ extrude002 = extrude(sketch002, length = -25, tagEnd = $capEnd002)
             segmentSnippets,
             parameters,
             expectedCode,
-            instance,
-            kclManager,
-            engineCommandManager,
-            editorManager,
-            codeManager
+            instanceInThisFile,
+            kclManagerInThisFile,
+            engineCommandManagerInThisFile,
+            editorManagerInThisFile,
+            codeManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
       })
       describe(`Testing deleteEdgeTreatment with ${edgeTreatmentType}s`, () => {
         // simple cases
         it(`should delete a piped ${edgeTreatmentType} from a single segment`, async () => {
-          const { kclManager, engineCommandManager, instance } =
-            await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
@@ -971,14 +909,11 @@ extrude001 = extrude(sketch001, length = -15)`
             code,
             edgeTreatmentSnippet,
             expectedCode,
-            instance,
-            kclManager
+            instanceInThisFile,
+            kclManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
         it(`should delete a standalone assigned ${edgeTreatmentType} from a single segment`, async () => {
-          const { kclManager, engineCommandManager, instance } =
-            await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
@@ -1002,14 +937,11 @@ extrude001 = extrude(sketch001, length = -15)`
             code,
             edgeTreatmentSnippet,
             expectedCode,
-            instance,
-            kclManager
+            instanceInThisFile,
+            kclManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
         it(`should delete a standalone ${edgeTreatmentType} without assignment from a single segment`, async () => {
-          const { kclManager, engineCommandManager, instance } =
-            await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
@@ -1033,15 +965,12 @@ extrude001 = extrude(sketch001, length = -15)`
             code,
             edgeTreatmentSnippet,
             expectedCode,
-            instance,
-            kclManager
+            instanceInThisFile,
+            kclManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
         // getOppositeEdge and getNextAdjacentEdge cases
         it(`should delete a piped ${edgeTreatmentType} tagged with getOppositeEdge`, async () => {
-          const { kclManager, engineCommandManager, instance } =
-            await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
@@ -1065,14 +994,11 @@ extrude001 = extrude(sketch001, length = -15)`
             code,
             edgeTreatmentSnippet,
             expectedCode,
-            instance,
-            kclManager
+            instanceInThisFile,
+            kclManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
         it(`should delete a non-piped ${edgeTreatmentType} tagged with getNextAdjacentEdge`, async () => {
-          const { kclManager, engineCommandManager, instance } =
-            await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
@@ -1096,15 +1022,12 @@ extrude001 = extrude(sketch001, length = -15)`
             code,
             edgeTreatmentSnippet,
             expectedCode,
-            instance,
-            kclManager
+            instanceInThisFile,
+            kclManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
         // cases with several edge treatments
         it(`should delete a piped ${edgeTreatmentType} from a body with multiple treatments`, async () => {
-          const { kclManager, engineCommandManager, instance } =
-            await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0], tag = $seg01)
@@ -1134,14 +1057,11 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
             code,
             edgeTreatmentSnippet,
             expectedCode,
-            instance,
-            kclManager
+            instanceInThisFile,
+            kclManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
         it(`should delete a non-piped ${edgeTreatmentType} from a body with multiple treatments`, async () => {
-          const { kclManager, engineCommandManager, instance } =
-            await buildTheWorldAndConnectToEngine()
           const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0], tag = $seg01)
@@ -1171,10 +1091,9 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
             code,
             edgeTreatmentSnippet,
             expectedCode,
-            instance,
-            kclManager
+            instanceInThisFile,
+            kclManagerInThisFile
           )
-          engineCommandManager.tearDown()
         }, 10_000)
       })
     }
