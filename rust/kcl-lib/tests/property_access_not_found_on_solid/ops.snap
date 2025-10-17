@@ -5,31 +5,6 @@ description: Operations executed property_access_not_found_on_solid.kcl
 {
   "rust/kcl-lib/tests/property_access_not_found_on_solid/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "myFunction",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -132,9 +107,6 @@ description: Operations executed property_access_not_found_on_solid.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     }
   ],
   "std::math": [

@@ -718,40 +718,6 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "face",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 24
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -794,9 +760,6 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1017,40 +980,6 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "face",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 27
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1093,9 +1022,6 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -2536,137 +2462,6 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "lipFace",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "origin": {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Number",
-                    "value": 3.75,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 11.75,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  }
-                ]
-              },
-              "xAxis": {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 1.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  }
-                ]
-              },
-              "yAxis": {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 1.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 39
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -2709,9 +2504,6 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -2756,137 +2548,6 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "lipFace",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "origin": {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 122.25,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 11.75,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  }
-                ]
-              },
-              "xAxis": {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Number",
-                    "value": 1.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  }
-                ]
-              },
-              "yAxis": {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 1.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 40
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -2929,9 +2590,6 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -3236,137 +2894,6 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "lipFace",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "origin": {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Number",
-                    "value": 3.75,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 11.75,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  }
-                ]
-              },
-              "xAxis": {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 1.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  }
-                ]
-              },
-              "yAxis": {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 1.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 44
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -3409,9 +2936,6 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -3510,137 +3034,6 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "lipFace",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Object",
-            "value": {
-              "origin": {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Number",
-                    "value": 80.25,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 11.75,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  }
-                ]
-              },
-              "xAxis": {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 1.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  }
-                ]
-              },
-              "yAxis": {
-                "type": "Array",
-                "value": [
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 0.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  },
-                  {
-                    "type": "Number",
-                    "value": 1.0,
-                    "ty": {
-                      "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
-                    }
-                  }
-                ]
-              }
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 45
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -3683,9 +3076,6 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

@@ -1885,57 +1885,6 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "spoke",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "spokeAngle": {
-            "value": {
-              "type": "Number",
-              "value": 0.02,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "spokeGap": {
-            "value": {
-              "type": "Number",
-              "value": 0.2,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "spokeThickness": {
-            "value": {
-              "type": "Number",
-              "value": 0.95,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -2177,60 +2126,6 @@ description: Operations executed car-wheel-assembly.kcl
             }
           },
           "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "spoke",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "spokeAngle": {
-            "value": {
-              "type": "Number",
-              "value": -0.02,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "spokeGap": {
-            "value": {
-              "type": "Number",
-              "value": -0.2,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "spokeThickness": {
-            "value": {
-              "type": "Number",
-              "value": -0.95,
-              "ty": {
-                "type": "Default",
-                "len": "in",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
         }
       },
       "nodePath": {
@@ -2488,9 +2383,6 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -2630,181 +2522,6 @@ description: Operations executed car-wheel-assembly.kcl
   ],
   "public/kcl-samples/car-wheel-assembly/lug-nut.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "lug",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "diameter": {
-            "value": {
-              "type": "Number",
-              "value": 24.0,
-              "ty": {
-                "mm": null,
-                "type": "Known",
-                "type": "Length"
-              }
-            },
-            "sourceRange": []
-          },
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 30.0,
-              "ty": {
-                "mm": null,
-                "type": "Known",
-                "type": "Length"
-              }
-            },
-            "sourceRange": []
-          },
-          "plane": {
-            "value": {
-              "type": "Object",
-              "value": {
-                "origin": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 57.15,
-                      "ty": {
-                        "mm": null,
-                        "type": "Known",
-                        "type": "Length"
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": -30.0,
-                      "ty": {
-                        "mm": null,
-                        "type": "Known",
-                        "type": "Length"
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": "in",
-                        "angle": "degrees"
-                      }
-                    }
-                  }
-                },
-                "xAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": "in",
-                        "angle": "degrees"
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": "in",
-                        "angle": "degrees"
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": "in",
-                        "angle": "degrees"
-                      }
-                    }
-                  }
-                },
-                "yAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": "in",
-                        "angle": "degrees"
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": -1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": "in",
-                        "angle": "degrees"
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": "in",
-                        "angle": "degrees"
-                      }
-                    }
-                  }
-                },
-                "zAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": "in",
-                        "angle": "degrees"
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": "in",
-                        "angle": "degrees"
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": "in",
-                        "angle": "degrees"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -2940,9 +2657,6 @@ description: Operations executed car-wheel-assembly.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     }
   ],
   "public/kcl-samples/car-wheel-assembly/main.kcl": [

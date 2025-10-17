@@ -25,28 +25,6 @@ description: Operations executed pattern_linear_in_module.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "thing",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -133,27 +111,10 @@ description: Operations executed pattern_linear_in_module.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     }
   ],
   "rust/kcl-lib/tests/pattern_linear_in_module/thing.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "thing",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -240,9 +201,6 @@ description: Operations executed pattern_linear_in_module.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     }
   ],
   "std::math": [

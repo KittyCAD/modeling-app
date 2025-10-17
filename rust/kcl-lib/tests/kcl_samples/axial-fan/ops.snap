@@ -947,45 +947,6 @@ description: Operations executed axial-fan.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "fanBlade",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "offsetHeight": {
-            "value": {
-              "type": "Number",
-              "value": 4.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "startAngle": {
-            "value": {
-              "type": "Number",
-              "value": 50.0,
-              "ty": {
-                "degrees": null,
-                "type": "Known",
-                "type": "Angle"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "offsetPlane",
       "unlabeledArg": {
@@ -1025,48 +986,6 @@ description: Operations executed axial-fan.kcl
         "sourceRange": []
       },
       "labeledArgs": {},
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "fanBlade",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "offsetHeight": {
-            "value": {
-              "type": "Number",
-              "value": 9.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "startAngle": {
-            "value": {
-              "type": "Number",
-              "value": 30.0,
-              "ty": {
-                "degrees": null,
-                "type": "Known",
-                "type": "Angle"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
       "nodePath": {
         "steps": []
       },
@@ -1118,48 +1037,6 @@ description: Operations executed axial-fan.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "fanBlade",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "offsetHeight": {
-            "value": {
-              "type": "Number",
-              "value": 23.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "startAngle": {
-            "value": {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "degrees": null,
-                "type": "Known",
-                "type": "Angle"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "offsetPlane",
       "unlabeledArg": {
@@ -1203,9 +1080,6 @@ description: Operations executed axial-fan.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

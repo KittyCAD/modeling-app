@@ -74,54 +74,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "divider",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 7
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "dividerSketch",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -136,9 +88,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -172,26 +121,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "dividerSketch",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -206,9 +135,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -326,9 +252,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -371,54 +294,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "divider",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 8
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "dividerSketch",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -433,9 +308,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -469,26 +341,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "dividerSketch",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -503,9 +355,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -625,9 +474,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
       "name": "offsetPlane",
       "unlabeledArg": {
@@ -668,54 +514,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "divider",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "dividerSketch",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -730,9 +528,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -766,26 +561,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "dividerSketch",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -800,9 +575,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -922,9 +694,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
       "name": "offsetPlane",
       "unlabeledArg": {
@@ -965,94 +734,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "connector",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 56.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 10
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "connectorSketch",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "start": {
-            "value": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Number",
-                  "value": -12.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                },
-                {
-                  "type": "Number",
-                  "value": 8.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                }
-              ]
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1067,9 +748,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1103,53 +781,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "connectorSketch",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "start": {
-            "value": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Number",
-                  "value": 16.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                },
-                {
-                  "type": "Number",
-                  "value": 8.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                }
-              ]
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1164,9 +795,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1198,9 +826,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1243,67 +868,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "seatSlats",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 60.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 11
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "seatSlatSketch",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1318,9 +882,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1371,9 +932,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
       "name": "offsetPlane",
       "unlabeledArg": {
@@ -1414,67 +972,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "backSlats",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 60.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 12
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "backSlatsSketch",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1489,9 +986,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1536,50 +1030,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "armRest",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "offset": {
-            "value": {
-              "type": "Number",
-              "value": 28.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 13
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "offsetPlane",
       "unlabeledArg": {
@@ -1609,26 +1059,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "armRestPath",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1643,9 +1073,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1677,39 +1104,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "armRestProfile",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "offset": {
-            "value": {
-              "type": "Number",
-              "value": -28.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1724,9 +1118,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1753,50 +1144,6 @@ description: Operations executed bench.kcl
       },
       "nodePath": {
         "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "armRest",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "offset": {
-            "value": {
-              "type": "Number",
-              "value": -28.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 14
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
       },
       "sourceRange": []
     },
@@ -1830,26 +1177,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "armRestPath",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1864,9 +1191,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1898,39 +1222,6 @@ description: Operations executed bench.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "armRestProfile",
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Plane",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "offset": {
-            "value": {
-              "type": "Number",
-              "value": 28.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1945,9 +1236,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1976,9 +1264,6 @@ description: Operations executed bench.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     }
   ],
   "std::math": [

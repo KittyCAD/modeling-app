@@ -5,58 +5,6 @@ description: Operations executed subtract_cylinder_from_cube.kcl
 {
   "rust/kcl-lib/tests/subtract_cylinder_from_cube/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "cube",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "center": {
-            "value": {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Number",
-                  "value": 2.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                },
-                {
-                  "type": "Number",
-                  "value": 2.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                }
-              ]
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -152,9 +100,6 @@ description: Operations executed subtract_cylinder_from_cube.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

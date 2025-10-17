@@ -199,93 +199,6 @@ description: Operations executed gallows-bracket.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "angleIron",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 2400.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "miterEnd": {
-            "value": {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "miterStart": {
-            "value": {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "thickness": {
-            "value": {
-              "type": "Number",
-              "value": 6.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "width": {
-            "value": {
-              "type": "Number",
-              "value": 75.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 7
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "VariableDeclaration",
       "name": "csgFriendlyOffset",
       "value": {
@@ -385,9 +298,6 @@ description: Operations executed gallows-bracket.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -507,81 +417,6 @@ description: Operations executed gallows-bracket.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "gallowsBracket",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "depth": {
-            "value": {
-              "type": "Number",
-              "value": 450.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "height": {
-            "value": {
-              "type": "Number",
-              "value": 1250.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "ironThickness": {
-            "value": {
-              "type": "Number",
-              "value": 6.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "ironWidth": {
-            "value": {
-              "type": "Number",
-              "value": 75.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 8
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "VariableDeclaration",
       "name": "boltRadius",
       "value": {
@@ -630,81 +465,6 @@ description: Operations executed gallows-bracket.kcl
         }
       },
       "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "angleIron",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 1250.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "miterEnd": {
-            "value": {
-              "type": "Number",
-              "value": 45.0,
-              "ty": {
-                "degrees": null,
-                "type": "Known",
-                "type": "Angle"
-              }
-            },
-            "sourceRange": []
-          },
-          "miterStart": {
-            "value": {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "degrees": null,
-                "type": "Known",
-                "type": "Angle"
-              }
-            },
-            "sourceRange": []
-          },
-          "thickness": {
-            "value": {
-              "type": "Number",
-              "value": 6.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "width": {
-            "value": {
-              "type": "Number",
-              "value": 75.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
       "nodePath": {
         "steps": []
       },
@@ -942,9 +702,6 @@ description: Operations executed gallows-bracket.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
       "name": "rotate",
       "unlabeledArg": {
@@ -1083,12 +840,19 @@ description: Operations executed gallows-bracket.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
+      "type": "StdLibCall",
+      "name": "subtract",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "tools": {
           "value": {
             "type": "Solid",
             "value": {
@@ -1096,17 +860,6 @@ description: Operations executed gallows-bracket.kcl
             }
           },
           "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            "sourceRange": []
-          }
         }
       },
       "nodePath": {
@@ -1143,41 +896,6 @@ description: Operations executed gallows-bracket.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "subtract",
       "unlabeledArg": {
@@ -1198,147 +916,6 @@ description: Operations executed gallows-bracket.kcl
             }
           },
           "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": null,
-        "functionSourceRange": [],
-        "unlabeledArg": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        },
-        "labeledArgs": {
-          "accum": {
-            "value": {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "subtract",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "tools": {
-          "value": {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "angleIron",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 450.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "miterEnd": {
-            "value": {
-              "type": "Number",
-              "value": 0.0,
-              "ty": {
-                "degrees": null,
-                "type": "Known",
-                "type": "Angle"
-              }
-            },
-            "sourceRange": []
-          },
-          "miterStart": {
-            "value": {
-              "type": "Number",
-              "value": 45.0,
-              "ty": {
-                "degrees": null,
-                "type": "Known",
-                "type": "Angle"
-              }
-            },
-            "sourceRange": []
-          },
-          "thickness": {
-            "value": {
-              "type": "Number",
-              "value": 6.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "width": {
-            "value": {
-              "type": "Number",
-              "value": 75.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
         }
       },
       "nodePath": {
@@ -1578,9 +1155,6 @@ description: Operations executed gallows-bracket.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
       "name": "rotate",
       "unlabeledArg": {
@@ -1762,81 +1336,6 @@ description: Operations executed gallows-bracket.kcl
         }
       },
       "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "angleIron",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "length": {
-            "value": {
-              "type": "Number",
-              "value": 627.9108216936542,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "miterEnd": {
-            "value": {
-              "type": "Number",
-              "value": -45.0,
-              "ty": {
-                "degrees": null,
-                "type": "Known",
-                "type": "Angle"
-              }
-            },
-            "sourceRange": []
-          },
-          "miterStart": {
-            "value": {
-              "type": "Number",
-              "value": -45.0,
-              "ty": {
-                "degrees": null,
-                "type": "Known",
-                "type": "Angle"
-              }
-            },
-            "sourceRange": []
-          },
-          "thickness": {
-            "value": {
-              "type": "Number",
-              "value": 6.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "width": {
-            "value": {
-              "type": "Number",
-              "value": 69.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
       "nodePath": {
         "steps": []
       },
@@ -2204,9 +1703,6 @@ description: Operations executed gallows-bracket.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
       "name": "rotate",
       "unlabeledArg": {
@@ -2483,9 +1979,6 @@ description: Operations executed gallows-bracket.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

@@ -542,72 +542,6 @@ description: Operations executed tooling-nest-block.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "String",
-              "value": "end"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 15.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 19
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -793,76 +727,6 @@ description: Operations executed tooling-nest-block.kcl
           {
             "type": "PipeBodyItem",
             "index": 3
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentA001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 10.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.65,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 20
-          },
-          {
-            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -1061,76 +925,6 @@ description: Operations executed tooling-nest-block.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentA001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 6.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.25,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.25,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 21
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1323,76 +1117,6 @@ description: Operations executed tooling-nest-block.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentA001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 6.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.25,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.75,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 22
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1579,76 +1303,6 @@ description: Operations executed tooling-nest-block.kcl
           {
             "type": "PipeBodyItem",
             "index": 3
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentB001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 0.375,
-              "ty": {
-                "in": null,
-                "type": "Known",
-                "type": "Length"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.7,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.3,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 23
-          },
-          {
-            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -1847,70 +1501,192 @@ description: Operations executed tooling-nest-block.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentB001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 0.25,
-              "ty": {
-                "in": null,
-                "type": "Known",
-                "type": "Length"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.25,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.3,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
+      "type": "StdLibCall",
+      "name": "startSketchOn",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
           }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "face": {
+          "value": {
+            "type": "TagIdentifier",
+            "value": "rectangleSegmentB001",
+            "artifact_id": "[uuid]"
+          },
+          "sourceRange": []
         }
       },
       "nodePath": {
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 18
           },
           {
-            "type": "ExpressionStatementExpr"
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "extrude",
+      "unlabeledArg": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": -0.25,
+            "ty": {
+              "in": null,
+              "type": "Known",
+              "type": "Length"
+            }
+          },
+          "sourceRange": []
+        },
+        "tagStart": {
+          "value": {
+            "type": "TagDeclarator",
+            "name": "capStart001"
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 18
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "StdLibCall",
+      "name": "fillet",
+      "unlabeledArg": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "radius": {
+          "value": {
+            "type": "Number",
+            "value": 0.2475,
+            "ty": {
+              "in": null,
+              "type": "Known",
+              "type": "Length"
+            }
+          },
+          "sourceRange": []
+        },
+        "tags": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Uuid",
+                "value": "[uuid]"
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 18
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
           }
         ]
       },
@@ -2109,76 +1885,6 @@ description: Operations executed tooling-nest-block.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentB001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 0.25,
-              "ty": {
-                "in": null,
-                "type": "Known",
-                "type": "Length"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.25,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.7,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 25
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -2365,338 +2071,6 @@ description: Operations executed tooling-nest-block.kcl
           {
             "type": "PipeBodyItem",
             "index": 3
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentB001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 0.25,
-              "ty": {
-                "in": null,
-                "type": "Known",
-                "type": "Length"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.7,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.7,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 26
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "startSketchOn",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "face": {
-          "value": {
-            "type": "TagIdentifier",
-            "value": "rectangleSegmentB001",
-            "artifact_id": "[uuid]"
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 18
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "extrude",
-      "unlabeledArg": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": -0.25,
-            "ty": {
-              "in": null,
-              "type": "Known",
-              "type": "Length"
-            }
-          },
-          "sourceRange": []
-        },
-        "tagStart": {
-          "value": {
-            "type": "TagDeclarator",
-            "name": "capStart001"
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 18
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 2
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "fillet",
-      "unlabeledArg": {
-        "value": {
-          "type": "Solid",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {
-        "radius": {
-          "value": {
-            "type": "Number",
-            "value": 0.2475,
-            "ty": {
-              "in": null,
-              "type": "Known",
-              "type": "Length"
-            }
-          },
-          "sourceRange": []
-        },
-        "tags": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
-              }
-            ]
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 18
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentC001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 0.5,
-              "ty": {
-                "in": null,
-                "type": "Known",
-                "type": "Length"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": -0.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 27
-          },
-          {
-            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -2895,76 +2269,6 @@ description: Operations executed tooling-nest-block.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 1.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": -0.2,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.2,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 28
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -3151,76 +2455,6 @@ description: Operations executed tooling-nest-block.kcl
           {
             "type": "PipeBodyItem",
             "index": 3
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 2.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": -0.2,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 29
-          },
-          {
-            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -3419,76 +2653,6 @@ description: Operations executed tooling-nest-block.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 2.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": -0.2,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.8,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 30
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -3675,76 +2839,6 @@ description: Operations executed tooling-nest-block.kcl
           {
             "type": "PipeBodyItem",
             "index": 3
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 3.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": -0.8,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.2,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 31
-          },
-          {
-            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -3943,76 +3037,6 @@ description: Operations executed tooling-nest-block.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 4.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": -0.8,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 32
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -4199,76 +3223,6 @@ description: Operations executed tooling-nest-block.kcl
           {
             "type": "PipeBodyItem",
             "index": 3
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 5.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": -0.8,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.8,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 33
-          },
-          {
-            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -4467,76 +3421,6 @@ description: Operations executed tooling-nest-block.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 4.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": -0.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.33,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 34
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -4723,76 +3607,6 @@ description: Operations executed tooling-nest-block.kcl
           {
             "type": "PipeBodyItem",
             "index": 3
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentD001",
-              "artifact_id": "[uuid]"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 3.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": -0.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.67,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 35
-          },
-          {
-            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -4991,75 +3805,6 @@ description: Operations executed tooling-nest-block.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "nest",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {
-          "cubeFace": {
-            "value": {
-              "type": "String",
-              "value": "start"
-            },
-            "sourceRange": []
-          },
-          "nestSize": {
-            "value": {
-              "type": "Number",
-              "value": 0.75,
-              "ty": {
-                "in": null,
-                "type": "Known",
-                "type": "Length"
-              }
-            },
-            "sourceRange": []
-          },
-          "xPos": {
-            "value": {
-              "type": "Number",
-              "value": -0.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          },
-          "yPos": {
-            "value": {
-              "type": "Number",
-              "value": 0.5,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            "sourceRange": []
-          }
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 36
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -5249,9 +3994,6 @@ description: Operations executed tooling-nest-block.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     }
   ],
   "std::math": [

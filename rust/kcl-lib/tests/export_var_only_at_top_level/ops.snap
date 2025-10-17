@@ -5,28 +5,6 @@ description: Operations executed export_var_only_at_top_level.kcl
 {
   "rust/kcl-lib/tests/export_var_only_at_top_level/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "FunctionCall",
-        "name": "main",
-        "functionSourceRange": [],
-        "unlabeledArg": null,
-        "labeledArgs": {}
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "VariableDeclaration",
       "name": "x",
       "value": {
@@ -67,9 +45,6 @@ description: Operations executed export_var_only_at_top_level.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     }
   ],
   "std::math": [
