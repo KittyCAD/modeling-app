@@ -2983,7 +2983,7 @@ extrude004 = extrude(profile004, length = 8)`
       )
     })
 
-    it('should add flatness annotations to multiple faces (same body)', async () => {
+    it('should add flatness annotations to multiple faces', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(box)
       const faces = getWallsFromBox(artifactGraph, 3)
 
@@ -3007,7 +3007,7 @@ extrude004 = extrude(profile004, length = 8)`
       expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
     })
 
-    it('should add flatness annotations to multiple faces (different bodies)', async () => {
+    it('should add flatness annotations to different bodies', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(twoBodies)
       const faces = getEndCapsFromMultipleBodies(artifactGraph)
 
