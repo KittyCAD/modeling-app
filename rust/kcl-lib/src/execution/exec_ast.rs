@@ -14,7 +14,7 @@ use crate::{
         Operation, PlaneType, StatementKind, TagIdentifier, annotations,
         cad_op::OpKclValue,
         fn_call::Args,
-        kcl_value::{FunctionSource, TypeDef},
+        kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
         memory,
         state::{ModuleState, SketchBlockState},
         types::{NumericType, PrimitiveType, RuntimeType},
@@ -795,8 +795,7 @@ impl ExecutorContext {
                         value: Box::new(FunctionSource::kcl(
                             function_expression.clone(),
                             exec_state.mut_stack().snapshot(),
-                            is_std,
-                            experimental,
+                            KclFunctionSourceParams { is_std, experimental },
                         )),
                         meta: vec![metadata.to_owned()],
                     }

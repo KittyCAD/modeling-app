@@ -138,6 +138,11 @@ pub struct FunctionSource {
     pub ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
 }
 
+pub struct KclFunctionSourceParams {
+    pub is_std: bool,
+    pub experimental: bool,
+}
+
 impl FunctionSource {
     pub fn rust(
         func: crate::std::StdFn,
@@ -160,7 +165,8 @@ impl FunctionSource {
         }
     }
 
-    pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, is_std: bool, experimental: bool) -> Self {
+    pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, params: KclFunctionSourceParams) -> Self {
+        let KclFunctionSourceParams { is_std, experimental } = params;
         let (input_arg, named_args) = Self::args_from_ast(&ast);
         FunctionSource {
             input_arg,
@@ -168,6 +174,7 @@ impl FunctionSource {
             return_type: ast.return_type.clone(),
             deprecated: false,
             experimental,
+            // ADAM: This should be configurable.
             include_in_feature_tree: true,
             is_std,
             body: FunctionBody::Kcl(memory),

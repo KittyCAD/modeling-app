@@ -906,7 +906,14 @@ mod test {
                 return_type: None,
                 digest: None,
             });
-            let func_src = FunctionSource::kcl(Box::new(func_expr), EnvironmentRef::dummy(), false, false);
+            let func_src = FunctionSource::kcl(
+                Box::new(func_expr),
+                EnvironmentRef::dummy(),
+                crate::execution::kcl_value::KclFunctionSourceParams {
+                    is_std: false,
+                    experimental: false,
+                },
+            );
             let labeled = args
                 .iter()
                 .map(|(name, value)| {

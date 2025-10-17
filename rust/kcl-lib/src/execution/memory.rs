@@ -1300,8 +1300,10 @@ mod test {
                 value: Box::new(FunctionSource::kcl(
                     crate::parsing::ast::types::FunctionExpression::dummy(),
                     sn2,
-                    false,
-                    false,
+                    crate::execution::kcl_value::KclFunctionSourceParams {
+                        is_std: false,
+                        experimental: false,
+                    },
                 )),
                 meta: Vec::new(),
             },
