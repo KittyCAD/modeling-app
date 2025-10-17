@@ -297,42 +297,6 @@ description: Operations executed countersunk-plate.kcl
       "sourceRange": []
     },
     {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 0.6068125000000003,
-        "ty": {
-          "type": "Default",
-          "len": "in",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 1.547799999949525,
-        "ty": {
-          "type": "Default",
-          "len": "in",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "polar",
       "unlabeledArg": null,
