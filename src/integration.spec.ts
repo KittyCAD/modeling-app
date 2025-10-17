@@ -3139,6 +3139,23 @@ extrude004 = extrude(profile004, length = 8)`
       expect(newCode).toContain('fontPointSize = 36')
       expect(newCode).toContain('fontScale = 1.5')
     })
+
+    it('should place GDT annotations at the end of the file', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(twoBodies)
+      const faces = getEndCapsFromMultipleBodies(artifactGraph)
+
+      const tolerance = await getKclCommandValue('0.1mm')
+      const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst)
+      if (err(newCode)) throw newCode
+
+      // Verify GDT calls come after all model code
+      const lastExtrudeIndex = newCode.lastIndexOf('extrude')
+      const firstGdtIndex = newCode.indexOf('gdt::flatness')
+      expect(firstGdtIndex).toBeGreaterThan(lastExtrudeIndex)
+    })
   })
 })
 
