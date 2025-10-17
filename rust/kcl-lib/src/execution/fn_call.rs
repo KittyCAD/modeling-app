@@ -245,10 +245,17 @@ impl FunctionSource {
 
         // Some function calls might get added to the feature tree.
         // We do this by adding an "operation".
-        // Don't add operations if the KCL code being executed is inside the stdlib,
-        // because the stdlib internals aren't relevant to users, they would be pointless noise.
-        let caller_is_in_stdlib = exec_state.mod_local.inside_stdlib;
-        let should_track_operation = !caller_is_in_stdlib && self.include_in_feature_tree;
+        //
+        // Don't add operations if the KCL code being executed is
+        // just the KCL stdlib calling other KCL stdlib,
+        // because the stdlib internals aren't relevant to users,
+        // that would just be pointless noise.
+        //
+        // Do add operations if the KCL being executed is
+        // user-defined, or the calling code is user-defined,
+        // because that's relevant to the user.
+        let would_trace_stdlib_internals = exec_state.mod_local.inside_stdlib && self.is_std;
+        let should_track_operation = !would_trace_stdlib_internals && self.include_in_feature_tree;
         let op = if should_track_operation {
             let op_labeled_args = args
                 .labeled
