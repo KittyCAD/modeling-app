@@ -10,10 +10,8 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import {
-  getFacesExprsFromSelection,
-  isFaceArtifact,
-} from '@src/lang/modifyAst/faces'
+import { isFaceArtifact } from '@src/lang/modifyAst/faces'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { valueOrVariable } from '@src/lang/queryAst'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
@@ -62,7 +60,7 @@ export function addFlatnessGdt({
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // Clone the AST to avoid mutating the original
-  const modifiedAst = structuredClone(ast)
+  let modifiedAst = structuredClone(ast)
 
   // Filter to only include face selections
   const faceSelections = faces.graphSelections.filter((selection) =>
@@ -76,11 +74,26 @@ export function addFlatnessGdt({
   }
 
   // Get face expressions from the selection
-  const facesExprs = getFacesExprsFromSelection(
-    modifiedAst,
-    { graphSelections: faceSelections, otherSelections: [] },
-    artifactGraph
-  )
+  // GDT annotations require tags for unambiguous face references (no body context)
+  // We use modifyAstWithTagsForSelection directly to make the tagging explicit
+  const facesExprs: Expr[] = []
+  for (const faceSelection of faceSelections) {
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      faceSelection,
+      artifactGraph
+    )
+    if (err(tagResult)) {
+      console.warn('Failed to add tag for face selection', tagResult)
+      continue
+    }
+
+    // Update the AST with the tagged version
+    modifiedAst = tagResult.modifiedAst
+
+    // Create expression from the first tag (faces have one tag)
+    facesExprs.push(createLocalName(tagResult.tags[0]))
+  }
 
   if (facesExprs.length === 0) {
     return new Error(
