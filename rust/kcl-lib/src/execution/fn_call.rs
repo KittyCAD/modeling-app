@@ -245,7 +245,7 @@ impl FunctionSource {
 
         // Some function calls might get added to the feature tree.
         // We do this by adding an "operation".
-        //
+
         // Don't add operations if the KCL code being executed is
         // just the KCL stdlib calling other KCL stdlib,
         // because the stdlib internals aren't relevant to users,

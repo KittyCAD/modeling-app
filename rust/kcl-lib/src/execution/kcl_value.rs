@@ -148,7 +148,7 @@ impl FunctionSource {
     pub fn rust(
         func: crate::std::StdFn,
         ast: Box<Node<FunctionExpression>>,
-        props: StdFnProps,
+        _props: StdFnProps,
         attrs: FnAttrs,
     ) -> Self {
         let (input_arg, named_args) = Self::args_from_ast(&ast);
@@ -159,7 +159,7 @@ impl FunctionSource {
             return_type: ast.return_type.clone(),
             deprecated: attrs.deprecated,
             experimental: attrs.experimental,
-            include_in_feature_tree: props.include_in_feature_tree,
+            include_in_feature_tree: attrs.include_in_feature_tree,
             is_std: true,
             body: FunctionBody::Rust(func),
             ast,

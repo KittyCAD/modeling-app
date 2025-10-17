@@ -155,7 +155,7 @@ export MERGE = "merge": string
 ///     cylinder = part001,
 ///  )
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn helix(
   /// Number of revolutions.
   revolutions: number(_),
@@ -258,7 +258,7 @@ export fn helix(
 ///   |> line(end = [0, 10])
 ///   |> close()
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn offsetPlane(
   /// The plane (e.g. `XY`) which this new plane is created from.
   @plane: Plane,
@@ -495,7 +495,7 @@ export fn offsetPlane(
 ///        roughness = 50
 ///    )
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn clone(
   /// The sketch, solid, or imported geometry to be cloned.
   @geometry: Sketch | Solid | ImportedGeometry,

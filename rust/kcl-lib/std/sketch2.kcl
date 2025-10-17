@@ -42,5 +42,5 @@ export fn arc(
 @(experimental = true)
 export type Segment = Arc | Line
 
-@(impl = std_rust_constraint, experimental = true)
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn parallel(@input: [Line; 2+], distance?: number(Length)) {}

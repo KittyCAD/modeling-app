@@ -200,7 +200,7 @@
 /// 
 /// subtract(cube001, tools = cube002)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn startSketchOn(
   /// Profile whose start is being used.
   @planeOrSolid: Solid | Plane,
@@ -357,7 +357,7 @@ export fn circle(
 /// exampleSketch = startSketchOn(XY)
 ///   |> ellipse(center = [0, 0], majorRadius = 50, minorRadius = 20)
 /// ```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, experimental = true, feature_tree = true)
 export fn ellipse(
   /// Sketch to extend, or plane or surface to sketch on.
   @sketchOrSurface: Sketch | Plane | Face,
@@ -543,7 +543,7 @@ export fn ellipse(
 ///   |> extrude(to = XZ, method = NEW)
 ///   |> appearance(color ='#FF00FF')
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn extrude(
   /// Which sketch or sketches should be extruded.
   @sketches: [Sketch; 1+],
@@ -792,7 +792,7 @@ export fn extrude(
 ///     |> circle(center = [-10, 10], radius = 4)
 ///     |> revolve(angle = 90deg, axis = revolveAxis, bidirectionalAngle = 50)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn revolve(
   /// The sketch or set of sketches that should be revolved
   @sketches: [Sketch; 1+],
@@ -1131,7 +1131,7 @@ export fn polygon(
 ///
 /// sweep(circleSketch, path = sweepPath, sectional = true)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn sweep(
   /// The sketch or set of sketches that should be swept in space.
   @sketches: [Sketch; 1+],
@@ -1215,7 +1215,7 @@ export fn sweep(
 ///     vDegree = 2,
 /// )
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn loft(
   /// Which sketches to loft. Must include at least 2 sketches.
   @sketches: [Sketch; 2+],
@@ -2112,7 +2112,7 @@ export fn bezierCurve(
 ///     |> subtract2d(tool = squareHoleSketch())
 /// example = extrude(exampleSketch, length = 1)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn subtract2d(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2136,7 +2136,7 @@ export fn subtract2d(
 ///   |> close()
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, experimental = true, feature_tree = true)
 export fn conic(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2171,7 +2171,7 @@ export fn conic(
 ///   )
 ///   |>close()
 ///```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, experimental = true, feature_tree = true)
 export fn parabolic(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2222,7 +2222,7 @@ export fn parabolicPoint(
 ///   )
 ///   |>close()
 ///```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, experimental = true, feature_tree = true)
 export fn hyperbolic(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2274,7 +2274,7 @@ export fn hyperbolicPoint(
 ///    |> close()
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, experimental = true, feature_tree = true)
 export fn elliptic(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
