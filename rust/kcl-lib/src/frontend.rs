@@ -2,9 +2,9 @@ use std::ops::ControlFlow;
 
 use anyhow::{anyhow, bail};
 use kcl_api::{
-    Error, Expr, FileId, Number, NumericSuffix, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, Settings,
-    SourceDelta, SourceRef, Version,
-    sketch::{Freedom, LineCtor, Point2d, Segment, SketchArgs},
+    Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, Settings, SourceDelta,
+    SourceRef, Version,
+    sketch::{LineCtor, Point2d, Segment, SketchArgs},
 };
 use kcl_error::SourceRange;
 
@@ -392,33 +392,6 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta))
     }
 
-    fn add_equal_length_constraint(
-        &mut self,
-        sketch: ObjectId,
-        _version: Version,
-        segments: Vec<ObjectId>,
-    ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta)> {
-        todo!()
-    }
-
-    fn sketch_ast_from_id<F>(&self, ast: &ast::Node<ast::Program>, sketch_id: ObjectId, f: F) -> anyhow::Result<bool>
-    where
-        F: Fn(&crate::walk::Node) -> anyhow::Result<()>,
-    {
-        let sketch_object = self
-            .scene_graph
-            .objects
-            .get(sketch_id.0)
-            .ok_or_else(|| anyhow!("Sketch not found: {sketch_id:?}"))?;
-        let ObjectKind::Sketch(_) = &sketch_object.kind else {
-            bail!("Object is not a sketch: {sketch_object:?}");
-        };
-        match &sketch_object.source {
-            SourceRef::Simple(range) => ast_node_from_source_range(ast, *range, f),
-            SourceRef::BackTrace(_) => bail!("BackTrace source refs not supported yet"),
-        }
-    }
-
     fn ast_from_object_id_mut<B, F>(
         &mut self,
         ast: &mut ast::Node<ast::Program>,
@@ -437,25 +410,6 @@ impl FrontendState {
             SourceRef::Simple(range) => ast_node_from_source_range_mut(ast, *range, f),
             SourceRef::BackTrace(_) => bail!("BackTrace source refs not supported yet"),
         }
-    }
-
-    fn position_from_expr(&self, _point: &Point2d<Expr>) -> kcl_api::Result<Point2d<Number>> {
-        // TODO: sketch-api: implement
-        Ok(Point2d {
-            x: Number {
-                value: 0.0,
-                units: NumericSuffix::Mm,
-            },
-            y: Number {
-                value: 0.0,
-                units: NumericSuffix::Mm,
-            },
-        })
-    }
-
-    fn freedom_from_expr(&self, _point: &Point2d<Expr>) -> kcl_api::Result<Freedom> {
-        // TODO: sketch-api: implement
-        Ok(Freedom::Free)
     }
 }
 
@@ -551,22 +505,6 @@ fn ast_name(name: String) -> ast::Node<ast::Name> {
         pre_comments: Default::default(),
         comment_start: Default::default(),
     }
-}
-
-fn ast_node_from_source_range<F>(ast: &ast::Node<ast::Program>, source_range: SourceRange, f: F) -> anyhow::Result<bool>
-where
-    F: Fn(&crate::walk::Node) -> anyhow::Result<()>,
-{
-    crate::walk::walk(ast, |node: crate::walk::Node| -> anyhow::Result<bool> {
-        let Ok(node_range) = SourceRange::try_from(&node) else {
-            return Ok(true);
-        };
-        if node_range != source_range {
-            return Ok(true);
-        }
-        f(&node)?;
-        Ok(false)
-    })
 }
 
 fn ast_node_from_source_range_mut<B, F>(
