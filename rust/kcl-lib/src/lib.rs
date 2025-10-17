@@ -148,6 +148,10 @@ pub mod pretty {
     pub use crate::fmt::{format_number_literal, format_number_value, human_display_number};
 }
 
+pub mod front {
+    pub use crate::frontend::FrontendState;
+}
+
 #[cfg(feature = "cli")]
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
