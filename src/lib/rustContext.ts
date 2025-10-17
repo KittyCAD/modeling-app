@@ -8,6 +8,7 @@ import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { SegmentCtor } from '@rust/kcl-lib/bindings/SegmentCtor'
+import type { SketchExecOutcome } from '@rust/kcl-api/bindings/SketchExecOutcome'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { BSON } from 'bson'
 
@@ -27,6 +28,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getModule } from '@src/lib/wasm_lib_wrapper'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
+import type { SourceDelta } from '@rust/kcl-api/bindings/SourceDelta'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true
@@ -267,8 +269,8 @@ export default class RustContext {
     label: string,
     settings: DeepPartial<Configuration>
   ): Promise<{
-    kclSource: { text: string }
-    sketchExecOutcome: { segments: any[]; constraints: any[] }
+    kclSource: SourceDelta
+    sketchExecOutcome: SketchExecOutcome
   }> {
     const instance = this._checkInstance()
 
