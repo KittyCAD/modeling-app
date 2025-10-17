@@ -1942,9 +1942,38 @@ async fn inner_subtract_2d(
 pub async fn elliptic_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let x = args.get_kw_arg_opt("x", &RuntimeType::length(), exec_state)?;
     let y = args.get_kw_arg_opt("y", &RuntimeType::length(), exec_state)?;
-    let major_radius = args.get_kw_arg("majorRadius", &RuntimeType::num_any(), exec_state)?;
-    let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::num_any(), exec_state)?;
+    let major_radius = args.get_kw_arg_opt("majorRadius", &RuntimeType::num_any(), exec_state)?;
+    let major_diameter: Option<TyF64> = args.get_kw_arg_opt("majorDiameter", &RuntimeType::num_any(), exec_state)?;
+    let minor_radius = args.get_kw_arg_opt("minorRadius", &RuntimeType::num_any(), exec_state)?;
+    let minor_diameter: Option<TyF64> = args.get_kw_arg_opt("minorDiameter", &RuntimeType::num_any(), exec_state)?;
 
+    let major_radius = match (major_radius, major_diameter) {
+        (Some(_), Some(_)) | (None, None) => {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Provide either `majorDiameter` or `majorRadius`, not both.".to_string(),
+                vec![args.source_range],
+            )));
+        }
+        (Some(major_radius), _) => major_radius,
+        (_, Some(major_diameter)) => TyF64 {
+            n: 0.5 * major_diameter.n,
+            ty: major_diameter.ty,
+        },
+    };
+
+    let minor_radius = match (minor_radius, minor_diameter) {
+        (Some(_), Some(_)) | (None, None) => {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Provide either `minorDiameter` or `minorRadius`, not both.".to_string(),
+                vec![args.source_range],
+            )));
+        }
+        (Some(minor_radius), _) => minor_radius,
+        (_, Some(minor_diameter)) => TyF64 {
+            n: 0.5 * minor_diameter.n,
+            ty: minor_diameter.ty,
+        },
+    };
     let elliptic_point = inner_elliptic_point(x, y, major_radius, minor_radius, &args).await?;
 
     args.make_kcl_val_from_point(elliptic_point, exec_state.length_unit().into())
@@ -2015,9 +2044,40 @@ pub async fn elliptic(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     let angle_start = args.get_kw_arg("angleStart", &RuntimeType::degrees(), exec_state)?;
     let angle_end = args.get_kw_arg("angleEnd", &RuntimeType::degrees(), exec_state)?;
     let major_radius = args.get_kw_arg_opt("majorRadius", &RuntimeType::length(), exec_state)?;
+    let major_diameter: Option<TyF64> = args.get_kw_arg_opt("majorDiameter", &RuntimeType::length(), exec_state)?;
     let major_axis = args.get_kw_arg_opt("majorAxis", &RuntimeType::point2d(), exec_state)?;
-    let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::length(), exec_state)?;
+    let minor_radius = args.get_kw_arg_opt("minorRadius", &RuntimeType::length(), exec_state)?;
+    let minor_diameter: Option<TyF64> = args.get_kw_arg_opt("minorDiameter", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
+
+    let major_radius = match (major_radius, major_diameter) {
+        (Some(_), Some(_)) => {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Provide either `majorDiameter` or `majorRadius`, not both.".to_string(),
+                vec![args.source_range],
+            )));
+        }
+        (None, None) => None,
+        (Some(major_radius), _) => Some(major_radius),
+        (_, Some(major_diameter)) => Some(TyF64 {
+            n: 0.5 * major_diameter.n,
+            ty: major_diameter.ty,
+        }),
+    };
+
+    let minor_radius = match (minor_radius, minor_diameter) {
+        (Some(_), Some(_)) | (None, None) => {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Provide either `minorDiameter` or `minorRadius`, not both.".to_string(),
+                vec![args.source_range],
+            )));
+        }
+        (Some(minor_radius), _) => minor_radius,
+        (_, Some(minor_diameter)) => TyF64 {
+            n: 0.5 * minor_diameter.n,
+            ty: minor_diameter.ty,
+        },
+    };
 
     let new_sketch = inner_elliptic(
         sketch,
@@ -2058,7 +2118,7 @@ pub(crate) async fn inner_elliptic(
     let major_axis = match (major_axis, major_radius) {
         (Some(_), Some(_)) | (None, None) => {
             return Err(KclError::new_type(KclErrorDetails::new(
-                "Provide either `majorAxis` or `majorRadius`.".to_string(),
+                "Provide either `majorAxis` or `majorRadius`, not both.".to_string(),
                 vec![args.source_range],
             )));
         }

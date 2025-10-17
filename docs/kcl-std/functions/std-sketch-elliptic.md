@@ -15,8 +15,10 @@ elliptic(
   center: Point2d,
   angleStart: number(Angle),
   angleEnd: number(Angle),
-  minorRadius: number(Length),
+  minorRadius?: number(Length),
+  minorDiameter?: number(Length),
   majorRadius?: number(Length),
+  majorDiameter?: number(Length),
   majorAxis?: Point2d,
   tag?: TagDecl,
 ): Sketch
@@ -32,8 +34,10 @@ elliptic(
 | `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center of the ellipse. | Yes |
 | `angleStart` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Where along the ellptic should this segment start? | Yes |
 | `angleEnd` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Where along the ellptic should this segment end? | Yes |
-| `minorRadius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The minor radius, b, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. | Yes |
-| `majorRadius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The major radius, a, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Equivalent to majorAxis = [majorRadius, 0]. | No |
+| `minorRadius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The minor radius, b, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Incompatible with `minorDiameter`. | No |
+| `minorDiameter` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The minor diameter of the elliptic equation. Incompatible with `minorRadius`. | No |
+| `majorRadius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The major radius, a, of the elliptic equation x^2 / a^2 + y^2 / b^2 = 1. Equivalent to majorAxis = [majorRadius, 0]. Incompatible with `majorDiameter`. | No |
+| `majorDiameter` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The major diameter of the elliptic equation. Incompatible with `majorRadius`. | No |
 | `majorAxis` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The major axis of the elliptic. | No |
 | `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this arc. | No |
 

@@ -532,9 +532,39 @@ pub async fn ellipse(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
     let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
     let major_radius = args.get_kw_arg_opt("majorRadius", &RuntimeType::length(), exec_state)?;
+    let major_diameter: Option<TyF64> = args.get_kw_arg_opt("majorDiameter", &RuntimeType::length(), exec_state)?;
     let major_axis = args.get_kw_arg_opt("majorAxis", &RuntimeType::point2d(), exec_state)?;
-    let minor_radius = args.get_kw_arg("minorRadius", &RuntimeType::length(), exec_state)?;
+    let minor_radius = args.get_kw_arg_opt("minorRadius", &RuntimeType::length(), exec_state)?;
+    let minor_diameter: Option<TyF64> = args.get_kw_arg_opt("minorDiameter", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
+
+    let major_radius = match (major_radius, major_diameter) {
+        (Some(_), Some(_)) | (None, None) => {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Provide either `majorDiameter` or `majorRadius`, not both.".to_string(),
+                vec![args.source_range],
+            )));
+        }
+        (Some(major_radius), _) => Some(major_radius),
+        (_, Some(major_diameter)) => Some(TyF64 {
+            n: 0.5 * major_diameter.n,
+            ty: major_diameter.ty,
+        }),
+    };
+
+    let minor_radius = match (minor_radius, minor_diameter) {
+        (Some(_), Some(_)) | (None, None) => {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Provide either `minorDiameter` or `minorRadius`, not both.".to_string(),
+                vec![args.source_range],
+            )));
+        }
+        (Some(minor_radius), _) => minor_radius,
+        (_, Some(minor_diameter)) => TyF64 {
+            n: 0.5 * minor_diameter.n,
+            ty: minor_diameter.ty,
+        },
+    };
 
     let sketch = inner_ellipse(
         sketch_or_surface,
