@@ -2669,6 +2669,13 @@ y = x[0mm + 1]
         parse_execute(&ast).await.unwrap();
     }
 
+    #[cfg(not(feature = "artifact-graph"))]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn no_artifacts_from_within_hole_call() {
+        panic!("This test must be run with the 'artifact-graph' feature.")
+    }
+
+    #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn no_artifacts_from_within_hole_call() {
         // Test that executing stdlib KCL, like the `hole` function
@@ -2680,6 +2687,7 @@ y = x[0mm + 1]
 
         // Get all the operations that occurred.
         let actual_operations = out.exec_state.global.root_module_artifacts.operations;
+
         // There should be 8, for sketching the cube and applying the hole.
         // If the stdlib internal calls are being tracked, that's a bug,
         // and the actual number of operations will be something like 35.
