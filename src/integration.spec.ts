@@ -3069,16 +3069,22 @@ extrude004 = extrude(profile004, length = 8)`
       const faces = getCapFromCylinder(artifactGraph)
 
       // Add first annotation
-      const tolerance = await getKclCommandValue('0.1mm')
-      const result1 = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
+      const tolerance1 = await getKclCommandValue('0.1mm')
+      const result1 = addFlatnessGdt({
+        ast,
+        artifactGraph,
+        faces,
+        tolerance: tolerance1,
+      })
       if (err(result1)) throw result1
 
       // Add second annotation to the same face
+      const tolerance2 = await getKclCommandValue('0.2mm')
       const result2 = addFlatnessGdt({
         ast: result1.modifiedAst,
         artifactGraph,
         faces,
-        tolerance,
+        tolerance: tolerance2,
       })
       if (err(result2)) throw result2
 
@@ -3087,9 +3093,11 @@ extrude004 = extrude(profile004, length = 8)`
 
       // Verify tag appears only once
       expect(newCode.match(/tagEnd/g)).toHaveLength(1)
-      // Should have TWO identical GDT calls
-      const gdtLine = 'gdt::flatness(faces = [capEnd001], tolerance = 0.1mm)'
-      expect(newCode.split(gdtLine).length - 1).toBe(2)
+      // Should have TWO GDT calls
+      const gdtCalls = newCode.match(/gdt::flatness/g)
+      expect(gdtCalls).toHaveLength(2)
+      expect(newCode).toContain('faces = [capEnd001], tolerance = 0.1mm')
+      expect(newCode).toContain('faces = [capEnd001], tolerance = 0.2mm')
     })
   })
 })
