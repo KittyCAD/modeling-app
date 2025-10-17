@@ -1,0 +1,6 @@
+@(feature_tree = true)
+fn foo() {
+  return ""
+}
+
+foo()

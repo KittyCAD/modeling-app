@@ -2698,6 +2698,47 @@ y = x[0mm + 1]
         );
     }
 
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn feature_tree_annotation_on_user_defined_kcl() {
+        // The call to foo() should generate an operation.
+        let ast = std::fs::read_to_string("tests/inputs/feature_tree_annotation_on_user_defined_kcl.kcl").unwrap();
+        let out = parse_execute(&ast).await.unwrap();
+
+        // Get all the operations that occurred.
+        let actual_operations = out.exec_state.global.root_module_artifacts.operations;
+
+        let expected = 2;
+        assert_eq!(
+            actual_operations.len(),
+            expected,
+            "expected {expected} operations, received {}:\n{actual_operations:#?}",
+            actual_operations.len(),
+        );
+        assert!(matches!(actual_operations[0], Operation::GroupBegin { .. }));
+        assert!(matches!(actual_operations[1], Operation::GroupEnd));
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn no_feature_tree_annotation_on_user_defined_kcl() {
+        // The call to foo() should not generate an operation,
+        // because it doesn't have @(feature_tree = true)
+        let ast = std::fs::read_to_string("tests/inputs/no_feature_tree_annotation_on_user_defined_kcl.kcl").unwrap();
+        let out = parse_execute(&ast).await.unwrap();
+
+        // Get all the operations that occurred.
+        let actual_operations = out.exec_state.global.root_module_artifacts.operations;
+
+        let expected = 0;
+        assert_eq!(
+            actual_operations.len(),
+            expected,
+            "expected {expected} operations, received {}:\n{actual_operations:#?}",
+            actual_operations.len(),
+        );
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn custom_warning() {
         let warn = r#"
