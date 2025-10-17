@@ -76,12 +76,6 @@ description: Operations executed multi_transform.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
       "name": "patternTransform",
       "unlabeledArg": {

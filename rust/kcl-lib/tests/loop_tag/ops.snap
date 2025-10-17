@@ -508,9 +508,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -689,9 +686,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -880,9 +874,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -1061,9 +1052,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -1252,9 +1240,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -1433,9 +1418,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -1624,9 +1606,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -1805,9 +1784,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -1996,9 +1972,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -2177,9 +2150,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -2368,9 +2338,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -2549,9 +2516,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -2740,9 +2704,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -2921,9 +2882,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -3112,9 +3070,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -3293,9 +3248,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -3484,9 +3436,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -3665,9 +3614,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -3856,9 +3802,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -4037,9 +3980,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -4228,9 +4168,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -4409,9 +4346,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -4600,9 +4534,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -4781,9 +4712,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -4972,9 +4900,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -5153,9 +5078,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -5344,9 +5266,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -5525,9 +5444,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -5716,9 +5632,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -5897,9 +5810,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -6088,9 +5998,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -6269,9 +6176,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -6460,9 +6364,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -6641,9 +6542,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -6832,9 +6730,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -7013,9 +6908,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -7204,9 +7096,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -7385,9 +7274,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -7576,9 +7462,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -7757,9 +7640,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -7948,9 +7828,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -8129,9 +8006,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -8320,9 +8194,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -8501,9 +8372,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -8692,9 +8560,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -8873,9 +8738,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"
@@ -9064,9 +8926,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -9250,9 +9109,6 @@ description: Operations executed loop_tag.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -9431,9 +9287,6 @@ description: Operations executed loop_tag.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupEnd"

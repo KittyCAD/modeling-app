@@ -641,18 +641,6 @@ description: Operations executed battery-module-cooling-plate.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
       "type": "VariableDeclaration",
       "name": "mountingRadius",
       "value": {
@@ -1134,9 +1122,6 @@ description: Operations executed battery-module-cooling-plate.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -1291,9 +1276,6 @@ description: Operations executed battery-module-cooling-plate.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupBegin",
@@ -1452,9 +1434,6 @@ description: Operations executed battery-module-cooling-plate.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -1611,9 +1590,6 @@ description: Operations executed battery-module-cooling-plate.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -1768,9 +1744,6 @@ description: Operations executed battery-module-cooling-plate.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupBegin",
@@ -2166,9 +2139,6 @@ description: Operations executed battery-module-cooling-plate.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -2560,9 +2530,6 @@ description: Operations executed battery-module-cooling-plate.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupBegin",
@@ -2958,9 +2925,6 @@ description: Operations executed battery-module-cooling-plate.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -3354,9 +3318,6 @@ description: Operations executed battery-module-cooling-plate.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -3748,9 +3709,6 @@ description: Operations executed battery-module-cooling-plate.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupBegin",

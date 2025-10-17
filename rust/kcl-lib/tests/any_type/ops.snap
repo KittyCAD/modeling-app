@@ -276,9 +276,6 @@ description: Operations executed any_type.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "VariableDeclaration",
       "name": "len1",
       "value": {

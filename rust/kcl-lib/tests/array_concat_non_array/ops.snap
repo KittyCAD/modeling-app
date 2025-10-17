@@ -5,15 +5,6 @@ description: Operations executed array_concat_non_array.kcl
 {
   "rust/kcl-lib/tests/array_concat_non_array/input.kcl": [
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
       "name": "count",
       "unlabeledArg": {
@@ -67,12 +58,6 @@ description: Operations executed array_concat_non_array.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

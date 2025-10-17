@@ -320,16 +320,18 @@ impl FunctionSource {
         exec_state.mod_local.inside_stdlib = prev_inside_stdlib;
         exec_state.mut_stack().pop_env();
 
-        if let Some(mut op) = op {
-            op.set_std_lib_call_is_error(result.is_err());
-            // Track call operation.  We do this after the call
-            // since things like patternTransform may call user code
-            // before running, and we will likely want to use the
-            // return value. The call takes ownership of the args,
-            // so we need to build the op before the call.
-            exec_state.push_op(op);
-        } else if !is_calling_into_stdlib {
-            exec_state.push_op(Operation::GroupEnd);
+        if should_track_operation {
+            if let Some(mut op) = op {
+                op.set_std_lib_call_is_error(result.is_err());
+                // Track call operation.  We do this after the call
+                // since things like patternTransform may call user code
+                // before running, and we will likely want to use the
+                // return value. The call takes ownership of the args,
+                // so we need to build the op before the call.
+                exec_state.push_op(op);
+            } else if !is_calling_into_stdlib {
+                exec_state.push_op(Operation::GroupEnd);
+            }
         }
 
         if self.is_std

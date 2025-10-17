@@ -1111,9 +1111,6 @@ description: Operations executed gallows-bracket.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
       "name": "subtract",
       "unlabeledArg": {
@@ -1142,9 +1139,6 @@ description: Operations executed gallows-bracket.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
       "type": "StdLibCall",
       "name": "subtract",
       "unlabeledArg": {
@@ -1171,9 +1165,6 @@ description: Operations executed gallows-bracket.kcl
         "steps": []
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "GroupBegin",

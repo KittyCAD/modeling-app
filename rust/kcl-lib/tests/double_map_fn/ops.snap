@@ -3,26 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed double_map_fn.kcl
 ---
 {
-  "rust/kcl-lib/tests/double_map_fn/input.kcl": [
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupEnd"
-    }
-  ],
   "std::math": [
     {
       "type": "VariableDeclaration",
