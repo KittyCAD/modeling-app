@@ -96,9 +96,6 @@ jobs:
             target: arm-unknown-linux-gnueabihf
             code-target: linux-armhf
           - os: namespace-profile-macos-6-cores
-            target: x86_64-apple-darwin
-            code-target: darwin-x64
-          - os: namespace-profile-macos-6-cores
             target: aarch64-apple-darwin
             code-target: darwin-arm64
     name: kcl-language-server build-release (${{ matrix.target }})
@@ -282,10 +279,6 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: release-aarch64-apple-darwin
-          path: rust/build
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-x86_64-apple-darwin
           path: rust/build
       - uses: actions/download-artifact@v4
         with:

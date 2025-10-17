@@ -14,6 +14,7 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { roundOffWithUnits } from '@src/lib/utils'
+import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
 function CommandBarHeaderFooter({
   children,
@@ -31,12 +32,14 @@ function CommandBarHeaderFooter({
     if (!selectedCommand?.args) return undefined
     const s = { ...selectedCommand.args }
     for (const [name, arg] of Object.entries(s)) {
-      if (
-        typeof arg.hidden === 'function'
-          ? arg.hidden(commandBarState.context)
-          : arg.hidden
+      const { isHidden } = evaluateCommandBarArg(
+        name,
+        arg,
+        commandBarState.context
       )
+      if (isHidden) {
         delete s[name]
+      }
     }
     return s
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -117,16 +120,13 @@ function CommandBarHeaderFooter({
             </p>
             {Object.entries(nonHiddenArgs || {}).flatMap(
               ([argName, arg], i) => {
-                const argValue =
-                  (typeof argumentsToSubmit[argName] === 'function'
-                    ? argumentsToSubmit[argName](commandBarState.context)
-                    : argumentsToSubmit[argName]) || ''
+                const { value: argValue, isRequired } = evaluateCommandBarArg(
+                  argName,
+                  arg,
+                  commandBarState.context
+                )
                 const isCurrentArg = argName === currentArgument?.name
                 const isSkipFalse = arg.skip === false
-                const isRequired =
-                  typeof arg.required === 'function'
-                    ? arg.required(commandBarState.context)
-                    : arg.required
 
                 // We actually want to show non-hidden optional args that have a value set already
                 if (!(argValue || isCurrentArg || isSkipFalse || isRequired)) {

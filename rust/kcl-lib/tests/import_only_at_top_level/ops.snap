@@ -3,7 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_only_at_top_level.kcl
 ---
 {
-  "rust/kcl-lib/tests/import_only_at_top_level/empty.kcl": [],
   "rust/kcl-lib/tests/import_only_at_top_level/input.kcl": [
     {
       "type": "GroupBegin",
@@ -64,9 +63,6 @@ description: Operations executed import_only_at_top_level.kcl
       "type": "GroupEnd"
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -172,14 +168,5 @@ description: Operations executed import_only_at_top_level.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

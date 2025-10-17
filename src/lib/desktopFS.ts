@@ -92,7 +92,11 @@ export function getUniqueProjectName(name: string, projects: FileEntry[]) {
     return interpolateProjectNameWithIndex(name, nextIndex)
   } else {
     let newName = name
-    while (projects.some((project) => project.name === newName)) {
+    while (
+      projects.some(
+        (project) => project.name.toLowerCase() === newName.toLowerCase()
+      )
+    ) {
       const nameEndsWithNumber = newName.match(/\d+$/)
       newName = nameEndsWithNumber
         ? newName.replace(/\d+$/, (num) => `${parseInt(num, 10) + 1}`)

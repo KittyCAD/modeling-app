@@ -23,7 +23,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
-import { deleteSegmentOrProfile } from '@src/clientSideScene/deleteSegment'
+import { deleteSegmentsOrProfiles } from '@src/clientSideScene/deleteSegment'
 import {
   orthoScale,
   quaternionFromUpNForward,
@@ -148,6 +148,7 @@ import {
   editorManager,
   engineCommandManager,
   kclManager,
+  rustContext,
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
@@ -305,8 +306,8 @@ export type ModelingMachineEvent =
       type: 'Center camera on selection'
     }
   | {
-      type: 'Delete segment'
-      data: PathToNode
+      type: 'Delete segments'
+      data: PathToNode[]
     }
   | {
       type: 'code edit during sketch'
@@ -1067,19 +1068,23 @@ export const modelingMachine = setup({
     },
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to defaults': () => {
-      kclManager.defaultSelectionFilter()
+      kclManager.setSelectionFilterToDefault()
     },
-    'Delete segment': ({ context: { sketchDetails }, event }) => {
-      if (event.type !== 'Delete segment') return
+    'Delete segments': ({ context: { sketchDetails }, event }) => {
+      if (event.type !== 'Delete segments') return
       if (!sketchDetails || !event.data) return
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      deleteSegmentOrProfile({
-        pathToNode: event.data,
+      deleteSegmentsOrProfiles({
+        pathToNodes: event.data,
         sketchDetails,
-      }).then(() => {
-        return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
       })
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
+        .catch((e) => {
+          console.warn('error', e)
+        })
     },
     'Set context': assign({
       store: ({ context: { store }, event }) => {
@@ -1356,6 +1361,13 @@ export const modelingMachine = setup({
           const codeMirrorSelection = editorManager.createEditorSelection(
             setSelections.selection
           )
+
+          // This turns the selection into blue, needed when selecting with ctrl+A
+          const { updateSceneObjectColors } = handleSelectionBatch({
+            selections: setSelections.selection,
+          })
+          updateSceneObjectColors()
+
           kclEditorActor.send({
             type: 'setLastSelectionEvent',
             data: {
@@ -1506,6 +1518,7 @@ export const modelingMachine = setup({
         sceneEntitiesManager.removeSketchGrid()
         sceneInfra.camControls.syncDirection = 'engineToClient'
         sceneEntitiesManager.resetOverlays()
+        sceneInfra.stop()
       }
     ),
     /* Below are all the do-constrain sketch actors,
@@ -2311,9 +2324,10 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        const { ast } = kclManager
+        const { ast, artifactGraph } = kclManager
         const astResult = addExtrude({
           ast,
+          artifactGraph,
           ...input,
         })
         if (err(astResult)) {
@@ -2328,6 +2342,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2362,6 +2377,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2393,6 +2409,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2427,6 +2444,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2463,6 +2481,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2498,6 +2517,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2533,6 +2553,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2626,6 +2647,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: focusPath,
@@ -2718,6 +2740,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: focusPath,
@@ -2781,6 +2804,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2816,6 +2840,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2851,6 +2876,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2886,6 +2912,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2921,6 +2948,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2970,6 +2998,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3005,6 +3034,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3040,6 +3070,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3076,6 +3107,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3112,6 +3144,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3219,10 +3252,20 @@ export const modelingMachine = setup({
         'Enter sketch': [
           {
             target: 'animating to existing sketch',
+            actions: [
+              () => {
+                sceneInfra.animate()
+              },
+            ],
             guard: 'Selection is on face',
           },
           {
             target: 'Sketch no face',
+            actions: [
+              () => {
+                sceneInfra.animate()
+              },
+            ],
             guard: 'no kcl errors',
           },
         ],
@@ -4481,10 +4524,9 @@ export const modelingMachine = setup({
 
       on: {
         Cancel: '.undo startSketchOn',
-
-        'Delete segment': {
+        'Delete segments': {
           reenter: false,
-          actions: ['Delete segment', 'reset selections'],
+          actions: ['Delete segments', 'reset selections'],
         },
         'code edit during sketch': '.clean slate',
         'Constrain with named value': {
@@ -4975,6 +5017,9 @@ export const modelingMachine = setup({
         'reset sketch metadata',
         'enable copilot',
         'enter modeling mode',
+        () => {
+          sceneInfra.stop()
+        },
       ],
     },
 

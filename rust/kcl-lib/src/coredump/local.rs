@@ -23,7 +23,9 @@ impl Default for CoreDumper {
 #[async_trait::async_trait(?Send)]
 impl CoreDump for CoreDumper {
     fn token(&self) -> Result<String> {
-        Ok(std::env::var("KITTYCAD_API_TOKEN").unwrap_or_default())
+        Ok(std::env::var("ZOO_API_TOKEN")
+            .or_else(|_| std::env::var("KITTYCAD_API_TOKEN"))
+            .unwrap_or_default())
     }
 
     fn base_api_url(&self) -> Result<String> {

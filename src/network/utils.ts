@@ -272,6 +272,9 @@ export enum EngineCommandManagerEvents {
   peerConnectionClosed = 'peer-connection-closed',
 
   OnlineRequest = 'online-request',
+
+  // RTCPeerConnection processed a data channel close in createOnDataChannelClose
+  dataChannelClose = 'data-channel-closed',
 }
 
 export interface UnreliableSubscription<T extends UnreliableResponses['type']> {
@@ -322,6 +325,7 @@ export interface ManagerTearDown {
   peerConnectionFailed?: boolean
   peerConnectionDisconnected?: boolean
   peerConnectionClosed?: boolean
+  dataChannelClosed?: boolean
   code?: string
 }
 

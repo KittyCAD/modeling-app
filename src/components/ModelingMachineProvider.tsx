@@ -89,6 +89,7 @@ import {
   getDefaultSketchPlaneData,
   selectionBodyFace,
   getOffsetSketchPlaneData,
+  selectAllInCurrentSketch,
   updateSelections,
   getEventForSegmentSelection,
   updateExtraSegments,
@@ -1263,6 +1264,7 @@ export const ModelingMachineProvider = ({
                 kclManager,
                 editorManager,
                 codeManager,
+                rustContext,
               })
             }
             return {
@@ -1528,11 +1530,16 @@ export const ModelingMachineProvider = ({
       modelingState.context.selectionRanges.graphSelections.filter((sel) =>
         segmentNodePaths.includes(JSON.stringify(sel.codeRef.pathToNode))
       )
-    selections.forEach((selection) => {
-      modelingSend({
-        type: 'Delete segment',
-        data: selection.codeRef.pathToNode,
-      })
+    // Order selections by how late they are used in the codebase, as later nodes are less likely to be referenced than
+    // earlier ones. This could be further refined as this is just a simple heuristic.
+    const orderedSelections = selections.slice().sort((a, b) => {
+      const aStart = a.codeRef.range?.[0] ?? 0
+      const bStart = b.codeRef.range?.[0] ?? 0
+      return bStart - aStart
+    })
+    modelingSend({
+      type: 'Delete segments',
+      data: orderedSelections.map((selection) => selection.codeRef.pathToNode),
     })
     if (
       modelingState.context.selectionRanges.graphSelections.length >
@@ -1558,6 +1565,24 @@ export const ModelingMachineProvider = ({
       data: { level: 'project', value: !snapToGrid.current },
     })
   })
+
+  useHotkeys(
+    ['mod + a'],
+    (e) => {
+      const inSketchMode = modelingState.matches('Sketch')
+      if (!inSketchMode) return
+
+      e.preventDefault()
+      const selection = selectAllInCurrentSketch()
+      modelingSend({
+        type: 'Set selection',
+        data: { selectionType: 'completeSelection', selection },
+      })
+    },
+    {
+      enableOnContentEditable: false,
+    }
+  )
 
   useModelingMachineCommands({
     machineId: 'modeling',

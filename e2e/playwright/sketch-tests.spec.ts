@@ -443,11 +443,11 @@ sketch001 = startSketchOn(XZ)
 
       const code = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(-XZ)
-profile001 = startProfile(sketch001, at = [${roundOff(scale * 76.94)}, ${roundOff(
-        scale * 35.11
+profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOff(
+        scale * 34.8
       )}])
-    |> xLine(length = ${roundOff(scale * 153.87)})
-    |> yLine(length = -${roundOff(scale * 139.66)})
+    |> xLine(length = ${roundOff(scale * 154.22)})
+    |> yLine(length = -${roundOff(scale * 139.2)})
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()`
 
@@ -576,11 +576,8 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 76.94)}, ${roundOf
     // otherwise the cmdbar would be waiting for a selection.
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
-      stage: 'arguments',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: { Profiles: '1 profile', Length: '' },
-      highlightedHeaderArg: 'length',
+      stage: 'review',
+      headerArguments: { Profiles: '1 profile' },
       commandName: 'Extrude',
     })
   })
@@ -959,6 +956,52 @@ profile001 = startProfile(sketch001, at = [0, 0])
 `,
       { shouldNormalise: true }
     )
+  })
+
+  test('Select-all delete removes segments and circle in sketch mode (seeded code)', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    toolbar,
+    editor,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 600 })
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-0.26, 0])
+  |> xLine(length = 0.11)
+  |> line(end = [0.12, -0.11])
+
+profile002 = circle(sketch001, center = [0.03, -0.03], radius = 0.08)
+// testcomment2`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    // Enter sketch mode on first sketch via Feature Tree
+    await toolbar.openFeatureTreePane()
+    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+    await page.waitForTimeout(600)
+    await editor.expectEditor.toContain('startSketchOn(XZ)')
+    await editor.expectEditor.toContain('startProfile(')
+    await editor.expectEditor.toContain('circle(')
+
+    // Select all and delete
+    await page.keyboard.press('ControlOrMeta+A')
+    await page.keyboard.press('Delete')
+
+    // Expect that only the sketch declaration remains
+    await editor.expectEditor.toContain('startSketchOn(XZ)')
+    await editor.expectEditor.not.toContain('startProfile(')
+    await editor.expectEditor.not.toContain('|> xLine(')
+    await editor.expectEditor.not.toContain('circle(')
+    await editor.expectEditor.toContain('testcomment2')
   })
 })
 

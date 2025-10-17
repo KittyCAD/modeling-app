@@ -879,7 +879,7 @@ mod test {
                 return_type: None,
                 digest: None,
             });
-            let func_src = FunctionSource::kcl(Box::new(func_expr), EnvironmentRef::dummy(), false);
+            let func_src = FunctionSource::kcl(Box::new(func_expr), EnvironmentRef::dummy(), false, false);
             let labeled = args
                 .iter()
                 .map(|(name, value)| {
