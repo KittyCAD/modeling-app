@@ -697,41 +697,44 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
     const holeTypeValue = operation.labeledArgs.holeType.value.value
     const holeTypeSimpleFeatureId = 0 // TODO: pull this from rust
     if (
-      'counterboreDepth' in holeTypeValue &&
-      holeTypeValue.counterboreDepth?.type === 'Number' &&
-      'counterboreDiameter' in holeTypeValue &&
-      holeTypeValue.counterboreDiameter?.type === 'Number'
+      'depth' in holeTypeValue &&
+      holeTypeValue.depth?.type === 'Number' &&
+      'diameter' in holeTypeValue &&
+      holeTypeValue.diameter?.type === 'Number'
+      // TODO: should we check on 'feature' instead?
     ) {
       holeType = 'counterbore'
       const depthStr = formatNumberValue(
-        holeTypeValue.counterboreDepth.value,
-        holeTypeValue.counterboreDepth.ty
+        holeTypeValue.depth.value,
+        holeTypeValue.depth.ty
       )
       if (err(depthStr)) {
-        return { reason: "Couldn't format counterboreDepth argument" }
+        return { reason: "Couldn't format depth argument" }
       }
       const depthResult = await stringToKclExpression(depthStr)
       if (err(depthResult) || 'errors' in depthResult) {
-        return { reason: "Couldn't retrieve counterboreDepth argument" }
+        return { reason: "Couldn't retrieve depth argument" }
       }
       counterboreDepth = depthResult
 
       const diameterStr = formatNumberValue(
-        holeTypeValue.counterboreDiameter.value,
-        holeTypeValue.counterboreDiameter.ty
+        holeTypeValue.diameter.value,
+        holeTypeValue.diameter.ty
       )
       if (err(diameterStr)) {
-        return { reason: "Couldn't format counterboreDiameter argument" }
+        return { reason: "Couldn't format diameter argument" }
       }
       const diameterResult = await stringToKclExpression(diameterStr)
       if (err(diameterResult) || 'errors' in diameterResult) {
         return { reason: "Couldn't retrieve counterboreDiameter argument" }
       }
+      counterboreDiameter = diameterResult
     } else if (
       'angle' in holeTypeValue &&
       holeTypeValue.angle?.type === 'Number' &&
       'diameter' in holeTypeValue &&
       holeTypeValue.diameter?.type === 'Number'
+      // TODO: should we check on 'feature' instead?
     ) {
       holeType = 'countersink'
       const angleStr = formatNumberValue(

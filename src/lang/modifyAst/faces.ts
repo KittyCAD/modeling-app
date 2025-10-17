@@ -150,6 +150,7 @@ export function addHole({
   // 2. Prepare unlabeled and labeled arguments
   // TODO: understand if this is a limiation of the lookup with hole functions being part of the ast?
   // Turning this to true would default to the no variable case and think it's a pipe
+  // THIS IS BREAKING HOLE ON HOLE
   const lastChildLookup = false
   const result = buildSolidsAndFacesExprs(
     face,
