@@ -73,6 +73,9 @@ export const KCL_DEFAULT_DEGREE = `360deg`
 /** The default KCL vector3d origin expression */
 export const KCL_DEFAULT_ORIGIN = `[0, 0, 0]`
 
+/** The default KCL vector2d origin expression */
+export const KCL_DEFAULT_ORIGIN_2D = `[0, 0]`
+
 /** The default KCL color expression */
 export const KCL_DEFAULT_COLOR = `#3c73ff`
 
