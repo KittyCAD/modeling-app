@@ -1,13 +1,25 @@
-import { assertEvent, fromPromise, setup, sendParent } from 'xstate'
+import { assertEvent, fromPromise, setup } from 'xstate'
 
 import { sceneInfra, rustContext } from '@src/lib/singletons'
 import type { SegmentCtor } from '@rust/kcl-lib/bindings/SegmentCtor'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import type { SourceDelta } from '@rust/kcl-api/bindings/SourceDelta'
+import type { SketchExecOutcome } from '@rust/kcl-api/bindings/SketchExecOutcome'
+
+const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
+const CONFIRMING_DIMENSIONS_DONE = `xstate.done.actor.0.Point tool.${CONFIRMING_DIMENSIONS}`
 
 type PointEvent =
   | { type: 'unequip' }
   | { type: 'add point'; data: [x: number, y: number] }
   | { type: 'update selection' }
+  | {
+      type: `xstate.done.actor.0.Point tool.${typeof CONFIRMING_DIMENSIONS}`
+      output: {
+        kclSource: SourceDelta
+        sketchExecOutcome: SketchExecOutcome
+      }
+    }
 
 export const machine = setup({
   types: {
@@ -45,6 +57,15 @@ export const machine = setup({
         onClick: () => {},
       })
     },
+    'send result to parent': ({ event, self }) => {
+      if (event.type !== CONFIRMING_DIMENSIONS_DONE) {
+        return
+      }
+      self._parent?.send({
+        type: 'update sketch outcome',
+        data: event.output,
+      })
+    },
   },
   actors: {
     modAndSolve: fromPromise(
@@ -75,12 +96,6 @@ export const machine = setup({
           )
 
           console.log('Point segment added successfully:', result)
-
-          // Send the result directly to the parent
-          sendParent({
-            type: 'update sketch outcome',
-            data: result,
-          })
 
           return result
         } catch (error) {
@@ -113,11 +128,11 @@ export const machine = setup({
       entry: 'add point listener',
 
       on: {
-        'add point': 'Confirming dimensions',
+        'add point': CONFIRMING_DIMENSIONS,
       },
     },
 
-    'Confirming dimensions': {
+    [CONFIRMING_DIMENSIONS]: {
       invoke: {
         input: ({ event }) => {
           assertEvent(event, 'add point')
@@ -126,9 +141,13 @@ export const machine = setup({
         onDone: {
           target: 'ready for user click',
           reenter: true,
+          actions: 'send result to parent',
         },
         onError: {
           target: 'unequipping',
+        },
+        onExit: {
+          actions: 'send result to parent',
         },
         src: 'modAndSolve',
       },
