@@ -771,6 +771,7 @@ impl ExecutorContext {
             Expr::FunctionExpression(function_expression) => {
                 let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
                 let experimental = attrs.map(|a| a.experimental).unwrap_or_default();
+                let include_in_feature_tree = attrs.map(|a| a.include_in_feature_tree).unwrap_or_default();
                 if let Some(attrs) = attrs
                     && (attrs.impl_ == annotations::Impl::Rust || attrs.impl_ == annotations::Impl::RustConstraint)
                 {
@@ -795,7 +796,11 @@ impl ExecutorContext {
                         value: Box::new(FunctionSource::kcl(
                             function_expression.clone(),
                             exec_state.mut_stack().snapshot(),
-                            KclFunctionSourceParams { is_std, experimental },
+                            KclFunctionSourceParams {
+                                is_std,
+                                experimental,
+                                include_in_feature_tree,
+                            },
                         )),
                         meta: vec![metadata.to_owned()],
                     }

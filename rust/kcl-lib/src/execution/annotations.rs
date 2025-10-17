@@ -23,6 +23,7 @@ pub(crate) const SETTINGS_EXPERIMENTAL_FEATURES: &str = "experimentalFeatures";
 pub(super) const NO_PRELUDE: &str = "no_std";
 pub(crate) const DEPRECATED: &str = "deprecated";
 pub(crate) const EXPERIMENTAL: &str = "experimental";
+pub(crate) const INCLUDE_IN_FEATURE_TREE: &str = "feature_tree";
 
 pub(super) const IMPORT_FORMAT: &str = "format";
 pub(super) const IMPORT_COORDS: &str = "coords";
@@ -231,6 +232,7 @@ pub struct FnAttrs {
     pub impl_: Impl,
     pub deprecated: bool,
     pub experimental: bool,
+    pub include_in_feature_tree: bool,
 }
 
 pub(super) fn get_fn_attrs(
@@ -280,6 +282,16 @@ pub(super) fn get_fn_attrs(
                     result = Some(FnAttrs::default());
                 }
                 result.as_mut().unwrap().experimental = b;
+                continue;
+            }
+
+            if &*p.key.name == INCLUDE_IN_FEATURE_TREE
+                && let Some(b) = p.value.literal_bool()
+            {
+                if result.is_none() {
+                    result = Some(FnAttrs::default());
+                }
+                result.as_mut().unwrap().include_in_feature_tree = b;
                 continue;
             }
 

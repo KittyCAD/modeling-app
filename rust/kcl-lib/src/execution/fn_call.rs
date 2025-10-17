@@ -912,6 +912,7 @@ mod test {
                 crate::execution::kcl_value::KclFunctionSourceParams {
                     is_std: false,
                     experimental: false,
+                    include_in_feature_tree: false,
                 },
             );
             let labeled = args

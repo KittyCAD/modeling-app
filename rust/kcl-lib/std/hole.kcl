@@ -349,7 +349,7 @@ fn holeGeometry(@solid, face, holeBottom, holeBody, holeType, cutAt) {
 ///        holeType = hole::counterbore(diameter = 12, depth = 3.5),
 ///      )
 /// ```
-@(experimental = true)
+@(experimental = true, feature_tree = true)
 export fn hole(
   /// Which solid to add a hole to.
   @solid: Solid,
@@ -373,7 +373,7 @@ export fn hole(
 /// From the hole's parts (bottom, middle, top), cut the hole into the given solid,
 /// at each of the given 2D positions on the given face.
 /// Basically like function `hole` but it takes multiple 2D positions in `cutsAt`.
-@(experimental = true)
+@(experimental = true, feature_tree = true)
 export fn holes(
   /// Which solid to add a hole to.
   @solid: Solid,

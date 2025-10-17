@@ -141,6 +141,7 @@ pub struct FunctionSource {
 pub struct KclFunctionSourceParams {
     pub is_std: bool,
     pub experimental: bool,
+    pub include_in_feature_tree: bool,
 }
 
 impl FunctionSource {
@@ -166,7 +167,11 @@ impl FunctionSource {
     }
 
     pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, params: KclFunctionSourceParams) -> Self {
-        let KclFunctionSourceParams { is_std, experimental } = params;
+        let KclFunctionSourceParams {
+            is_std,
+            experimental,
+            include_in_feature_tree,
+        } = params;
         let (input_arg, named_args) = Self::args_from_ast(&ast);
         FunctionSource {
             input_arg,
@@ -174,8 +179,7 @@ impl FunctionSource {
             return_type: ast.return_type.clone(),
             deprecated: false,
             experimental,
-            // ADAM: This should be configurable.
-            include_in_feature_tree: true,
+            include_in_feature_tree,
             is_std,
             body: FunctionBody::Kcl(memory),
             ast,
