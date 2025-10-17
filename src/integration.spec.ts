@@ -2936,6 +2936,13 @@ describe('gdt.spec.ts', () => {
     return createSelectionFromArtifacts(walls, artifactGraph)
   }
 
+  function getEndCapsFromMultipleBodies(artifactGraph: ArtifactGraph) {
+    const endCaps = [...artifactGraph.values()].filter(
+      (a) => a.type === 'cap' && a.subType === 'end'
+    )
+    return createSelectionFromArtifacts(endCaps, artifactGraph)
+  }
+
   const cylinder = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 10)
 extrude001 = extrude(profile001, length = 10)`
@@ -2948,6 +2955,14 @@ profile002 = startProfile(sketch002, at = [0, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(profile002, length = 10)`
+
+  const twoBodies = `sketch003 = startSketchOn(XY)
+profile003 = circle(sketch003, center = [0, 0], radius = 5)
+extrude003 = extrude(profile003, length = 8)
+
+sketch004 = startSketchOn(XY)
+profile004 = circle(sketch004, center = [15, 0], radius = 5)
+extrude004 = extrude(profile004, length = 8)`
 
   describe('Testing addFlatnessGdt', () => {
     it('should add a basic flatness annotation to a single face (cap)', async () => {
@@ -2968,7 +2983,7 @@ extrude002 = extrude(profile002, length = 10)`
       )
     })
 
-    it('should add flatness annotations to multiple faces', async () => {
+    it('should add flatness annotations to multiple faces (same body)', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(box)
       const faces = getWallsFromBox(artifactGraph, 3)
 
@@ -2990,6 +3005,28 @@ extrude002 = extrude(profile002, length = 10)`
       expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
       expect(newCode).toContain('faces = [seg02], tolerance = 0.1mm')
       expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
+    })
+
+    it('should add flatness annotations to multiple faces (different bodies)', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(twoBodies)
+      const faces = getEndCapsFromMultipleBodies(artifactGraph)
+
+      const tolerance = await getKclCommandValue('0.1mm')
+      const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst)
+      if (err(newCode)) throw newCode
+
+      // Verify both extrudes were tagged
+      expect(newCode).toContain('tagEnd = $capEnd001')
+      expect(newCode).toContain('tagEnd = $capEnd002')
+      // Should create two separate GDT annotations (one per body)
+      const gdtCalls = newCode.match(/gdt::flatness/g)
+      expect(gdtCalls).toHaveLength(2)
+      // Verify each face has its own annotation
+      expect(newCode).toContain('faces = [capEnd001], tolerance = 0.1mm')
+      expect(newCode).toContain('faces = [capEnd002], tolerance = 0.1mm')
     })
   })
 })
