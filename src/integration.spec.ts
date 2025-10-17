@@ -2970,11 +2970,11 @@ extrude004 = extrude(profile004, length = 8)`
       const faces = getCapFromCylinder(artifactGraph)
       const tolerance = await getKclCommandValue('0.1mm')
       const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
-      if (err(result)) {
-        throw result
-      }
+      if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst)
+      if (err(newCode)) throw newCode
+
       // Verify the extrude was tagged
       expect(newCode).toContain('tagEnd = $capEnd001')
       // Verify the GDT annotation was added
