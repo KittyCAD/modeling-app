@@ -3028,6 +3028,41 @@ extrude004 = extrude(profile004, length = 8)`
       expect(newCode).toContain('faces = [capEnd001], tolerance = 0.1mm')
       expect(newCode).toContain('faces = [capEnd002], tolerance = 0.1mm')
     })
+
+    it('should not create duplicate annotations when same face is selected multiple times', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(box)
+      const walls = getWallsFromBox(artifactGraph, 3)
+
+      // Manually duplicate one face in the selection
+      const duplicatedSelection: Selections = {
+        graphSelections: [
+          ...walls.graphSelections,
+          walls.graphSelections[0], // Add first wall again
+        ],
+        otherSelections: [],
+      }
+
+      const tolerance = await getKclCommandValue('0.1mm')
+      const result = addFlatnessGdt({
+        ast,
+        artifactGraph,
+        faces: duplicatedSelection,
+        tolerance,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst)
+      if (err(newCode)) throw newCode
+
+      // Should still only have 3 GDT calls (deduplication within selection works)
+      const tagMatches = newCode.match(/tag = \$seg\d+/g)
+      expect(tagMatches).toHaveLength(3)
+      const gdtCalls = newCode.match(/gdt::flatness/g)
+      expect(gdtCalls).toHaveLength(3)
+      expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
+      expect(newCode).toContain('faces = [seg02], tolerance = 0.1mm')
+      expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
+    })
   })
 })
 
