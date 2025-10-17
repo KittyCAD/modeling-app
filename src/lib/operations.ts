@@ -659,22 +659,26 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
       'drillBitAngle' in holeBottomValue &&
       holeBottomValue.drillBitAngle?.type === 'Number'
     ) {
-      holeBottom = 'drill'
-      const angleStr = formatNumberValue(
-        holeBottomValue.drillBitAngle.value,
-        holeBottomValue.drillBitAngle.ty
-      )
-      if (err(angleStr)) {
-        return { reason: "Couldn't format drillBitAngle argument" }
+      if (holeBottomValue.drillBitAngle.value === 180) {
+        // TODO: we should do better than this??
+        holeBottom = 'flat'
+      } else {
+        holeBottom = 'drill'
+        const angleStr = formatNumberValue(
+          holeBottomValue.drillBitAngle.value,
+          holeBottomValue.drillBitAngle.ty
+        )
+        if (err(angleStr)) {
+          return { reason: "Couldn't format drillBitAngle argument" }
+        }
+        const angleResult = await stringToKclExpression(angleStr)
+        if (err(angleResult) || 'errors' in angleResult) {
+          return { reason: "Couldn't retrieve drillBitAngle argument" }
+        }
+        drillPointAngle = angleResult
       }
-      const angleResult = await stringToKclExpression(angleStr)
-      if (err(angleResult) || 'errors' in angleResult) {
-        return { reason: "Couldn't retrieve drillBitAngle argument" }
-      }
-      drillPointAngle = angleResult
     } else if (Object.keys(holeBottomValue).length === 0) {
       // TODO: make this less weird
-      holeBottom = 'flat'
     } else {
       return {
         reason:

@@ -148,16 +148,23 @@ export function addHole({
   const modifiedAst = structuredClone(ast)
 
   // 2. Prepare unlabeled and labeled arguments
+  // TODO: understand if this is a limiation of the lookup with hole functions being part of the ast?
+  // Turning this to true would default to the no variable case and think it's a pipe
+  const lastChildLookup = false
   const result = buildSolidsAndFacesExprs(
     face,
     artifactGraph,
     modifiedAst,
-    nodeToEdit
+    nodeToEdit,
+    lastChildLookup
   )
   if (err(result)) {
     return result
   }
 
+  const { solidsExpr, facesExpr, pathIfPipe } = result
+
+  // Prep the big label args
   let holeBodyNode: Node<CallExpressionKw> | undefined
   if (holeBody === 'blind') {
     holeBodyNode = createCallExpressionStdLibKw('hole::blind', null, [
@@ -204,7 +211,6 @@ export function addHole({
     return new Error('Unsupported hole type or missing parameters')
   }
 
-  const { solidsExpr, facesExpr, pathIfPipe } = result
   // TODO: should there be a createCallExpression for modules?
   const call = createCallExpressionStdLibKw('hole::hole', solidsExpr, [
     createLabeledArg('face', facesExpr),
@@ -586,7 +592,8 @@ export function buildSolidsAndFacesExprs(
   faces: Selections,
   artifactGraph: ArtifactGraph,
   modifiedAst: Node<Program>,
-  nodeToEdit?: PathToNode
+  nodeToEdit?: PathToNode,
+  lastChildLookup = true
 ) {
   const solids: Selections = {
     graphSelections: faces.graphSelections.flatMap((f) => {
@@ -604,7 +611,6 @@ export function buildSolidsAndFacesExprs(
     otherSelections: [],
   }
   // Map the sketches selection into a list of kcl expressions to be passed as unlabeled argument
-  const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
     modifiedAst,
