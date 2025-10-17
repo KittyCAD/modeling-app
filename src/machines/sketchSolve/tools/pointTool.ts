@@ -1,4 +1,4 @@
-import { assertEvent, fromPromise, setup } from 'xstate'
+import { assertEvent, fromPromise, setup, sendParent } from 'xstate'
 
 import { sceneInfra, rustContext } from '@src/lib/singletons'
 import type { SegmentCtor } from '@rust/kcl-lib/bindings/SegmentCtor'
@@ -52,7 +52,7 @@ export const machine = setup({
         const [x, y] = pointData
 
         try {
-          // Create a PointCtor with the clicked coordinates
+          // TODO not sure if we should be sending through units with this
           const segmentCtor: SegmentCtor = {
             Point: {
               position: {
@@ -73,6 +73,13 @@ export const machine = setup({
           )
 
           console.log('Point segment added successfully:', result)
+
+          // Send the result directly to the parent
+          sendParent({
+            type: 'update sketch outcome',
+            data: result,
+          })
+
           return result
         } catch (error) {
           console.error('Failed to add point segment:', error)

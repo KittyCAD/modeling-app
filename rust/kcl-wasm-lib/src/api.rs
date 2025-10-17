@@ -1,6 +1,6 @@
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_api::sketch::{SegmentCtor, SketchApi, SketchApiStub};
-use kcl_api::{Error, File, FileId, LifecycleApi, ObjectId, ProjectId, Version};
+use kcl_api::sketch::{SegmentCtor, SketchApi, SketchApiStub, SketchExecOutcome};
+use kcl_api::{Error, File, FileId, KclSource, LifecycleApi, ObjectId, ProjectId, Version};
 use wasm_bindgen::prelude::*;
 
 use crate::Context;
@@ -88,7 +88,7 @@ impl Context {
 
         // For now, use the stub implementation
         let sketch_api = SketchApiStub;
-        let result = sketch_api
+        let result: (KclSource, SketchExecOutcome) = sketch_api
             .add_segment(Version(version), ObjectId(sketch), segment, label)
             .await
             .map_err(|e: Error| JsValue::from_serde(&e).unwrap())?;

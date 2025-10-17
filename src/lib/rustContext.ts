@@ -8,6 +8,8 @@ import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { SegmentCtor } from '@rust/kcl-lib/bindings/SegmentCtor'
+import type { SketchExecOutcome } from '@rust/kcl-api/bindings/SketchExecOutcome'
+import type { KclSource } from '@rust/kcl-api/bindings/KclSource'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { BSON } from 'bson'
 
@@ -247,8 +249,8 @@ export default class RustContext {
     segment: SegmentCtor,
     label?: string
   ): Promise<{
-    kclSource: { text: string }
-    sketchExecOutcome: { segments: any[]; constraints: any[] }
+    kclSource: KclSource
+    sketchExecOutcome: SketchExecOutcome
   }> {
     const instance = this._checkInstance()
 

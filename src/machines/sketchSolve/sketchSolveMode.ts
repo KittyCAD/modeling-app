@@ -11,6 +11,8 @@ import type { SetSelections } from '@src/machines/modelingSharedTypes'
 import { machine as centerRectTool } from '@src/machines/sketchSolve/tools/centerRectTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
+import type { SketchExecOutcome } from '@rust/kcl-api/bindings/SketchExecOutcome'
+import type { KclSource } from '@rust/kcl-api/bindings/KclSource'
 
 const equipTools = Object.freeze({
   centerRectTool,
@@ -37,10 +39,21 @@ export type SketchSolveMachineEvent =
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
+  | {
+      type: 'update sketch outcome'
+      data: {
+        kclSource: KclSource
+        sketchExecOutcome: SketchExecOutcome
+      }
+    }
 
 type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
   pendingToolName?: EquipTool
+  sketchExecOutcome?: {
+    kclSource: KclSource
+    sketchExecOutcome: SketchExecOutcome
+  }
 }
 
 export const sketchSolveMachine = setup({
@@ -67,6 +80,10 @@ export const sketchSolveMachine = setup({
     'send tool unequipped to parent': sendParent({
       type: 'sketch solve tool changed',
       data: { tool: null },
+    }),
+    'update sketch outcome': assign(({ event }) => {
+      assertEvent(event, 'update sketch outcome')
+      return { sketchExecOutcome: event.data }
     }),
     'spawn tool': assign(({ event, spawn, context }) => {
       // Determine which tool to spawn based on event type
@@ -101,7 +118,7 @@ export const sketchSolveMachine = setup({
     ...equipTools,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6UNEwAEdQ5j48DEISNIks4VyM-O1FFRqB2Sd6jlk1BstEVo1pZQ1e+Rt5eWlB0u0vH3RxgEpsFaMoALaEIKRUQQPBxBJJOgQMRgZTMUSkQjocGQsAAFU2xG2GV2OXEBxkBmMTw0L06ig42jkZjuBTUykGBjUN0G3Q0jL+owB-kmQRmqIhUJhcPiiQwDAATgrCArlHxiNEAGYqsE48gErbcHaCPbk0D5aRUgzKexVV6yc7aAaNSnaVRcz7lakuDiWwVjEWBaYhPUUaGw+FyhjLVbrQnE-gmsl5GR2G2FRTGeQaapFY7yF0IAzuVSDYx1SptRRc-3CiZBkGo0JCURQOMkOYLGNrDaG9KJ7IpFMIOzcm19NTFqnSYwaT6FjTnZS6XqyAxXLpz5y1vz14Hi5TN9Ft3vEaMrHvxo0kpNDikIWfFTo1IpGF-OQsMt05xwcTTdQpZGGf5dyBMUQ1gAB3VhcGPdsz0YWAMGiVFkQWZRIiSFVlFPBNMlvfZzRkR4OUfRRrgZQZ1ELbQumUZxtEY7QTHXZjgKFUDRWDUF5iWC84NPOhEOQmJlDQ1FMI2VVcOvAdTWHOwmRtQYmX5IwgKAws5Dda5LV0P9pB6LQvBGUQQngDIAz3cDaGNQdCMkRBJ3TYxM2zXMbEGQtmktZ5jCKB0uRcAYqR3QEuMbUM8HDGUEQwOz5PvRcn2MTpix9NpnVZOxrQUKkHH5BlZDCwN9xDI9W3ghLk3vWoOGeNQ1w4HQ7EURdFAXGcOXURdaRMMoc3YqywO41EoJgnABMJaq7yIotjDdTMuXKdxaWpAtWUnYpGLeep6nXa4DBK6zRuUJhhFbGaHItFdl2uc4TAW7kikLfz3UqRlPIWxx5GOkbIt47sppIK6zUch8BmUQpqkeaQnRUjamk6J56Q+c4QocEyPCAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6cKiYvFh0cbxCUOxCAFswNIks4VyM-OkBg2VjU40a6-ljF0VGxFbpY2Uug0ubTp07rx8Vv5JkEZmFRGAAI6hZh8PAYQgkPYZA45cTHRDaRQqGoDWROeocWRqBqWZ5GaTKDS9eQ2eTyaSDUraf6jQETQLTELKLaEIKRUQQJbxRIYOgQMRgZTMUSkQjobm8sAAFQRxCR-EEhzRoBOnwpGipPw42jkZlJBTUykGBjUxMG3Q0xpZYyBHOCtAVfIFQoSSQYACd-YR-co+MRogAzYNbT3K1XqzKa1F5GSfc72KrU2R47QDJ4IU7aVQ2+nlS4uDinZ1sgJTd2SnlewVxX2iyHQ2HwxHcfZJlIpgt2ZSE+7GeQaapFLHyfMGdyqQbGOqVNqKG3Vvzsuug5ShISiKBw1VzcFQmFH7vpDXZfvogvG+SUsp49RdA3E-NaItY4y-3Mm20nRGF0txBLk92lQ8u2IBgz07eMe2RPsjh1RAigpT46m0XQTFkG01HzbQFHeLFZA0BQ6kUeppA3VZgU5D1YAAd1YXBIIvGDGFgDBoklcVwWUSIkmDZQExRW9UIQIpzjuCp9ExJdygI81iUfBk8InKi1AUOdaNdbdwNPDs+HY6C6C4niYmUfjJSE+EQzE5DtUkRAXEfFw83NBRimMXQyO0eoDEJNQDC8EZRBCeAMhA2swNoXsbxQlyEBC4dCkUMcJzuGxBnzZpTkpX9s0KXRn06PTQIYhtFTwflm2FJIEq1AdyOKNM8IZNQHE8po7HOHSlzaR1FEJCrYqq3d9yg1UmuTO8TBUapyXUaodEec1HXczpNC0NbFDG+j62UZjWJwUyZqQxLnPyT5v2MfDLgNExpBnFTOmUbCaXqQLgtC4Ca0OncmGEA9Zok5LpF0S0iO0gK-1tIp81-YtKmNHLfMceQDrdHdQiMmETIPDiwaS3VyOUV5ekqDKurKfMsSLUobAZRRCiqRQaLCoA */
   context: (): SketchSolveContext => ({
     sketchSolveToolName: null,
   }),
@@ -121,6 +138,11 @@ export const sketchSolveMachine = setup({
       ],
       description:
         'sketch mode consumes the current selection from its source of truth (currently modelingMachine). Whenever it receives',
+    },
+    'update sketch outcome': {
+      actions: 'update sketch outcome',
+      description:
+        'Updates the sketch execution outcome in the context when tools complete operations',
     },
     'unequip tool': {
       actions: 'send unequip to tool',

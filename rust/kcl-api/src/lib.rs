@@ -66,7 +66,7 @@ pub struct SourceDelta {}
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
-// TODO not sure if this needs to be file name and content? 
+// TODO not sure if this needs to be file name and content?
 pub struct KclSource {
     pub text: String,
 }
