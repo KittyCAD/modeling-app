@@ -25,6 +25,31 @@ import { expect } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclSingleton'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type RustContext from '@src/lib/rustContext'
+
+let instanceInThisFile: ModuleType = null!
+let kclManagerInThisFile: KclManager = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+let rustContextInThisFile: RustContext = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
+beforeAll(async () => {
+  const { instance, kclManager, engineCommandManager, rustContext } =
+    await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  kclManagerInThisFile = kclManager
+  engineCommandManagerInThisFile = engineCommandManager
+  rustContextInThisFile = rustContext
+})
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
+})
 
 describe('faces.test.ts', () => {
   async function getAstAndArtifactGraph(
@@ -32,7 +57,7 @@ describe('faces.test.ts', () => {
     instance: ModuleType,
     kclManager: KclManager
   ) {
-    const ast = assertParse(code, instance)
+    const ast = assertParse(code, instanceInThisFile)
     await kclManager.executeAst({ ast })
     const {
       artifactGraph,
@@ -179,37 +204,32 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
   describe('Testing addShell', () => {
     it('should add a basic shell call on cylinder end cap', async () => {
-      const { kclManager, instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         cylinder,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
       const thickness = (await stringToKclExpression(
         '1',
         undefined,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )) as KclCommandValue
       const result = addShell({ ast, artifactGraph, faces, thickness })
       if (err(result)) {
         throw result
       }
 
-      const newCode = recast(result.modifiedAst, instance)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(cylinder)
       expect(newCode).toContain(
         `shell001 = shell(extrude001, faces = END, thickness = 1)`
       )
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
-      engineCommandManager.tearDown()
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
     })
 
     it('should add a shell call on variable-less extrude', async () => {
-      const { kclManager, instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       // Note: this was code from https://github.com/KittyCAD/modeling-app/issues/7640
       const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 2358.24])
@@ -222,45 +242,42 @@ p = mirror2d([profile001], axis = Y)
 extrude(p, length = 1000)`
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
       const thickness = (await stringToKclExpression(
         '1',
         undefined,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )) as KclCommandValue
       const result = addShell({ ast, artifactGraph, faces, thickness })
       if (err(result)) {
         throw result
       }
 
-      const newCode = recast(result.modifiedAst, instance)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${code}
   |> shell(faces = END, thickness = 1)`)
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
-      engineCommandManager.tearDown()
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
     })
 
     it('should edit a basic shell call on cylinder end cap with new thickness', async () => {
-      const { kclManager, instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `${cylinder}
 shell001 = shell(extrude001, faces = END, thickness = 1)
 `
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
       const thickness = (await stringToKclExpression(
         '2',
         undefined,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(ast)
       const result = addShell({
@@ -274,57 +291,51 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
         throw result
       }
 
-      const newCode = recast(result.modifiedAst, instance)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(cylinder)
       expect(newCode).toContain(
         `shell001 = shell(extrude001, faces = END, thickness = 2)`
       )
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
-      engineCommandManager.tearDown()
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
     })
 
     it('should add a shell call on box for 2 walls', async () => {
-      const { kclManager, instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         box,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const faces = getFacesFromBox(artifactGraph, 2)
       const thickness = (await stringToKclExpression(
         '1',
         undefined,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )) as KclCommandValue
       const result = addShell({ ast, artifactGraph, faces, thickness })
       if (err(result)) {
         throw result
       }
 
-      const newCode = recast(result.modifiedAst, instance)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${boxWithTwoTags}
 shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`)
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
-      engineCommandManager.tearDown()
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
     })
 
     it('should edit a shell call on box for 2 walls to a new thickness', async () => {
-      const { kclManager, instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         `${boxWithTwoTags}
 shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const faces = getFacesFromBox(artifactGraph, 2)
       const thickness = (await stringToKclExpression(
         '2',
         undefined,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(ast)
       const result = addShell({
@@ -338,21 +349,18 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`,
         throw result
       }
 
-      const newCode = recast(result.modifiedAst, instance)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${boxWithTwoTags}
 shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
-      engineCommandManager.tearDown()
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
     })
 
     it('should add a shell on two related sweeps end faces', async () => {
-      const { kclManager, instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       // Code from https://github.com/KittyCAD/modeling-app/blob/21f11c369e1e4bcb6d2514d1150ba5e13138fe32/docs/kcl-std/functions/std-solid-shell.md#L154-L155
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         multiSolids,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const twoCaps = [...artifactGraph.values()]
         .filter((a) => a.type === 'cap' && a.subType === 'end')
@@ -362,25 +370,22 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
       const thickness = (await stringToKclExpression(
         '5',
         undefined,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )) as KclCommandValue
       const result = addShell({ ast, artifactGraph, faces, thickness })
       if (err(result)) {
         throw result
       }
 
-      const newCode = recast(result.modifiedAst, instance)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(multiSolidsShell)
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
-      engineCommandManager.tearDown()
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
     })
   })
 
   describe('Testing retrieveFaceSelectionsFromOpArgs', () => {
     it('should find the solid and face of basic shell on cylinder cap', async () => {
-      const { kclManager, instance, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const circleProfileInVar = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
@@ -388,8 +393,8 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
 `
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
         circleProfileInVar,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const op = operations.find(
         (o) => o.type === 'StdLibCall' && o.name === 'shell'
@@ -424,16 +429,13 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       }
       expect(face.artifact.subType).toEqual('end')
       expect(face.artifact.sweepId).toEqual(solid.artifact.id)
-      engineCommandManager.tearDown()
     })
 
     it('should find the sweeps and faces of complex shell', async () => {
-      const { kclManager, instance, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
         multiSolidsShell,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const lastTwoSweeps = [...artifactGraph.values()]
         .filter((a) => a.type === 'sweep')
@@ -467,20 +469,17 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)
       expect(selections.faces.graphSelections).toHaveLength(2)
       expect(selections.faces.graphSelections[0].artifact!.type).toEqual('cap')
       expect(selections.faces.graphSelections[1].artifact!.type).toEqual('cap')
-      engineCommandManager.tearDown()
     })
   })
 
   describe('Testing retrieveNonDefaultPlaneSelectionFromOpArg', () => {
     it('should find an offset plane on an offset plane', async () => {
-      const { kclManager, instance, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `plane001 = offsetPlane(XY, offset = 1)
 plane002 = offsetPlane(plane001, offset = 2)`
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const op = operations.findLast(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
@@ -496,18 +495,15 @@ plane002 = offsetPlane(plane001, offset = 2)`
         (selections.graphSelections[0].artifact as PlaneArtifact).codeRef
           .pathToNode[1][0]
       ).toEqual(0)
-      engineCommandManager.tearDown()
     })
 
     it('should find an offset plane on a sweep face', async () => {
-      const { kclManager, instance, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `${cylinder}
 plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const op = operations.find(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
@@ -524,16 +520,13 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
         (a) => a.type === 'cap' && a.subType === 'end'
       )
       expect(selections.graphSelections[0].artifact!.id).toEqual(cap!.id)
-      engineCommandManager.tearDown()
     })
 
     it('should find an offset plane on a chamfer face', async () => {
-      const { kclManager, instance, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const { artifactGraph, operations } = await getAstAndArtifactGraph(
         boxWithOneTagAndChamferAndPlane,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const op = operations.find(
         (o) => o.type === 'StdLibCall' && o.name === 'offsetPlane'
@@ -546,7 +539,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
 
       expect(selections.graphSelections).toHaveLength(1)
       expect(selections.graphSelections[0].artifact!.type).toEqual('edgeCut')
-      engineCommandManager.tearDown()
     })
   })
 
@@ -554,20 +546,18 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
     it.each<DefaultPlaneStr>(['XY', 'XZ', 'YZ'])(
       'should add a basic offset plane call on default plane %s and then edit it',
       async (name) => {
-        const { kclManager, instance, rustContext, engineCommandManager } =
-          await buildTheWorldAndConnectToEngine()
         const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
           '',
-          instance,
-          kclManager
+          instanceInThisFile,
+          kclManagerInThisFile
         )
         const offset = (await stringToKclExpression(
           '1',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue
-        const id = rustContext.getDefaultPlaneId(name)
+        const id = rustContextInThisFile.getDefaultPlaneId(name)
         if (err(id)) {
           throw id
         }
@@ -586,15 +576,20 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
           throw result
         }
 
-        const newCode = recast(result.modifiedAst, instance)
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
         expect(newCode).toContain(`plane001 = offsetPlane(${name}, offset = 1)`)
-        await enginelessExecutor(ast, undefined, undefined, rustContext)
+        await enginelessExecutor(
+          ast,
+          undefined,
+          undefined,
+          rustContextInThisFile
+        )
 
         const newOffset = (await stringToKclExpression(
           '2',
           undefined,
-          instance,
-          rustContext
+          instanceInThisFile,
+          rustContextInThisFile
         )) as KclCommandValue
         const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
         const result2 = addOffsetPlane({
@@ -608,7 +603,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
         if (err(result2)) {
           throw result2
         }
-        const newCode2 = recast(result2.modifiedAst, instance)
+        const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
         expect(newCode2).not.toContain(`offset = 1`)
         expect(newCode2).toContain(
           `plane001 = offsetPlane(${name}, offset = 2)`
@@ -617,26 +612,23 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
           result2.modifiedAst,
           undefined,
           undefined,
-          rustContext
+          rustContextInThisFile
         )
-        engineCommandManager.tearDown()
       }
     )
 
     it('should add an offset plane call on offset plane and then edit it', async () => {
-      const { kclManager, instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const code = `plane001 = offsetPlane(XY, offset = 1)`
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
         code,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const offset = (await stringToKclExpression(
         '2',
         undefined,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )) as KclCommandValue
       const artifact = [...artifactGraph.values()].find(
         (a) => a.type === 'plane'
@@ -661,16 +653,16 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
         throw result
       }
 
-      const newCode = recast(result.modifiedAst, instance)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${code}
 plane002 = offsetPlane(plane001, offset = 2)`)
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
 
       const newOffset = (await stringToKclExpression(
         '3',
         undefined,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
       const result2 = addOffsetPlane({
@@ -684,7 +676,7 @@ plane002 = offsetPlane(plane001, offset = 2)`)
       if (err(result2)) {
         throw result2
       }
-      const newCode2 = recast(result2.modifiedAst, instance)
+      const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
       expect(newCode2).not.toContain(`offset = 2`)
       expect(newCode2).toContain(`${code}
 plane002 = offsetPlane(plane001, offset = 3)`)
@@ -692,25 +684,22 @@ plane002 = offsetPlane(plane001, offset = 3)`)
         result2.modifiedAst,
         undefined,
         undefined,
-        rustContext
+        rustContextInThisFile
       )
-      engineCommandManager.tearDown()
     })
 
     it('should add an offset plane call on cylinder end cap and allow edits', async () => {
-      const { kclManager, instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
         cylinder,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const plane = getCapFromCylinder(artifactGraph)
       const offset = (await stringToKclExpression(
         '2',
         undefined,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )) as KclCommandValue
       const result = addOffsetPlane({
         ast,
@@ -723,16 +712,16 @@ plane002 = offsetPlane(plane001, offset = 3)`)
         throw result
       }
 
-      const newCode = recast(result.modifiedAst, instance)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${cylinder}
 plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 2)`)
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
 
       const newOffset = (await stringToKclExpression(
         '3',
         undefined,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
       const result2 = addOffsetPlane({
@@ -746,7 +735,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 2)`)
       if (err(result2)) {
         throw result2
       }
-      const newCode2 = recast(result2.modifiedAst, instance)
+      const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
       expect(newCode2).not.toContain(`offset = 2`)
       expect(newCode2).toContain(`${cylinder}
 plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 3)`)
@@ -754,25 +743,22 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 3)`)
         result2.modifiedAst,
         undefined,
         undefined,
-        rustContext
+        rustContextInThisFile
       )
-      engineCommandManager.tearDown()
     })
 
     it('should add an offset plane call on box wall and allow edits', async () => {
-      const { kclManager, instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
         box,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const plane = getFacesFromBox(artifactGraph, 1)
       const offset = (await stringToKclExpression(
         '10',
         undefined,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )) as KclCommandValue
       const result = addOffsetPlane({
         ast,
@@ -785,16 +771,16 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 3)`)
         throw result
       }
 
-      const newCode = recast(result.modifiedAst, instance)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${boxWithOneTag}
 plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 10)`)
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
 
       const newOffset = (await stringToKclExpression(
         '20',
         undefined,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
       const result2 = addOffsetPlane({
@@ -808,7 +794,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 10)`)
       if (err(result2)) {
         throw result2
       }
-      const newCode2 = recast(result2.modifiedAst, instance)
+      const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
       expect(newCode2).not.toContain(`offset = 10`)
       expect(newCode2).toContain(`${boxWithOneTag}
 plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
@@ -816,18 +802,15 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
         result2.modifiedAst,
         undefined,
         undefined,
-        rustContext
+        rustContextInThisFile
       )
-      engineCommandManager.tearDown()
     })
 
     it('should add an offset plane call on chamfer face and allow edits', async () => {
-      const { kclManager, instance, rustContext, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const { artifactGraph, ast, variables } = await getAstAndArtifactGraph(
         boxWithOneTagAndChamfer,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const chamfer = [...artifactGraph.values()].find(
         (a) => a.type === 'edgeCut'
@@ -836,8 +819,8 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       const offset = (await stringToKclExpression(
         '1',
         undefined,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )) as KclCommandValue
       const result = addOffsetPlane({
         ast,
@@ -850,15 +833,15 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
         throw result
       }
 
-      const newCode = recast(result.modifiedAst, instance)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(boxWithOneTagAndChamferAndPlane)
-      await enginelessExecutor(ast, undefined, undefined, rustContext)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
 
       const newOffset = (await stringToKclExpression(
         '2',
         undefined,
-        instance,
-        rustContext
+        instanceInThisFile,
+        rustContextInThisFile
       )) as KclCommandValue
       const nodeToEdit = createPathToNodeForLastVariable(result.modifiedAst)
       const result2 = addOffsetPlane({
@@ -872,7 +855,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       if (err(result2)) {
         throw result2
       }
-      const newCode2 = recast(result2.modifiedAst, instance)
+      const newCode2 = recast(result2.modifiedAst, instanceInThisFile)
       expect(newCode2).not.toContain(`offset = 1`)
       expect(newCode2).toContain(
         `plane001 = offsetPlane(planeOf(extrude001, face = seg02), offset = 2)`
@@ -881,20 +864,17 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
         result2.modifiedAst,
         undefined,
         undefined,
-        rustContext
+        rustContextInThisFile
       )
-      engineCommandManager.tearDown()
     })
   })
 
   describe('Testing getEdgeCutMeta', () => {
     it('should find the edge cut meta info on a wall-cap chamfer', async () => {
-      const { kclManager, instance, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         boxWithOneTagAndChamfer,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const artifact = [...artifactGraph.values()].find(
         (a) => a.type === 'edgeCut'
@@ -903,16 +883,13 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       expect(result?.type).toEqual('edgeCut')
       expect(result?.subType).toEqual('opposite')
       expect(result?.tagName).toEqual('seg01')
-      engineCommandManager.tearDown()
     })
 
     it('should find the edge cut meta info on a wall-wall chamfer', async () => {
-      const { kclManager, instance, engineCommandManager } =
-        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         boxWithTwoTagsAndChamfer,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       const artifact = [...artifactGraph.values()].find(
         (a) => a.type === 'edgeCut'
@@ -921,7 +898,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       expect(result?.type).toEqual('edgeCut')
       expect(result?.subType).toEqual('adjacent')
       expect(result?.tagName).toEqual('seg01')
-      engineCommandManager.tearDown()
     })
   })
 })
