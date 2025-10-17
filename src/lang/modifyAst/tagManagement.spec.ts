@@ -5,6 +5,28 @@ import { err } from '@src/lib/trap'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import type { ConnectionManager } from '@src/network/connectionManager'
+
+let instanceInThisFile: ModuleType = null!
+let kclManagerInThisFile: KclManager = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
+beforeAll(async () => {
+  const { instance, kclManager, engineCommandManager } =
+    await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  kclManagerInThisFile = kclManager
+  engineCommandManagerInThisFile = engineCommandManager
+})
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
+})
 
 const executeCode = async (
   code: string,
@@ -103,12 +125,10 @@ extrude001 = extrude(sketch001, length = 15)
 
     // Handle EDGE selections (commonEdge approach)
     it('should tag a segment and capStart using commonEdge approach', async () => {
-      const { instance, engineCommandManager, kclManager } =
-        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
@@ -127,22 +147,19 @@ extrude001 = extrude(sketch001, length = 15)
       )
       if (err(result)) return result
       const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       // Verify results
       expect(tags.length).toBe(2) // Should add two tags
       expect(newCode).toContain('tag = $seg01')
       expect(newCode).toContain('tagStart = $capStart001')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
-      engineCommandManager.tearDown()
     }, 5_000)
     it('should tag 2 segments using commonEdge approach', async () => {
-      const { instance, engineCommandManager, kclManager } =
-        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
@@ -161,22 +178,19 @@ extrude001 = extrude(sketch001, length = 15)
       )
       if (err(result)) return result
       const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       // Verify results
       expect(tags.length).toBe(2) // Should add two tags
       expect(newCode).toContain('tag = $seg01')
       expect(newCode).toContain('tag = $seg02')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
-      engineCommandManager.tearDown()
     }, 5_000)
     it('should tag a segment and capEnd using commonEdge approach', async () => {
-      const { instance, engineCommandManager, kclManager } =
-        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
@@ -195,23 +209,20 @@ extrude001 = extrude(sketch001, length = 15)
       )
       if (err(result)) return result
       const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       // Verify results
       expect(tags.length).toBe(2) // Should add two tags
       expect(newCode).toContain('tag = $seg01')
       expect(newCode).toContain('tagEnd = $capEnd001')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
-      engineCommandManager.tearDown()
     }, 5_000)
     // Handle EDGE selections (getOpposite/AdjacentEdge approach)
     it('should tag a segment using legacy oppositeAndAdjacentEdges approach for base edge selection', async () => {
-      const { instance, engineCommandManager, kclManager } =
-        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
@@ -231,21 +242,18 @@ extrude001 = extrude(sketch001, length = 15)
       )
       if (err(result)) return result
       const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       // Verify results
       expect(tags.length).toBe(1) // Should add one tag
       expect(newCode).toContain('tag = $seg01')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
-      engineCommandManager.tearDown()
     }, 5_000)
     it('should tag a segment using legacy oppositeAndAdjacentEdges approach for adjacent edge selection', async () => {
-      const { instance, engineCommandManager, kclManager } =
-        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
@@ -264,21 +272,18 @@ extrude001 = extrude(sketch001, length = 15)
       )
       if (err(result)) return result
       const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       // Verify results
       expect(tags.length).toBe(1) // Should add one tag
       expect(newCode).toContain('tag = $seg01')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
-      engineCommandManager.tearDown()
     }, 5_000)
     it('should tag a segment using legacy oppositeAndAdjacentEdges approach for opposite edge selection', async () => {
-      const { instance, engineCommandManager, kclManager } =
-        await buildTheWorldAndConnectToEngine()
       const { ast, artifactGraph } = await executeCode(
         basicExampleCode,
-        instance,
-        kclManager
+        instanceInThisFile,
+        kclManagerInThisFile
       )
       // Find an edge artifact
       const selectionResult = await createSelectionWithFirstMatchingArtifact(
@@ -298,13 +303,12 @@ extrude001 = extrude(sketch001, length = 15)
       )
       if (err(result)) return result
       const { modifiedAst, tags } = result
-      const newCode = recast(modifiedAst, instance)
+      const newCode = recast(modifiedAst, instanceInThisFile)
 
       // Verify results
       expect(tags.length).toBe(1) // Should add one tag
       expect(newCode).toContain('tag = $seg01')
       expect(tags).toBeTruthy() // Tags should be non-empty strings
-      engineCommandManager.tearDown()
     }, 5_000)
 
     // TODO: Add handling for FACE selections
