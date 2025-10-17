@@ -16,6 +16,30 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type RustContext from '@src/lib/rustContext'
 import { addScale } from '@src/lang/modifyAst/transforms'
+import type { ConnectionManager } from '@src/network/connectionManager'
+
+let instanceInThisFile: ModuleType = null!
+let kclManagerInThisFile: KclManager = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+let rustContextInThisFile: RustContext = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
+beforeAll(async () => {
+  const { instance, kclManager, engineCommandManager, rustContext } =
+    await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  kclManagerInThisFile = kclManager
+  engineCommandManagerInThisFile = engineCommandManager
+  rustContextInThisFile = rustContext
+})
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
+})
 
 async function getKclCommandValue(
   value: string,
@@ -127,8 +151,6 @@ describe('transforms.test.ts', () => {
     }
 
     it('should add a standalone translate call on sweep selection', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
@@ -141,17 +163,14 @@ extrude001 = extrude(profile001, length = 1)`
 )`
       const newCode = await runAddTranslateTest(
         code,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
-      engineCommandManager.tearDown()
     })
 
     it('should push a call in pipe if selection was in variable-less pipe', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)`
@@ -163,12 +182,11 @@ extrude001 = extrude(profile001, length = 1)`
      )`
       const newCode = await runAddTranslateTest(
         code,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
-      engineCommandManager.tearDown()
     })
 
     async function runEditTranslateTest(
@@ -199,8 +217,6 @@ extrude001 = extrude(profile001, length = 1)`
     }
 
     it('should edit a call with variable if og selection was a variable sweep', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
@@ -228,17 +244,14 @@ translate(
       const newCode = await runEditTranslateTest(
         code,
         nodeToEdit,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
-      engineCommandManager.tearDown()
     })
 
     it('should edit a call in pipe if og selection was in pipe', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)
@@ -263,12 +276,11 @@ translate(
       const newCode = await runEditTranslateTest(
         code,
         nodeToEdit,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
-      engineCommandManager.tearDown()
     })
   })
 
@@ -299,8 +311,6 @@ translate(
     }
 
     it('should add a standalone call on sweep selection', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
@@ -313,17 +323,14 @@ extrude001 = extrude(profile001, length = 1)`
 )`
       const newCode = await runAddScaleTest(
         code,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
-      engineCommandManager.tearDown()
     })
 
     it('should push a call in pipe if selection was in variable-less pipe', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)`
@@ -335,12 +342,11 @@ extrude001 = extrude(profile001, length = 1)`
      )`
       const newCode = await runAddScaleTest(
         code,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
-      engineCommandManager.tearDown()
     })
 
     async function runEditScaleTest(
@@ -371,8 +377,6 @@ extrude001 = extrude(profile001, length = 1)`
     }
 
     it('should edit a scale call with variable if og selection was a variable sweep', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
@@ -400,17 +404,14 @@ scale(
       const newCode = await runEditScaleTest(
         code,
         nodeToEdit,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
-      engineCommandManager.tearDown()
     })
 
     it('should edit a call in pipe if og selection was in pipe', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)
@@ -435,12 +436,11 @@ scale(
       const newCode = await runEditScaleTest(
         code,
         nodeToEdit,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
-      engineCommandManager.tearDown()
     })
 
     // TODO: missing multi-objects test
@@ -473,8 +473,6 @@ scale(
     }
 
     it('should add a standalone call on sweep selection', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
@@ -487,17 +485,14 @@ extrude001 = extrude(profile001, length = 1)`
 )`
       const newCode = await runAddRotateTest(
         code,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
-      engineCommandManager.tearDown()
     })
 
     it('should push a call in pipe if selection was in variable-less pipe', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)`
@@ -509,12 +504,11 @@ extrude001 = extrude(profile001, length = 1)`
      )`
       const newCode = await runAddRotateTest(
         code,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
-      engineCommandManager.tearDown()
     })
 
     async function runEditRotateTest(
@@ -545,8 +539,6 @@ extrude001 = extrude(profile001, length = 1)`
     }
 
     it('should edit a call with variable if og selection was a variable sweep', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
@@ -574,17 +566,14 @@ rotate(
       const newCode = await runEditRotateTest(
         code,
         nodeToEdit,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
-      engineCommandManager.tearDown()
     })
 
     it('should edit a call in pipe if og selection was in pipe', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)
@@ -609,12 +598,11 @@ rotate(
       const newCode = await runEditRotateTest(
         code,
         nodeToEdit,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
-      engineCommandManager.tearDown()
     })
 
     // TODO: missing multi-objects test
@@ -644,20 +632,17 @@ rotate(
     }
 
     it('should add a standalone call on sweep selection', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
       const expectedNewLine = `yoyoyo = clone(extrude001)`
       const newCode = await runAddCloneTest(
         code,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
-      engineCommandManager.tearDown()
     })
   })
 
@@ -688,55 +673,59 @@ extrude001 = extrude(profile001, length = 1)`
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
     it('should add a standalone call on sweep selection', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const expectedNewLine = `appearance(extrude001, color = '#FF0000')`
       const newCode = await runAddAppearanceTest(
         box,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(box + '\n' + expectedNewLine)
-      engineCommandManager.tearDown()
     })
 
     it('should push a call in pipe if selection was in variable-less pipe', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)`
       const expectedNewLine = `  |> appearance(color = '#FF0000')`
       const newCode = await runAddAppearanceTest(
         code,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
-      engineCommandManager.tearDown()
     })
 
     it('should add a call with metalness and roughness', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const {
         artifactGraph,
         ast,
         sketches: objects,
-      } = await getAstAndSketchSelections(box, instance, kclManager)
+      } = await getAstAndSketchSelections(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
       const result = addAppearance({
         ast,
         artifactGraph,
         objects,
         color: '#FF0000',
-        metalness: await getKclCommandValue('1', instance, rustContext),
-        roughness: await getKclCommandValue('2', instance, rustContext),
+        metalness: await getKclCommandValue(
+          '1',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        roughness: await getKclCommandValue(
+          '2',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
       })
       if (err(result)) throw result
-      await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
-      const newCode = recast(result.modifiedAst, instance)
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${box}
 appearance(
   extrude001,
@@ -744,7 +733,6 @@ appearance(
   metalness = 1,
   roughness = 2,
 )`)
-      engineCommandManager.tearDown()
     })
 
     async function runEditAppearanceTest(
@@ -772,8 +760,6 @@ appearance(
     }
 
     it('should edit a call with variable if og selection was a variable sweep', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
@@ -790,17 +776,14 @@ appearance(extrude001, color = '#00FF00')`
       const newCode = await runEditAppearanceTest(
         code,
         nodeToEdit,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
-      engineCommandManager.tearDown()
     }, 30_000)
 
     it('should edit a call in pipe if og selection was in pipe', async () => {
-      const { instance, kclManager, engineCommandManager, rustContext } =
-        await buildTheWorldAndConnectToEngine()
       const code = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)
@@ -819,12 +802,11 @@ appearance(extrude001, color = '#00FF00')`
       const newCode = await runEditAppearanceTest(
         code,
         nodeToEdit,
-        instance,
-        kclManager,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(expectedNewCode)
-      engineCommandManager.tearDown()
     })
 
     // TODO: missing multi-objects test
