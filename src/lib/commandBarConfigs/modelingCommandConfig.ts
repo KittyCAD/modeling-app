@@ -788,9 +788,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       countersinkAngle: {
         inputType: 'kcl',
         required: (context) =>
-          ['blind'].includes(context.argumentsToSubmit.holeType as string),
+          ['countersink'].includes(
+            context.argumentsToSubmit.holeType as string
+          ),
         hidden: (context) =>
-          !['blind'].includes(context.argumentsToSubmit.holeType as string),
+          !['countersink'].includes(
+            context.argumentsToSubmit.holeType as string
+          ),
         defaultValue: KCL_DEFAULT_LENGTH,
       },
       countersinkDiameter: {

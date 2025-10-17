@@ -677,8 +677,6 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
         }
         drillPointAngle = angleResult
       }
-    } else if (Object.keys(holeBottomValue).length === 0) {
-      // TODO: make this less weird
     } else {
       return {
         reason:
@@ -730,15 +728,15 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
         return { reason: "Couldn't retrieve counterboreDiameter argument" }
       }
     } else if (
-      'countersinkAngle' in holeTypeValue &&
-      holeTypeValue.countersinkAngle?.type === 'Number' &&
-      'countersinkDiameter' in holeTypeValue &&
-      holeTypeValue.countersinkDiameter?.type === 'Number'
+      'angle' in holeTypeValue &&
+      holeTypeValue.angle?.type === 'Number' &&
+      'diameter' in holeTypeValue &&
+      holeTypeValue.diameter?.type === 'Number'
     ) {
       holeType = 'countersink'
       const angleStr = formatNumberValue(
-        holeTypeValue.countersinkAngle.value,
-        holeTypeValue.countersinkAngle.ty
+        holeTypeValue.angle.value,
+        holeTypeValue.angle.ty
       )
       if (err(angleStr)) {
         return { reason: "Couldn't format countersinkAngle argument" }
@@ -750,8 +748,8 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
       countersinkAngle = angleResult
 
       const diameterStr = formatNumberValue(
-        holeTypeValue.countersinkDiameter.value,
-        holeTypeValue.countersinkDiameter.ty
+        holeTypeValue.diameter.value,
+        holeTypeValue.diameter.ty
       )
       if (err(diameterStr)) {
         return { reason: "Couldn't format countersinkDiameter argument" }
