@@ -141,6 +141,20 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta, sketch_id))
     }
 
+    fn exit_sketch(&mut self, sketch: ObjectId) -> kcl_api::Result<SceneGraph> {
+        if self.scene_graph.sketch_mode != Some(sketch) {
+            return Err(Error {
+                msg: format!(
+                    "Not currently in sketch mode editing the given sketch: current={:?}, given={sketch:?}",
+                    self.scene_graph.sketch_mode
+                ),
+            });
+        }
+        self.scene_graph.sketch_mode = None;
+
+        Ok(self.scene_graph.clone())
+    }
+
     async fn add_line(
         &mut self,
         sketch: ObjectId,
@@ -384,10 +398,6 @@ impl FrontendState {
         _version: Version,
         segments: Vec<ObjectId>,
     ) -> kcl_api::Result<(SourceDelta, SceneGraphDelta)> {
-        todo!()
-    }
-
-    fn exit_sketch(&mut self, sketch: ObjectId) -> kcl_api::Result<SceneGraph> {
         todo!()
     }
 
