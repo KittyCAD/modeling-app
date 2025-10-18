@@ -4,7 +4,7 @@ import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
@@ -12,6 +12,12 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   const {
     context: { argumentsToSubmit, selectedCommand },
   } = commandBarState
+
+  // TODO: figure out if we really want to add state here?
+  const [reviewMessage, setReviewMessage] = useState<
+    string | React.ReactNode | undefined
+  >()
+  const [reviewError, setReviewError] = useState<string | undefined>()
 
   useHotkeys('backspace+meta', stepBack, {
     enableOnFormTags: true,
@@ -61,6 +67,25 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     })
   }
 
+  useEffect(() => {
+    if (selectedCommand?.reviewMessage instanceof Function) {
+      selectedCommand
+        .reviewMessage(commandBarState.context)
+        .then((msg) => {
+          setReviewMessage(msg)
+          setReviewError(undefined)
+        })
+        .catch((err: Error) => {
+          console.error('Error getting review message:', err)
+          setReviewMessage(undefined)
+          setReviewError(err.message)
+        })
+    } else {
+      setReviewMessage(selectedCommand?.reviewMessage)
+      setReviewError(undefined)
+    }
+  }, [selectedCommand, commandBarState.context])
+
   const availableOptionalArgs = useMemo(() => {
     if (!selectedCommand?.args) return undefined
     const s = { ...selectedCommand.args }
@@ -77,14 +102,16 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     return s
   }, [selectedCommand, commandBarState.context])
   return (
-    <CommandBarHeaderFooter stepBack={stepBack}>
-      {selectedCommand?.reviewMessage && (
+    <CommandBarHeaderFooter stepBack={stepBack} submitDisabled={!!reviewError}>
+      {reviewMessage && (
         <>
-          <p className="px-4 py-2">
-            {selectedCommand.reviewMessage instanceof Function
-              ? selectedCommand.reviewMessage(commandBarState.context)
-              : selectedCommand.reviewMessage}
-          </p>
+          <p className="px-4 py-2">{reviewMessage}</p>
+          <CommandBarDivider />
+        </>
+      )}
+      {reviewError && (
+        <>
+          <p className="px-4 py-2 text-red-500/50 font-bold">{reviewError}</p>
           <CommandBarDivider />
         </>
       )}

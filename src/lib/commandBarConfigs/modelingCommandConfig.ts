@@ -22,13 +22,15 @@ import {
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { kclManager } from '@src/lib/singletons'
+import { kclManager, rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type {
   ModelingMachineContext,
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
+import { addExtrude } from '@src/lang/modifyAst/sweeps'
+import { executeAstMock } from '@src/lang/langHelpers'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -449,6 +451,38 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Pull a sketch into 3D along its normal or perpendicular.',
     icon: 'extrude',
     needsReview: true,
+    reviewMessage: async (context) => {
+      if (!context.argumentsToSubmit) {
+        return Promise.reject(
+          new Error('No arguments to submit found in context')
+        )
+      }
+
+      // TODO: fix this
+      const input =
+        context.argumentsToSubmit as ModelingCommandSchema['Extrude']
+
+      // TODO: too verbose?
+      const { ast, artifactGraph } = kclManager
+      const astResult = addExtrude({
+        ast,
+        artifactGraph,
+        ...input,
+      })
+      if (err(astResult)) {
+        return Promise.reject(new Error('Invalid selection'))
+      }
+
+      const { errors } = await executeAstMock({
+        ast: astResult.modifiedAst,
+        rustContext,
+      })
+      if (errors.length > 0) {
+        return Promise.reject(
+          new Error(errors.map((e) => e.message).join('\n'))
+        )
+      }
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
