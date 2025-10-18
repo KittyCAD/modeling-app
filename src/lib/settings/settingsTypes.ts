@@ -36,6 +36,12 @@ export const baseUnitLabels = {
   m: 'Meters',
 } as const
 
+export const warningLevels: WarningLevel[] = [
+  { type: 'Allow' },
+  { type: 'Warn' },
+  { type: 'Deny' },
+]
+
 export type Toggle = 'On' | 'Off'
 export const toggleAsArray = ['On', 'Off'] as const
 

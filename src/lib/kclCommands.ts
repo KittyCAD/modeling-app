@@ -19,7 +19,7 @@ import {
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { copyFileShareLink } from '@src/lib/links'
-import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
 import {
   codeManager,
   editorManager,
@@ -115,14 +115,13 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             kclManager.fileSettings.experimentalFeatures?.type.toLowerCase() ||
             DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES,
           options: () =>
-            Object.values(['allow', 'deny', 'warn']).map((v) => {
+            warningLevels.map((l) => {
               return {
-                name: v,
-                value: v,
+                name: l.type,
+                value: l,
                 isCurrent: kclManager.fileSettings.experimentalFeatures
-                  ? v ===
-                    kclManager.fileSettings.experimentalFeatures?.type.toLowerCase()
-                  : v === DEFAULT_DEFAULT_LENGTH_UNIT,
+                  ? l.type === kclManager.fileSettings.experimentalFeatures.type
+                  : l.type === DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES.type,
               }
             }),
         },

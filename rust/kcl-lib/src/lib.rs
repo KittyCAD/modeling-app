@@ -150,6 +150,7 @@ pub mod pretty {
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
+use crate::execution::annotations::WarningLevel;
 #[allow(unused_imports)]
 use crate::log::{log, logln};
 
@@ -236,11 +237,7 @@ impl Program {
         })
     }
 
-    pub fn change_experimental_features(
-        &self,
-        warning_level: Option<String>,
-        // TODO: should be Option<WarningLevel>
-    ) -> Result<Self, KclError> {
+    pub fn change_experimental_features(&self, warning_level: Option<WarningLevel>) -> Result<Self, KclError> {
         Ok(Self {
             ast: self.ast.change_experimental_features(warning_level)?,
             original_file_contents: self.original_file_contents.clone(),

@@ -1,7 +1,12 @@
 //! Data types for the AST.
 
 use std::{
-    cell::RefCell, collections::{BTreeMap, HashMap}, fmt, ops::{Deref, DerefMut, RangeInclusive}, rc::Rc, str::FromStr, sync::{Arc, Mutex}
+    cell::RefCell,
+    collections::{BTreeMap, HashMap},
+    fmt,
+    ops::{Deref, DerefMut, RangeInclusive},
+    rc::Rc,
+    sync::{Arc, Mutex},
 };
 
 use anyhow::Result;
@@ -21,7 +26,11 @@ pub use crate::parsing::ast::types::{
 use crate::{
     ModuleId, SourceRange, TypedPath,
     errors::KclError,
-    execution::{KclValue, Metadata, TagIdentifier, annotations, types::ArrayLen},
+    execution::{
+        KclValue, Metadata, TagIdentifier,
+        annotations::{self, WarningLevel},
+        types::ArrayLen,
+    },
     lsp::ToLspRange,
     parsing::{PIPE_OPERATOR, ast::digest::Digest, token::NumericSuffix},
 };
@@ -394,20 +403,16 @@ impl Node<Program> {
         Ok(new_program)
     }
 
-    pub fn change_experimental_features(
-        &self,
-        experimental_features: Option<String>,
-        // TODO: shouldn't be String but WarningLevel
-    ) -> Result<Self, KclError> {
+    pub fn change_experimental_features(&self, warning_level: Option<WarningLevel>) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         let mut found = false;
         for node in &mut new_program.inner_attrs {
             if node.name() == Some(annotations::SETTINGS) {
-                if let Some(ref exp) = experimental_features {
+                if let Some(level) = warning_level {
                     node.inner.add_or_update(
                         annotations::SETTINGS_EXPERIMENTAL_FEATURES,
                         // TODO: use as_str from WarningLevel
-                        Expr::Name(Box::new(Name::new(&exp.to_string()))),
+                        Expr::Name(Box::new(Name::new(level.as_str()))),
                     );
                 }
                 // Previous source range no longer makes sense, but we want to
@@ -420,10 +425,10 @@ impl Node<Program> {
 
         if !found {
             let mut settings = Annotation::new(annotations::SETTINGS);
-            if let Some(ref exp) = experimental_features {
+            if let Some(level) = warning_level {
                 settings.inner.add_or_update(
                     annotations::SETTINGS_EXPERIMENTAL_FEATURES,
-                    Expr::Name(Box::new(Name::new(&exp.to_string()))),
+                    Expr::Name(Box::new(Name::new(level.as_str()))),
                 );
             }
 

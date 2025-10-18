@@ -7,15 +7,14 @@ import { codeManager, kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { useEffect, useState } from 'react'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { warningLevels } from '@src/lib/settings/settingsTypes'
+import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 export function ExperimentalFeaturesMenu() {
   const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
 
-  // TODO: pull from rust
-  const warningLevels = ['allow', 'warn', 'deny']
-  const currentLevel =
-    fileSettings.experimentalFeatures?.type.toLowerCase() ??
-    DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES
+  const currentLevel: WarningLevel =
+    fileSettings.experimentalFeatures ?? DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES
 
   useEffect(() => {
     setFileSettings(kclManager.fileSettings)
@@ -23,7 +22,7 @@ export function ExperimentalFeaturesMenu() {
   }, [kclManager.fileSettings])
 
   return (
-    currentLevel !== 'deny' && (
+    currentLevel.type !== 'Deny' && (
       <Popover className="relative pointer-events-auto">
         {({ close }) => (
           <>
@@ -35,7 +34,7 @@ export function ExperimentalFeaturesMenu() {
             >
               <CustomIcon name="beaker" className="w-4 h-4" />
               <span className="sr-only">
-                Experimental features:&nbsp; {currentLevel}
+                Experimental features:&nbsp; {currentLevel.type}
               </span>
             </Popover.Button>
             <Popover.Panel
@@ -45,7 +44,7 @@ export function ExperimentalFeaturesMenu() {
             >
               <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
                 {warningLevels.map((level) => (
-                  <li key={level} className="contents">
+                  <li key={level.type} className="contents">
                     <button
                       className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                       onClick={() => {
@@ -65,7 +64,7 @@ export function ExperimentalFeaturesMenu() {
                           ])
                             .then(() => {
                               toast.success(
-                                `Updated file experimental features level to ${level}`
+                                `Updated file experimental features level to ${level.type}`
                               )
                             })
                             .catch(reportRejection)
@@ -73,10 +72,10 @@ export function ExperimentalFeaturesMenu() {
                         close()
                       }}
                     >
-                      <span className="flex-1">{level}</span>
-                      {level ===
-                        (fileSettings.experimentalFeatures?.type.toLowerCase() ??
-                          DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES) && (
+                      <span className="flex-1">{level.type}</span>
+                      {level.type ===
+                        (fileSettings.experimentalFeatures?.type ??
+                          DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES.type) && (
                         <span className="text-chalkboard-60">current</span>
                       )}
                     </button>

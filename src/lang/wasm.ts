@@ -64,6 +64,7 @@ import {
   serialize_configuration,
   serialize_project_configuration,
 } from '@src/lib/wasm_lib_wrapper'
+import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -775,10 +776,10 @@ export function changeDefaultUnits(
  */
 export function changeExperimentalFeatures(
   kcl: string,
-  warningLevel: string | null = null // TODO: change to WarningLevel | null
+  warningLevel: WarningLevel | null = null
 ): string | Error {
   try {
-    return change_experimental_features(kcl, warningLevel ?? '')
+    return change_experimental_features(kcl, JSON.stringify(warningLevel))
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })

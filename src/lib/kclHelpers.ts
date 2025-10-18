@@ -146,10 +146,9 @@ export function getStringValue(code: string, range: SourceRange): string {
 }
 
 export async function enableExperimentalFeatures(): Promise<void | Error> {
-  const newCode = changeExperimentalFeatures(
-    codeManager.code,
-    'allow' // TODO: update that
-  )
+  const newCode = changeExperimentalFeatures(codeManager.code, {
+    type: 'Allow',
+  })
   if (err(newCode)) {
     return new Error(`Failed to set experimental features: ${newCode.message}`)
   }
