@@ -1523,11 +1523,14 @@ export function getEdgeCutMeta(
   ast: Node<Program>,
   artifactGraph: ArtifactGraph
 ): null | EdgeCutInfo {
-  let chamferInfo: {
+  let edgeCutInfo: {
     segment: SegmentArtifact
     type: EdgeCutInfo['subType']
   } | null = null
-  if (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer') {
+  if (
+    artifact?.type === 'edgeCut' &&
+    (artifact.subType === 'chamfer' || artifact.subType === 'fillet')
+  ) {
     const consumedArtifact = getArtifactOfTypes(
       {
         key: artifact.consumedEdgeId,
@@ -1538,7 +1541,7 @@ export function getEdgeCutMeta(
     console.log('consumedArtifact', consumedArtifact)
     if (err(consumedArtifact)) return null
     if (consumedArtifact.type === 'segment') {
-      chamferInfo = {
+      edgeCutInfo = {
         type: 'base',
         segment: consumedArtifact,
       }
@@ -1548,16 +1551,16 @@ export function getEdgeCutMeta(
         artifactGraph
       )
       if (err(segment)) return null
-      chamferInfo = {
+      edgeCutInfo = {
         type: consumedArtifact.subType,
         segment,
       }
     }
   }
-  if (!chamferInfo) return null
+  if (!edgeCutInfo) return null
   const segmentCallExpr = getNodeFromPath<CallExpressionKw>(
     ast,
-    chamferInfo?.segment.codeRef.pathToNode || [],
+    edgeCutInfo?.segment.codeRef.pathToNode || [],
     ['CallExpressionKw']
   )
   if (err(segmentCallExpr)) return null
@@ -1570,7 +1573,7 @@ export function getEdgeCutMeta(
 
   return {
     type: 'edgeCut',
-    subType: chamferInfo.type,
+    subType: edgeCutInfo.type,
     tagName: tagDeclarator.value,
   }
 }
