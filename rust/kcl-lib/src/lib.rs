@@ -149,7 +149,7 @@ pub mod pretty {
 }
 
 pub mod front {
-    pub use crate::frontend::FrontendState;
+    pub use crate::frontend::{FrontendState, scene::ObjectId};
 }
 
 #[cfg(feature = "cli")]
