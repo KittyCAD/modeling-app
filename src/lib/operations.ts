@@ -1863,7 +1863,6 @@ const operationFilters = [
   isNotUserFunctionWithNoOperations,
   isNotInsideGroup,
   isNotGroupEnd,
-  isNotTopLevelHole,
 ]
 
 /**
@@ -1929,28 +1928,6 @@ function isNotUserFunctionWithNoOperations(
  */
 function isNotGroupEnd(ops: Operation[]): Operation[] {
   return ops.filter((op) => op.type !== 'GroupEnd')
-}
-
-/**
- * A filter to exclude hole sub operations from a list of operations.
- */
-function isNotTopLevelHole(ops: Operation[]): Operation[] {
-  // TODO: also filter out other hole.kcl declarations, or find another way
-  return ops.filter(
-    (op) =>
-      !(
-        op.type === 'StdLibCall' &&
-        // holeType
-        (op.name === 'hole::flat' ||
-          op.name === 'hole::countersink' ||
-          op.name === 'hole::counterbore' ||
-          // holeBottom
-          op.name === 'hole::simple' ||
-          op.name === 'hole::drill' ||
-          // holeBody
-          op.name === 'hole::blind')
-      )
-  )
 }
 
 export interface EnterEditFlowProps {
