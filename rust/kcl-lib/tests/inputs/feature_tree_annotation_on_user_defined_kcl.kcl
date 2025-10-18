@@ -1,4 +1,4 @@
-@(feature_tree = true)
+@(feature_tree = false)
 fn foo() {
   return ""
 }

@@ -771,7 +771,13 @@ impl ExecutorContext {
             Expr::FunctionExpression(function_expression) => {
                 let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
                 let experimental = attrs.map(|a| a.experimental).unwrap_or_default();
-                let include_in_feature_tree = attrs.map(|a| a.include_in_feature_tree).unwrap_or_default();
+                let is_std = matches!(&exec_state.mod_local.path, ModulePath::Std { .. });
+
+                // KCL functions in the stdlib should default to NOT emitting operations,
+                // this is a legacy decision and I haven't had time to reverse them all yet.
+                // On the other hand, user-defined functions should default to being included in the tree.
+                // They can set @(feature_tree = false) explicitly if they want to skip them.
+                let include_in_feature_tree = attrs.map(|a| a.include_in_feature_tree).unwrap_or(!is_std);
                 if let Some(attrs) = attrs
                     && (attrs.impl_ == annotations::Impl::Rust || attrs.impl_ == annotations::Impl::RustConstraint)
                 {
@@ -791,7 +797,6 @@ impl ExecutorContext {
                     // Snapshotting memory here is crucial for semantics so that we close
                     // over variables. Variables defined lexically later shouldn't
                     // be available to the function body.
-                    let is_std = matches!(&exec_state.mod_local.path, ModulePath::Std { .. });
                     KclValue::Function {
                         value: Box::new(FunctionSource::kcl(
                             function_expression.clone(),
@@ -2701,8 +2706,29 @@ y = x[0mm + 1]
     #[cfg(feature = "artifact-graph")]
     #[tokio::test(flavor = "multi_thread")]
     async fn feature_tree_annotation_on_user_defined_kcl() {
-        // The call to foo() should generate an operation.
+        // The call to foo() should not generate an operation,
+        // because its 'feature_tree' attribute has been set to false.
         let ast = std::fs::read_to_string("tests/inputs/feature_tree_annotation_on_user_defined_kcl.kcl").unwrap();
+        let out = parse_execute(&ast).await.unwrap();
+
+        // Get all the operations that occurred.
+        let actual_operations = out.exec_state.global.root_module_artifacts.operations;
+
+        let expected = 0;
+        assert_eq!(
+            actual_operations.len(),
+            expected,
+            "expected {expected} operations, received {}:\n{actual_operations:#?}",
+            actual_operations.len(),
+        );
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn no_feature_tree_annotation_on_user_defined_kcl() {
+        // The call to foo() should generate an operation,
+        // because @(feature_tree) defaults to true.
+        let ast = std::fs::read_to_string("tests/inputs/no_feature_tree_annotation_on_user_defined_kcl.kcl").unwrap();
         let out = parse_execute(&ast).await.unwrap();
 
         // Get all the operations that occurred.
@@ -2717,26 +2743,6 @@ y = x[0mm + 1]
         );
         assert!(matches!(actual_operations[0], Operation::GroupBegin { .. }));
         assert!(matches!(actual_operations[1], Operation::GroupEnd));
-    }
-
-    #[cfg(feature = "artifact-graph")]
-    #[tokio::test(flavor = "multi_thread")]
-    async fn no_feature_tree_annotation_on_user_defined_kcl() {
-        // The call to foo() should not generate an operation,
-        // because it doesn't have @(feature_tree = true)
-        let ast = std::fs::read_to_string("tests/inputs/no_feature_tree_annotation_on_user_defined_kcl.kcl").unwrap();
-        let out = parse_execute(&ast).await.unwrap();
-
-        // Get all the operations that occurred.
-        let actual_operations = out.exec_state.global.root_module_artifacts.operations;
-
-        let expected = 0;
-        assert_eq!(
-            actual_operations.len(),
-            expected,
-            "expected {expected} operations, received {}:\n{actual_operations:#?}",
-            actual_operations.len(),
-        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
