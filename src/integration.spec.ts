@@ -859,7 +859,20 @@ sketch001 = startSketchOn(XY)
   |> close()
 extrude001 = extrude(sketch001, length = 15)
 `
-
+    const boxWithOneTagAndChamfer = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10, tag = $seg01)
+  |> yLine(length = 10)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
+  |> chamfer(
+        length = 1,
+        tags = [
+          getCommonEdge(faces = [seg01, capEnd001])
+        ],
+      )`
     // ----------------------------------------
     // 2D Entities
     // ----------------------------------------
@@ -1044,7 +1057,102 @@ extrude001 = extrude(sketch001, length = 15)
       expect(tags).toBeTruthy() // Tags should be non-empty strings
     }, 5_000)
 
-    // TODO: Add handling for FACE selections
+    // Handle FACE selections
+    it('should tag a wall face by tagging the underlying segment', async () => {
+      const { ast, artifactGraph } = await executeCode(basicExampleCode)
+      // Find a wall face artifact
+      const wallArtifact = [...artifactGraph.values()].find(
+        (a) => a.type === 'wall'
+      )
+      expect(wallArtifact).toBeDefined()
+
+      const selection = createSelectionFromArtifacts(
+        [wallArtifact!],
+        artifactGraph
+      )
+      const wallFaceSelection = selection.graphSelections[0]
+
+      // Apply tagging
+      const result = modifyAstWithTagsForSelection(
+        ast,
+        wallFaceSelection,
+        artifactGraph
+      )
+      if (err(result)) throw result
+      const { modifiedAst, tags } = result
+      const newCode = recast(modifiedAst)
+      if (err(newCode)) throw newCode
+
+      // Verify results - should tag the underlying segment
+      expect(tags.length).toBe(1)
+      expect(newCode).toContain('tag = $seg01')
+      expect(tags[0]).toBeTruthy()
+    }, 5_000)
+
+    it('should tag a cap face by tagging the extrusion', async () => {
+      const { ast, artifactGraph } = await executeCode(basicExampleCode)
+      // Find a cap face artifact
+      const capArtifact = [...artifactGraph.values()].find(
+        (a) => a.type === 'cap'
+      )
+      expect(capArtifact).toBeDefined()
+
+      const selection = createSelectionFromArtifacts(
+        [capArtifact!],
+        artifactGraph
+      )
+      const capFaceSelection = selection.graphSelections[0]
+
+      // Apply tagging
+      const result = modifyAstWithTagsForSelection(
+        ast,
+        capFaceSelection,
+        artifactGraph
+      )
+      if (err(result)) throw result
+      const { modifiedAst, tags } = result
+      const newCode = recast(modifiedAst)
+      if (err(newCode)) throw newCode
+
+      // Verify results - should tag the extrusion
+      expect(tags.length).toBe(1)
+      // Should tag either start or end cap depending on which one was found
+      const hasTagStart = newCode.includes('tagStart = $capStart001')
+      const hasTagEnd = newCode.includes('tagEnd = $capEnd001')
+      expect(hasTagStart || hasTagEnd).toBe(true)
+      expect(tags[0]).toBeTruthy()
+    }, 5_000)
+
+    it('should tag an edgeCut face by tagging the edgeCut expression', async () => {
+      const { ast, artifactGraph } = await executeCode(boxWithOneTagAndChamfer)
+      // Find an edgeCut face artifact (created by chamfer)
+      const edgeCutArtifact = [...artifactGraph.values()].find(
+        (a) => a.type === 'edgeCut'
+      )
+      expect(edgeCutArtifact).toBeDefined()
+
+      const selection = createSelectionFromArtifacts(
+        [edgeCutArtifact!],
+        artifactGraph
+      )
+      const edgeCutFaceSelection = selection.graphSelections[0]
+
+      // Apply tagging
+      const result = modifyAstWithTagsForSelection(
+        ast,
+        edgeCutFaceSelection,
+        artifactGraph
+      )
+      if (err(result)) throw result
+      const { modifiedAst, tags } = result
+      const newCode = recast(modifiedAst)
+      if (err(newCode)) throw newCode
+
+      // Verify results - should tag the chamfer operation (edgeCut expression)
+      expect(tags.length).toBe(1)
+      expect(newCode).toContain('tag = $seg02') // The NEW chamfer tag that was added
+      expect(tags[0]).toBe('seg02') // The returned tag should be seg02
+    }, 5_000)
   })
 })
 
@@ -2889,6 +2997,21 @@ helix001 = helix(
 })
 
 describe('gdt.spec.ts', () => {
+  const boxWithOneTagAndChamfer = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10, tag = $seg01)
+  |> yLine(length = 10)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 1,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )`
+
   async function getAstAndArtifactGraph(code: string) {
     const ast = assertParse(code)
     await kclManager.executeAst({ ast })
@@ -3155,6 +3278,42 @@ extrude004 = extrude(profile004, length = 8)`
       const lastExtrudeIndex = newCode.lastIndexOf('extrude')
       const firstGdtIndex = newCode.indexOf('gdt::flatness')
       expect(firstGdtIndex).toBeGreaterThan(lastExtrudeIndex)
+    })
+
+    it('should add a flatness annotation to an edgeCut (chamfer) face', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        boxWithOneTagAndChamfer
+      )
+
+      // Find the edgeCut artifact created by the chamfer operation
+      const edgeCutArtifact = [...artifactGraph.values()].find(
+        (a) => a.type === 'edgeCut'
+      )
+      expect(edgeCutArtifact).toBeDefined()
+
+      // Create selection for the edgeCut face
+      const faces = createSelectionFromArtifacts(
+        [edgeCutArtifact!],
+        artifactGraph
+      )
+
+      const tolerance = await getKclCommandValue('0.1mm')
+      const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst)
+      if (err(newCode)) throw newCode
+
+      // Verify the original segment tag is preserved and chamfer gets new tag
+      expect(newCode).toContain('tag = $seg01')
+      expect(newCode).toContain('tag = $seg02')
+      // Verify the GDT annotation references the chamfer tag
+      expect(newCode).toContain(
+        'gdt::flatness(faces = [seg02], tolerance = 0.1mm)'
+      )
+      // Verify the original chamfer operation is still there
+      expect(newCode).toContain('chamfer(')
+      expect(newCode).toContain('getCommonEdge(faces = [seg01, capEnd001])')
     })
   })
 })
