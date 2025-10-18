@@ -80,11 +80,16 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     <CommandBarHeaderFooter stepBack={stepBack}>
       {selectedCommand?.reviewMessage && (
         <>
-          <p className="px-4 py-2">
+          <p className="px-4 py-2 text-sm">
             {selectedCommand.reviewMessage instanceof Function
               ? selectedCommand.reviewMessage(commandBarState.context)
               : selectedCommand.reviewMessage}
           </p>
+          {selectedCommand.status === 'experimental' && (
+            <p className="px-4 py-2 text-sm">
+              Warning: this command is experimental.
+            </p>
+          )}
           <CommandBarDivider />
         </>
       )}

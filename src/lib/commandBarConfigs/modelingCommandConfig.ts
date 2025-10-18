@@ -714,7 +714,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     status: 'experimental',
     reviewMessage:
-      'Note: cutAt specifies where to place the cut on the given face of the solid, given as absolute coordinates in the global scene. It will be selection-based in the future, and more hole bottoms and hole types are coming soon.',
+      'Note: cutAt specifies where to place the hole on the given face of the solid with absolute coordinates. Selection-based location and more hole features are coming soon.',
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
