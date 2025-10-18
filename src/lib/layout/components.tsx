@@ -58,8 +58,6 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import usePlatform from '@src/hooks/usePlatform'
 
-const ENABLE_CONTEXT_MENUS = false
-
 type WithoutRootLayout<T> = Omit<T, 'rootLayout'>
 interface LayoutState {
   areaLibrary: Record<AreaType, AreaTypeDefinition>
@@ -67,6 +65,8 @@ interface LayoutState {
   updateSplitSizes: (props: WithoutRootLayout<IUpdateNodeSizes>) => void
   replaceLayoutNode: (props: WithoutRootLayout<IReplaceLayoutChildNode>) => void
   togglePane: (props: WithoutRootLayout<ITogglePane>) => void
+  /** Kind of a feature flag, remove in future */
+  enableContextMenus: boolean
 }
 
 const nullAreaLibrary = Object.fromEntries(
@@ -96,6 +96,8 @@ const LayoutStateContext = createContext<LayoutState>({
   updateSplitSizes: () => {},
   replaceLayoutNode: () => {},
   togglePane: () => {},
+  /** Kind of a feature flag, remove in future */
+  enableContextMenus: false,
 })
 
 export const useLayoutState = () => useContext(LayoutStateContext)
@@ -107,6 +109,8 @@ interface LayoutRootNodeProps {
   getLayout: () => Layout | undefined
   setLayout: (layout: Layout) => void
   layoutName?: string
+  /** Kind of a feature flag, remove in future */
+  enableContextMenus?: boolean
 }
 
 export function LayoutRootNode({
@@ -116,6 +120,7 @@ export function LayoutRootNode({
   getLayout,
   setLayout,
   layoutName = 'default',
+  enableContextMenus = false,
 }: LayoutRootNodeProps) {
   const getLayoutWithFallback = () => getLayout() || defaultLayout
   useEffect(() => {
@@ -162,6 +167,7 @@ export function LayoutRootNode({
         updateSplitSizes,
         replaceLayoutNode,
         togglePane,
+        enableContextMenus,
         // More API here if needed within nested layout components
       }}
     >
@@ -281,7 +287,7 @@ function SplitLayoutContents({
  * the pane UI buttons and invoke fire-and-forget actions.
  */
 function PaneLayout({ layout }: { layout: PaneLayoutType }) {
-  const { togglePane, areaLibrary } = useLayoutState()
+  const { togglePane, areaLibrary, enableContextMenus } = useLayoutState()
   const paneBarRef = useRef<HTMLUListElement>(null)
   const barBorderWidthProp = `border${orientationToReactCss(sideToOrientation(layout.side))}Width`
   const shouldHide = (l: PaneChild) =>
@@ -328,7 +334,7 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
         {layout.actions?.map((action) => (
           <ActionButton key={action.id} action={action} side={layout.side} />
         ))}
-        {ENABLE_CONTEXT_MENUS ? (
+        {enableContextMenus ? (
           <PaneLayoutContextMenu
             layout={layout}
             menuTargetElement={paneBarRef}

@@ -19,6 +19,7 @@ export function TestLayout() {
       setLayout={setLayout}
       layoutName="test"
       areaLibrary={testAreaLibrary}
+      enableContextMenus={true}
     />
   )
 }
