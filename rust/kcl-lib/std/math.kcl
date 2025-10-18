@@ -71,7 +71,7 @@ export TAU = 6.28318530717958647692528676655900577_
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn cos(@num: number(Angle)): number {}
 
 /// Compute the sine of a number.
@@ -88,7 +88,7 @@ export fn cos(@num: number(Angle)): number {}
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn sin(@num: number(Angle)): number {}
 
 /// Compute the tangent of a number.
@@ -105,7 +105,7 @@ export fn sin(@num: number(Angle)): number {}
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn tan(@num: number(Angle)): number {}
 
 /// Compute the arccosine of a number.
@@ -123,7 +123,7 @@ export fn tan(@num: number(Angle)): number {}
 ///
 /// extrude001 = extrude(sketch001, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn acos(@num: number(Count)): number(rad) {}
 
 /// Compute the arcsine of a number.
@@ -140,7 +140,7 @@ export fn acos(@num: number(Count)): number(rad) {}
 ///
 /// extrude001 = extrude(sketch001, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn asin(@num: number(Count)): number(rad) {}
 
 /// Compute the arctangent of a number.
@@ -159,7 +159,7 @@ export fn asin(@num: number(Count)): number(rad) {}
 ///
 /// extrude001 = extrude(sketch001, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn atan(@num: number(Count)): number(rad) {}
 
 /// Compute the four quadrant arctangent of Y and X.
@@ -176,7 +176,7 @@ export fn atan(@num: number(Count)): number(rad) {}
 ///
 /// extrude001 = extrude(sketch001, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn atan2(y: number(Length), x: number(Length)): number(rad) {}
 
 /// Convert polar/sphere (azimuth, elevation, distance) coordinates to
@@ -193,6 +193,7 @@ export fn atan2(y: number(Length), x: number(Length)): number(rad) {}
 ///  
 /// example = extrude(exampleSketch, length = 5)
 /// ```
+@(feature_tree = false)
 export fn polar(angle: number(rad), length: number(Length)): Point2d {
   x = length * cos(angle)
   y = length * sin(angle)
@@ -210,7 +211,7 @@ export fn polar(angle: number(rad), length: number(Length)): Point2d {
 /// assert(rem( 6.5,  divisor = 2.5), isEqualTo = 1.5, error = "remainder is 1.5")
 /// assert(rem( 6.5,  divisor =   2), isEqualTo = 0.5, error = "remainder is 0.5")
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn rem(
   /// The number which will be divided by `divisor`.
   @num: number,
@@ -232,7 +233,7 @@ export fn rem(
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn sqrt(@input: number): number {}
 
 /// Compute the absolute value of a number.
@@ -256,7 +257,7 @@ export fn sqrt(@input: number): number {}
 ///
 /// baseExtrusion = extrude(sketch001, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn abs(@input: number): number {}
 
 /// Round a number to the nearest integer.
@@ -271,7 +272,7 @@ export fn abs(@input: number): number {}
 ///
 /// extrude001 = extrude(sketch001, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn round(@input: number): number {}
 
 /// Compute the largest integer less than or equal to a number.
@@ -286,7 +287,7 @@ export fn round(@input: number): number {}
 ///
 /// extrude001 = extrude(sketch001, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn floor(@input: number): number {}
 
 /// Compute the smallest integer greater than or equal to a number.
@@ -301,7 +302,7 @@ export fn floor(@input: number): number {}
 ///
 /// extrude001 = extrude(sketch001, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn ceil(@input: number): number {}
 
 /// Compute the minimum of the given arguments.
@@ -318,7 +319,7 @@ export fn ceil(@input: number): number {}
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn min(
   /// An array of numbers to compute the minimum of.
   @input: [number; 1+],
@@ -338,7 +339,7 @@ export fn min(
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn max(
   /// An array of numbers to compute the maximum of.
   @input: [number; 1+],
@@ -358,7 +359,7 @@ export fn max(
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn pow(
   /// The number to raise.
   @input: number,
@@ -382,7 +383,7 @@ export fn pow(
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn log(
   /// The number to compute the logarithm of.
   @input: number,
@@ -402,7 +403,7 @@ export fn log(
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn log2(@input: number): number {}
 
 /// Compute the base 10 logarithm of the number.
@@ -417,7 +418,7 @@ export fn log2(@input: number): number {}
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn log10(@input: number): number {}
 
 /// Compute the natural logarithm of the number.
@@ -432,7 +433,7 @@ export fn log10(@input: number): number {}
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn ln(@input: number): number {}
 
 /// Compute the length of the given leg.
@@ -440,7 +441,7 @@ export fn ln(@input: number): number {}
 /// ```kcl,no_run
 /// legLen(hypotenuse = 5, leg = 3)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn legLen(
   /// The length of the triangle's hypotenuse.
   hypotenuse: number(Length),
@@ -453,7 +454,7 @@ export fn legLen(
 /// ```kcl,no_run
 /// legAngX(hypotenuse = 5, leg = 3)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn legAngX(
   /// The length of the triangle's hypotenuse.
   hypotenuse: number(Length),
@@ -466,7 +467,7 @@ export fn legAngX(
 /// ```kcl,no_run
 /// legAngY(hypotenuse = 5, leg = 3)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn legAngY(
   /// The length of the triangle's hypotenuse.
   hypotenuse: number(Length),
