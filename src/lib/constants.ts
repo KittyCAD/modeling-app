@@ -47,6 +47,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   LOFT: 'loft',
   SWEEP: 'sweep',
   SHELL: 'shell',
+  HOLE: 'hole',
   SEGMENT: 'seg',
   REVOLVE: 'revolve',
   PLANE: 'plane',
