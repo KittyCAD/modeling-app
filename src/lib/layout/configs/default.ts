@@ -1,3 +1,5 @@
+import { isPlaywright } from '@src/lib/isPlaywright'
+import type { PaneChild } from '@src/lib/layout/types'
 import {
   ActionType,
   AreaType,
@@ -35,6 +37,29 @@ export const debugPaneConfig: PaneLayout['children'][number] = {
   icon: 'bug',
   type: LayoutType.Simple,
   areaType: AreaType.Debug,
+}
+
+/**
+ * TODO: Unify test and production layout behavior.
+ * The right sidebar is currently omitted from Playwright E2E tests,
+ */
+const textToCADPane: Layout = {
+  id: DefaultLayoutToolbarID.Right,
+  label: DefaultLayoutToolbarID.Right,
+  type: LayoutType.Panes,
+  side: 'inline-end',
+  activeIndices: [0],
+  sizes: [],
+  splitOrientation: 'block',
+  children: [
+    {
+      id: DefaultLayoutPaneID.TTC,
+      label: 'ttc',
+      type: LayoutType.Simple,
+      areaType: AreaType.TTC,
+      icon: 'sparkles',
+    },
+  ],
 }
 
 /**
@@ -98,6 +123,9 @@ export const defaultLayoutConfig: Layout = {
           areaType: AreaType.Logs,
           icon: 'logs',
         },
+        ...(isPlaywright()
+          ? [{ ...textToCADPane, icon: 'sparkles' } satisfies PaneChild]
+          : []),
       ],
       actions: [
         {
@@ -132,23 +160,6 @@ export const defaultLayoutConfig: Layout = {
       type: LayoutType.Simple,
       areaType: AreaType.ModelingScene,
     },
-    {
-      id: DefaultLayoutToolbarID.Right,
-      label: DefaultLayoutToolbarID.Right,
-      type: LayoutType.Panes,
-      side: 'inline-end',
-      activeIndices: [0],
-      sizes: [],
-      splitOrientation: 'block',
-      children: [
-        {
-          id: DefaultLayoutPaneID.TTC,
-          label: 'ttc',
-          type: LayoutType.Simple,
-          areaType: AreaType.TTC,
-          icon: 'sparkles',
-        },
-      ],
-    },
+    ...(isPlaywright() ? [] : [textToCADPane]),
   ],
 }
