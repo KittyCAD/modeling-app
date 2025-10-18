@@ -227,12 +227,23 @@ pub(super) fn expect_number(expr: &Expr) -> Result<String, KclError> {
     )))
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Default)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub struct FnAttrs {
     pub impl_: Impl,
     pub deprecated: bool,
     pub experimental: bool,
     pub include_in_feature_tree: bool,
+}
+
+impl Default for FnAttrs {
+    fn default() -> Self {
+        Self {
+            impl_: Impl::default(),
+            deprecated: false,
+            experimental: false,
+            include_in_feature_tree: true,
+        }
+    }
 }
 
 pub(super) fn get_fn_attrs(

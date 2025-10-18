@@ -773,11 +773,8 @@ impl ExecutorContext {
                 let experimental = attrs.map(|a| a.experimental).unwrap_or_default();
                 let is_std = matches!(&exec_state.mod_local.path, ModulePath::Std { .. });
 
-                // KCL functions in the stdlib should default to NOT emitting operations,
-                // this is a legacy decision and I haven't had time to reverse them all yet.
-                // On the other hand, user-defined functions should default to being included in the tree.
-                // They can set @(feature_tree = false) explicitly if they want to skip them.
-                let include_in_feature_tree = attrs.map(|a| a.include_in_feature_tree).unwrap_or(!is_std);
+                // Check the KCL @(feature_tree = ) annotation.
+                let include_in_feature_tree = attrs.clone().unwrap_or_default().include_in_feature_tree;
                 if let Some(attrs) = attrs
                     && (attrs.impl_ == annotations::Impl::Rust || attrs.impl_ == annotations::Impl::RustConstraint)
                 {
