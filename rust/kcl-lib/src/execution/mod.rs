@@ -82,6 +82,7 @@ pub struct ExecOutcome {
     pub artifact_graph: ArtifactGraph,
     /// Map from source range to object ID for lookup of objects by their source
     /// range.
+    #[serde(skip)]
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     /// Non-fatal errors and warnings.
     pub errors: Vec<CompilationError>,
