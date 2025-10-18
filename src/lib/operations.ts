@@ -89,6 +89,14 @@ async function extractKclArgument(
   return result
 }
 
+/**
+ * Extracts face selections for GDT annotations.
+ *
+ * Handles following types of face selections through direct tagging:
+ * - Segment faces: Tagged directly on segments, converted to wall artifacts
+ * - Cap faces: Tagged directly on sweeps using tagEnd/tagStart
+ * GDT uses direct tagging for explicit face references.
+ */
 function extractFaceSelections(facesArg: any): Selection[] | { error: string } {
   const faceValues: any[] =
     facesArg.value.type === 'Array' ? facesArg.value.value : [facesArg.value]
@@ -111,6 +119,7 @@ function extractFaceSelections(facesArg: any): Selection[] | { error: string } {
       kclManager.artifactGraph
     )
 
+    // Handle segment faces: Convert segment artifacts to wall artifacts for 3D operations
     if (artifact.type === 'segment') {
       const wallArtifact = Array.from(kclManager.artifactGraph.values()).find(
         (candidate) =>
@@ -138,6 +147,8 @@ function extractFaceSelections(facesArg: any): Selection[] | { error: string } {
       }
     }
 
+    // Cap faces (from tagEnd/tagStart) are handled directly
+    // as they already reference the correct cap artifacts
     if (targetCodeRefs && targetCodeRefs.length > 0) {
       graphSelections.push({
         artifact: targetArtifact,
@@ -1358,8 +1369,12 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
 }
 
 /**
- * Gather up the argument values for the GDT Flatness command
- * to be used in the command bar edit flow.
+ * Prepares GDT Flatness annotations for editing.
+ *
+ * Supports following types of face selections through direct tagging:
+ * - Segment faces: Tagged directly on sketch segments (e.g., from line(), arc())
+ * - Cap faces: Tagged directly on sweep expressions using tagEnd/tagStart
+ * GDT uses explicit tagging for predictable face references.
  */
 const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   operation,
@@ -1377,6 +1392,7 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
     return { reason: 'Missing or invalid faces argument' }
   }
 
+  // Extract face selections
   const graphSelections = extractFaceSelections(facesArg)
   if ('error' in graphSelections) {
     return { reason: graphSelections.error }
