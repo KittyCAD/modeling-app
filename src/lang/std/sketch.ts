@@ -3515,7 +3515,8 @@ export function replaceSketchLine({
   return { modifiedAst, valueUsedInTransform, pathToNode }
 }
 
-/** Ostensibly  should be used to add a chamfer tag to a chamfer call expression
+/** Used to add tags to edge cut expressions (chamfer or fillet calls).
+ * Both chamfers and fillets use identical tagging logic.
  *
  * However things get complicated in situations like:
  * ```ts
@@ -3524,8 +3525,8 @@ export function replaceSketchLine({
  *     tags = [tag1, tagOfInterest],
  *   )
  * ```
- * Because tag declarator is not allowed on a chamfer with more than one tag,
- * They must be pulled apart into separate chamfer calls:
+ * Because tag declarator is not allowed on edge cuts with more than one tag,
+ * They must be pulled apart into separate calls:
  * ```ts
  * |> chamfer(
  *     length = 1,
@@ -3537,7 +3538,7 @@ export function replaceSketchLine({
  *   , tag = $newTagDeclarator)
  * ```
  */
-function addTagToChamfer(
+function addTagToEdgeCut(
   tagInfo: AddTagInfo,
   edgeCutMeta: EdgeCutInfo
 ):
@@ -3666,13 +3667,13 @@ export function addTagForSketchOnFace(
   if (expressionName === 'close') {
     return addTagKw()(tagInfo)
   }
-  if (expressionName === 'chamfer') {
+  if (expressionName === 'chamfer' || expressionName === 'fillet') {
     if (edgeCutMeta === null) {
       return new Error(
-        'Cannot add tag to chamfer because no edge cut was provided'
+        'Cannot add tag to edge cut because no edge cut was provided'
       )
     }
-    return addTagToChamfer(tagInfo, edgeCutMeta)
+    return addTagToEdgeCut(tagInfo, edgeCutMeta)
   }
   if (expressionName in sketchLineHelperMapKw) {
     const { addTag } = sketchLineHelperMapKw[expressionName]
