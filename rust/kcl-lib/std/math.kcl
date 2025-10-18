@@ -193,6 +193,7 @@ export fn atan2(y: number(Length), x: number(Length)): number(rad) {}
 ///  
 /// example = extrude(exampleSketch, length = 5)
 /// ```
+@(feature_tree = false)
 export fn polar(angle: number(rad), length: number(Length)): Point2d {
   x = length * cos(angle)
   y = length * sin(angle)

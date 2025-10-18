@@ -173,6 +173,7 @@ export fn flat() {
 // Defining the hole
 
 
+@(feature_tree = false)
 fn drawTop(@partialHoleProfile, body, holeType) {
   prof = if holeType.feature == holeTypeSimple {
     partialHoleProfile
@@ -204,6 +205,7 @@ fn drawTop(@partialHoleProfile, body, holeType) {
   return prof
 }
 
+@(feature_tree = false)
 fn holeTypeHeight(body, holeType) {
   height = if holeType.feature == holeTypeSimple {
     0

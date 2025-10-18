@@ -207,10 +207,10 @@ export fn concat(
 /// arr1 = [10, 20, 30]
 /// assert(count(arr1), isEqualTo = 3)
 /// ```
+@(feature_tree = false)
 export fn count(
   /// The array whose length will be returned.
   @array: [any],
 ): number {
   return reduce(array, initial = 0, f = fn(@i, accum) { return accum + 1})
 }
-
