@@ -2989,6 +2989,7 @@ export const modelingMachine = setup({
           },
           {
             focusPath: [result.pathToNode],
+            skipErrorsOnMockExecution: true, // Skip validation since gdt::flatness may not be available in runtime yet
           }
         )
       }
