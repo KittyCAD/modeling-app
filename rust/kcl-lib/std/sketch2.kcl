@@ -5,14 +5,14 @@
 
 import Point2d from "std::types"
 
-@(impl = std_constrainable, experimental = true)
+@(impl = std_constrainable, experimental = true, feature_tree = false)
 export type Line = {
   start: Point2d | none,
   end: Point2d | none,
   midpoint: Point2d | none,
 }
 
-@(impl = std_constrainable, experimental = true)
+@(impl = std_constrainable, experimental = true, feature_tree = false)
 export fn line(
   start: Point2d,
   end?: Point2d,
@@ -21,7 +21,7 @@ export fn line(
   { start, end, midpoint }
 }
 
-@(impl = std_constrainable, experimental = true)
+@(impl = std_constrainable, experimental = true, feature_tree = false)
 export type Arc = {
   start: Point2d,
   end: Point2d,
@@ -29,7 +29,7 @@ export type Arc = {
   interior: Point2d | none,
 }
 
-@(impl = std_constrainable, experimental = true)
+@(impl = std_constrainable, experimental = true, feature_tree = false)
 export fn arc(
   start: Point2d,
   end: Point2d,
@@ -42,5 +42,5 @@ export fn arc(
 @(experimental = true)
 export type Segment = Arc | Line
 
-@(impl = std_rust_constraint, experimental = true)
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn parallel(@input: [Line; 2+], distance?: number(Length)) {}
