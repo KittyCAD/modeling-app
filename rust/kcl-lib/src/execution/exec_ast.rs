@@ -2688,10 +2688,10 @@ y = x[0mm + 1]
         // Get all the operations that occurred.
         let actual_operations = out.exec_state.global.root_module_artifacts.operations;
 
-        // There should be 8, for sketching the cube and applying the hole.
+        // There should be 5, for sketching the cube and applying the hole.
         // If the stdlib internal calls are being tracked, that's a bug,
         // and the actual number of operations will be something like 35.
-        let expected = 8;
+        let expected = 5;
         assert_eq!(
             actual_operations.len(),
             expected,
