@@ -12,79 +12,81 @@ export function ExperimentalFeaturesMenu() {
   const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
 
   // TODO: pull from rust
-  const warningLevels = ['allow', 'deny', 'warn']
+  const warningLevels = ['allow', 'warn', 'deny']
   const currentLevel =
     fileSettings.experimentalFeatures?.type.toLowerCase() ??
     DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES
 
   useEffect(() => {
-    console.log('fileSettings', kclManager.fileSettings)
     setFileSettings(kclManager.fileSettings)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [kclManager.fileSettings])
 
   return (
-    <Popover className="relative pointer-events-auto">
-      {({ close }) => (
-        <>
-          <Popover.Button
-            data-testid="units-menu"
-            className={`flex items-center gap-2 px-3 py-1 
+    currentLevel !== 'deny' && (
+      <Popover className="relative pointer-events-auto">
+        {({ close }) => (
+          <>
+            <Popover.Button
+              data-testid="units-menu"
+              className={`flex items-center gap-2 px-1 py-1 
         text-xs text-primary bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm 
         border !border-primary/50 rounded-full`}
-          >
-            <CustomIcon name="beaker" className="w-4 h-4" />
-            <span className="sr-only">Experimental features:&nbsp;</span>
-            {currentLevel}
-          </Popover.Button>
-          <Popover.Panel
-            className={`absolute bottom-full right-0 mb-2 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
+            >
+              <CustomIcon name="beaker" className="w-4 h-4" />
+              <span className="sr-only">
+                Experimental features:&nbsp; {currentLevel}
+              </span>
+            </Popover.Button>
+            <Popover.Panel
+              className={`absolute bottom-full right-0 mb-2 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-10 dark:border-chalkboard-90 rounded
           shadow-lg`}
-          >
-            <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
-              {warningLevels.map((level) => (
-                <li key={level} className="contents">
-                  <button
-                    className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
-                    onClick={() => {
-                      const newCode = changeExperimentalFeatures(
-                        codeManager.code,
-                        level
-                      )
-                      if (err(newCode)) {
-                        toast.error(
-                          `Failed to set file experimental features level: ${newCode.message}`
+            >
+              <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
+                {warningLevels.map((level) => (
+                  <li key={level} className="contents">
+                    <button
+                      className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
+                      onClick={() => {
+                        const newCode = changeExperimentalFeatures(
+                          codeManager.code,
+                          level
                         )
-                      } else {
-                        codeManager.updateCodeStateEditor(newCode)
-                        Promise.all([
-                          codeManager.writeToFile(),
-                          kclManager.executeCode(),
-                        ])
-                          .then(() => {
-                            toast.success(
-                              `Updated file experimental features level to ${level}`
-                            )
-                          })
-                          .catch(reportRejection)
-                      }
-                      close()
-                    }}
-                  >
-                    <span className="flex-1">{level}</span>
-                    {level ===
-                      (fileSettings.experimentalFeatures?.type.toLowerCase() ??
-                        DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES) && (
-                      <span className="text-chalkboard-60">current</span>
-                    )}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </Popover.Panel>
-        </>
-      )}
-    </Popover>
+                        if (err(newCode)) {
+                          toast.error(
+                            `Failed to set file experimental features level: ${newCode.message}`
+                          )
+                        } else {
+                          codeManager.updateCodeStateEditor(newCode)
+                          Promise.all([
+                            codeManager.writeToFile(),
+                            kclManager.executeCode(),
+                          ])
+                            .then(() => {
+                              toast.success(
+                                `Updated file experimental features level to ${level}`
+                              )
+                            })
+                            .catch(reportRejection)
+                        }
+                        close()
+                      }}
+                    >
+                      <span className="flex-1">{level}</span>
+                      {level ===
+                        (fileSettings.experimentalFeatures?.type.toLowerCase() ??
+                          DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES) && (
+                        <span className="text-chalkboard-60">current</span>
+                      )}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </Popover.Panel>
+          </>
+        )}
+      </Popover>
+    )
   )
 }
