@@ -30,6 +30,7 @@ export class ToolbarFixture {
   helixButton!: Locator
   patternCircularButton!: Locator
   patternLinearButton!: Locator
+  gdtFlatnessButton!: Locator
   startSketchBtn!: Locator
   insertButton!: Locator
   lineBtn!: Locator
@@ -74,6 +75,7 @@ export class ToolbarFixture {
     this.helixButton = page.getByTestId('helix')
     this.patternCircularButton = page.getByTestId('pattern-circular-3d')
     this.patternLinearButton = page.getByTestId('pattern-linear-3d')
+    this.gdtFlatnessButton = page.getByTestId('gdt-flatness')
     this.startSketchBtn = page.getByTestId('sketch')
     this.insertButton = page.getByTestId('insert')
     this.lineBtn = page.getByTestId('line')
