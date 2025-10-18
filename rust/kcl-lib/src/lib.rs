@@ -143,9 +143,10 @@ pub mod std_utils {
 }
 
 pub mod pretty {
-    pub use kcl_api::NumericSuffix;
-
-    pub use crate::fmt::{format_number_literal, format_number_value, human_display_number};
+    pub use crate::{
+        fmt::{format_number_literal, format_number_value, human_display_number},
+        parsing::token::NumericSuffix,
+    };
 }
 
 pub mod front {

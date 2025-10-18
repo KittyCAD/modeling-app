@@ -2,7 +2,7 @@
 
 #![allow(async_fn_in_trait)]
 
-use kcl_error::{CompilationError, SourceRange};
+use kcl_error::SourceRange;
 use serde::{Deserialize, Serialize};
 
 pub mod sketch;
@@ -198,48 +198,6 @@ pub enum NumericSuffix {
     Deg,
     Rad,
     Unknown,
-}
-
-impl std::str::FromStr for NumericSuffix {
-    type Err = CompilationError;
-
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-        match s {
-            "_" | "Count" => Ok(NumericSuffix::Count),
-            "Length" => Ok(NumericSuffix::Length),
-            "Angle" => Ok(NumericSuffix::Angle),
-            "mm" | "millimeters" => Ok(NumericSuffix::Mm),
-            "cm" | "centimeters" => Ok(NumericSuffix::Cm),
-            "m" | "meters" => Ok(NumericSuffix::M),
-            "inch" | "in" => Ok(NumericSuffix::Inch),
-            "ft" | "feet" => Ok(NumericSuffix::Ft),
-            "yd" | "yards" => Ok(NumericSuffix::Yd),
-            "deg" | "degrees" => Ok(NumericSuffix::Deg),
-            "rad" | "radians" => Ok(NumericSuffix::Rad),
-            "?" => Ok(NumericSuffix::Unknown),
-            _ => Err(CompilationError::err(SourceRange::default(), "invalid unit of measure")),
-        }
-    }
-}
-
-impl std::fmt::Display for NumericSuffix {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            NumericSuffix::None => Ok(()),
-            NumericSuffix::Count => write!(f, "_"),
-            NumericSuffix::Unknown => write!(f, "_?"),
-            NumericSuffix::Length => write!(f, "Length"),
-            NumericSuffix::Angle => write!(f, "Angle"),
-            NumericSuffix::Mm => write!(f, "mm"),
-            NumericSuffix::Cm => write!(f, "cm"),
-            NumericSuffix::M => write!(f, "m"),
-            NumericSuffix::Inch => write!(f, "in"),
-            NumericSuffix::Ft => write!(f, "ft"),
-            NumericSuffix::Yd => write!(f, "yd"),
-            NumericSuffix::Deg => write!(f, "deg"),
-            NumericSuffix::Rad => write!(f, "rad"),
-        }
-    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]

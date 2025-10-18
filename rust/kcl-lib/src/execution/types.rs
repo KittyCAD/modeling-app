@@ -1,7 +1,6 @@
 use std::{collections::HashMap, fmt, str::FromStr};
 
 use anyhow::Result;
-use kcl_api::NumericSuffix;
 use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use serde::{Deserialize, Serialize};
 
@@ -13,7 +12,10 @@ use crate::{
         kcl_value::{KclValue, TypeDef},
         memory::{self},
     },
-    parsing::ast::types::{PrimitiveType as AstPrimitiveType, Type},
+    parsing::{
+        ast::types::{PrimitiveType as AstPrimitiveType, Type},
+        token::NumericSuffix,
+    },
     std::args::{FromKclValue, TyF64},
 };
 
