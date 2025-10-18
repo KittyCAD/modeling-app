@@ -534,42 +534,6 @@ description: Operations executed herringbone-gear.kcl
       "sourceRange": []
     },
     {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 0.0000000000000007426684721314096,
-        "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 12.128696578449956,
-        "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "polar",
       "unlabeledArg": null,
@@ -650,42 +614,6 @@ description: Operations executed herringbone-gear.kcl
       "sourceRange": []
     },
     {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -1.504830584785392,
-        "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 13.41586690866805,
-        "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "polar",
       "unlabeledArg": null,
@@ -762,42 +690,6 @@ description: Operations executed herringbone-gear.kcl
             "index": 0
           }
         ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -3.016284183551481,
-        "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 11.74765127232507,
-        "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
       },
       "sourceRange": []
     },
@@ -1190,42 +1082,6 @@ description: Operations executed herringbone-gear.kcl
       "sourceRange": []
     },
     {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 3.015462170559555,
-        "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 11.747862298734521,
-        "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "polar",
       "unlabeledArg": null,
@@ -1306,42 +1162,6 @@ description: Operations executed herringbone-gear.kcl
       "sourceRange": []
     },
     {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 1.877901430549112,
-        "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 13.36875036108991,
-        "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "polar",
       "unlabeledArg": null,
@@ -1418,42 +1238,6 @@ description: Operations executed herringbone-gear.kcl
             "index": 0
           }
         ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -0.0008486680761640642,
-        "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 12.128696548758493,
-        "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
       },
       "sourceRange": []
     },

@@ -1377,42 +1377,6 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
       "sourceRange": []
     },
     {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -0.5745333323392336,
-        "ty": {
-          "type": "Default",
-          "len": "m",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 0.48209070726490444,
-        "ty": {
-          "type": "Default",
-          "len": "m",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "polar",
       "unlabeledArg": null,
@@ -1723,42 +1687,6 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "index": 0
           }
         ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -0.7277422209630292,
-        "ty": {
-          "type": "Default",
-          "len": "m",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 0.6106482292022123,
-        "ty": {
-          "type": "Default",
-          "len": "m",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
       },
       "sourceRange": []
     },
@@ -2168,42 +2096,6 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
       "sourceRange": []
     },
     {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -0.5745333323392336,
-        "ty": {
-          "type": "Default",
-          "len": "m",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 0.48209070726490444,
-        "ty": {
-          "type": "Default",
-          "len": "m",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "polar",
       "unlabeledArg": null,
@@ -2514,42 +2406,6 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "index": 0
           }
         ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -0.7277422209630292,
-        "ty": {
-          "type": "Default",
-          "len": "m",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 0.6106482292022123,
-        "ty": {
-          "type": "Default",
-          "len": "m",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
       },
       "sourceRange": []
     },
@@ -3128,42 +2984,6 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
       "sourceRange": []
     },
     {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -0.7277422209630292,
-        "ty": {
-          "type": "Default",
-          "len": "m",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 0.6106482292022123,
-        "ty": {
-          "type": "Default",
-          "len": "m",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "polar",
       "unlabeledArg": null,
@@ -3593,42 +3413,6 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
             "index": 0
           }
         ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": -0.210662221857719,
-        "ty": {
-          "type": "Default",
-          "len": "m",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 0.17676659266379832,
-        "ty": {
-          "type": "Default",
-          "len": "m",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
       },
       "sourceRange": []
     },

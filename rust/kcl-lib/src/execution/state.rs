@@ -96,10 +96,12 @@ pub(super) struct ModuleState {
     /// The closest variable declaration being executed in any parent node in the AST.
     /// This is used to provide better error messages, e.g. noticing when the user is trying
     /// to use the variable `length` inside the RHS of its own definition, like `length = tan(length)`.
-    /// TODO: Make this a reference.
     pub being_declared: Option<String>,
     /// Present if we're currently executing inside a sketch block.
     pub sketch_block: Option<SketchBlockState>,
+    /// Tracks if KCL being executed is currently inside a stdlib function or not.
+    /// This matters because e.g. we shouldn't emit artifacts from declarations declared inside a stdlib function.
+    pub inside_stdlib: bool,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
     /// Settings specified from annotations.
@@ -532,6 +534,7 @@ impl ModuleState {
             artifacts: Default::default(),
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
+            inside_stdlib: false,
         }
     }
 

@@ -148,6 +148,7 @@ import {
   editorManager,
   engineCommandManager,
   kclManager,
+  rustContext,
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
@@ -2341,6 +2342,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2375,6 +2377,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2406,6 +2409,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2440,6 +2444,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2476,6 +2481,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2511,6 +2517,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2546,6 +2553,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2639,6 +2647,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: focusPath,
@@ -2731,6 +2740,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: focusPath,
@@ -2794,6 +2804,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2829,6 +2840,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2864,6 +2876,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2899,6 +2912,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2934,6 +2948,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -2983,6 +2998,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3018,6 +3034,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3053,6 +3070,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3089,6 +3107,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3125,6 +3144,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
