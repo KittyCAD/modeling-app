@@ -1672,6 +1672,12 @@ export function getOperationVariableName(
   if (op.type === 'VariableDeclaration') {
     return op.name
   }
+
+  // Handle GDT operations - they don't have variable names as they're standalone statements
+  if (op.type === 'StdLibCall' && op.name.startsWith('gdt::')) {
+    return undefined
+  }
+
   if (
     op.type !== 'StdLibCall' &&
     !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall') &&
