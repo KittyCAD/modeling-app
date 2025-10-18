@@ -78,6 +78,52 @@ export class CmdBarFixture {
       }
     }
 
+    // Check if we're dealing with vector2d inputs
+    const vector2dInputsExist = await this.page
+      .getByTestId('vector2d-x-input')
+      .isVisible()
+      .catch(() => false)
+    if (vector2dInputsExist) {
+      // Validate that both vector2d inputs are present
+      const inputsPresent = await Promise.all([
+        this.page.getByTestId('vector2d-x-input').isVisible(),
+        this.page.getByTestId('vector2d-y-input').isVisible(),
+      ])
+
+      if (!inputsPresent.every(Boolean)) {
+        throw new Error('Not all vector2d inputs are present')
+      }
+
+      const [
+        headerArguments,
+        highlightedHeaderArg,
+        commandName,
+        xValue,
+        yValue,
+      ] = await Promise.all([
+        getHeaderArgs(),
+        this.page
+          .locator('[data-is-current-arg="true"]')
+          .locator('[data-test-name="arg-name"]')
+          .textContent(),
+        getCommandName(),
+        this.page.getByTestId('vector2d-x-input').inputValue(),
+        this.page.getByTestId('vector2d-y-input').inputValue(),
+      ])
+
+      const vectorValue = `[${xValue}, ${yValue}]`
+
+      return {
+        stage: 'arguments',
+        currentArgKey: highlightedHeaderArg || '',
+        currentArgValue: vectorValue,
+        headerArguments,
+        highlightedHeaderArg: highlightedHeaderArg || '',
+        commandName: commandName || '',
+      }
+    }
+
+    // Check if we're dealing with vector3d inputs
     const vector3dInputsExist = await this.page
       .getByTestId('vector3d-x-input')
       .isVisible()

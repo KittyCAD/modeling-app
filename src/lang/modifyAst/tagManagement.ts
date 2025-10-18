@@ -23,7 +23,7 @@ import {
   createTagDeclarator,
   findUniqueName,
 } from '@src/lang/create'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodeFromPath, getEdgeCutMeta } from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
@@ -41,7 +41,7 @@ import type {
   PathToNode,
   Program,
 } from '@src/lang/wasm'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import type { EdgeCutInfo, Selection } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import { capitaliseFC } from '@src/lib/utils'
 
@@ -390,6 +390,21 @@ function modifyAstWithTagForFaceSelection(
       modifiedAst: modifiedAst,
       tag: tag,
     }
+  }
+  // CASE 3: Handle edgeCut face - tag the underlying segment
+  else if (selection.artifact.type === 'edgeCut') {
+    // Each handler function creates its own clone and returns a new AST
+    const result = modifyAstWithTagForEdgeCutFace(
+      ast,
+      selection.artifact,
+      artifactGraph
+    )
+    if (err(result)) return result
+    const { modifiedAst, tag } = result
+    return {
+      modifiedAst: modifiedAst,
+      tag: tag,
+    }
   } else {
     return new Error(`Unsupported artifact type: ${selection.artifact.type}`)
   }
@@ -553,4 +568,95 @@ function modifyAstWithTagForSketchSegment(
   const { tag } = taggedSegment
 
   return { modifiedAst: astClone, tag }
+}
+
+/**
+ * Mutates the AST to add a tag to a sketch segment or chamfer
+ *
+ * This function adds a tag to sketch line segments (like xLine, yLine, line, arc)
+ * or chamfer operations. It validates the target node is a valid segment or chamfer
+ * and uses the existing tag if one is present, or creates a new one if needed.
+ *
+ * Used by various tagging operations that need to reference specific sketch segments,
+ * particularly for edge treatments and GDT annotations on chamfered faces.
+ *
+ * @param astClone The AST to modify (will be mutated)
+ * @param pathToSegmentNode Path to the target sketch segment or chamfer node
+ * @param edgeCutMeta Optional edge cut metadata for chamfer operations
+ * @returns Object with modified AST and the tag name, or Error if invalid
+ */
+export function mutateAstWithTagForSketchSegment(
+  astClone: Node<Program>,
+  pathToSegmentNode: PathToNode,
+  edgeCutMeta: EdgeCutInfo | null = null
+): { modifiedAst: Node<Program>; tag: string } | Error {
+  const segmentNode = getNodeFromPath<CallExpressionKw>(
+    astClone,
+    pathToSegmentNode,
+    ['CallExpressionKw']
+  )
+  if (err(segmentNode)) return segmentNode
+
+  // Check whether selection is a valid segment
+  if (
+    !segmentNode.node.callee ||
+    !(
+      segmentNode.node.callee.name.name in sketchLineHelperMapKw ||
+      segmentNode.node.callee.name.name === 'chamfer' ||
+      segmentNode.node.callee.name.name === 'fillet'
+    )
+  ) {
+    return new Error('Selection is not a sketch segment, chamfer, or fillet')
+  }
+
+  // Add tag to the sketch segment or use existing tag
+  // a helper function that creates the updated node and applies the changes to the AST
+  const taggedSegment = addTagForSketchOnFace(
+    {
+      pathToNode: pathToSegmentNode,
+      node: astClone,
+    },
+    segmentNode.node.callee.name.name,
+    edgeCutMeta
+  )
+  if (err(taggedSegment)) return taggedSegment
+  const { tag } = taggedSegment
+
+  return { modifiedAst: astClone, tag }
+}
+
+/**
+ * Handler for edgeCut face selection.
+ * Tags the underlying sketch segment that was used to create the edge cut.
+ *
+ * @param ast - The AST to modify
+ * @param edgeCutFace - The edgeCut artifact representing the face
+ * @param artifactGraph - The artifact graph for context
+ * @returns Modified AST with tag and the tag name, or an Error
+ */
+function modifyAstWithTagForEdgeCutFace(
+  ast: Node<Program>,
+  edgeCutFace: Artifact,
+  artifactGraph: ArtifactGraph
+): { modifiedAst: Node<Program>; tag: string } | Error {
+  if (edgeCutFace.type !== 'edgeCut') {
+    return new Error('Selection artifact is not a valid edgeCut type')
+  }
+
+  // Clone AST
+  const astClone = structuredClone(ast)
+
+  // Get edge cut metadata to understand the underlying segment
+  const edgeCutMeta = getEdgeCutMeta(edgeCutFace, astClone, artifactGraph)
+
+  // Tag the underlying segment using the edgeCut artifact's codeRef
+  const tagResult = mutateAstWithTagForSketchSegment(
+    astClone,
+    edgeCutFace.codeRef.pathToNode,
+    edgeCutMeta
+  )
+  if (err(tagResult)) return tagResult
+
+  const { modifiedAst, tag } = tagResult
+  return { modifiedAst, tag }
 }

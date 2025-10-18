@@ -225,6 +225,13 @@ export function buildCommandArgument<
       validation: arg.validation,
       ...baseCommandArgument,
     } satisfies CommandArgument<O, T> & { inputType: 'vector3d' }
+  } else if (arg.inputType === 'vector2d') {
+    return {
+      inputType: arg.inputType,
+      defaultValue: arg.defaultValue,
+      validation: arg.validation,
+      ...baseCommandArgument,
+    } satisfies CommandArgument<O, T> & { inputType: 'vector2d' }
   } else if (arg.inputType === 'string') {
     return {
       inputType: arg.inputType,
