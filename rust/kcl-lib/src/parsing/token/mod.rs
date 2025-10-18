@@ -28,10 +28,21 @@ pub(crate) use tokeniser::RESERVED_WORDS;
 pub const NUM_SUFFIXES: [&str; 10] = ["mm", "cm", "m", "inch", "in", "ft", "yd", "deg", "rad", "?"];
 
 pub(crate) trait NumericSuffixExt {
+    fn is_none(self) -> bool;
+    fn is_some(self) -> bool;
     fn digestable_id(&self) -> &[u8];
 }
 
 impl NumericSuffixExt for NumericSuffix {
+    #[allow(dead_code)]
+    fn is_none(self) -> bool {
+        self == Self::None
+    }
+
+    fn is_some(self) -> bool {
+        self != Self::None
+    }
+
     fn digestable_id(&self) -> &[u8] {
         match self {
             NumericSuffix::None => &[],
