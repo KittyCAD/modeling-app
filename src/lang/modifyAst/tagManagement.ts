@@ -24,7 +24,6 @@ import {
   findUniqueName,
 } from '@src/lang/create'
 import { getNodeFromPath, getEdgeCutMeta } from '@src/lang/queryAst'
-import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
@@ -42,7 +41,7 @@ import type {
   PathToNode,
   Program,
 } from '@src/lang/wasm'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import type { EdgeCutInfo, Selection } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import { capitaliseFC } from '@src/lib/utils'
 
@@ -564,6 +563,60 @@ function modifyAstWithTagForSketchSegment(
     },
     segmentNode.node.callee.name.name,
     null
+  )
+  if (err(taggedSegment)) return taggedSegment
+  const { tag } = taggedSegment
+
+  return { modifiedAst: astClone, tag }
+}
+
+/**
+ * Mutates the AST to add a tag to a sketch segment or chamfer
+ *
+ * This function adds a tag to sketch line segments (like xLine, yLine, line, arc)
+ * or chamfer operations. It validates the target node is a valid segment or chamfer
+ * and uses the existing tag if one is present, or creates a new one if needed.
+ *
+ * Used by various tagging operations that need to reference specific sketch segments,
+ * particularly for edge treatments and GDT annotations on chamfered faces.
+ *
+ * @param astClone The AST to modify (will be mutated)
+ * @param pathToSegmentNode Path to the target sketch segment or chamfer node
+ * @param edgeCutMeta Optional edge cut metadata for chamfer operations
+ * @returns Object with modified AST and the tag name, or Error if invalid
+ */
+export function mutateAstWithTagForSketchSegment(
+  astClone: Node<Program>,
+  pathToSegmentNode: PathToNode,
+  edgeCutMeta: EdgeCutInfo | null = null
+): { modifiedAst: Node<Program>; tag: string } | Error {
+  const segmentNode = getNodeFromPath<CallExpressionKw>(
+    astClone,
+    pathToSegmentNode,
+    ['CallExpressionKw']
+  )
+  if (err(segmentNode)) return segmentNode
+
+  // Check whether selection is a valid segment
+  if (
+    !segmentNode.node.callee ||
+    !(
+      segmentNode.node.callee.name.name in sketchLineHelperMapKw ||
+      segmentNode.node.callee.name.name === 'chamfer'
+    )
+  ) {
+    return new Error('Selection is not a sketch segment or chamfer')
+  }
+
+  // Add tag to the sketch segment or use existing tag
+  // a helper function that creates the updated node and applies the changes to the AST
+  const taggedSegment = addTagForSketchOnFace(
+    {
+      pathToNode: pathToSegmentNode,
+      node: astClone,
+    },
+    segmentNode.node.callee.name.name,
+    edgeCutMeta
   )
   if (err(taggedSegment)) return taggedSegment
   const { tag } = taggedSegment
