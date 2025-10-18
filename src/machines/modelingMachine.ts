@@ -2985,6 +2985,7 @@ export const modelingMachine = setup({
             kclManager,
             editorManager,
             codeManager,
+            rustContext,
           },
           {
             focusPath: [result.pathToNode],
