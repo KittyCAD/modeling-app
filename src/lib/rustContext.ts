@@ -36,7 +36,7 @@ export default class RustContext {
   private projectId = 0
 
   /** Initialize the WASM module */
-  async ensureWasmInit() {
+  private async ensureWasmInit() {
     try {
       await initPromise
       if (this.wasmInitFailed) {
@@ -63,7 +63,7 @@ export default class RustContext {
   }
 
   /** Create a new context instance */
-  create(): Context {
+  private create(): Context {
     this.rustInstance = getModule()
 
     const ctxInstance = new this.rustInstance.Context(
@@ -78,7 +78,7 @@ export default class RustContext {
     return this.rustInstance || undefined
   }
 
-  createFromInstance(instance: ModuleType) {
+  private createFromInstance(instance: ModuleType) {
     this.rustInstance = instance
 
     const ctxInstance = new this.rustInstance.Context(
