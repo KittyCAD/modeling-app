@@ -96,11 +96,7 @@ export function UnitsMenu() {
                   <button
                     className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                     onClick={() => {
-                      const newCode = changeKclSettings(
-                        codeManager.code,
-                        unit,
-                        'allow' // TODO: this is just my test
-                      )
+                      const newCode = changeKclSettings(codeManager.code, unit)
                       if (err(newCode)) {
                         toast.error(
                           `Failed to set per-file units: ${newCode.message}`

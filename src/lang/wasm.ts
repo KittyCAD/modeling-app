@@ -762,7 +762,7 @@ export function changeKclSettings(
   exp: string | null = null // TODO: change to WarningLevel | null
 ): string | Error {
   try {
-    return change_kcl_settings(kcl, JSON.stringify(len), exp)
+    return change_kcl_settings(kcl, JSON.stringify(len), exp ?? '')
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })

@@ -377,7 +377,7 @@ impl Node<Program> {
                     node.inner.add_or_update(
                         annotations::SETTINGS_EXPERIMENTAL_FEATURES,
                         // TODO: use as_str from WarningLevel
-                        Expr::Name(Box::new(Name::new(&exp))),
+                        Expr::Name(Box::new(Name::new(&exp.to_string()))),
                     );
                 }
                 // Previous source range no longer makes sense, but we want to

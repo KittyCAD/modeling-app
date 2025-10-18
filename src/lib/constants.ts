@@ -188,6 +188,11 @@ export const DEFAULT_DEFAULT_ANGLE_UNIT: UnitAngle = 'degrees'
  */
 export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength = 'mm'
 
+/**
+ * When no annotation is in the KCL file to specify the defaults
+ */
+export const DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES: string = 'deny'
+
 /** Real execution. */
 export const EXECUTION_TYPE_REAL = 'real'
 /** Mock execution. */
