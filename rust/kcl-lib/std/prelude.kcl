@@ -507,7 +507,7 @@ export fn clone(
 /// kclIsFun = true
 /// assertIs(kclIsFun)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn assertIs(
   /// Value to check. If this is the boolean value true, assert passes. Otherwise it fails..
   @actual: bool,
@@ -524,7 +524,7 @@ export fn assertIs(
 /// assert(n, isGreaterThanOrEqual = 0, isLessThan = 100, error = "number should be between 0 and 100")
 /// assert(1.0000000000012, isEqualTo = 1, tolerance = 0.0001, error = "number should be almost exactly 1")
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn assert(
   /// Value to check. If this is the boolean value true, assert passes. Otherwise it fails..
   @actual: number,
