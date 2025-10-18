@@ -774,7 +774,7 @@ impl ExecutorContext {
                 let is_std = matches!(&exec_state.mod_local.path, ModulePath::Std { .. });
 
                 // Check the KCL @(feature_tree = ) annotation.
-                let include_in_feature_tree = attrs.clone().unwrap_or_default().include_in_feature_tree;
+                let include_in_feature_tree = attrs.unwrap_or_default().include_in_feature_tree;
                 if let Some(attrs) = attrs
                     && (attrs.impl_ == annotations::Impl::Rust || attrs.impl_ == annotations::Impl::RustConstraint)
                 {
