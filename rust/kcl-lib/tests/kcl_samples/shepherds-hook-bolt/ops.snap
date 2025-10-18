@@ -438,6 +438,64 @@ description: Operations executed shepherds-hook-bolt.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "polarToCartesian",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "angle": {
+            "value": {
+              "type": "Number",
+              "value": 290.0,
+              "ty": {
+                "degrees": null,
+                "type": "Known",
+                "type": "Angle"
+              }
+            },
+            "sourceRange": []
+          },
+          "radius": {
+            "value": {
+              "type": "Number",
+              "value": 12.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 16
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 2
+          },
+          {
+            "type": "CallKwArg",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "x",
       "value": {
@@ -516,6 +574,67 @@ description: Operations executed shepherds-hook-bolt.kcl
           },
           {
             "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "polarToCartesian",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "angle": {
+            "value": {
+              "type": "Number",
+              "value": 150.0,
+              "ty": {
+                "degrees": null,
+                "type": "Known",
+                "type": "Angle"
+              }
+            },
+            "sourceRange": []
+          },
+          "radius": {
+            "value": {
+              "type": "Number",
+              "value": 12.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 16
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 3
+          },
+          {
+            "type": "CallKwArg",
+            "index": 0
           }
         ]
       },
@@ -604,6 +723,9 @@ description: Operations executed shepherds-hook-bolt.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

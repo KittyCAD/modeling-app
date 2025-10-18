@@ -5,6 +5,89 @@ description: Operations executed helical-planetary-gearset.kcl
 {
   "public/kcl-samples/helical-planetary-gearset/main.kcl": [
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "ringGear",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "gearHeight": {
+            "value": {
+              "type": "Number",
+              "value": 5.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "helixAngle": {
+            "value": {
+              "type": "Number",
+              "value": -25.0,
+              "ty": {
+                "degrees": null,
+                "type": "Known",
+                "type": "Angle"
+              }
+            },
+            "sourceRange": []
+          },
+          "module": {
+            "value": {
+              "type": "Number",
+              "value": 1.5,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "nTeeth": {
+            "value": {
+              "type": "Number",
+              "value": 42.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "pressureAngle": {
+            "value": {
+              "type": "Number",
+              "value": 14.0,
+              "ty": {
+                "degrees": null,
+                "type": "Known",
+                "type": "Angle"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "pitchDiameter",
       "value": {
@@ -203,6 +286,57 @@ description: Operations executed helical-planetary-gearset.kcl
           {
             "type": "FunctionExpressionBodyItem",
             "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "ringGearSketch",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "offsetHeight": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -593,6 +727,60 @@ description: Operations executed helical-planetary-gearset.kcl
           {
             "type": "PipeBodyItem",
             "index": 2
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "ringGearSketch",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "offsetHeight": {
+            "value": {
+              "type": "Number",
+              "value": 2.5,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -983,6 +1171,60 @@ description: Operations executed helical-planetary-gearset.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "ringGearSketch",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "offsetHeight": {
+            "value": {
+              "type": "Number",
+              "value": 5.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "helixCalc",
       "value": {
@@ -1367,6 +1609,9 @@ description: Operations executed helical-planetary-gearset.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupEnd"
+    },
+    {
       "type": "StdLibCall",
       "name": "loft",
       "unlabeledArg": {
@@ -1420,6 +1665,92 @@ description: Operations executed helical-planetary-gearset.kcl
           },
           {
             "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "helicalGear",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "gearHeight": {
+            "value": {
+              "type": "Number",
+              "value": 5.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "helixAngle": {
+            "value": {
+              "type": "Number",
+              "value": 25.0,
+              "ty": {
+                "degrees": null,
+                "type": "Known",
+                "type": "Angle"
+              }
+            },
+            "sourceRange": []
+          },
+          "module": {
+            "value": {
+              "type": "Number",
+              "value": 1.5,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "nTeeth": {
+            "value": {
+              "type": "Number",
+              "value": 12.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "pressureAngle": {
+            "value": {
+              "type": "Number",
+              "value": 14.0,
+              "ty": {
+                "degrees": null,
+                "type": "Known",
+                "type": "Angle"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "ExpressionStatementExpr"
           }
         ]
       },
@@ -1890,6 +2221,57 @@ description: Operations executed helical-planetary-gearset.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "helicalGearSketch",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "offsetHeight": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 12
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "helixCalc",
       "value": {
@@ -2138,6 +2520,60 @@ description: Operations executed helical-planetary-gearset.kcl
           {
             "type": "PipeBodyItem",
             "index": 8
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "helicalGearSketch",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "offsetHeight": {
+            "value": {
+              "type": "Number",
+              "value": 2.5,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 13
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -2398,6 +2834,60 @@ description: Operations executed helical-planetary-gearset.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "helicalGearSketch",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "offsetHeight": {
+            "value": {
+              "type": "Number",
+              "value": 5.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "helixCalc",
       "value": {
@@ -2652,6 +3142,9 @@ description: Operations executed helical-planetary-gearset.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupEnd"
+    },
+    {
       "type": "StdLibCall",
       "name": "loft",
       "unlabeledArg": {
@@ -2711,6 +3204,9 @@ description: Operations executed helical-planetary-gearset.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupEnd"
+    },
+    {
       "type": "VariableDeclaration",
       "name": "numPlanetGears",
       "value": {
@@ -2734,6 +3230,93 @@ description: Operations executed helical-planetary-gearset.kcl
           },
           {
             "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "helicalGear",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "gearHeight": {
+            "value": {
+              "type": "Number",
+              "value": 5.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "helixAngle": {
+            "value": {
+              "type": "Number",
+              "value": -25.0,
+              "ty": {
+                "degrees": null,
+                "type": "Known",
+                "type": "Angle"
+              }
+            },
+            "sourceRange": []
+          },
+          "module": {
+            "value": {
+              "type": "Number",
+              "value": 1.5,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "nTeeth": {
+            "value": {
+              "type": "Number",
+              "value": 12.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "pressureAngle": {
+            "value": {
+              "type": "Number",
+              "value": 14.0,
+              "ty": {
+                "degrees": null,
+                "type": "Known",
+                "type": "Angle"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
           }
         ]
       },
@@ -3204,6 +3787,57 @@ description: Operations executed helical-planetary-gearset.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "helicalGearSketch",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "offsetHeight": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 12
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "helixCalc",
       "value": {
@@ -3452,6 +4086,60 @@ description: Operations executed helical-planetary-gearset.kcl
           {
             "type": "PipeBodyItem",
             "index": 8
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "helicalGearSketch",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "offsetHeight": {
+            "value": {
+              "type": "Number",
+              "value": 2.5,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 13
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -3712,6 +4400,60 @@ description: Operations executed helical-planetary-gearset.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "helicalGearSketch",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "offsetHeight": {
+            "value": {
+              "type": "Number",
+              "value": 5.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "helixCalc",
       "value": {
@@ -3966,6 +4708,9 @@ description: Operations executed helical-planetary-gearset.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupEnd"
+    },
+    {
       "type": "StdLibCall",
       "name": "loft",
       "unlabeledArg": {
@@ -4023,6 +4768,9 @@ description: Operations executed helical-planetary-gearset.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

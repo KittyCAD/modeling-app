@@ -150,6 +150,80 @@ description: Operations executed curtain-wall-anchor-plate.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "lProfileFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "lengthBase": {
+            "value": {
+              "type": "Number",
+              "value": 300.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "lengthHook": {
+            "value": {
+              "type": "Number",
+              "value": 80.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "thickness": {
+            "value": {
+              "type": "Number",
+              "value": 8.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "width": {
+            "value": {
+              "type": "Number",
+              "value": 200.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "offsetPlane",
       "unlabeledArg": {
@@ -445,6 +519,9 @@ description: Operations executed curtain-wall-anchor-plate.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "VariableDeclaration",
@@ -874,6 +951,72 @@ description: Operations executed curtain-wall-anchor-plate.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "boltWithPlateAndNutFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "diameter": {
+            "value": {
+              "type": "Number",
+              "value": 10.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "gap": {
+            "value": {
+              "type": "Number",
+              "value": 13.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "length": {
+            "value": {
+              "type": "Number",
+              "value": 20.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 19
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "plateSide",
       "value": {
@@ -1117,6 +1260,67 @@ description: Operations executed curtain-wall-anchor-plate.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "hexagonFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "plane": {
+            "value": {
+              "type": "Face",
+              "artifact_id": "[uuid]"
+            },
+            "sourceRange": []
+          },
+          "radius": {
+            "value": {
+              "type": "Number",
+              "value": 12.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
       "type": "StdLibCall",
       "name": "extrude",
       "unlabeledArg": {
@@ -1172,6 +1376,69 @@ description: Operations executed curtain-wall-anchor-plate.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "boltFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "diameter": {
+            "value": {
+              "type": "Number",
+              "value": 10.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "length": {
+            "value": {
+              "type": "Number",
+              "value": 26.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1210,6 +1477,67 @@ description: Operations executed curtain-wall-anchor-plate.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "hexagonFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "plane": {
+            "value": {
+              "type": "Plane",
+              "artifact_id": "[uuid]"
+            },
+            "sourceRange": []
+          },
+          "radius": {
+            "value": {
+              "type": "Number",
+              "value": 10.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 7
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "FunctionExpressionBody"
+          },
+          {
+            "type": "FunctionExpressionBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1372,6 +1700,9 @@ description: Operations executed curtain-wall-anchor-plate.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupEnd"
+    },
+    {
       "type": "StdLibCall",
       "name": "union",
       "unlabeledArg": {
@@ -1423,6 +1754,9 @@ description: Operations executed curtain-wall-anchor-plate.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

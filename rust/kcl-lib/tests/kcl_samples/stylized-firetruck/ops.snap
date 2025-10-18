@@ -1134,6 +1134,48 @@ description: Operations executed stylized-firetruck.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "makeWheelCutout",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "size": {
+            "value": {
+              "type": "Number",
+              "value": 0.7,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 38
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1227,6 +1269,9 @@ description: Operations executed stylized-firetruck.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1299,6 +1344,48 @@ description: Operations executed stylized-firetruck.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "makeWheelCutout",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "size": {
+            "value": {
+              "type": "Number",
+              "value": 0.7,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 39
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1392,6 +1479,9 @@ description: Operations executed stylized-firetruck.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1464,6 +1554,48 @@ description: Operations executed stylized-firetruck.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "makeWheelCutout",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "size": {
+            "value": {
+              "type": "Number",
+              "value": 0.7,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 40
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1557,6 +1689,9 @@ description: Operations executed stylized-firetruck.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1699,6 +1834,48 @@ description: Operations executed stylized-firetruck.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "makeWheelCutout",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "size": {
+            "value": {
+              "type": "Number",
+              "value": 0.7,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 41
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -1792,6 +1969,9 @@ description: Operations executed stylized-firetruck.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -2526,6 +2706,60 @@ description: Operations executed stylized-firetruck.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "wheelFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "diameter": {
+            "value": {
+              "type": "Number",
+              "value": 0.7,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "width": {
+            "value": {
+              "type": "Number",
+              "value": 0.27,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 55
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -2846,6 +3080,9 @@ description: Operations executed stylized-firetruck.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -2929,6 +3166,60 @@ description: Operations executed stylized-firetruck.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "wheelFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "diameter": {
+            "value": {
+              "type": "Number",
+              "value": 0.7,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "width": {
+            "value": {
+              "type": "Number",
+              "value": 0.27,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 56
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -3249,6 +3540,9 @@ description: Operations executed stylized-firetruck.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -3332,6 +3626,60 @@ description: Operations executed stylized-firetruck.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "wheelFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "diameter": {
+            "value": {
+              "type": "Number",
+              "value": 0.7,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "width": {
+            "value": {
+              "type": "Number",
+              "value": 0.27,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 57
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -3652,6 +4000,9 @@ description: Operations executed stylized-firetruck.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -3816,6 +4167,60 @@ description: Operations executed stylized-firetruck.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "wheelFn",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "diameter": {
+            "value": {
+              "type": "Number",
+              "value": 0.7,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "width": {
+            "value": {
+              "type": "Number",
+              "value": 0.27,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 58
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "startSketchOn",
       "unlabeledArg": {
@@ -4136,6 +4541,9 @@ description: Operations executed stylized-firetruck.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

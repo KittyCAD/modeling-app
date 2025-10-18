@@ -922,6 +922,45 @@ description: Operations executed cpu-cooler.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "fanBlade",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "offsetHeight": {
+            "value": {
+              "type": "Number",
+              "value": 4.5,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "startAngle": {
+            "value": {
+              "type": "Number",
+              "value": 50.0,
+              "ty": {
+                "degrees": null,
+                "type": "Known",
+                "type": "Angle"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "offsetPlane",
       "unlabeledArg": {
@@ -961,6 +1000,48 @@ description: Operations executed cpu-cooler.kcl
         "sourceRange": []
       },
       "labeledArgs": {},
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "fanBlade",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "offsetHeight": {
+            "value": {
+              "type": "Number",
+              "value": 9.5,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "startAngle": {
+            "value": {
+              "type": "Number",
+              "value": 30.0,
+              "ty": {
+                "degrees": null,
+                "type": "Known",
+                "type": "Angle"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
       "nodePath": {
         "steps": []
       },
@@ -1012,6 +1093,48 @@ description: Operations executed cpu-cooler.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "fanBlade",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "offsetHeight": {
+            "value": {
+              "type": "Number",
+              "value": 23.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "startAngle": {
+            "value": {
+              "type": "Number",
+              "value": 0.0,
+              "ty": {
+                "type": "Default",
+                "len": "mm",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": []
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "offsetPlane",
       "unlabeledArg": {
@@ -1055,6 +1178,9 @@ description: Operations executed cpu-cooler.kcl
         "steps": []
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -2943,6 +3069,38 @@ description: Operations executed cpu-cooler.kcl
       "type": "GroupEnd"
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "translatePart",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "part": {
+            "value": {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 9
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "translate",
       "unlabeledArg": {
@@ -3113,6 +3271,52 @@ description: Operations executed cpu-cooler.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "translatePart",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "part": {
+            "value": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                }
+              ]
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "translate",
       "unlabeledArg": {
@@ -3305,6 +3509,100 @@ description: Operations executed cpu-cooler.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "translatePart",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "part": {
+            "value": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                },
+                {
+                  "type": "Solid",
+                  "value": {
+                    "artifactId": "[uuid]"
+                  }
+                }
+              ]
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 11
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "translate",
       "unlabeledArg": {
@@ -3591,6 +3889,9 @@ description: Operations executed cpu-cooler.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

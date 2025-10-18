@@ -1157,6 +1157,80 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "fanBladeSketch",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "angle": {
+            "value": {
+              "type": "Number",
+              "value": -30.0,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "armLength": {
+            "value": {
+              "type": "Number",
+              "value": 1.4,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "offsetDistance": {
+            "value": {
+              "type": "Number",
+              "value": 17.333333333333332,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "r1": {
+            "value": {
+              "type": "Number",
+              "value": 0.75,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "d1",
       "value": {
@@ -1665,6 +1739,83 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "fanBladeSketch",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "angle": {
+            "value": {
+              "type": "Number",
+              "value": -20.0,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "armLength": {
+            "value": {
+              "type": "Number",
+              "value": 0.4,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "offsetDistance": {
+            "value": {
+              "type": "Number",
+              "value": 51.0,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "r1": {
+            "value": {
+              "type": "Number",
+              "value": 0.75,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 11
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "d1",
       "value": {
@@ -2173,6 +2324,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupEnd"
+    },
+    {
       "type": "StdLibCall",
       "name": "loft",
       "unlabeledArg": {
@@ -2252,6 +2406,80 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
           {
             "type": "PipeBodyItem",
             "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "endCapSketch",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "angle": {
+            "value": {
+              "type": "Number",
+              "value": -20.0,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "armLength": {
+            "value": {
+              "type": "Number",
+              "value": 0.4,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "offsetDistance": {
+            "value": {
+              "type": "Number",
+              "value": 51.0,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "r1": {
+            "value": {
+              "type": "Number",
+              "value": 0.75,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 13
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -2547,6 +2775,83 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupEnd"
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "FunctionCall",
+        "name": "endCapSketch",
+        "functionSourceRange": [],
+        "unlabeledArg": null,
+        "labeledArgs": {
+          "angle": {
+            "value": {
+              "type": "Number",
+              "value": -20.0,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "armLength": {
+            "value": {
+              "type": "Number",
+              "value": 0.1,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "offsetDistance": {
+            "value": {
+              "type": "Number",
+              "value": 52.0,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          },
+          "r1": {
+            "value": {
+              "type": "Number",
+              "value": 0.075,
+              "ty": {
+                "type": "Default",
+                "len": "m",
+                "angle": "degrees"
+              }
+            },
+            "sourceRange": []
+          }
+        }
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "d1",
       "value": {
@@ -2834,6 +3139,9 @@ description: Operations executed wind-turbine-blade-root-inserts.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
