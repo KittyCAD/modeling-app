@@ -602,10 +602,11 @@ export function mutateAstWithTagForSketchSegment(
     !segmentNode.node.callee ||
     !(
       segmentNode.node.callee.name.name in sketchLineHelperMapKw ||
-      segmentNode.node.callee.name.name === 'chamfer'
+      segmentNode.node.callee.name.name === 'chamfer' ||
+      segmentNode.node.callee.name.name === 'fillet'
     )
   ) {
-    return new Error('Selection is not a sketch segment or chamfer')
+    return new Error('Selection is not a sketch segment, chamfer, or fillet')
   }
 
   // Add tag to the sketch segment or use existing tag
