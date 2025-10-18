@@ -19,7 +19,7 @@ conic(
   coefficients?: [number; 6],
   startTangent?: Point2d,
   endTangent?: Point2d,
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -37,7 +37,7 @@ conic(
 | `coefficients` | [`[number; 6]`](/docs/kcl-std/types/std-types-number) | The coefficients [a, b, c, d, e, f] of the generic conic equation ax^2 + by^2 + cxy + dx + ey + f = 0. If provided the start and end tangents will be calculated using this equation. Incompatible with `startTangent` and `endTangent`. | No |
 | `startTangent` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The tangent of the conic section at the start. If not provided the tangent of the previous path segment is used. Incompatible with `coefficients`. | No |
 | `endTangent` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The tangent of the conic section at the end. Incompatible with `coefficients`. | No |
-| `tag` | `tag` | Create a new tag which refers to this segment. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this segment. | No |
 
 ### Returns
 

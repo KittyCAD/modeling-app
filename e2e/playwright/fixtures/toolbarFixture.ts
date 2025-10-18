@@ -28,6 +28,7 @@ export class ToolbarFixture {
   revolveButton!: Locator
   offsetPlaneButton!: Locator
   helixButton!: Locator
+  translateButton!: Locator
   patternCircularButton!: Locator
   patternLinearButton!: Locator
   gdtFlatnessButton!: Locator
@@ -73,6 +74,7 @@ export class ToolbarFixture {
     this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.helixButton = page.getByTestId('helix')
+    this.translateButton = page.getByTestId('translate')
     this.patternCircularButton = page.getByTestId('pattern-circular-3d')
     this.patternLinearButton = page.getByTestId('pattern-linear-3d')
     this.gdtFlatnessButton = page.getByTestId('gdt-flatness')
