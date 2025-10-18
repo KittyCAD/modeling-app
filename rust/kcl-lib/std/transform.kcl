@@ -85,7 +85,7 @@ import Axis3d from "std::types"
 ///
 /// shell([sketch002], faces = ['end'], thickness = .1 )
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn mirror2d(
   /// The sketch or sketches to be reflected.
   @sketches: [Sketch; 1+],
@@ -256,7 +256,7 @@ export fn mirror2d(
 ///
 /// loft([profile001, profile002])
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn translate(
   /// The solid, sketch, or set of solids or sketches to move.
   @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
@@ -496,7 +496,7 @@ export fn translate(
 ///
 /// loft([profile001, profile002])
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn rotate(
   /// The solid, sketch, or set of solids or sketches to rotate.
   @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,
@@ -604,7 +604,7 @@ export fn rotate(
 /// // Scale the sweep.
 /// scale(parts, z = 0.5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn scale(
   /// The solid, sketch, or set of solids or sketches to scale.
   @objects: [Solid; 1+] | [Sketch; 1+] | ImportedGeometry,

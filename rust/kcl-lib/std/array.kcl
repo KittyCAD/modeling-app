@@ -35,7 +35,7 @@
 ///   }
 /// )
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn map(
   /// Input array. The output array is this input array, but every element has had the function `f` run on it.
   @array: [any],
@@ -125,7 +125,7 @@ export fn map(
 /// // Use the `decagon` function declared above, to sketch a decagon with radius 5.
 /// decagon(5.0) |> close()
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn reduce(
   /// Each element of this array gets run through the function `f`, combined with the previous output from `f`, and then used for the next run.
   @array: [any],
@@ -144,7 +144,7 @@ export fn reduce(
 /// new_arr = push(arr, item = 4)
 /// assert(new_arr[3], isEqualTo = 4, tolerance = 0.1, error = "4 was added to the end of the array")
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn push(
   /// The array which you're adding a new item to.
   @array: [any],
@@ -163,7 +163,7 @@ export fn push(
 /// assert(new_arr[1], isEqualTo = 2, tolerance = 0.00001, error = "2 is the second element of the array")
 /// assert(new_arr[2], isEqualTo = 3, tolerance = 0.00001, error = "3 is the third element of the array")
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn pop(
   /// The array to pop from. Must not be empty.
   @array: [any; 1+],
@@ -194,7 +194,7 @@ export fn pop(
 /// assert(newArr[2], isEqualTo = 30, tolerance = 0.00001)
 /// assert(count(newArr), isEqualTo = 3, tolerance = 0.00001)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn concat(
   /// The array of starting elements.
   @array: [any],
@@ -207,10 +207,10 @@ export fn concat(
 /// arr1 = [10, 20, 30]
 /// assert(count(arr1), isEqualTo = 3)
 /// ```
+@(feature_tree = false)
 export fn count(
   /// The array whose length will be returned.
   @array: [any],
 ): number {
   return reduce(array, initial = 0, f = fn(@i, accum) { return accum + 1})
 }
-

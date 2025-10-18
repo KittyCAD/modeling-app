@@ -298,60 +298,6 @@ description: Operations executed countersunk-plate.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "polar",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "angle": {
-          "value": {
-            "type": "Number",
-            "value": 1.1971635237196154,
-            "ty": {
-              "radians": null,
-              "type": "Known",
-              "type": "Angle"
-            }
-          },
-          "sourceRange": []
-        },
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": 1.6625,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 1
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
       "name": "subtract2d",
       "unlabeledArg": {
         "value": {
