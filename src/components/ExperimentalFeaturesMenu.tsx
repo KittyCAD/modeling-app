@@ -1,11 +1,8 @@
 import { Popover } from '@headlessui/react'
 import toast from 'react-hot-toast'
 
-import { changeKclSettings } from '@src/lang/wasm'
-import {
-  DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES,
-  DEFAULT_DEFAULT_LENGTH_UNIT,
-} from '@src/lib/constants'
+import { changeExperimentalFeatures } from '@src/lang/wasm'
+import { DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES } from '@src/lib/constants'
 import { codeManager, kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { useEffect, useState } from 'react'
@@ -16,8 +13,6 @@ export function ExperimentalFeaturesMenu() {
 
   // TODO: pull from rust
   const warningLevels = ['allow', 'deny', 'warn']
-  const currentUnit =
-    fileSettings.defaultLengthUnit ?? DEFAULT_DEFAULT_LENGTH_UNIT
   const currentLevel =
     fileSettings.experimentalFeatures?.type.toLowerCase() ??
     DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES
@@ -53,14 +48,13 @@ export function ExperimentalFeaturesMenu() {
                   <button
                     className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                     onClick={() => {
-                      const newCode = changeKclSettings(
+                      const newCode = changeExperimentalFeatures(
                         codeManager.code,
-                        currentUnit,
                         level
                       )
                       if (err(newCode)) {
                         toast.error(
-                          `Failed to set per-file units: ${newCode.message}`
+                          `Failed to set file experimental features level: ${newCode.message}`
                         )
                       } else {
                         codeManager.updateCodeStateEditor(newCode)
@@ -69,7 +63,9 @@ export function ExperimentalFeaturesMenu() {
                           kclManager.executeCode(),
                         ])
                           .then(() => {
-                            toast.success(`Updated per-file units to ${level}`)
+                            toast.success(
+                              `Updated file experimental features level to ${level}`
+                            )
                           })
                           .catch(reportRejection)
                       }

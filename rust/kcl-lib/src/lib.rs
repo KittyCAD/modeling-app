@@ -226,15 +226,23 @@ impl Program {
     }
 
     /// Change the meta settings for the kcl file.
-    pub fn change_kcl_settings(
+    pub fn change_default_units(
         &self,
         length_units: Option<kittycad_modeling_cmds::units::UnitLength>,
-        experimental_features: Option<String>,
-        // TODO: make this work
-        // experimental_features: Option<WarningLevel>,
     ) -> Result<Self, KclError> {
         Ok(Self {
-            ast: self.ast.change_kcl_settings(length_units, experimental_features)?,
+            ast: self.ast.change_default_units(length_units)?,
+            original_file_contents: self.original_file_contents.clone(),
+        })
+    }
+
+    pub fn change_experimental_features(
+        &self,
+        warning_level: Option<String>,
+        // TODO: should be Option<WarningLevel>
+    ) -> Result<Self, KclError> {
+        Ok(Self {
+            ast: self.ast.change_experimental_features(warning_level)?,
             original_file_contents: self.original_file_contents.clone(),
         })
     }

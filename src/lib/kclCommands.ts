@@ -4,7 +4,8 @@ import toast from 'react-hot-toast'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { addModuleImport, insertNamedConstant } from '@src/lang/modifyAst'
 import {
-  changeKclSettings,
+  changeDefaultUnits,
+  changeExperimentalFeatures,
   isPathToNode,
   type PathToNode,
   type SourceRange,
@@ -81,12 +82,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (typeof data === 'object' && 'unit' in data) {
-          const newCode = changeKclSettings(
-            codeManager.code,
-            data.unit,
-            kclManager.fileSettings.defaultLengthUnit ??
-              DEFAULT_DEFAULT_LENGTH_UNIT
-          )
+          const newCode = changeDefaultUnits(codeManager.code, data.unit)
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)
           } else {
@@ -112,7 +108,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       groupId: 'code',
       icon: 'code',
       args: {
-        flag: {
+        level: {
           required: true,
           inputType: 'options',
           defaultValue:
@@ -132,30 +128,28 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         },
       },
       onSubmit: (data) => {
-        if (typeof data === 'object' && 'flag' in data) {
-          const newCode = changeKclSettings(
+        if (typeof data === 'object' && 'level' in data) {
+          const newCode = changeExperimentalFeatures(
             codeManager.code,
-            kclManager.fileSettings.defaultLengthUnit ??
-              DEFAULT_DEFAULT_LENGTH_UNIT,
-            data.flag
+            data.level
           )
           if (err(newCode)) {
             toast.error(
-              `Failed to set experimental features flag: ${newCode.message}`
+              `Failed to set experimental features level: ${newCode.message}`
             )
           } else {
             codeManager.updateCodeStateEditor(newCode)
             Promise.all([codeManager.writeToFile(), kclManager.executeCode()])
               .then(() => {
                 toast.success(
-                  `Updated experimental features flag to ${data.flag}`
+                  `Updated experimental features level to ${data.level}`
                 )
               })
               .catch(reportRejection)
           }
         } else {
           toast.error(
-            'Failed to set experimental features flag: no value provided to submit function. This is a bug.'
+            'Failed to set experimental features level: no value provided to submit function. This is a bug.'
           )
         }
       },

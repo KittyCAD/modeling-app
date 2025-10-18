@@ -357,11 +357,9 @@ impl Node<Program> {
         Ok(None)
     }
 
-    pub fn change_kcl_settings(
+    pub fn change_default_units(
         &self,
         length_units: Option<kittycad_modeling_cmds::units::UnitLength>,
-        experimental_features: Option<String>,
-        // TODO: shouldn't be String but WarningLevel
     ) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         let mut found = false;
@@ -371,13 +369,6 @@ impl Node<Program> {
                     node.inner.add_or_update(
                         annotations::SETTINGS_UNIT_LENGTH,
                         Expr::Name(Box::new(Name::new(&len.to_string()))),
-                    );
-                }
-                if let Some(exp) = experimental_features {
-                    node.inner.add_or_update(
-                        annotations::SETTINGS_EXPERIMENTAL_FEATURES,
-                        // TODO: use as_str from WarningLevel
-                        Expr::Name(Box::new(Name::new(&exp.to_string()))),
                     );
                 }
                 // Previous source range no longer makes sense, but we want to
@@ -394,6 +385,45 @@ impl Node<Program> {
                 settings.inner.add_or_update(
                     annotations::SETTINGS_UNIT_LENGTH,
                     Expr::Name(Box::new(Name::new(&len.to_string()))),
+                );
+            }
+
+            new_program.inner_attrs.push(settings);
+        }
+
+        Ok(new_program)
+    }
+
+    pub fn change_experimental_features(
+        &self,
+        experimental_features: Option<String>,
+        // TODO: shouldn't be String but WarningLevel
+    ) -> Result<Self, KclError> {
+        let mut new_program = self.clone();
+        let mut found = false;
+        for node in &mut new_program.inner_attrs {
+            if node.name() == Some(annotations::SETTINGS) {
+                if let Some(ref exp) = experimental_features {
+                    node.inner.add_or_update(
+                        annotations::SETTINGS_EXPERIMENTAL_FEATURES,
+                        // TODO: use as_str from WarningLevel
+                        Expr::Name(Box::new(Name::new(&exp.to_string()))),
+                    );
+                }
+                // Previous source range no longer makes sense, but we want to
+                // preserve other things like comments.
+                node.reset_source();
+                found = true;
+                break;
+            }
+        }
+
+        if !found {
+            let mut settings = Annotation::new(annotations::SETTINGS);
+            if let Some(ref exp) = experimental_features {
+                settings.inner.add_or_update(
+                    annotations::SETTINGS_EXPERIMENTAL_FEATURES,
+                    Expr::Name(Box::new(Name::new(&exp.to_string()))),
                 );
             }
 
@@ -4420,7 +4450,7 @@ startSketchOn(XY)"#;
         assert_eq!(meta_settings.default_length_units, UnitLength::Inches);
 
         // Edit the ast.
-        let new_program = program.change_kcl_settings(Some(UnitLength::Millimeters), None).unwrap();
+        let new_program = program.change_default_units(Some(UnitLength::Millimeters)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
@@ -4447,7 +4477,7 @@ startSketchOn(XY)
         assert!(result.is_none());
 
         // Edit the ast.
-        let new_program = program.change_kcl_settings(Some(UnitLength::Millimeters), None).unwrap();
+        let new_program = program.change_default_units(Some(UnitLength::Millimeters)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
@@ -4480,7 +4510,7 @@ startSketchOn(XY)
 "#;
         let program = crate::parsing::top_level_parse(code).unwrap();
 
-        let new_program = program.change_kcl_settings(Some(UnitLength::Centimeters), None).unwrap();
+        let new_program = program.change_default_units(Some(UnitLength::Centimeters)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());

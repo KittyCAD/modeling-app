@@ -5,12 +5,11 @@ import {
   formatNumberValue,
   parse,
   resultIsOk,
-  changeKclSettings,
+  changeExperimentalFeatures,
 } from '@src/lang/wasm'
 import type { KclExpression } from '@src/lib/commandTypes'
 import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 
 const DUMMY_VARIABLE_NAME = '__result__'
 
@@ -147,9 +146,8 @@ export function getStringValue(code: string, range: SourceRange): string {
 }
 
 export async function enableExperimentalFeatures(): Promise<void | Error> {
-  const newCode = changeKclSettings(
+  const newCode = changeExperimentalFeatures(
     codeManager.code,
-    kclManager.fileSettings.defaultLengthUnit ?? DEFAULT_DEFAULT_LENGTH_UNIT,
     'allow' // TODO: update that
   )
   if (err(newCode)) {
