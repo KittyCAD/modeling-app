@@ -1,7 +1,6 @@
 use std::{fmt, str::FromStr};
 
 use indexmap::IndexMap;
-use kcl_api::NumericSuffix;
 use regex::Regex;
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
@@ -11,8 +10,11 @@ use tower_lsp::lsp_types::{
 use crate::{
     ModuleId,
     execution::annotations,
-    parsing::ast::types::{
-        Annotation, Expr, ImportSelector, ItemVisibility, LiteralValue, Node, NonCodeValue, VariableKind,
+    parsing::{
+        ast::types::{
+            Annotation, Expr, ImportSelector, ItemVisibility, LiteralValue, Node, NonCodeValue, VariableKind,
+        },
+        token::NumericSuffix,
     },
 };
 

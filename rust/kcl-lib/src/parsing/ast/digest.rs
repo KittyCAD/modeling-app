@@ -1,16 +1,12 @@
 use sha2::{Digest as DigestTrait, Sha256};
 
-use crate::parsing::{
-    ast::types::{
-        Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, Block,
-        BodyItem, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression,
-        FunctionType, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone,
-        LabelledExpression, Literal, LiteralValue, MemberExpression, Name, NumericLiteral, ObjectExpression,
-        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement,
-        SketchBlock, SketchVar, TagDeclarator, Type, TypeDeclaration, UnaryExpression, VariableDeclaration,
-        VariableDeclarator, VariableKind,
-    },
-    token::NumericSuffixExt,
+use crate::parsing::ast::types::{
+    Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, Block,
+    BodyItem, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, FunctionType,
+    Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression,
+    Literal, LiteralValue, MemberExpression, Name, NumericLiteral, ObjectExpression, ObjectProperty, Parameter,
+    PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, SketchBlock, SketchVar, TagDeclarator,
+    Type, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
 };
 
 /// Position-independent digest of the AST node.

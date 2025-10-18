@@ -1,10 +1,12 @@
 use std::{fmt, str::FromStr};
 
-use kcl_api::NumericSuffix;
 use serde::{Deserialize, Serialize};
 
 use super::Node;
-use crate::parsing::ast::types::{Expr, Literal};
+use crate::parsing::{
+    ast::types::{Expr, Literal},
+    token::NumericSuffix,
+};
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
