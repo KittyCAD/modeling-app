@@ -14,7 +14,6 @@ pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
-use kcl_api::ObjectId;
 pub use kcl_value::{KclObjectFields, KclValue};
 use kcmc::{
     ImageFormat, ModelingCmd, each_cmd as mcmd,
