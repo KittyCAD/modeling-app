@@ -1,8 +1,8 @@
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import { type settings } from '@src/lib/settings/initialSettings'
+import type { settings } from '@src/lib/settings/initialSettings'
 import { useSelector } from '@xstate/react'
 import { Resizable } from 're-resizable'
-import type { HTMLProps, MouseEventHandler, ComponentProps, Ref } from 'react'
+import type { ComponentProps, Ref } from 'react'
 import {
   useCallback,
   useContext,
@@ -15,7 +15,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import { useAppState } from '@src/AppState'
 import { ActionIcon } from '@src/components/ActionIcon'
-import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
+import type { CustomIconName } from '@src/components/CustomIcon'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
 import type {
@@ -36,26 +36,28 @@ import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import usePlatform from '@src/hooks/usePlatform'
 import { useKclContext } from '@src/lang/KclProvider'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
-import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
-import { mlEphantManagerActor, useSettings } from '@src/lib/singletons'
+import {
+  getLayout,
+  mlEphantManagerActor,
+  useSettings,
+} from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { settingsActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
 import { EngineConnectionStateType } from '@src/network/utils'
-
-interface BadgeInfoComputed {
-  value: number | boolean | string
-  onClick?: MouseEventHandler<any>
-  className?: string
-  title?: string
-}
-
-enum Alignment {
-  Left = 'left',
-  Right = 'right',
-}
+import { ResizeHandle } from '@src/components/ResizeHandle'
+import {
+  Alignment,
+  type BadgeInfoComputed,
+} from '@src/components/ModelingSidebar/types'
+import {
+  defaultLayout,
+  getOpenPanes,
+  setOpenPanes,
+} from '@src/lib/layout/utils'
 
 function getPlatformString(): 'web' | 'desktop' {
   return isDesktop() ? 'desktop' : 'web'
@@ -156,8 +158,6 @@ export function ModelingSidebarLeft() {
 
 export function ModelingSidebarRight() {
   const settings = useSettings()
-  const { send: modelingContextSend, context: modelingContext } =
-    useModelingContext()
   const promptsBelongingToConversation = useSelector(
     mlEphantManagerActor,
     (actor) => {
@@ -179,15 +179,13 @@ export function ModelingSidebarRight() {
     }
 
     const newPanes = new Set(
-      modelingContext.store.openPanes.concat('text-to-cad')
+      getOpenPanes({ rootLayout: getLayout() }).concat('text-to-cad')
     )
 
-    modelingContextSend({
-      type: 'Set context',
-      data: {
-        openPanes: Array.from(newPanes),
-      },
-    })
+    setOpenPanes(
+      structuredClone(getLayout() || defaultLayout),
+      Array.from(newPanes)
+    )
     // React doesn't realize that we are updating `modelingContext.store.openPanes` here
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [promptsBelongingToConversation, actuallyNew])
@@ -295,14 +293,12 @@ export function ModelingSidebar(props: ModelingSidebarProps) {
     })
 
     if (panesToReset.length > 0) {
-      send({
-        type: 'Set context',
-        data: {
-          openPanes: context.store?.openPanes.filter(
-            (pane) => !panesToReset.includes(pane)
-          ),
-        },
-      })
+      setOpenPanes(
+        structuredClone(getLayout() || defaultLayout),
+        getOpenPanes({ rootLayout: getLayout() }).filter(
+          (pane) => !(panesToReset as string[]).includes(pane)
+        )
+      )
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [props.settings.app.showDebugPanel])
@@ -560,33 +556,6 @@ function ModelingPaneButton({
           )}
         </p>
       )}
-    </div>
-  )
-}
-
-function ResizeHandle(
-  props: HTMLProps<HTMLDivElement> & { alignment: Alignment }
-) {
-  const oppositeAlignment =
-    props.alignment === Alignment.Left ? Alignment.Right : Alignment.Left
-  return (
-    <div
-      {...props}
-      className={'group/grip absolute inset-0 ' + props.className}
-    >
-      <div
-        className={`hidden group-hover/grip:block absolute bg-chalkboard-30 dark:bg-chalkboard-70 w-[1px] h-auto top-0 bottom-0`}
-        style={{
-          // Tailwind did not like trying to do computed class names here, so I've inlined the styles
-          [oppositeAlignment]: 'auto',
-          [props.alignment]: '50%',
-        }}
-      />
-      <div
-        className={`hidden group-hover/grip:block py-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-sm w-fit group-hover/grip:bg-chalkboard-30 group-hover/grip:dark:bg-chalkboard-70 bg-transparent transition-colors border border-transparent group-hover/grip:border-chalkboard-40 dark:group-hover/grip:border-chalkboard-90 duration-75 transition-ease-out delay-100`}
-      >
-        <CustomIcon className="w-5 -mx-0.5 rotate-90" name="sixDots" />
-      </div>
     </div>
   )
 }
