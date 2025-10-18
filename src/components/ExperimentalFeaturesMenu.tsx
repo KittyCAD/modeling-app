@@ -2,7 +2,10 @@ import { Popover } from '@headlessui/react'
 import toast from 'react-hot-toast'
 
 import { changeKclSettings } from '@src/lang/wasm'
-import { DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES } from '@src/lib/constants'
+import {
+  DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES,
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+} from '@src/lib/constants'
 import { codeManager, kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { useEffect, useState } from 'react'
@@ -10,8 +13,11 @@ import { CustomIcon } from '@src/components/CustomIcon'
 
 export function ExperimentalFeaturesMenu() {
   const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
+
   // TODO: pull from rust
   const warningLevels = ['allow', 'deny', 'warn']
+  const currentUnit =
+    fileSettings.defaultLengthUnit ?? DEFAULT_DEFAULT_LENGTH_UNIT
   const currentLevel =
     fileSettings.experimentalFeatures?.type.toLowerCase() ??
     DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES
@@ -49,7 +55,7 @@ export function ExperimentalFeaturesMenu() {
                     onClick={() => {
                       const newCode = changeKclSettings(
                         codeManager.code,
-                        null,
+                        currentUnit,
                         level
                       )
                       if (err(newCode)) {
@@ -72,7 +78,7 @@ export function ExperimentalFeaturesMenu() {
                   >
                     <span className="flex-1">{level}</span>
                     {level ===
-                      (fileSettings.experimentalFeatures ??
+                      (fileSettings.experimentalFeatures?.type.toLowerCase() ??
                         DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES) && (
                       <span className="text-chalkboard-60">current</span>
                     )}
