@@ -113,6 +113,7 @@ pub mod exec {
     pub use crate::execution::{ArtifactCommand, Operation};
     pub use crate::execution::{
         DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
+        annotations::WarningLevel,
         types::{NumericType, UnitType},
     };
 }
@@ -150,7 +151,7 @@ pub mod pretty {
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
-use crate::execution::annotations::WarningLevel;
+use crate::exec::WarningLevel;
 #[allow(unused_imports)]
 use crate::log::{log, logln};
 
