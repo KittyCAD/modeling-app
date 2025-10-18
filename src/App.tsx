@@ -68,6 +68,7 @@ import {
 } from '@src/routes/Onboarding/utils'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { ConnectionStream } from '@src/components/ConnectionStream'
+import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 
 // CYCLIC REF
 
@@ -278,6 +279,7 @@ export function App() {
             <Toolbar />
             <ConnectionStream pool={pool} authToken={authToken} />
             <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
+              <ExperimentalFeaturesMenu />
               <UnitsMenu />
               <Gizmo />
             </div>

@@ -270,7 +270,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           })
         },
         icon: 'hole',
-        status: 'available',
+        status: 'experimental',
         title: 'Hole',
         description:
           'Standard holes that could be drilled or cut into a 3D solid.',

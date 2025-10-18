@@ -1,12 +1,7 @@
 //! Data types for the AST.
 
 use std::{
-    cell::RefCell,
-    collections::{BTreeMap, HashMap},
-    fmt,
-    ops::{Deref, DerefMut, RangeInclusive},
-    rc::Rc,
-    sync::{Arc, Mutex},
+    cell::RefCell, collections::{BTreeMap, HashMap}, fmt, ops::{Deref, DerefMut, RangeInclusive}, rc::Rc, str::FromStr, sync::{Arc, Mutex}
 };
 
 use anyhow::Result;
@@ -390,6 +385,45 @@ impl Node<Program> {
                 settings.inner.add_or_update(
                     annotations::SETTINGS_UNIT_LENGTH,
                     Expr::Name(Box::new(Name::new(&len.to_string()))),
+                );
+            }
+
+            new_program.inner_attrs.push(settings);
+        }
+
+        Ok(new_program)
+    }
+
+    pub fn change_experimental_features(
+        &self,
+        experimental_features: Option<String>,
+        // TODO: shouldn't be String but WarningLevel
+    ) -> Result<Self, KclError> {
+        let mut new_program = self.clone();
+        let mut found = false;
+        for node in &mut new_program.inner_attrs {
+            if node.name() == Some(annotations::SETTINGS) {
+                if let Some(ref exp) = experimental_features {
+                    node.inner.add_or_update(
+                        annotations::SETTINGS_EXPERIMENTAL_FEATURES,
+                        // TODO: use as_str from WarningLevel
+                        Expr::Name(Box::new(Name::new(&exp.to_string()))),
+                    );
+                }
+                // Previous source range no longer makes sense, but we want to
+                // preserve other things like comments.
+                node.reset_source();
+                found = true;
+                break;
+            }
+        }
+
+        if !found {
+            let mut settings = Annotation::new(annotations::SETTINGS);
+            if let Some(ref exp) = experimental_features {
+                settings.inner.add_or_update(
+                    annotations::SETTINGS_EXPERIMENTAL_FEATURES,
+                    Expr::Name(Box::new(Name::new(&exp.to_string()))),
                 );
             }
 

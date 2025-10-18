@@ -236,6 +236,17 @@ impl Program {
         })
     }
 
+    pub fn change_experimental_features(
+        &self,
+        warning_level: Option<String>,
+        // TODO: should be Option<WarningLevel>
+    ) -> Result<Self, KclError> {
+        Ok(Self {
+            ast: self.ast.change_experimental_features(warning_level)?,
+            original_file_contents: self.original_file_contents.clone(),
+        })
+    }
+
     pub fn is_empty_or_only_settings(&self) -> bool {
         self.ast.is_empty_or_only_settings()
     }

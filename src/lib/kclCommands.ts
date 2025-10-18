@@ -5,6 +5,7 @@ import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { addModuleImport, insertNamedConstant } from '@src/lang/modifyAst'
 import {
   changeDefaultUnits,
+  changeExperimentalFeatures,
   isPathToNode,
   type PathToNode,
   type SourceRange,
@@ -12,6 +13,7 @@ import {
 } from '@src/lang/wasm'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
+  DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES,
   DEFAULT_DEFAULT_LENGTH_UNIT,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
@@ -94,6 +96,60 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         } else {
           toast.error(
             'Failed to set per-file units: no value provided to submit function. This is a bug.'
+          )
+        }
+      },
+    },
+    {
+      name: 'set-file-experimental-features',
+      displayName: 'Set experimental features flag',
+      description: 'Set the experimental features flag in the current file.',
+      needsReview: false,
+      groupId: 'code',
+      icon: 'code',
+      args: {
+        level: {
+          required: true,
+          inputType: 'options',
+          defaultValue:
+            kclManager.fileSettings.experimentalFeatures?.type.toLowerCase() ||
+            DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES,
+          options: () =>
+            Object.values(['allow', 'deny', 'warn']).map((v) => {
+              return {
+                name: v,
+                value: v,
+                isCurrent: kclManager.fileSettings.experimentalFeatures
+                  ? v ===
+                    kclManager.fileSettings.experimentalFeatures?.type.toLowerCase()
+                  : v === DEFAULT_DEFAULT_LENGTH_UNIT,
+              }
+            }),
+        },
+      },
+      onSubmit: (data) => {
+        if (typeof data === 'object' && 'level' in data) {
+          const newCode = changeExperimentalFeatures(
+            codeManager.code,
+            data.level
+          )
+          if (err(newCode)) {
+            toast.error(
+              `Failed to set experimental features level: ${newCode.message}`
+            )
+          } else {
+            codeManager.updateCodeStateEditor(newCode)
+            Promise.all([codeManager.writeToFile(), kclManager.executeCode()])
+              .then(() => {
+                toast.success(
+                  `Updated experimental features level to ${data.level}`
+                )
+              })
+              .catch(reportRejection)
+          }
+        } else {
+          toast.error(
+            'Failed to set experimental features level: no value provided to submit function. This is a bug.'
           )
         }
       },

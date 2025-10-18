@@ -2,6 +2,7 @@ import type { UnitAngle, UnitLength } from '@kittycad/lib'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
+import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
 import type { Setting, settings } from '@src/lib/settings/initialSettings'
@@ -145,4 +146,5 @@ export type SaveSettingsPayload = RecursiveSettingsPayloads<typeof settings>
 export interface KclSettingsAnnotation {
   defaultLengthUnit?: UnitLength
   defaultAngleUnit?: UnitAngle
+  experimentalFeatures?: WarningLevel
 }

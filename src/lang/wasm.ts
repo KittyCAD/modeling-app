@@ -43,6 +43,7 @@ import { isArray } from '@src/lib/utils'
 import {
   base64_decode,
   change_default_units,
+  change_experimental_features,
   coredump,
   default_app_settings,
   default_project_settings,
@@ -762,6 +763,22 @@ export function changeDefaultUnits(
 ): string | Error {
   try {
     return change_default_units(kcl, JSON.stringify(len))
+  } catch (e) {
+    console.error('Caught error changing kcl settings', e)
+    return new Error('Caught error changing kcl settings', { cause: e })
+  }
+}
+
+/**
+ * Change the meta settings for the kcl file.
+ * @returns the new kcl string with the updated settings.
+ */
+export function changeExperimentalFeatures(
+  kcl: string,
+  warningLevel: string | null = null // TODO: change to WarningLevel | null
+): string | Error {
+  try {
+    return change_experimental_features(kcl, warningLevel ?? '')
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })

@@ -972,6 +972,7 @@ export function getSettingsAnnotation(
 
   settings.defaultLengthUnit = metaSettings.defaultLengthUnits
   settings.defaultAngleUnit = metaSettings.defaultAngleUnits
+  settings.experimentalFeatures = metaSettings.experimentalFeatures
 
   return settings
 }
