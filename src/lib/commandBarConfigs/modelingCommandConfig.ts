@@ -29,8 +29,13 @@ import type {
   ModelingMachineContext,
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
-import { addExtrude } from '@src/lang/modifyAst/sweeps'
-import { executeAstMock } from '@src/lang/langHelpers'
+import {
+  addExtrude,
+  addLoft,
+  addRevolve,
+  addSweep,
+} from '@src/lang/modifyAst/sweeps'
+import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -452,35 +457,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'extrude',
     needsReview: true,
     reviewMessage: async (context) => {
-      if (!context.argumentsToSubmit) {
-        return Promise.reject(
-          new Error('No arguments to submit found in context')
-        )
-      }
-
-      // TODO: fix this
-      const input =
-        context.argumentsToSubmit as ModelingCommandSchema['Extrude']
-
-      // TODO: too verbose?
-      const { ast, artifactGraph } = kclManager
-      const astResult = addExtrude({
-        ast,
-        artifactGraph,
-        ...input,
+      const modRes = addExtrude({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Extrude']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
       })
-      if (err(astResult)) {
+      if (err(modRes)) {
         return Promise.reject(new Error('Invalid selection'))
       }
 
-      const { errors } = await executeAstMock({
-        ast: astResult.modifiedAst,
-        rustContext,
-      })
-      if (errors.length > 0) {
-        return Promise.reject(
-          new Error(errors.map((e) => e.message).join('\n'))
-        )
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
       }
     },
     args: {
@@ -552,6 +543,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Create a 3D body by moving a sketch region along an arbitrary path.',
     icon: 'sweep',
     needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addSweep({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Sweep']),
+        ast: kclManager.ast,
+      })
+      if (err(modRes)) {
+        return Promise.reject(new Error('Invalid selection'))
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -597,6 +605,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a 3D body by blending between two or more sketches',
     icon: 'loft',
     needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addLoft({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Loft']),
+        ast: kclManager.ast,
+      })
+      if (err(modRes)) {
+        return Promise.reject(new Error('Invalid selection'))
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -635,6 +660,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
     needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addRevolve({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Revolve']),
+        ast: kclManager.ast,
+      })
+      if (err(modRes)) {
+        return Promise.reject(new Error('Invalid selection'))
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,

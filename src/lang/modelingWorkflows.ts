@@ -22,6 +22,16 @@ import {
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err, reject } from '@src/lib/trap'
 
+export async function mockExecAstAndReportErrors(
+  ast: Node<Program>,
+  rustContext: RustContext
+): Promise<void | Error> {
+  const { errors } = await executeAstMock({ ast, rustContext })
+  if (errors.length > 0) {
+    return new Error(errors.map((e) => e.message).join('\n'))
+  }
+}
+
 /**
  * Updates the complete modeling state:
  * AST, code editor, file, and 3D scene.
@@ -67,12 +77,11 @@ export async function updateModelingState(
   } = { newAst: ast }
 
   // Step 0: Mock execute shit so we know it aint broke
-  const { errors } = await executeAstMock({
-    ast,
-    rustContext: dependencies.rustContext,
-  })
-  if (errors.length > 0 && !options?.skipErrorsOnMockExecution) {
-    return Promise.reject(new Error(errors.map((e) => e.message).join('\n')))
+  if (!options?.skipErrorsOnMockExecution) {
+    const res = await mockExecAstAndReportErrors(ast, dependencies.rustContext)
+    if (err(res)) {
+      return Promise.reject(res)
+    }
   }
 
   // Step 1: Update AST without executing (prepare selections)
