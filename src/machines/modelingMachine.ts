@@ -159,7 +159,7 @@ import {
   type EquipTool,
   sketchSolveMachine,
 } from '@src/machines/sketchSolve/sketchSolveMode'
-import { enableExperimentalFeatures } from '@src/lib/kclHelpers'
+import { setExperimentalFeatures } from '@src/lib/kclHelpers'
 
 export type ModelingMachineEvent =
   | {
@@ -2575,7 +2575,7 @@ export const modelingMachine = setup({
 
         // Remove once Hole isn't experimental anymore
         if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
-          const result = await enableExperimentalFeatures()
+          const result = await setExperimentalFeatures({ type: 'Allow' })
           if (err(result)) {
             return Promise.reject(result)
           }
