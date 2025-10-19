@@ -1,3 +1,4 @@
+import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import { executeAstMock } from '@src/lang/langHelpers'
 import {
   type SourceRange,
@@ -145,10 +146,10 @@ export function getStringValue(code: string, range: SourceRange): string {
   return code.slice(range[0], range[1]).replaceAll(`'`, ``).replaceAll(`"`, ``)
 }
 
-export async function enableExperimentalFeatures(): Promise<void | Error> {
-  const newCode = changeExperimentalFeatures(codeManager.code, {
-    type: 'Allow',
-  })
+export async function setExperimentalFeatures(
+  level: WarningLevel
+): Promise<void | Error> {
+  const newCode = changeExperimentalFeatures(codeManager.code, level)
   if (err(newCode)) {
     return new Error(`Failed to set experimental features: ${newCode.message}`)
   }

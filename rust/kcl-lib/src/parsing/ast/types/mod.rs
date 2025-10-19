@@ -411,7 +411,6 @@ impl Node<Program> {
                 if let Some(level) = warning_level {
                     node.inner.add_or_update(
                         annotations::SETTINGS_EXPERIMENTAL_FEATURES,
-                        // TODO: use as_str from WarningLevel
                         Expr::Name(Box::new(Name::new(level.as_str()))),
                     );
                 }
