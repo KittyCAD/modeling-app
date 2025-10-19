@@ -5,9 +5,10 @@ import {
   formatNumberValue,
   parse,
   resultIsOk,
+  changeExperimentalFeatures,
 } from '@src/lang/wasm'
 import type { KclExpression } from '@src/lib/commandTypes'
-import { rustContext } from '@src/lib/singletons'
+import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 
 const DUMMY_VARIABLE_NAME = '__result__'
@@ -142,4 +143,16 @@ export async function stringToKclExpression(
 
 export function getStringValue(code: string, range: SourceRange): string {
   return code.slice(range[0], range[1]).replaceAll(`'`, ``).replaceAll(`"`, ``)
+}
+
+export async function enableExperimentalFeatures(): Promise<void | Error> {
+  const newCode = changeExperimentalFeatures(codeManager.code, {
+    type: 'Allow',
+  })
+  if (err(newCode)) {
+    return new Error(`Failed to set experimental features: ${newCode.message}`)
+  }
+  codeManager.updateCodeStateEditor(newCode)
+  await codeManager.writeToFile()
+  await kclManager.executeCode()
 }

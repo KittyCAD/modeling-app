@@ -1,6 +1,7 @@
 import type { WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 export const APP_NAME = 'Design Studio'
 /** Search string in new project names to increment as an index */
@@ -187,6 +188,13 @@ export const DEFAULT_DEFAULT_ANGLE_UNIT: UnitAngle = 'degrees'
  * default units.
  */
 export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength = 'mm'
+
+/**
+ * When no annotation is in the KCL file to specify the defaults
+ */
+export const DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES: WarningLevel = {
+  type: 'Deny',
+}
 
 /** Real execution. */
 export const EXECUTION_TYPE_REAL = 'real'
