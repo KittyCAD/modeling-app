@@ -135,7 +135,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
                 return
               }
               toast.success(
-                `Updated experimental features level to ${data.unit}`
+                `Updated experimental features level to ${data.level}`
               )
             })
             .catch(reportRejection)
