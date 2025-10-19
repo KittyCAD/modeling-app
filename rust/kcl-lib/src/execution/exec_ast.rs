@@ -1473,16 +1473,85 @@ impl Node<MemberExpression> {
 }
 
 impl Node<BinaryExpression> {
-    #[async_recursion]
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        let left_value = self.left.get_result(exec_state, ctx).await?;
-        let right_value = self.right.get_result(exec_state, ctx).await?;
+        enum State {
+            EvaluateLeft(Node<BinaryExpression>),
+            FromLeft {
+                node: Node<BinaryExpression>,
+            },
+            EvaluateRight {
+                node: Node<BinaryExpression>,
+                left: KclValue,
+            },
+            FromRight {
+                node: Node<BinaryExpression>,
+                left: KclValue,
+            },
+        }
+
+        let mut stack = vec![State::EvaluateLeft(self.clone())];
+        let mut last_result: Option<KclValue> = None;
+
+        while let Some(state) = stack.pop() {
+            match state {
+                State::EvaluateLeft(node) => {
+                    let left_part = node.left.clone();
+                    match left_part {
+                        BinaryPart::BinaryExpression(child) => {
+                            stack.push(State::FromLeft { node });
+                            stack.push(State::EvaluateLeft(*child));
+                        }
+                        part => {
+                            let left_value = part.get_result(exec_state, ctx).await?;
+                            stack.push(State::EvaluateRight { node, left: left_value });
+                        }
+                    }
+                }
+                State::FromLeft { node } => {
+                    let Some(left_value) = last_result.take() else {
+                        return Err(Self::missing_result_error(&node));
+                    };
+                    stack.push(State::EvaluateRight { node, left: left_value });
+                }
+                State::EvaluateRight { node, left } => {
+                    let right_part = node.right.clone();
+                    match right_part {
+                        BinaryPart::BinaryExpression(child) => {
+                            stack.push(State::FromRight { node, left });
+                            stack.push(State::EvaluateLeft(*child));
+                        }
+                        part => {
+                            let right_value = part.get_result(exec_state, ctx).await?;
+                            let result = node.apply_operator(exec_state, ctx, left, right_value).await?;
+                            last_result = Some(result);
+                        }
+                    }
+                }
+                State::FromRight { node, left } => {
+                    let Some(right_value) = last_result.take() else {
+                        return Err(Self::missing_result_error(&node));
+                    };
+                    let result = node.apply_operator(exec_state, ctx, left, right_value).await?;
+                    last_result = Some(result);
+                }
+            }
+        }
+
+        last_result.ok_or_else(|| Self::missing_result_error(self))
+    }
+
+    async fn apply_operator(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+        left_value: KclValue,
+        right_value: KclValue,
+    ) -> Result<KclValue, KclError> {
         let mut meta = left_value.metadata();
         meta.extend(right_value.metadata());
 
-        // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add
-            && let (KclValue::String { value: left, meta: _ }, KclValue::String { value: right, meta: _ }) =
+            && let (KclValue::String { value: left, .. }, KclValue::String { value: right, .. }) =
                 (&left_value, &right_value)
         {
             return Ok(KclValue::String {
@@ -1491,7 +1560,6 @@ impl Node<BinaryExpression> {
             });
         }
 
-        // Then check if we have solids.
         if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
                 let args = Args::new_no_args(self.into(), ctx.clone());
@@ -1505,7 +1573,6 @@ impl Node<BinaryExpression> {
                 return Ok(result.into());
             }
         } else if self.operator == BinaryOperator::Sub {
-            // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
                 let args = Args::new_no_args(self.into(), ctx.clone());
                 let result = crate::std::csg::inner_subtract(
@@ -1518,28 +1585,22 @@ impl Node<BinaryExpression> {
                 .await?;
                 return Ok(result.into());
             }
-        } else if self.operator == BinaryOperator::And {
-            // Check if we have solids.
-            if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = Args::new_no_args(self.into(), ctx.clone());
-                let result = crate::std::csg::inner_intersect(
-                    vec![*left.clone(), *right.clone()],
-                    Default::default(),
-                    exec_state,
-                    args,
-                )
-                .await?;
-                return Ok(result.into());
-            }
+        } else if self.operator == BinaryOperator::And
+            && let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value)
+        {
+            let args = Args::new_no_args(self.into(), ctx.clone());
+            let result = crate::std::csg::inner_intersect(
+                vec![*left.clone(), *right.clone()],
+                Default::default(),
+                exec_state,
+                args,
+            )
+            .await?;
+            return Ok(result.into());
         }
 
-        // Check if we are doing logical operations on booleans.
         if self.operator == BinaryOperator::Or || self.operator == BinaryOperator::And {
-            let KclValue::Bool {
-                value: left_value,
-                meta: _,
-            } = left_value
-            else {
+            let KclValue::Bool { value: left_value, .. } = left_value else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
                         "Cannot apply logical operator to non-boolean value: {}",
@@ -1548,11 +1609,7 @@ impl Node<BinaryExpression> {
                     vec![self.left.clone().into()],
                 )));
             };
-            let KclValue::Bool {
-                value: right_value,
-                meta: _,
-            } = right_value
-            else {
+            let KclValue::Bool { value: right_value, .. } = right_value else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
                         "Cannot apply logical operator to non-boolean value: {}",
@@ -1569,25 +1626,19 @@ impl Node<BinaryExpression> {
             return Ok(KclValue::Bool { value: raw_value, meta });
         }
 
-        // Check if we're doing equivalence in sketch mode.
         if self.operator == BinaryOperator::Eq && exec_state.mod_local.sketch_block.is_some() {
             match (&left_value, &right_value) {
-                // Same sketch variables.
                 (KclValue::SketchVar { value: left_value, .. }, KclValue::SketchVar { value: right_value, .. })
                     if left_value.id == right_value.id =>
                 {
                     return Ok(KclValue::Bool { value: true, meta });
                 }
-                // Different sketch variables.
                 (KclValue::SketchVar { .. }, KclValue::SketchVar { .. }) => {
-                    // TODO: sketch-api: Collapse the two sketch variables into
-                    // one constraint variable.
                     return Err(KclError::new_semantic(KclErrorDetails::new(
                         "TODO: Different sketch variables".to_owned(),
                         vec![self.into()],
                     )));
                 }
-                // One sketch variable, one number.
                 (KclValue::SketchVar { value: var, .. }, input_number @ KclValue::Number { .. })
                 | (input_number @ KclValue::Number { .. }, KclValue::SketchVar { value: var, .. }) => {
                     let number_value = normalize_to_solver_unit(
@@ -1697,6 +1748,13 @@ impl Node<BinaryExpression> {
         };
 
         Ok(value)
+    }
+
+    fn missing_result_error(node: &Node<BinaryExpression>) -> KclError {
+        KclError::new_internal(KclErrorDetails::new(
+            "Internal error: missing result while evaluating binary expression".to_owned(),
+            vec![SourceRange::from(node)],
+        ))
     }
 
     fn warn_on_unknown(&self, ty: &NumericType, verb: &str, exec_state: &mut ExecState) {
