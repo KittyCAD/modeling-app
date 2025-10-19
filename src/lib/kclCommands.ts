@@ -112,13 +112,13 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           required: true,
           inputType: 'options',
           defaultValue:
-            kclManager.fileSettings.experimentalFeatures?.type.toLowerCase() ||
-            DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES,
+            kclManager.fileSettings.experimentalFeatures?.type ||
+            DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES.type,
           options: () =>
             warningLevels.map((l) => {
               return {
                 name: l.type,
-                value: l,
+                value: l.type,
                 isCurrent: kclManager.fileSettings.experimentalFeatures
                   ? l.type === kclManager.fileSettings.experimentalFeatures.type
                   : l.type === DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES.type,
@@ -128,14 +128,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (typeof data === 'object' && 'level' in data) {
-          setExperimentalFeatures({ type: 'Allow' })
+          setExperimentalFeatures({ type: data.level })
             .then((result) => {
               if (err(result)) {
                 reportRejection(result)
                 return
               }
               toast.success(
-                `Updated experimental features level to ${data.unit}`
+                `Updated experimental features level to ${data.level}`
               )
             })
             .catch(reportRejection)
