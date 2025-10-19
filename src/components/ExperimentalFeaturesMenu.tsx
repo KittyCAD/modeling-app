@@ -1,14 +1,14 @@
 import { Popover } from '@headlessui/react'
 import toast from 'react-hot-toast'
 
-import { changeExperimentalFeatures } from '@src/lang/wasm'
 import { DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES } from '@src/lib/constants'
-import { codeManager, kclManager } from '@src/lib/singletons'
+import { kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { useEffect, useState } from 'react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { warningLevels } from '@src/lib/settings/settingsTypes'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
+import { setExperimentalFeatures } from '@src/lib/kclHelpers'
 
 export function ExperimentalFeaturesMenu() {
   const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
@@ -48,27 +48,20 @@ export function ExperimentalFeaturesMenu() {
                     <button
                       className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                       onClick={() => {
-                        const newCode = changeExperimentalFeatures(
-                          codeManager.code,
-                          level
-                        )
-                        if (err(newCode)) {
-                          toast.error(
-                            `Failed to set file experimental features level: ${newCode.message}`
-                          )
-                        } else {
-                          codeManager.updateCodeStateEditor(newCode)
-                          Promise.all([
-                            codeManager.writeToFile(),
-                            kclManager.executeCode(),
-                          ])
-                            .then(() => {
-                              toast.success(
-                                `Updated file experimental features level to ${level.type}`
+                        setExperimentalFeatures(level)
+                          .then((result) => {
+                            if (err(result)) {
+                              toast.error(
+                                `Failed to set file experimental features level: ${result.message}`
                               )
-                            })
-                            .catch(reportRejection)
-                        }
+                              return
+                            }
+
+                            toast.success(
+                              `Updated file experimental features level to ${level.type}`
+                            )
+                          })
+                          .catch(reportRejection)
                         close()
                       }}
                     >

@@ -5,7 +5,6 @@ import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { addModuleImport, insertNamedConstant } from '@src/lang/modifyAst'
 import {
   changeDefaultUnits,
-  changeExperimentalFeatures,
   isPathToNode,
   type PathToNode,
   type SourceRange,
@@ -33,6 +32,7 @@ import { getNodeFromPath } from '@src/lang/queryAst'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { setExperimentalFeatures } from '@src/lib/kclHelpers'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -128,24 +128,17 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (typeof data === 'object' && 'level' in data) {
-          const newCode = changeExperimentalFeatures(
-            codeManager.code,
-            data.level
-          )
-          if (err(newCode)) {
-            toast.error(
-              `Failed to set experimental features level: ${newCode.message}`
-            )
-          } else {
-            codeManager.updateCodeStateEditor(newCode)
-            Promise.all([codeManager.writeToFile(), kclManager.executeCode()])
-              .then(() => {
-                toast.success(
-                  `Updated experimental features level to ${data.level}`
-                )
-              })
-              .catch(reportRejection)
-          }
+          setExperimentalFeatures({ type: 'Allow' })
+            .then((result) => {
+              if (err(result)) {
+                reportRejection(result)
+                return
+              }
+              toast.success(
+                `Updated experimental features level to ${data.unit}`
+              )
+            })
+            .catch(reportRejection)
         } else {
           toast.error(
             'Failed to set experimental features level: no value provided to submit function. This is a bug.'
