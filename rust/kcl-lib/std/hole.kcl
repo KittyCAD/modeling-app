@@ -10,7 +10,7 @@ holeTypeCounterbore = 1
 holeTypeCountersink = 2
 
 /// A hole top with no decoration.
-@(experimental = true)
+@(experimental = true, feature_tree = false)
 export fn simple() {
   return { feature = holeTypeSimple }
 }
@@ -45,7 +45,7 @@ export fn simple() {
 ///        holeType = hole::counterbore(diameter = 12, depth = 3.5),
 ///      )
 /// ```
-@(experimental = true)
+@(experimental = true, feature_tree = false)
 export fn counterbore(diameter: number(Length), depth: number(Length)) {
   return {
     diameter = diameter,
@@ -84,7 +84,7 @@ export fn counterbore(diameter: number(Length), depth: number(Length)) {
 ///        holeType = hole::countersink(diameter = 14, angle = 100deg),
 ///      )
 /// ```
-@(experimental = true)
+@(experimental = true, feature_tree = false)
 export fn countersink(diameter: number(Length), angle: number(Angle)) {
   return {
     diameter = diameter,
@@ -97,7 +97,7 @@ export fn countersink(diameter: number(Length), angle: number(Angle)) {
 
 
 /// The hole has the given blind depth.
-@(experimental = true)
+@(experimental = true, feature_tree = false)
 export fn blind(depth: number(Length), diameter: number(Length)) {
   return {
     blindDepth = depth,
@@ -134,7 +134,7 @@ export fn blind(depth: number(Length), diameter: number(Length)) {
 ///        holeType = hole::simple(),
 ///      )
 /// ```
-@(experimental = true)
+@(experimental = true, feature_tree = false)
 export fn drill(pointAngle: number(Angle)) {
   return { drillBitAngle = pointAngle }
 }
@@ -165,7 +165,7 @@ export fn drill(pointAngle: number(Angle)) {
 ///        holeType = hole::simple(),
 ///      )
 /// ```
-@(experimental = true)
+@(experimental = true, feature_tree = false)
 export fn flat() {
   return { drillBitAngle = 180deg }
 }
@@ -173,6 +173,7 @@ export fn flat() {
 // Defining the hole
 
 
+@(feature_tree = false)
 fn drawTop(@partialHoleProfile, body, holeType) {
   prof = if holeType.feature == holeTypeSimple {
     partialHoleProfile
@@ -204,6 +205,7 @@ fn drawTop(@partialHoleProfile, body, holeType) {
   return prof
 }
 
+@(feature_tree = false)
 fn holeTypeHeight(body, holeType) {
   height = if holeType.feature == holeTypeSimple {
     0
@@ -227,7 +229,7 @@ fn holeTypeHeight(body, holeType) {
 
 /// Profile for the end of the hole. Only really intended for advanced uses.
 /// You can use this and `revolveHole` to do tricky custom hole cutting.
-@(experimental = true)
+@(experimental = true, feature_tree = false)
 fn sketchHoleProfile(@sketchOn, holeBottom, holeBody, holeType, shift) {
   body = holeBody
   bottom = holeBottom
@@ -264,7 +266,7 @@ fn sketchHoleProfile(@sketchOn, holeBottom, holeBody, holeType, shift) {
 
 /// Given a hole profile, revolve it into a 3D hole solid geometry.
 /// This can be subtracted from a solid to form a hole in it.
-@(experimental = true)
+@(experimental = true, feature_tree = false)
 fn revolveHole(@holeProfile, edge) {
   return holeProfile
     |> revolve(axis = edge)
@@ -273,7 +275,7 @@ fn revolveHole(@holeProfile, edge) {
 
 /// Build a hole's geometry from its top, bottom and depth.
 /// Can be subtracted from a solid to cut a hole into it.
-@(experimental = true)
+@(experimental = true, feature_tree = false)
 fn holeGeometry(@solid, face, holeBottom, holeBody, holeType, cutAt) {
   intoSolid = startSketchOn(
     solid,
@@ -349,7 +351,7 @@ fn holeGeometry(@solid, face, holeBottom, holeBody, holeType, cutAt) {
 ///        holeType = hole::counterbore(diameter = 12, depth = 3.5),
 ///      )
 /// ```
-@(experimental = true)
+@(experimental = true, feature_tree = true)
 export fn hole(
   /// Which solid to add a hole to.
   @solid: Solid,
@@ -373,7 +375,7 @@ export fn hole(
 /// From the hole's parts (bottom, middle, top), cut the hole into the given solid,
 /// at each of the given 2D positions on the given face.
 /// Basically like function `hole` but it takes multiple 2D positions in `cutsAt`.
-@(experimental = true)
+@(experimental = true, feature_tree = true)
 export fn holes(
   /// Which solid to add a hole to.
   @solid: Solid,
@@ -398,7 +400,7 @@ export fn holes(
 /// Place the given holes in a line.
 /// Basically like function `hole` but cuts multiple holes in a line.
 /// Works like linear patterns.
-@(experimental = true)
+@(experimental = true, feature_tree = false)
 export fn holesLinear(
   /// Which solid to add a hole to.
   @solid: Solid,

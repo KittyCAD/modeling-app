@@ -138,11 +138,17 @@ pub struct FunctionSource {
     pub ast: crate::parsing::ast::types::BoxNode<FunctionExpression>,
 }
 
+pub struct KclFunctionSourceParams {
+    pub is_std: bool,
+    pub experimental: bool,
+    pub include_in_feature_tree: bool,
+}
+
 impl FunctionSource {
     pub fn rust(
         func: crate::std::StdFn,
         ast: Box<Node<FunctionExpression>>,
-        props: StdFnProps,
+        _props: StdFnProps,
         attrs: FnAttrs,
     ) -> Self {
         let (input_arg, named_args) = Self::args_from_ast(&ast);
@@ -153,14 +159,19 @@ impl FunctionSource {
             return_type: ast.return_type.clone(),
             deprecated: attrs.deprecated,
             experimental: attrs.experimental,
-            include_in_feature_tree: props.include_in_feature_tree,
+            include_in_feature_tree: attrs.include_in_feature_tree,
             is_std: true,
             body: FunctionBody::Rust(func),
             ast,
         }
     }
 
-    pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, is_std: bool, experimental: bool) -> Self {
+    pub fn kcl(ast: Box<Node<FunctionExpression>>, memory: EnvironmentRef, params: KclFunctionSourceParams) -> Self {
+        let KclFunctionSourceParams {
+            is_std,
+            experimental,
+            include_in_feature_tree,
+        } = params;
         let (input_arg, named_args) = Self::args_from_ast(&ast);
         FunctionSource {
             input_arg,
@@ -168,7 +179,7 @@ impl FunctionSource {
             return_type: ast.return_type.clone(),
             deprecated: false,
             experimental,
-            include_in_feature_tree: true,
+            include_in_feature_tree,
             is_std,
             body: FunctionBody::Kcl(memory),
             ast,

@@ -17,7 +17,7 @@ parabolic(
   coefficients?: [number; 3],
   interior?: Point2d,
   interiorAbsolute?: Point2d,
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -33,7 +33,7 @@ parabolic(
 | `coefficients` | [`[number; 3]`](/docs/kcl-std/types/std-types-number) | The coefficients [a, b, c] of the parabolic equation y = ax^2 + bx + c. Incompatible with `interior`. | No |
 | `interior` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | A point between the segment's start and end that lies on the parabola. Incompatible with `coefficients` or `interiorAbsolute` or `endAbsolute`. | No |
 | `interiorAbsolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Any point between the segment's start and end. Requires `endAbsolute`. Incompatible with `coefficients` or `interior` or `end`. | No |
-| `tag` | `tag` | Create a new tag which refers to this segment. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this segment. | No |
 
 ### Returns
 

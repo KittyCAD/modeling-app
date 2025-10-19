@@ -14,7 +14,7 @@ use crate::{
         Operation, PlaneType, StatementKind, TagIdentifier, annotations,
         cad_op::OpKclValue,
         fn_call::Args,
-        kcl_value::{FunctionSource, TypeDef},
+        kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
         memory,
         state::{ModuleState, SketchBlockState},
         types::{NumericType, PrimitiveType, RuntimeType},
@@ -396,7 +396,12 @@ impl ExecutorContext {
                         .mut_stack()
                         .add(var_name.clone(), rhs.clone(), source_range)?;
 
-                    if rhs.show_variable_in_feature_tree() {
+                    // Track operations, for the feature tree.
+                    // Don't track these operations if the KCL code being executed is in the stdlib,
+                    // because users shouldn't know about stdlib internals -- it's useless noise, to them.
+                    let should_show_in_feature_tree =
+                        !exec_state.mod_local.inside_stdlib && rhs.show_variable_in_feature_tree();
+                    if should_show_in_feature_tree {
                         exec_state.push_op(Operation::VariableDeclaration {
                             name: var_name.clone(),
                             value: OpKclValue::from(&rhs),
@@ -766,6 +771,10 @@ impl ExecutorContext {
             Expr::FunctionExpression(function_expression) => {
                 let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
                 let experimental = attrs.map(|a| a.experimental).unwrap_or_default();
+                let is_std = matches!(&exec_state.mod_local.path, ModulePath::Std { .. });
+
+                // Check the KCL @(feature_tree = ) annotation.
+                let include_in_feature_tree = attrs.unwrap_or_default().include_in_feature_tree;
                 if let Some(attrs) = attrs
                     && (attrs.impl_ == annotations::Impl::Rust || attrs.impl_ == annotations::Impl::RustConstraint)
                 {
@@ -789,8 +798,11 @@ impl ExecutorContext {
                         value: Box::new(FunctionSource::kcl(
                             function_expression.clone(),
                             exec_state.mut_stack().snapshot(),
-                            matches!(&exec_state.mod_local.path, ModulePath::Std { .. }),
-                            experimental,
+                            KclFunctionSourceParams {
+                                is_std,
+                                experimental,
+                                include_in_feature_tree,
+                            },
                         )),
                         meta: vec![metadata.to_owned()],
                     }
@@ -2659,10 +2671,75 @@ y = x[0mm + 1]
 
     #[tokio::test(flavor = "multi_thread")]
     async fn getting_property_of_plane() {
-        // let ast = include_str!("../../tests/inputs/planestuff.kcl");
         let ast = std::fs::read_to_string("tests/inputs/planestuff.kcl").unwrap();
-
         parse_execute(&ast).await.unwrap();
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn no_artifacts_from_within_hole_call() {
+        // Test that executing stdlib KCL, like the `hole` function
+        // (which is actually implemented in KCL not Rust)
+        // does not generate artifacts from within the stdlib code,
+        // only from the user code.
+        let ast = std::fs::read_to_string("tests/inputs/sample_hole.kcl").unwrap();
+        let out = parse_execute(&ast).await.unwrap();
+
+        // Get all the operations that occurred.
+        let actual_operations = out.exec_state.global.root_module_artifacts.operations;
+
+        // There should be 5, for sketching the cube and applying the hole.
+        // If the stdlib internal calls are being tracked, that's a bug,
+        // and the actual number of operations will be something like 35.
+        let expected = 5;
+        assert_eq!(
+            actual_operations.len(),
+            expected,
+            "expected {expected} operations, received {}:\n{actual_operations:#?}",
+            actual_operations.len(),
+        );
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn feature_tree_annotation_on_user_defined_kcl() {
+        // The call to foo() should not generate an operation,
+        // because its 'feature_tree' attribute has been set to false.
+        let ast = std::fs::read_to_string("tests/inputs/feature_tree_annotation_on_user_defined_kcl.kcl").unwrap();
+        let out = parse_execute(&ast).await.unwrap();
+
+        // Get all the operations that occurred.
+        let actual_operations = out.exec_state.global.root_module_artifacts.operations;
+
+        let expected = 0;
+        assert_eq!(
+            actual_operations.len(),
+            expected,
+            "expected {expected} operations, received {}:\n{actual_operations:#?}",
+            actual_operations.len(),
+        );
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn no_feature_tree_annotation_on_user_defined_kcl() {
+        // The call to foo() should generate an operation,
+        // because @(feature_tree) defaults to true.
+        let ast = std::fs::read_to_string("tests/inputs/no_feature_tree_annotation_on_user_defined_kcl.kcl").unwrap();
+        let out = parse_execute(&ast).await.unwrap();
+
+        // Get all the operations that occurred.
+        let actual_operations = out.exec_state.global.root_module_artifacts.operations;
+
+        let expected = 2;
+        assert_eq!(
+            actual_operations.len(),
+            expected,
+            "expected {expected} operations, received {}:\n{actual_operations:#?}",
+            actual_operations.len(),
+        );
+        assert!(matches!(actual_operations[0], Operation::GroupBegin { .. }));
+        assert!(matches!(actual_operations[1], Operation::GroupEnd));
     }
 
     #[tokio::test(flavor = "multi_thread")]
