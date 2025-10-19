@@ -26,7 +26,7 @@
 ///   framePlane = XZ,
 /// )
 /// ```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, experimental = true, feature_tree = true)
 export fn datum(
   /// The face to be annotated.
   @(includeInSnippet = true)
@@ -89,7 +89,7 @@ export fn datum(
 ///   |> extrude(length = 5)
 /// gdt::flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], framePlane = XZ)
 /// ```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, experimental = true, feature_tree = true)
 export fn flatness(
   /// The faces to be annotated.
   @(includeInSnippet = true)
