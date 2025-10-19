@@ -4502,6 +4502,65 @@ startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_experimental_features_deny_to_allow() {
+        let some_program_string = r#"@settings(experimentalFeatures = deny)
+
+startSketchOn(XY)"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let result = program.meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(meta_settings.experimental_features, WarningLevel::Deny);
+
+        // Edit the ast.
+        let new_program = program.change_experimental_features(Some(WarningLevel::Allow)).unwrap();
+
+        let result = new_program.meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(meta_settings.experimental_features, WarningLevel::Allow);
+
+        let formatted = new_program.recast_top(&Default::default(), 0);
+
+        assert_eq!(
+            formatted,
+            r#"@settings(experimentalFeatures = allow)
+
+startSketchOn(XY)
+"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_experimental_features_nothing_to_warn() {
+        let some_program_string = r#"startSketchOn(XY)"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let result = program.meta_settings().unwrap();
+        assert!(result.is_none());
+
+        // Edit the ast.
+        let new_program = program.change_experimental_features(Some(WarningLevel::Warn)).unwrap();
+
+        let result = new_program.meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(meta_settings.experimental_features, WarningLevel::Warn);
+
+        let formatted = new_program.recast_top(&Default::default(), 0);
+
+        assert_eq!(
+            formatted,
+            r#"@settings(experimentalFeatures = warn)
+
+startSketchOn(XY)
+"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_change_meta_settings_preserves_comments() {
         let code = r#"// Title
 

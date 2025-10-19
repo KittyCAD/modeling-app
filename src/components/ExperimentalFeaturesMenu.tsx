@@ -27,7 +27,7 @@ export function ExperimentalFeaturesMenu() {
         {({ close }) => (
           <>
             <Popover.Button
-              data-testid="units-menu"
+              data-testid="experimental-features-menu"
               className={`flex items-center gap-2 px-1 py-1 
         text-xs text-primary bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm 
         border !border-primary/50 rounded-full`}
