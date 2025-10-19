@@ -128,7 +128,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (typeof data === 'object' && 'level' in data) {
-          setExperimentalFeatures({ type: 'Allow' })
+          setExperimentalFeatures({ type: data.level })
             .then((result) => {
               if (err(result)) {
                 reportRejection(result)
