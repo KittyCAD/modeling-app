@@ -105,13 +105,13 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     <CommandBarHeaderFooter stepBack={stepBack} submitDisabled={!!reviewError}>
       {reviewMessage && (
         <>
-          <p className="px-4 py-2">{reviewMessage}</p>
+          <p className="px-4 py-2 text-sm">{reviewMessage}</p>
           <CommandBarDivider />
         </>
       )}
       {reviewError && (
         <>
-          <p className="px-4 py-2 text-red-500/50 font-bold">{reviewError}</p>
+          <p className="px-4 py-2 text-red-500/50 text-sm">{reviewError}</p>
           <CommandBarDivider />
         </>
       )}
