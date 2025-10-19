@@ -1550,6 +1550,7 @@ impl Node<BinaryExpression> {
         let mut meta = left_value.metadata();
         meta.extend(right_value.metadata());
 
+        // First check if we are doing string concatenation.
         if self.operator == BinaryOperator::Add
             && let (KclValue::String { value: left, .. }, KclValue::String { value: right, .. }) =
                 (&left_value, &right_value)
@@ -1560,6 +1561,7 @@ impl Node<BinaryExpression> {
             });
         }
 
+        // Then check if we have solids.
         if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
                 let args = Args::new_no_args(self.into(), ctx.clone());
@@ -1573,6 +1575,7 @@ impl Node<BinaryExpression> {
                 return Ok(result.into());
             }
         } else if self.operator == BinaryOperator::Sub {
+            // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
                 let args = Args::new_no_args(self.into(), ctx.clone());
                 let result = crate::std::csg::inner_subtract(
@@ -1588,6 +1591,7 @@ impl Node<BinaryExpression> {
         } else if self.operator == BinaryOperator::And
             && let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value)
         {
+            // Check if we have solids.
             let args = Args::new_no_args(self.into(), ctx.clone());
             let result = crate::std::csg::inner_intersect(
                 vec![*left.clone(), *right.clone()],
@@ -1599,6 +1603,7 @@ impl Node<BinaryExpression> {
             return Ok(result.into());
         }
 
+        // Check if we are doing logical operations on booleans.
         if self.operator == BinaryOperator::Or || self.operator == BinaryOperator::And {
             let KclValue::Bool { value: left_value, .. } = left_value else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -1626,19 +1631,25 @@ impl Node<BinaryExpression> {
             return Ok(KclValue::Bool { value: raw_value, meta });
         }
 
+        // Check if we're doing equivalence in sketch mode.
         if self.operator == BinaryOperator::Eq && exec_state.mod_local.sketch_block.is_some() {
             match (&left_value, &right_value) {
+                // Same sketch variables.
                 (KclValue::SketchVar { value: left_value, .. }, KclValue::SketchVar { value: right_value, .. })
                     if left_value.id == right_value.id =>
                 {
                     return Ok(KclValue::Bool { value: true, meta });
                 }
+                // Different sketch variables.
                 (KclValue::SketchVar { .. }, KclValue::SketchVar { .. }) => {
+                    // TODO: sketch-api: Collapse the two sketch variables into
+                    // one constraint variable.
                     return Err(KclError::new_semantic(KclErrorDetails::new(
                         "TODO: Different sketch variables".to_owned(),
                         vec![self.into()],
                     )));
                 }
+                // One sketch variable, one number.
                 (KclValue::SketchVar { value: var, .. }, input_number @ KclValue::Number { .. })
                 | (input_number @ KclValue::Number { .. }, KclValue::SketchVar { value: var, .. }) => {
                     let number_value = normalize_to_solver_unit(
