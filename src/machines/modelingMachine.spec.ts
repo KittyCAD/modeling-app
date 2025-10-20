@@ -1170,8 +1170,8 @@ p3 = [342.51, 216.38],
         }
       )
     })
-    // test: todo
-    describe.only('removing individual constraints with segment overlay events', () => {
+    // test: all tests pass
+    describe('removing individual constraints with segment overlay events', () => {
       const removeIndividualConstraintsCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.removeIndividualConstraintsCases
       )

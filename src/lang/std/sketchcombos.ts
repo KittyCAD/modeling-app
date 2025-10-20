@@ -1790,10 +1790,19 @@ export function getTransformInfos(
 
 export function getRemoveConstraintsTransforms(
   selectionRanges: Selections,
-  ast: Program
+  ast: Program,
+  wasmInstance?: ModuleType
 ): TransformInfo[] | Error {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(ast, codeRef.pathToNode)
+    getNodeFromPath<Expr>(
+      ast,
+      codeRef.pathToNode,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      wasmInstance
+    )
   )
 
   const theTransforms = nodes.map((nodeMeta) => {

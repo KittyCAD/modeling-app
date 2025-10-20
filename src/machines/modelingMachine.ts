@@ -581,7 +581,11 @@ export const modelingMachine = setup({
       return info.enabled
     },
     'Can constrain remove constraints': ({
-      context: { selectionRanges },
+      context: {
+        selectionRanges,
+        kclManager: providedKclManager,
+        wasmInstance,
+      },
       event,
     }) => {
       if (event.type !== 'Constrain remove constraints') return false
@@ -591,7 +595,11 @@ export const modelingMachine = setup({
         : selectionRanges.graphSelections.map(({ codeRef }) => {
             return codeRef.pathToNode
           })
-      const info = removeConstrainingValuesInfo(pathToNodes)
+      const info = removeConstrainingValuesInfo(
+        pathToNodes,
+        providedKclManager,
+        wasmInstance
+      )
       if (err(info)) return false
       return info.enabled
     },
@@ -1771,6 +1779,7 @@ export const modelingMachine = setup({
           data,
           codeManager: providedCodeManager,
           sceneEntitiesManager: providedSceneEntitiesManager,
+          kclManager: providedKclManager,
           wasmInstance,
         },
       }: {
@@ -1781,11 +1790,14 @@ export const modelingMachine = setup({
           | 'codeManager'
           | 'sceneEntitiesManager'
           | 'wasmInstance'
+          | 'kclManager'
         > & { data?: PathToNode }
       }) => {
         const constraint = applyRemoveConstrainingValues({
           selectionRanges,
           pathToNodes: data && [data],
+          providedKclManager,
+          wasmInstance,
         })
         if (trap(constraint)) return
         const { pathToNodeMap } = constraint
@@ -4857,6 +4869,7 @@ export const modelingMachine = setup({
                 codeManager: providedCodeManager,
                 sceneEntitiesManager: providedSceneEntitiesManager,
                 wasmInstance,
+                kclManager: providedKclManager,
               },
               event,
             }) => {
@@ -4870,6 +4883,7 @@ export const modelingMachine = setup({
                 codeManager: providedCodeManager,
                 sceneEntitiesManager: providedSceneEntitiesManager,
                 wasmInstance,
+                kclManager: providedKclManager,
               }
             },
             onDone: {
