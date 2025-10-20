@@ -37,6 +37,7 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
     yz: true,
   },
   planesInitialized: false,
+  sketchSolveToolName: null,
   sketchSolveTool: null,
 }
 
@@ -79,6 +80,7 @@ export function generateModelingMachineDefaultContext() {
     },
     planesInitialized: false,
     sketchSolveTool: null,
+    sketchSolveToolName: null,
   }
   return context
 }

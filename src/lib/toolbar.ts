@@ -1126,7 +1126,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [],
         isActive: (state) =>
           state.matches('sketchSolveMode') &&
-          state.context.sketchSolveTool === 'dimensionTool',
+          state.context.sketchSolveToolName === 'dimensionTool',
       },
       {
         id: 'point',
@@ -1147,7 +1147,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [],
         isActive: (state) =>
           state.matches('sketchSolveMode') &&
-          state.context.sketchSolveTool === 'pointTool',
+          state.context.sketchSolveToolName === 'pointTool',
       },
     ],
   },

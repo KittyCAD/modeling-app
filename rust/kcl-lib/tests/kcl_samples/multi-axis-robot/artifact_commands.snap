@@ -3,8 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands multi-axis-robot.kcl
 ---
 {
-  "public/kcl-samples/multi-axis-robot/globals.kcl": [],
-  "public/kcl-samples/multi-axis-robot/main.kcl": [],
   "public/kcl-samples/multi-axis-robot/robot-arm-base.kcl": [
     {
       "cmdId": "[uuid]",
@@ -5683,19 +5681,5 @@ description: Artifact commands multi-axis-robot.kcl
         "edge_id": "[uuid]"
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

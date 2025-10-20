@@ -29,6 +29,7 @@ test.describe('Point-and-click tests', () => {
 
     await test.step(`Edit first extrude via feature tree`, async () => {
       await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+      await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
@@ -54,6 +55,7 @@ test.describe('Point-and-click tests', () => {
 
     await test.step(`Edit second extrude via feature tree`, async () => {
       await (await toolbar.getFeatureTreeOperation('Extrude', 1)).dblclick()
+      await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
@@ -81,6 +83,7 @@ test.describe('Point-and-click tests', () => {
 
     await test.step(`Edit third extrude via feature tree`, async () => {
       await (await toolbar.getFeatureTreeOperation('Extrude', 2)).dblclick()
+      await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
@@ -128,6 +131,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
       await toolbar.extrudeButton.click()
       await editor.selectText('circle')
       await cmdBar.progressCmdBar()
+      await cmdBar.clickOptionalArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
@@ -181,6 +185,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
 
     await test.step(`Edit first extrude via feature tree`, async () => {
       await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+      await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
@@ -2545,6 +2550,115 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       await editor.expectEditor.toContain(
         newCodeToFind.replace('angle = 360deg', 'angle = angle001')
       )
+    })
+  })
+
+  test(`Translate point-and-click with segment-to-body coercion`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch = startSketchOn(XY)
+profile = startProfile(sketch, at = [-5, -10])
+  |> xLine(length = 10)
+  |> yLine(length = 20)
+  |> xLine(length = -10)
+  |> close()
+box = extrude(profile, length = 30)`
+    const expectedTranslateCode = `translate(box, x = 50)`
+    const segmentToSelect = `yLine(length = 20)`
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Select an edge first (before opening translate)', async () => {
+      await editor.selectText(segmentToSelect)
+      await expect(toolbar.selectionStatus).toContainText('1 segment')
+    })
+
+    await test.step('Open translate via context menu and verify coercion', async () => {
+      await toolbar.translateButton.click()
+
+      // When translate opens with a segment selected, it should coerce to the parent body
+      // The segment belongs to the 'profile' path, which is extruded into 'box'
+      // So the selection should coerce from segment to path (body)
+      await cmdBar.expectState({
+        commandName: 'Translate',
+        currentArgKey: 'objects',
+        currentArgValue: '',
+        headerArguments: {
+          Objects: '',
+        },
+        highlightedHeaderArg: 'objects',
+        stage: 'arguments',
+      })
+
+      await expect(page.getByText('1 path selected')).toBeVisible()
+      await expect(toolbar.selectionStatus).toContainText('1 path')
+    })
+
+    await test.step('Complete command flow', async () => {
+      await test.step('Progress to review since object is already selected', async () => {
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Objects: '1 path',
+          },
+          commandName: 'Translate',
+        })
+      })
+
+      await test.step('Add x translation', async () => {
+        await cmdBar.clickOptionalArgument('x')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'x',
+          currentArgValue: '0',
+          headerArguments: {
+            Objects: '1 path',
+            X: '',
+          },
+          highlightedHeaderArg: 'x',
+          commandName: 'Translate',
+        })
+        await page.keyboard.insertText('50')
+        await cmdBar.progressCmdBar()
+      })
+
+      await test.step('Review and submit', async () => {
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Objects: '1 path',
+            X: '50',
+          },
+          commandName: 'Translate',
+        })
+        await cmdBar.submit()
+        await scene.settled(cmdBar)
+      })
+    })
+
+    await test.step('Verify code was added correctly', async () => {
+      await toolbar.closePane('feature-tree')
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(expectedTranslateCode)
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: [expectedTranslateCode],
+        highlightedCode: '',
+      })
     })
   })
 

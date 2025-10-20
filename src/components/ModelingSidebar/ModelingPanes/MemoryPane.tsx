@@ -106,6 +106,10 @@ export const processMemory = (
       processedMemory[key] = '__function__'
     } else if (val.type === 'Number') {
       processedMemory[key] = humanDisplayNumber(val.value, val.ty, wasmInstance)
+    } else if (val.type === 'SketchVar') {
+      const sketchVar = val.value
+      processedMemory[key] =
+        `var ${humanDisplayNumber(sketchVar.initialValue, sketchVar.ty, wasmInstance)}`
     } else {
       processedMemory[key] = val.value
     }

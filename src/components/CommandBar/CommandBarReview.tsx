@@ -5,6 +5,7 @@ import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderF
 import { CustomIcon } from '@src/components/CustomIcon'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { useMemo } from 'react'
+import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   const commandBarState = useCommandBarState()
@@ -64,24 +65,17 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     if (!selectedCommand?.args) return undefined
     const s = { ...selectedCommand.args }
     for (const [name, arg] of Object.entries(s)) {
-      const value =
-        (typeof argumentsToSubmit[name] === 'function'
-          ? argumentsToSubmit[name](commandBarState.context)
-          : argumentsToSubmit[name]) || ''
-      const isHidden =
-        typeof arg.hidden === 'function'
-          ? arg.hidden(commandBarState.context)
-          : arg.hidden
-      const isRequired =
-        typeof arg.required === 'function'
-          ? arg.required(commandBarState.context)
-          : arg.required
+      const { isHidden, isRequired, value } = evaluateCommandBarArg(
+        name,
+        arg,
+        commandBarState.context
+      )
       if (isHidden || isRequired || value) {
         delete s[name]
       }
     }
     return s
-  }, [selectedCommand, argumentsToSubmit, commandBarState.context])
+  }, [selectedCommand, commandBarState.context])
   return (
     <CommandBarHeaderFooter stepBack={stepBack}>
       {selectedCommand?.reviewMessage && (
@@ -97,7 +91,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
       {Object.entries(availableOptionalArgs || {}).length > 0 && (
         <>
           <div className="px-4 flex flex-wrap gap-2 items-baseline">
-            <span className="text-sm mr-4">Optional</span>
+            <span className="text-sm mr-4">Arguments</span>
             {Object.entries(availableOptionalArgs || {}).map(
               ([argName, arg]) => {
                 return (

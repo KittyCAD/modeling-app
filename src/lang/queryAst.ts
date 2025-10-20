@@ -1188,6 +1188,17 @@ export function retrieveSelectionsFromOpArg(
       continue
     }
 
+    const isArtifactFromImportedModule = codeRefs.some(
+      (c) => c.pathToNode.length === 0
+    )
+    if (isArtifactFromImportedModule) {
+      // TODO: retrieve module import alias instead of throwing here
+      // https://github.com/KittyCAD/modeling-app/issues/8463
+      return new Error(
+        "The selected artifact is from an imported module, editing isn't supported yet. Please delete the operation and recreate."
+      )
+    }
+
     graphSelections.push({
       artifact,
       codeRef: codeRefs[0],

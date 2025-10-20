@@ -2586,21 +2586,5 @@ description: Artifact commands pillow-block-bearing.kcl
         "edge_id": "[uuid]"
       }
     }
-  ],
-  "public/kcl-samples/pillow-block-bearing/main.kcl": [],
-  "public/kcl-samples/pillow-block-bearing/parameters.kcl": [],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

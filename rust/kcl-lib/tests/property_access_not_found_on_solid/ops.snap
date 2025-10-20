@@ -137,9 +137,6 @@ description: Operations executed property_access_not_found_on_solid.kcl
       "type": "GroupEnd"
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -245,14 +242,5 @@ description: Operations executed property_access_not_found_on_solid.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

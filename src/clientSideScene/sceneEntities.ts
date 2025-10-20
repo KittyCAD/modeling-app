@@ -1322,11 +1322,20 @@ export class SceneEntities {
           return
         }
 
-        await updateModelingState(modifiedAst, EXECUTION_TYPE_MOCK, {
-          kclManager: this.kclManager,
-          editorManager: this.editorManager,
-          codeManager: this.codeManager,
-        })
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_MOCK,
+          {
+            kclManager: this.kclManager,
+            editorManager: this.editorManager,
+            codeManager: this.codeManager,
+            rustContext: this.rustContext,
+          },
+          {
+            // TODO: understand why this is needed
+            skipErrorsOnMockExecution: true,
+          }
+        )
 
         if (intersectsProfileStart) {
           this.sceneInfra.modelingSend({ type: 'Close sketch' })
@@ -1559,6 +1568,7 @@ export class SceneEntities {
           kclManager: this.kclManager,
           editorManager: this.editorManager,
           codeManager: this.codeManager,
+          rustContext: this.rustContext,
         })
         this.sceneInfra.modelingSend({ type: 'Finish rectangle' })
       },
@@ -1773,6 +1783,7 @@ export class SceneEntities {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
             codeManager: this.codeManager,
+            rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish center rectangle' })
         }
@@ -1960,6 +1971,7 @@ export class SceneEntities {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
             codeManager: this.codeManager,
+            rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish circle three point' })
         }
@@ -2182,6 +2194,7 @@ export class SceneEntities {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
             codeManager: this.codeManager,
+            rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish arc' })
         }
@@ -2425,6 +2438,7 @@ export class SceneEntities {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
             codeManager: this.codeManager,
+            rustContext: this.rustContext,
           })
           if (intersectsProfileStart) {
             this.sceneInfra.modelingSend({ type: 'Close sketch' })
@@ -2625,6 +2639,7 @@ export class SceneEntities {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
             codeManager: this.codeManager,
+            rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish circle' })
         }

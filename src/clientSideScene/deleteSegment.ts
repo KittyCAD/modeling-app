@@ -33,12 +33,12 @@ import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
-export async function deleteSegmentOrProfile({
-  pathToNode,
+export async function deleteSegmentsOrProfiles({
+  pathToNodes,
   sketchDetails,
   dependencies,
 }: {
-  pathToNode: PathToNode
+  pathToNodes: PathToNode[]
   sketchDetails: SketchDetails | null
   dependencies: {
     kclManager: KclManager
@@ -50,7 +50,9 @@ export async function deleteSegmentOrProfile({
   }
 }) {
   let modifiedAst: Node<Program> | Error = dependencies.kclManager.ast
-  const dependentRanges = findUsesOfTagInPipe(modifiedAst, pathToNode)
+  const dependentRanges = pathToNodes.flatMap((pathToNode) =>
+    findUsesOfTagInPipe(dependencies.kclManager.ast, pathToNode)
+  )
 
   const shouldContinueSegDelete = dependentRanges.length
     ? await confirmModal({
@@ -59,19 +61,23 @@ export async function deleteSegmentOrProfile({
       })
     : true
 
-  if (!shouldContinueSegDelete) return
+  if (!shouldContinueSegDelete) {
+    return
+  }
 
   modifiedAst = deleteSegmentOrProfileFromPipeExpression(
     dependentRanges,
     modifiedAst,
     dependencies.kclManager.variables,
     dependencies.codeManager.code,
-    pathToNode,
+    pathToNodes,
     getConstraintInfoKw,
     removeSingleConstraint,
     transformAstSketchLines
   )
-  if (err(modifiedAst)) return Promise.reject(modifiedAst)
+  if (err(modifiedAst)) {
+    return Promise.reject(modifiedAst)
+  }
 
   const newCode = recast(modifiedAst, dependencies.wasmInstance)
   const pResult = parse(newCode, dependencies.wasmInstance)

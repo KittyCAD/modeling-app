@@ -1,3 +1,4 @@
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
@@ -129,14 +130,32 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // 2. Convert the length argument from a string to a KCL expression
-  const length = await stringToKclExpression(
-    codeManager.code.slice(
-      operation.labeledArgs?.['length']?.sourceRange[0],
-      operation.labeledArgs?.['length']?.sourceRange[1]
+  let length: KclCommandValue | undefined
+  if ('length' in operation.labeledArgs && operation.labeledArgs.length) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs?.['length']?.sourceRange[0],
+        operation.labeledArgs?.['length']?.sourceRange[1]
+      )
     )
-  )
-  if (err(length) || 'errors' in length) {
-    return { reason: "Couldn't retrieve length argument" }
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve length argument" }
+    }
+
+    length = result
+  }
+
+  let to: Selections | undefined
+  if ('to' in operation.labeledArgs && operation.labeledArgs.to) {
+    const result = retrieveNonDefaultPlaneSelectionFromOpArg(
+      operation.labeledArgs.to,
+      kclManager.artifactGraph
+    )
+    if (err(result)) {
+      return { reason: result.message }
+    }
+
+    to = result
   }
 
   // symmetric argument from a string to boolean
@@ -258,6 +277,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   const argDefaultValues: ModelingCommandSchema['Extrude'] = {
     sketches,
     length,
+    to,
     symmetric,
     bidirectionalLength,
     tagStart,
@@ -1493,7 +1513,8 @@ export function getOperationVariableName(
   }
   if (
     op.type !== 'StdLibCall' &&
-    !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall')
+    !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall') &&
+    !(op.type === 'GroupBegin' && op.group.type === 'ModuleInstance')
   ) {
     return undefined
   }
@@ -1507,6 +1528,27 @@ export function getOperationVariableName(
   if (pathToNode.length === 0) {
     return undefined
   }
+
+  // If this is a module instance, the variable name is the import alias.
+  if (op.type === 'GroupBegin' && op.group.type === 'ModuleInstance') {
+    const statement = getNodeFromPath<ImportStatement>(
+      program,
+      pathToNode,
+      'ImportStatement'
+    )
+    if (
+      err(statement) ||
+      statement.node.type !== 'ImportStatement' ||
+      statement.node.selector.type !== 'None' ||
+      !statement.node.selector.alias
+    ) {
+      return undefined
+    }
+
+    return statement.node.selector.alias.name
+  }
+
+  // Otherwise, this is a StdLibCall or a function call and we need to find the node then the variable
   const call = getNodeFromPath<CallExpressionKw>(
     program,
     pathToNode,
@@ -1911,7 +1953,7 @@ async function prepareToEditRotate({ operation }: EnterEditFlowProps) {
     kclManager.artifactGraph
   )
   if (err(objects)) {
-    return { reason: "Couldn't retrieve objects" }
+    return { reason: objects.message }
   }
 
   // 2. Convert the x y z arguments from a string to a KCL expression

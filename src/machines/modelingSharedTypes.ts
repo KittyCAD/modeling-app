@@ -256,6 +256,7 @@ export interface ModelingMachineContext {
   wasmInstance?: ModuleType
   kclEditorMachine?: ActorRefFrom<typeof kclEditorMachine>
   rustContext?: RustContext
+  sketchSolveToolName: EquipTool | null
 }
 
 export type PlaneVisibilityMap = {

@@ -419,74 +419,6 @@ description: Operations executed food-service-spatula.kcl
       "sourceRange": []
     },
     {
-      "type": "StdLibCall",
-      "name": "units::toDegrees",
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": -0.0,
-          "ty": {
-            "radians": null,
-            "type": "Known",
-            "type": "Angle"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 10
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "IfExpressionElse"
-          },
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "IfExpressionThen"
-          },
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "BinaryLeft"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "VariableDeclaration",
       "name": "angle",
       "value": {
@@ -755,74 +687,6 @@ description: Operations executed food-service-spatula.kcl
       "sourceRange": []
     },
     {
-      "type": "StdLibCall",
-      "name": "units::toDegrees",
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": -0.033320995878247196,
-          "ty": {
-            "radians": null,
-            "type": "Known",
-            "type": "Angle"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 10
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "IfExpressionElse"
-          },
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "IfExpressionThen"
-          },
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "BinaryLeft"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "VariableDeclaration",
       "name": "angle",
       "value": {
@@ -1085,74 +949,6 @@ description: Operations executed food-service-spatula.kcl
           },
           {
             "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "units::toDegrees",
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.033320995878247196,
-          "ty": {
-            "radians": null,
-            "type": "Known",
-            "type": "Angle"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 10
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "FunctionExpressionBody"
-          },
-          {
-            "type": "FunctionExpressionBodyItem",
-            "index": 0
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "IfExpressionElse"
-          },
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "IfExpressionThen"
-          },
-          {
-            "type": "ProgramBodyItem",
-            "index": 0
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "BinaryLeft"
           }
         ]
       },
@@ -2137,9 +1933,6 @@ description: Operations executed food-service-spatula.kcl
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -2245,14 +2038,5 @@ description: Operations executed food-service-spatula.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

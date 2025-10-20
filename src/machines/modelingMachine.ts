@@ -23,7 +23,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
-import { deleteSegmentOrProfile } from '@src/clientSideScene/deleteSegment'
+import { deleteSegmentsOrProfiles } from '@src/clientSideScene/deleteSegment'
 import {
   orthoScale,
   quaternionFromUpNForward,
@@ -168,6 +168,7 @@ import type { KclManager } from '@src/lang/KclSingleton'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type RustContext from '@src/lib/rustContext'
 
 export type ModelingMachineEvent =
   | {
@@ -315,8 +316,8 @@ export type ModelingMachineEvent =
       type: 'Center camera on selection'
     }
   | {
-      type: 'Delete segment'
-      data: PathToNode
+      type: 'Delete segments'
+      data: PathToNode[]
     }
   | {
       type: 'code edit during sketch'
@@ -1249,9 +1250,9 @@ export const modelingMachine = setup({
     /** TODO: this action is hiding unawaited asynchronous code */
     'set selection filter to defaults': ({ context }) => {
       const theKclManager = context.kclManager ? context.kclManager : kclManager
-      theKclManager.defaultSelectionFilter()
+      theKclManager.setSelectionFilterToDefault()
     },
-    'Delete segment': ({
+    'Delete segments': ({
       context: {
         sketchDetails,
         codeManager: providedCodeManager,
@@ -1263,7 +1264,7 @@ export const modelingMachine = setup({
       },
       event,
     }) => {
-      if (event.type !== 'Delete segment') return
+      if (event.type !== 'Delete segments') return
       if (!sketchDetails || !event.data) return
       const theKclManager = providedKclManager ? providedKclManager : kclManager
       const theCodeManager = providedCodeManager
@@ -1276,8 +1277,9 @@ export const modelingMachine = setup({
         ? providedSceneEntitiesManager
         : sceneEntitiesManager
       const theSceneInfra = providedSceneInfra ? providedSceneInfra : sceneInfra
-      deleteSegmentOrProfile({
-        pathToNode: event.data,
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      deleteSegmentsOrProfiles({
+        pathToNodes: event.data,
         sketchDetails,
         dependencies: {
           kclManager: theKclManager,
@@ -1295,8 +1297,8 @@ export const modelingMachine = setup({
             wasmInstance
           )
         })
-        .catch((error) => {
-          console.error('unable to delete segement or profile', error)
+        .catch((e) => {
+          console.warn('error', e)
         })
     },
     'Set context': assign({
@@ -1601,6 +1603,13 @@ export const modelingMachine = setup({
           const codeMirrorSelection = theEditorManager.createEditorSelection(
             setSelections.selection
           )
+
+          // This turns the selection into blue, needed when selecting with ctrl+A
+          const { updateSceneObjectColors } = handleSelectionBatch({
+            selections: setSelections.selection,
+          })
+          updateSceneObjectColors()
+
           theKclEditorMachine.send({
             type: 'setLastSelectionEvent',
             data: {
@@ -1762,11 +1771,11 @@ export const modelingMachine = setup({
             })
           })
           .catch(reportRejection)
-
         theSceneEntitiesManager.tearDownSketch({ removeAxis: false })
         theSceneEntitiesManager.removeSketchGrid()
         theSceneInfra.camControls.syncDirection = 'engineToClient'
         theSceneEntitiesManager.resetOverlays()
+        theSceneInfra.stop()
       }
     ),
     /* Below are all the do-constrain sketch actors,
@@ -2869,6 +2878,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -2877,9 +2887,10 @@ export const modelingMachine = setup({
         }
         const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const { ast } = theKclManager
+        const { ast, artifactGraph } = theKclManager
         const astResult = addExtrude({
           ast,
+          artifactGraph,
           ...input.data,
         })
         if (err(astResult)) {
@@ -2893,6 +2904,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -2900,6 +2914,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2917,6 +2932,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -2941,6 +2957,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -2948,6 +2967,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [pathToNode],
@@ -2965,6 +2985,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -2986,6 +3007,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -2993,6 +3017,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [pathToNode],
@@ -3010,6 +3035,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -3034,6 +3060,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3041,6 +3070,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [pathToNode],
@@ -3058,6 +3088,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -3084,6 +3115,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3091,6 +3125,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [pathToNode],
@@ -3108,6 +3143,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -3133,6 +3169,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3140,6 +3179,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [pathToNode],
@@ -3157,6 +3197,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -3182,6 +3223,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3189,6 +3233,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [pathToNode],
@@ -3206,6 +3251,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
               engineCommandManager?: ConnectionManager
             }
           | undefined
@@ -3293,7 +3339,9 @@ export const modelingMachine = setup({
           modifiedAst = filletResult.modifiedAst
           focusPath = filletResult.pathToEdgeTreatmentNode
         }
-
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3301,6 +3349,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: focusPath,
@@ -3318,6 +3367,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
               engineCommandManager?: ConnectionManager
             }
           | undefined
@@ -3405,6 +3455,9 @@ export const modelingMachine = setup({
           modifiedAst = chamferResult.modifiedAst
           focusPath = chamferResult.pathToEdgeTreatmentNode
         }
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
 
         await updateModelingState(
           modifiedAst,
@@ -3413,6 +3466,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: focusPath,
@@ -3458,6 +3512,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -3481,6 +3536,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3488,6 +3546,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3505,6 +3564,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -3529,7 +3589,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
-
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3537,6 +3599,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3554,6 +3617,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -3561,7 +3625,9 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
         const theKclManager = input.kclManager ? input.kclManager : kclManager
-
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         const ast = theKclManager.ast
         const artifactGraph = kclManager.artifactGraph
         const result = addRotate({
@@ -3587,6 +3653,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3604,6 +3671,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -3629,6 +3697,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3636,6 +3707,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3653,6 +3725,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -3676,6 +3749,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3683,6 +3759,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3714,6 +3791,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -3738,6 +3816,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3745,6 +3826,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3762,6 +3844,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -3786,6 +3869,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3793,6 +3879,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3810,6 +3897,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -3834,6 +3922,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3841,6 +3932,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3859,6 +3951,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -3883,6 +3976,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3890,6 +3986,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -3908,6 +4005,7 @@ export const modelingMachine = setup({
               codeManager?: CodeManager
               kclManager?: KclManager
               editorManager?: EditorManager
+              rustContext?: RustContext
             }
           | undefined
       }) => {
@@ -3932,6 +4030,9 @@ export const modelingMachine = setup({
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           result.modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3939,6 +4040,7 @@ export const modelingMachine = setup({
             kclManager: theKclManager,
             editorManager: theEditorManager,
             codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [result.pathToNode],
@@ -4051,10 +4153,20 @@ export const modelingMachine = setup({
         'Enter sketch': [
           {
             target: 'animating to existing sketch',
+            actions: [
+              () => {
+                sceneInfra.animate()
+              },
+            ],
             guard: 'Selection is on face',
           },
           {
             target: 'Sketch no face',
+            actions: [
+              () => {
+                sceneInfra.animate()
+              },
+            ],
             guard: 'no kcl errors',
           },
         ],
@@ -5526,10 +5638,9 @@ export const modelingMachine = setup({
 
       on: {
         Cancel: '.undo startSketchOn',
-
-        'Delete segment': {
+        'Delete segments': {
           reenter: false,
-          actions: ['Delete segment', 'reset selections'],
+          actions: ['Delete segments', 'reset selections'],
         },
         'code edit during sketch': '.clean slate',
         'Constrain with named value': {
@@ -6129,6 +6240,9 @@ export const modelingMachine = setup({
         'reset sketch metadata',
         'enable copilot',
         'enter modeling mode',
+        () => {
+          sceneInfra.stop()
+        },
       ],
     },
 
@@ -6172,7 +6286,7 @@ export const modelingMachine = setup({
         console.log('sketch solve tool changed', event)
         if (event.type !== 'sketch solve tool changed') return {}
         return {
-          sketchSolveTool: event.data.tool,
+          sketchSolveToolName: event.data.tool,
         }
       }),
     },

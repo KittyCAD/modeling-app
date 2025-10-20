@@ -183,7 +183,7 @@ profile002 = rectangle(
 
   describe('Testing addExtrude', () => {
     it('should add a basic extrude call', async () => {
-      const { ast, sketches } = await getAstAndSketchSelections(
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
         instanceInThisFile,
         kclManagerInThisFile
@@ -193,7 +193,7 @@ profile002 = rectangle(
         instanceInThisFile,
         rustContextInThisFile
       )
-      const result = addExtrude({ ast, sketches, length })
+      const result = addExtrude({ ast, sketches, length, artifactGraph })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleProfileCode)
@@ -202,17 +202,18 @@ profile002 = rectangle(
     })
 
     it('should add a basic multi-profile extrude call', async () => {
-      const { ast, sketches } = await getAstAndSketchSelectionsEngineless(
-        circleAndRectProfilesCode,
-        instanceInThisFile,
-        rustContextInThisFile
-      )
+      const { ast, sketches, artifactGraph } =
+        await getAstAndSketchSelectionsEngineless(
+          circleAndRectProfilesCode,
+          instanceInThisFile,
+          rustContextInThisFile
+        )
       const length = await getKclCommandValue(
         '1',
         instanceInThisFile,
         rustContextInThisFile
       )
-      const result = addExtrude({ ast, sketches, length })
+      const result = addExtrude({ ast, sketches, length, artifactGraph })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleProfileCode)
@@ -223,7 +224,7 @@ profile002 = rectangle(
     })
 
     it('should add an extrude call with symmetric true', async () => {
-      const { ast, sketches } = await getAstAndSketchSelections(
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
         instanceInThisFile,
         kclManagerInThisFile
@@ -233,7 +234,13 @@ profile002 = rectangle(
         instanceInThisFile,
         rustContextInThisFile
       )
-      const result = addExtrude({ ast, sketches, length, symmetric: true })
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        symmetric: true,
+        artifactGraph,
+      })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleProfileCode)
@@ -244,7 +251,7 @@ profile002 = rectangle(
     })
 
     it('should add an extrude call with bidirectional length and twist angle', async () => {
-      const { ast, sketches } = await getAstAndSketchSelections(
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
         instanceInThisFile,
         kclManagerInThisFile
@@ -270,6 +277,7 @@ profile002 = rectangle(
         length,
         bidirectionalLength,
         twistAngle,
+        artifactGraph,
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -286,11 +294,12 @@ profile002 = rectangle(
     it('should edit an extrude call from symmetric true to false and new length', async () => {
       const extrudeCode = `${circleProfileCode}
 extrude001 = extrude(profile001, length = 1, symmetric = true)`
-      const { ast, sketches } = await getAstAndSketchSelectionsEngineless(
-        extrudeCode,
-        instanceInThisFile,
-        rustContextInThisFile
-      )
+      const { ast, sketches, artifactGraph } =
+        await getAstAndSketchSelectionsEngineless(
+          extrudeCode,
+          instanceInThisFile,
+          rustContextInThisFile
+        )
       const length = await getKclCommandValue(
         '2',
         instanceInThisFile,
@@ -304,6 +313,7 @@ extrude001 = extrude(profile001, length = 1, symmetric = true)`
         length,
         symmetric,
         nodeToEdit,
+        artifactGraph,
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
@@ -313,7 +323,7 @@ extrude001 = extrude(profile001, length = 2)`)
     })
 
     it('should add an extrude call with method NEW', async () => {
-      const { ast, sketches } = await getAstAndSketchSelections(
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
         circleProfileCode,
         instanceInThisFile,
         kclManagerInThisFile
@@ -323,7 +333,13 @@ extrude001 = extrude(profile001, length = 2)`)
         instanceInThisFile,
         rustContextInThisFile
       )
-      const result = addExtrude({ ast, sketches, length, method: 'NEW' })
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        method: 'NEW',
+        artifactGraph,
+      })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleProfileCode)

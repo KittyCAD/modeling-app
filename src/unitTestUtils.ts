@@ -96,7 +96,7 @@ export async function buildTheWorldAndConnectToEngine() {
   await new Promise((resolve) => {
     engineCommandManager
       .start({
-        token: env().VITE_KITTYCAD_API_TOKEN || '',
+        token: env().VITE_ZOO_API_TOKEN || '',
         width: 256,
         height: 256,
         setStreamIsReady: () => {
