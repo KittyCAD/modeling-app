@@ -179,7 +179,8 @@ export function getNodeFromPath<T>(
  */
 export function getNodeFromPathCurry(
   node: Program,
-  path: PathToNode
+  path: PathToNode,
+  wasmInstance?: ModuleType
 ): <T>(
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly?: boolean
@@ -190,7 +191,15 @@ export function getNodeFromPathCurry(
     }
   | Error {
   return <T>(stopAt?: SyntaxType | SyntaxType[], returnEarly = false) => {
-    const _node1 = getNodeFromPath<T>(node, path, stopAt, returnEarly)
+    const _node1 = getNodeFromPath<T>(
+      node,
+      path,
+      stopAt,
+      returnEarly,
+      undefined,
+      undefined,
+      wasmInstance
+    )
     if (err(_node1)) return _node1
     const { node: _node, shallowPath } = _node1
     return {

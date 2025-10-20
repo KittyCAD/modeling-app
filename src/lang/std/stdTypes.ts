@@ -262,6 +262,7 @@ export type CreateStdLibSketchCallExpr = (args: {
   tag?: Node<Expr>
   forceValueUsedInTransform?: BinaryPart
   referencedSegment?: Path
+  wasmInstance?: ModuleType
 }) => CreatedSketchExprResult | Error
 
 export type TransformInfo = {

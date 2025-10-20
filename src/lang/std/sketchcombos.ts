@@ -444,11 +444,15 @@ const getMinAndSegAngVals = (
 const getSignedLeg = (arg: Literal, legLenVal: BinaryPart) =>
   forceNum(arg) < 0 ? createUnaryExpression(legLenVal) : legLenVal
 
-const getLegAng = (ang: number, legAngleVal: BinaryPart) => {
+const getLegAng = (
+  ang: number,
+  legAngleVal: BinaryPart,
+  wasmInstance?: ModuleType
+) => {
   const normalisedAngle = ((ang % 360) + 360) % 360 // between 0 and 360
   const truncatedTo90 = Math.floor(normalisedAngle / 90) * 90
   const binExp = createBinaryExpressionWithUnary([
-    createLiteral(truncatedTo90, 'Deg'),
+    createLiteral(truncatedTo90, 'Deg', wasmInstance),
     legAngleVal,
   ])
   return truncatedTo90 === 0 ? legAngleVal : binExp
@@ -1016,7 +1020,13 @@ const transformMap: TransformMap = {
     xRelative: {
       equalLength: {
         tooltip: 'angledLineOfXLength',
-        createNode: ({ referenceSegName, inputs, tag, rawArgs: args }) => {
+        createNode: ({
+          referenceSegName,
+          inputs,
+          tag,
+          rawArgs: args,
+          wasmInstance,
+        }) => {
           const [minVal, legAngle] = getMinAndSegAngVals(
             referenceSegName,
             getInputOfType(inputs, 'xRelative').expr
@@ -1025,7 +1035,7 @@ const transformMap: TransformMap = {
           if (err(val)) return val
           return createCallWrapper(
             'angledLineOfXLength',
-            [getLegAng(val, legAngle), minVal],
+            [getLegAng(val, legAngle, wasmInstance), minVal],
             tag
           )
         },
@@ -1069,7 +1079,13 @@ const transformMap: TransformMap = {
     yRelative: {
       equalLength: {
         tooltip: 'angledLineOfYLength',
-        createNode: ({ referenceSegName, inputs, tag, rawArgs: args }) => {
+        createNode: ({
+          referenceSegName,
+          inputs,
+          tag,
+          rawArgs: args,
+          wasmInstance,
+        }) => {
           const [minVal, legAngle] = getMinAndSegAngVals(
             referenceSegName,
             inputs[1].expr,
@@ -1079,7 +1095,7 @@ const transformMap: TransformMap = {
           if (err(val)) return val
           return createCallWrapper(
             'angledLineOfXLength',
-            [getLegAng(val, legAngle), minVal],
+            [getLegAng(val, legAngle, wasmInstance), minVal],
             tag
           )
         },
@@ -1760,10 +1776,19 @@ export function getConstraintType(
 export function getTransformInfos(
   selectionRanges: Selections,
   ast: Program,
-  constraintType: ConstraintType
+  constraintType: ConstraintType,
+  wasmInstance?: ModuleType
 ): TransformInfo[] {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(ast, codeRef.pathToNode, ['CallExpressionKw'])
+    getNodeFromPath<Expr>(
+      ast,
+      codeRef.pathToNode,
+      ['CallExpressionKw'],
+      undefined,
+      undefined,
+      undefined,
+      wasmInstance
+    )
   )
 
   try {
@@ -1830,6 +1855,7 @@ export function transformSecondarySketchLinesTagFirst({
   memVars,
   forceSegName,
   forceValueUsedInTransform,
+  wasmInstance,
 }: {
   ast: Node<Program>
   selectionRanges: Selections
@@ -1837,6 +1863,7 @@ export function transformSecondarySketchLinesTagFirst({
   memVars: VariableMap
   forceSegName?: string
   forceValueUsedInTransform?: BinaryPart
+  wasmInstance?: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -1873,6 +1900,7 @@ export function transformSecondarySketchLinesTagFirst({
     memVars,
     referenceSegName: tag,
     forceValueUsedInTransform,
+    wasmInstance,
   })
   if (err(result)) return result
 
@@ -1936,7 +1964,7 @@ export function transformAstSketchLines({
 
     if (!callBack || !transformTo) return new Error('no callback helper')
 
-    const getNode = getNodeFromPathCurry(node, _pathToNode)
+    const getNode = getNodeFromPathCurry(node, _pathToNode, wasmInstance)
 
     // Find `call` which could either be a positional-arg or keyword-arg call.
     const call = getNode<Node<CallExpressionKw>>('CallExpressionKw')
@@ -2108,6 +2136,7 @@ export function transformAstSketchLines({
           rawArgs,
           forceValueUsedInTransform,
           referencedSegment,
+          wasmInstance,
         }),
       wasmInstance,
     })
