@@ -434,6 +434,7 @@ function PaneButton({
     <Switch
       key={pane.id}
       checked={parentActiveIndices.includes(childIndex)}
+      aria-pressed={parentActiveIndices.includes(childIndex)}
       onChange={(checked) => onChange(checked)}
       className={`ui-checked:border-primary dark:ui-checked:border-primary hover:b-3 border-transparent dark:border-transparent p-2 m-0 rounded-none border-0 hover:bg-2 ${resolvedAreaType?.cssClassOverrides?.button || ''}`}
       style={{ [buttonBorderWidthProp]: '2px' }}
