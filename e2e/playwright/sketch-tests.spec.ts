@@ -2072,7 +2072,6 @@ profile001 = startProfile(sketch001, at = [-102.72, 237.44])
     homePage,
     scene,
     toolbar,
-    cmdBar,
     page,
   }) => {
     const u = await getUtils(page)
@@ -2112,7 +2111,6 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
     await scene.connectionEstablished()
 
     await u.closeDebugPanel()
-
 
     ///await page.waitForTimeout(1000)
 
