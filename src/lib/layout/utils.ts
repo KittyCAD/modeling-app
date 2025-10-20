@@ -13,17 +13,13 @@ import { capitaliseFC, throttle } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
 import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
 import {
-  DefaultLayoutPaneID,
   DefaultLayoutToolbarID,
-  debugPaneConfig,
   defaultLayoutConfig,
   isDefaultLayoutPaneID,
 } from '@src/lib/layout/configs/default'
 import { isErr } from '@src/lib/trap'
 import { parseLayoutFromJsonString } from '@src/lib/layout/parse'
-import { useEffect } from 'react'
 import { LAYOUT_PERSIST_PREFIX, LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
 
 // Attempt to load a persisted layout
 const defaultLayoutLoadResult = loadLayout('default')
