@@ -1,25 +1,18 @@
 import { Popover } from '@headlessui/react'
 import toast from 'react-hot-toast'
 
-import { DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES } from '@src/lib/constants'
+import { DEFAULT_EXPERIMENTAL_FEATURES } from '@src/lib/constants'
 import { kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
-import { useEffect, useState } from 'react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { warningLevels } from '@src/lib/settings/settingsTypes'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import { setExperimentalFeatures } from '@src/lib/kclHelpers'
 
 export function ExperimentalFeaturesMenu() {
-  const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
-
   const currentLevel: WarningLevel =
-    fileSettings.experimentalFeatures ?? DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES
-
-  useEffect(() => {
-    setFileSettings(kclManager.fileSettings)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.fileSettings])
+    kclManager.fileSettings.experimentalFeatures ??
+    DEFAULT_EXPERIMENTAL_FEATURES
 
   return (
     currentLevel.type !== 'Deny' && (
@@ -66,9 +59,7 @@ export function ExperimentalFeaturesMenu() {
                       }}
                     >
                       <span className="flex-1">{level.type}</span>
-                      {level.type ===
-                        (fileSettings.experimentalFeatures?.type ??
-                          DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES.type) && (
+                      {level.type === currentLevel.type && (
                         <span className="text-chalkboard-60">current</span>
                       )}
                     </button>

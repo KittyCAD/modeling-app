@@ -12,7 +12,7 @@ import {
 } from '@src/lang/wasm'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
-  DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES,
+  DEFAULT_EXPERIMENTAL_FEATURES,
   DEFAULT_DEFAULT_LENGTH_UNIT,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
@@ -113,7 +113,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           inputType: 'options',
           defaultValue:
             kclManager.fileSettings.experimentalFeatures?.type ||
-            DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES.type,
+            DEFAULT_EXPERIMENTAL_FEATURES.type,
           options: () =>
             warningLevels.map((l) => {
               return {
@@ -121,7 +121,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
                 value: l.type,
                 isCurrent: kclManager.fileSettings.experimentalFeatures
                   ? l.type === kclManager.fileSettings.experimentalFeatures.type
-                  : l.type === DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES.type,
+                  : l.type === DEFAULT_EXPERIMENTAL_FEATURES.type,
               }
             }),
         },

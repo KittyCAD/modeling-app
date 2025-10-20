@@ -85,11 +85,19 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
               ? selectedCommand.reviewMessage(commandBarState.context)
               : selectedCommand.reviewMessage}
           </p>
-          {selectedCommand.status === 'experimental' && (
-            <p className="px-4 py-2 text-sm">
-              Warning: this command is experimental.
-            </p>
-          )}
+          <CommandBarDivider />
+        </>
+      )}
+      {selectedCommand?.status === 'experimental' && (
+        <>
+          <p className="px-4 py-2 text-sm">
+            <span className="font-bold">Warning: </span>
+            <span>
+              this command is experimental, which means the KCL code we generate
+              may not be compatible with future versions of Zoo Design Studio.
+              Use at your own risk, and please report issues!
+            </span>
+          </p>
           <CommandBarDivider />
         </>
       )}
