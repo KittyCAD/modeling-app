@@ -37,7 +37,10 @@ profile001 = startProfile(at = [120.37, 162.76])
         ast,
         sketchPathToNode || [],
         'VariableDeclaration',
-        undefined, undefined, undefined, instance
+        undefined,
+        undefined,
+        undefined,
+        instance
       )
       if (trap(_node)) return
       const sketchInit = _node.node?.declaration.init
