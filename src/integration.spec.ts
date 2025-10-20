@@ -54,6 +54,7 @@ import {
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
+  addHole,
   addOffsetPlane,
   addShell,
   retrieveFaceSelectionsFromOpArgs,
@@ -3145,6 +3146,170 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
 
       const newCode = recast(result.modifiedAst)
       expect(newCode).toContain(multiSolidsShell)
+      await enginelessExecutor(ast)
+    })
+  })
+
+  describe('Testing addHole', () => {
+    const simpleHole = `hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [0, 0],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeType =   hole::simple(),
+)`
+
+    it('should add a simple hole call on cylinder end cap', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(cylinder)
+      const face = getCapFromCylinder(artifactGraph)
+      const cutAt = (await stringToKclExpression('[0, 0]')) as KclCommandValue
+      const depth = (await stringToKclExpression('5')) as KclCommandValue
+      const diameter = (await stringToKclExpression('1')) as KclCommandValue
+      const result = addHole({
+        ast,
+        artifactGraph,
+        face,
+        cutAt,
+        holeBody: 'blind',
+        blindDepth: depth,
+        blindDiameter: diameter,
+        holeType: 'simple',
+        holeBottom: 'flat',
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst)
+      expect(newCode).toContain(cylinder)
+      expect(newCode).toContain(simpleHole)
+      await enginelessExecutor(ast)
+    })
+
+    it('should add a simple hole call on cylinder end cap that has a hole already', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(`${cylinder}
+${simpleHole}`)
+      const face = getCapFromCylinder(artifactGraph)
+      const cutAt = (await stringToKclExpression('[3, 3]')) as KclCommandValue
+      const depth = (await stringToKclExpression('3')) as KclCommandValue
+      const diameter = (await stringToKclExpression('2')) as KclCommandValue
+      const result = addHole({
+        ast,
+        artifactGraph,
+        face,
+        cutAt,
+        holeBody: 'blind',
+        blindDepth: depth,
+        blindDiameter: diameter,
+        holeType: 'simple',
+        holeBottom: 'flat',
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst)
+      // TODO: fix the codemod to get to this behavior, not working yet due to
+      // https://github.com/KittyCAD/modeling-app/blob/71718f84668c86c6fc770e41d565c86ade489e1e/src/lang/modifyAst/faces.ts#L154-L155
+      expect(newCode).toContain(
+        `${cylinder}
+${simpleHole}
+hole002 = hole::hole(
+  hole001,
+  face = END,
+  cutAt = [3, 3],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 3, diameter = 2),
+  holeType =   hole::simple(),
+)`
+      )
+      await enginelessExecutor(ast)
+    })
+
+    it('should add a counterbore hole call on cylinder end cap', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(cylinder)
+      const face = getCapFromCylinder(artifactGraph)
+      const cutAt = (await stringToKclExpression('[0, 0]')) as KclCommandValue
+      const depth = (await stringToKclExpression('5')) as KclCommandValue
+      const diameter = (await stringToKclExpression('1')) as KclCommandValue
+      const cDepth = (await stringToKclExpression('1')) as KclCommandValue
+      const cDiameter = (await stringToKclExpression('2')) as KclCommandValue
+      const result = addHole({
+        ast,
+        artifactGraph,
+        face,
+        cutAt,
+        holeBody: 'blind',
+        blindDepth: depth,
+        blindDiameter: diameter,
+        holeType: 'counterbore',
+        counterboreDepth: cDepth,
+        counterboreDiameter: cDiameter,
+        holeBottom: 'flat',
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst)
+      expect(newCode).toContain(cylinder)
+      expect(newCode).toContain(
+        `hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [0, 0],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeType =   hole::counterbore(depth = 1, diameter = 2),
+)`
+      )
+      await enginelessExecutor(ast)
+    })
+
+    it('should edit a simple hole call into a countersink hole call on cylinder end cap with drill end', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(`${cylinder}
+${simpleHole}`)
+      const nodeToEdit = createPathToNodeForLastVariable(ast)
+      const face = getCapFromCylinder(artifactGraph)
+      const cutAt = (await stringToKclExpression('[1, 1]')) as KclCommandValue
+      const depth = (await stringToKclExpression('6')) as KclCommandValue
+      const diameter = (await stringToKclExpression('1.1')) as KclCommandValue
+      const dAngle = (await stringToKclExpression('110')) as KclCommandValue
+      const cAngle = (await stringToKclExpression('120')) as KclCommandValue
+      const cDiameter = (await stringToKclExpression('2')) as KclCommandValue
+      const result = addHole({
+        ast,
+        artifactGraph,
+        nodeToEdit,
+        face,
+        cutAt,
+        holeBody: 'blind',
+        blindDepth: depth,
+        blindDiameter: diameter,
+        holeType: 'countersink',
+        countersinkAngle: cAngle,
+        countersinkDiameter: cDiameter,
+        holeBottom: 'drill',
+        drillPointAngle: dAngle,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst)
+      expect(newCode).toContain(cylinder)
+      expect(newCode).toContain(
+        `${cylinder}
+hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [1, 1],
+  holeBottom =   hole::drill(pointAngle = 110),
+  holeBody =   hole::blind(depth = 6, diameter = 1.1),
+  holeType =   hole::countersink(angle = 120, diameter = 2),
+)`
+      )
       await enginelessExecutor(ast)
     })
   })
