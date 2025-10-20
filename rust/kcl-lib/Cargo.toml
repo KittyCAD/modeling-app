@@ -48,7 +48,7 @@ async-trait = { workspace = true }
 base64 = "0.22.1"
 bson = { workspace = true }
 chrono = "0.4.42"
-clap = { version = "4.5.48", default-features = false, optional = true, features = [
+clap = { version = "4.5.49", default-features = false, optional = true, features = [
   "std",
   "derive",
 ] }
@@ -73,7 +73,7 @@ kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 lazy_static = { workspace = true }
 libm = "0.2.15"
-measurements = "0.11.0"
+measurements = "0.11.1"
 miette = { workspace = true }
 mime_guess = "2.0.5"
 nalgebra-glm = "0.20.0"
@@ -81,7 +81,7 @@ parse-display = "0.10.0"
 pyo3 = { workspace = true, optional = true }
 pyo3-stub-gen = { workspace = true, optional = true }
 rayon = { workspace = true }
-regex = "1.12.1"
+regex = "1.12.2"
 reqwest = { version = "0.12", default-features = false, features = [
   "stream",
   "rustls-tls",
