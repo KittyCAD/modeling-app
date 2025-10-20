@@ -652,6 +652,47 @@ fn lint(code: String) -> PyResult<Vec<Discovered>> {
     Ok(lints)
 }
 
+/// Customize a snapshot.
+#[derive(Serialize, Debug, Clone)]
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
+#[pyclass]
+pub struct FixedLints {
+    /// Code after suggestions have been applied.
+    pub new_code: String,
+    /// Any lints that didn't have suggestions or couldn't be applied.
+    pub unfixed_lints: Vec<Discovered>,
+}
+
+/// Lint the kcl code. Fix any lints that can be fixed with automatic suggestions.
+/// Returns any unfixed lints.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+fn lint_and_fix(code: String) -> PyResult<FixedLints> {
+    let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
+    let lints = program
+        .lint(checks::lint_variables)
+        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+
+    let mut unfixed_lints = Vec::with_capacity(lints.len());
+    let mut new_code = code;
+    for lint in lints {
+        let out = lint.apply_suggestion(&new_code);
+        match out {
+            None => {
+                unfixed_lints.push(lint);
+            }
+            Some(newer_code) => {
+                new_code = newer_code;
+            }
+        }
+    }
+
+    Ok(FixedLints {
+        new_code,
+        unfixed_lints,
+    })
+}
+
 /// The kcl python module.
 #[pymodule]
 fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
@@ -697,6 +738,7 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(format, m)?)?;
     m.add_function(wrap_pyfunction!(format_dir, m)?)?;
     m.add_function(wrap_pyfunction!(lint, m)?)?;
+    m.add_function(wrap_pyfunction!(lint_and_fix, m)?)?;
     m.add_function(wrap_pyfunction!(relevant_file_extensions, m)?)?;
     Ok(())
 }

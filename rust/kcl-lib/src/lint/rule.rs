@@ -51,7 +51,6 @@ pub struct Discovered {
 }
 
 impl Discovered {
-    #[cfg(test)]
     pub fn apply_suggestion(&self, src: &str) -> Option<String> {
         let suggestion = self.suggestion.as_ref()?;
         Some(format!(
