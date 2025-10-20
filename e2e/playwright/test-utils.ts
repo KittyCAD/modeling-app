@@ -5,7 +5,11 @@ import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
-import { IS_PLAYWRIGHT_KEY, COOKIE_NAME_PREFIX } from '@src/lib/constants'
+import {
+  IS_PLAYWRIGHT_KEY,
+  COOKIE_NAME_PREFIX,
+  LAYOUT_PERSIST_PREFIX,
+} from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
@@ -30,7 +34,11 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
-import { playwrightLayout, saveLayout, setOpenPanes } from '@src/lib/layout'
+import {
+  type LayoutWithMetadata,
+  playwrightLayoutConfig,
+  setOpenPanes,
+} from '@src/lib/layout'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -678,17 +686,18 @@ export async function getUtils(page: Page, test_?: typeof test) {
      * @link https://github.com/KittyCAD/modeling-app/actions/runs/10731890169/job/29762700806?pr=3807#step:20:19553
      */
     panesOpen: async (paneIds: string[]) => {
-      const saveModifiedPlaywrightLayout = () =>
-        saveLayout({
-          layoutName: 'default',
-          layout: setOpenPanes(playwrightLayout, paneIds),
-        })
       return test?.step(`Setting ${paneIds} panes to be open`, async () => {
         await page.addInitScript(
-          ({ saveModifiedLayout }) => {
-            saveModifiedLayout()
+          ({ layoutName, layoutPayload }) => {
+            localStorage.setItem(layoutName, layoutPayload)
           },
-          { saveModifiedLayout: saveModifiedPlaywrightLayout }
+          {
+            layoutName: `${LAYOUT_PERSIST_PREFIX}default`,
+            layoutPayload: JSON.stringify({
+              version: 'v1',
+              layout: setOpenPanes(playwrightLayoutConfig, paneIds),
+            } satisfies LayoutWithMetadata),
+          }
         )
         await page.reload()
       })
@@ -917,20 +926,19 @@ export async function setup(
   page: Page,
   testInfo?: TestInfo
 ) {
-  const savePlaywrightLayout = () =>
-    saveLayout({ layoutName: 'default', layout: playwrightLayout })
   await page.addInitScript(
     async ({
       token,
       settingsKey,
       settings,
       IS_PLAYWRIGHT_KEY,
-      savePlaywrightLayout,
+      layoutName,
+      layoutPayload,
     }) => {
       localStorage.clear()
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
-      savePlaywrightLayout()
+      localStorage.setItem(layoutName, layoutPayload)
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
       window.addEventListener('beforeunload', () => {
@@ -958,7 +966,11 @@ export async function setup(
         },
       }),
       IS_PLAYWRIGHT_KEY,
-      savePlaywrightLayout,
+      layoutName: `${LAYOUT_PERSIST_PREFIX}default`,
+      layoutPayload: JSON.stringify({
+        version: 'v1',
+        layout: playwrightLayoutConfig,
+      } satisfies LayoutWithMetadata),
     }
   )
 

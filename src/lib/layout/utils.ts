@@ -30,10 +30,6 @@ const defaultLayoutLoadResult = loadLayout('default')
 export const defaultLayout = isErr(defaultLayoutLoadResult)
   ? defaultLayoutConfig
   : defaultLayoutLoadResult
-/** In Playwright E2E tests, we still have a special layout, but someday we'd like to not. */
-export const playwrightLayout = setOpenPanes(defaultLayoutConfig, [
-  DefaultLayoutPaneID.Code,
-])
 
 /**
  * A split area must have the same number of sizes as children.
