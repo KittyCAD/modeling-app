@@ -50,7 +50,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
       - name: Install dependencies
@@ -119,7 +119,7 @@ jobs:
           components: rust-src
           target: ${{ matrix.target }}
       - name: Install Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
       - name: Update apt repositories
@@ -271,41 +271,41 @@ jobs:
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Install Nodejs
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version-file: ".nvmrc"
       - run: echo "HEAD_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
       - run: 'echo "HEAD_SHA: $HEAD_SHA"'
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: release-aarch64-apple-darwin
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: release-x86_64-unknown-linux-gnu
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: release-x86_64-unknown-linux-musl
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: release-aarch64-unknown-linux-gnu
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: release-arm-unknown-linux-gnueabihf
           path: rust/build
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: release-x86_64-pc-windows-msvc
           path: rust/build
-          #- uses: actions/download-artifact@v4
+          #- uses: actions/download-artifact@v5
           #with:
           #name: release-i686-pc-windows-msvc
           #path:
           #build
-          #- uses: actions/download-artifact@v4
+          #- uses: actions/download-artifact@v5
           #with:
           #name: release-aarch64-pc-windows-msvc
           #path: rust/build
@@ -322,11 +322,11 @@ jobs:
           mkdir -p releases/language-server/${{ env.TAG }}
           cp -r build/* releases/language-server/${{ env.TAG }}
       - name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v2.1.10"
+        uses: "google-github-actions/auth@v3.0.0"
         with:
           credentials_json: "${{ secrets.GOOGLE_CLOUD_DL_SA }}"
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2.1.4
+        uses: google-github-actions/setup-gcloud@v3.0.1
         with:
           project_id: kittycadapi
       - name: "upload files to gcp"
