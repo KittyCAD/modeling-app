@@ -184,7 +184,7 @@ async fn inner_flatness(
 ) -> Result<Vec<GdtAnnotation>, KclError> {
     let precision = if let Some(precision) = precision {
         let rounded = precision.n.round();
-        if rounded < 0.0 || rounded > 9.0 {
+        if !(0.0..=9.0).contains(&rounded) {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Precision must be between 0 and 9".to_owned(),
                 vec![args.source_range],
