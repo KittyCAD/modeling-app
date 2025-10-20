@@ -95,9 +95,6 @@ jobs:
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
-      - run: npm run simpleserver:bg
-        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-
       - name: Install Chromium Browser
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: npm run playwright install chromium --with-deps
