@@ -712,6 +712,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Standard holes that could be drilled or cut into a 3D solid.',
     icon: 'hole',
     needsReview: true,
+    status: 'experimental',
     reviewMessage:
       'Note: cutAt specifies where to place the cut on the given face of the solid, given as absolute coordinates in the global scene. It will be selection-based in the future, and more hole bottoms and hole types are coming soon.',
     args: {
