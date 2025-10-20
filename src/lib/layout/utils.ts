@@ -22,7 +22,6 @@ import {
   parseLayoutFromJsonString,
   parseLayoutInner,
 } from '@src/lib/layout/parse'
-import { useEffect } from 'react'
 import { LAYOUT_PERSIST_PREFIX, LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
 
 // Attempt to load a persisted layout
