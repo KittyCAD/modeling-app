@@ -36,7 +36,6 @@ import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import type { Identifier, Literal } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
@@ -49,27 +48,50 @@ import {
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
 
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type RustContext from '@src/lib/rustContext'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+
+let instanceInThisFile: ModuleType = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+let rustContextInThisFile: RustContext = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
 beforeAll(async () => {
-  await initPromise
+  const { instance, engineCommandManager, rustContext } =
+    await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  engineCommandManagerInThisFile = engineCommandManager
+  rustContextInThisFile = rustContext
+})
+
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
 })
 
 describe('Testing createLiteral', () => {
   it('should create a literal number without units', () => {
-    const result = createLiteral(5)
+    const result = createLiteral(5, undefined, instanceInThisFile)
     expect(result.type).toBe('Literal')
     expect((result as any).value.value).toBe(5)
     expect((result as any).value.suffix).toBe('None')
     expect((result as Literal).raw).toBe('5')
   })
   it('should create a literal number with units', () => {
-    const result = createLiteral(5, 'Mm')
+    const result = createLiteral(5, 'Mm', instanceInThisFile)
     expect(result.type).toBe('Literal')
     expect((result as any).value.value).toBe(5)
     expect((result as any).value.suffix).toBe('Mm')
     expect((result as Literal).raw).toBe('5mm')
   })
   it('should create a literal boolean', () => {
-    const result = createLiteral(false)
+    const result = createLiteral(false, undefined, instanceInThisFile)
     expect(result.type).toBe('Literal')
     expect((result as Literal).value).toBe(false)
     expect((result as Literal).raw).toBe('false')
@@ -85,7 +107,7 @@ describe('Testing createIdentifier', () => {
 describe('Testing createObjectExpression', () => {
   it('should create an object expression', () => {
     const result = createObjectExpression({
-      myProp: createLiteral(5),
+      myProp: createLiteral(5, undefined, instanceInThisFile),
     })
     expect(result.type).toBe('ObjectExpression')
     expect(result.properties[0].type).toBe('ObjectProperty')
@@ -96,7 +118,9 @@ describe('Testing createObjectExpression', () => {
 })
 describe('Testing createArrayExpression', () => {
   it('should create an array expression', () => {
-    const result = createArrayExpression([createLiteral(5)])
+    const result = createArrayExpression([
+      createLiteral(5, undefined, instanceInThisFile),
+    ])
     expect(result.type).toBe('ArrayExpression')
     expect(result.elements[0].type).toBe('Literal')
     expect((result.elements[0] as any).value.value).toBe(5)
@@ -110,7 +134,10 @@ describe('Testing createPipeSubstitution', () => {
 })
 describe('Testing createVariableDeclaration', () => {
   it('should create a variable declaration', () => {
-    const result = createVariableDeclaration('myVar', createLiteral(5))
+    const result = createVariableDeclaration(
+      'myVar',
+      createLiteral(5, undefined, instanceInThisFile)
+    )
     expect(result.type).toBe('VariableDeclaration')
     expect(result.declaration.type).toBe('VariableDeclarator')
     expect(result.declaration.id.type).toBe('Identifier')
@@ -121,7 +148,9 @@ describe('Testing createVariableDeclaration', () => {
 })
 describe('Testing createPipeExpression', () => {
   it('should create a pipe expression', () => {
-    const result = createPipeExpression([createLiteral(5)])
+    const result = createPipeExpression([
+      createLiteral(5, undefined, instanceInThisFile),
+    ])
     expect(result.type).toBe('PipeExpression')
     expect(result.body[0].type).toBe('Literal')
     expect((result.body[0] as any).value.value).toBe(5)
@@ -246,7 +275,7 @@ describe('Testing addSketchTo', () => {
       },
       'yz'
     )
-    const str = recast(result.modifiedAst)
+    const str = recast(result.modifiedAst, instanceInThisFile)
     expect(str).toBe(`sketch001 = startSketchOn(YZ)
   |> startProfile(at = 'default')
   |> line(end = 'default')
@@ -261,13 +290,13 @@ function giveSketchFnCallTagTestHelper(
   // giveSketchFnCallTag inputs and outputs an ast, which is very verbose for testing
   // this wrapper changes the input and output to code
   // making it more of an integration test, but easier to read the test intention is the goal
-  const ast = assertParse(code)
+  const ast = assertParse(code, instanceInThisFile)
   const start = code.indexOf(searchStr)
   const range = topLevelRange(start, start + searchStr.length)
   const sketchRes = giveSketchFnCallTag(ast, range)
   if (err(sketchRes)) throw sketchRes
   const { modifiedAst, tag, isTagExisting } = sketchRes
-  const newCode = recast(modifiedAst)
+  const newCode = recast(modifiedAst, instanceInThisFile)
   if (err(newCode)) throw newCode
   return { tag, newCode, isTagExisting }
 }
@@ -335,8 +364,13 @@ part001 = startSketchOn(XY)
 |> angledLine(angle = jkl(yo) + 2deg, length = 3.09)
 yo2 = hmm([identifierGuy + 5])`
   it('should move a binary expression into a new variable', async () => {
-    const ast = assertParse(code)
-    const execState = await enginelessExecutor(ast)
+    const ast = assertParse(code, instanceInThisFile)
+    const execState = await enginelessExecutor(
+      ast,
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const startIndex = code.indexOf('100deg + 100deg') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
@@ -344,13 +378,18 @@ yo2 = hmm([identifierGuy + 5])`
       topLevelRange(startIndex, startIndex),
       'newVar'
     )
-    const newCode = recast(modifiedAst)
+    const newCode = recast(modifiedAst, instanceInThisFile)
     expect(newCode).toContain(`newVar = 100deg + 100deg`)
     expect(newCode).toContain(`angledLine(angle = newVar, length = 3.09)`)
   })
   it('should move a value into a new variable', async () => {
-    const ast = assertParse(code)
-    const execState = await enginelessExecutor(ast)
+    const ast = assertParse(code, instanceInThisFile)
+    const execState = await enginelessExecutor(
+      ast,
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const startIndex = code.indexOf('2.8') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
@@ -358,13 +397,18 @@ yo2 = hmm([identifierGuy + 5])`
       topLevelRange(startIndex, startIndex),
       'newVar'
     )
-    const newCode = recast(modifiedAst)
+    const newCode = recast(modifiedAst, instanceInThisFile)
     expect(newCode).toContain(`newVar = 2.8`)
     expect(newCode).toContain(`line(end = [newVar, 0])`)
   })
   it('should move a callExpression into a new variable', async () => {
-    const ast = assertParse(code)
-    const execState = await enginelessExecutor(ast)
+    const ast = assertParse(code, instanceInThisFile)
+    const execState = await enginelessExecutor(
+      ast,
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const startIndex = code.indexOf('def(')
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
@@ -372,13 +416,18 @@ yo2 = hmm([identifierGuy + 5])`
       topLevelRange(startIndex, startIndex),
       'newVar'
     )
-    const newCode = recast(modifiedAst)
+    const newCode = recast(modifiedAst, instanceInThisFile)
     expect(newCode).toContain(`newVar = def(yo)`)
     expect(newCode).toContain(`angledLine(angle = newVar, length = 3.09)`)
   })
   it('should move a binary expression with call expression into a new variable', async () => {
-    const ast = assertParse(code)
-    const execState = await enginelessExecutor(ast)
+    const ast = assertParse(code, instanceInThisFile)
+    const execState = await enginelessExecutor(
+      ast,
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const startIndex = code.indexOf('jkl(') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
@@ -386,13 +435,18 @@ yo2 = hmm([identifierGuy + 5])`
       topLevelRange(startIndex, startIndex),
       'newVar'
     )
-    const newCode = recast(modifiedAst)
+    const newCode = recast(modifiedAst, instanceInThisFile)
     expect(newCode).toContain(`newVar = jkl(yo) + 2deg`)
     expect(newCode).toContain(`angledLine(angle = newVar, length = 3.09)`)
   })
   it('should move a identifier into a new variable', async () => {
-    const ast = assertParse(code)
-    const execState = await enginelessExecutor(ast)
+    const ast = assertParse(code, instanceInThisFile)
+    const execState = await enginelessExecutor(
+      ast,
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const startIndex = code.indexOf('identifierGuy +') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
@@ -400,7 +454,7 @@ yo2 = hmm([identifierGuy + 5])`
       topLevelRange(startIndex, startIndex),
       'newVar'
     )
-    const newCode = recast(modifiedAst)
+    const newCode = recast(modifiedAst, instanceInThisFile)
     expect(newCode).toContain(`newVar = identifierGuy + 5`)
     expect(newCode).toContain(`yo2 = hmm([newVar])`)
   })
@@ -414,7 +468,7 @@ describe('testing sketchOnExtrudedFace', () => {
   |> line(end = [8.62, -9.57])
   |> close()
   |> extrude(length = 5 + 7)`
-    const ast = assertParse(code)
+    const ast = assertParse(code, instanceInThisFile)
 
     const segmentSnippet = `line(end = [9.7, 9.19])`
     const segmentRange = topLevelRange(
@@ -438,7 +492,7 @@ describe('testing sketchOnExtrudedFace', () => {
     if (err(extruded)) throw extruded
     const { modifiedAst } = extruded
 
-    const newCode = recast(modifiedAst)
+    const newCode = recast(modifiedAst, instanceInThisFile)
     expect(newCode).toContain(`part001 = startSketchOn(-XZ)
   |> startProfile(at = [3.58, 2.06])
   |> line(end = [9.7, 9.19], tag = $seg01)
@@ -454,7 +508,7 @@ sketch001 = startSketchOn(part001, face = seg01)`)
   |> line(end = [8.62, -9.57])
   |> close()
   |> extrude(length = 5 + 7)`
-    const ast = assertParse(code)
+    const ast = assertParse(code, instanceInThisFile)
     const segmentSnippet = `close()`
     const segmentRange = topLevelRange(
       code.indexOf(segmentSnippet),
@@ -477,7 +531,7 @@ sketch001 = startSketchOn(part001, face = seg01)`)
     if (err(extruded)) throw extruded
     const { modifiedAst } = extruded
 
-    const newCode = recast(modifiedAst)
+    const newCode = recast(modifiedAst, instanceInThisFile)
     expect(newCode).toContain(`part001 = startSketchOn(-XZ)
   |> startProfile(at = [3.58, 2.06])
   |> line(end = [9.7, 9.19])
@@ -493,7 +547,7 @@ sketch001 = startSketchOn(part001, face = seg01)`)
   |> line(end = [8.62, -9.57])
   |> close()
   |> extrude(length = 5 + 7)`
-    const ast = assertParse(code)
+    const ast = assertParse(code, instanceInThisFile)
     const sketchSnippet = `startProfile(at = [3.58, 2.06])`
     const sketchRange = topLevelRange(
       code.indexOf(sketchSnippet),
@@ -517,7 +571,7 @@ sketch001 = startSketchOn(part001, face = seg01)`)
     if (err(extruded)) throw extruded
     const { modifiedAst } = extruded
 
-    const newCode = recast(modifiedAst)
+    const newCode = recast(modifiedAst, instanceInThisFile)
     expect(newCode).toContain(`part001 = startSketchOn(-XZ)
   |> startProfile(at = [3.58, 2.06])
   |> line(end = [9.7, 9.19])
@@ -541,7 +595,7 @@ sketch001 = startSketchOn(part001, face = END)`)
     |> line(end = [-17.67, 0.85])
     |> close()
     part001 = extrude(sketch001, length = 5 + 7)`
-    const ast = assertParse(code)
+    const ast = assertParse(code, instanceInThisFile)
     const segmentSnippet = `line(end = [4.99, -0.46])`
     const segmentRange = topLevelRange(
       code.indexOf(segmentSnippet),
@@ -562,7 +616,7 @@ sketch001 = startSketchOn(part001, face = END)`)
       addTagForSketchOnFace
     )
     if (err(updatedAst)) throw updatedAst
-    const newCode = recast(updatedAst.modifiedAst)
+    const newCode = recast(updatedAst.modifiedAst, instanceInThisFile)
     expect(newCode).toContain(`part001 = extrude(sketch001, length = 5 + 7)
 sketch002 = startSketchOn(part001, face = seg01)`)
   })
@@ -575,8 +629,13 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
   |> line(end = [306.21, 198.82])
   |> line(end = [306.21, 198.85], tag = $a)
   |> line(end = [306.21, 198.87])`
-    const ast = assertParse(code)
-    const execState = await enginelessExecutor(ast)
+    const ast = assertParse(code, instanceInThisFile)
+    const execState = await enginelessExecutor(
+      ast,
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const lineOfInterest = 'line(end = [306.21, 198.85], tag = $a)'
     const range = topLevelRange(
       code.indexOf(lineOfInterest),
@@ -594,7 +653,7 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
       transformAstSketchLines
     )
     if (err(modifiedAst)) throw modifiedAst
-    const newCode = recast(modifiedAst)
+    const newCode = recast(modifiedAst, instanceInThisFile)
     expect(newCode).toBe(`part001 = startSketchOn(-XZ)
   |> startProfile(at = [54.78, -95.91])
   |> line(end = [306.21, 198.82])
@@ -663,8 +722,13 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65deg, length = ${
       ],
     ])(`%s`, async (_, line, [replace1, replace2]) => {
       const code = makeCode(line)
-      const ast = assertParse(code)
-      const execState = await enginelessExecutor(ast)
+      const ast = assertParse(code, instanceInThisFile)
+      const execState = await enginelessExecutor(
+        ast,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
       const lineOfInterest = line
       const start = code.indexOf(lineOfInterest)
       expect(start).toBeGreaterThanOrEqual(0)
@@ -679,10 +743,11 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65deg, length = ${
         pathToNode,
         getConstraintInfoKw,
         removeSingleConstraint,
-        transformAstSketchLines
+        transformAstSketchLines,
+        instanceInThisFile
       )
       if (err(modifiedAst)) throw modifiedAst
-      const newCode = recast(modifiedAst)
+      const newCode = recast(modifiedAst, instanceInThisFile)
       const expected = makeCode(line, replace1, replace2)
       expect(newCode).toBe(expected)
     })
@@ -847,8 +912,13 @@ sketch003 = startSketchOn(XZ)
     '%s',
     async (_name, { codeBefore, codeAfter, lineOfInterest, type }) => {
       // const lineOfInterest = 'line(end = [-2.94, 2.7])'
-      const ast = assertParse(codeBefore)
-      const execState = await enginelessExecutor(ast)
+      const ast = assertParse(codeBefore, instanceInThisFile)
+      const execState = await enginelessExecutor(
+        ast,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
 
       // deleteFromSelection
       const range = topLevelRange(
@@ -875,7 +945,7 @@ sketch003 = startSketchOn(XZ)
         }
       )
       if (err(newAst)) throw newAst
-      const newCode = recast(newAst)
+      const newCode = recast(newAst, instanceInThisFile)
       expect(newCode).toBe(codeAfter)
     }
   )
@@ -905,7 +975,7 @@ part001 = startProfile(sketch001, at = [1, 2])
 extrude001 = extrude(part001, length = 5)
     `
 
-    const ast = assertParse(codeBefore)
+    const ast = assertParse(codeBefore, instanceInThisFile)
 
     const codeOfInterest = `startSketchOn(XZ)`
     const range: [number, number, number] = [
@@ -919,7 +989,7 @@ extrude001 = extrude(part001, length = 5)
 
     if (err(result)) throw result
 
-    const newCode = recast(result.modifiedAst)
+    const newCode = recast(result.modifiedAst, instanceInThisFile)
     if (err(newCode)) throw newCode
     expect(newCode.trim()).toBe(expectedCodeAfter.trim())
   })
@@ -932,7 +1002,7 @@ part001 = startProfile(sketch001, at = [1, 2])
 extrude001 = extrude(part001, length = 5)
     `
 
-    const ast = assertParse(codeBefore)
+    const ast = assertParse(codeBefore, instanceInThisFile)
 
     const codeOfInterest = `startProfile(sketch001, at = [1, 2])`
     const range: [number, number, number] = [
@@ -1028,12 +1098,20 @@ describe('Testing createPathToNodeForLastVariable', () => {
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 5)
 `
-    const ast = assertParse(circleProfileInVar)
+    const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const path = createPathToNodeForLastVariable(ast, false)
     expect(path.length).toEqual(4)
 
     // Verify we can get the right node
-    const node = getNodeFromPath<any>(ast, path)
+    const node = getNodeFromPath<any>(
+      ast,
+      path,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      instanceInThisFile
+    )
     if (err(node)) {
       throw node
     }
@@ -1048,12 +1126,20 @@ extrude001 = extrude(profile001, length = 5)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 123)
 `
-    const ast = assertParse(circleProfileInVar)
+    const ast = assertParse(circleProfileInVar, instanceInThisFile)
     const path = createPathToNodeForLastVariable(ast, true)
     expect(path.length).toEqual(7)
 
     // Verify we can get the right node
-    const node = getNodeFromPath<any>(ast, path)
+    const node = getNodeFromPath<any>(
+      ast,
+      path,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      instanceInThisFile
+    )
     if (err(node)) {
       throw node
     }
@@ -1069,18 +1155,21 @@ describe('Testing setCallInAst', () => {
     const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 `
-    const ast = assertParse(code)
+    const ast = assertParse(code, instanceInThisFile)
     const exprs = createVariableExpressionsArray([
       createLocalName('profile001'),
     ])
     const call = createCallExpressionStdLibKw('extrude', exprs, [
-      createLabeledArg('length', createLiteral(5)),
+      createLabeledArg(
+        'length',
+        createLiteral(5, undefined, instanceInThisFile)
+      ),
     ])
     const pathToNode = setCallInAst({ ast, call, variableIfNewDecl: 'extrude' })
     if (err(pathToNode)) {
       throw pathToNode
     }
-    const newCode = recast(ast)
+    const newCode = recast(ast, instanceInThisFile)
     expect(newCode).toContain(code)
     expect(newCode).toContain(`extrude001 = extrude(profile001, length = 5)`)
   })
@@ -1089,8 +1178,13 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const code = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
 `
-    const ast = assertParse(code)
-    const { artifactGraph } = await enginelessExecutor(ast)
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph } = await enginelessExecutor(
+      ast,
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
     if (!artifact) {
       throw new Error('Artifact not found in the graph')
@@ -1108,7 +1202,10 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     if (err(vars)) throw vars
     const exprs = createVariableExpressionsArray(vars.exprs)
     const call = createCallExpressionStdLibKw('extrude', exprs, [
-      createLabeledArg('length', createLiteral(5)),
+      createLabeledArg(
+        'length',
+        createLiteral(5, undefined, instanceInThisFile)
+      ),
     ])
     const pathToNode = setCallInAst({
       ast,
@@ -1118,7 +1215,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     if (err(pathToNode)) {
       throw pathToNode
     }
-    const newCode = recast(ast)
+    const newCode = recast(ast, instanceInThisFile)
     expect(newCode).toContain(code)
     expect(newCode).toContain(`|> extrude(length = 5)`)
   })
@@ -1127,8 +1224,13 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const code = `profile001 = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
 `
-    const ast = assertParse(code)
-    const { artifactGraph } = await enginelessExecutor(ast)
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph } = await enginelessExecutor(
+      ast,
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const artifact = [...artifactGraph.values()].find((a) => a.type === 'path')
     if (!artifact) {
       throw new Error('Artifact not found in the graph')
@@ -1146,7 +1248,10 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     if (err(vars)) throw vars
     const exprs = createVariableExpressionsArray(vars.exprs)
     const call = createCallExpressionStdLibKw('extrude', exprs, [
-      createLabeledArg('length', createLiteral(5)),
+      createLabeledArg(
+        'length',
+        createLiteral(5, undefined, instanceInThisFile)
+      ),
     ])
     const pathToNode = setCallInAst({
       ast,
@@ -1157,7 +1262,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     if (err(pathToNode)) {
       throw pathToNode
     }
-    const newCode = recast(ast)
+    const newCode = recast(ast, instanceInThisFile)
     expect(newCode).toContain(code)
     expect(newCode).toContain(`extrude001 = extrude(profile001, length = 5)`)
   })

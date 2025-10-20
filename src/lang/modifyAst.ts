@@ -678,7 +678,8 @@ export function deleteSegmentOrProfileFromPipeExpression(
   pathToNode: PathToNode,
   getConstraintInfoKw: typeof GetConstraintInfoKwFn,
   removeSingleConstraint: typeof RemoveSingleConstraintFn,
-  transformAstSketchLines: typeof TransformAstSketchLinesFn
+  transformAstSketchLines: typeof TransformAstSketchLinesFn,
+  wasmInstance?: ModuleType
 ): Node<Program> | Error {
   let _modifiedAst = structuredClone(modifiedAst)
 
@@ -689,7 +690,10 @@ export function deleteSegmentOrProfileFromPipeExpression(
       _modifiedAst,
       path,
       ['CallExpressionKw'],
-      true
+      true,
+      undefined,
+      undefined,
+      wasmInstance
     )
     if (err(callExp)) return callExp
 
@@ -705,7 +709,8 @@ export function deleteSegmentOrProfileFromPipeExpression(
       _modifiedAst,
       memVars,
       removeSingleConstraint,
-      transformAstSketchLines
+      transformAstSketchLines,
+      wasmInstance
     )
     if (!transform) return
     _modifiedAst = transform.modifiedAst
