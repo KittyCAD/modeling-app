@@ -13,7 +13,7 @@ use crate::{
         ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch, SketchSurface,
         Solid, TagIdentifier, annotations,
         kcl_value::FunctionSource,
-        types::{NumericType, PrimitiveType, RuntimeType, UnitType},
+        types::{NumericSuffixTypeConvertError, NumericType, PrimitiveType, RuntimeType, UnitType},
     },
     front::Number,
     parsing::ast::types::TagNode,
@@ -110,7 +110,7 @@ impl TyF64 {
 
     // This can't be a TryFrom impl because `Point2d` is defined in another
     // crate.
-    pub fn to_point2d(value: &[TyF64; 2]) -> Result<crate::front::Point2d<Number>, ()> {
+    pub fn to_point2d(value: &[TyF64; 2]) -> Result<crate::front::Point2d<Number>, NumericSuffixTypeConvertError> {
         Ok(crate::front::Point2d {
             x: Number {
                 value: value[0].n,

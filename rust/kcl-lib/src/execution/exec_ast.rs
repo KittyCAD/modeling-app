@@ -1254,7 +1254,10 @@ fn create_segment_scene_objects(
 
         let start_point2d = TyF64::to_point2d(&segment.start).map_err(|_| {
             KclError::new_internal(KclErrorDetails::new(
-                format!("Error converting start point runtime type to API value"),
+                format!(
+                    "Error converting start point runtime type to API value: {:?}",
+                    &segment.start
+                ),
                 vec![sketch_block_range],
             ))
         })?;
@@ -1279,7 +1282,10 @@ fn create_segment_scene_objects(
 
         let end_point2d = TyF64::to_point2d(&segment.end).map_err(|_| {
             KclError::new_internal(KclErrorDetails::new(
-                format!("Error converting end point runtime type to API value"),
+                format!(
+                    "Error converting end point runtime type to API value: {:?}",
+                    &segment.end
+                ),
                 vec![sketch_block_range],
             ))
         })?;
@@ -1311,14 +1317,14 @@ fn create_segment_scene_objects(
                     start: crate::front::Point2d {
                         // TODO: sketch-api: use original input expressions
                         // instead of numbers.
-                        x: crate::front::Expr::Number(start_point2d.x.clone()),
-                        y: crate::front::Expr::Number(start_point2d.y.clone()),
+                        x: crate::front::Expr::Number(start_point2d.x),
+                        y: crate::front::Expr::Number(start_point2d.y),
                     },
                     end: crate::front::Point2d {
                         // TODO: sketch-api: use original input expressions
                         // instead of numbers.
-                        x: crate::front::Expr::Number(end_point2d.x.clone()),
-                        y: crate::front::Expr::Number(end_point2d.y.clone()),
+                        x: crate::front::Expr::Number(end_point2d.x),
+                        y: crate::front::Expr::Number(end_point2d.y),
                     },
                 }),
                 ctor_applicable: true,
