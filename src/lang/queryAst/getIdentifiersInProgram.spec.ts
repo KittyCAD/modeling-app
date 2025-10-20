@@ -35,7 +35,9 @@ describe(`getIdentifiersInProgram`, () => {
   })
   it(`finds multiple identifiers in an expression`, async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
-    const identifiers = getIdentifiersInProgram(assertParse('a + b + c', instance))
+    const identifiers = getIdentifiersInProgram(
+      assertParse('a + b + c', instance)
+    )
     expect(identifiers).toEqual([
       identifier('a', 0, 1),
       identifier('b', 4, 5),
@@ -44,9 +46,12 @@ describe(`getIdentifiersInProgram`, () => {
   })
   it(`finds all the identifiers in a normal program`, async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
-    const program = assertParse(`x = 5 + 2
+    const program = assertParse(
+      `x = 5 + 2
 y = x * 2
-z = y + 1`, instance)
+z = y + 1`,
+      instance
+    )
     const identifiers = getIdentifiersInProgram(program)
     expect(identifiers).toEqual([
       identifier('x', 14, 15),

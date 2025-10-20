@@ -12,9 +12,34 @@ import {
 import { topLevelRange } from '@src/lang/util'
 import type { CallExpressionKw } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type RustContext from '@src/lib/rustContext'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+
+let instanceInThisFile: ModuleType = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+let rustContextInThisFile: RustContext = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
+beforeAll(async () => {
+  const { instance, engineCommandManager, rustContext } =
+    await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  engineCommandManagerInThisFile = engineCommandManager
+  rustContextInThisFile = rustContext
+})
+
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
+})
 
 const eachQuad: [number, [number, number]][] = [
   [-315, [1, 1]],
@@ -30,10 +55,6 @@ const eachQuad: [number, [number, number]][] = [
   [585, [-1, -1]],
   [675, [1, -1]],
 ]
-
-beforeAll(async () => {
-  await initPromise
-})
 
 describe('testing getYComponent', () => {
   it('should return the vertical component of a vector correctly when given angles in each quadrant (and with angles < 0, or > 360)', () => {
@@ -112,9 +133,14 @@ describe('testing changeSketchArguments', () => {
 `
     const code = genCode(lineToChange)
     const expectedCode = genCode(lineAfterChange)
-    const ast = assertParse(code)
+    const ast = assertParse(code, instanceInThisFile)
 
-    const execState = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(
+      ast,
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const sourceStart = code.indexOf(lineToChange)
     const changeSketchArgsRetVal = changeSketchArguments(
       ast,
@@ -133,7 +159,9 @@ describe('testing changeSketchArguments', () => {
       }
     )
     if (err(changeSketchArgsRetVal)) return changeSketchArgsRetVal
-    expect(recast(changeSketchArgsRetVal.modifiedAst)).toBe(expectedCode)
+    expect(recast(changeSketchArgsRetVal.modifiedAst, instanceInThisFile)).toBe(
+      expectedCode
+    )
   })
 })
 
@@ -148,8 +176,8 @@ describe('testing addTagForSketchOnFace', () => {
   |> line(endAbsolute = [0.46, -5.82])
 `
     const code = genCode(originalLine)
-    const ast = assertParse(code)
-    await enginelessExecutor(ast)
+    const ast = assertParse(code, instanceInThisFile)
+    await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
     const sourceStart = code.indexOf(originalLine)
     const sourceRange = topLevelRange(
       sourceStart,
@@ -172,7 +200,7 @@ describe('testing addTagForSketchOnFace', () => {
     const expectedCode = genCode(
       'line(endAbsolute = [-1.59, -1.54], tag = $seg01)'
     )
-    expect(recast(modifiedAst)).toBe(expectedCode)
+    expect(recast(modifiedAst, instanceInThisFile)).toBe(expectedCode)
   })
   const chamferTestCases = [
     {
@@ -212,8 +240,8 @@ extrude001 = extrude(sketch001, length = 100)
 ${insertCode}
 `
       const code = genCode(originalChamfer)
-      const ast = assertParse(code)
-      await enginelessExecutor(ast)
+      const ast = assertParse(code, instanceInThisFile)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
       const sourceStart = code.indexOf(originalChamfer)
       const extraChars = originalChamfer.indexOf('chamfer')
       const sourceRange = topLevelRange(
@@ -237,7 +265,7 @@ ${insertCode}
         }
       )
       if (err(sketchOnFaceRetVal)) throw sketchOnFaceRetVal
-      expect(recast(sketchOnFaceRetVal.modifiedAst)).toBe(
+      expect(recast(sketchOnFaceRetVal.modifiedAst, instanceInThisFile)).toBe(
         genCode(expectedChamfer)
       )
     })
@@ -257,7 +285,7 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
     ])('testing %s when inputs are unconstrained', (functionName, expected) => {
-      const ast = assertParse(code)
+      const ast = assertParse(code, instanceInThisFile)
       const match = new RegExp(functionName).exec(code)
       expect(match).toBeTruthy()
       if (match === null) {
@@ -635,7 +663,7 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
     ])('testing %s when inputs are unconstrained', (functionName, expected) => {
-      const ast = assertParse(code)
+      const ast = assertParse(code, instanceInThisFile)
       const match = new RegExp(functionName).exec(code)
       expect(match).toBeTruthy()
       if (match === null) {
@@ -791,7 +819,7 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
     ])('testing %s when inputs are unconstrained', (functionName, expected) => {
-      const ast = assertParse(code)
+      const ast = assertParse(code, instanceInThisFile)
       const match = new RegExp(functionName).exec(code)
       expect(match).toBeTruthy()
       if (match === null) {
@@ -1165,7 +1193,7 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
     ])('testing %s when inputs are unconstrained', (functionName, expected) => {
-      const ast = assertParse(code)
+      const ast = assertParse(code, instanceInThisFile)
       const match = new RegExp(functionName).exec(code)
       expect(match).toBeTruthy()
       if (match === null) {
