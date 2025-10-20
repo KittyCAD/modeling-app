@@ -62,11 +62,7 @@ import {
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
-import {
-  defaultLayout,
-  LayoutRootNode,
-  useToggleDebugPaneVisibility,
-} from '@src/lib/layout'
+import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
 import { defaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { defaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 
@@ -107,7 +103,6 @@ export function App() {
   const settings = useSettings()
   const authToken = useToken()
   const layout = useLayout()
-  useToggleDebugPaneVisibility({ rootLayout: layout, settings, setLayout })
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()

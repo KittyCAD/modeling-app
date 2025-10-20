@@ -1,5 +1,10 @@
 import { useSearchParams } from 'react-router-dom'
-import { editorManager, getLayout, useToken } from '@src/lib/singletons'
+import {
+  editorManager,
+  getLayout,
+  getSettings,
+  useToken,
+} from '@src/lib/singletons'
 import env from '@src/env'
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import Gizmo from '@src/components/Gizmo'
@@ -118,7 +123,7 @@ export const defaultAreaLibrary = Object.freeze({
     useNotifications: () => undefined,
   },
   debug: {
-    hide: () => false,
+    hide: () => getSettings().app.showDebugPanel.current === false,
     shortcut: 'Shift + D',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[5], ...props }),

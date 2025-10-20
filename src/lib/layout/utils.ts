@@ -549,50 +549,6 @@ export function togglePaneLayoutNode({
   return rootLayout
 }
 
-/**
- * Custom React hook to update a layout configuration to include the debug pane
- * based on the `showDebugPanel` setting value.
- *
- * TODO: move the state for the layout higher up and do this listening work somewhere else.
- */
-export function useToggleDebugPaneVisibility({
-  rootLayout,
-  settings,
-  setLayout,
-}: {
-  rootLayout: Layout
-  settings: SettingsType
-  setLayout: (l: Layout) => void
-}) {
-  const showDebugPane = settings.app.showDebugPanel.current
-  return useEffect(() => {
-    if (!rootLayout) {
-      return
-    }
-    const leftSidebar = findLayoutChildNode({
-      rootLayout,
-      targetNodeId: DefaultLayoutToolbarID.Left,
-    })
-    if (!leftSidebar || leftSidebar.type !== LayoutType.Panes) {
-      return
-    }
-    const debugChildPaneIndex = leftSidebar?.children.findIndex(
-      (pane) => pane.id === DefaultLayoutPaneID.Debug
-    )
-    const hasDebugPane = debugChildPaneIndex >= 0
-
-    if (showDebugPane && !hasDebugPane) {
-      leftSidebar.children.push(debugPaneConfig)
-      setLayout(structuredClone(rootLayout))
-    }
-
-    if (!showDebugPane && hasDebugPane) {
-      leftSidebar.children.splice(debugChildPaneIndex, 1)
-      setLayout(structuredClone(rootLayout))
-    }
-  }, [showDebugPane, rootLayout, setLayout])
-}
-
 export function getOpenPanes({ rootLayout }: { rootLayout: Layout }): string[] {
   if (!rootLayout) {
     return []
