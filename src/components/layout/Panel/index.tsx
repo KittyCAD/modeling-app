@@ -6,9 +6,9 @@ import { ActionIcon } from '@src/components/ActionIcon'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 
-import styles from './ModelingPane.module.css'
+import styles from './index.module.css'
 
-export interface ModelingPaneProps {
+export interface LayoutPanelProps {
   id: string
   children: ReactNode | ReactNode[]
   className?: string
@@ -19,13 +19,13 @@ export interface ModelingPaneProps {
   onClose: () => void
 }
 
-export const ModelingPaneHeader = ({
+export const LayoutPanelHeader = ({
   id,
   icon,
   title,
   Menu,
   onClose,
-}: Pick<ModelingPaneProps, 'id' | 'icon' | 'title' | 'Menu' | 'onClose'>) => {
+}: Pick<LayoutPanelProps, 'id' | 'icon' | 'title' | 'Menu' | 'onClose'>) => {
   return (
     <div className={styles.header}>
       <div className="flex gap-2 items-center flex-1">
@@ -56,7 +56,7 @@ export const ModelingPaneHeader = ({
   )
 }
 
-export const ModelingPane = ({
+export const LayoutPanel = ({
   id,
   children,
   className,
@@ -64,7 +64,7 @@ export const ModelingPane = ({
   onClose,
   title,
   ...props
-}: ModelingPaneProps) => {
+}: LayoutPanelProps) => {
   return (
     <section
       {...props}

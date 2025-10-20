@@ -9,8 +9,8 @@ import {
   type SidebarPane,
   sidebarPanesLeft,
   sidebarPanesRight,
-} from '@src/components/ModelingSidebar/ModelingPanes'
-import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
+} from '@src/components/layout/areas'
+import { LayoutPanel } from '@src/components/layout/Panel'
 import type {
   AreaType,
   AreaTypeDefinition,
@@ -174,7 +174,7 @@ function PaneToArea({
   const onCloseWithFallback =
     onClose || (() => console.warn('no onClose defined for', pane.id))
   return (
-    <ModelingPane
+    <LayoutPanel
       icon={pane.icon}
       title={pane.sidebarName}
       onClose={onCloseWithFallback}
@@ -182,6 +182,6 @@ function PaneToArea({
       className="border-none"
     >
       {pane.Content({ id: pane.id, onClose: onCloseWithFallback })}
-    </ModelingPane>
+    </LayoutPanel>
   )
 }

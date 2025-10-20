@@ -39,7 +39,7 @@ import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useRef } from 'react'
 
 import { useLspContext } from '@src/components/LspProvider'
-import CodeEditor from '@src/components/ModelingSidebar/ModelingPanes/CodeEditor'
+import CodeEditor from '@src/components/layout/areas/CodeEditor'
 import { historyCompartment } from '@src/editor/compartments'
 import { lineHighlightField } from '@src/editor/highlightextension'
 import { modelingMachineEvent } from '@src/editor/manager'

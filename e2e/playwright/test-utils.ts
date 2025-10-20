@@ -30,6 +30,7 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
+import { playwrightLayout, saveLayout, setOpenPanes } from '@src/lib/layout'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -676,16 +677,18 @@ export async function getUtils(page: Page, test_?: typeof test) {
      * but having a separate initScript does not seem to work reliably.
      * @link https://github.com/KittyCAD/modeling-app/actions/runs/10731890169/job/29762700806?pr=3807#step:20:19553
      */
-    panesOpen: async (paneIds: PaneId[]) => {
+    panesOpen: async (paneIds: string[]) => {
+      const saveModifiedPlaywrightLayout = () =>
+        saveLayout({
+          layoutName: 'default',
+          layout: setOpenPanes(playwrightLayout, paneIds),
+        })
       return test?.step(`Setting ${paneIds} panes to be open`, async () => {
         await page.addInitScript(
-          ({ PERSIST_MODELING_CONTEXT, paneIds }: any) => {
-            localStorage.setItem(
-              PERSIST_MODELING_CONTEXT,
-              JSON.stringify({ openPanes: paneIds })
-            )
+          ({ saveModifiedLayout }) => {
+            saveModifiedLayout()
           },
-          { PERSIST_MODELING_CONTEXT, paneIds }
+          { saveModifiedLayout: saveModifiedPlaywrightLayout }
         )
         await page.reload()
       })
@@ -914,21 +917,20 @@ export async function setup(
   page: Page,
   testInfo?: TestInfo
 ) {
+  const savePlaywrightLayout = () =>
+    saveLayout({ layoutName: 'default', layout: playwrightLayout })
   await page.addInitScript(
     async ({
       token,
       settingsKey,
       settings,
       IS_PLAYWRIGHT_KEY,
-      PERSIST_MODELING_CONTEXT,
+      savePlaywrightLayout,
     }) => {
       localStorage.clear()
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
-      localStorage.setItem(
-        PERSIST_MODELING_CONTEXT,
-        JSON.stringify({ openPanes: ['code'] })
-      )
+      savePlaywrightLayout()
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
       window.addEventListener('beforeunload', () => {
@@ -956,7 +958,7 @@ export async function setup(
         },
       }),
       IS_PLAYWRIGHT_KEY,
-      PERSIST_MODELING_CONTEXT,
+      savePlaywrightLayout,
     }
   )
 

@@ -4,7 +4,7 @@ import { Menu } from '@headlessui/react'
 import type { PropsWithChildren } from 'react'
 
 import { ActionIcon } from '@src/components/ActionIcon'
-import { editorShortcutMeta } from '@src/components/ModelingSidebar/ModelingPanes/KclEditorPane'
+import { editorShortcutMeta } from '@src/components/layout/areas/KclEditorPane'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { codeManager, kclManager } from '@src/lib/singletons'

@@ -86,10 +86,6 @@ export const AllSettingsFields = forwardRef(
       )
     }
 
-    function resetLayout() {
-      appActor.send({ type: AppMachineEventType.ResetLayout })
-    }
-
     return (
       <div className="relative overflow-y-auto">
         <div ref={scrollRef} className="flex flex-col gap-4 px-2">

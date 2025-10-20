@@ -1,5 +1,4 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
-import type { SidebarCssOverrides } from '@src/components/ModelingSidebar/ModelingPanes'
 import type { MouseEventHandler } from 'react'
 
 export enum AreaType {
@@ -17,7 +16,7 @@ export type AreaTypeDefinition = {
   hide: () => boolean
   shortcut?: string
   /** I decided this is where impure stuff like the TTC button's custom styling should live */
-  cssClassOverrides?: SidebarCssOverrides
+  cssClassOverrides?: PaneChildCssOverrides
   useNotifications?: () =>
     | {
         value: string | number
@@ -83,6 +82,11 @@ export type Action = HasIdAndLabel &
     actionType: ActionType
   }
 export type PaneChild = Layout & WithIcon
+export type PaneChildCssOverrides = Partial<{
+  button: string
+  // Could add pane, etc here
+}>
+
 export type PaneLayout = BaseLayout &
   WithSizes &
   WithSide & {

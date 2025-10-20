@@ -1,5 +1,4 @@
 import type { MachineManager } from '@src/components/MachineManagerProvider'
-import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import type { PathToNode } from '@src/lang/wasm'
 import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
 import type { DefaultPlaneStr } from '@src/lib/planes'
@@ -7,7 +6,6 @@ import type { Coords2d } from '@src/lang/util'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type { ToolbarModeName } from '@src/lib/toolbar'
-import { isDesktop } from '@src/lib/isDesktop'
 import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveMode'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
@@ -174,7 +172,6 @@ export type SegmentOverlayPayload =
 
 export interface Store {
   videoElement?: HTMLVideoElement
-  openPanes: SidebarId[]
   cameraProjection?: Setting<CameraProjectionType>
   useNewSketchMode?: Setting<boolean>
 }
@@ -191,32 +188,6 @@ export type SketchTool =
   | 'none'
 
 export type MoveDesc = { line: number; snippet: string }
-
-export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
-
-interface PersistedModelingContext {
-  openPanes: Store['openPanes']
-}
-
-type PersistedKeys = keyof PersistedModelingContext
-export const PersistedValues: PersistedKeys[] = ['openPanes']
-
-export const getPersistedContext = (): Partial<PersistedModelingContext> => {
-  const fallbackContextObject = {
-    openPanes: isDesktop()
-      ? (['feature-tree', 'code', 'files'] satisfies Store['openPanes'])
-      : (['feature-tree', 'code'] satisfies Store['openPanes']),
-  }
-
-  try {
-    const c: Partial<PersistedModelingContext> = JSON.parse(
-      localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}'
-    )
-    return { ...fallbackContextObject, ...c }
-  } catch {
-    return fallbackContextObject
-  }
-}
 
 export interface ModelingMachineContext {
   currentMode: ToolbarModeName

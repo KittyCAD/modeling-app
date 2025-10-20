@@ -23,9 +23,7 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
   mouseState: { type: 'idle' },
   segmentOverlays: {},
   segmentHoverMap: {},
-  store: {
-    openPanes: [],
-  },
+  store: {},
   defaultPlaneVisibility: {
     xy: true,
     xz: true,

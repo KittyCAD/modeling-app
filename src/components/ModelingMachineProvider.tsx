@@ -1,11 +1,5 @@
 import { useMachine, useSelector } from '@xstate/react'
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react'
+import React, { createContext, useContext, useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -113,10 +107,7 @@ import type {
   ExtrudeFacePlane,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
-import {
-  getPersistedContext,
-  modelingMachine,
-} from '@src/machines/modelingMachine'
+import { modelingMachine } from '@src/machines/modelingMachine'
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import { useFolders } from '@src/machines/systemIO/hooks'
 
@@ -128,11 +119,7 @@ import type { WebContentSendPayload } from '@src/menu/channels'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
-import {
-  defaultLayout,
-  getOpenPanes,
-  setOpenPanes,
-} from '@src/lib/layout/utils'
+import { getOpenPanes, setOpenPanes } from '@src/lib/layout/utils'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -189,7 +176,6 @@ export const ModelingMachineProvider = ({
   }, [projects, loaderData, file])
 
   const streamRef = useRef<HTMLDivElement>(null)
-  const persistedContext = useMemo(() => getPersistedContext(), [])
 
   const isCommandBarClosed = useSelector(
     commandBarActor,
@@ -1293,7 +1279,6 @@ export const ModelingMachineProvider = ({
         ...modelingMachineDefaultContext,
         store: {
           ...modelingMachineDefaultContext.store,
-          ...persistedContext,
           cameraProjection,
           useNewSketchMode,
         },
@@ -1306,56 +1291,30 @@ export const ModelingMachineProvider = ({
 
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
-    const openPanes = getOpenPanes({ rootLayout: getLayout() })
+    const rootLayout = getLayout()
+    const openPanes = getOpenPanes({ rootLayout })
     if (data.menuLabel === 'View.Panes.Feature tree') {
-      const alwaysAddFeatureTree: string[] = [
-        ...new Set([...openPanes, DefaultLayoutPaneID.FeatureTree]),
-      ]
       setLayout(
-        setOpenPanes(
-          structuredClone(getLayout() || defaultLayout),
-          alwaysAddFeatureTree
-        )
+        setOpenPanes(rootLayout, [
+          ...openPanes,
+          DefaultLayoutPaneID.FeatureTree,
+        ])
       )
     } else if (data.menuLabel === 'View.Panes.KCL code') {
-      const alwaysAddCode: string[] = [
-        ...new Set([...openPanes, DefaultLayoutPaneID.Code]),
-      ]
       setLayout(
-        setOpenPanes(
-          structuredClone(getLayout() || defaultLayout),
-          alwaysAddCode
-        )
+        setOpenPanes(rootLayout, [...openPanes, DefaultLayoutPaneID.Code])
       )
     } else if (data.menuLabel === 'View.Panes.Project files') {
-      const alwaysAddProjectFiles: string[] = [
-        ...new Set([...openPanes, DefaultLayoutPaneID.Files]),
-      ]
       setLayout(
-        setOpenPanes(
-          structuredClone(getLayout() || defaultLayout),
-          alwaysAddProjectFiles
-        )
+        setOpenPanes(rootLayout, [...openPanes, DefaultLayoutPaneID.Files])
       )
     } else if (data.menuLabel === 'View.Panes.Variables') {
-      const alwaysAddVariables: string[] = [
-        ...new Set([...openPanes, DefaultLayoutPaneID.Variables]),
-      ]
       setLayout(
-        setOpenPanes(
-          structuredClone(getLayout() || defaultLayout),
-          alwaysAddVariables
-        )
+        setOpenPanes(rootLayout, [...openPanes, DefaultLayoutPaneID.Variables])
       )
     } else if (data.menuLabel === 'View.Panes.Logs') {
-      const alwaysAddLogs: string[] = [
-        ...new Set([...openPanes, DefaultLayoutPaneID.Logs]),
-      ]
       setLayout(
-        setOpenPanes(
-          structuredClone(getLayout() || defaultLayout),
-          alwaysAddLogs
-        )
+        setOpenPanes(rootLayout, [...openPanes, DefaultLayoutPaneID.Logs])
       )
     } else if (data.menuLabel === 'Design.Start sketch') {
       modelingSend({

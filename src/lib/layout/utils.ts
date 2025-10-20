@@ -30,6 +30,10 @@ const defaultLayoutLoadResult = loadLayout('default')
 export const defaultLayout = isErr(defaultLayoutLoadResult)
   ? defaultLayoutConfig
   : defaultLayoutLoadResult
+/** In Playwright E2E tests, we still have a special layout, but someday we'd like to not. */
+export const playwrightLayout = setOpenPanes(defaultLayoutConfig, [
+  DefaultLayoutPaneID.Code,
+])
 
 /**
  * A split area must have the same number of sizes as children.
@@ -615,7 +619,10 @@ export function getOpenPanes({ rootLayout }: { rootLayout: Layout }): string[] {
  * Mutate a Layout to find and open any panes within their parent Pane layout
  */
 export function setOpenPanes(rootLayout: Layout, paneIDs: string[]): Layout {
-  const validPaneIDs = paneIDs.filter(isDefaultLayoutPaneID)
+  const deduplicatedPaneIDs = new Set(paneIDs)
+  const validPaneIDs = Array.from(deduplicatedPaneIDs).filter(
+    isDefaultLayoutPaneID
+  )
   for (const id of validPaneIDs) {
     const parentOfPane = findLayoutParentNode({ rootLayout, targetNodeId: id })
     if (!parentOfPane || parentOfPane.type !== LayoutType.Panes) {

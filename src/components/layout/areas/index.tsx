@@ -1,3 +1,4 @@
+import type { PaneChildCssOverrides } from '@src/lib/layout'
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
@@ -17,19 +18,19 @@ import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
 import { MLEphantConversationPaneMenu } from '@src/components/MlEphantConversation'
 import { MLEphantConversationPaneMenu2 } from '@src/components/MlEphantConversation2'
-import { ModelingPaneHeader } from '@src/components/ModelingSidebar/ModelingPane'
-import { DebugPane } from '@src/components/ModelingSidebar/ModelingPanes/DebugPane'
-import { FeatureTreeMenu } from '@src/components/ModelingSidebar/ModelingPanes/FeatureTreeMenu'
-import { FeatureTreePane } from '@src/components/ModelingSidebar/ModelingPanes/FeatureTreePane'
-import { KclEditorMenu } from '@src/components/ModelingSidebar/ModelingPanes/KclEditorMenu'
-import { KclEditorPane } from '@src/components/ModelingSidebar/ModelingPanes/KclEditorPane'
-import { LogsPane } from '@src/components/ModelingSidebar/ModelingPanes/LoggingPanes'
+import { LayoutPanelHeader } from '@src/components/layout/Panel'
+import { DebugPane } from '@src/components/layout/areas/DebugPane'
+import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
+import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
+import { KclEditorMenu } from '@src/components/layout/areas/KclEditorMenu'
+import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
+import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import {
   MemoryPane,
   MemoryPaneMenu,
-} from '@src/components/ModelingSidebar/ModelingPanes/MemoryPane'
-import { MlEphantConversationPane } from '@src/components/ModelingSidebar/ModelingPanes/MlEphantConversationPane'
-import { MlEphantConversationPane2 } from '@src/components/ModelingSidebar/ModelingPanes/MlEphantConversationPane2'
+} from '@src/components/layout/areas/MemoryPane'
+import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
+import { MlEphantConversationPane2 } from '@src/components/layout/areas/MlEphantConversationPane2'
 import { ToastInsert } from '@src/components/ToastInsert'
 import type { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
@@ -81,11 +82,6 @@ interface PaneCallbackProps {
   platform: 'web' | 'desktop'
 }
 
-export type SidebarCssOverrides = Partial<{
-  button: string
-  // Could add pane, etc here
-}>
-
 export type SidebarPane = {
   id: SidebarId
   sidebarName: string
@@ -94,7 +90,7 @@ export type SidebarPane = {
   Content: React.FC<{ id: SidebarId; onClose: () => void }>
   hide?: boolean | ((props: PaneCallbackProps) => boolean)
   showBadge?: BadgeInfo
-  cssClassOverrides?: SidebarCssOverrides
+  cssClassOverrides?: PaneChildCssOverrides
 }
 
 export type SidebarAction = {
@@ -107,7 +103,7 @@ export type SidebarAction = {
   action: () => void
   hide?: boolean | ((props: PaneCallbackProps) => boolean)
   disable?: () => string | undefined
-  cssClassOverrides?: SidebarCssOverrides
+  cssClassOverrides?: PaneChildCssOverrides
 }
 
 // For now a lot of icons are the same but the reality is they could totally
@@ -130,7 +126,7 @@ const textToCadPane = Object.freeze({
 
     return (
       <>
-        <ModelingPaneHeader
+        <LayoutPanelHeader
           id={props.id}
           icon="sparkles"
           title="Text-to-CAD"
@@ -174,7 +170,7 @@ const textToCadPane2 = Object.freeze({
 
     return (
       <>
-        <ModelingPaneHeader
+        <LayoutPanelHeader
           id={props.id}
           icon="sparkles"
           title="Text-to-CAD"
@@ -208,7 +204,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
     sidebarName: 'Feature Tree',
     Content: (props) => (
       <>
-        <ModelingPaneHeader
+        <LayoutPanelHeader
           id={props.id}
           icon="model"
           title="Feature Tree"
@@ -226,7 +222,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
     Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
-          <ModelingPaneHeader
+          <LayoutPanelHeader
             id={props.id}
             icon="code"
             title="KCL Code"
@@ -292,7 +288,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
         useState<number>(0)
       const [collapsePressed, setCollapsedPressed] = useState<number>(0)
 
-      const onRowClicked = (entry: FileExplorerEntry, domIndex: number) => {
+      const onRowClicked = (entry: FileExplorerEntry) => {
         const applicationProjectDirectory =
           settings.app.projectDirectory.current
         const requestedFileName = parentPathRelativeToProject(
@@ -349,7 +345,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
 
       return (
         <>
-          <ModelingPaneHeader
+          <LayoutPanelHeader
             id={props.id}
             icon="folder"
             title={`${theProject?.name || ''}`}
@@ -367,7 +363,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
                 onCollapseExplorer={() => {
                   setCollapsedPressed(performance.now())
                 }}
-              ></FileExplorerHeaderActions>
+              />
             }
             onClose={props.onClose}
           />
@@ -384,10 +380,10 @@ export const sidebarPanesLeft: SidebarPane[] = [
                 onRowEnter={onRowClicked}
                 canNavigate={true}
                 readOnly={false}
-              ></ProjectExplorer>
+              />
             </div>
           ) : (
-            <div></div>
+            <div />
           )}
         </>
       )
@@ -421,7 +417,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
     Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
-          <ModelingPaneHeader
+          <LayoutPanelHeader
             id={props.id}
             icon="make-variable"
             title="Variables"
@@ -441,7 +437,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
     Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
-          <ModelingPaneHeader
+          <LayoutPanelHeader
             id={props.id}
             icon="logs"
             title="Logs"
@@ -461,7 +457,7 @@ export const sidebarPanesLeft: SidebarPane[] = [
     Content: (props: { id: SidebarId; onClose: () => void }) => {
       return (
         <>
-          <ModelingPaneHeader
+          <LayoutPanelHeader
             id={props.id}
             icon="bug"
             title="Debug"
