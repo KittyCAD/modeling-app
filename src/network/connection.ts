@@ -782,7 +782,9 @@ export class Connection extends EventTarget {
 
   disconnectPeerConnection() {
     if (!this.peerConnection) {
-      console.warn('peerConnection is undefined during disconnectPeerConnection')
+      console.warn(
+        'peerConnection is undefined during disconnectPeerConnection'
+      )
       return
     }
 

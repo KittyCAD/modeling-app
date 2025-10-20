@@ -1801,7 +1801,8 @@ export const modelingMachine = setup({
           sketchDetails.yAxis,
           sketchDetails.origin,
           getEventForSegmentSelection,
-          updateExtraSegments
+          updateExtraSegments,
+          wasmInstance
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1866,7 +1867,8 @@ export const modelingMachine = setup({
             sketchDetails.yAxis,
             sketchDetails.origin,
             getEventForSegmentSelection,
-            updateExtraSegments
+            updateExtraSegments,
+            wasmInstance
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1929,7 +1931,8 @@ export const modelingMachine = setup({
             sketchDetails.yAxis,
             sketchDetails.origin,
             getEventForSegmentSelection,
-            updateExtraSegments
+            updateExtraSegments,
+            wasmInstance
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -1990,7 +1993,8 @@ export const modelingMachine = setup({
             sketchDetails.yAxis,
             sketchDetails.origin,
             getEventForSegmentSelection,
-            updateExtraSegments
+            updateExtraSegments,
+            wasmInstance
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -2052,7 +2056,8 @@ export const modelingMachine = setup({
             sketchDetails.yAxis,
             sketchDetails.origin,
             getEventForSegmentSelection,
-            updateExtraSegments
+            updateExtraSegments,
+            wasmInstance
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -2114,7 +2119,8 @@ export const modelingMachine = setup({
             sketchDetails.yAxis,
             sketchDetails.origin,
             getEventForSegmentSelection,
-            updateExtraSegments
+            updateExtraSegments,
+            wasmInstance
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -2176,7 +2182,8 @@ export const modelingMachine = setup({
             sketchDetails.yAxis,
             sketchDetails.origin,
             getEventForSegmentSelection,
-            updateExtraSegments
+            updateExtraSegments,
+            wasmInstance
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -2244,7 +2251,8 @@ export const modelingMachine = setup({
             sketchDetails.yAxis,
             sketchDetails.origin,
             getEventForSegmentSelection,
-            updateExtraSegments
+            updateExtraSegments,
+            wasmInstance
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -2306,7 +2314,8 @@ export const modelingMachine = setup({
             sketchDetails.yAxis,
             sketchDetails.origin,
             getEventForSegmentSelection,
-            updateExtraSegments
+            updateExtraSegments,
+            wasmInstance
           )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
@@ -2616,6 +2625,7 @@ export const modelingMachine = setup({
           | 'codeManager'
           | 'wasmInstance'
           | 'kclManager'
+          | 'sceneEntitiesManager'
         > & {
           data?: ModelingCommandSchema['Constrain with named value']
         }
@@ -2628,6 +2638,9 @@ export const modelingMachine = setup({
           return Promise.reject(new Error('No data from command flow'))
         }
         const theKclManager = input.kclManager ? input.kclManager : kclManager
+        const theSceneEntitiesManager = input.sceneEntitiesManager
+          ? input.sceneEntitiesManager
+          : sceneEntitiesManager
         let pResult = parse(
           recast(theKclManager.ast, input.wasmInstance),
           input.wasmInstance
@@ -2722,17 +2735,19 @@ export const modelingMachine = setup({
           exprInsertIndex: result.exprInsertIndex,
         })
 
-        const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
-          updatedSketchEntryNodePath,
-          updatedSketchNodePaths,
-          updatedPlaneNodePath,
-          parsed,
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin,
-          getEventForSegmentSelection,
-          updateExtraSegments
-        )
+        const updatedAst =
+          await theSceneEntitiesManager.updateAstAndRejigSketch(
+            updatedSketchEntryNodePath,
+            updatedSketchNodePaths,
+            updatedPlaneNodePath,
+            parsed,
+            sketchDetails.zAxis,
+            sketchDetails.yAxis,
+            sketchDetails.origin,
+            getEventForSegmentSelection,
+            updateExtraSegments,
+            input.wasmInstance
+          )
         if (err(updatedAst)) return Promise.reject(updatedAst)
 
         const theCodeManager = input.codeManager
@@ -4786,7 +4801,8 @@ export const modelingMachine = setup({
                 sketchDetails,
                 codeManager: providedCodeManager,
                 wasmInstance,
-                kclManager,
+                kclManager: providedKclManager,
+                sceneEntitiesManager: providedSceneEntitiesManager,
               },
               event,
             }) => {
@@ -4803,7 +4819,8 @@ export const modelingMachine = setup({
                 data: event.data,
                 codeManager: providedCodeManager,
                 wasmInstance,
-                kclManager,
+                kclManager: providedKclManager,
+                sceneEntitiesManager: providedSceneEntitiesManager,
               }
             },
             onError: 'SketchIdle',

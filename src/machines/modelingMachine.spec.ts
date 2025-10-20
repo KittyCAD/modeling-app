@@ -168,7 +168,6 @@ describe('modelingMachine.test.ts', () => {
 
         // The machine should start in the idle state
         expect(state).toEqual({ idle: 'hidePlanes' })
-
       })
     })
 
@@ -1033,17 +1032,16 @@ p3 = [342.51, 216.38],
             }
 
             expect(codeManagerInThisFile.code).not.toContain(searchText)
-
           }, 10_000)
         }
       )
     })
-    describe.only('Adding segment overlay constraints', () => {
+    describe('Adding segment overlay constraints', () => {
       const namedConstantConstraintCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.namedConstantConstraint
       )
-      const oneTest = [namedConstantConstraintCases[0]]
-      oneTest.forEach(
+
+      namedConstantConstraintCases.forEach(
         ({
           name,
           code,
@@ -1168,26 +1166,14 @@ p3 = [342.51, 216.38],
               },
             })
 
-            // Wait for the state to change in response to the constraint
-            await waitForCondition(() => {
-              const snapshot = actor.getSnapshot()
-              // Check if we've transitioned to a different state
-              return (
-                JSON.stringify(snapshot.value) !==
-                JSON.stringify({
-                  Sketch: { SketchIdle: 'set up segments' },
-                })
-              )
-            }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
-
-            await waitForCondition(() => {
-              const snapshot = actor.getSnapshot()
-              // Check if we've transitioned to a different state
-              return (
-                JSON.stringify(snapshot.value) !==
-                JSON.stringify({ Sketch: 'Converting to named value' })
-              )
-            }, GLOBAL_TIMEOUT_FOR_MODELING_MACHINE)
+            await waitForState({
+              modelingMachineActor: actor,
+              stateString: { Sketch: 'Converting to named value' },
+            })
+            await waitForState({
+              modelingMachineActor: actor,
+              stateString: { Sketch: { SketchIdle: 'scene drawn' } },
+            })
             expect(codeManagerInThisFile.code).toContain(expectedResult)
           }, 10_000)
         }
