@@ -93,7 +93,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
           <p className="px-4 py-2 text-sm">
             <span className="font-bold">Warning: </span>
             <span>
-              this command is experimental, which means the KCL code we generate
+              this command is experimental, which means the feature it generates
               may not be compatible with future versions of Zoo Design Studio.
               Use at your own risk, and please report issues!
             </span>
