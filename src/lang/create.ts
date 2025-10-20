@@ -27,6 +27,7 @@ import {
   formatNumberLiteral,
 } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 /**
  * Note: This depends on WASM, but it's not async.  Callers are responsible for
@@ -34,7 +35,8 @@ import { err } from '@src/lib/trap'
  */
 export function createLiteral(
   value: number | string | boolean,
-  suffix?: NumericSuffix
+  suffix?: NumericSuffix,
+  wasmInstance?: ModuleType
 ): Node<Literal> {
   // TODO: Should we handle string escape sequences?
   return {
@@ -46,7 +48,7 @@ export function createLiteral(
       typeof value === 'number'
         ? { value, suffix: suffix ? suffix : 'None' }
         : value,
-    raw: createRawStr(value, suffix),
+    raw: createRawStr(value, suffix, wasmInstance),
     outerAttrs: [],
     preComments: [],
     commentStart: 0,
@@ -55,13 +57,14 @@ export function createLiteral(
 
 function createRawStr(
   value: number | string | boolean,
-  suffix?: NumericSuffix
+  suffix?: NumericSuffix,
+  wasmInstance?: ModuleType
 ): string {
   if (typeof value !== 'number' || !suffix) {
     return `${value}`
   }
 
-  const formatted = formatNumberLiteral(value, suffix)
+  const formatted = formatNumberLiteral(value, suffix, wasmInstance)
   if (err(formatted)) {
     return `${value}`
   }

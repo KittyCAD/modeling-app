@@ -910,7 +910,7 @@ p3 = [342.51, 216.38],
         ],
       },
     }
-
+    // test: all of these pass.
     describe('Deleting segment with three dot menu', () => {
       let namedConstantConstraintCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.deleteSegment
@@ -1032,7 +1032,8 @@ p3 = [342.51, 216.38],
         }
       )
     })
-    describe.only('Adding segment overlay constraints', () => {
+    // test: all of these pass
+    describe('Adding segment overlay constraints', () => {
       let namedConstantConstraintCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.namedConstantConstraint
       )
@@ -1169,7 +1170,8 @@ p3 = [342.51, 216.38],
         }
       )
     })
-    describe('removing individual constraints with segment overlay events', () => {
+    // test: todo
+    describe.only('removing individual constraints with segment overlay events', () => {
       const removeIndividualConstraintsCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.removeIndividualConstraintsCases
       )
@@ -1282,7 +1284,8 @@ p3 = [342.51, 216.38],
               ast,
               kclManagerInThisFile.variables,
               removeSingleConstraint,
-              transformAstSketchLines
+              transformAstSketchLines,
+              instanceInThisFile
             )
             if (!mod) {
               throw new Error('Failed to remove constraint info')

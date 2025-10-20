@@ -65,6 +65,7 @@ import {
   type removeSingleConstraint as RemoveSingleConstraintFn,
   type transformAstSketchLines as TransformAstSketchLinesFn,
 } from '@src/lang/std/sketchcombos'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -766,7 +767,8 @@ export function removeSingleConstraintInfo(
   ast: Node<Program>,
   memVars: VariableMap,
   removeSingleConstraint: typeof RemoveSingleConstraintFn,
-  transformAstSketchLines: typeof TransformAstSketchLinesFn
+  transformAstSketchLines: typeof TransformAstSketchLinesFn,
+  wasmInstance?: ModuleType
 ):
   | {
       modifiedAst: Node<Program>
@@ -785,6 +787,7 @@ export function removeSingleConstraintInfo(
     transformInfos: [transform],
     memVars,
     referenceSegName: '',
+    wasmInstance,
   })
   if (err(retval)) return false
   return retval

@@ -77,7 +77,8 @@ export function getNodeFromPath<T>(
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly = false,
   suppressNoise = false,
-  replacement?: any
+  replacement?: any,
+  wasmInstance?: ModuleType
 ):
   | {
       node: T
@@ -104,7 +105,7 @@ export function getNodeFromPath<T>(
         }
       }
       const stackTraceError = new Error()
-      const sourceCode = recast(node)
+      const sourceCode = recast(node, wasmInstance)
       const levels = stackTraceError.stack?.split('\n')
       const aFewFunctionNames: string[] = []
       let tree = ''

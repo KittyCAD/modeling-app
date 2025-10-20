@@ -4331,6 +4331,7 @@ export const modelingMachine = setup({
                 ],
                 onError: {
                   target: '#Modeling.idle',
+                  actions: [(event) => console.log(event)],
                   reenter: true,
                 },
               },

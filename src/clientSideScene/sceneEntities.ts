@@ -202,6 +202,7 @@ export class SceneEntities {
   readonly codeManager: CodeManager
   readonly kclManager: KclManager
   readonly rustContext: RustContext
+  readonly wasmInstance?: ModuleType
   commandBarActor?: ActorRefFrom<typeof commandBarMachine>
   activeSegments: { [key: string]: Group } = {}
   readonly intersectionPlane: Mesh
@@ -217,7 +218,8 @@ export class SceneEntities {
     editorManager: EditorManager,
     codeManager: CodeManager,
     kclManager: KclManager,
-    rustContext: RustContext
+    rustContext: RustContext,
+    wasmInstance?: ModuleType
   ) {
     this.engineCommandManager = engineCommandManager
     this.sceneInfra = sceneInfra
@@ -228,7 +230,7 @@ export class SceneEntities {
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
       this.sceneInfra
     )
-
+    this.wasmInstance = wasmInstance
     this.sceneInfra.camControls.cameraChange.add(this.onCamChange)
     this.sceneInfra.baseUnitChange.add(this.onCamChange)
   }
@@ -335,6 +337,7 @@ export class SceneEntities {
         group: segment,
         scale: factor,
         sceneInfra: this.sceneInfra,
+        wasmInstance: this.wasmInstance,
       })
       callBack && !err(callBack) && callbacks.push(callBack)
       if (segment.name === PROFILE_START) {

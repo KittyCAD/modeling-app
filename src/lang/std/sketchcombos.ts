@@ -90,6 +90,7 @@ import {
   normaliseAngle,
   roundOff,
 } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -1898,6 +1899,7 @@ export function transformAstSketchLines({
   referenceSegName,
   forceValueUsedInTransform,
   referencedSegmentRange,
+  wasmInstance,
 }: {
   ast: Node<Program>
   selectionRanges: Selections | PathToNode[]
@@ -1906,6 +1908,7 @@ export function transformAstSketchLines({
   referenceSegName: string
   referencedSegmentRange?: SourceRange
   forceValueUsedInTransform?: BinaryPart
+  wasmInstance?: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -1952,7 +1955,15 @@ export function transformAstSketchLines({
       )
         return
 
-      const nodeMeta = getNodeFromPath<Expr>(ast, a.pathToNode)
+      const nodeMeta = getNodeFromPath<Expr>(
+        ast,
+        a.pathToNode,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        wasmInstance
+      )
       if (err(nodeMeta)) return
 
       switch (a?.argPosition?.type) {
@@ -2089,6 +2100,7 @@ export function transformAstSketchLines({
           forceValueUsedInTransform,
           referencedSegment,
         }),
+      wasmInstance,
     })
     if (err(replacedSketchLine)) return replacedSketchLine
 
