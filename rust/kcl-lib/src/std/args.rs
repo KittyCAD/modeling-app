@@ -15,6 +15,7 @@ use crate::{
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType, UnitType},
     },
+    front::Number,
     parsing::ast::types::TagNode,
     std::{
         shapes::{PolygonType, SketchOrSurface},
@@ -39,7 +40,7 @@ impl TyF64 {
         Self { n, ty }
     }
 
-    pub fn from_number(n: kcl_api::Number, settings: &MetaSettings) -> Self {
+    pub fn from_number(n: Number, settings: &MetaSettings) -> Self {
         Self {
             n: n.value,
             ty: NumericType::from_parsed(n.units, settings),
@@ -109,13 +110,13 @@ impl TyF64 {
 
     // This can't be a TryFrom impl because `Point2d` is defined in another
     // crate.
-    pub fn to_point2d(value: &[TyF64; 2]) -> Result<kcl_api::sketch::Point2d<kcl_api::Number>, ()> {
-        Ok(kcl_api::sketch::Point2d {
-            x: kcl_api::Number {
+    pub fn to_point2d(value: &[TyF64; 2]) -> Result<crate::front::Point2d<Number>, ()> {
+        Ok(crate::front::Point2d {
+            x: Number {
                 value: value[0].n,
                 units: value[0].ty.try_into()?,
             },
-            y: kcl_api::Number {
+            y: Number {
                 value: value[1].n,
                 units: value[1].ty.try_into()?,
             },

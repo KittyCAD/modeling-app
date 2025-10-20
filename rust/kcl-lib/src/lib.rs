@@ -150,7 +150,18 @@ pub mod pretty {
 }
 
 pub mod front {
-    pub use crate::frontend::{FrontendState, scene::ObjectId};
+    pub use crate::frontend::{
+        FrontendState,
+        scene::{
+            Error, Expr, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane, ProjectId, Result,
+            SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, StandardPlane, Version,
+        },
+        sketch::{
+            Arc, ArcCtor, Circle, CircleCtor, Freedom, Line, LineCtor, MidPointLineCtor, Point, Point2d, Segment,
+            SegmentCtor, Sketch, SketchApi, SketchArgs, StartOrEnd, TangentArcCtor, ThreePointArcCtor,
+            ThreePointCircleCtor,
+        },
+    };
 }
 
 #[cfg(feature = "cli")]

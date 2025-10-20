@@ -37,6 +37,7 @@ use crate::{
         import_graph::{Universe, UniverseMap},
         typed_path::TypedPath,
     },
+    front::ObjectId,
     fs::FileManager,
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
@@ -250,12 +251,12 @@ impl From<&Expr> for Metadata {
 }
 
 impl Metadata {
-    pub fn to_source_ref(meta: &[Metadata]) -> kcl_api::SourceRef {
+    pub fn to_source_ref(meta: &[Metadata]) -> crate::front::SourceRef {
         if meta.len() == 1 {
             let meta = &meta[0];
-            return kcl_api::SourceRef::Simple(meta.source_range);
+            return crate::front::SourceRef::Simple(meta.source_range);
         }
-        kcl_api::SourceRef::BackTrace(meta.iter().map(|m| m.source_range).collect())
+        crate::front::SourceRef::BackTrace(meta.iter().map(|m| m.source_range).collect())
     }
 }
 

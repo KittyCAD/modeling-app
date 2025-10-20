@@ -2,7 +2,7 @@
 
 #![allow(async_fn_in_trait)]
 
-use kcl_error::SourceRange;
+use kcl_error::{CompilationError, SourceRange};
 use serde::{Deserialize, Serialize};
 
 pub mod sketch;

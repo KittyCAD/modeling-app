@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
-use kcl_api::{Object, ObjectId, ObjectKind, sketch::Freedom};
 use kcl_ezpz::Constraint;
 use kittycad_modeling_cmds::units::UnitLength;
 
@@ -22,6 +21,7 @@ use crate::{
         types::{NumericType, PrimitiveType, RuntimeType},
     },
     fmt,
+    front::{Freedom, Object, ObjectId, ObjectKind},
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
@@ -1039,11 +1039,11 @@ impl Node<SketchBlock> {
         // TODO: sketch-api: send this to the engine.
         let scene_object = Object {
             id: sketch_id,
-            kind: ObjectKind::Sketch(kcl_api::sketch::Sketch {
-                args: kcl_api::sketch::SketchArgs {
+            kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
+                args: crate::front::SketchArgs {
                     on: on_object
-                        .map(kcl_api::Plane::Object)
-                        .unwrap_or(kcl_api::Plane::Default(kcl_api::StandardPlane::XY)),
+                        .map(crate::front::Plane::Object)
+                        .unwrap_or(crate::front::Plane::Default(crate::front::StandardPlane::XY)),
                 },
                 segments: segment_object_ids,
                 // TODO: sketch-api: implement
@@ -1260,7 +1260,7 @@ fn create_segment_scene_objects(
         })?;
         let start_point_object = Object {
             id: exec_state.next_object_id(),
-            kind: ObjectKind::Segment(kcl_api::sketch::Segment::Point(kcl_api::sketch::Point {
+            kind: ObjectKind::Segment(crate::front::Segment::Point(crate::front::Point {
                 position: start_point2d.clone(),
                 ctor: None,
                 owner: Some(segment_object_id),
@@ -1285,7 +1285,7 @@ fn create_segment_scene_objects(
         })?;
         let end_point_object = Object {
             id: exec_state.next_object_id(),
-            kind: ObjectKind::Segment(kcl_api::sketch::Segment::Point(kcl_api::sketch::Point {
+            kind: ObjectKind::Segment(crate::front::Segment::Point(crate::front::Point {
                 position: end_point2d.clone(),
                 ctor: None,
                 owner: Some(segment_object_id),
@@ -1304,21 +1304,21 @@ fn create_segment_scene_objects(
 
         let segment_object = Object {
             id: segment_object_id,
-            kind: ObjectKind::Segment(kcl_api::sketch::Segment::Line(kcl_api::sketch::Line {
+            kind: ObjectKind::Segment(crate::front::Segment::Line(crate::front::Line {
                 start: start_point_object_id,
                 end: end_point_object_id,
-                ctor: kcl_api::sketch::SegmentCtor::Line(kcl_api::sketch::LineCtor {
-                    start: kcl_api::sketch::Point2d {
+                ctor: crate::front::SegmentCtor::Line(crate::front::LineCtor {
+                    start: crate::front::Point2d {
                         // TODO: sketch-api: use original input expressions
                         // instead of numbers.
-                        x: kcl_api::Expr::Number(start_point2d.x.clone()),
-                        y: kcl_api::Expr::Number(start_point2d.y.clone()),
+                        x: crate::front::Expr::Number(start_point2d.x.clone()),
+                        y: crate::front::Expr::Number(start_point2d.y.clone()),
                     },
-                    end: kcl_api::sketch::Point2d {
+                    end: crate::front::Point2d {
                         // TODO: sketch-api: use original input expressions
                         // instead of numbers.
-                        x: kcl_api::Expr::Number(end_point2d.x.clone()),
-                        y: kcl_api::Expr::Number(end_point2d.y.clone()),
+                        x: crate::front::Expr::Number(end_point2d.x.clone()),
+                        y: crate::front::Expr::Number(end_point2d.y.clone()),
                     },
                 }),
                 ctor_applicable: true,

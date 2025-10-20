@@ -2,7 +2,6 @@ use std::{collections::BTreeMap, str::FromStr, sync::Arc};
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcl_api::{Object, ObjectId};
 use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -20,6 +19,7 @@ use crate::{
         memory::{ProgramMemory, Stack},
         types::NumericType,
     },
+    front::{Object, ObjectId},
     id::IncIdGenerator,
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},

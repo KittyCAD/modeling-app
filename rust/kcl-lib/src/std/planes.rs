@@ -33,9 +33,9 @@ pub(crate) async fn inner_plane_of(
     args: &Args,
 ) -> Result<Plane, KclError> {
     let plane_object_id = exec_state.next_object_id();
-    let plane_object = kcl_api::Object {
+    let plane_object = crate::front::Object {
         id: plane_object_id,
-        kind: kcl_api::ObjectKind::Plane(kcl_api::Plane::Object(plane_object_id)),
+        kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
         label: Default::default(),
         comments: Default::default(),
         artifact_id: 0, // TODO: sketch-api: implement

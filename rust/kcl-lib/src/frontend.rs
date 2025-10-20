@@ -5,18 +5,22 @@ use kcl_error::SourceRange;
 use tokio::sync::RwLock;
 
 use crate::{
-    fmt::format_number_literal, frontend::{
+    ExecutorContext, Program,
+    fmt::format_number_literal,
+    frontend::{
         scene::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, Settings,
             SourceDelta, SourceRef, Version,
         },
         sketch::{Constraint, LineCtor, Point2d, Segment, SegmentCtor, SketchApi, SketchArgs},
         traverse::dfs_mut,
-    }, parsing::ast::types as ast, walk::NodeMut, ExecutorContext, Program
+    },
+    parsing::ast::types as ast,
+    walk::NodeMut,
 };
 
 pub(crate) mod scene;
-mod sketch;
+pub(crate) mod sketch;
 mod traverse;
 
 const LINE_FN: &str = "line";
