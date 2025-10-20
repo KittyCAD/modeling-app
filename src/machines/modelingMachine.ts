@@ -167,6 +167,7 @@ import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type ModelingMachineEvent =
   | {
@@ -2418,6 +2419,7 @@ export const modelingMachine = setup({
           sceneInfra: providedSceneInfra,
           sceneEntitiesManager: providedSceneEntitiesManager,
           kclManager: providedKclManager,
+          wasmInstance,
         },
       }: {
         input: {
@@ -2426,6 +2428,7 @@ export const modelingMachine = setup({
           sceneInfra?: SceneInfra
           sceneEntitiesManager?: SceneEntities
           kclManager?: KclManager
+          wasmInstance?: ModuleType
         }
       }) => {
         if (!sketchDetails) {
@@ -2456,6 +2459,7 @@ export const modelingMachine = setup({
           position: sketchDetails.origin,
           maybeModdedAst: theKclManager.ast,
           selectionRanges,
+          wasmInstance,
         })
         theSceneInfra.resetMouseListeners()
 
@@ -4305,6 +4309,7 @@ export const modelingMachine = setup({
                     sceneInfra: providedSeneInfra,
                     sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
+                    wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
@@ -4312,6 +4317,7 @@ export const modelingMachine = setup({
                   sceneInfra: providedSeneInfra,
                   sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
+                  wasmInstance,
                 }),
                 onDone: [
                   {
@@ -4496,6 +4502,7 @@ export const modelingMachine = setup({
                     sceneInfra: providedSeneInfra,
                     sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
+                    wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
@@ -4503,6 +4510,7 @@ export const modelingMachine = setup({
                   sceneInfra: providedSeneInfra,
                   sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -4571,6 +4579,7 @@ export const modelingMachine = setup({
                     sceneInfra: providedSeneInfra,
                     sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
+                    wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
@@ -4578,6 +4587,7 @@ export const modelingMachine = setup({
                   sceneInfra: providedSeneInfra,
                   sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -4646,6 +4656,7 @@ export const modelingMachine = setup({
                     sceneInfra: providedSeneInfra,
                     sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
+                    wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
@@ -4653,6 +4664,7 @@ export const modelingMachine = setup({
                   sceneInfra: providedSeneInfra,
                   sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -4725,6 +4737,7 @@ export const modelingMachine = setup({
                     sceneInfra: providedSeneInfra,
                     sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
+                    wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
@@ -4732,6 +4745,7 @@ export const modelingMachine = setup({
                   sceneInfra: providedSeneInfra,
                   sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -5109,6 +5123,7 @@ export const modelingMachine = setup({
                     sceneInfra: providedSeneInfra,
                     sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
+                    wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
@@ -5116,6 +5131,7 @@ export const modelingMachine = setup({
                   sceneInfra: providedSeneInfra,
                   sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -5177,6 +5193,7 @@ export const modelingMachine = setup({
                     sceneInfra: providedSeneInfra,
                     sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
+                    wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
@@ -5184,6 +5201,7 @@ export const modelingMachine = setup({
                   sceneInfra: providedSeneInfra,
                   sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -5256,6 +5274,7 @@ export const modelingMachine = setup({
                     sceneInfra: providedSeneInfra,
                     sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
+                    wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
@@ -5263,6 +5282,7 @@ export const modelingMachine = setup({
                   sceneInfra: providedSeneInfra,
                   sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -5338,6 +5358,7 @@ export const modelingMachine = setup({
                     sceneInfra: providedSeneInfra,
                     sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
+                    wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
@@ -5345,6 +5366,7 @@ export const modelingMachine = setup({
                   sceneInfra: providedSeneInfra,
                   sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -5436,6 +5458,7 @@ export const modelingMachine = setup({
                     sceneInfra: providedSeneInfra,
                     sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
+                    wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
@@ -5443,6 +5466,7 @@ export const modelingMachine = setup({
                   sceneInfra: providedSeneInfra,
                   sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },
@@ -5459,6 +5483,7 @@ export const modelingMachine = setup({
                     sceneInfra: providedSeneInfra,
                     sceneEntitiesManager: providedSceneEntitiesManager,
                     kclManager: providedKclManager,
+                    wasmInstance,
                   },
                 }) => ({
                   sketchDetails,
@@ -5466,6 +5491,7 @@ export const modelingMachine = setup({
                   sceneInfra: providedSeneInfra,
                   sceneEntitiesManager: providedSceneEntitiesManager,
                   kclManager: providedKclManager,
+                  wasmInstance,
                 }),
               },
             },

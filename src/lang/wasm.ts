@@ -512,11 +512,13 @@ export function getTangentialArcToInfo({
   arcEndPoint,
   tanPreviousPoint,
   obtuse = true,
+  wasmInstance,
 }: {
   arcStartPoint: Coords2d
   arcEndPoint: Coords2d
   tanPreviousPoint: Coords2d
   obtuse?: boolean
+  wasmInstance?: ModuleType
 }): {
   center: Coords2d
   arcMidPoint: Coords2d
@@ -526,7 +528,10 @@ export function getTangentialArcToInfo({
   ccw: boolean
   arcLength: number
 } {
-  const result = get_tangential_arc_to_info(
+  const the_get_tangential_arc_to_info = wasmInstance
+    ? wasmInstance.get_tangential_arc_to_info
+    : get_tangential_arc_to_info
+  const result = the_get_tangential_arc_to_info(
     arcStartPoint[0],
     arcStartPoint[1],
     arcEndPoint[0],

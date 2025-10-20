@@ -805,6 +805,7 @@ export class SceneEntities {
     maybeModdedAst,
     draftExpressionsIndices,
     selectionRanges,
+    wasmInstance,
   }: {
     sketchEntryNodePath: PathToNode
     sketchNodePaths: PathToNode[]
@@ -814,6 +815,7 @@ export class SceneEntities {
     up: [number, number, number]
     position?: [number, number, number]
     selectionRanges?: Selections
+    wasmInstance?: ModuleType
   }): Promise<{
     truncatedAst: Node<Program>
     variableDeclarationName: string
@@ -887,6 +889,7 @@ export class SceneEntities {
 
         callbacks.push(startProfileCallBack)
       }
+
       sketch.paths.forEach((segment, index) => {
         const isLastInProfile =
           index === sketch.paths.length - 1 && segment.type !== 'Circle'
@@ -1006,6 +1009,7 @@ export class SceneEntities {
           selection,
           commandBarActor: this.commandBarActor,
           kclManager: this.kclManager,
+          wasmInstance,
         })
         if (err(result)) return
         const { group: _group, updateOverlaysCallback } = result

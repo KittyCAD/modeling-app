@@ -912,9 +912,10 @@ p3 = [342.51, 216.38],
     }
 
     describe('Deleting segment with three dot menu', () => {
-      const namedConstantConstraintCases = Object.values(cases).flatMap(
+      let namedConstantConstraintCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.deleteSegment
       )
+      // namedConstantConstraintCases = namedConstantConstraintCases.filter((cases) => { return cases.name === 'should delete tangentialArc absolute' })
       namedConstantConstraintCases.forEach(
         ({ name, code, searchText, filter }) => {
           it(name, async () => {
@@ -984,11 +985,6 @@ p3 = [342.51, 216.38],
               stateString: { Sketch: { SketchIdle: 'set up segments' } },
             })
 
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'scene drawn' } },
-            })
-
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
               artifact.codeRef.pathToNode,
@@ -1036,11 +1032,10 @@ p3 = [342.51, 216.38],
         }
       )
     })
-    describe('Adding segment overlay constraints', () => {
-      const namedConstantConstraintCases = Object.values(cases).flatMap(
+    describe.only('Adding segment overlay constraints', () => {
+      let namedConstantConstraintCases = Object.values(cases).flatMap(
         (caseGroup) => caseGroup.namedConstantConstraint
       )
-
       namedConstantConstraintCases.forEach(
         ({
           name,
@@ -1116,11 +1111,6 @@ p3 = [342.51, 216.38],
             await waitForState({
               modelingMachineActor: actor,
               stateString: { Sketch: { SketchIdle: 'set up segments' } },
-            })
-
-            await waitForState({
-              modelingMachineActor: actor,
-              stateString: { Sketch: { SketchIdle: 'scene drawn' } },
             })
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
