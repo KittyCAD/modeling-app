@@ -574,8 +574,7 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
     return { reason: 'Wrong operation type' }
   }
 
-  console.log('prepareToEditHole operation:', operation)
-  // 1. Map the unlabeled and faces arguments to solid2d selections
+  // 1. Map the unlabeled face arguments to solid2d selections
   if (!operation.unlabeledArg || !operation.labeledArgs?.face) {
     return { reason: `Couldn't retrieve operation arguments` }
   }
@@ -591,7 +590,7 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
 
   const { faces: face } = result
 
-  // 2. Convert the required arguments from a string to a KCL expression
+  // 2.1 Convert the required arg from string to KclExpression
   const cutAt = await stringToKclExpression(
     codeManager.code.slice(
       operation.labeledArgs?.cutAt?.sourceRange[0],
@@ -602,7 +601,7 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
     return { reason: "Couldn't retrieve cutAt argument" }
   }
 
-  // holeBody argument
+  // 2.2 Handle the holeBody required 'mode' arg and its related optional args
   let holeBody: 'blind' | undefined
   let blindDepth: KclExpression | undefined
   let blindDiameter: KclExpression | undefined
@@ -649,18 +648,16 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
     return { reason: "Couldn't retrieve holeBody argument: doesn't exist" }
   }
 
-  // holeBottom argument
+  // 2.3 Handle the holeBottom required 'mode' arg and its related optional args
   let holeBottom: 'flat' | 'drill' | undefined
   let drillPointAngle: KclExpression | undefined
   if (operation.labeledArgs?.holeBottom?.value.type === 'Object') {
     const holeBottomValue = operation.labeledArgs.holeBottom.value.value
-    // TODO: check why drillBitAngle is inconsistent here
     if (
       'drillBitAngle' in holeBottomValue &&
       holeBottomValue.drillBitAngle?.type === 'Number'
     ) {
       if (holeBottomValue.drillBitAngle.value === 180) {
-        // TODO: we should do better than this??
         holeBottom = 'flat'
       } else {
         holeBottom = 'drill'
@@ -687,7 +684,7 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
     return { reason: "Couldn't retrieve holeBottom argument: doesn't exist" }
   }
 
-  // holeType argument
+  // 2.3 Handle the holeType required 'mode' arg and its related optional args
   let holeType: 'simple' | 'counterbore' | 'countersink' | undefined
   let counterboreDepth: KclExpression | undefined
   let counterboreDiameter: KclExpression | undefined
@@ -695,13 +692,28 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
   let countersinkDiameter: KclExpression | undefined
   if (operation.labeledArgs?.holeType?.value.type === 'Object') {
     const holeTypeValue = operation.labeledArgs.holeType.value.value
-    const holeTypeSimpleFeatureId = 0 // TODO: pull this from rust
+    // TODO: pull this from Rust/KCL
+    // https://github.com/KittyCAD/modeling-app/blob/2666d89427c3350ededccb055ee0b2eceec12d4d/rust/kcl-lib/std/hole.kcl#L8-L10
+    const holeTypeSimpleFeatureId = 0
+    const holeTypeCounterboreFeatureId = 1
+    const holeTypeCountersinkFeatureId = 2
     if (
+      !('feature' in holeTypeValue && holeTypeValue.feature?.type === 'Number')
+    ) {
+      return {
+        reason: "Couldn't retrieve holeType argument: couldn't determine type",
+      }
+    }
+
+    const feature = holeTypeValue.feature.value
+    if (feature === holeTypeSimpleFeatureId) {
+      holeType = 'simple'
+    } else if (
+      feature === holeTypeCounterboreFeatureId &&
       'depth' in holeTypeValue &&
       holeTypeValue.depth?.type === 'Number' &&
       'diameter' in holeTypeValue &&
       holeTypeValue.diameter?.type === 'Number'
-      // TODO: should we check on 'feature' instead?
     ) {
       holeType = 'counterbore'
       const depthStr = formatNumberValue(
@@ -730,11 +742,11 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
       }
       counterboreDiameter = diameterResult
     } else if (
+      feature === holeTypeCountersinkFeatureId &&
       'angle' in holeTypeValue &&
       holeTypeValue.angle?.type === 'Number' &&
       'diameter' in holeTypeValue &&
       holeTypeValue.diameter?.type === 'Number'
-      // TODO: should we check on 'feature' instead?
     ) {
       holeType = 'countersink'
       const angleStr = formatNumberValue(
@@ -762,13 +774,6 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
         return { reason: "Couldn't retrieve countersinkDiameter argument" }
       }
       countersinkDiameter = diameterResult
-    } else if (
-      'feature' in holeTypeValue &&
-      holeTypeValue.feature?.type === 'Number' &&
-      holeTypeValue.feature.value === holeTypeSimpleFeatureId
-    ) {
-      // TODO: make this less weird
-      holeType = 'simple'
     } else {
       return {
         reason: "Couldn't retrieve holeType argument: couldn't determine type",
@@ -779,8 +784,6 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // TODO: clean up the above with one of multiple util functions
-
-  // TODO: figure out why this isn't working while in the codemod (it sets the solid to null, like if it was detecting a pipe express)
 
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
@@ -800,7 +803,6 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
     drillPointAngle,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
-  console.log(argDefaultValues)
   return {
     ...baseCommand,
     argDefaultValues,
