@@ -4,6 +4,7 @@ import {
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { processEnv } from '@src/env'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
+import type { ModuleType} from '@src/lib/wasm_lib_wrapper'
 import { init, reloadModule } from '@src/lib/wasm_lib_wrapper'
 
 export const wasmUrl = () => {
@@ -47,10 +48,16 @@ const initialise = async () => {
 
 export const initPromise = initialise()
 
-export function importFileExtensions(): string[] {
-  return import_file_extensions()
+export function importFileExtensions(wasmInstance?: ModuleType): string[] {
+  const the_import_file_extensions = wasmInstance
+    ? wasmInstance.import_file_extensions
+    : import_file_extensions
+  return the_import_file_extensions()
 }
 
-export function relevantFileExtensions(): string[] {
-  return relevant_file_extensions()
+export function relevantFileExtensions(wasmInstance?: ModuleType): string[] {
+  const the_relevant_file_extensions = wasmInstance
+    ? wasmInstance.relevant_file_extensions
+    : relevant_file_extensions
+  return the_relevant_file_extensions()
 }
