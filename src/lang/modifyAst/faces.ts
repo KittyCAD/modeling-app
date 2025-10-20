@@ -148,9 +148,9 @@ export function addHole({
   const modifiedAst = structuredClone(ast)
 
   // 2. Prepare unlabeled and labeled arguments
-  // TODO: understand if this is a limitation of the lookup with hole functions being part of the ast?
-  // Turning this to true would default to the no variable case and think it's a pipe
-  // THIS IS BREAKING HOLE ON HOLE
+  // Setting this to 'false' is likely breaking hole on hole.
+  // This is believed to be due to an empty nodePath and pathToNode on the subtract artifact,
+  // see https://github.com/KittyCAD/modeling-app/issues/8616
   const lastChildLookup = false
   const result = buildSolidsAndFacesExprs(
     face,
