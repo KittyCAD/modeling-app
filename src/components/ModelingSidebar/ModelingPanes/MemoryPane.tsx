@@ -81,7 +81,10 @@ export const MemoryPane = () => {
   )
 }
 
-export const processMemory = (variables: VariableMap, wasmInstance?: ModuleType) => {
+export const processMemory = (
+  variables: VariableMap,
+  wasmInstance?: ModuleType
+) => {
   const processedMemory: Record<
     string,
     string | number | boolean | object | undefined

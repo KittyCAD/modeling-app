@@ -498,7 +498,9 @@ export function humanDisplayNumber(
   wasmInstance?: ModuleType
 ): string | Error {
   try {
-    const the_human_display_number = wasmInstance ? wasmInstance.human_display_number : human_display_number
+    const the_human_display_number = wasmInstance
+      ? wasmInstance.human_display_number
+      : human_display_number
     return the_human_display_number(value, JSON.stringify(ty))
   } catch (e) {
     return new Error(
