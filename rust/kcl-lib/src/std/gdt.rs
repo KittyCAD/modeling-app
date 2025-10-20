@@ -182,6 +182,19 @@ async fn inner_flatness(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
+    let precision = if let Some(precision) = precision {
+        let rounded = precision.n.round();
+        if rounded < 0.0 || rounded > 9.0 {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Precision must be between 0 and 9".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        rounded as u32
+    } else {
+        // The default precision.
+        3
+    };
     let frame_plane = if let Some(plane) = frame_plane {
         plane
     } else {
@@ -239,7 +252,7 @@ async fn inner_flatness(
                             } else {
                                 KPoint2d { x: 100.0, y: 100.0 }
                             },
-                            precision: precision.as_ref().map(|n| n.n.round() as u32).unwrap_or(3),
+                            precision,
                             font_scale: style.font_scale.as_ref().map(|n| n.n as f32).unwrap_or(1.0),
                             font_point_size: style.font_point_size.as_ref().map(|n| n.n.round() as u32).unwrap_or(36),
                         }),
