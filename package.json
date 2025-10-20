@@ -133,7 +133,6 @@
     "test": "vitest --mode=development",
     "test:unit": "vitest run --mode=development --project=unit",
     "test:integration": "vitest run --mode=development --project=integration",
-    "test:integration:local": "npm run test:integration",
     "test:snapshots": "cross-env TARGET=web NODE_ENV=development playwright test --config=playwright.config.ts --grep=@snapshot",
     "test:e2e:kcl": "(cd rust && just test && just lint)",
     "test:e2e:web": "cross-env TARGET=web NODE_ENV=development playwright test --config=playwright.config.ts --project=\"Google Chrome\" --grep=@web",
