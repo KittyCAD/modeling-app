@@ -938,7 +938,13 @@ export async function setup(
       localStorage.clear()
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
-      localStorage.setItem(layoutName, layoutPayload)
+      localStorage.setItem(
+        layoutName,
+        JSON.stringify({
+          version: 'v1',
+          layout: layoutPayload,
+        } satisfies LayoutWithMetadata)
+      )
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
       window.addEventListener('beforeunload', () => {
@@ -967,10 +973,7 @@ export async function setup(
       }),
       IS_PLAYWRIGHT_KEY,
       layoutName: `${LAYOUT_PERSIST_PREFIX}default`,
-      layoutPayload: JSON.stringify({
-        version: 'v1',
-        layout: playwrightLayoutConfig,
-      } satisfies LayoutWithMetadata),
+      layoutPayload: playwrightLayoutConfig,
     }
   )
 

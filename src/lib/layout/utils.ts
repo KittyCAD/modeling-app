@@ -269,7 +269,12 @@ export function findAndUpdateSplitSizes({
  * Load in a layout's persisted JSON and parse and validate it
  */
 export function loadLayout(id: string): Layout | Error {
-  const layoutString = localStorage.getItem(`${LAYOUT_PERSIST_PREFIX}${id}`)
+  if (!globalThis.localStorage) {
+    return Error('No localStorage to load from')
+  }
+  const layoutString = globalThis.localStorage.getItem(
+    `${LAYOUT_PERSIST_PREFIX}${id}`
+  )
   if (!layoutString) {
     return new Error('No persisted layout found')
   }
@@ -287,9 +292,12 @@ interface ISaveLayout {
  * and save it to persisted storage.
  */
 function saveLayoutInner({ layout, layoutName = 'default' }: ISaveLayout) {
-  return localStorage.setItem(
+  if (!globalThis.localStorage) {
+    return
+  }
+  globalThis.localStorage.setItem(
     `${LAYOUT_PERSIST_PREFIX}${layoutName}`,
-    JSON.stringify({
+    globalThis.JSON?.stringify({
       version: 'v1',
       layout,
     } satisfies LayoutWithMetadata)
