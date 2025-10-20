@@ -2,7 +2,6 @@ use std::ops::ControlFlow;
 
 use anyhow::{anyhow, bail};
 use kcl_error::SourceRange;
-use tokio::sync::RwLock;
 
 use crate::{
     ExecutorContext, Program,
@@ -29,129 +28,19 @@ const LINE_END_PARAM: &str = "end";
 
 #[derive(Debug, Clone)]
 pub struct FrontendState {
-    inner: std::sync::Arc<RwLock<InnerFrontendState>>,
-}
-
-impl FrontendState {
-    pub fn new(ctx: ExecutorContext) -> Self {
-        Self {
-            inner: std::sync::Arc::new(RwLock::new(InnerFrontendState::new(ctx))),
-        }
-    }
-}
-
-impl SketchApi for FrontendState {
-    async fn new_sketch(
-        &self,
-        _project: ProjectId,
-        _file: FileId,
-        _version: Version,
-        args: SketchArgs,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
-        // TODO: Check version.
-        let mut guard = self.inner.write().await;
-        guard.new_sketch(args).await
-    }
-
-    async fn edit_sketch(
-        &self,
-        _project: ProjectId,
-        _file: FileId,
-        _version: Version,
-        _sketch: ObjectId,
-    ) -> scene::Result<SceneGraphDelta> {
-        todo!()
-    }
-
-    async fn exit_sketch(&self, _version: Version, sketch: ObjectId) -> scene::Result<SceneGraph> {
-        // TODO: Check version.
-        let mut guard = self.inner.write().await;
-        guard.exit_sketch(sketch)
-    }
-
-    async fn add_segment(
-        &self,
-        _version: Version,
-        sketch: ObjectId,
-        segment: SegmentCtor,
-        _label: Option<String>,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
-        // TODO: Check version.
-        let mut guard = self.inner.write().await;
-        match segment {
-            SegmentCtor::Line(ctor) => guard.add_line(sketch, ctor).await,
-            _ => Err(Error {
-                msg: format!("segment ctor not implemented yet: {segment:?}"),
-            }),
-        }
-    }
-
-    async fn edit_segment(
-        &self,
-        _version: Version,
-        sketch: ObjectId,
-        segment_id: ObjectId,
-        segment: SegmentCtor,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
-        // TODO: Check version.
-        let mut guard = self.inner.write().await;
-        match segment {
-            SegmentCtor::Line(ctor) => guard.edit_line(sketch, segment_id, ctor).await,
-            _ => Err(Error {
-                msg: format!("segment ctor not implemented yet: {segment:?}"),
-            }),
-        }
-    }
-
-    async fn delete_segment(
-        &self,
-        _version: Version,
-        _sketch: ObjectId,
-        _segment_id: ObjectId,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
-        todo!()
-    }
-
-    async fn add_constraint(
-        &self,
-        _version: Version,
-        _sketch: ObjectId,
-        _constraint: Constraint,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
-        todo!()
-    }
-
-    async fn edit_constraint(
-        &self,
-        _version: Version,
-        _sketch: ObjectId,
-        _constraint_id: ObjectId,
-        _constraint: Constraint,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
-        todo!()
-    }
-
-    async fn delete_constraint(
-        &self,
-        _version: Version,
-        _sketch: ObjectId,
-        _constraint_id: ObjectId,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
-        todo!()
-    }
-}
-
-#[derive(Debug, Clone)]
-pub(crate) struct InnerFrontendState {
-    ctx: ExecutorContext,
     program: Program,
     scene_graph: SceneGraph,
 }
 
-impl InnerFrontendState {
-    pub(crate) fn new(ctx: ExecutorContext) -> Self {
+impl Default for FrontendState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl FrontendState {
+    pub fn new() -> Self {
         Self {
-            ctx,
             program: Program::empty(),
             scene_graph: SceneGraph {
                 project: ProjectId(0),
@@ -163,8 +52,19 @@ impl InnerFrontendState {
             },
         }
     }
+}
 
-    async fn new_sketch(&mut self, args: SketchArgs) -> scene::Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
+impl SketchApi for FrontendState {
+    async fn new_sketch(
+        &mut self,
+        ctx: &ExecutorContext,
+        _project: ProjectId,
+        _file: FileId,
+        _version: Version,
+        args: SketchArgs,
+    ) -> scene::Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
+        // TODO: Check version.
+
         // Create updated KCL source from args.
         let plane_ast = match &args.on {
             // TODO: sketch-api: implement ObjectId to source.
@@ -229,7 +129,7 @@ impl InnerFrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = self.ctx.run_with_caching(new_program).await.map_err(|err| {
+        let outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -255,7 +155,24 @@ impl InnerFrontendState {
         Ok((src_delta, scene_graph_delta, sketch_id))
     }
 
-    fn exit_sketch(&mut self, sketch: ObjectId) -> scene::Result<SceneGraph> {
+    async fn edit_sketch(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _project: ProjectId,
+        _file: FileId,
+        _version: Version,
+        _sketch: ObjectId,
+    ) -> scene::Result<SceneGraphDelta> {
+        todo!()
+    }
+
+    async fn exit_sketch(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+    ) -> scene::Result<SceneGraph> {
+        // TODO: Check version.
         if self.scene_graph.sketch_mode != Some(sketch) {
             return Err(Error {
                 msg: format!(
@@ -266,10 +183,94 @@ impl InnerFrontendState {
         }
         self.scene_graph.sketch_mode = None;
 
+        // TODO: Execute
+
         Ok(self.scene_graph.clone())
     }
 
-    async fn add_line(&mut self, sketch: ObjectId, ctor: LineCtor) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
+    async fn add_segment(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+        segment: SegmentCtor,
+        _label: Option<String>,
+    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+        match segment {
+            SegmentCtor::Line(ctor) => self.add_line(ctx, sketch, ctor).await,
+            _ => Err(Error {
+                msg: format!("segment ctor not implemented yet: {segment:?}"),
+            }),
+        }
+    }
+
+    async fn edit_segment(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        sketch: ObjectId,
+        segment_id: ObjectId,
+        segment: SegmentCtor,
+    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
+        // TODO: Check version.
+        match segment {
+            SegmentCtor::Line(ctor) => self.edit_line(ctx, sketch, segment_id, ctor).await,
+            _ => Err(Error {
+                msg: format!("segment ctor not implemented yet: {segment:?}"),
+            }),
+        }
+    }
+
+    async fn delete_segment(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _version: Version,
+        _sketch: ObjectId,
+        _segment_id: ObjectId,
+    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
+        todo!()
+    }
+
+    async fn add_constraint(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _version: Version,
+        _sketch: ObjectId,
+        _constraint: Constraint,
+    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
+        todo!()
+    }
+
+    async fn edit_constraint(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _version: Version,
+        _sketch: ObjectId,
+        _constraint_id: ObjectId,
+        _constraint: Constraint,
+    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
+        todo!()
+    }
+
+    async fn delete_constraint(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _version: Version,
+        _sketch: ObjectId,
+        _constraint_id: ObjectId,
+    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
+        todo!()
+    }
+}
+
+impl FrontendState {
+    async fn add_line(
+        &mut self,
+        ctx: &ExecutorContext,
+        sketch: ObjectId,
+        ctor: LineCtor,
+    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
         // Create updated KCL source from args.
         let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
@@ -364,7 +365,7 @@ impl InnerFrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = self.ctx.run_mock(&new_program, true).await.map_err(|err| {
+        let outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -405,6 +406,7 @@ impl InnerFrontendState {
 
     async fn edit_line(
         &mut self,
+        ctx: &ExecutorContext,
         sketch: ObjectId,
         line: ObjectId,
         ctor: LineCtor,
@@ -477,7 +479,7 @@ impl InnerFrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        self.ctx.run_mock(&new_program, true).await.map_err(|err| {
+        ctx.run_mock(&new_program, true).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
