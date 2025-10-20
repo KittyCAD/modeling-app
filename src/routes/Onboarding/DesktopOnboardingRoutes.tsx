@@ -325,7 +325,7 @@ function ProjectPane() {
   useOnboardingHighlight('files-pane-button')
 
   // Open the code pane on mount, close on unmount
-useOnboardingPanes([DefaultLayoutPaneID.Files])
+  useOnboardingPanes([DefaultLayoutPaneID.Files])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-end">

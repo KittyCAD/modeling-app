@@ -437,6 +437,7 @@ function PaneButton({
       onChange={(checked) => onChange(checked)}
       className={`ui-checked:border-primary dark:ui-checked:border-primary hover:b-3 border-transparent dark:border-transparent p-2 m-0 rounded-none border-0 hover:bg-2 ${resolvedAreaType?.cssClassOverrides?.button || ''}`}
       style={{ [buttonBorderWidthProp]: '2px' }}
+      data-testid={`${pane.id}-pane-button`}
     >
       <CustomIcon name={pane.icon} className="w-5 h-5" />
       <Tooltip
@@ -515,6 +516,7 @@ function ActionButton({ action, side }: { action: Action; side: Side }) {
         className="hover:b-3 border-transparent p-2 m-0 rounded-none border-0 hover:bg-2"
         disabled={disabledReason !== undefined}
         onClick={() => resolvedAction.execute()}
+        data-testid={`${action.id}-pane-button`}
       >
         <CustomIcon name={action.icon} className="w-5 h-5" />
         <Tooltip

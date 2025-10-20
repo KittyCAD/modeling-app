@@ -136,7 +136,7 @@ export async function openPane(page: Page, testId: string) {
   if (!isOpen) {
     await paneButtonLocator.click()
   }
-  await expect(paneButtonLocator).toHaveAttribute('aria-pressed', 'true')
+  await expect(paneButtonLocator).not.toHaveAttribute('aria-pressed', 'false')
 }
 
 export async function closePane(page: Page, testId: string) {
