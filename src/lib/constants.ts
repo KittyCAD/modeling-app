@@ -191,7 +191,7 @@ export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength = 'mm'
 /**
  * When no annotation is in the KCL file to specify the defaults
  */
-export const DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES: WarningLevel = {
+export const DEFAULT_EXPERIMENTAL_FEATURES: WarningLevel = {
   type: 'Deny',
 }
 

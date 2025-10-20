@@ -1,7 +1,7 @@
 import { Popover } from '@headlessui/react'
 import toast from 'react-hot-toast'
 
-import { DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES } from '@src/lib/constants'
+import { DEFAULT_EXPERIMENTAL_FEATURES } from '@src/lib/constants'
 import { kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { useEffect, useState } from 'react'
@@ -14,11 +14,14 @@ export function ExperimentalFeaturesMenu() {
   const [fileSettings, setFileSettings] = useState(kclManager.fileSettings)
 
   const currentLevel: WarningLevel =
-    fileSettings.experimentalFeatures ?? DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES
+    fileSettings.experimentalFeatures ?? DEFAULT_EXPERIMENTAL_FEATURES
 
   useEffect(() => {
     setFileSettings(kclManager.fileSettings)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+    // TODO: something weird is happening here, if I don't have this line,
+    // it complains about 'an unnecessary dependency: 'kclManager.fileSettings'
+    // and removing the dep altogether leads to the component not reacting
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [kclManager.fileSettings])
 
   return (
@@ -68,7 +71,7 @@ export function ExperimentalFeaturesMenu() {
                       <span className="flex-1">{level.type}</span>
                       {level.type ===
                         (fileSettings.experimentalFeatures?.type ??
-                          DEFAULT_DEFAULT_EXPERIMENTAL_FEATURES.type) && (
+                          DEFAULT_EXPERIMENTAL_FEATURES.type) && (
                         <span className="text-chalkboard-60">current</span>
                       )}
                     </button>
