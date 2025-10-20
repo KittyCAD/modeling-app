@@ -1,3 +1,5 @@
+#![allow(async_fn_in_trait)]
+
 use serde::{Deserialize, Serialize};
 
 use crate::frontend::scene::{

@@ -65,7 +65,6 @@ http = { workspace = true }
 image = { version = "0.25.8", default-features = false, features = ["png"] }
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.14.0"
-kcl-api = { version = "0.1", path = "../kcl-api" }
 kcl-derive-docs = { version = "0.1", path = "../kcl-derive-docs" }
 kcl-error = { version = "0.1", path = "../kcl-error" }
 kcl-ezpz = { workspace = true }

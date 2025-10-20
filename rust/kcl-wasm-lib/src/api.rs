@@ -1,5 +1,5 @@
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_api::{Error, File, FileId, LifecycleApi, ProjectId};
+use kcl_lib::front::{Error, File, FileId, LifecycleApi, ProjectId};
 use wasm_bindgen::prelude::*;
 
 use crate::Context;
