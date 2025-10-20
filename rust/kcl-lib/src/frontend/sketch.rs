@@ -2,13 +2,17 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::frontend::scene::{
-    Expr, FileId, Number, ObjectId, Plane, ProjectId, Result, SceneGraph, SceneGraphDelta, SourceDelta, Version,
+use crate::{
+    ExecutorContext,
+    frontend::scene::{
+        Expr, FileId, Number, ObjectId, Plane, ProjectId, Result, SceneGraph, SceneGraphDelta, SourceDelta, Version,
+    },
 };
 
 pub trait SketchApi {
     async fn new_sketch(
-        &self,
+        &mut self,
+        ctx: &ExecutorContext,
         project: ProjectId,
         file: FileId,
         version: Version,
@@ -17,17 +21,19 @@ pub trait SketchApi {
 
     // Enters sketch mode
     async fn edit_sketch(
-        &self,
+        &mut self,
+        ctx: &ExecutorContext,
         project: ProjectId,
         file: FileId,
         version: Version,
         sketch: ObjectId,
     ) -> Result<SceneGraphDelta>;
 
-    async fn exit_sketch(&self, version: Version, sketch: ObjectId) -> Result<SceneGraph>;
+    async fn exit_sketch(&mut self, ctx: &ExecutorContext, version: Version, sketch: ObjectId) -> Result<SceneGraph>;
 
     async fn add_segment(
-        &self,
+        &mut self,
+        ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
         segment: SegmentCtor,
@@ -35,7 +41,8 @@ pub trait SketchApi {
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn edit_segment(
-        &self,
+        &mut self,
+        ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
         segment_id: ObjectId,
@@ -43,21 +50,24 @@ pub trait SketchApi {
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn delete_segment(
-        &self,
+        &mut self,
+        ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
         segment_id: ObjectId,
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn add_constraint(
-        &self,
+        &mut self,
+        ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
         constraint: Constraint,
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn edit_constraint(
-        &self,
+        &mut self,
+        ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
         constraint_id: ObjectId,
@@ -65,7 +75,8 @@ pub trait SketchApi {
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn delete_constraint(
-        &self,
+        &mut self,
+        ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
         constraint_id: ObjectId,
