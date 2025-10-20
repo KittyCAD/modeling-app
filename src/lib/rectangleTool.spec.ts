@@ -6,15 +6,13 @@ import type { VariableDeclaration } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import { updateCenterRectangleSketch } from '@src/lib/rectangleTool'
 import { trap } from '@src/lib/trap'
-import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { join } from 'path'
-const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 describe('library rectangleTool helper functions', () => {
   describe('updateCenterRectangleSketch', () => {
     // regression test for https://github.com/KittyCAD/modeling-app/issues/5157
     test('should update AST and source code', async () => {
-      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+      const { instance } = await buildTheWorldAndNoEngineConnection()
 
       // Base source code that will be edited in place
       const sourceCode = `sketch001 = startSketchOn(XZ)
@@ -38,7 +36,8 @@ profile001 = startProfile(at = [120.37, 162.76])
       const _node = getNodeFromPath<VariableDeclaration>(
         ast,
         sketchPathToNode || [],
-        'VariableDeclaration'
+        'VariableDeclaration',
+        undefined, undefined, undefined, instance
       )
       if (trap(_node)) return
       const sketchInit = _node.node?.declaration.init
@@ -61,7 +60,8 @@ profile001 = startProfile(at = [120.37, 162.76])
           y,
           tags[0],
           rectangleOrigin[0],
-          rectangleOrigin[1]
+          rectangleOrigin[1],
+          instance
         )
         expect(maybeErr).toEqual(undefined)
       }
