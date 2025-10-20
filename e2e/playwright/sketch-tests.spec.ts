@@ -2112,8 +2112,6 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
 
     await u.closeDebugPanel()
 
-    ///await page.waitForTimeout(1000)
-
     await toolbar.openFeatureTreePane()
 
     await toolbar.openPane('files')
