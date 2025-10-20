@@ -1763,7 +1763,7 @@ impl Node<BinaryExpression> {
 
     fn missing_result_error(node: &Node<BinaryExpression>) -> KclError {
         KclError::new_internal(KclErrorDetails::new(
-            "Internal error: missing result while evaluating binary expression".to_owned(),
+            "missing result while evaluating binary expression".to_owned(),
             vec![SourceRange::from(node)],
         ))
     }
