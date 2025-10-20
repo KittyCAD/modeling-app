@@ -23,7 +23,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         )));
     }
     // SAFETY: checked length above.
-    let Some(start_x) = start.get(0).unwrap().clone().as_unsolved_expr() else {
+    let Some(start_x) = start.first().unwrap().clone().as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "start x must be a number or sketch var".to_owned(),
             vec![args.source_range],
@@ -35,7 +35,7 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
             vec![args.source_range],
         )));
     };
-    let Some(end_x) = end.get(0).unwrap().clone().as_unsolved_expr() else {
+    let Some(end_x) = end.first().unwrap().clone().as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "end x must be a number or sketch var".to_owned(),
             vec![args.source_range],

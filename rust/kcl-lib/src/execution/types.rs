@@ -953,8 +953,11 @@ impl From<UnitAngle> for NumericType {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS)]
+pub struct NumericSuffixTypeConvertError;
+
 impl TryFrom<NumericType> for NumericSuffix {
-    type Error = ();
+    type Error = NumericSuffixTypeConvertError;
 
     fn try_from(value: NumericType) -> Result<Self, Self::Error> {
         match value {
@@ -971,7 +974,7 @@ impl TryFrom<NumericType> for NumericSuffix {
             NumericType::Known(UnitType::GenericAngle) => Ok(NumericSuffix::Angle),
             NumericType::Default { .. } => Ok(NumericSuffix::None),
             NumericType::Unknown => Ok(NumericSuffix::Unknown),
-            NumericType::Any => Err(()),
+            NumericType::Any => Err(NumericSuffixTypeConvertError),
         }
     }
 }

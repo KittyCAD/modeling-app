@@ -345,20 +345,14 @@ impl InnerFrontendState {
             .body
             .iter()
             .find_map(|item| {
-                if let ast::BodyItem::ExpressionStatement(expr_stmt) = item {
+                if let ast::BodyItem::ExpressionStatement(expr_stmt) = item
+                    && expr_stmt.module_id == sketch_block_range.module_id()
+                    && expr_stmt.start == sketch_block_range.start()
                     // End shouldn't match since we added a line.
-                    if expr_stmt.module_id == sketch_block_range.module_id()
-                        && expr_stmt.start == sketch_block_range.start()
-                        && expr_stmt.end >= sketch_block_range.end()
-                    {
-                        if let ast::Expr::SketchBlock(sketch_block) = &expr_stmt.expression {
-                            return sketch_block
-                                .body
-                                .items
-                                .last()
-                                .map(|last_item| SourceRange::from(last_item));
-                        }
-                    }
+                    && expr_stmt.end >= sketch_block_range.end()
+                    && let ast::Expr::SketchBlock(sketch_block) = &expr_stmt.expression
+                {
+                    return sketch_block.body.items.last().map(SourceRange::from);
                 }
                 None
             })
