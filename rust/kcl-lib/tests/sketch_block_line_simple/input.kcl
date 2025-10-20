@@ -1,0 +1,12 @@
+@settings(experimentalFeatures = allow)
+
+s = sketch() {
+  x = var 5mm
+  y = var
+  l1 = sketch2::line(start=[x, y], end=[10mm, 0mm])
+  x == 1mm
+  y == 2mm
+}
+
+assert(s.l1.start.x, isEqualTo = 1mm)
+assert(s.l1.start.y, isEqualTo = 2mm)
