@@ -410,9 +410,10 @@ export const kclLint = async (
 
 export async function rustImplPathToNode(
   ast: Program,
-  range: SourceRange
+  range: SourceRange,
+  wasmInstance?: ModuleType
 ): Promise<PathToNode> {
-  const nodePath = await nodePathFromRange(ast, range)
+  const nodePath = await nodePathFromRange(ast, range, wasmInstance)
   if (!nodePath) {
     // When a NodePath can't be found, we use an empty PathToNode.
     return []
