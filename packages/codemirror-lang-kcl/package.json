@@ -21,13 +21,13 @@
   "dependencies": {
     "@codemirror/language": "^6.11.3",
     "@codemirror/state": "^6.5.2",
-    "@lezer/highlight": "^1.2.1",
-    "typescript": "^5.7.2"
+    "@lezer/highlight": "^1.2.2",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "@lezer/generator": "^1.7.3",
+    "@lezer/generator": "^1.8.0",
     "@rollup/plugin-typescript": "^12.1.4",
-    "rollup": "^4.40.0",
+    "rollup": "^4.52.5",
     "rollup-plugin-dts": "^6.2.3",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.1.1"
