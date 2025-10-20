@@ -18,7 +18,11 @@ import {
   isDefaultLayoutPaneID,
 } from '@src/lib/layout/configs/default'
 import { isErr } from '@src/lib/trap'
-import { parseLayoutFromJsonString } from '@src/lib/layout/parse'
+import {
+  parseLayoutFromJsonString,
+  parseLayoutInner,
+} from '@src/lib/layout/parse'
+import { useEffect } from 'react'
 import { LAYOUT_PERSIST_PREFIX, LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
 
 // Attempt to load a persisted layout
@@ -223,7 +227,13 @@ export function findAndReplaceLayoutChildNode({
   newNode,
 }: IReplaceLayoutChildNode): Layout {
   if (rootLayout.id === targetNodeId) {
-    return newNode
+    const newNodeParsed = parseLayoutInner(newNode)
+    if (isErr(newNodeParsed)) {
+      console.error(newNodeParsed)
+      return rootLayout
+    }
+
+    return newNodeParsed
   }
 
   if ('children' in rootLayout && rootLayout.children) {
