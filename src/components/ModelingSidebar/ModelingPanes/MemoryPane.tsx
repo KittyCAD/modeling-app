@@ -13,6 +13,7 @@ import { useKclContext } from '@src/lang/KclProvider'
 import type { VariableMap } from '@src/lang/wasm'
 import { humanDisplayNumber, sketchFromKclValueOptional } from '@src/lang/wasm'
 import { Reason, trap } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export const MemoryPaneMenu = () => {
   const { variables } = useKclContext()
@@ -80,7 +81,7 @@ export const MemoryPane = () => {
   )
 }
 
-export const processMemory = (variables: VariableMap) => {
+export const processMemory = (variables: VariableMap, wasmInstance?: ModuleType) => {
   const processedMemory: Record<
     string,
     string | number | boolean | object | undefined
@@ -101,7 +102,7 @@ export const processMemory = (variables: VariableMap) => {
     } else if (val.type === 'Function') {
       processedMemory[key] = '__function__'
     } else if (val.type === 'Number') {
-      processedMemory[key] = humanDisplayNumber(val.value, val.ty)
+      processedMemory[key] = humanDisplayNumber(val.value, val.ty, wasmInstance)
     } else {
       processedMemory[key] = val.value
     }

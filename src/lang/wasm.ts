@@ -494,10 +494,12 @@ export function formatNumberValue(
  */
 export function humanDisplayNumber(
   value: number,
-  ty: NumericType
+  ty: NumericType,
+  wasmInstance?: ModuleType
 ): string | Error {
   try {
-    return human_display_number(value, JSON.stringify(ty))
+    const the_human_display_number = wasmInstance ? wasmInstance.human_display_number : human_display_number
+    return the_human_display_number(value, JSON.stringify(ty))
   } catch (e) {
     return new Error(
       `Error formatting number for human display: value=${value}, ty=${JSON.stringify(ty)}`,
