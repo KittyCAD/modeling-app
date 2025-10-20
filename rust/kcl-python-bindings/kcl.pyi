@@ -83,6 +83,12 @@ class Finding:
     @property
     def experimental(self) -> builtins.bool: ...
 
+class FixedLints:
+    r"""
+    Customize a snapshot.
+    """
+    ...
+
 class GltfExportOptions:
     r"""
     Options for exporting glTF 2.0.
@@ -692,6 +698,12 @@ async def import_and_snapshot_views(filepaths:typing.Sequence[builtins.str], for
 def lint(code:builtins.str) -> builtins.list[Discovered]:
     r"""
     Lint the kcl code.
+    """
+
+def lint_and_fix(code:builtins.str) -> FixedLints:
+    r"""
+    Lint the kcl code. Fix any lints that can be fixed with automatic suggestions.
+    Returns any unfixed lints.
     """
 
 async def mock_execute(path:builtins.str) -> builtins.bool:
