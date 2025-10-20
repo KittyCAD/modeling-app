@@ -673,7 +673,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Hollow out a 3D solid.',
     icon: 'shell',
     needsReview: true,
-    status: 'experimental',
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
