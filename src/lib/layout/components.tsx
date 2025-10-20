@@ -287,14 +287,18 @@ function SplitLayoutContents({
  * the pane UI buttons and invoke fire-and-forget actions.
  */
 function PaneLayout({ layout }: { layout: PaneLayoutType }) {
-  const { togglePane, areaLibrary, enableContextMenus } = useLayoutState()
+  const { togglePane, areaLibrary, enableContextMenus, replaceLayoutNode } =
+    useLayoutState()
   const paneBarRef = useRef<HTMLUListElement>(null)
   const barBorderWidthProp = `border${orientationToReactCss(sideToOrientation(layout.side))}Width`
   const shouldHide = (l: PaneChild) =>
     l.type === LayoutType.Simple && areaLibrary[l.areaType]?.hide()
   const activePanes = layout.activeIndices
-    .map((itemIndex) => layout.children[itemIndex])
-    .filter((item) => item !== undefined && !shouldHide(item))
+    .map((itemIndex) => ({
+      activeIndex: itemIndex,
+      item: layout.children[itemIndex],
+    }))
+    .filter(({ item }) => item !== undefined && !shouldHide(item))
 
   const onToggleItem = (checked: boolean, i: number) => {
     togglePane({
@@ -303,6 +307,18 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
       paneIndex: i,
     })
   }
+
+  // Remove any hidden-but-active panes from the layout on mount.
+  // The File explorer is hidden in the browser but is a part of the default layout.
+  // We clear it here (as opposed to earlier in the life cycle at layout parsing)
+  // so that we can better ensure we have any dependencies required by `hide()`.
+  useEffect(() => {
+    if (activePanes.length !== layout.activeIndices.length) {
+      const newNode = structuredClone(layout)
+      newNode.activeIndices = activePanes.map(({ activeIndex }) => activeIndex)
+      replaceLayoutNode({ targetNodeId: layout.id, newNode })
+    }
+  }, [activePanes, layout, replaceLayoutNode])
 
   return (
     <div
@@ -345,7 +361,7 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
         <></>
       ) : activePanes.length === 1 ? (
         <LayoutNode
-          layout={activePanes[0]}
+          layout={activePanes[0].item}
           onClose={() => onToggleItem(false, layout.activeIndices[0])}
         />
       ) : (
@@ -356,7 +372,7 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
           }
           layout={{
             ...layout,
-            children: activePanes,
+            children: activePanes.map(({ item }) => item),
           }}
           onClose={(index: number) =>
             onToggleItem(false, layout.activeIndices[index])
