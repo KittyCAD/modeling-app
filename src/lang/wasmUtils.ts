@@ -4,7 +4,7 @@ import {
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { processEnv } from '@src/env'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
-import type { ModuleType} from '@src/lib/wasm_lib_wrapper'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { init, reloadModule } from '@src/lib/wasm_lib_wrapper'
 
 export const wasmUrl = () => {
