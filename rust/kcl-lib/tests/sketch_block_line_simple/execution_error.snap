@@ -2,17 +2,13 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing sketch_block_line_simple.kcl
 ---
-KCL UndefinedValue error
+KCL Semantic error
 
-  × undefined value: Result of user-defined function sketch2::line is
-  │ undefined
-    ╭─[16:15]
- 15 │     @(impl = std_rust_constrainable, experimental = true, feature_tree = false)
- 16 │ ╭─▶ export fn line(
- 17 │ │     start: Point2d,
- 18 │ │     end?: Point2d,
- 19 │ │     midpoint?: Point2d,
- 20 │ ├─▶ ): Line {}
-    · ╰──── std::sketch2
- 21 │     
+  × semantic: Only arrays can be indexed, but you're trying to index a segment
+    ╭─[11:8]
+ 10 │ 
+ 11 │ assert(s.l1.start.x, isEqualTo = 1mm)
+    ·        ─────┬────
+    ·             ╰── tests/sketch_block_line_simple/input.kcl
+ 12 │ assert(s.l1.start.y, isEqualTo = 2mm)
     ╰────

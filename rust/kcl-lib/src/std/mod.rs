@@ -463,6 +463,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::appearance::hex_string(e, a)),
             StdFnProps::default("std::appearance::hexString"),
         ),
+        ("sketch2", "line") => (
+            |e, a| Box::pin(crate::std::constraints::line(e, a)),
+            StdFnProps::default("std::sketch2::line"),
+        ),
         ("sketch2", "parallel") => (
             |e, a| Box::pin(crate::std::constraints::parallel(e, a)),
             StdFnProps::default("std::sketch2::parallel"),
