@@ -72,14 +72,14 @@ export const playwrightLayoutConfig: Layout = {
         },
         {
           id: DefaultLayoutPaneID.Debug,
-          label: 'debug',
+          label: 'Debug',
           icon: 'bug',
           type: LayoutType.Simple,
           areaType: AreaType.Debug,
         },
         {
           id: DefaultLayoutPaneID.TTC,
-          label: 'ttc',
+          label: 'Text-to-CAD',
           type: LayoutType.Simple,
           areaType: AreaType.TTC,
           icon: 'sparkles',
@@ -87,25 +87,25 @@ export const playwrightLayoutConfig: Layout = {
       ],
       actions: [
         {
-          id: crypto.randomUUID(),
+          id: 'add-file-to-project',
           label: 'Add file to project',
           icon: 'importFile',
           actionType: ActionType.AddFile,
         },
         {
-          id: crypto.randomUUID(),
+          id: 'export',
           label: 'Export part',
           icon: 'floppyDiskArrow',
           actionType: ActionType.Export,
         },
         {
-          id: crypto.randomUUID(),
+          id: 'make',
           label: 'Make part',
           icon: 'printer3d',
           actionType: ActionType.Make,
         },
         {
-          id: crypto.randomUUID(),
+          id: 'refresh',
           label: 'Refresh app',
           icon: 'exclamationMark',
           actionType: ActionType.Refresh,
@@ -113,8 +113,8 @@ export const playwrightLayoutConfig: Layout = {
       ],
     },
     {
-      id: crypto.randomUUID(),
-      label: 'modeling-scene',
+      id: 'modeling-scene',
+      label: 'Modeling scene',
       type: LayoutType.Simple,
       areaType: AreaType.ModelingScene,
     },
