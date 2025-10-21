@@ -147,6 +147,7 @@ export function createApplicationCommands({
     groupId: 'application',
     needsReview: false,
     status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
+    mlBranding: true,
     icon: 'sparkles',
     onSubmit: (record) => {
       if (record) {
