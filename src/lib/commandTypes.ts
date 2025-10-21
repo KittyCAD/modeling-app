@@ -105,6 +105,7 @@ export type Command<
   hideFromSearch?: boolean
   disabled?: boolean
   status?: CommandStatus
+  mlBranding?: boolean
 }
 
 export type CommandConfig<

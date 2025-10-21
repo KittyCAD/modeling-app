@@ -115,6 +115,19 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
           <CommandBarDivider />
         </>
       )}
+      {selectedCommand?.status === 'experimental' && (
+        <>
+          <p className="px-4 py-2 text-sm">
+            <span className="font-bold">Warning: </span>
+            <span>
+              this command is experimental, which means the feature it generates
+              may not be compatible with future versions of Zoo Design Studio.
+              Use at your own risk, and please report issues!
+            </span>
+          </p>
+          <CommandBarDivider />
+        </>
+      )}
       {Object.entries(availableOptionalArgs || {}).length > 0 && (
         <>
           <div className="px-4 flex flex-wrap gap-2 items-baseline">

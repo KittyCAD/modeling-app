@@ -2072,7 +2072,6 @@ profile001 = startProfile(sketch001, at = [-102.72, 237.44])
     homePage,
     scene,
     toolbar,
-    cmdBar,
     page,
   }) => {
     const u = await getUtils(page)
@@ -2101,7 +2100,7 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
       const projectDir = path.join(dir, 'multi-file-sketch-test')
       await fs.mkdir(projectDir, { recursive: true })
       await Promise.all([
-        fs.writeFile(path.join(projectDir, 'good.kcl'), GOOD_KCL, 'utf-8'),
+        fs.writeFile(path.join(projectDir, 'correct.kcl'), GOOD_KCL, 'utf-8'),
         fs.writeFile(path.join(projectDir, 'error.kcl'), ERROR_KCL, 'utf-8'),
       ])
     })
@@ -2114,15 +2113,22 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
     await u.closeDebugPanel()
 
     await toolbar.openFeatureTreePane()
+
     await toolbar.openPane('files')
 
-    await toolbar.openFile('good.kcl')
+    await page.waitForTimeout(1000)
+
+    await toolbar.openFile('correct.kcl')
+
+    await page.waitForTimeout(1000)
 
     await expect(
       toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })
     ).toHaveCount(2)
 
     await toolbar.openFile('error.kcl')
+
+    await page.waitForTimeout(1000)
 
     await expect(
       toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })
