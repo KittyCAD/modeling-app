@@ -12,13 +12,6 @@ import {
 } from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import { parse, recast, resultIsOk } from '@src/lang/wasm'
-import {
-  codeManager,
-  kclManager,
-  rustContext,
-  sceneEntitiesManager,
-  sceneInfra,
-} from '@src/lib/singletons'
 import { err, isErr } from '@src/lib/trap'
 import type { SketchDetails } from '@src/machines/modelingSharedTypes'
 
@@ -33,17 +26,32 @@ import {
 } from '@src/lib/selections'
 
 import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type CodeManager from '@src/lang/codeManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type RustContext from '@src/lib/rustContext'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 
 export async function deleteSegmentsOrProfiles({
   pathToNodes,
   sketchDetails,
+  dependencies,
 }: {
   pathToNodes: PathToNode[]
   sketchDetails: SketchDetails | null
+  dependencies: {
+    kclManager: KclManager
+    codeManager: CodeManager
+    wasmInstance?: ModuleType
+    rustContext: RustContext
+    sceneEntitiesManager: SceneEntities
+    sceneInfra: SceneInfra
+  }
 }) {
-  let modifiedAst: Node<Program> | Error = kclManager.ast
+  let modifiedAst: Node<Program> | Error = dependencies.kclManager.ast
   const dependentRanges = pathToNodes.flatMap((pathToNode) =>
-    findUsesOfTagInPipe(kclManager.ast, pathToNode)
+    findUsesOfTagInPipe(dependencies.kclManager.ast, pathToNode)
   )
 
   const shouldContinueSegDelete = dependentRanges.length
@@ -60,8 +68,8 @@ export async function deleteSegmentsOrProfiles({
   modifiedAst = deleteSegmentOrProfileFromPipeExpression(
     dependentRanges,
     modifiedAst,
-    kclManager.variables,
-    codeManager.code,
+    dependencies.kclManager.variables,
+    dependencies.codeManager.code,
     pathToNodes,
     getConstraintInfoKw,
     removeSingleConstraint,
@@ -71,15 +79,15 @@ export async function deleteSegmentsOrProfiles({
     return Promise.reject(modifiedAst)
   }
 
-  const newCode = recast(modifiedAst)
-  const pResult = parse(newCode)
+  const newCode = recast(modifiedAst, dependencies.wasmInstance)
+  const pResult = parse(newCode, dependencies.wasmInstance)
   if (err(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
   modifiedAst = pResult.program
 
   const testExecute = await executeAstMock({
     ast: modifiedAst,
     usePrevMemory: false,
-    rustContext: rustContext,
+    rustContext: dependencies.rustContext,
   })
   if (testExecute.errors.length) {
     toast.error('Segment tag used outside of current Sketch. Could not delete.')
@@ -96,7 +104,7 @@ export async function deleteSegmentsOrProfiles({
     sketchDetails
   )
 
-  await sceneEntitiesManager.updateAstAndRejigSketch(
+  await dependencies.sceneEntitiesManager.updateAstAndRejigSketch(
     sketchDetails.sketchEntryNodePath,
     sketchDetails.sketchNodePaths,
     sketchDetails.planeNodePath,
@@ -105,11 +113,12 @@ export async function deleteSegmentsOrProfiles({
     sketchDetails.yAxis,
     sketchDetails.origin,
     getEventForSegmentSelection,
-    updateExtraSegments
+    updateExtraSegments,
+    dependencies.wasmInstance
   )
 
   // Update the machine context.sketchDetails so subsequent interactions use fresh paths
-  sceneInfra.modelingSend({
+  dependencies.sceneInfra.modelingSend({
     type: 'Update sketch details',
     data: {
       sketchEntryNodePath: sketchDetails.sketchEntryNodePath,

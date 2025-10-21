@@ -3,15 +3,12 @@ import os from 'os'
 import path from 'path'
 import { v4 as uuidv4 } from 'uuid'
 
-import { initPromise } from '@src/lang/wasmUtils'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
-
-beforeAll(async () => {
-  await initPromise
-})
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 describe('getCurrentProjectFile', () => {
   test('with explicit open file with space (URL encoded)', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
     const name = `kittycad-modeling-projects-${uuidv4()}`
     const tmpProjectDir = path.join(os.tmpdir(), name)
 
@@ -19,7 +16,8 @@ describe('getCurrentProjectFile', () => {
     await fs.writeFile(path.join(tmpProjectDir, 'i have a space.kcl'), '')
 
     const state = await getCurrentProjectFile(
-      path.join(tmpProjectDir, 'i%20have%20a%20space.kcl')
+      path.join(tmpProjectDir, 'i%20have%20a%20space.kcl'),
+      instance
     )
 
     expect(state).toBe(path.join(tmpProjectDir, 'i have a space.kcl'))
@@ -28,6 +26,7 @@ describe('getCurrentProjectFile', () => {
   })
 
   test('with explicit open file with space', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
     const name = `kittycad-modeling-projects-${uuidv4()}`
     const tmpProjectDir = path.join(os.tmpdir(), name)
 
@@ -35,7 +34,8 @@ describe('getCurrentProjectFile', () => {
     await fs.writeFile(path.join(tmpProjectDir, 'i have a space.kcl'), '')
 
     const state = await getCurrentProjectFile(
-      path.join(tmpProjectDir, 'i have a space.kcl')
+      path.join(tmpProjectDir, 'i have a space.kcl'),
+      instance
     )
 
     expect(state).toBe(path.join(tmpProjectDir, 'i have a space.kcl'))
@@ -44,6 +44,7 @@ describe('getCurrentProjectFile', () => {
   })
 
   test('with source path dot', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
     const name = `kittycad-modeling-projects-${uuidv4()}`
     const tmpProjectDir = path.join(os.tmpdir(), name)
     await fs.mkdir(tmpProjectDir, { recursive: true })
@@ -53,7 +54,7 @@ describe('getCurrentProjectFile', () => {
     process.chdir(tmpProjectDir)
 
     try {
-      const state = await getCurrentProjectFile('.')
+      const state = await getCurrentProjectFile('.', instance)
 
       if (state instanceof Error) {
         throw state
@@ -69,12 +70,13 @@ describe('getCurrentProjectFile', () => {
   })
 
   test('with main.kcl not existing', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
     const name = `kittycad-modeling-projects-${uuidv4()}`
     const tmpProjectDir = path.join(os.tmpdir(), name)
     await fs.mkdir(tmpProjectDir, { recursive: true })
 
     try {
-      const state = await getCurrentProjectFile(tmpProjectDir)
+      const state = await getCurrentProjectFile(tmpProjectDir, instance)
 
       expect(state).toBe(path.join(tmpProjectDir, 'main.kcl'))
     } finally {
@@ -83,13 +85,14 @@ describe('getCurrentProjectFile', () => {
   })
 
   test('with directory, main.kcl not existing, other.kcl does', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
     const name = `kittycad-modeling-projects-${uuidv4()}`
     const tmpProjectDir = path.join(os.tmpdir(), name)
     await fs.mkdir(tmpProjectDir, { recursive: true })
     await fs.writeFile(path.join(tmpProjectDir, 'other.kcl'), '')
 
     try {
-      const state = await getCurrentProjectFile(tmpProjectDir)
+      const state = await getCurrentProjectFile(tmpProjectDir, instance)
 
       expect(state).toBe(path.join(tmpProjectDir, 'other.kcl'))
 

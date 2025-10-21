@@ -52,6 +52,10 @@ import type {
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import { type handleSelectionBatch as handleSelectionBatchFn } from '@src/lib/selections'
+
+import { processEnv } from '@src/env'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+
 import {
   setSelectionFilter,
   setSelectionFilterToDefault,
@@ -285,6 +289,15 @@ export class KclManager extends EventTarget {
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.ensureWasmInit().then(async () => {
+      if (this.wasmInitFailed) {
+        if (processEnv()?.VITEST) {
+          console.log(
+            'Running in vitest runtime. KclSingleton polluting global runtime.'
+          )
+          return
+        }
+      }
+
       await this.safeParse(this.singletons.codeManager.code).then((ast) => {
         if (ast) {
           this.ast = ast
@@ -392,8 +405,11 @@ export class KclManager extends EventTarget {
     }, 200)(null)
   }
 
-  async safeParse(code: string): Promise<Node<Program> | null> {
-    const result = parse(code)
+  async safeParse(
+    code: string,
+    wasmInstance?: ModuleType
+  ): Promise<Node<Program> | null> {
+    const result = parse(code, wasmInstance)
     this.diagnostics = []
     this._astParseFailed = false
 
@@ -426,6 +442,13 @@ export class KclManager extends EventTarget {
   }
 
   async ensureWasmInit() {
+    if (processEnv()?.VITEST) {
+      const message =
+        'kclSingle is trying to call ensureWasmInit. This will be blocked in VITEST runtimes.'
+      console.log(message)
+      return Promise.resolve(message)
+    }
+
     try {
       await initPromise
       if (this.wasmInitFailed) {
@@ -488,6 +511,7 @@ export class KclManager extends EventTarget {
         await lintAst({
           ast,
           sourceCode: this.singletons.codeManager.code,
+          instance: this.singletons.rustContext.getRustInstance(),
         })
       )
       await setSelectionFilterToDefault(this.engineCommandManager)
@@ -501,9 +525,11 @@ export class KclManager extends EventTarget {
       return
     }
 
-    let fileSettings = getSettingsAnnotation(ast)
+    let fileSettings = getSettingsAnnotation(
+      ast,
+      this.singletons.rustContext.getRustInstance()
+    )
     if (err(fileSettings)) {
-      console.error(fileSettings)
       fileSettings = {}
     }
     this.fileSettings = fileSettings
@@ -566,15 +592,17 @@ export class KclManager extends EventTarget {
   }
 
   // DO NOT CALL THIS from codemirror ever.
-  async executeAstMock(ast: Program): Promise<null | Error> {
+  async executeAstMock(
+    ast: Program,
+    wasmInstance?: ModuleType
+  ): Promise<null | Error> {
     await this.ensureWasmInit()
-
-    const newCode = recast(ast)
+    const newCode = recast(ast, wasmInstance)
     if (err(newCode)) {
       console.error(newCode)
       return newCode
     }
-    const newAst = await this.safeParse(newCode)
+    const newAst = await this.safeParse(newCode, wasmInstance)
 
     if (!newAst) {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
@@ -663,15 +691,16 @@ export class KclManager extends EventTarget {
     execute: boolean,
     optionalParams?: {
       focusPath?: Array<PathToNode>
-    }
+    },
+    wasmInstance?: ModuleType
   ): Promise<{
     newAst: Node<Program>
     selections?: Selections
   }> {
-    const newCode = recast(ast)
+    const newCode = recast(ast, wasmInstance)
     if (err(newCode)) return Promise.reject(newCode)
 
-    const astWithUpdatedSource = await this.safeParse(newCode)
+    const astWithUpdatedSource = await this.safeParse(newCode, wasmInstance)
     if (!astWithUpdatedSource) return Promise.reject(new Error('bad ast'))
     let returnVal: Selections | undefined = undefined
 
@@ -717,7 +746,10 @@ export class KclManager extends EventTarget {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
       // instead..
-      const didReParse = await this.executeAstMock(astWithUpdatedSource)
+      const didReParse = await this.executeAstMock(
+        astWithUpdatedSource,
+        wasmInstance
+      )
       if (err(didReParse)) return Promise.reject(didReParse)
     }
 

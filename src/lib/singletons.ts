@@ -76,9 +76,17 @@ import {
   saveLayout,
   type Layout,
 } from '@src/lib/layout'
+import { processEnv } from '@src/env'
 
 initPromise
   .then(() => {
+    if (processEnv()?.VITEST) {
+      const message =
+        'singletons is trying to call initPromise and setKclVersion. This will be blocked in VITEST runtimes.'
+      console.log(message)
+      return
+    }
+
     setKclVersion(kclManager.kclVersion)
   })
   .catch((e) => {
