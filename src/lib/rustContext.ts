@@ -48,14 +48,18 @@ export default class RustContext {
     }
   }
 
-  constructor(engineCommandManager: ConnectionManager) {
+  constructor(engineCommandManager: ConnectionManager, instance?: ModuleType) {
     this.engineCommandManager = engineCommandManager
 
-    this.ensureWasmInit()
-      .then(() => {
-        this.ctxInstance = this.create()
-      })
-      .catch(reportRejection)
+    if (instance) {
+      this.createFromInstance(instance)
+    } else {
+      this.ensureWasmInit()
+        .then(() => {
+          this.ctxInstance = this.create()
+        })
+        .catch(reportRejection)
+    }
   }
 
   /** Create a new context instance */
@@ -68,6 +72,21 @@ export default class RustContext {
     )
 
     return ctxInstance
+  }
+
+  getRustInstance() {
+    return this.rustInstance || undefined
+  }
+
+  createFromInstance(instance: ModuleType) {
+    this.rustInstance = instance
+
+    const ctxInstance = new this.rustInstance.Context(
+      this.engineCommandManager,
+      projectFsManager
+    )
+
+    this.ctxInstance = ctxInstance
   }
 
   async sendOpenProject(

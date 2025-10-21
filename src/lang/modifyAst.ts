@@ -65,6 +65,7 @@ import {
   type removeSingleConstraint as RemoveSingleConstraintFn,
   type transformAstSketchLines as TransformAstSketchLinesFn,
 } from '@src/lang/std/sketchcombos'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -677,7 +678,8 @@ export function deleteSegmentOrProfileFromPipeExpression(
   pathToNodes: PathToNode[],
   getConstraintInfoKw: typeof GetConstraintInfoKwFn,
   removeSingleConstraint: typeof RemoveSingleConstraintFn,
-  transformAstSketchLines: typeof TransformAstSketchLinesFn
+  transformAstSketchLines: typeof TransformAstSketchLinesFn,
+  wasmInstance?: ModuleType
 ): Node<Program> | Error {
   let _modifiedAst = structuredClone(modifiedAst)
 
@@ -688,7 +690,10 @@ export function deleteSegmentOrProfileFromPipeExpression(
       _modifiedAst,
       path,
       ['CallExpressionKw'],
-      true
+      true,
+      undefined,
+      undefined,
+      wasmInstance
     )
     if (err(callExp)) return callExp
 
@@ -704,7 +709,8 @@ export function deleteSegmentOrProfileFromPipeExpression(
       _modifiedAst,
       memVars,
       removeSingleConstraint,
-      transformAstSketchLines
+      transformAstSketchLines,
+      wasmInstance
     )
     if (!transform) return
     _modifiedAst = transform.modifiedAst
@@ -821,7 +827,8 @@ export function removeSingleConstraintInfo(
   ast: Node<Program>,
   memVars: VariableMap,
   removeSingleConstraint: typeof RemoveSingleConstraintFn,
-  transformAstSketchLines: typeof TransformAstSketchLinesFn
+  transformAstSketchLines: typeof TransformAstSketchLinesFn,
+  wasmInstance?: ModuleType
 ):
   | {
       modifiedAst: Node<Program>
@@ -840,6 +847,7 @@ export function removeSingleConstraintInfo(
     transformInfos: [transform],
     memVars,
     referenceSegName: '',
+    wasmInstance,
   })
   if (err(retval)) return false
   return retval

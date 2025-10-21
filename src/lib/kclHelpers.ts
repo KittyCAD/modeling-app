@@ -1,3 +1,4 @@
+import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import { executeAstMock } from '@src/lang/langHelpers'
 import {
   type SourceRange,
@@ -5,10 +6,13 @@ import {
   formatNumberValue,
   parse,
   resultIsOk,
+  changeExperimentalFeatures,
 } from '@src/lang/wasm'
 import type { KclExpression } from '@src/lib/commandTypes'
-import { rustContext } from '@src/lib/singletons'
+import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type RustContext from '@src/lib/rustContext'
 
 const DUMMY_VARIABLE_NAME = '__result__'
 
@@ -27,18 +31,20 @@ function isNumberValueItem(item: KclValue): item is KclNumber {
  */
 export async function getCalculatedKclExpressionValue(
   value: string,
-  allowArrays?: boolean
+  allowArrays?: boolean,
+  instance?: ModuleType,
+  providedRustContext?: RustContext
 ) {
   // Create a one-line program that assigns the value to a variable
   const dummyProgramCode = `${DUMMY_VARIABLE_NAME} = ${value}`
-  const pResult = parse(dummyProgramCode)
+  const pResult = parse(dummyProgramCode, instance)
   if (err(pResult) || !resultIsOk(pResult)) return pResult
   const ast = pResult.program
 
   // Execute the program without hitting the engine
   const { execState } = await executeAstMock({
     ast,
-    rustContext: rustContext,
+    rustContext: providedRustContext ? providedRustContext : rustContext,
   })
 
   // Find the variable declaration for the result
@@ -80,7 +86,7 @@ export async function getCalculatedKclExpressionValue(
 
     const arrayValues = varValue.value.map((item: KclValue) => {
       if (isNumberValueItem(item)) {
-        const formatted = formatNumberValue(item.value, item.ty)
+        const formatted = formatNumberValue(item.value, item.ty, instance)
         if (!err(formatted)) {
           return formatted
         }
@@ -102,7 +108,7 @@ export async function getCalculatedKclExpressionValue(
     if (!varValue || varValue.type !== 'Number') {
       return undefined
     }
-    const formatted = formatNumberValue(varValue.value, varValue.ty)
+    const formatted = formatNumberValue(varValue.value, varValue.ty, instance)
     if (err(formatted)) return undefined
     return formatted
   })()
@@ -122,11 +128,15 @@ export async function getCalculatedKclExpressionValue(
 
 export async function stringToKclExpression(
   value: string,
-  allowArrays?: boolean
+  allowArrays?: boolean,
+  instance?: ModuleType,
+  providedRustContext?: RustContext
 ) {
   const calculatedResult = await getCalculatedKclExpressionValue(
     value,
-    allowArrays
+    allowArrays,
+    instance,
+    providedRustContext
   )
   if (err(calculatedResult) || 'errors' in calculatedResult) {
     return calculatedResult
@@ -142,4 +152,16 @@ export async function stringToKclExpression(
 
 export function getStringValue(code: string, range: SourceRange): string {
   return code.slice(range[0], range[1]).replaceAll(`'`, ``).replaceAll(`"`, ``)
+}
+
+export async function setExperimentalFeatures(
+  level: WarningLevel
+): Promise<void | Error> {
+  const newCode = changeExperimentalFeatures(codeManager.code, level)
+  if (err(newCode)) {
+    return new Error(`Failed to set experimental features: ${newCode.message}`)
+  }
+  codeManager.updateCodeStateEditor(newCode)
+  await codeManager.writeToFile()
+  await kclManager.executeCode()
 }
