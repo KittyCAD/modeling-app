@@ -1575,6 +1575,71 @@ impl Node<MemberExpression> {
 
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
+            (KclValue::Segment { value: segment }, Property::String(property), false) => match property.as_str() {
+                "start" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => {
+                        // TODO: assert that types of all elements are the same.
+                        Ok(KclValue::HomArray {
+                            value: vec![
+                                KclValue::from_unsolved_expr(segment.start[0].clone(), segment.meta.clone()),
+                                KclValue::from_unsolved_expr(segment.start[1].clone(), segment.meta.clone()),
+                            ],
+                            ty: RuntimeType::any(),
+                        })
+                    }
+                    SegmentRepr::Solved { segment } => {
+                        // TODO: assert that types of all elements are the same.
+                        Ok(KclValue::array_from_point2d(
+                            [segment.start[0].n, segment.start[1].n],
+                            segment.start[0].ty,
+                            segment.meta.clone(),
+                        ))
+                    }
+                    SegmentRepr::InEngine { segment, .. } => {
+                        // TODO: assert that types of all elements are the same.
+                        Ok(KclValue::array_from_point2d(
+                            [segment.start[0].n, segment.start[1].n],
+                            segment.start[0].ty,
+                            segment.meta.clone(),
+                        ))
+                    }
+                },
+                "end" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => {
+                        // TODO: assert that types of all elements are the same.
+                        Ok(KclValue::HomArray {
+                            value: vec![
+                                KclValue::from_unsolved_expr(segment.end[0].clone(), segment.meta.clone()),
+                                KclValue::from_unsolved_expr(segment.end[1].clone(), segment.meta.clone()),
+                            ],
+                            ty: RuntimeType::any(),
+                        })
+                    }
+                    SegmentRepr::Solved { segment } => {
+                        // TODO: assert that types of all elements are the same.
+                        Ok(KclValue::array_from_point2d(
+                            [segment.end[0].n, segment.end[1].n],
+                            segment.end[0].ty,
+                            segment.meta.clone(),
+                        ))
+                    }
+                    SegmentRepr::InEngine { segment, .. } => {
+                        // TODO: assert that types of all elements are the same.
+                        Ok(KclValue::array_from_point2d(
+                            [segment.end[0].n, segment.end[1].n],
+                            segment.end[0].ty,
+                            segment.meta.clone(),
+                        ))
+                    }
+                },
+                other => Err(KclError::new_undefined_value(
+                    KclErrorDetails::new(
+                        format!("Property '{other}' not found in segment"),
+                        vec![self.clone().into()],
+                    ),
+                    None,
+                )),
+            },
             (KclValue::Plane { value: plane }, Property::String(property), false) => match property.as_str() {
                 "zAxis" => {
                     let (p, u) = plane.info.z_axis.as_3_dims();

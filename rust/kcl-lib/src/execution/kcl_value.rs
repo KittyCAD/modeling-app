@@ -596,6 +596,26 @@ impl KclValue {
     }
 
     /// Put the point into a KCL point.
+    pub(crate) fn array_from_point2d(p: [f64; 2], ty: NumericType, meta: Vec<Metadata>) -> Self {
+        let [x, y] = p;
+        Self::HomArray {
+            value: vec![
+                Self::Number {
+                    value: x,
+                    meta: meta.clone(),
+                    ty,
+                },
+                Self::Number {
+                    value: y,
+                    meta: meta.clone(),
+                    ty,
+                },
+            ],
+            ty: ty.into(),
+        }
+    }
+
+    /// Put the point into a KCL point.
     pub fn array_from_point3d(p: [f64; 3], ty: NumericType, meta: Vec<Metadata>) -> Self {
         let [x, y, z] = p;
         Self::HomArray {
@@ -617,6 +637,25 @@ impl KclValue {
                 },
             ],
             ty: ty.into(),
+        }
+    }
+
+    pub(crate) fn from_unsolved_expr(expr: UnsolvedExpr, meta: Vec<Metadata>) -> Self {
+        match expr {
+            UnsolvedExpr::Known(v) => crate::execution::KclValue::Number {
+                value: v.n,
+                ty: v.ty,
+                meta,
+            },
+            UnsolvedExpr::Unknown(var_id) => crate::execution::KclValue::SketchVar {
+                value: Box::new(SketchVar {
+                    id: var_id,
+                    initial_value: Default::default(),
+                    // TODO: Should this be the solver units?
+                    ty: Default::default(),
+                    meta,
+                }),
+            },
         }
     }
 

@@ -4,12 +4,12 @@ description: Error from executing sketch_block_line_simple.kcl
 ---
 KCL Semantic error
 
-  × semantic: Only objects can have members accessed with dot notation, but
-  │ you're trying to access a segment
+  × semantic: Only integers >= 0 can be used as the index of an array, but
+  │ you're using a string
     ╭─[11:8]
  10 │ 
  11 │ assert(s.l1.start.x, isEqualTo = 1mm)
-    ·        ─────┬────
-    ·             ╰── tests/sketch_block_line_simple/input.kcl
+    ·        ──────┬─────
+    ·              ╰── tests/sketch_block_line_simple/input.kcl
  12 │ assert(s.l1.start.y, isEqualTo = 2mm)
     ╰────
