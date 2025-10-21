@@ -12,6 +12,7 @@ pub mod csg;
 pub mod edge;
 pub mod extrude;
 pub mod fillet;
+pub mod gdt;
 pub mod helix;
 pub mod loft;
 pub mod math;
@@ -43,25 +44,24 @@ pub type StdFn = fn(
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct StdFnProps {
     pub name: String,
-    pub include_in_feature_tree: bool,
 }
 
 impl StdFnProps {
     fn default(name: &str) -> Self {
-        Self {
-            name: name.to_owned(),
-            include_in_feature_tree: false,
-        }
-    }
-
-    fn include_in_feature_tree(mut self) -> Self {
-        self.include_in_feature_tree = true;
-        self
+        Self { name: name.to_owned() }
     }
 }
 
 pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProps) {
     match (path, fn_name) {
+        ("gdt", "datum") => (
+            |e, a| Box::pin(crate::std::gdt::datum(e, a)),
+            StdFnProps::default("std::gdt::datum"),
+        ),
+        ("gdt", "flatness") => (
+            |e, a| Box::pin(crate::std::gdt::flatness(e, a)),
+            StdFnProps::default("std::gdt::flatness"),
+        ),
         ("math", "cos") => (
             |e, a| Box::pin(crate::std::math::cos(e, a)),
             StdFnProps::default("std::math::cos"),
@@ -161,31 +161,31 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "ellipse") => (
             |e, a| Box::pin(crate::std::shapes::ellipse(e, a)),
-            StdFnProps::default("std::sketch::ellipse").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::ellipse"),
         ),
         ("prelude", "helix") => (
             |e, a| Box::pin(crate::std::helix::helix(e, a)),
-            StdFnProps::default("std::helix").include_in_feature_tree(),
+            StdFnProps::default("std::helix"),
         ),
         ("transform", "mirror2d") => (
             |e, a| Box::pin(crate::std::mirror::mirror_2d(e, a)),
-            StdFnProps::default("std::transform::mirror2d").include_in_feature_tree(),
+            StdFnProps::default("std::transform::mirror2d"),
         ),
         ("transform", "translate") => (
             |e, a| Box::pin(crate::std::transform::translate(e, a)),
-            StdFnProps::default("std::transform::translate").include_in_feature_tree(),
+            StdFnProps::default("std::transform::translate"),
         ),
         ("transform", "rotate") => (
             |e, a| Box::pin(crate::std::transform::rotate(e, a)),
-            StdFnProps::default("std::transform::rotate").include_in_feature_tree(),
+            StdFnProps::default("std::transform::rotate"),
         ),
         ("transform", "scale") => (
             |e, a| Box::pin(crate::std::transform::scale(e, a)),
-            StdFnProps::default("std::transform::scale").include_in_feature_tree(),
+            StdFnProps::default("std::transform::scale"),
         ),
         ("prelude", "offsetPlane") => (
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),
-            StdFnProps::default("std::offsetPlane").include_in_feature_tree(),
+            StdFnProps::default("std::offsetPlane"),
         ),
         ("prelude", "assert") => (
             |e, a| Box::pin(crate::std::assert::assert(e, a)),
@@ -197,47 +197,47 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("solid", "fillet") => (
             |e, a| Box::pin(crate::std::fillet::fillet(e, a)),
-            StdFnProps::default("std::solid::fillet").include_in_feature_tree(),
+            StdFnProps::default("std::solid::fillet"),
         ),
         ("solid", "chamfer") => (
             |e, a| Box::pin(crate::std::chamfer::chamfer(e, a)),
-            StdFnProps::default("std::solid::chamfer").include_in_feature_tree(),
+            StdFnProps::default("std::solid::chamfer"),
         ),
         ("solid", "shell") => (
             |e, a| Box::pin(crate::std::shell::shell(e, a)),
-            StdFnProps::default("std::solid::shell").include_in_feature_tree(),
+            StdFnProps::default("std::solid::shell"),
         ),
         ("solid", "hollow") => (
             |e, a| Box::pin(crate::std::shell::hollow(e, a)),
-            StdFnProps::default("std::solid::hollow").include_in_feature_tree(),
+            StdFnProps::default("std::solid::hollow"),
         ),
         ("solid", "union") => (
             |e, a| Box::pin(crate::std::csg::union(e, a)),
-            StdFnProps::default("std::solid::union").include_in_feature_tree(),
+            StdFnProps::default("std::solid::union"),
         ),
         ("solid", "intersect") => (
             |e, a| Box::pin(crate::std::csg::intersect(e, a)),
-            StdFnProps::default("std::solid::intersect").include_in_feature_tree(),
+            StdFnProps::default("std::solid::intersect"),
         ),
         ("solid", "subtract") => (
             |e, a| Box::pin(crate::std::csg::subtract(e, a)),
-            StdFnProps::default("std::solid::subtract").include_in_feature_tree(),
+            StdFnProps::default("std::solid::subtract"),
         ),
         ("solid", "patternTransform") => (
             |e, a| Box::pin(crate::std::patterns::pattern_transform(e, a)),
-            StdFnProps::default("std::solid::patternTransform").include_in_feature_tree(),
+            StdFnProps::default("std::solid::patternTransform"),
         ),
         ("solid", "patternLinear3d") => (
             |e, a| Box::pin(crate::std::patterns::pattern_linear_3d(e, a)),
-            StdFnProps::default("std::solid::patternLinear3d").include_in_feature_tree(),
+            StdFnProps::default("std::solid::patternLinear3d"),
         ),
         ("solid", "patternCircular3d") => (
             |e, a| Box::pin(crate::std::patterns::pattern_circular_3d(e, a)),
-            StdFnProps::default("std::solid::patternCircular3d").include_in_feature_tree(),
+            StdFnProps::default("std::solid::patternCircular3d"),
         ),
         ("solid", "appearance") => (
             |e, a| Box::pin(crate::std::appearance::appearance(e, a)),
-            StdFnProps::default("std::solid::appearance").include_in_feature_tree(),
+            StdFnProps::default("std::solid::appearance"),
         ),
         ("array", "map") => (
             |e, a| Box::pin(crate::std::array::map(e, a)),
@@ -261,15 +261,15 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("prelude", "clone") => (
             |e, a| Box::pin(crate::std::clone::clone(e, a)),
-            StdFnProps::default("std::clone").include_in_feature_tree(),
+            StdFnProps::default("std::clone"),
         ),
         ("sketch", "conic") => (
             |e, a| Box::pin(crate::std::sketch::conic(e, a)),
-            StdFnProps::default("std::sketch::conic").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::conic"),
         ),
         ("sketch", "parabolic") => (
             |e, a| Box::pin(crate::std::sketch::parabolic(e, a)),
-            StdFnProps::default("std::sketch::parabolic").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::parabolic"),
         ),
         ("sketch", "parabolicPoint") => (
             |e, a| Box::pin(crate::std::sketch::parabolic_point(e, a)),
@@ -277,7 +277,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "hyperbolic") => (
             |e, a| Box::pin(crate::std::sketch::hyperbolic(e, a)),
-            StdFnProps::default("std::sketch::hyperbolic").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::hyperbolic"),
         ),
         ("sketch", "hyperbolicPoint") => (
             |e, a| Box::pin(crate::std::sketch::hyperbolic_point(e, a)),
@@ -285,7 +285,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "elliptic") => (
             |e, a| Box::pin(crate::std::sketch::elliptic(e, a)),
-            StdFnProps::default("std::sketch::elliptic").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::elliptic"),
         ),
         ("sketch", "ellipticPoint") => (
             |e, a| Box::pin(crate::std::sketch::elliptic_point(e, a)),
@@ -301,7 +301,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "extrude") => (
             |e, a| Box::pin(crate::std::extrude::extrude(e, a)),
-            StdFnProps::default("std::sketch::extrude").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::extrude"),
         ),
         ("sketch", "patternTransform2d") => (
             |e, a| Box::pin(crate::std::patterns::pattern_transform_2d(e, a)),
@@ -309,15 +309,15 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "revolve") => (
             |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
-            StdFnProps::default("std::sketch::revolve").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::revolve"),
         ),
         ("sketch", "sweep") => (
             |e, a| Box::pin(crate::std::sweep::sweep(e, a)),
-            StdFnProps::default("std::sketch::sweep").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::sweep"),
         ),
         ("sketch", "loft") => (
             |e, a| Box::pin(crate::std::loft::loft(e, a)),
-            StdFnProps::default("std::sketch::loft").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::loft"),
         ),
         ("sketch", "polygon") => (
             |e, a| Box::pin(crate::std::shapes::polygon(e, a)),
@@ -409,7 +409,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "startSketchOn") => (
             |e, a| Box::pin(crate::std::sketch::start_sketch_on(e, a)),
-            StdFnProps::default("std::sketch::startSketchOn").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::startSketchOn"),
         ),
         ("sketch", "startProfile") => (
             |e, a| Box::pin(crate::std::sketch::start_profile(e, a)),
@@ -457,7 +457,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch", "subtract2d") => (
             |e, a| Box::pin(crate::std::sketch::subtract_2d(e, a)),
-            StdFnProps::default("std::sketch::subtract2d").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::subtract2d"),
         ),
         ("appearance", "hexString") => (
             |e, a| Box::pin(crate::std::appearance::hex_string(e, a)),
@@ -465,7 +465,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("sketch2", "parallel") => (
             |e, a| Box::pin(crate::std::constraints::parallel(e, a)),
-            StdFnProps::default("std::sketch2::parallel").include_in_feature_tree(),
+            StdFnProps::default("std::sketch2::parallel"),
         ),
         (module, fn_name) => {
             panic!("No implementation found for {module}::{fn_name}, please add it to this big match statement")
@@ -479,6 +479,10 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
         ("types", "Solid") => (PrimitiveType::Solid, StdFnProps::default("std::types::Solid")),
         ("types", "Plane") => (PrimitiveType::Plane, StdFnProps::default("std::types::Plane")),
         ("types", "Face") => (PrimitiveType::Face, StdFnProps::default("std::types::Face")),
+        ("types", "GdtAnnotation") => (
+            PrimitiveType::GdtAnnotation,
+            StdFnProps::default("std::types::GdtAnnotation"),
+        ),
         ("types", "Helix") => (PrimitiveType::Helix, StdFnProps::default("std::types::Helix")),
         ("types", "Edge") => (PrimitiveType::Edge, StdFnProps::default("std::types::Edge")),
         ("types", "Axis2d") => (PrimitiveType::Axis2d, StdFnProps::default("std::types::Axis2d")),

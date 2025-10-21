@@ -4,7 +4,6 @@ import type { StateFrom } from 'xstate'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
-  type Selections,
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
@@ -15,6 +14,7 @@ import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 const selectionSelector = (snapshot?: StateFrom<typeof modelingMachine>) =>
   snapshot?.context.selectionRanges
@@ -60,7 +60,7 @@ function CommandBarSelectionInput({
     return () => {
       toSync(() => {
         const promises = [
-          new Promise(() => kclManager.defaultSelectionFilter(selection)),
+          new Promise(() => kclManager.setSelectionFilterToDefault(selection)),
         ]
         if (!kclManager._isAstEmpty(kclManager.ast)) {
           promises.push(kclManager.hidePlanes())
@@ -145,7 +145,7 @@ function CommandBarSelectionInput({
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
-    return () => kclManager.defaultSelectionFilter(selection)
+    return () => kclManager.setSelectionFilterToDefault(selection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.selectionFilter])
 

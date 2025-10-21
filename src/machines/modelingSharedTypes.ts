@@ -3,11 +3,22 @@ import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import type { PathToNode } from '@src/lang/wasm'
 import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { isDesktop } from '@src/lib/isDesktop'
+import type { EquipTool } from '@src/machines/sketchSolve/sketchSolveMode'
+import type CodeManager from '@src/lang/codeManager'
+import type { KclManager } from '@src/lang/KclSingleton'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type EditorManager from '@src/editor/manager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { kclEditorMachine } from '@src/machines/kclEditorMachine'
+import type { ActorRefFrom } from 'xstate'
+import type RustContext from '@src/lib/rustContext'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
 
@@ -235,6 +246,17 @@ export interface ModelingMachineContext {
   defaultPlaneVisibility: PlaneVisibilityMap
   savedDefaultPlaneVisibility: PlaneVisibilityMap
   planesInitialized: boolean
+  sketchSolveTool: EquipTool | null
+  codeManager?: CodeManager
+  kclManager?: KclManager
+  engineCommandManager?: ConnectionManager
+  sceneInfra?: SceneInfra
+  sceneEntitiesManager?: SceneEntities
+  editorManager?: EditorManager
+  wasmInstance?: ModuleType
+  kclEditorMachine?: ActorRefFrom<typeof kclEditorMachine>
+  rustContext?: RustContext
+  sketchSolveToolName: EquipTool | null
 }
 
 export type PlaneVisibilityMap = {

@@ -147,6 +147,45 @@ test.describe('Sketch tests', () => {
     ).toBeVisible()
   })
 
+  test('delete startProfile removes profile statement', async ({
+    page,
+    context,
+    homePage,
+    scene,
+    cmdBar,
+    editor,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 600 })
+
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0.0, 0.0])`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await editor.expectEditor.toContain('startProfile(')
+
+    // Open feature tree and select the first sketch
+    await page.getByRole('button', { name: 'Feature Tree' }).click()
+    await page.getByRole('button', { name: 'sketch001' }).dblclick()
+    await page.waitForTimeout(600)
+
+    // Select the profile by clicking the origin in the canvas, then press Delete
+    const [clickCenter] = scene.makeMouseHelpers(0.5, 0.5, { format: 'ratio' })
+    await clickCenter()
+
+    await page.waitForTimeout(200)
+
+    await page.keyboard.press('Delete')
+
+    await editor.expectEditor.not.toContain('startProfile(')
+  })
+
   test('Can exit selection of face', async ({ page, homePage }) => {
     // Load the app with the code panes
     await page.addInitScript(async () => {
@@ -292,7 +331,7 @@ test.describe('Sketch tests', () => {
   test(
     'Can edit a sketch that has been extruded in the same pipe',
     { tag: '@web' },
-    async ({ page, homePage, editor, toolbar, scene, cmdBar }) => {
+    async ({ page, editor, toolbar, scene, cmdBar }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -306,7 +345,6 @@ sketch001 = startSketchOn(XZ)
         )
       })
 
-      await homePage.goToModelingScene()
       await toolbar.waitForFeatureTreeToBeBuilt()
       await scene.settled(cmdBar)
 
@@ -538,11 +576,8 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOf
     // otherwise the cmdbar would be waiting for a selection.
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
-      stage: 'arguments',
-      currentArgKey: 'length',
-      currentArgValue: '5',
-      headerArguments: { Profiles: '1 profile', Length: '' },
-      highlightedHeaderArg: 'length',
+      stage: 'review',
+      headerArguments: { Profiles: '1 profile' },
       commandName: 'Extrude',
     })
   })
@@ -921,6 +956,52 @@ profile001 = startProfile(sketch001, at = [0, 0])
 `,
       { shouldNormalise: true }
     )
+  })
+
+  test('Select-all delete removes segments and circle in sketch mode (seeded code)', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    toolbar,
+    editor,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 600 })
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-0.26, 0])
+  |> xLine(length = 0.11)
+  |> line(end = [0.12, -0.11])
+
+profile002 = circle(sketch001, center = [0.03, -0.03], radius = 0.08)
+// testcomment2`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    // Enter sketch mode on first sketch via Feature Tree
+    await toolbar.openFeatureTreePane()
+    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+    await page.waitForTimeout(600)
+    await editor.expectEditor.toContain('startSketchOn(XZ)')
+    await editor.expectEditor.toContain('startProfile(')
+    await editor.expectEditor.toContain('circle(')
+
+    // Select all and delete
+    await page.keyboard.press('ControlOrMeta+A')
+    await page.keyboard.press('Delete')
+
+    // Expect that only the sketch declaration remains
+    await editor.expectEditor.toContain('startSketchOn(XZ)')
+    await editor.expectEditor.not.toContain('startProfile(')
+    await editor.expectEditor.not.toContain('|> xLine(')
+    await editor.expectEditor.not.toContain('circle(')
+    await editor.expectEditor.toContain('testcomment2')
   })
 })
 
@@ -1991,7 +2072,6 @@ profile001 = startProfile(sketch001, at = [-102.72, 237.44])
     homePage,
     scene,
     toolbar,
-    cmdBar,
     page,
   }) => {
     const u = await getUtils(page)
@@ -2020,7 +2100,7 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
       const projectDir = path.join(dir, 'multi-file-sketch-test')
       await fs.mkdir(projectDir, { recursive: true })
       await Promise.all([
-        fs.writeFile(path.join(projectDir, 'good.kcl'), GOOD_KCL, 'utf-8'),
+        fs.writeFile(path.join(projectDir, 'correct.kcl'), GOOD_KCL, 'utf-8'),
         fs.writeFile(path.join(projectDir, 'error.kcl'), ERROR_KCL, 'utf-8'),
       ])
     })
@@ -2033,15 +2113,22 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
     await u.closeDebugPanel()
 
     await toolbar.openFeatureTreePane()
+
     await toolbar.openPane('files')
 
-    await toolbar.openFile('good.kcl')
+    await page.waitForTimeout(1000)
+
+    await toolbar.openFile('correct.kcl')
+
+    await page.waitForTimeout(1000)
 
     await expect(
       toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })
     ).toHaveCount(2)
 
     await toolbar.openFile('error.kcl')
+
+    await page.waitForTimeout(1000)
 
     await expect(
       toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })

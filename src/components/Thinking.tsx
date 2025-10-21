@@ -335,10 +335,6 @@ const fromDataToComponent = (
   thought: MlCopilotServerMessage,
   options: { key?: string | number }
 ) => {
-  if ('end_of_stream' in thought) {
-    return <End />
-  }
-
   if ('reasoning' in thought) {
     const type = thought.reasoning.type
     switch (type) {
@@ -350,16 +346,12 @@ const fromDataToComponent = (
           </>
         )
       }
-      // Prepare to have this type come down the pipeline.
-      // We have to shut-up tsc.
       case 'markdown': {
         return (
-          <>
-            <NothingInParticular
-              key={options.key}
-              content={(thought.reasoning as { content: string }).content}
-            />
-          </>
+          <NothingInParticular
+            key={options.key}
+            content={(thought.reasoning as { content: string }).content}
+          />
         )
       }
       case 'kcl_code_examples': {
@@ -438,18 +430,20 @@ const fromDataToComponent = (
     }
   }
 
-  if ('error' in thought) {
-    return <ErroneousThing key={options.key} content={thought.error.detail} />
-  }
-
   return null
 }
 
 export const Thinking = (props: {
   thoughts?: MlCopilotServerMessage[]
+  isDone: boolean
   onlyShowImmediateThought: boolean
 }) => {
   const refViewFull = useRef<HTMLDivElement>(null)
+
+  const reasoningThoughts =
+    props.thoughts?.filter((x: MlCopilotServerMessage) => {
+      return 'reasoning' in x
+    }) ?? []
 
   useEffect(() => {
     if (props.onlyShowImmediateThought === true) {
@@ -462,30 +456,43 @@ export const Thinking = (props: {
     if (c.length === 0) {
       return
     }
-    c[c.length - 1].scrollIntoView({ behavior: 'smooth' })
-  }, [props.thoughts?.length, props.onlyShowImmediateThought])
+
+    setTimeout(() => {
+      c[c.length - 1].scrollIntoView({ behavior: 'smooth' })
+      setTimeout(() => {
+        if (refViewFull.current === null) return
+        refViewFull.current.scrollIntoView({ behavior: 'smooth' })
+      })
+    })
+  }, [reasoningThoughts.length, props.onlyShowImmediateThought])
 
   if (props.thoughts === undefined) {
     return (
       <div className="animate-shimmer p-2">
-        <Text content={'Processing...'} />
+        <Generic content={'Thinking...'} />
       </div>
     )
   }
 
-  const componentThoughts = props.thoughts.map((thought, index: number) => {
+  const componentThoughts = reasoningThoughts.map((thought, index: number) => {
     return fromDataToComponent(thought, { key: index })
   })
+
+  if (props.isDone) {
+    componentThoughts.push(<End key={reasoningThoughts.length} />)
+  }
+
+  const lastTextualThought = reasoningThoughts.findLast(
+    (thought) => thought.reasoning.type === 'text'
+  )
 
   const componentLastGenericThought = (
     <Generic
       content={
-        props.thoughts.findLast(
-          (thought) =>
-            'reasoning' in thought && thought.reasoning?.type === 'text'
-          // Typescript can't figure out only a `text` type or undefined is found
-          // @ts-expect-error
-        )?.reasoning?.content ?? 'Processing...'
+        lastTextualThought !== undefined &&
+        lastTextualThought.reasoning.type === 'text'
+          ? lastTextualThought.reasoning.content
+          : ''
       }
     />
   )
@@ -493,12 +500,13 @@ export const Thinking = (props: {
   const ViewFull = (
     <div
       ref={refViewFull}
-      className="text-2 bg-2 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
+      style={{ maxHeight: '20lh' }}
+      className="overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
     >
       {componentThoughts.length > 0 ? (
         componentThoughts
       ) : (
-        <Text content={'Processing...'} />
+        <div className="animate-pulse animate-shimmer h-4 w-full p-1 bg-chalkboard-80 rounded"></div>
       )}
     </div>
   )

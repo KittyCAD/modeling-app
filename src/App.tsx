@@ -8,12 +8,10 @@ import {
   useNavigate,
   useSearchParams,
 } from 'react-router-dom'
-
 import { Toolbar } from '@src/Toolbar'
 import { AppHeader } from '@src/components/AppHeader'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { DownloadAppToast } from '@src/components/DownloadAppToast'
-import { EngineStream } from '@src/components/EngineStream'
 import Gizmo from '@src/components/Gizmo'
 import { useLspContext } from '@src/components/LspProvider'
 import {
@@ -55,25 +53,24 @@ import {
   editorManager,
   getSettings,
   kclManager,
-  sceneInfra,
   settingsActor,
 } from '@src/lib/singletons'
-import { engineStreamActor, useSettings, useToken } from '@src/lib/singletons'
+import { useSettings, useToken } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { BillingTransition } from '@src/machines/billingMachine'
-import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
 import {
   TutorialRequestToast,
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
+import { ConnectionStream } from '@src/components/ConnectionStream'
+import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 
 // CYCLIC REF
-sceneInfra.camControls.engineStreamActor = engineStreamActor
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -147,13 +144,10 @@ export function App() {
     billingActor.send({ type: BillingTransition.Update, apiToken: authToken })
 
     // Tell engineStream to wait for dependencies to start streaming.
-    engineStreamActor.send({ type: EngineStreamTransition.WaitForDependencies })
-
     // When leaving the modeling scene, cut the engine stream.
+
     return () => {
-      // When leaving the modeling scene, cut the engine stream.
-      // Stop is more serious than Pause
-      engineStreamActor.send({ type: EngineStreamTransition.Stop })
+      // Add any logic to be called when the page gets unmounted.
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
@@ -283,8 +277,9 @@ export function App() {
             style={{ minWidth: '256px' }}
           >
             <Toolbar />
-            <EngineStream pool={pool} authToken={authToken} />
+            <ConnectionStream pool={pool} authToken={authToken} />
             <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
+              <ExperimentalFeaturesMenu />
               <UnitsMenu />
               <Gizmo />
             </div>

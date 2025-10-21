@@ -105,6 +105,7 @@ export type Command<
   hideFromSearch?: boolean
   disabled?: boolean
   status?: CommandStatus
+  mlBranding?: boolean
 }
 
 export type CommandConfig<
@@ -190,6 +191,7 @@ export type CommandArgumentConfig<
       selectionTypes: Artifact['type'][]
       selectionFilter?: EntityType[]
       multiple: boolean
+      clearSelectionFirst?: boolean
       allowNoSelection?: boolean
       validation?: ({
         data,
@@ -279,11 +281,11 @@ export type CommandArgumentConfig<
   | {
       inputType: 'vector3d'
       defaultValue?:
-        | OutputType
+        | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: C
-          ) => OutputType)
+          ) => string)
       defaultValueFromContext?: (context: C) => OutputType
       validation?: ({
         data,
@@ -364,6 +366,7 @@ export type CommandArgument<
       selectionTypes: Artifact['type'][]
       selectionFilter?: EntityType[]
       multiple: boolean
+      clearSelectionFirst?: boolean
       allowNoSelection?: boolean
       validation?: ({
         data,
@@ -457,11 +460,11 @@ export type CommandArgument<
   | {
       inputType: 'vector3d'
       defaultValue?:
-        | OutputType
+        | string
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: ContextFrom<T>
-          ) => OutputType)
+          ) => string)
       validation?: ({
         data,
         context,

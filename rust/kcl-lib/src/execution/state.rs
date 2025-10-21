@@ -13,7 +13,7 @@ use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     exec::DefaultPlanes,
     execution::{
-        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, annotations,
+        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, SketchVarId, annotations,
         cad_op::Operation,
         id_generator::IdGenerator,
         memory::{ProgramMemory, Stack},
@@ -96,8 +96,12 @@ pub(super) struct ModuleState {
     /// The closest variable declaration being executed in any parent node in the AST.
     /// This is used to provide better error messages, e.g. noticing when the user is trying
     /// to use the variable `length` inside the RHS of its own definition, like `length = tan(length)`.
-    /// TODO: Make this a reference.
     pub being_declared: Option<String>,
+    /// Present if we're currently executing inside a sketch block.
+    pub sketch_block: Option<SketchBlockState>,
+    /// Tracks if KCL being executed is currently inside a stdlib function or not.
+    /// This matters because e.g. we shouldn't emit artifacts from declarations declared inside a stdlib function.
+    pub inside_stdlib: bool,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
     /// Settings specified from annotations.
@@ -109,6 +113,12 @@ pub(super) struct ModuleState {
 
     pub(super) allowed_warnings: Vec<&'static str>,
     pub(super) denied_warnings: Vec<&'static str>,
+}
+
+#[derive(Debug, Clone, Default)]
+pub(super) struct SketchBlockState {
+    pub sketch_vars: Vec<KclValue>,
+    pub constraints: Vec<kcl_ezpz::Constraint>,
 }
 
 impl ExecState {
@@ -435,13 +445,18 @@ impl GlobalState {
                 id: root_id,
                 path: ModulePath::Local {
                     value: root_path.clone(),
+                    original_import_path: None,
                 },
                 repr: ModuleRepr::Root,
             },
         );
-        global
-            .path_to_source_id
-            .insert(ModulePath::Local { value: root_path }, root_id);
+        global.path_to_source_id.insert(
+            ModulePath::Local {
+                value: root_path.clone(),
+                original_import_path: None,
+            },
+            root_id,
+        );
         global
     }
 
@@ -511,6 +526,7 @@ impl ModuleState {
             stack: memory.new_stack(),
             pipe_value: Default::default(),
             being_declared: Default::default(),
+            sketch_block: Default::default(),
             module_exports: Default::default(),
             explicit_length_units: false,
             path,
@@ -518,6 +534,7 @@ impl ModuleState {
             artifacts: Default::default(),
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
+            inside_stdlib: false,
         }
     }
 
@@ -526,6 +543,12 @@ impl ModuleState {
             .find_all_in_env(main_ref)
             .map(|(k, v)| (k.clone(), v.clone()))
             .collect()
+    }
+}
+
+impl SketchBlockState {
+    pub(crate) fn next_sketch_var_id(&self) -> SketchVarId {
+        SketchVarId(self.sketch_vars.len())
     }
 }
 

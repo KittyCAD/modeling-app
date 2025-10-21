@@ -248,6 +248,16 @@ code,
     mask-position: left;
   }
 }
+
+@keyframes delta-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .react-json-view {
   @apply bg-transparent !important;
 }
@@ -481,9 +491,17 @@ code,
 
 .animate-shimmer {
   animation-delay: .5s;
-  animation-duration: 3s;
+  animation-duration: 1s;
   animation-iteration-count: infinite;
   animation-name: loading-shimmer;
   mask: linear-gradient(90deg, #000 30%, #0001, #000 70%) right / 350% 100%;
   display: inline-block;
+}
+
+.animate-delta-in {
+  animation-delay: .5s;
+  animation-duration: 1.5s;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-name: delta-in;
 }

@@ -91,7 +91,7 @@ jobs:
             simulation_tests::kcl_samples \
             2>&1 | tee /tmp/github-actions.log
         env:
-          KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
+          ZOO_API_TOKEN: ${{secrets.ZOO_API_TOKEN}}
           ZOO_HOST: https://api.dev.zoo.dev
           RUST_BACKTRACE: full
           RUST_MIN_STACK: 10485760000
@@ -121,7 +121,7 @@ jobs:
         env:
           # The default is auto, and insta behaves differently in CI vs. not.
           INSTA_UPDATE: always
-          KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
+          ZOO_API_TOKEN: ${{secrets.ZOO_API_TOKEN}}
           ZOO_HOST: https://api.dev.zoo.dev
           # Configure nextest when it's run by insta (via just).
           NEXTEST_PROFILE: ci
@@ -186,10 +186,10 @@ jobs:
           popd
           .github/ci-cd-scripts/upload-results.sh
         env:
-          KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
+          ZOO_API_TOKEN: ${{secrets.ZOO_API_TOKEN}}
           ZOO_HOST: https://api.dev.zoo.dev
           RUST_MIN_STACK: 10485760000
-          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -238,11 +238,10 @@ jobs:
           TWENTY_TWENTY: overwrite
           INSTA_UPDATE: always
           EXPECTORATE: overwrite
-          KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
+          ZOO_API_TOKEN: ${{secrets.ZOO_API_TOKEN}}
           ZOO_HOST: https://api.dev.zoo.dev
-          MODELING_APP_INTERNAL_SAMPLES_SECRET: ${{secrets.MODELING_APP_INTERNAL_SAMPLES_SECRET}}
           RUST_MIN_STACK: 10485760000
-          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -266,7 +265,7 @@ jobs:
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           cache: false # Configured below.
-      - uses: taiki-e/install-action@c07504cae06f832dc8de08911c9a9c5cddb0d2d3
+      - uses: taiki-e/install-action@5ab30948b991e8d6aa5a6c1e33c6aea130c6de65
         with:
           tool: wasm-pack
       - name: Rust Cache
@@ -284,5 +283,5 @@ jobs:
           cd kcl-wasm-lib
           #wasm-pack test --headless --chrome
         env:
-          KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           NODE_ENV: development

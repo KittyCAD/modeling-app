@@ -60,7 +60,13 @@ import type {
   SimplifiedArgDetails,
   TransformInfo,
 } from '@src/lang/std/stdTypes'
-import { findKwArg, findKwArgAny } from '@src/lang/util'
+import type { PathToNodeMap } from '@src/lang/util'
+import {
+  findKwArg,
+  findKwArgAny,
+  isLiteralArrayOrStatic,
+  isNotLiteralArrayOrStatic,
+} from '@src/lang/util'
 import type {
   BinaryPart,
   CallExpressionKw,
@@ -75,7 +81,7 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import { sketchFromKclValue } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { isErr as _isErr, isNotErr as _isNotErr, err } from '@src/lib/trap'
 import {
   allLabels,
@@ -84,6 +90,7 @@ import {
   normaliseAngle,
   roundOff,
 } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -437,11 +444,15 @@ const getMinAndSegAngVals = (
 const getSignedLeg = (arg: Literal, legLenVal: BinaryPart) =>
   forceNum(arg) < 0 ? createUnaryExpression(legLenVal) : legLenVal
 
-const getLegAng = (ang: number, legAngleVal: BinaryPart) => {
+const getLegAng = (
+  ang: number,
+  legAngleVal: BinaryPart,
+  wasmInstance?: ModuleType
+) => {
   const normalisedAngle = ((ang % 360) + 360) % 360 // between 0 and 360
   const truncatedTo90 = Math.floor(normalisedAngle / 90) * 90
   const binExp = createBinaryExpressionWithUnary([
-    createLiteral(truncatedTo90, 'Deg'),
+    createLiteral(truncatedTo90, 'Deg', wasmInstance),
     legAngleVal,
   ])
   return truncatedTo90 === 0 ? legAngleVal : binExp
@@ -1009,7 +1020,13 @@ const transformMap: TransformMap = {
     xRelative: {
       equalLength: {
         tooltip: 'angledLineOfXLength',
-        createNode: ({ referenceSegName, inputs, tag, rawArgs: args }) => {
+        createNode: ({
+          referenceSegName,
+          inputs,
+          tag,
+          rawArgs: args,
+          wasmInstance,
+        }) => {
           const [minVal, legAngle] = getMinAndSegAngVals(
             referenceSegName,
             getInputOfType(inputs, 'xRelative').expr
@@ -1018,7 +1035,7 @@ const transformMap: TransformMap = {
           if (err(val)) return val
           return createCallWrapper(
             'angledLineOfXLength',
-            [getLegAng(val, legAngle), minVal],
+            [getLegAng(val, legAngle, wasmInstance), minVal],
             tag
           )
         },
@@ -1062,7 +1079,13 @@ const transformMap: TransformMap = {
     yRelative: {
       equalLength: {
         tooltip: 'angledLineOfYLength',
-        createNode: ({ referenceSegName, inputs, tag, rawArgs: args }) => {
+        createNode: ({
+          referenceSegName,
+          inputs,
+          tag,
+          rawArgs: args,
+          wasmInstance,
+        }) => {
           const [minVal, legAngle] = getMinAndSegAngVals(
             referenceSegName,
             inputs[1].expr,
@@ -1072,7 +1095,7 @@ const transformMap: TransformMap = {
           if (err(val)) return val
           return createCallWrapper(
             'angledLineOfXLength',
-            [getLegAng(val, legAngle), minVal],
+            [getLegAng(val, legAngle, wasmInstance), minVal],
             tag
           )
         },
@@ -1753,10 +1776,19 @@ export function getConstraintType(
 export function getTransformInfos(
   selectionRanges: Selections,
   ast: Program,
-  constraintType: ConstraintType
+  constraintType: ConstraintType,
+  wasmInstance?: ModuleType
 ): TransformInfo[] {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(ast, codeRef.pathToNode, ['CallExpressionKw'])
+    getNodeFromPath<Expr>(
+      ast,
+      codeRef.pathToNode,
+      ['CallExpressionKw'],
+      undefined,
+      undefined,
+      undefined,
+      wasmInstance
+    )
   )
 
   try {
@@ -1783,10 +1815,19 @@ export function getTransformInfos(
 
 export function getRemoveConstraintsTransforms(
   selectionRanges: Selections,
-  ast: Program
+  ast: Program,
+  wasmInstance?: ModuleType
 ): TransformInfo[] | Error {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(ast, codeRef.pathToNode)
+    getNodeFromPath<Expr>(
+      ast,
+      codeRef.pathToNode,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      wasmInstance
+    )
   )
 
   const theTransforms = nodes.map((nodeMeta) => {
@@ -1807,8 +1848,6 @@ export function getRemoveConstraintsTransforms(
   return theTransforms
 }
 
-export type PathToNodeMap = { [key: number]: PathToNode }
-
 export function transformSecondarySketchLinesTagFirst({
   ast,
   selectionRanges,
@@ -1816,6 +1855,7 @@ export function transformSecondarySketchLinesTagFirst({
   memVars,
   forceSegName,
   forceValueUsedInTransform,
+  wasmInstance,
 }: {
   ast: Node<Program>
   selectionRanges: Selections
@@ -1823,6 +1863,7 @@ export function transformSecondarySketchLinesTagFirst({
   memVars: VariableMap
   forceSegName?: string
   forceValueUsedInTransform?: BinaryPart
+  wasmInstance?: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -1859,6 +1900,7 @@ export function transformSecondarySketchLinesTagFirst({
     memVars,
     referenceSegName: tag,
     forceValueUsedInTransform,
+    wasmInstance,
   })
   if (err(result)) return result
 
@@ -1894,6 +1936,7 @@ export function transformAstSketchLines({
   referenceSegName,
   forceValueUsedInTransform,
   referencedSegmentRange,
+  wasmInstance,
 }: {
   ast: Node<Program>
   selectionRanges: Selections | PathToNode[]
@@ -1902,6 +1945,7 @@ export function transformAstSketchLines({
   referenceSegName: string
   referencedSegmentRange?: SourceRange
   forceValueUsedInTransform?: BinaryPart
+  wasmInstance?: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -1920,7 +1964,7 @@ export function transformAstSketchLines({
 
     if (!callBack || !transformTo) return new Error('no callback helper')
 
-    const getNode = getNodeFromPathCurry(node, _pathToNode)
+    const getNode = getNodeFromPathCurry(node, _pathToNode, wasmInstance)
 
     // Find `call` which could either be a positional-arg or keyword-arg call.
     const call = getNode<Node<CallExpressionKw>>('CallExpressionKw')
@@ -1948,7 +1992,15 @@ export function transformAstSketchLines({
       )
         return
 
-      const nodeMeta = getNodeFromPath<Expr>(ast, a.pathToNode)
+      const nodeMeta = getNodeFromPath<Expr>(
+        ast,
+        a.pathToNode,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        wasmInstance
+      )
       if (err(nodeMeta)) return
 
       switch (a?.argPosition?.type) {
@@ -2084,7 +2136,9 @@ export function transformAstSketchLines({
           rawArgs,
           forceValueUsedInTransform,
           referencedSegment,
+          wasmInstance,
         }),
+      wasmInstance,
     })
     if (err(replacedSketchLine)) return replacedSketchLine
 
@@ -2233,36 +2287,6 @@ export function getConstraintLevelFromSourceRange(
   if (isOneValFree) return { level: 'partial', range: range }
 
   return { level: 'partial', range: range }
-}
-
-export function isLiteralArrayOrStatic(
-  val: Expr | [Expr, Expr] | [Expr, Expr, Expr] | undefined
-): boolean {
-  if (!val) return false
-
-  if (isArray(val)) {
-    const a = val[0]
-    const b = val[1]
-    return isLiteralArrayOrStatic(a) && isLiteralArrayOrStatic(b)
-  }
-  return (
-    val.type === 'Literal' ||
-    (val.type === 'UnaryExpression' && val.argument.type === 'Literal')
-  )
-}
-
-export function isNotLiteralArrayOrStatic(
-  val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
-): boolean {
-  if (isArray(val)) {
-    const a = val[0]
-    const b = val[1]
-    return isNotLiteralArrayOrStatic(a) && isNotLiteralArrayOrStatic(b)
-  }
-  return (
-    (val.type !== 'Literal' && val.type !== 'UnaryExpression') ||
-    (val.type === 'UnaryExpression' && val.argument.type !== 'Literal')
-  )
 }
 
 export function isExprBinaryPart(expr: Expr): expr is BinaryPart {

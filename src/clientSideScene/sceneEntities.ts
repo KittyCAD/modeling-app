@@ -133,8 +133,8 @@ import {
   codeRefFromRange,
   getArtifactFromRange,
 } from '@src/lang/std/artifactGraph'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
+
 import {
   addCallExpressionsToPipe,
   addCloseToPipe,
@@ -159,9 +159,7 @@ import {
   updateRectangleSketch,
 } from '@src/lib/rectangleTool'
 import type RustContext from '@src/lib/rustContext'
-import { updateExtraSegments } from '@src/lib/selections'
-import type { Selections } from '@src/lib/selections'
-import { getEventForSegmentSelection } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { Themes, getResolvedTheme } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
@@ -180,6 +178,15 @@ import type {
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { ActorRefFrom } from 'xstate'
+import {
+  type updateExtraSegments as updateExtraSegmentsFn,
+  type getEventForSegmentSelection as getEventForSegmentSelectionFn,
+} from '@src/lib/selections'
+
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -189,12 +196,14 @@ type Vec3Array = [number, number, number]
 // That mostly mean sketch elements.
 // Cameras, controls, raycasters, etc are handled by sceneInfra
 export class SceneEntities {
-  readonly engineCommandManager: EngineCommandManager
+  readonly engineCommandManager: ConnectionManager
   readonly sceneInfra: SceneInfra
   readonly editorManager: EditorManager
   readonly codeManager: CodeManager
   readonly kclManager: KclManager
   readonly rustContext: RustContext
+  readonly wasmInstance?: ModuleType
+  commandBarActor?: ActorRefFrom<typeof commandBarMachine>
   activeSegments: { [key: string]: Group } = {}
   readonly intersectionPlane: Mesh
   axisGroup: Group | null = null
@@ -203,15 +212,14 @@ export class SceneEntities {
 
   getSettings: (() => SettingsType) | null = null
 
-  private canvasResizeObserver: ResizeObserver
-
   constructor(
-    engineCommandManager: EngineCommandManager,
+    engineCommandManager: ConnectionManager,
     sceneInfra: SceneInfra,
     editorManager: EditorManager,
     codeManager: CodeManager,
     kclManager: KclManager,
-    rustContext: RustContext
+    rustContext: RustContext,
+    wasmInstance?: ModuleType
   ) {
     this.engineCommandManager = engineCommandManager
     this.sceneInfra = sceneInfra
@@ -222,15 +230,9 @@ export class SceneEntities {
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
       this.sceneInfra
     )
-
+    this.wasmInstance = wasmInstance
     this.sceneInfra.camControls.cameraChange.add(this.onCamChange)
     this.sceneInfra.baseUnitChange.add(this.onCamChange)
-
-    const canvas = this.sceneInfra.renderer.domElement
-    this.canvasResizeObserver = new ResizeObserver(() => {
-      this.onCamChange()
-    })
-    this.canvasResizeObserver.observe(canvas)
   }
 
   onCamChange = () => {
@@ -335,6 +337,7 @@ export class SceneEntities {
         group: segment,
         scale: factor,
         sceneInfra: this.sceneInfra,
+        wasmInstance: this.wasmInstance,
       })
       callBack && !err(callBack) && callbacks.push(callBack)
       if (segment.name === PROFILE_START) {
@@ -416,7 +419,6 @@ export class SceneEntities {
     // This makes sure axis lines are picked after segment lines in case of overlapping
     xAxisMesh.position.z = -0.1
     yAxisMesh.position.z = -0.1
-
     xAxisMesh.userData = {
       type: X_AXIS,
       baseColor: baseXColor,
@@ -806,6 +808,7 @@ export class SceneEntities {
     maybeModdedAst,
     draftExpressionsIndices,
     selectionRanges,
+    wasmInstance,
   }: {
     sketchEntryNodePath: PathToNode
     sketchNodePaths: PathToNode[]
@@ -815,6 +818,7 @@ export class SceneEntities {
     up: [number, number, number]
     position?: [number, number, number]
     selectionRanges?: Selections
+    wasmInstance?: ModuleType
   }): Promise<{
     truncatedAst: Node<Program>
     variableDeclarationName: string
@@ -888,6 +892,7 @@ export class SceneEntities {
 
         callbacks.push(startProfileCallBack)
       }
+
       sketch.paths.forEach((segment, index) => {
         const isLastInProfile =
           index === sketch.paths.length - 1 && segment.type !== 'Circle'
@@ -989,6 +994,10 @@ export class SceneEntities {
           maybeModdedAst,
           this.kclManager
         )
+        if (!this.commandBarActor) {
+          console.error('command bar actor not found.')
+          return
+        }
         const result = initSegment({
           prevSegment: sketch.paths[index - 1],
           callExpName,
@@ -1001,6 +1010,9 @@ export class SceneEntities {
           isSelected,
           sceneInfra: this.sceneInfra,
           selection,
+          commandBarActor: this.commandBarActor,
+          kclManager: this.kclManager,
+          wasmInstance,
         })
         if (err(result)) return
         const { group: _group, updateOverlaysCallback } = result
@@ -1048,10 +1060,18 @@ export class SceneEntities {
     modifiedAst: Node<Program> | Error,
     forward: [number, number, number],
     up: [number, number, number],
-    origin: [number, number, number]
+    origin: [number, number, number],
+    getEventForSegmentSelection: typeof getEventForSegmentSelectionFn,
+    updateExtraSegments: typeof updateExtraSegmentsFn,
+    wasmInstance?: ModuleType
   ) => {
     if (trap(modifiedAst)) return Promise.reject(modifiedAst)
-    const nextAst = await this.kclManager.updateAst(modifiedAst, false)
+    const nextAst = await this.kclManager.updateAst(
+      modifiedAst,
+      false,
+      undefined,
+      wasmInstance
+    )
     this.sceneInfra.resetMouseListeners()
     await this.setupSketch({
       sketchEntryNodePath,
@@ -1068,6 +1088,8 @@ export class SceneEntities {
       sketchEntryNodePath,
       sketchNodePaths,
       planeNodePath,
+      getEventForSegmentSelection,
+      updateExtraSegments,
     })
     return nextAst
   }
@@ -1300,11 +1322,20 @@ export class SceneEntities {
           return
         }
 
-        await updateModelingState(modifiedAst, EXECUTION_TYPE_MOCK, {
-          kclManager: this.kclManager,
-          editorManager: this.editorManager,
-          codeManager: this.codeManager,
-        })
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_MOCK,
+          {
+            kclManager: this.kclManager,
+            editorManager: this.editorManager,
+            codeManager: this.codeManager,
+            rustContext: this.rustContext,
+          },
+          {
+            // TODO: understand why this is needed
+            skipErrorsOnMockExecution: true,
+          }
+        )
 
         if (intersectsProfileStart) {
           this.sceneInfra.modelingSend({ type: 'Close sketch' })
@@ -1537,6 +1568,7 @@ export class SceneEntities {
           kclManager: this.kclManager,
           editorManager: this.editorManager,
           codeManager: this.codeManager,
+          rustContext: this.rustContext,
         })
         this.sceneInfra.modelingSend({ type: 'Finish rectangle' })
       },
@@ -1751,6 +1783,7 @@ export class SceneEntities {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
             codeManager: this.codeManager,
+            rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish center rectangle' })
         }
@@ -1938,6 +1971,7 @@ export class SceneEntities {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
             codeManager: this.codeManager,
+            rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish circle three point' })
         }
@@ -2160,6 +2194,7 @@ export class SceneEntities {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
             codeManager: this.codeManager,
+            rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish arc' })
         }
@@ -2403,6 +2438,7 @@ export class SceneEntities {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
             codeManager: this.codeManager,
+            rustContext: this.rustContext,
           })
           if (intersectsProfileStart) {
             this.sceneInfra.modelingSend({ type: 'Close sketch' })
@@ -2603,6 +2639,7 @@ export class SceneEntities {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
             codeManager: this.codeManager,
+            rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish circle' })
         }
@@ -2621,6 +2658,8 @@ export class SceneEntities {
     up,
     forward,
     position,
+    getEventForSegmentSelection,
+    updateExtraSegments,
   }: {
     sketchEntryNodePath: PathToNode
     sketchNodePaths: PathToNode[]
@@ -2628,6 +2667,8 @@ export class SceneEntities {
     forward: [number, number, number]
     up: [number, number, number]
     position?: [number, number, number]
+    getEventForSegmentSelection: typeof getEventForSegmentSelectionFn
+    updateExtraSegments: typeof updateExtraSegmentsFn
   }) => {
     let addingNewSegmentStatus: 'nothing' | 'pending' | 'added' = 'nothing'
     this.sceneInfra.setCallbacks({
@@ -2650,6 +2691,8 @@ export class SceneEntities {
             up,
             forward,
             position,
+            getEventForSegmentSelection,
+            updateExtraSegments,
           })
         }
         await this.codeManager.writeToFile()
@@ -2762,20 +2805,21 @@ export class SceneEntities {
         if (!event) return
         this.sceneInfra.modelingSend(event)
       },
-      ...this.mouseEnterLeaveCallbacks(),
+      ...this.mouseEnterLeaveCallbacks(updateExtraSegments),
     })
   }
   prepareTruncatedAst = (
     sketchNodePaths: PathToNode[],
     ast?: Node<Program>,
     draftSegment?: DraftSegment
-  ) =>
-    prepareTruncatedAst(
+  ) => {
+    return prepareTruncatedAst(
       sketchNodePaths,
       ast || this.kclManager.ast,
       this.kclManager.lastSuccessfulVariables,
       draftSegment
     )
+  }
 
   getSnappedDragPoint(
     pos: Vector2,
@@ -3465,7 +3509,7 @@ export class SceneEntities {
     this.activeSegments = {}
   }
 
-  mouseEnterLeaveCallbacks() {
+  mouseEnterLeaveCallbacks(updateExtraSegments: typeof updateExtraSegmentsFn) {
     return {
       onMouseEnter: ({ selected }: OnMouseEnterLeaveArgs) => {
         if ([X_AXIS, Y_AXIS].includes(selected?.userData?.type)) {
@@ -3852,6 +3896,13 @@ function prepareTruncatedAst(
     Number(sketchNodePaths[sketchNodePaths.length - 1]?.[1]?.[0]) ||
     ast.body.length
   const _ast = structuredClone(ast)
+
+  if (!sketchNodePaths.length) {
+    return {
+      truncatedAst: _ast,
+      variableDeclarationName: '',
+    }
+  }
 
   const _node = getNodeFromPath<Node<VariableDeclaration>>(
     _ast,

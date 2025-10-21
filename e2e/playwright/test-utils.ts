@@ -17,7 +17,8 @@ import { PNG } from 'pngjs'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
-export const token = process.env.VITE_KITTYCAD_API_TOKEN || ''
+export const token =
+  process.env.VITE_ZOO_API_TOKEN || process.env.VITE_KITTYCAD_API_TOKEN || ''
 
 /** A string version of a RegExp to get a number that may include a decimal point */
 export const NUMBER_REGEXP = '((-)?\\d+(\\.\\d+)?)'

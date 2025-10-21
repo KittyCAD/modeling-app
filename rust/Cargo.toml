@@ -1,7 +1,6 @@
 [workspace]
 resolver = "2"
 members = [
-  "ezpz",
   "kcl-api",
   "kcl-bumper",
   "kcl-derive-docs",
@@ -25,6 +24,7 @@ console_error_panic_hook = "0.1.7"
 dashmap = { version = "6.1.0" }
 http = "1"
 indexmap = "2.11.4"
+kcl-ezpz = "0.1.0"
 kittycad = { version = "0.4.2", default-features = false, features = [
   "js",
   "requests",
@@ -38,9 +38,10 @@ miette = "7.6.0"
 pyo3 = { version = "0.25.1" }
 # Build with Python >= 3.10 (set PYO3_PYTHON accordingly)
 pyo3-stub-gen = "0.13.1"
+rayon = "1.11.0"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
-slog = "2.7.0"
+slog = "2.8.2"
 slog-async = "2.8.0"
 slog-json = "2.6.1"
 slog-term = "2.9.2"

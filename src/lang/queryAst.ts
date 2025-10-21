@@ -12,6 +12,7 @@ import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   codeRefFromRange,
+  getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
 } from '@src/lang/std/artifactGraph'
@@ -38,6 +39,7 @@ import type {
   PipeExpression,
   Program,
   ReturnStatement,
+  SegmentArtifact,
   SourceRange,
   SyntaxType,
   VariableDeclaration,
@@ -45,7 +47,6 @@ import type {
   VariableMap,
 } from '@src/lang/wasm'
 import { kclSettings, recast, sketchFromKclValue } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/lib/selections'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
@@ -56,6 +57,12 @@ import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
+import type {
+  Selection,
+  Selections,
+  EdgeCutInfo,
+} from '@src/machines/modelingSharedTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -70,7 +77,8 @@ export function getNodeFromPath<T>(
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly = false,
   suppressNoise = false,
-  replacement?: any
+  replacement?: any,
+  wasmInstance?: ModuleType
 ):
   | {
       node: T
@@ -97,7 +105,7 @@ export function getNodeFromPath<T>(
         }
       }
       const stackTraceError = new Error()
-      const sourceCode = recast(node)
+      const sourceCode = recast(node, wasmInstance)
       const levels = stackTraceError.stack?.split('\n')
       const aFewFunctionNames: string[] = []
       let tree = ''
@@ -171,7 +179,8 @@ export function getNodeFromPath<T>(
  */
 export function getNodeFromPathCurry(
   node: Program,
-  path: PathToNode
+  path: PathToNode,
+  wasmInstance?: ModuleType
 ): <T>(
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly?: boolean
@@ -182,7 +191,15 @@ export function getNodeFromPathCurry(
     }
   | Error {
   return <T>(stopAt?: SyntaxType | SyntaxType[], returnEarly = false) => {
-    const _node1 = getNodeFromPath<T>(node, path, stopAt, returnEarly)
+    const _node1 = getNodeFromPath<T>(
+      node,
+      path,
+      stopAt,
+      returnEarly,
+      undefined,
+      undefined,
+      wasmInstance
+    )
     if (err(_node1)) return _node1
     const { node: _node, shallowPath } = _node1
     return {
@@ -955,9 +972,10 @@ export function doesSketchPipeNeedSplitting(
  * Given KCL, returns the settings annotation object if it exists.
  */
 export function getSettingsAnnotation(
-  kcl: string | Node<Program>
+  kcl: string | Node<Program>,
+  instance?: ModuleType
 ): KclSettingsAnnotation | Error {
-  const metaSettings = kclSettings(kcl)
+  const metaSettings = kclSettings(kcl, instance)
   if (err(metaSettings)) return metaSettings
 
   const settings: KclSettingsAnnotation = {}
@@ -966,6 +984,7 @@ export function getSettingsAnnotation(
 
   settings.defaultLengthUnit = metaSettings.defaultLengthUnits
   settings.defaultAngleUnit = metaSettings.defaultAngleUnits
+  settings.experimentalFeatures = metaSettings.experimentalFeatures
 
   return settings
 }
@@ -1168,6 +1187,17 @@ export function retrieveSelectionsFromOpArg(
     const codeRefs = getCodeRefsByArtifactId(artifactId, artifactGraph)
     if (!codeRefs || codeRefs.length === 0) {
       continue
+    }
+
+    const isArtifactFromImportedModule = codeRefs.some(
+      (c) => c.pathToNode.length === 0
+    )
+    if (isArtifactFromImportedModule) {
+      // TODO: retrieve module import alias instead of throwing here
+      // https://github.com/KittyCAD/modeling-app/issues/8463
+      return new Error(
+        "The selected artifact is from an imported module, editing isn't supported yet. Please delete the operation and recreate."
+      )
     }
 
     graphSelections.push({
@@ -1499,4 +1529,61 @@ export function getLastVariable(
     }
   }
   return null
+}
+
+export function getEdgeCutMeta(
+  artifact: Artifact,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph
+): null | EdgeCutInfo {
+  let chamferInfo: {
+    segment: SegmentArtifact
+    type: EdgeCutInfo['subType']
+  } | null = null
+  if (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer') {
+    const consumedArtifact = getArtifactOfTypes(
+      {
+        key: artifact.consumedEdgeId,
+        types: ['segment', 'sweepEdge'],
+      },
+      artifactGraph
+    )
+    console.log('consumedArtifact', consumedArtifact)
+    if (err(consumedArtifact)) return null
+    if (consumedArtifact.type === 'segment') {
+      chamferInfo = {
+        type: 'base',
+        segment: consumedArtifact,
+      }
+    } else {
+      const segment = getArtifactOfTypes(
+        { key: consumedArtifact.segId, types: ['segment'] },
+        artifactGraph
+      )
+      if (err(segment)) return null
+      chamferInfo = {
+        type: consumedArtifact.subType,
+        segment,
+      }
+    }
+  }
+  if (!chamferInfo) return null
+  const segmentCallExpr = getNodeFromPath<CallExpressionKw>(
+    ast,
+    chamferInfo?.segment.codeRef.pathToNode || [],
+    ['CallExpressionKw']
+  )
+  if (err(segmentCallExpr)) return null
+  if (segmentCallExpr.node.type !== 'CallExpressionKw') return null
+  const sketchNodeArgs = segmentCallExpr.node.arguments.map((la) => la.arg)
+  const tagDeclarator = sketchNodeArgs.find(
+    ({ type }) => type === 'TagDeclarator'
+  )
+  if (!tagDeclarator || tagDeclarator.type !== 'TagDeclarator') return null
+
+  return {
+    type: 'edgeCut',
+    subType: chamferInfo.type,
+    tagName: tagDeclarator.value,
+  }
 }

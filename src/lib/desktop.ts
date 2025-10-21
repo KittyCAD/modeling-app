@@ -32,6 +32,8 @@ import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { processEnv } from '@src/env'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export async function renameProjectDirectory(
   electron: IElectronAPI,
@@ -178,12 +180,27 @@ export async function createNewProjectDirectory(
 
 export async function listProjects(
   electron: IElectronAPI,
-  configuration?: DeepPartial<Configuration> | Error
+  configuration?: DeepPartial<Configuration> | Error,
+  wasmInstance?: ModuleType
 ): Promise<Project[]> {
   // Make sure we have wasm initialized.
   const initializedResult = await initPromise
-  if (err(initializedResult)) {
-    return Promise.reject(initializedResult)
+
+  // Bypass if vitest!
+  if (!processEnv()?.VITEST) {
+    // Hack: This is required because of the initialise module load and vitest unit tests spamming this
+    // since it is a global dependency that is spam loaded. This function should never return a string.
+    // If it does during application code something is wrong.
+    if (typeof initializedResult === 'string') {
+      console.error(
+        'TODO: Stop globally importing and spamming lang/wasmUtils/initialise. You should not see this message in the application.'
+      )
+      return Promise.reject(new Error(initializedResult))
+    }
+
+    if (err(initializedResult)) {
+      return Promise.reject(initializedResult)
+    }
   }
 
   if (configuration === undefined) {
@@ -399,7 +416,8 @@ const directoryCount = (file: FileEntry) => {
 
 export async function getProjectInfo(
   electron: IElectronAPI,
-  projectPath: string
+  projectPath: string,
+  wasmInstance?: ModuleType
 ): Promise<Project> {
   // Check the directory.
   let metadata
@@ -426,7 +444,7 @@ export async function getProjectInfo(
   const { value: canReadWriteProjectPath } =
     await electron.canReadWriteDirectory(projectPath)
 
-  const fileExtensionsForFilter = relevantFileExtensions()
+  const fileExtensionsForFilter = relevantFileExtensions(wasmInstance)
   // Return walked early if canReadWriteProjectPath is false
   let walked = await collectAllFilesRecursiveFrom(
     electron,

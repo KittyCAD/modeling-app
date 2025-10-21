@@ -27,10 +27,9 @@ import {
   Y_AXIS,
 } from '@src/clientSideScene/sceneUtils'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import type { Coords2d } from '@src/lang/std/sketch'
+import type { Coords2d } from '@src/lang/util'
 import { vec2WithinDistance } from '@src/lang/std/sketch'
-import type { Axis, NonCodeSelection } from '@src/lib/selections'
+import type { Axis, NonCodeSelection } from '@src/machines/modelingSharedTypes'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
 import { Signal } from '@src/lib/signal'
 import { Themes } from '@src/lib/theme'
@@ -39,6 +38,8 @@ import type {
   MouseState,
   SegmentOverlayPayload,
 } from '@src/machines/modelingSharedTypes'
+
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -286,8 +287,9 @@ export class SceneInfra {
   } | null = null
   private isRenderingPaused = false
   private lastFrameTime = 0
+  private animationFrameId = -1
 
-  constructor(engineCommandManager: EngineCommandManager) {
+  constructor(engineCommandManager: ConnectionManager) {
     // SCENE
     this.scene = new Scene()
     this.scene.background = new Color(0x000000)
@@ -360,7 +362,7 @@ export class SceneInfra {
   }
 
   animate = () => {
-    requestAnimationFrame(this.animate)
+    this.animationFrameId = requestAnimationFrame(this.animate)
     TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
       this.camControls.update()
@@ -378,6 +380,16 @@ export class SceneInfra {
         this.renderer.render(this.scene, this.camControls.camera)
         this.labelRenderer.render(this.scene, this.camControls.camera)
       }
+    }
+  }
+
+  stop = () => {
+    if (this.animationFrameId !== -1) {
+      cancelAnimationFrame(this.animationFrameId)
+      this.animationFrameId = -1
+      // If you stop the renderer it will render a last frame of the sketch scene
+      // clear it since they should not be seeing this renderer anyway
+      this.renderer.clear()
     }
   }
 

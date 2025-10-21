@@ -23,6 +23,7 @@ pub(crate) const SETTINGS_EXPERIMENTAL_FEATURES: &str = "experimentalFeatures";
 pub(super) const NO_PRELUDE: &str = "no_std";
 pub(crate) const DEPRECATED: &str = "deprecated";
 pub(crate) const EXPERIMENTAL: &str = "experimental";
+pub(crate) const INCLUDE_IN_FEATURE_TREE: &str = "feature_tree";
 
 pub(super) const IMPORT_FORMAT: &str = "format";
 pub(super) const IMPORT_COORDS: &str = "coords";
@@ -49,18 +50,22 @@ pub(crate) const WARN_UNKNOWN_ATTR: &str = "unknownAttribute";
 pub(crate) const WARN_MOD_RETURN_VALUE: &str = "moduleReturnValue";
 pub(crate) const WARN_DEPRECATED: &str = "deprecated";
 pub(crate) const WARN_IGNORED_Z_AXIS: &str = "ignoredZAxis";
+pub(crate) const WARN_SOLVER: &str = "solver";
 pub(crate) const WARN_UNNECESSARY_CLOSE: &str = "unnecessaryClose";
-pub(super) const WARN_VALUES: [&str; 7] = [
+pub(super) const WARN_VALUES: [&str; 8] = [
     WARN_UNKNOWN_UNITS,
     WARN_ANGLE_UNITS,
     WARN_UNKNOWN_ATTR,
     WARN_MOD_RETURN_VALUE,
     WARN_DEPRECATED,
     WARN_IGNORED_Z_AXIS,
+    WARN_SOLVER,
     WARN_UNNECESSARY_CLOSE,
 ];
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub enum WarningLevel {
     Allow,
     Warn,
@@ -73,6 +78,14 @@ impl WarningLevel {
             WarningLevel::Allow => None,
             WarningLevel::Warn => Some(Severity::Warning),
             WarningLevel::Deny => Some(Severity::Error),
+        }
+    }
+
+    pub(crate) fn as_str(self) -> &'static str {
+        match self {
+            WarningLevel::Allow => WARN_ALLOW,
+            WarningLevel::Warn => WARN_WARN,
+            WarningLevel::Deny => WARN_DENY,
         }
     }
 }
@@ -116,7 +129,7 @@ impl FromStr for Impl {
 }
 
 pub(crate) fn settings_completion_text() -> String {
-    format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = mm, {SETTINGS_UNIT_ANGLE} = deg, {SETTINGS_VERSION} = 1.0)")
+    format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = mm, {SETTINGS_VERSION} = 1.0)")
 }
 
 pub(super) fn is_significant(attr: &&Node<Annotation>) -> bool {
@@ -224,11 +237,23 @@ pub(super) fn expect_number(expr: &Expr) -> Result<String, KclError> {
     )))
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Default)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub struct FnAttrs {
     pub impl_: Impl,
     pub deprecated: bool,
     pub experimental: bool,
+    pub include_in_feature_tree: bool,
+}
+
+impl Default for FnAttrs {
+    fn default() -> Self {
+        Self {
+            impl_: Impl::default(),
+            deprecated: false,
+            experimental: false,
+            include_in_feature_tree: true,
+        }
+    }
 }
 
 pub(super) fn get_fn_attrs(
@@ -281,9 +306,19 @@ pub(super) fn get_fn_attrs(
                 continue;
             }
 
+            if &*p.key.name == INCLUDE_IN_FEATURE_TREE
+                && let Some(b) = p.value.literal_bool()
+            {
+                if result.is_none() {
+                    result = Some(FnAttrs::default());
+                }
+                result.as_mut().unwrap().include_in_feature_tree = b;
+                continue;
+            }
+
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
-                    "Invalid attribute, expected one of: {IMPL}, {DEPRECATED}, {EXPERIMENTAL}, found `{}`",
+                    "Invalid attribute, expected one of: {IMPL}, {DEPRECATED}, {EXPERIMENTAL}, {INCLUDE_IN_FEATURE_TREE}, found `{}`",
                     &*p.key.name,
                 ),
                 vec![source_range],

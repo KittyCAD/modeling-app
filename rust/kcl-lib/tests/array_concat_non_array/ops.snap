@@ -128,61 +128,6 @@ description: Operations executed array_concat_non_array.kcl
       "type": "GroupEnd"
     },
     {
-      "type": "StdLibCall",
-      "name": "count",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 1.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 2.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 3.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "GroupBegin",
       "group": {
         "type": "FunctionCall",
@@ -263,56 +208,8 @@ description: Operations executed array_concat_non_array.kcl
     },
     {
       "type": "GroupEnd"
-    },
-    {
-      "type": "StdLibCall",
-      "name": "count",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 1.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            },
-            {
-              "type": "Number",
-              "value": 2.0,
-              "ty": {
-                "type": "Default",
-                "len": "mm",
-                "angle": "degrees"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 6
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          }
-        ]
-      },
-      "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -418,14 +315,5 @@ description: Operations executed array_concat_non_array.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

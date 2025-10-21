@@ -10,10 +10,11 @@ import type {
   KclCommandValue,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
-import type { Selections } from '@src/lib/selections'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { roundOffWithUnits } from '@src/lib/utils'
+import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
 function CommandBarHeaderFooter({
   children,
@@ -31,12 +32,14 @@ function CommandBarHeaderFooter({
     if (!selectedCommand?.args) return undefined
     const s = { ...selectedCommand.args }
     for (const [name, arg] of Object.entries(s)) {
-      if (
-        typeof arg.hidden === 'function'
-          ? arg.hidden(commandBarState.context)
-          : arg.hidden
+      const { isHidden } = evaluateCommandBarArg(
+        name,
+        arg,
+        commandBarState.context
       )
+      if (isHidden) {
         delete s[name]
+      }
     }
     return s
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -108,8 +111,16 @@ function CommandBarHeaderFooter({
                 {selectedCommand.displayName || selectedCommand.name}
               </span>
               {selectedCommand.status === 'experimental' ? (
-                <span className="uppercase text-xs rounded-full ml-2 px-2 py-1 border border-ml-green dark:text-ml-green">
-                  experimental
+                <span
+                  className={`text-xs rounded-full  ml-2 px-1 py-1 border ${selectedCommand.mlBranding ? 'border-ml-green dark:text-ml-green' : 'border-primary dark:text-primary'}`}
+                >
+                  <CustomIcon name="beaker" className="w-4 h-4" />
+                  <Tooltip
+                    position="bottom-right"
+                    contentClassName="max-w-none flex items-center"
+                  >
+                    <span>Experimental</span>
+                  </Tooltip>
                 </span>
               ) : (
                 <span className="pr-2" />
@@ -117,16 +128,13 @@ function CommandBarHeaderFooter({
             </p>
             {Object.entries(nonHiddenArgs || {}).flatMap(
               ([argName, arg], i) => {
-                const argValue =
-                  (typeof argumentsToSubmit[argName] === 'function'
-                    ? argumentsToSubmit[argName](commandBarState.context)
-                    : argumentsToSubmit[argName]) || ''
+                const { value: argValue, isRequired } = evaluateCommandBarArg(
+                  argName,
+                  arg,
+                  commandBarState.context
+                )
                 const isCurrentArg = argName === currentArgument?.name
                 const isSkipFalse = arg.skip === false
-                const isRequired =
-                  typeof arg.required === 'function'
-                    ? arg.required(commandBarState.context)
-                    : arg.required
 
                 // We actually want to show non-hidden optional args that have a value set already
                 if (!(argValue || isCurrentArg || isSkipFalse || isRequired)) {
@@ -152,7 +160,7 @@ function CommandBarHeaderFooter({
                     key={argName}
                     className={`relative w-fit px-2 py-1 rounded-sm flex gap-2 items-center border ${
                       argName === currentArgument?.name
-                        ? selectedCommand.status === 'experimental'
+                        ? selectedCommand.mlBranding
                           ? 'disabled:bg-ml-green/10 dark:disabled:bg-ml-green/20 disabled:border-ml-green dark:disabled:border-ml-green disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
                           : 'disabled:bg-primary/10 dark:disabled:bg-primary/20 disabled:border-primary dark:disabled:border-primary disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
                         : 'bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80'
@@ -176,6 +184,8 @@ function CommandBarHeaderFooter({
                             (argValue as KclCommandValue).valueCalculated,
                             4
                           )
+                        ) : arg.inputType === 'vector3d' ? (
+                          (argValue as KclCommandValue).valueCalculated
                         ) : arg.inputType === 'text' &&
                           !arg.valueSummary &&
                           typeof argValue === 'string' ? (
@@ -237,12 +247,10 @@ function CommandBarHeaderFooter({
           {isReviewing ? (
             <ReviewingButton
               bgClassName={
-                selectedCommand.status === 'experimental'
-                  ? '!bg-ml-green'
-                  : '!bg-primary'
+                selectedCommand.mlBranding ? '!bg-ml-green' : '!bg-primary'
               }
               iconClassName={
-                selectedCommand.status === 'experimental'
+                selectedCommand.mlBranding
                   ? '!text-ml-black'
                   : '!text-chalkboard-10'
               }
@@ -250,12 +258,10 @@ function CommandBarHeaderFooter({
           ) : (
             <GatheringArgsButton
               bgClassName={
-                selectedCommand.status === 'experimental'
-                  ? '!bg-ml-green'
-                  : '!bg-primary'
+                selectedCommand.mlBranding ? '!bg-ml-green' : '!bg-primary'
               }
               iconClassName={
-                selectedCommand.status === 'experimental'
+                selectedCommand.mlBranding
                   ? '!text-ml-black'
                   : '!text-chalkboard-10'
               }

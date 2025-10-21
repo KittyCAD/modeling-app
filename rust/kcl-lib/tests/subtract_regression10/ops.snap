@@ -1401,96 +1401,6 @@ description: Operations executed subtract_regression10.kcl
       "sourceRange": []
     },
     {
-      "type": "VariableDeclaration",
-      "name": "x",
-      "value": {
-        "type": "Number",
-        "value": 42.13244437154379,
-        "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "VariableDeclaration",
-      "name": "y",
-      "value": {
-        "type": "Number",
-        "value": 35.35331853275966,
-        "ty": {
-          "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
-        }
-      },
-      "visibility": "default",
-      "nodePath": {
-        "steps": []
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "polar",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "angle": {
-          "value": {
-            "type": "Number",
-            "value": 0.6981317007977318,
-            "ty": {
-              "radians": null,
-              "type": "Known",
-              "type": "Angle"
-            }
-          },
-          "sourceRange": []
-        },
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": 55.0,
-            "ty": {
-              "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 21
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 0
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
       "type": "StdLibCall",
       "name": "extrude",
       "unlabeledArg": {
@@ -1861,8 +1771,6 @@ description: Operations executed subtract_regression10.kcl
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -1968,14 +1876,5 @@ description: Operations executed subtract_regression10.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

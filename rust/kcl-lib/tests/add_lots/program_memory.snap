@@ -9,7 +9,7 @@ description: Variables in memory after executing add_lots.kcl
   },
   "x": {
     "type": "Number",
-    "value": 2652.0,
+    "value": 2256.0,
     "ty": {
       "type": "Default",
       "len": "mm",
