@@ -19,7 +19,7 @@ import {
   indentOnInput,
   syntaxHighlighting,
 } from '@codemirror/language'
-import { diagnosticCount, lintGutter, lintKeymap } from '@codemirror/lint'
+import { lintGutter, lintKeymap } from '@codemirror/lint'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import type { Extension } from '@codemirror/state'
 import { EditorState, Prec, Transaction } from '@codemirror/state'
@@ -207,7 +207,7 @@ export const KclEditorPane = () => {
             // Update diagnostics as they are cleared when the editor is unmounted.
             // Without this, errors would not be shown when closing and reopening the editor.
             // We do this because we trust the cache on the rust side to not recompute all the engine commands
-            kclManager.executeCode().catch((e)=>{console.error(e)})
+            kclManager.executeCode().catch(reportRejection)
           }}
         />
       </div>
