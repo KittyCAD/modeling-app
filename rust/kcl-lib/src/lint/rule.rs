@@ -58,6 +58,12 @@ impl Discovered {
 
 /// Lint, and try to apply all suggestions.
 /// Returns the new source code, and any lints without suggestions.
+/// # Implementation
+/// Currently, this runs a loop: parse the code, lint it, apply a lint with suggestions,
+/// and loop again, until there's no more lints with suggestions. This is because our auto-fix
+/// system currently replaces the whole program, not just a certain part of it.
+/// If/when we discover that this autofix loop is too slow, we'll change our lint system so that
+/// lints can be applied to a small part of the program.
 pub fn lint_and_fix(mut source: String) -> anyhow::Result<(String, Vec<Discovered>)> {
     loop {
         let (program, errors) = crate::Program::parse(&source)?;
