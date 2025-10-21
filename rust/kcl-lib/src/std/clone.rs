@@ -119,6 +119,7 @@ async fn fix_tags_and_references(
             solid.sketch.id = new_geometry_id;
             solid.sketch.original_id = new_geometry_id;
             solid.sketch.artifact_id = new_geometry_id.into();
+            solid.sketch.clone = Some(old_geometry_id);
 
             fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map, exec_state, Some(solid.value.clone()))
                 .await?;
@@ -156,7 +157,7 @@ async fn fix_tags_and_references(
                 exec_state,
                 args,
                 None,
-                None,
+                Some(&entity_id_map.clone()),
             )
             .await?;
 

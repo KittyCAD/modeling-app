@@ -420,6 +420,9 @@ pub(crate) async fn do_post_extrude<'a>(
     } = analyze_faces(exec_state, args, face_infos).await;
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let no_engine_commands = args.ctx.no_engine_commands().await;
+    println!("clone_id_map: {:?}", clone_id_map);
+    println!("is sketch clone? {:?}", sketch.clone.is_some());
+    println!("face_id_map: {:?}", face_id_map);
     let mut new_value: Vec<ExtrudeSurface> = Vec::with_capacity(sketch.paths.len() + sketch.inner_paths.len() + 2);
     let outer_surfaces = sketch.paths.iter().flat_map(|path| {
         if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
@@ -434,9 +437,14 @@ pub(crate) async fn do_post_extrude<'a>(
         } else if sketch.clone.is_some()
             && let Some(clone_map) = clone_id_map
         {
-            let new_path = clone_map.get(&path.get_base().geo_meta.id)?;
-            match face_id_map.get(new_path) {
-                Some(Some(actual_face_id)) => clone_surface_of(path, *new_path, *actual_face_id),
+            println!("No face ID found for path ID {:?}, but sketch is a clone, so looking up the clone path ID", path.get_base().geo_meta.id);
+            let new_path = clone_map.get(&(path.get_base().geo_meta.id));
+            println!("new_path: {:?}", new_path);
+            println!("Found clone path ID {:?} for original path ID {:?}", new_path, path.get_base().geo_meta.id);
+            match face_id_map.get(new_path.unwrap()) {
+                Some(Some(actual_face_id)) => 
+                {println!("found actual_face_id {:?} for clone path ID {:?}", actual_face_id, new_path);
+                clone_surface_of(path, *new_path.unwrap(), *actual_face_id)}
                 _ => None,
             }
         } else {
