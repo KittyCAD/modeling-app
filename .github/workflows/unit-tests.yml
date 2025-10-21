@@ -21,6 +21,7 @@ jobs:
 
   npm-test-unit:
     runs-on: namespace-profile-ubuntu-2-cores
+    # TODO: Remove unit test dependency on Wasm binary
     needs: npm-build-wasm
     steps:
       - uses: actions/checkout@v5
@@ -94,10 +95,6 @@ jobs:
           ls -R prepared-ts-rs-bindings
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
-
-      - name: Install Chromium Browser
-        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        run: npm run playwright install chromium --with-deps
 
       - name: npm run test:integration
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}

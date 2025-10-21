@@ -131,6 +131,7 @@ test: test-unit test-integration
 
 .PHONY: test-unit
 test-unit: install public/kcl_wasm_lib_bg.wasm ## Run the unit tests
+	# TODO: Remove unit test dependency on Wasm binary
 	npm run test:unit
 
 .PHONY: test-integration
