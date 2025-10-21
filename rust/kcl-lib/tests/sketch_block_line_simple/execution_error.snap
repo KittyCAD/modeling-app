@@ -2,27 +2,17 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing sketch_block_line_simple.kcl
 ---
-KCL Argument error
+KCL UndefinedValue error
 
-  × argument: start requires a value with type `Point2d`, but found an array
-  │ of `number(mm)`, `number` (with type `[any; 2]`).
-   ╭─[6:8]
- 5 │   y = var
- 6 │   l1 = sketch2::line(start=[x, y], end=[10mm, 0mm])
-   ·        ──────────────────────┬─────────────────────┬
-   ·                              │                     ╰── tests/sketch_block_line_simple/input.kcl
-   ·                              ╰── tests/sketch_block_line_simple/input.kcl
- 7 │   x == 1mm
-   ╰────
-  ╰─▶ KCL Argument error
-      
-        × argument: start requires a value with type `Point2d`, but found an
-        │ array of `number(mm)`, `number` (with type `[any; 2]`).
-         ╭─[6:28]
-       5 │   y = var
-       6 │   l1 = sketch2::line(start=[x, y], end=[10mm, 0mm])
-         ·                            ───┬──
-         ·                               ╰── tests/sketch_block_line_simple/
-      input.kcl
-       7 │   x == 1mm
-         ╰────
+  × undefined value: Result of user-defined function sketch2::line is
+  │ undefined
+    ╭─[16:15]
+ 15 │     @(impl = std_rust_constrainable, experimental = true, feature_tree = false)
+ 16 │ ╭─▶ export fn line(
+ 17 │ │     start: Point2d,
+ 18 │ │     end?: Point2d,
+ 19 │ │     midpoint?: Point2d,
+ 20 │ ├─▶ ): Line {}
+    · ╰──── std::sketch2
+ 21 │     
+    ╰────

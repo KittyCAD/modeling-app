@@ -835,8 +835,10 @@ impl NumericType {
     }
 
     fn coerce(&self, val: &KclValue) -> Result<KclValue, CoercionError> {
-        let KclValue::Number { value, ty, meta } = val else {
-            return Err(val.into());
+        let (value, ty, meta) = match val {
+            KclValue::Number { value, ty, meta } => (value, ty, meta),
+            KclValue::SketchVar { value } => (&value.initial_value, &value.ty, &value.meta),
+            _ => return Err(val.into()),
         };
 
         if ty.subtype(self) {
