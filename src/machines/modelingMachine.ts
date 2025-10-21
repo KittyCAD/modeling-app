@@ -11,7 +11,6 @@ import type {
   ExtrudeFacePlane,
   DefaultPlane,
   OffsetPlane,
-  Store,
   SketchTool,
   PlaneVisibilityMap,
   ModelingMachineContext,

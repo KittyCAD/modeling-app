@@ -84,7 +84,6 @@ export const defaultAreaLibrary = Object.freeze({
         (diagnostic) => diagnostic.severity === 'error'
       ).length
       return useMemo(() => {
-        console.log('WHAT IS KCL CONTEXT', kclContext)
         return { value, onClick: onCodeNotificationClick, title: undefined }
       }, [value])
     },
