@@ -307,9 +307,10 @@ mod test {
         };
     }
 
-    use super::*;
     pub(crate) use assert_finding;
     pub(crate) use assert_no_finding;
     pub(crate) use test_finding;
     pub(crate) use test_no_finding;
+
+    use super::*;
 }
