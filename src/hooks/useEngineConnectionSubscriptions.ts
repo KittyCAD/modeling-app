@@ -71,47 +71,52 @@ export function useEngineConnectionSubscriptions() {
       event: 'select_with_point',
       callback: state.matches('Sketch no face')
         ? ({ data }) => {
-            ;(async () => {
-              let planeOrFaceId = data.entity_id
-              if (!planeOrFaceId) return
-
-              if (context.store.useNewSketchMode?.current) {
-                sceneInfra.modelingSend({
-                  type: 'Select sketch solve plane',
-                  data: planeOrFaceId,
-                })
-                return
-              }
-
-              const defaultSketchPlaneSelected =
-                selectDefaultSketchPlane(planeOrFaceId)
-              if (
-                !err(defaultSketchPlaneSelected) &&
-                defaultSketchPlaneSelected
-              ) {
-                return
-              }
-
-              const artifact = kclManager.artifactGraph.get(planeOrFaceId)
-              const offsetPlaneSelected =
-                await selectOffsetSketchPlane(artifact)
-              if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
-                return
-              }
-
-              const sweepFaceSelected = await selectionBodyFace(planeOrFaceId)
-              if (sweepFaceSelected) {
-                sceneInfra.modelingSend({
-                  type: 'Select sketch plane',
-                  data: sweepFaceSelected,
-                })
-              }
-              return
-            })().catch(reportRejection)
+            void selectSketchPlane(
+              data.entity_id,
+              Boolean(context.store.useNewSketchMode?.current)
+            )
           }
         : () => {},
     })
     return unSub
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager, state])
+}
+
+export async function selectSketchPlane(
+  planeOrFaceId: string | undefined,
+  useNewSketchMode: boolean
+) {
+  try {
+    if (!planeOrFaceId) return
+
+    if (useNewSketchMode) {
+      sceneInfra.modelingSend({
+        type: 'Select sketch solve plane',
+        data: planeOrFaceId,
+      })
+      return
+    }
+
+    const defaultSketchPlaneSelected = selectDefaultSketchPlane(planeOrFaceId)
+    if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
+      return
+    }
+
+    const artifact = kclManager.artifactGraph.get(planeOrFaceId)
+    const offsetPlaneSelected = await selectOffsetSketchPlane(artifact)
+    if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
+      return
+    }
+
+    const sweepFaceSelected = await selectionBodyFace(planeOrFaceId)
+    if (sweepFaceSelected) {
+      sceneInfra.modelingSend({
+        type: 'Select sketch plane',
+        data: sweepFaceSelected,
+      })
+    }
+  } catch (err) {
+    reportRejection(err)
+  }
 }
