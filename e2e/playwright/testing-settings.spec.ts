@@ -805,5 +805,56 @@ fn cube`
         ).toBeVisible()
       })
     })
+
+    test(`Enable and disable inline experimental features`, async ({
+      page,
+      homePage,
+      context,
+      editor,
+      scene,
+      cmdBar,
+      toolbar,
+    }) => {
+      const initialCode = `startSketchOn(XY)`
+      await test.step('Settle the scene', async () => {
+        await context.addInitScript((initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        }, initialCode)
+        await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
+        await expect(toolbar.experimentalFeaturesMenu).not.toBeVisible()
+      })
+
+      await test.step('Fire command to allow experimental features', async () => {
+        await cmdBar.openCmdBar()
+        await cmdBar.chooseCommand('Set experimental features flag')
+        await cmdBar.selectOption({ name: 'Allow' }).click()
+      })
+
+      await test.step('Check that they are enabled', async () => {
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain(
+          `@settings(experimentalFeatures = allow)
+${initialCode}`,
+          { shouldNormalise: true }
+        )
+        await expect(toolbar.experimentalFeaturesMenu).toBeVisible()
+      })
+
+      await test.step('Use the indicator to turn them off', async () => {
+        await toolbar.experimentalFeaturesMenu.click()
+        await page.getByRole('button', { name: 'Deny' }).click()
+      })
+
+      await test.step('Check that they are disabled', async () => {
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain(
+          `@settings(experimentalFeatures = deny)
+${initialCode}`,
+          { shouldNormalise: true }
+        )
+        await expect(toolbar.experimentalFeaturesMenu).not.toBeVisible()
+      })
+    })
   }
 )

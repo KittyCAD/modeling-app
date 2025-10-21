@@ -111,8 +111,16 @@ function CommandBarHeaderFooter({
                 {selectedCommand.displayName || selectedCommand.name}
               </span>
               {selectedCommand.status === 'experimental' ? (
-                <span className="uppercase text-xs rounded-full ml-2 px-2 py-1 border border-ml-green dark:text-ml-green">
-                  experimental
+                <span
+                  className={`text-xs rounded-full  ml-2 px-1 py-1 border ${selectedCommand.mlBranding ? 'border-ml-green dark:text-ml-green' : 'border-primary dark:text-primary'}`}
+                >
+                  <CustomIcon name="beaker" className="w-4 h-4" />
+                  <Tooltip
+                    position="bottom-right"
+                    contentClassName="max-w-none flex items-center"
+                  >
+                    <span>Experimental</span>
+                  </Tooltip>
                 </span>
               ) : (
                 <span className="pr-2" />
@@ -152,7 +160,7 @@ function CommandBarHeaderFooter({
                     key={argName}
                     className={`relative w-fit px-2 py-1 rounded-sm flex gap-2 items-center border ${
                       argName === currentArgument?.name
-                        ? selectedCommand.status === 'experimental'
+                        ? selectedCommand.mlBranding
                           ? 'disabled:bg-ml-green/10 dark:disabled:bg-ml-green/20 disabled:border-ml-green dark:disabled:border-ml-green disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
                           : 'disabled:bg-primary/10 dark:disabled:bg-primary/20 disabled:border-primary dark:disabled:border-primary disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
                         : 'bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80'
@@ -239,12 +247,10 @@ function CommandBarHeaderFooter({
           {isReviewing ? (
             <ReviewingButton
               bgClassName={
-                selectedCommand.status === 'experimental'
-                  ? '!bg-ml-green'
-                  : '!bg-primary'
+                selectedCommand.mlBranding ? '!bg-ml-green' : '!bg-primary'
               }
               iconClassName={
-                selectedCommand.status === 'experimental'
+                selectedCommand.mlBranding
                   ? '!text-ml-black'
                   : '!text-chalkboard-10'
               }
@@ -252,12 +258,10 @@ function CommandBarHeaderFooter({
           ) : (
             <GatheringArgsButton
               bgClassName={
-                selectedCommand.status === 'experimental'
-                  ? '!bg-ml-green'
-                  : '!bg-primary'
+                selectedCommand.mlBranding ? '!bg-ml-green' : '!bg-primary'
               }
               iconClassName={
-                selectedCommand.status === 'experimental'
+                selectedCommand.mlBranding
                   ? '!text-ml-black'
                   : '!text-chalkboard-10'
               }

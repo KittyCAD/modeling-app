@@ -26,7 +26,11 @@ pub use crate::parsing::ast::types::{
 use crate::{
     ModuleId, SourceRange, TypedPath,
     errors::KclError,
-    execution::{KclValue, Metadata, TagIdentifier, annotations, types::ArrayLen},
+    execution::{
+        KclValue, Metadata, TagIdentifier,
+        annotations::{self, WarningLevel},
+        types::ArrayLen,
+    },
     lsp::ToLspRange,
     parsing::{PIPE_OPERATOR, ast::digest::Digest, token::NumericSuffix},
 };
@@ -390,6 +394,40 @@ impl Node<Program> {
                 settings.inner.add_or_update(
                     annotations::SETTINGS_UNIT_LENGTH,
                     Expr::Name(Box::new(Name::new(&len.to_string()))),
+                );
+            }
+
+            new_program.inner_attrs.push(settings);
+        }
+
+        Ok(new_program)
+    }
+
+    pub fn change_experimental_features(&self, warning_level: Option<WarningLevel>) -> Result<Self, KclError> {
+        let mut new_program = self.clone();
+        let mut found = false;
+        for node in &mut new_program.inner_attrs {
+            if node.name() == Some(annotations::SETTINGS) {
+                if let Some(level) = warning_level {
+                    node.inner.add_or_update(
+                        annotations::SETTINGS_EXPERIMENTAL_FEATURES,
+                        Expr::Name(Box::new(Name::new(level.as_str()))),
+                    );
+                }
+                // Previous source range no longer makes sense, but we want to
+                // preserve other things like comments.
+                node.reset_source();
+                found = true;
+                break;
+            }
+        }
+
+        if !found {
+            let mut settings = Annotation::new(annotations::SETTINGS);
+            if let Some(level) = warning_level {
+                settings.inner.add_or_update(
+                    annotations::SETTINGS_EXPERIMENTAL_FEATURES,
+                    Expr::Name(Box::new(Name::new(level.as_str()))),
                 );
             }
 
@@ -4456,6 +4494,65 @@ startSketchOn(XY)
         assert_eq!(
             formatted,
             r#"@settings(defaultLengthUnit = mm)
+
+startSketchOn(XY)
+"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_experimental_features_deny_to_allow() {
+        let some_program_string = r#"@settings(experimentalFeatures = deny)
+
+startSketchOn(XY)"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let result = program.meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(meta_settings.experimental_features, WarningLevel::Deny);
+
+        // Edit the ast.
+        let new_program = program.change_experimental_features(Some(WarningLevel::Allow)).unwrap();
+
+        let result = new_program.meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(meta_settings.experimental_features, WarningLevel::Allow);
+
+        let formatted = new_program.recast_top(&Default::default(), 0);
+
+        assert_eq!(
+            formatted,
+            r#"@settings(experimentalFeatures = allow)
+
+startSketchOn(XY)
+"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_experimental_features_nothing_to_warn() {
+        let some_program_string = r#"startSketchOn(XY)"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let result = program.meta_settings().unwrap();
+        assert!(result.is_none());
+
+        // Edit the ast.
+        let new_program = program.change_experimental_features(Some(WarningLevel::Warn)).unwrap();
+
+        let result = new_program.meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(meta_settings.experimental_features, WarningLevel::Warn);
+
+        let formatted = new_program.recast_top(&Default::default(), 0);
+
+        assert_eq!(
+            formatted,
+            r#"@settings(experimentalFeatures = warn)
 
 startSketchOn(XY)
 "#

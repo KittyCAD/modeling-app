@@ -31,6 +31,7 @@ import {
   setOpenPanes,
 } from '@src/lib/layout/utils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 
 /**
  * For now we have strict area types but in future
@@ -165,6 +166,7 @@ function ModelingArea() {
       <Toolbar />
       <ConnectionStream pool={pool} authToken={authToken} />
       <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
+        <ExperimentalFeaturesMenu />
         <UnitsMenu />
         <Gizmo />
       </div>

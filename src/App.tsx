@@ -273,7 +273,6 @@ export function App() {
             actionLibrary={defaultActionLibrary}
           />
         </section>
-        {/* <CamToggle /> */}
         <StatusBar
           globalItems={[
             networkHealthStatus,
