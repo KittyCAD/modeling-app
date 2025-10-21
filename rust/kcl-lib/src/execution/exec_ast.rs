@@ -1697,7 +1697,14 @@ impl Node<MemberExpression> {
                     vec![self.clone().into()],
                 )))
             }
-            (being_indexed, _, _) => Err(KclError::new_semantic(KclErrorDetails::new(
+            (being_indexed, _, false) => Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "Only objects can have members accessed with dot notation, but you're trying to access {}",
+                    being_indexed.human_friendly_type()
+                ),
+                vec![self.clone().into()],
+            ))),
+            (being_indexed, _, true) => Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
                     "Only arrays can be indexed, but you're trying to index {}",
                     being_indexed.human_friendly_type()
