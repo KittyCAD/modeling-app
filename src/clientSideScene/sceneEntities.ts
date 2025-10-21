@@ -186,6 +186,7 @@ import {
 } from '@src/lib/selections'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -201,6 +202,7 @@ export class SceneEntities {
   readonly codeManager: CodeManager
   readonly kclManager: KclManager
   readonly rustContext: RustContext
+  readonly wasmInstance?: ModuleType
   commandBarActor?: ActorRefFrom<typeof commandBarMachine>
   activeSegments: { [key: string]: Group } = {}
   readonly intersectionPlane: Mesh
@@ -216,7 +218,8 @@ export class SceneEntities {
     editorManager: EditorManager,
     codeManager: CodeManager,
     kclManager: KclManager,
-    rustContext: RustContext
+    rustContext: RustContext,
+    wasmInstance?: ModuleType
   ) {
     this.engineCommandManager = engineCommandManager
     this.sceneInfra = sceneInfra
@@ -227,7 +230,7 @@ export class SceneEntities {
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
       this.sceneInfra
     )
-
+    this.wasmInstance = wasmInstance
     this.sceneInfra.camControls.cameraChange.add(this.onCamChange)
     this.sceneInfra.baseUnitChange.add(this.onCamChange)
   }
@@ -334,6 +337,7 @@ export class SceneEntities {
         group: segment,
         scale: factor,
         sceneInfra: this.sceneInfra,
+        wasmInstance: this.wasmInstance,
       })
       callBack && !err(callBack) && callbacks.push(callBack)
       if (segment.name === PROFILE_START) {
@@ -804,6 +808,7 @@ export class SceneEntities {
     maybeModdedAst,
     draftExpressionsIndices,
     selectionRanges,
+    wasmInstance,
   }: {
     sketchEntryNodePath: PathToNode
     sketchNodePaths: PathToNode[]
@@ -813,6 +818,7 @@ export class SceneEntities {
     up: [number, number, number]
     position?: [number, number, number]
     selectionRanges?: Selections
+    wasmInstance?: ModuleType
   }): Promise<{
     truncatedAst: Node<Program>
     variableDeclarationName: string
@@ -886,6 +892,7 @@ export class SceneEntities {
 
         callbacks.push(startProfileCallBack)
       }
+
       sketch.paths.forEach((segment, index) => {
         const isLastInProfile =
           index === sketch.paths.length - 1 && segment.type !== 'Circle'
@@ -1005,6 +1012,7 @@ export class SceneEntities {
           selection,
           commandBarActor: this.commandBarActor,
           kclManager: this.kclManager,
+          wasmInstance,
         })
         if (err(result)) return
         const { group: _group, updateOverlaysCallback } = result
@@ -1054,10 +1062,16 @@ export class SceneEntities {
     up: [number, number, number],
     origin: [number, number, number],
     getEventForSegmentSelection: typeof getEventForSegmentSelectionFn,
-    updateExtraSegments: typeof updateExtraSegmentsFn
+    updateExtraSegments: typeof updateExtraSegmentsFn,
+    wasmInstance?: ModuleType
   ) => {
     if (trap(modifiedAst)) return Promise.reject(modifiedAst)
-    const nextAst = await this.kclManager.updateAst(modifiedAst, false)
+    const nextAst = await this.kclManager.updateAst(
+      modifiedAst,
+      false,
+      undefined,
+      wasmInstance
+    )
     this.sceneInfra.resetMouseListeners()
     await this.setupSketch({
       sketchEntryNodePath,
@@ -2798,13 +2812,14 @@ export class SceneEntities {
     sketchNodePaths: PathToNode[],
     ast?: Node<Program>,
     draftSegment?: DraftSegment
-  ) =>
-    prepareTruncatedAst(
+  ) => {
+    return prepareTruncatedAst(
       sketchNodePaths,
       ast || this.kclManager.ast,
       this.kclManager.lastSuccessfulVariables,
       draftSegment
     )
+  }
 
   getSnappedDragPoint(
     pos: Vector2,
