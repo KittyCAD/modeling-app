@@ -1,5 +1,5 @@
 .PHONY: all
-all: check test-unit
+all: check test
 
 ###############################################################################
 # INSTALL
@@ -127,11 +127,15 @@ E2E_MODE ?= none
 endif
 
 .PHONY: test
-test: test-unit test-e2e
+test: test-unit test-integration
 
 .PHONY: test-unit
 test-unit: install public/kcl_wasm_lib_bg.wasm ## Run the unit tests
+	# TODO: Remove unit test dependency on Wasm binary
 	npm run test:unit
+
+.PHONY: test-integration
+test-integration: install public/kcl_wasm_lib_bg.wasm ## Run the integration tests
 	npm run test:integration
 
 .PHONY: test-e2e
