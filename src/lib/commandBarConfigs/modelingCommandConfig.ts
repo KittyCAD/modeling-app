@@ -46,6 +46,10 @@ import {
   addScale,
   addTranslate,
 } from '@src/lang/modifyAst/transforms'
+import {
+  addPatternCircular3D,
+  addPatternLinear3D,
+} from '@src/lang/modifyAst/pattern3D'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -1452,6 +1456,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a circular pattern of 3D solids around an axis.',
     icon: 'patternCircular3d',
     needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addPatternCircular3D({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Pattern Circular 3D']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) {
+        return Promise.reject(modRes)
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1502,6 +1524,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a linear pattern of 3D solids along an axis.',
     icon: 'patternLinear3d',
     needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addPatternLinear3D({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Pattern Linear 3D']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) {
+        return Promise.reject(modRes)
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
