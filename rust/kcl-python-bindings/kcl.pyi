@@ -85,7 +85,9 @@ class Finding:
 
 class FixedLints:
     r"""
-    Customize a snapshot.
+    Result from linting and fixing automatically.
+    Shows the new code after applying fixes,
+    and any lints that couldn't be automatically applied.
     """
     ...
 
