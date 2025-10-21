@@ -52,13 +52,27 @@ pub struct Discovered {
 
 impl Discovered {
     pub fn apply_suggestion(&self, src: &str) -> Option<String> {
-        let suggestion = self.suggestion.as_ref()?;
-        Some(format!(
-            "{}{}{}",
-            &src[0..suggestion.source_range.start()],
-            suggestion.insert,
-            &src[suggestion.source_range.end()..]
-        ))
+        self.suggestion.as_ref().map(|suggestion| suggestion.apply(src))
+    }
+}
+
+/// Lint, and try to apply all suggestions.
+/// Returns the new source code, and any lints without suggestions.
+pub fn lint_and_fix(mut source: String) -> anyhow::Result<(String, Vec<Discovered>)> {
+    loop {
+        let (program, errors) = crate::Program::parse(&source)?;
+        if !errors.is_empty() {
+            anyhow::bail!("Found errors while parsing, please run the parser and fix them before linting.");
+        }
+        let Some(program) = program else {
+            anyhow::bail!("Could not parse, please run parser and ensure the program is valid before linting");
+        };
+        let lints = program.lint_all()?;
+        if let Some(to_fix) = lints.iter().find_map(|lint| lint.suggestion.clone()) {
+            source = to_fix.apply(&source);
+        } else {
+            return Ok((source, lints));
+        }
     }
 }
 
@@ -204,6 +218,26 @@ pub(crate) use test::{assert_finding, assert_no_finding, test_finding, test_no_f
 #[cfg(test)]
 mod test {
 
+    #[test]
+    fn test_lint_and_fix() {
+        // This file has some snake_case identifiers.
+        let path = "../kcl-python-bindings/files/box_with_linter_errors.kcl";
+        let f = std::fs::read_to_string(path).unwrap();
+        let prog = crate::Program::parse_no_errs(&f).unwrap();
+
+        // That should cause linter errors.
+        let lints = prog.lint_all().unwrap();
+        assert!(lints.len() >= 4);
+
+        // But the linter errors can be fixed.
+        let (new_code, unfixed) = lint_and_fix(f).unwrap();
+        assert!(unfixed.len() < 4);
+
+        // After the fix, no more snake_case identifiers.
+        eprintln!("{new_code}");
+        assert!(!new_code.contains('_'));
+    }
+
     macro_rules! assert_no_finding {
         ( $check:expr_2021, $finding:expr_2021, $kcl:expr_2021 ) => {
             let prog = $crate::Program::parse_no_errs($kcl).unwrap();
@@ -267,6 +301,7 @@ mod test {
         };
     }
 
+    use super::*;
     pub(crate) use assert_finding;
     pub(crate) use assert_no_finding;
     pub(crate) use test_finding;

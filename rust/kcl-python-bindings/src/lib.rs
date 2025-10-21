@@ -668,25 +668,8 @@ pub struct FixedLints {
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
 fn lint_and_fix(code: String) -> PyResult<FixedLints> {
-    let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
-    let lints = program
-        .lint(checks::lint_variables)
-        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-
-    let mut unfixed_lints = Vec::with_capacity(lints.len());
-    let mut new_code = code;
-    for lint in lints {
-        let out = lint.apply_suggestion(&new_code);
-        match out {
-            None => {
-                unfixed_lints.push(lint);
-            }
-            Some(newer_code) => {
-                new_code = newer_code;
-            }
-        }
-    }
-
+    let (new_code, unfixed_lints) =
+        kcl_lib::lint::lint_and_fix(code).map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
     Ok(FixedLints {
         new_code,
         unfixed_lints,
