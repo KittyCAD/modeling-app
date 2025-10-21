@@ -111,7 +111,10 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
       )}
       {reviewError && (
         <>
-          <p className="px-4 py-2 text-red-500/50 text-sm">{reviewError}</p>
+          <p className="px-4 py-2 text-red-500 text-sm">
+            <span className="font-bold">Error: </span>
+            <span>{reviewError}</span>
+          </p>
           <CommandBarDivider />
         </>
       )}
