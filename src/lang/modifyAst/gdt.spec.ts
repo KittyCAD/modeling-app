@@ -163,7 +163,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )`
 
   describe('Testing addFlatnessGdt', () => {
-    it.only('should add a basic flatness annotation to a single face (cap)', async () => {
+    it('should add a basic flatness annotation to a single face (cap)', async () => {
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
@@ -330,7 +330,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       })
       if (err(result2)) throw result2
 
-      const newCode = recast(result2.modifiedAst)
+      const newCode = recast(result2.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify tag appears only once
@@ -512,7 +512,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       if (err(result)) throw result
       const { modifiedAst } = result
-      const newCode = recast(modifiedAst)
+      const newCode = recast(modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify GDT annotation was added for fillet
