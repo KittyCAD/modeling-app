@@ -36,6 +36,8 @@ import {
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
+import { addShell } from '@src/lang/modifyAst/faces'
+import { addSubtract, addUnion } from '@src/lang/modifyAst/boolean'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -463,7 +465,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         artifactGraph: kclManager.artifactGraph,
       })
       if (err(modRes)) {
-        return Promise.reject(new Error('Invalid selection'))
+        return Promise.reject(modRes)
       }
 
       const execRes = await mockExecAstAndReportErrors(
@@ -549,7 +551,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ast: kclManager.ast,
       })
       if (err(modRes)) {
-        return Promise.reject(new Error('Invalid selection'))
+        return Promise.reject(modRes)
       }
 
       const execRes = await mockExecAstAndReportErrors(
@@ -611,7 +613,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ast: kclManager.ast,
       })
       if (err(modRes)) {
-        return Promise.reject(new Error('Invalid selection'))
+        return Promise.reject(modRes)
       }
 
       const execRes = await mockExecAstAndReportErrors(
@@ -666,7 +668,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ast: kclManager.ast,
       })
       if (err(modRes)) {
-        return Promise.reject(new Error('Invalid selection'))
+        return Promise.reject(modRes)
       }
 
       const execRes = await mockExecAstAndReportErrors(
@@ -749,6 +751,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Hollow out a 3D solid.',
     icon: 'shell',
     needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addShell({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Shell']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) {
+        return Promise.reject(modRes)
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -771,6 +791,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Subtract one solid from another.',
     icon: 'booleanSubtract',
     needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addSubtract({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Subtract']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) {
+        return Promise.reject(modRes)
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       solids: {
         ...objectsTypesAndFilters,
@@ -795,6 +833,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Union multiple solids into a single solid.',
     icon: 'booleanUnion',
     needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addUnion({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Union']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) {
+        return Promise.reject(modRes)
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       solids: {
         ...objectsTypesAndFilters,
@@ -810,6 +866,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a solid from the intersection of two solids.',
     icon: 'booleanIntersect',
     needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addUnion({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Intersect']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) {
+        return Promise.reject(modRes)
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       solids: {
         ...objectsTypesAndFilters,
