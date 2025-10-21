@@ -25,6 +25,7 @@ import {
 } from '@src/lang/util'
 import type { CallExpressionKw, Expr, PipeExpression } from '@src/lang/wasm'
 import { roundOff } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 function angledLine(
   angle: Expr,
@@ -138,7 +139,8 @@ export function updateCenterRectangleSketch(
   deltaY: number,
   tag: string,
   originX: number,
-  originY: number
+  originY: number,
+  wasmInstance?: ModuleType
 ): undefined | Error {
   let startX = originX - Math.abs(deltaX)
   let startY = originY - Math.abs(deltaY)
@@ -155,8 +157,8 @@ export function updateCenterRectangleSketch(
       )
     }
     const at = createArrayExpression([
-      createLiteral(roundOff(startX)),
-      createLiteral(roundOff(startY)),
+      createLiteral(roundOff(startX), undefined, wasmInstance),
+      createLiteral(roundOff(startY), undefined, wasmInstance),
     ])
     mutateKwArgOnly(ARG_AT, callExpression, at)
   }
@@ -196,11 +198,11 @@ export function updateCenterRectangleSketch(
     const newAngle = createBinaryExpression([
       createCallExpressionStdLibKw('segAng', createLocalName(tag), []),
       oldAngleOperator,
-      createLiteral(90, 'Deg'),
+      createLiteral(90, 'Deg', wasmInstance),
     ])
 
     // Calculate new height.
-    const newLength = createLiteral(Math.abs(twoY))
+    const newLength = createLiteral(Math.abs(twoY), undefined, wasmInstance)
 
     // Update old rectangle.
     mutateKwArgOnly(ARG_ANGLE, edge1, newAngle)

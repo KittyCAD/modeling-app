@@ -69,9 +69,17 @@ export const kclManager = new KclManager(engineCommandManager, {
 import { initPromise } from '@src/lang/wasmUtils'
 // Initialize KCL version
 import { setKclVersion } from '@src/lib/kclVersion'
+import { processEnv } from '@src/env'
 
 initPromise
   .then(() => {
+    if (processEnv()?.VITEST) {
+      const message =
+        'singletons is trying to call initPromise and setKclVersion. This will be blocked in VITEST runtimes.'
+      console.log(message)
+      return
+    }
+
     setKclVersion(kclManager.kclVersion)
   })
   .catch((e) => {
