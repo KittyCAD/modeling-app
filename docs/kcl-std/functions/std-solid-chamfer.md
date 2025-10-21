@@ -126,4 +126,75 @@ sketch001 = startSketchOn(part001, face = chamfer1)
 >
 </model-viewer>
 
+```kcl
+// Specify a custom chamfer angle.
+fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = pos)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+
+  return sg
+}
+
+part001 = cube(pos = [0, 0], scale = 20)
+  |> close(tag = $line1)
+  |> extrude(length = 20)
+  |> chamfer(length = 10, angle = 30deg, tags = [getOppositeEdge(line1)])
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the chamfer function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer2_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer2.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Swap a custom chamfer angle to the other face.
+fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = pos)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+
+  return sg
+}
+
+part001 = cube(pos = [0, 0], scale = 20)
+  |> close(tag = $line1)
+  |> extrude(length = 20)
+  |> chamfer(
+       length = 10,
+       angle = 30deg,
+       swap = true,
+       tags = [getOppositeEdge(line1)],
+     )
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the chamfer function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer3_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer3.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
 

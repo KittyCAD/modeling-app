@@ -213,6 +213,8 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-appearance-9",
     "std-solid-chamfer-0",
     "std-solid-chamfer-1",
+    "std-solid-chamfer-2",
+    "std-solid-chamfer-3",
     "std-solid-fillet-0",
     "std-solid-fillet-1",
     "std-solid-hollow-0",
