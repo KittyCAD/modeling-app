@@ -43,6 +43,7 @@ import { isArray } from '@src/lib/utils'
 import {
   base64_decode,
   change_default_units,
+  change_experimental_features,
   coredump,
   default_app_settings,
   default_project_settings,
@@ -63,6 +64,7 @@ import {
   serialize_configuration,
   serialize_project_configuration,
 } from '@src/lib/wasm_lib_wrapper'
+import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -762,6 +764,22 @@ export function changeDefaultUnits(
 ): string | Error {
   try {
     return change_default_units(kcl, JSON.stringify(len))
+  } catch (e) {
+    console.error('Caught error changing kcl settings', e)
+    return new Error('Caught error changing kcl settings', { cause: e })
+  }
+}
+
+/**
+ * Change the meta settings for the kcl file.
+ * @returns the new kcl string with the updated settings.
+ */
+export function changeExperimentalFeatures(
+  kcl: string,
+  warningLevel: WarningLevel | null = null
+): string | Error {
+  try {
+    return change_experimental_features(kcl, JSON.stringify(warningLevel))
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })
