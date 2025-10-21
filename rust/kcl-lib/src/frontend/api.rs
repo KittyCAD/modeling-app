@@ -5,6 +5,7 @@
 use kcl_error::{CompilationError, SourceRange};
 use serde::{Deserialize, Serialize};
 
+pub use crate::ExecutorSettings as Settings;
 use crate::pretty::NumericSuffix;
 
 pub trait LifecycleApi {
@@ -36,7 +37,7 @@ impl SceneGraph {
             file,
             version,
             objects: Vec::new(),
-            settings: Settings {},
+            settings: Default::default(),
             sketch_mode: None,
         }
     }
@@ -87,10 +88,6 @@ pub struct File {
     pub path: String,
     pub text: String,
 }
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiSettings")]
-pub struct Settings {}
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 pub struct Object {

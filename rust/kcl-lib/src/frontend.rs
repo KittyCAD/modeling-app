@@ -8,8 +8,8 @@ use crate::{
     fmt::format_number_literal,
     frontend::{
         api::{
-            Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, Settings,
-            SourceDelta, SourceRef, Version,
+            Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
+            SourceRef, Version,
         },
         sketch::{Constraint, LineCtor, Point2d, Segment, SegmentCtor, SketchApi, SketchArgs},
         traverse::dfs_mut,
@@ -47,7 +47,7 @@ impl FrontendState {
                 file: FileId(0),
                 version: Version(0),
                 objects: Default::default(),
-                settings: Settings {},
+                settings: Default::default(),
                 sketch_mode: Default::default(),
             },
         }
