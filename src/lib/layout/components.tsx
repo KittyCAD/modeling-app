@@ -454,6 +454,8 @@ function PaneButton({
       key={pane.id}
     >
       <Switch
+        id={pane.id}
+        name={pane.id}
         checked={parentActiveIndices.includes(childIndex)}
         aria-pressed={parentActiveIndices.includes(childIndex)}
         onChange={(checked) => onChange(checked)}
