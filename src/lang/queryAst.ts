@@ -62,6 +62,7 @@ import type {
   Selections,
   EdgeCutInfo,
 } from '@src/machines/modelingSharedTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -76,7 +77,8 @@ export function getNodeFromPath<T>(
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly = false,
   suppressNoise = false,
-  replacement?: any
+  replacement?: any,
+  wasmInstance?: ModuleType
 ):
   | {
       node: T
@@ -103,7 +105,7 @@ export function getNodeFromPath<T>(
         }
       }
       const stackTraceError = new Error()
-      const sourceCode = recast(node)
+      const sourceCode = recast(node, wasmInstance)
       const levels = stackTraceError.stack?.split('\n')
       const aFewFunctionNames: string[] = []
       let tree = ''
@@ -177,7 +179,8 @@ export function getNodeFromPath<T>(
  */
 export function getNodeFromPathCurry(
   node: Program,
-  path: PathToNode
+  path: PathToNode,
+  wasmInstance?: ModuleType
 ): <T>(
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly?: boolean
@@ -188,7 +191,15 @@ export function getNodeFromPathCurry(
     }
   | Error {
   return <T>(stopAt?: SyntaxType | SyntaxType[], returnEarly = false) => {
-    const _node1 = getNodeFromPath<T>(node, path, stopAt, returnEarly)
+    const _node1 = getNodeFromPath<T>(
+      node,
+      path,
+      stopAt,
+      returnEarly,
+      undefined,
+      undefined,
+      wasmInstance
+    )
     if (err(_node1)) return _node1
     const { node: _node, shallowPath } = _node1
     return {
@@ -961,9 +972,10 @@ export function doesSketchPipeNeedSplitting(
  * Given KCL, returns the settings annotation object if it exists.
  */
 export function getSettingsAnnotation(
-  kcl: string | Node<Program>
+  kcl: string | Node<Program>,
+  instance?: ModuleType
 ): KclSettingsAnnotation | Error {
-  const metaSettings = kclSettings(kcl)
+  const metaSettings = kclSettings(kcl, instance)
   if (err(metaSettings)) return metaSettings
 
   const settings: KclSettingsAnnotation = {}

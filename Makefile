@@ -1,5 +1,5 @@
 .PHONY: all
-all: install check build
+all: check test
 
 ###############################################################################
 # INSTALL
@@ -87,11 +87,11 @@ endif
 check: format lint
 
 .PHONY: format
-format: install ## Format the code
+format: install public/kcl_wasm_lib_bg.wasm ## Format the code
 	npm run fmt
 
 .PHONY: lint
-lint: install ## Lint the code
+lint: install public/kcl_wasm_lib_bg.wasm ## Lint the code
 	npm run tsc
 	npm run lint
 
@@ -127,12 +127,15 @@ E2E_MODE ?= none
 endif
 
 .PHONY: test
-test: test-unit test-e2e
+test: test-unit test-integration
 
 .PHONY: test-unit
-test-unit: install ## Run the unit tests
+test-unit: install public/kcl_wasm_lib_bg.wasm ## Run the unit tests
+	# TODO: Remove unit test dependency on Wasm binary
 	npm run test:unit
-	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
+
+.PHONY: test-integration
+test-integration: install public/kcl_wasm_lib_bg.wasm ## Run the integration tests
 	npm run test:integration
 
 .PHONY: test-e2e
