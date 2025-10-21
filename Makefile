@@ -87,11 +87,11 @@ endif
 check: format lint
 
 .PHONY: format
-format: install public/kcl_wasm_lib_bg.wasm ## Format the code
+format: install ## Format the code
 	npm run fmt
 
 .PHONY: lint
-lint: install public/kcl_wasm_lib_bg.wasm ## Lint the code
+lint: install ## Lint the code
 	npm run tsc
 	npm run lint
 
@@ -130,8 +130,7 @@ endif
 test: test-unit test-integration
 
 .PHONY: test-unit
-test-unit: install public/kcl_wasm_lib_bg.wasm ## Run the unit tests
-	# TODO: Remove unit test dependency on Wasm binary
+test-unit: install ## Run the unit tests
 	npm run test:unit
 
 .PHONY: test-integration
