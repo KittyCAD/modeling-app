@@ -30,7 +30,6 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
     let swap = args.get_kw_arg_opt("swap", &RuntimeType::bool(), exec_state)?;
     // TODO: custom profiles not ready yet
-    // let custom_profile = args.get_kw_arg_opt("customProfile", &RuntimeType::sketch(), exec_state)?;
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
@@ -81,22 +80,22 @@ async fn inner_chamfer(
         )));
     }
 
-    let second_distance = second_length.clone().map(|x| LengthUnit(x.to_mm()));
-    let angle = angle.map(|x| Angle::from_degrees(x.to_degrees(exec_state, args.source_range)));
-    if let Some(angle) = angle
-        && angle.gt(&Angle::quarter_circle())
-    {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "The angle of a chamfer must be less than 90 degrees.".to_string(),
-            vec![args.source_range],
-        )));
-    }
-
     let strategy = if second_length.is_some() || angle.is_some() || custom_profile.is_some() {
         CutStrategy::Csg
     } else {
         Default::default()
     };
+
+    let second_distance = second_length.map(|x| LengthUnit(x.to_mm()));
+    let angle = angle.map(|x| Angle::from_degrees(x.to_degrees(exec_state, args.source_range)));
+    if let Some(angle) = angle
+        && (angle.ge(&Angle::quarter_circle()) || angle.le(&Angle::zero()))
+    {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "The angle of a chamfer must be greater than zero and less than 90 degrees.".to_string(),
+            vec![args.source_range],
+        )));
+    }
 
     let cut_type = if let Some(custom_profile) = custom_profile {
         // Hide the custom profile since it's no longer its own profile
