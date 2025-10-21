@@ -558,7 +558,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'Find and select command',
                 data: { name: 'GDT Flatness', groupId: 'modeling' },
               }),
-            status: 'available',
+            status: 'experimental',
             title: 'Flatness',
             icon: 'gdtFlatness',
             description:

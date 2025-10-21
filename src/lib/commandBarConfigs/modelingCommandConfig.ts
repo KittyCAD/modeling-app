@@ -1274,6 +1274,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add flatness geometric dimensioning & tolerancing annotation to faces.',
     icon: 'gdtFlatness',
     needsReview: true,
+    status: 'experimental',
     args: {
       nodeToEdit: {
         ...nodeToEditProps,

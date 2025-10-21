@@ -160,6 +160,7 @@ import {
   type EquipTool,
   sketchSolveMachine,
 } from '@src/machines/sketchSolve/sketchSolveMode'
+import { setExperimentalFeatures } from '@src/lib/kclHelpers'
 
 export type ModelingMachineEvent =
   | {
@@ -2966,6 +2967,14 @@ export const modelingMachine = setup({
       }) => {
         if (!input) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        // Remove once it isn't experimental anymore
+        if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
+          const result = await setExperimentalFeatures({ type: 'Allow' })
+          if (err(result)) {
+            return Promise.reject(result)
+          }
         }
 
         const { ast, artifactGraph } = kclManager
