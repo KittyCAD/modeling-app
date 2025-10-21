@@ -87,7 +87,7 @@ async fn inner_chamfer(
         && angle.gt(&Angle::quarter_circle())
     {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "The angle of a chamfer cannot must be less than 90 degrees.".to_string(),
+            "The angle of a chamfer must be less than 90 degrees.".to_string(),
             vec![args.source_range],
         )));
     }
