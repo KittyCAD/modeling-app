@@ -384,6 +384,7 @@ export function collapseSplitChildPaneNode({
   targetNode: panesLayoutNode,
 }: IRootAndTargetLayout) {
   if (!panesLayoutNode || panesLayoutNode.type !== LayoutType.Panes) {
+    console.error(`Invalid panesLayoutNode, ID: ${panesLayoutNode.id}`)
     return rootLayout
   }
 
@@ -392,6 +393,9 @@ export function collapseSplitChildPaneNode({
     targetNodeId: panesLayoutNode.id,
   })
   if (!splitsLayoutNode || splitsLayoutNode.type !== LayoutType.Splits) {
+    console.error(
+      `Invalid splitsLayoutNode, ID: ${splitsLayoutNode?.id || null}`
+    )
     return rootLayout
   }
 
@@ -406,6 +410,9 @@ export function collapseSplitChildPaneNode({
     splitsLayoutNode.orientation
   )
   if (!shouldCollapse || indexOfSplit < 0) {
+    console.warn(
+      `Not collapsing pane layout within split layout, ${panesLayoutNode.side} not in split orientation ${splitsLayoutNode.orientation}`
+    )
     return rootLayout
   }
 
@@ -414,6 +421,9 @@ export function collapseSplitChildPaneNode({
   const childElement = getPanelElement(panesLayoutNode.id)
   const toolbarElement = childElement?.querySelector('[data-pane-toolbar]')
   if (!parentElement || indexOfSplit < 0 || !toolbarElement) {
+    console.error(
+      `Could not find elements to collapse pane layout, split layout ID: ${splitsLayoutNode.id}`
+    )
     return rootLayout
   }
 
@@ -473,8 +483,7 @@ export function shouldDisableFlex(
 }
 
 export interface ITogglePane extends IRootAndTargetID {
-  expandOrCollapse: boolean
-  paneIndex: number
+  shouldExpand: boolean
 }
 
 /**
@@ -484,72 +493,84 @@ export interface ITogglePane extends IRootAndTargetID {
 export function togglePaneLayoutNode({
   rootLayout,
   targetNodeId,
-  expandOrCollapse,
-  paneIndex,
+  shouldExpand,
 }: ITogglePane): Layout {
-  const layout = findLayoutChildNode({ rootLayout, targetNodeId })
-  if (!layout || layout.type !== LayoutType.Panes) {
+  const paneChildLayout = findLayoutChildNode({ rootLayout, targetNodeId })
+  const paneLayout = findLayoutParentNode({ rootLayout, targetNodeId })
+  if (!paneLayout || paneLayout.type !== LayoutType.Panes || !paneChildLayout) {
     console.error(
-      `targetNode not found, pane toggling didn't occur. Target ID: ${targetNodeId}`
+      `targetNode pane child not found, pane toggling didn't occur. Target ID: ${targetNodeId}`
     )
     return rootLayout
   }
-  const indexInActiveItems = layout.activeIndices.indexOf(paneIndex)
+  const indexInChildren = paneLayout.children.findIndex(
+    (child) => child.id === targetNodeId
+  )
+  if (indexInChildren < 0) {
+    console.error(
+      `targetNode pane child is not a child of pane layout. Target ID: ${targetNodeId}`
+    )
+    return rootLayout
+  }
+
+  const indexInActiveItems = paneLayout.activeIndices
+    .map((index) => paneLayout.children[index])
+    .findIndex((activeItem) => activeItem.id === targetNodeId)
   const isInActiveItems = indexInActiveItems >= 0
 
-  if (expandOrCollapse && !isInActiveItems) {
-    layout.activeIndices.push(paneIndex)
-    layout.activeIndices.sort()
+  if (shouldExpand && !isInActiveItems) {
+    paneLayout.activeIndices.push(indexInChildren)
+    paneLayout.activeIndices.sort()
 
-    if (layout.sizes.length > 1) {
-      const newActiveIndex = layout.activeIndices.indexOf(paneIndex)
+    if (paneLayout.sizes.length > 1) {
+      const newActiveIndex = paneLayout.activeIndices.indexOf(indexInChildren)
 
-      if (areSplitSizesNatural(layout.sizes)) {
-        layout.sizes = Array(layout.activeIndices.length).fill(
-          100 / layout.activeIndices.length
+      if (areSplitSizesNatural(paneLayout.sizes)) {
+        paneLayout.sizes = Array(paneLayout.activeIndices.length).fill(
+          100 / paneLayout.activeIndices.length
         )
       } else {
         const activeIndexToSplit = newActiveIndex === 0 ? 1 : newActiveIndex - 1
-        const halfSize = (layout.sizes[activeIndexToSplit] || 2) / 2
-        layout.sizes[activeIndexToSplit] = halfSize
-        layout.sizes.splice(newActiveIndex, 0, halfSize)
+        const halfSize = (paneLayout.sizes[activeIndexToSplit] || 2) / 2
+        paneLayout.sizes[activeIndexToSplit] = halfSize
+        paneLayout.sizes.splice(newActiveIndex, 0, halfSize)
       }
-    } else if (layout.sizes.length === 1) {
-      layout.sizes = [50, 50]
+    } else if (paneLayout.sizes.length === 1) {
+      paneLayout.sizes = [50, 50]
     } else {
-      layout.sizes = [100]
-      return expandSplitChildPaneNode({ rootLayout, targetNode: layout })
+      paneLayout.sizes = [100]
+      return expandSplitChildPaneNode({ rootLayout, targetNode: paneLayout })
     }
 
     return findAndReplaceLayoutChildNode({
       rootLayout,
-      targetNodeId: layout.id,
-      newNode: layout,
+      targetNodeId: paneLayout.id,
+      newNode: paneLayout,
     })
   }
 
-  if (!expandOrCollapse && isInActiveItems) {
-    layout.activeIndices.splice(indexInActiveItems, 1)
+  if (!shouldExpand && isInActiveItems) {
+    paneLayout.activeIndices.splice(indexInActiveItems, 1)
 
-    if (layout.sizes.length > 1) {
-      const removedSize = layout.sizes.splice(indexInActiveItems, 1)
-      layout.sizes[indexInActiveItems === 0 ? 0 : indexInActiveItems - 1] +=
+    if (paneLayout.sizes.length > 1) {
+      const removedSize = paneLayout.sizes.splice(indexInActiveItems, 1)
+      paneLayout.sizes[indexInActiveItems === 0 ? 0 : indexInActiveItems - 1] +=
         removedSize[0]
     } else {
-      layout.activeIndices = []
-      layout.sizes = []
-      return collapseSplitChildPaneNode({ rootLayout, targetNode: layout })
+      paneLayout.activeIndices = []
+      paneLayout.sizes = []
+      return collapseSplitChildPaneNode({ rootLayout, targetNode: paneLayout })
     }
 
     return findAndReplaceLayoutChildNode({
       rootLayout,
-      targetNodeId: layout.id,
-      newNode: layout,
+      targetNodeId: paneLayout.id,
+      newNode: paneLayout,
     })
   }
 
   console.warn(
-    `Toggle pane seemed to be called unnecessarily: pane layout ${layout.id}`
+    `Toggle pane seemed to be called unnecessarily: pane layout ${paneLayout.id}`
   )
   return rootLayout
 }
@@ -589,18 +610,10 @@ export function setOpenPanes(rootLayout: Layout, paneIDs: string[]): Layout {
     isDefaultLayoutPaneID
   )
   for (const id of validPaneIDs) {
-    const parentOfPane = findLayoutParentNode({ rootLayout, targetNodeId: id })
-    if (!parentOfPane || parentOfPane.type !== LayoutType.Panes) {
-      continue
-    }
-    parentOfPane.activeIndices = []
-    parentOfPane.sizes = []
-    const paneIndex = parentOfPane.children.findIndex((p) => p.id === id)
     togglePaneLayoutNode({
       rootLayout,
-      targetNodeId: parentOfPane.id,
-      expandOrCollapse: true,
-      paneIndex,
+      targetNodeId: id,
+      shouldExpand: true,
     })
   }
   return rootLayout

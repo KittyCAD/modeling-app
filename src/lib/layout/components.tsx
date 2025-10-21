@@ -13,12 +13,7 @@ import type {
   ActionType,
 } from '@src/lib/layout/types'
 import { AreaType } from '@src/lib/layout/types'
-import {
-  getResizeHandleElement,
-  Panel,
-  PanelGroup,
-  PanelResizeHandle,
-} from 'react-resizable-panels'
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Switch } from '@headlessui/react'
 import { createContext, Fragment, useContext, useEffect, useRef } from 'react'
@@ -187,9 +182,9 @@ function LayoutNode({
   const { areaLibrary } = useLayoutState()
   switch (layout.type) {
     case LayoutType.Splits:
-      return <SplitLayout layout={layout} />
+      return <SplitLayout layout={layout} key={`node-${layout.id}`} />
     case LayoutType.Panes:
-      return <PaneLayout layout={layout} />
+      return <PaneLayout layout={layout} key={`node-${layout.id}`} />
     default:
       return areaLibrary[layout.areaType].Component({ onClose })
   }
@@ -219,7 +214,7 @@ function SplitLayoutContents({
 }: {
   direction: Direction
   layout: Layout
-  onClose?: (index: number) => void
+  onClose?: (id: string) => void
 }) {
   const { updateSplitSizes } = useLayoutState()
   const hasValidChildren = 'children' in layout && isArray(layout.children)
@@ -247,20 +242,20 @@ function SplitLayoutContents({
           const disableResize = !shouldEnableResizeHandle(a, i, arr)
           const disableFlex = shouldDisableFlex(a, layout)
           return (
-            <Fragment
-              key={`${a.id}${a.type === 'panes' ? a.activeIndices : ''}`}
-            >
+            <Fragment key={`${layout.id}${a.id}`}>
               <Panel
+                key={`panel-${a.id}`}
                 id={a.id}
                 order={i}
                 defaultSize={layout.sizes[i]}
                 className={`flex bg-default ${disableFlex ? '!flex-none' : ''}`}
               >
-                <LayoutNode layout={a} onClose={() => onClose?.(i)} />
+                <LayoutNode layout={a} onClose={() => onClose?.(a.id)} />
               </Panel>
               {i < layout.sizes.length - 1 ? (
                 <ResizeHandle
                   direction={direction}
+                  key={`handle-${a.id}`}
                   id={`handle-${a.id}`}
                   disabled={disableResize}
                   layout={layout}
@@ -300,11 +295,10 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
     }))
     .filter(({ item }) => item !== undefined && !shouldHide(item))
 
-  const onToggleItem = (checked: boolean, i: number) => {
+  const onToggleItem = (checked: boolean, targetNodeId: string) => {
     togglePane({
-      targetNodeId: layout.id,
-      expandOrCollapse: checked,
-      paneIndex: i,
+      targetNodeId,
+      shouldExpand: checked,
     })
   }
 
@@ -338,7 +332,7 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
               childIndex={i}
               parentActiveIndices={layout.activeIndices}
               side={layout.side}
-              onChange={(checked) => onToggleItem(checked, i)}
+              onChange={(checked) => onToggleItem(checked, pane.id)}
             />
           )
         )}
@@ -362,7 +356,7 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
       ) : activePanes.length === 1 ? (
         <LayoutNode
           layout={activePanes[0].item}
-          onClose={() => onToggleItem(false, layout.activeIndices[0])}
+          onClose={() => onToggleItem(false, activePanes[0].item.id)}
         />
       ) : (
         <SplitLayoutContents
@@ -374,9 +368,7 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
             ...layout,
             children: activePanes.map(({ item }) => item),
           }}
-          onClose={(index: number) =>
-            onToggleItem(false, layout.activeIndices[index])
-          }
+          onClose={(id) => onToggleItem(false, id)}
         />
       )}
     </div>
@@ -397,10 +389,6 @@ function ResizeHandle({
   layout: Layout
   currentIndex: number
 }) {
-  const handleRef = useRef<HTMLElement | null>(null)
-  useEffect(() => {
-    handleRef.current = getResizeHandleElement(id)
-  }, [id])
   return (
     <PanelResizeHandle
       disabled={disabled}
@@ -438,7 +426,6 @@ function PaneButton({
   useHotkeys(
     resolvedAreaType?.shortcut || '',
     () => {
-      console.log('FIRE!', { pane, isActiveIndex })
       onChange(!isActiveIndex)
     },
     {
@@ -451,7 +438,7 @@ function PaneButton({
       id={`${pane.id}-button-holder`}
       className="relative"
       data-onboarding-id={`${pane.id}-pane-button`}
-      key={pane.id}
+      key={`${pane.id}-button-holder`}
     >
       <Switch
         id={pane.id}
@@ -493,6 +480,10 @@ function NotificationBadge({ pane }: { pane: PaneChild }) {
     onClick: () => {},
     title: undefined,
   }
+
+  useEffect(() => {
+    console.log('ARE WE RERENDERING?', pane.id, value)
+  }, [value, pane.id])
 
   return value ? (
     <p

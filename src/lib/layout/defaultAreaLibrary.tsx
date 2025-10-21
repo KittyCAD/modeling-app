@@ -25,6 +25,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import type { MouseEventHandler } from 'react'
+import { useCallback, useMemo } from 'react'
 import {
   defaultLayout,
   getOpenPanes,
@@ -32,6 +33,20 @@ import {
 } from '@src/lib/layout/utils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
+
+const onCodeNotificationClick: MouseEventHandler = (e) => {
+  e.preventDefault()
+  const layout = getLayout()
+  setOpenPanes(
+    layout || defaultLayout,
+    Array.from(
+      new Set(getOpenPanes({ rootLayout: layout })).add(
+        DefaultLayoutPaneID.Code
+      )
+    )
+  )
+  editorManager.scrollToFirstErrorDiagnosticIfExists()
+}
 
 /**
  * For now we have strict area types but in future
@@ -43,12 +58,10 @@ export const defaultAreaLibrary = Object.freeze({
     shortcut: 'Shift + T',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[0], ...props }),
-    useNotifications: () => undefined,
   },
   modeling: {
     hide: () => false,
     Component: ModelingArea,
-    useNotifications: () => undefined,
   },
   ttc: {
     hide: () => false,
@@ -59,7 +72,6 @@ export const defaultAreaLibrary = Object.freeze({
     },
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesRight[0], ...props }),
-    useNotifications: () => undefined,
   },
   codeEditor: {
     hide: () => false,
@@ -71,19 +83,10 @@ export const defaultAreaLibrary = Object.freeze({
       const value = kclContext.diagnostics.filter(
         (diagnostic) => diagnostic.severity === 'error'
       ).length
-      const onClick: MouseEventHandler = (e) => {
-        e.preventDefault()
-        setOpenPanes(
-          getLayout() || defaultLayout,
-          Array.from(
-            new Set(getOpenPanes({ rootLayout: getLayout() })).add(
-              DefaultLayoutPaneID.Code
-            )
-          )
-        )
-        editorManager.scrollToFirstErrorDiagnosticIfExists()
-      }
-      return { value, onClick, title: undefined }
+      return useMemo(() => {
+        console.log('WHAT IS KCL CONTEXT', kclContext)
+        return { value, onClick: onCodeNotificationClick, title: undefined }
+      }, [value])
     },
   },
   files: {
@@ -106,7 +109,7 @@ export const defaultAreaLibrary = Object.freeze({
         // Do you automatically open the project files
         // editorManager.scrollToFirstErrorDiagnosticIfExists()
       }
-      return { value, onClick, title }
+      return useMemo(() => ({ value, onClick, title }), [value, title])
     },
   },
   variables: {
@@ -114,21 +117,18 @@ export const defaultAreaLibrary = Object.freeze({
     shortcut: 'Shift + V',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[3], ...props }),
-    useNotifications: () => undefined,
   },
   logs: {
     hide: () => false,
     shortcut: 'Shift + L',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[4], ...props }),
-    useNotifications: () => undefined,
   },
   debug: {
     hide: () => getSettings().app.showDebugPanel.current === false,
     shortcut: 'Shift + D',
     Component: (props: Partial<Closeable>) =>
       PaneToArea({ pane: sidebarPanesLeft[5], ...props }),
-    useNotifications: () => undefined,
   },
 } satisfies Record<AreaType, AreaTypeDefinition>)
 
@@ -178,8 +178,10 @@ function PaneToArea({
   pane,
   onClose,
 }: Partial<Closeable> & { pane: SidebarPane }) {
-  const onCloseWithFallback =
-    onClose || (() => console.warn('no onClose defined for', pane.id))
+  const onCloseWithFallback = useCallback(
+    () => onClose?.() || console.warn('no onClose defined for', pane.id),
+    [onClose, pane.id]
+  )
   return (
     <LayoutPanel
       icon={pane.icon}

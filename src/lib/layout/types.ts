@@ -1,5 +1,5 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
-import type { MouseEventHandler } from 'react'
+import type { MouseEventHandler, useMemo } from 'react'
 
 export enum AreaType {
   TTC = 'ttc',
@@ -17,14 +17,17 @@ export type AreaTypeDefinition = {
   shortcut?: string
   /** I decided this is where impure stuff like the TTC button's custom styling should live */
   cssClassOverrides?: PaneChildCssOverrides
-  useNotifications?: () =>
-    | {
-        value: string | number
-        onClick: MouseEventHandler
-        title?: string
-      }
-    | undefined
-  Component: (props: Partial<Closeable>) => React.ReactElement
+  useNotifications?: () => ReturnType<
+    typeof useMemo<
+      | {
+          value: string | number
+          onClick: MouseEventHandler
+          title?: string
+        }
+      | undefined
+    >
+  >
+  Component: React.FC<Partial<Closeable>>
 }
 
 export enum ActionType {
