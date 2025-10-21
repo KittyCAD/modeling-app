@@ -302,29 +302,7 @@ impl FrontendState {
         // Add the line to the AST of the sketch block.
         let mut new_ast = self.program.ast.clone();
         let sketch_block_range = self
-            .ast_from_object_id_mut(&mut new_ast, sketch_id, |node| {
-                if let NodeMut::SketchBlock(sketch_block) = node {
-                    sketch_block
-                        .body
-                        .items
-                        .push(ast::BodyItem::ExpressionStatement(ast::Node {
-                            inner: ast::ExpressionStatement {
-                                expression: line_ast.clone(),
-                                digest: None,
-                            },
-                            start: Default::default(),
-                            end: Default::default(),
-                            module_id: Default::default(),
-                            outer_attrs: Default::default(),
-                            pre_comments: Default::default(),
-                            comment_start: Default::default(),
-                        }));
-                    let sketch_block_range =
-                        SourceRange::new(sketch_block.start, sketch_block.end, sketch_block.module_id);
-                    return ControlFlow::Break(sketch_block_range);
-                }
-                ControlFlow::Continue(())
-            })
+            .ast_from_object_id_mut(&mut new_ast, sketch_id, AstMutateCommand::AddLine { line: line_ast })
             .map_err(|err| Error { msg: err.to_string() })?;
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
@@ -441,24 +419,14 @@ impl FrontendState {
 
         // Modify the line AST.
         let mut new_ast = self.program.ast.clone();
-        self.ast_from_object_id_mut(&mut new_ast, line_id, |node| {
-            if let NodeMut::CallExpressionKw(call) = node {
-                if call.callee.name.name != LINE_FN {
-                    return ControlFlow::Continue(());
-                }
-                // Update the arguments.
-                for labeled_arg in &mut call.arguments {
-                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(LINE_START_PARAM) {
-                        labeled_arg.arg = new_start_ast.clone();
-                    }
-                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(LINE_END_PARAM) {
-                        labeled_arg.arg = new_end_ast.clone();
-                    }
-                }
-                return ControlFlow::Break(());
-            }
-            ControlFlow::Continue(())
-        })
+        self.ast_from_object_id_mut(
+            &mut new_ast,
+            line_id,
+            AstMutateCommand::EditLine {
+                start: new_start_ast,
+                end: new_end_ast,
+            },
+        )
         .map_err(|err| Error { msg: err.to_string() })?;
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
@@ -496,25 +464,87 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta))
     }
 
-    fn ast_from_object_id_mut<B, F>(
+    fn ast_from_object_id_mut(
         &mut self,
         ast: &mut ast::Node<ast::Program>,
         object_id: ObjectId,
-        f: F,
-    ) -> anyhow::Result<B>
-    where
-        F: Fn(crate::walk::NodeMut) -> ControlFlow<B>,
-    {
+        command: AstMutateCommand,
+    ) -> anyhow::Result<SourceRange> {
         let sketch_object = self
             .scene_graph
             .objects
             .get(object_id.0)
             .ok_or_else(|| anyhow!("Object not found: {object_id:?}"))?;
         match &sketch_object.source {
-            SourceRef::Simple(range) => ast_node_from_source_range_mut(ast, *range, f),
+            SourceRef::Simple(range) => ast_node_from_source_range_mut(ast, *range, command),
             SourceRef::BackTrace(_) => bail!("BackTrace source refs not supported yet"),
         }
     }
+}
+
+struct AstMutateContext {
+    source_range: SourceRange,
+    command: AstMutateCommand,
+}
+
+#[allow(clippy::large_enum_variant)]
+enum AstMutateCommand {
+    AddLine { line: ast::Expr },
+    EditLine { start: ast::Expr, end: ast::Expr },
+}
+
+fn filter_and_process(ctx: &AstMutateContext, node: NodeMut) -> ControlFlow<SourceRange> {
+    // Make sure the node matches the source range.
+    let Ok(node_range) = SourceRange::try_from(&node) else {
+        return ControlFlow::Continue(());
+    };
+    if node_range != ctx.source_range {
+        return ControlFlow::Continue(());
+    }
+    process(&ctx.command, node).map_break(|_| ctx.source_range)
+}
+
+fn process(command: &AstMutateCommand, node: NodeMut) -> ControlFlow<()> {
+    match command {
+        AstMutateCommand::AddLine { line } => {
+            if let NodeMut::SketchBlock(sketch_block) = node {
+                sketch_block
+                    .body
+                    .items
+                    .push(ast::BodyItem::ExpressionStatement(ast::Node {
+                        inner: ast::ExpressionStatement {
+                            expression: line.clone(),
+                            digest: None,
+                        },
+                        start: Default::default(),
+                        end: Default::default(),
+                        module_id: Default::default(),
+                        outer_attrs: Default::default(),
+                        pre_comments: Default::default(),
+                        comment_start: Default::default(),
+                    }));
+                return ControlFlow::Break(());
+            }
+        }
+        AstMutateCommand::EditLine { start, end } => {
+            if let NodeMut::CallExpressionKw(call) = node {
+                if call.callee.name.name != LINE_FN {
+                    return ControlFlow::Continue(());
+                }
+                // Update the arguments.
+                for labeled_arg in &mut call.arguments {
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(LINE_START_PARAM) {
+                        labeled_arg.arg = start.clone();
+                    }
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(LINE_END_PARAM) {
+                        labeled_arg.arg = end.clone();
+                    }
+                }
+                return ControlFlow::Break(());
+            }
+        }
+    }
+    ControlFlow::Continue(())
 }
 
 fn source_from_ast(ast: &ast::Node<ast::Program>) -> String {
@@ -611,23 +641,13 @@ fn ast_name(name: String) -> ast::Node<ast::Name> {
     }
 }
 
-fn ast_node_from_source_range_mut<B, F>(
+fn ast_node_from_source_range_mut(
     ast: &mut ast::Node<ast::Program>,
     source_range: SourceRange,
-    f: F,
-) -> anyhow::Result<B>
-where
-    F: Fn(crate::walk::NodeMut) -> ControlFlow<B>,
-{
-    let control = dfs_mut(ast, |node| {
-        let Ok(node_range) = SourceRange::try_from(&node) else {
-            return ControlFlow::Continue(());
-        };
-        if node_range != source_range {
-            return ControlFlow::Continue(());
-        }
-        f(node)
-    });
+    command: AstMutateCommand,
+) -> anyhow::Result<SourceRange> {
+    let context = AstMutateContext { source_range, command };
+    let control = dfs_mut(ast, &context, filter_and_process);
     match control {
         ControlFlow::Continue(_) => Err(anyhow!("Source range not found: {source_range:?}")),
         ControlFlow::Break(break_value) => Ok(break_value),
