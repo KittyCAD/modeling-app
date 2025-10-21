@@ -663,6 +663,19 @@ pub struct FixedLints {
     pub unfixed_lints: Vec<Discovered>,
 }
 
+#[pymethods]
+impl FixedLints {
+    #[getter]
+    fn unfixed_lints(&self) -> PyResult<Vec<Discovered>> {
+        Ok(self.unfixed_lints.clone())
+    }
+
+    #[getter]
+    fn new_code(&self) -> PyResult<String> {
+        Ok(self.new_code.clone())
+    }
+}
+
 /// Lint the kcl code. Fix any lints that can be fixed with automatic suggestions.
 /// Returns any unfixed lints.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
