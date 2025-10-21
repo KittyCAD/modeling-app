@@ -3,17 +3,11 @@ import {
   getCalculatedKclExpressionValue,
   getStringValue,
 } from '@src/lib/kclHelpers'
-import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { join } from 'path'
-import { ConnectionManager } from '@src/network/connectionManager'
-import RustContext from '@src/lib/rustContext'
-const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 describe('KCL expression calculations', () => {
   it('calculates a simple expression without units', async () => {
-    const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-    const engineCommandManager = new ConnectionManager()
-    const rustContext = new RustContext(engineCommandManager, instance)
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue(
       '1 + 2',
       undefined,
@@ -26,9 +20,7 @@ describe('KCL expression calculations', () => {
     expect(coercedActual?.astNode).toBeDefined()
   })
   it('calculates a simple expression with units', async () => {
-    const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-    const engineCommandManager = new ConnectionManager()
-    const rustContext = new RustContext(engineCommandManager, instance)
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue(
       '1deg + 30deg',
       undefined,
@@ -41,9 +33,7 @@ describe('KCL expression calculations', () => {
     expect(coercedActual?.astNode).toBeDefined()
   })
   it('returns NAN for an invalid expression', async () => {
-    const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-    const engineCommandManager = new ConnectionManager()
-    const rustContext = new RustContext(engineCommandManager, instance)
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue(
       '1 + x',
       undefined,
@@ -56,9 +46,7 @@ describe('KCL expression calculations', () => {
   })
 
   it('returns NAN for arrays when allowArrays is false (default)', async () => {
-    const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-    const engineCommandManager = new ConnectionManager()
-    const rustContext = new RustContext(engineCommandManager, instance)
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue(
       '[1, 2, 3]',
       undefined,
@@ -71,9 +59,7 @@ describe('KCL expression calculations', () => {
   })
 
   it('returns NAN for arrays when allowArrays is explicitly false', async () => {
-    const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-    const engineCommandManager = new ConnectionManager()
-    const rustContext = new RustContext(engineCommandManager, instance)
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue(
       '[1, 2, 3]',
       false,
@@ -86,9 +72,7 @@ describe('KCL expression calculations', () => {
   })
 
   it('formats simple number arrays when allowArrays is true', async () => {
-    const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-    const engineCommandManager = new ConnectionManager()
-    const rustContext = new RustContext(engineCommandManager, instance)
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue(
       '[1, 2, 3]',
       true,
@@ -102,9 +86,7 @@ describe('KCL expression calculations', () => {
   })
 
   it('formats arrays with units when allowArrays is true', async () => {
-    const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-    const engineCommandManager = new ConnectionManager()
-    const rustContext = new RustContext(engineCommandManager, instance)
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue(
       '[1mm, 2mm, 3mm]',
       true,
@@ -118,9 +100,7 @@ describe('KCL expression calculations', () => {
   })
 
   it('formats mixed arrays when allowArrays is true', async () => {
-    const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-    const engineCommandManager = new ConnectionManager()
-    const rustContext = new RustContext(engineCommandManager, instance)
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue(
       '[0, 1, 0]',
       true,
@@ -134,9 +114,7 @@ describe('KCL expression calculations', () => {
   })
 
   it('rejects arrays with non-numeric types when allowArrays is true', async () => {
-    const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-    const engineCommandManager = new ConnectionManager()
-    const rustContext = new RustContext(engineCommandManager, instance)
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     // Arrays with non-numeric values should be rejected even when allowArrays is true
     const actual = await getCalculatedKclExpressionValue(
       '[1, true, 0]',
@@ -150,9 +128,7 @@ describe('KCL expression calculations', () => {
   })
 
   it('formats arrays with mixed numeric values (integers and floats) when allowArrays is true', async () => {
-    const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-    const engineCommandManager = new ConnectionManager()
-    const rustContext = new RustContext(engineCommandManager, instance)
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     // Arrays with different numeric types should work fine
     const actual = await getCalculatedKclExpressionValue(
       '[1, 2.5, 0]',
@@ -167,9 +143,7 @@ describe('KCL expression calculations', () => {
   })
 
   it('handles arrays with undefined variables when allowArrays is true', async () => {
-    const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-    const engineCommandManager = new ConnectionManager()
-    const rustContext = new RustContext(engineCommandManager, instance)
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     // Test what happens with arrays containing undefined variables like [0, x, 0]
     const actual = await getCalculatedKclExpressionValue(
       '[0, x, 0]',
@@ -184,9 +158,7 @@ describe('KCL expression calculations', () => {
   })
 
   it('handles arrays with arithmetic expressions when allowArrays is true', async () => {
-    const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-    const engineCommandManager = new ConnectionManager()
-    const rustContext = new RustContext(engineCommandManager, instance)
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     // Test arrays containing expressions like [0, 2 + 3, 0] that evaluate to numbers
     const actual = await getCalculatedKclExpressionValue(
       '[0, 2 + 3, 0]',
@@ -201,9 +173,7 @@ describe('KCL expression calculations', () => {
   })
 
   it('rejects empty arrays when allowArrays is true', async () => {
-    const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-    const engineCommandManager = new ConnectionManager()
-    const rustContext = new RustContext(engineCommandManager, instance)
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
     // Empty arrays aren't useful for geometric operations and should be rejected
     const actual = await getCalculatedKclExpressionValue(
       '[]',
@@ -217,7 +187,13 @@ describe('KCL expression calculations', () => {
   })
 
   it('rejects arrays when allowArrays parameter is omitted', async () => {
-    const actual = await getCalculatedKclExpressionValue('[1, 2, 3]')
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const actual = await getCalculatedKclExpressionValue(
+      '[1, 2, 3]',
+      undefined,
+      instance,
+      rustContext
+    )
     const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
     expect(coercedActual.valueAsString).toEqual('NAN')
     expect(coercedActual.astNode).toBeDefined()
