@@ -61,15 +61,16 @@ export function addShell({
       pathToNode: PathToNode
     }
   | Error {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   const result = buildSolidsAndFacesExprs(
     faces,
     artifactGraph,
     modifiedAst,
-    nodeToEdit
+    mNodeToEdit
   )
   if (err(result)) {
     return result
@@ -83,7 +84,7 @@ export function addShell({
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in thickness && thickness.variableName) {
-    insertVariableAndOffsetPathToNode(thickness, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(thickness, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -91,7 +92,7 @@ export function addShell({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SHELL,
   })
@@ -125,8 +126,9 @@ export function addOffsetPlane({
       pathToNode: PathToNode
     }
   | Error {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   let planeExpr: Expr | undefined
@@ -141,7 +143,7 @@ export function addOffsetPlane({
       plane,
       artifactGraph,
       modifiedAst,
-      nodeToEdit
+      mNodeToEdit
     )
     if (err(result)) {
       return result
@@ -164,7 +166,7 @@ export function addOffsetPlane({
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in offset && offset.variableName) {
-    insertVariableAndOffsetPathToNode(offset, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(offset, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -172,7 +174,7 @@ export function addOffsetPlane({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: undefined,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PLANE,
   })

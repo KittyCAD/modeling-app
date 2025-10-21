@@ -36,7 +36,7 @@ import {
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
-import { addShell } from '@src/lang/modifyAst/faces'
+import { addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
 import { addSubtract, addUnion } from '@src/lang/modifyAst/boolean'
 
 type OutputFormat = OutputFormat3d
@@ -898,6 +898,26 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'Offset plane': {
     description: 'Offset a plane.',
     icon: 'plane',
+    needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addOffsetPlane({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Offset plane']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        variables: kclManager.variables,
+      })
+      if (err(modRes)) {
+        return Promise.reject(modRes)
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,

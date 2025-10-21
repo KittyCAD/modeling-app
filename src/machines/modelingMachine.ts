@@ -2331,7 +2331,7 @@ export const modelingMachine = setup({
           ...input,
         })
         if (err(astResult)) {
-          return Promise.reject(new Error("Couldn't add extrude statement"))
+          return Promise.reject(astResult)
         }
 
         const { modifiedAst, pathToNode } = astResult
