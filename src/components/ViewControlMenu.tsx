@@ -24,7 +24,7 @@ import toast from 'react-hot-toast'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
-  const selectedPlaneId = getSelectedSketchTarget(
+  const planeOrFaceId = getSelectedSketchTarget(
     modelingState.context.selectionRanges
   )
 
@@ -122,7 +122,7 @@ export function useViewControlMenuItems() {
       <ContextMenuItem
         onClick={() => {
           ;(async () => {
-            if (selectedPlaneId) {
+            if (planeOrFaceId) {
               sceneInfra.modelingSend({
                 type: 'Enter sketch',
                 data: { forceNewSketch: true },
@@ -131,13 +131,13 @@ export function useViewControlMenuItems() {
               if (modelingState.context.store.useNewSketchMode?.current) {
                 sceneInfra.modelingSend({
                   type: 'Select sketch solve plane',
-                  data: selectedPlaneId,
+                  data: planeOrFaceId,
                 })
                 return
               }
 
               const defaultSketchPlaneSelected =
-                selectDefaultSketchPlane(selectedPlaneId)
+                selectDefaultSketchPlane(planeOrFaceId)
               if (
                 !err(defaultSketchPlaneSelected) &&
                 defaultSketchPlaneSelected
@@ -145,14 +145,14 @@ export function useViewControlMenuItems() {
                 return
               }
 
-              const artifact = kclManager.artifactGraph.get(selectedPlaneId)
+              const artifact = kclManager.artifactGraph.get(planeOrFaceId)
               const offsetPlaneSelected =
                 await selectOffsetSketchPlane(artifact)
               if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
                 return
               }
 
-              const sweepFaceSelected = await selectionBodyFace(selectedPlaneId)
+              const sweepFaceSelected = await selectionBodyFace(planeOrFaceId)
               if (sweepFaceSelected) {
                 sceneInfra.modelingSend({
                   type: 'Select sketch plane',
@@ -163,7 +163,7 @@ export function useViewControlMenuItems() {
             }
           })().catch(reportRejection)
         }}
-        disabled={!selectedPlaneId}
+        disabled={!planeOrFaceId}
       >
         Start sketch on selection
       </ContextMenuItem>,
@@ -190,7 +190,7 @@ export function useViewControlMenuItems() {
     ],
     [
       shouldLockView,
-      selectedPlaneId,
+      planeOrFaceId,
       firstValidSelection,
       modelingSend,
       modelingState.context.store.openPanes,
