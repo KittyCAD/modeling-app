@@ -7,13 +7,14 @@ import {
   ContextMenuItem,
 } from '@src/components/ContextMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { getSelectedPlaneId } from '@src/lang/queryAst'
+import { getSelectedSketchTarget } from '@src/lang/queryAst'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import {
   selectDefaultSketchPlane,
+  selectionBodyFace,
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
 import { kclManager, sceneInfra, settingsActor } from '@src/lib/singletons'
@@ -23,7 +24,7 @@ import toast from 'react-hot-toast'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
-  const selectedPlaneId = getSelectedPlaneId(
+  const selectedPlaneId = getSelectedSketchTarget(
     modelingState.context.selectionRanges
   )
 
@@ -120,24 +121,47 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
-          if (selectedPlaneId) {
-            sceneInfra.modelingSend({
-              type: 'Enter sketch',
-              data: { forceNewSketch: true },
-            })
+          ;(async () => {
+            if (selectedPlaneId) {
+              sceneInfra.modelingSend({
+                type: 'Enter sketch',
+                data: { forceNewSketch: true },
+              })
 
-            const defaultSketchPlaneSelected =
-              selectDefaultSketchPlane(selectedPlaneId)
-            if (
-              !err(defaultSketchPlaneSelected) &&
-              defaultSketchPlaneSelected
-            ) {
-              return
+              if (modelingState.context.store.useNewSketchMode?.current) {
+                sceneInfra.modelingSend({
+                  type: 'Select sketch solve plane',
+                  data: selectedPlaneId,
+                })
+                return
+              }
+
+              const defaultSketchPlaneSelected =
+                selectDefaultSketchPlane(selectedPlaneId)
+              if (
+                !err(defaultSketchPlaneSelected) &&
+                defaultSketchPlaneSelected
+              ) {
+                return
+              }
+
+              const artifact = kclManager.artifactGraph.get(selectedPlaneId)
+              const offsetPlaneSelected =
+                await selectOffsetSketchPlane(artifact)
+              if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
+                return
+              }
+
+              const sweepFaceSelected = await selectionBodyFace(selectedPlaneId)
+              if (sweepFaceSelected) {
+                sceneInfra.modelingSend({
+                  type: 'Select sketch plane',
+                  data: sweepFaceSelected,
+                })
+              }
+              //void selectOffsetSketchPlane(artifact)
             }
-
-            const artifact = kclManager.artifactGraph.get(selectedPlaneId)
-            void selectOffsetSketchPlane(artifact)
-          }
+          })().catch(reportRejection)
         }}
         disabled={!selectedPlaneId}
       >
@@ -170,6 +194,7 @@ export function useViewControlMenuItems() {
       firstValidSelection,
       modelingSend,
       modelingState.context.store.openPanes,
+      modelingState.context.store.useNewSketchMode,
       sketching,
       snapToGrid,
     ]
