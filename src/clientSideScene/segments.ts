@@ -94,6 +94,7 @@ import toast from 'react-hot-toast'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { ActorRefFrom } from 'xstate'
 import type { KclManager } from '@src/lang/KclSingleton'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {
@@ -110,6 +111,7 @@ interface CreateSegmentArgs {
   selection?: Selections
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
   kclManager: KclManager
+  wasmInstance?: ModuleType
 }
 
 interface UpdateSegmentArgs {
@@ -118,6 +120,7 @@ interface UpdateSegmentArgs {
   group: Group
   sceneInfra: SceneInfra
   scale?: number
+  wasmInstance?: ModuleType
 }
 
 interface CreateSegmentResult {
@@ -161,6 +164,7 @@ class StraightSegment implements SegmentUtils {
     selection,
     commandBarActor,
     kclManager,
+    wasmInstance,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
@@ -401,6 +405,7 @@ class TangentialArcToSegment implements SegmentUtils {
     theme,
     isSelected,
     sceneInfra,
+    wasmInstance,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
@@ -448,6 +453,7 @@ class TangentialArcToSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      wasmInstance,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -463,6 +469,7 @@ class TangentialArcToSegment implements SegmentUtils {
     group,
     scale = 1,
     sceneInfra,
+    wasmInstance,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
@@ -478,6 +485,7 @@ class TangentialArcToSegment implements SegmentUtils {
       arcEndPoint: to,
       tanPreviousPoint: getTanPreviousPoint(prevSegment),
       obtuse: true,
+      wasmInstance,
     })
 
     const pxLength = arcInfo.arcLength / scale

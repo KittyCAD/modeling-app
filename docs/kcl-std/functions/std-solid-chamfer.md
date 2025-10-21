@@ -12,6 +12,8 @@ chamfer(
   @solid: Solid,
   length: number(Length),
   tags: [Edge; 1+],
+  secondLength?: number(Length),
+  angle?: number(Angle),
   tag?: TagDecl,
 ): Solid
 ```
@@ -25,8 +27,10 @@ a sharp, straight transitional edge.
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose edges should be chamfered | Yes |
-| `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The length of the chamfer | Yes |
+| `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Chamfering cuts away two faces to create a third face. This is the length to chamfer away from each face. The larger this length to chamfer away, the larger the new face will be. | Yes |
 | `tags` | [`[Edge; 1+]`](/docs/kcl-std/types/std-types-Edge) | The paths you want to chamfer | Yes |
+| `secondLength` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Chamfering cuts away two faces to create a third face. If this argument isn't given, the lengths chamfered away from both the first and second face are both given by `length`. If this argument _is_ given, it determines how much is cut away from the second face. Incompatible with `angle`. | No |
+| `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Chamfering cuts away two faces to create a third face. This argument determines the angle between the two cut edges. Requires `length`, incompatible with `secondLength`. The valid range is 0deg < angle < 90deg. | No |
 | `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this chamfer | No |
 
 ### Returns
@@ -114,6 +118,39 @@ sketch001 = startSketchOn(part001, face = chamfer1)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer1.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Specify a custom chamfer angle.
+fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = pos)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+
+  return sg
+}
+
+part001 = cube(pos = [0, 0], scale = 20)
+  |> close(tag = $line1)
+  |> extrude(length = 20)
+  |> chamfer(length = 10, angle = 30deg, tags = [getOppositeEdge(line1)])
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the chamfer function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer2_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer2.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

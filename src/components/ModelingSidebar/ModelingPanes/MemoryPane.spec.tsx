@@ -1,10 +1,30 @@
 import { processMemory } from '@src/components/ModelingSidebar/ModelingPanes/MemoryPane'
 import { assertParse } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type RustContext from '@src/lib/rustContext'
 
+let instanceInThisFile: ModuleType = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+let rustContextInThisFile: RustContext = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
 beforeAll(async () => {
-  await initPromise
+  const { instance, engineCommandManager, rustContext } =
+    await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  engineCommandManagerInThisFile = engineCommandManager
+  rustContextInThisFile = rustContext
+})
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
 })
 
 describe('processMemory', () => {
@@ -36,9 +56,14 @@ describe('processMemory', () => {
     |> line(endAbsolute = [0.98, 5.16])
     |> line(endAbsolute = [2.15, 4.32])
     // |> rx(90)`
-    const ast = assertParse(code)
-    const execState = await enginelessExecutor(ast)
-    const output = processMemory(execState.variables)
+    const ast = assertParse(code, instanceInThisFile)
+    const execState = await enginelessExecutor(
+      ast,
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
+    const output = processMemory(execState.variables, instanceInThisFile)
     expect(output.nFeet).toEqual('2: number(ft)')
     expect(output.nInches).toEqual('2: number(in)')
     expect(output.nMm).toEqual('2: number(mm)')

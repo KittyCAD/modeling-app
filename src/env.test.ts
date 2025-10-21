@@ -12,7 +12,7 @@ describe('@src/env', () => {
     it('should run the process.env workflow', () => {
       // vite > node.js
       const expected = {
-        NODE_ENV: 'test',
+        NODE_ENV: 'place-holder-since-it-will-be-set',
         VITE_KITTYCAD_BASE_DOMAIN: 'dev.zoo.dev',
         VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
         VITE_KITTYCAD_API_WEBSOCKET_URL:
@@ -25,6 +25,10 @@ describe('@src/env', () => {
       const actual = env()
       //@ts-ignore I do not want this token in our logs for any reason.
       actual.VITE_ZOO_API_TOKEN = 'redacted'
+      //@ts-ignore I do not want this token in our logs for any reason.
+      // I need to mock the value other wise I'd have to delete the key from both
+      // actual and expected
+      actual.NODE_ENV = 'place-holder-since-it-will-be-set'
       expect(actual).toStrictEqual(expected)
     })
   })

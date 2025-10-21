@@ -24,6 +24,7 @@ import type {
   SourceRange,
   VariableMap,
 } from '@src/lang/wasm'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export interface ModifyAstBase {
   node: Node<Program>
@@ -102,6 +103,7 @@ export interface addCall extends ModifyAstBase {
     xAxis?: boolean
     yAxis?: boolean
   }
+  wasmInstance?: ModuleType
 }
 
 interface updateArgs extends ModifyAstBase {
@@ -260,6 +262,7 @@ export type CreateStdLibSketchCallExpr = (args: {
   tag?: Node<Expr>
   forceValueUsedInTransform?: BinaryPart
   referencedSegment?: Path
+  wasmInstance?: ModuleType
 }) => CreatedSketchExprResult | Error
 
 export type TransformInfo = {
