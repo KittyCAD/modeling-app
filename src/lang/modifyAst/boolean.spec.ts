@@ -14,7 +14,8 @@ describe('boolean', () => {
   describe('Testing addSubtract', () => {
     async function runAddSubtractTest(
       code: string,
-      toolCount = 1,
+      solidIds: number[],
+      toolIds: number[],
       instance: ModuleType,
       rustContext: RustContext
     ) {
@@ -31,11 +32,11 @@ describe('boolean', () => {
         (n) => n.type === 'sweep'
       )
       const solids: Selections = {
-        graphSelections: sweeps.slice(-1),
+        graphSelections: solidIds.map((i) => sweeps[i]),
         otherSelections: [],
       }
       const tools: Selections = {
-        graphSelections: sweeps.slice(0, toolCount),
+        graphSelections: toolIds.map((i) => sweeps[i]),
         otherSelections: [],
       }
       const result = addSubtract({
@@ -62,7 +63,15 @@ sketch002 = startSketchOn(XZ)
 profile002 = circle(sketch002, center = [0.2, 0.2], radius = 0.05)
 extrude002 = extrude(profile002, length = -1)`
       const expectedNewLine = `solid001 = subtract(extrude002, tools = extrude001)`
-      const newCode = await runAddSubtractTest(code, 1, instance, rustContext)
+      const solidIds = [1]
+      const toolIds = [0]
+      const newCode = await runAddSubtractTest(
+        code,
+        solidIds,
+        toolIds,
+        instance,
+        rustContext
+      )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
 
@@ -78,7 +87,15 @@ startSketchOn(XZ)
   |> circle(center = [0.2, 0.2], radius = 0.05)
   |> extrude(length = -1)`
       const expectedNewLine = `  |> subtract(tools = extrude001)`
-      const newCode = await runAddSubtractTest(code, 1, instance, rustContext)
+      const solidIds = [1]
+      const toolIds = [0]
+      const newCode = await runAddSubtractTest(
+        code,
+        solidIds,
+        toolIds,
+        instance,
+        rustContext
+      )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
 
@@ -95,10 +112,39 @@ sketch003 = startSketchOn(XZ)
 profile003 = circle(sketch003, center = [0.2, 0.2], radius = 0.1)
 extrude003 = extrude(profile003, length = -1)`
       const expectedNewLine = `solid001 = subtract(extrude003, tools = extrude001)`
-      const toolCount = 2
+      const solidIds = [2]
+      const toolIds = [0, 1]
       const newCode = await runAddSubtractTest(
         code,
-        toolCount,
+        solidIds,
+        toolIds,
+        instance,
+        rustContext
+      )
+      expect(newCode).toContain(code + '\n' + expectedNewLine)
+    })
+    it('should support multi-solid selection for subtract', async () => {
+      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+      const engineCommandManager = new ConnectionManager()
+      const rustContext = new RustContext(engineCommandManager, instance)
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+profile002 = circle(sketch001, center = [0, 0], radius = 4.98)
+extrude001 = extrude(profile002, length = 5)
+plane001 = offsetPlane(XY, offset = 10)
+sketch002 = startSketchOn(plane001)
+profile003 = circle(sketch002, center = [0, 0], radius = 3.18)
+extrude002 = extrude(profile003, length = 5)
+sketch003 = startSketchOn(XY)
+profile004 = circle(sketch003, center = [0, 0], radius = 1.06)
+extrude003 = extrude(profile004, length = 20)`
+      const expectedNewLine = `solid001 = subtract([extrude001, extrude002], tools = extrude003)`
+      const solidIds = [0, 1]
+      const toolIds = [2]
+      const newCode = await runAddSubtractTest(
+        code,
+        solidIds,
+        toolIds,
         instance,
         rustContext
       )
