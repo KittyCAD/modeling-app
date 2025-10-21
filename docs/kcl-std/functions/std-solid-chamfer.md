@@ -14,7 +14,6 @@ chamfer(
   tags: [Edge; 1+],
   secondLength?: number(Length),
   angle?: number(Angle),
-  swap?: bool,
   tag?: TagDecl,
 ): Solid
 ```
@@ -32,7 +31,6 @@ a sharp, straight transitional edge.
 | `tags` | [`[Edge; 1+]`](/docs/kcl-std/types/std-types-Edge) | The paths you want to chamfer | Yes |
 | `secondLength` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Use a second length for the second face. Incompatible with `angle` | No |
 | `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The angle between the edges. Incompatible with `secondLength` | No |
-| `swap` | [`bool`](/docs/kcl-std/types/std-types-bool) | Swap the `secondLength` or `angle` to be relative to the second face | No |
 | `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this chamfer | No |
 
 ### Returns
@@ -153,44 +151,6 @@ part001 = cube(pos = [0, 0], scale = 20)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer2.png"
-  shadow-intensity="1"
-  camera-controls
-  touch-action="pan-y"
->
-</model-viewer>
-
-```kcl
-// Swap a custom chamfer angle to the other face.
-fn cube(pos, scale) {
-  sg = startSketchOn(XY)
-    |> startProfile(at = pos)
-    |> line(end = [0, scale])
-    |> line(end = [scale, 0])
-    |> line(end = [0, -scale])
-
-  return sg
-}
-
-part001 = cube(pos = [0, 0], scale = 20)
-  |> close(tag = $line1)
-  |> extrude(length = 20)
-  |> chamfer(
-       length = 10,
-       angle = 30deg,
-       swap = true,
-       tags = [getOppositeEdge(line1)],
-     )
-
-```
-
-
-<model-viewer
-  class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the chamfer function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-chamfer3_output.gltf"
-  ar
-  environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-chamfer3.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

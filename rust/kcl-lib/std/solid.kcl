@@ -161,29 +161,6 @@ export fn fillet(
 ///         tags = [getOppositeEdge(line1)],
 ///     )
 /// ```
-/// 
-/// ```
-/// // Swap a custom chamfer angle to the other face.
-/// fn cube(pos, scale) {
-/// sg = startSketchOn(XY)
-///     |> startProfile(at = pos)
-///     |> line(end = [0, scale])
-///     |> line(end = [scale, 0])
-///     |> line(end = [0, -scale])
-///
-///     return sg
-/// }
-///
-/// part001 = cube(pos = [0,0], scale = 20)
-///     |> close(tag = $line1)
-///     |> extrude(length = 20)
-///     |> chamfer(
-///         length = 10,
-///         angle = 30deg,
-///         swap = true,
-///         tags = [getOppositeEdge(line1)],
-///     )
-/// ```
 @(impl = std_rust, feature_tree = true)
 export fn chamfer(
   /// The solid whose edges should be chamfered
