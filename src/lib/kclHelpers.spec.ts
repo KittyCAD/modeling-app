@@ -25,7 +25,7 @@ describe('KCL expression calculations', () => {
     expect(coercedActual.valueAsString).toEqual('3')
     expect(coercedActual?.astNode).toBeDefined()
   })
-  it.only('calculates a simple expression with units', async () => {
+  it('calculates a simple expression with units', async () => {
     const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
     const engineCommandManager = new ConnectionManager()
     const rustContext = new RustContext(engineCommandManager, instance)
