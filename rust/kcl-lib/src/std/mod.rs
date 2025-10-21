@@ -475,6 +475,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
 
 pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
     match (path, fn_name) {
+        ("types", "Segment") => (PrimitiveType::Segment, StdFnProps::default("std::types::Segment")),
         ("types", "Sketch") => (PrimitiveType::Sketch, StdFnProps::default("std::types::Sketch")),
         ("types", "Solid") => (PrimitiveType::Solid, StdFnProps::default("std::types::Solid")),
         ("types", "Plane") => (PrimitiveType::Plane, StdFnProps::default("std::types::Plane")),
