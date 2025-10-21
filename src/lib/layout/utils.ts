@@ -602,9 +602,43 @@ export function getOpenPanes({ rootLayout }: { rootLayout: Layout }): string[] {
 }
 
 /**
+ * Mutate a Layout to close all of a given pane set's panes
+ */
+export function closeAllPanes(
+  rootLayout: Layout,
+  paneLayoutID: string
+): Layout {
+  const paneLayout = findLayoutChildNode({
+    rootLayout,
+    targetNodeId: paneLayoutID,
+  })
+  if (!paneLayout || paneLayout.type !== LayoutType.Panes) {
+    console.warn(
+      `Pane layout with ID: ${paneLayoutID} not found to close all of its panes`
+    )
+    return rootLayout
+  }
+
+  for (const activeIndex of paneLayout.activeIndices) {
+    const child = paneLayout.children[activeIndex]
+    togglePaneLayoutNode({
+      rootLayout,
+      targetNodeId: child.id,
+      shouldExpand: false,
+    })
+  }
+
+  return rootLayout
+}
+
+/**
  * Mutate a Layout to find and open any panes within their parent Pane layout
  */
 export function setOpenPanes(rootLayout: Layout, paneIDs: string[]): Layout {
+  // TODO: Make this more generic in the future when users can have any number of Pane layouts
+  closeAllPanes(rootLayout, DefaultLayoutToolbarID.Left)
+  closeAllPanes(rootLayout, DefaultLayoutToolbarID.Right)
+
   const deduplicatedPaneIDs = new Set(paneIDs)
   const validPaneIDs = Array.from(deduplicatedPaneIDs).filter(
     isDefaultLayoutPaneID

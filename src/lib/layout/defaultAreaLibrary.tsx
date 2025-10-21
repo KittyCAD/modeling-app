@@ -14,6 +14,7 @@ import {
   type SidebarPane,
   sidebarPanesLeft,
   sidebarPanesRight,
+  textToCadPane2,
 } from '@src/components/layout/areas'
 import { LayoutPanel } from '@src/components/layout/Panel'
 import type {
@@ -71,7 +72,7 @@ export const defaultAreaLibrary = Object.freeze({
         'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
     },
     Component: (props: Partial<Closeable>) =>
-      PaneToArea({ pane: sidebarPanesRight[0], ...props }),
+      PaneToArea({ pane: textToCadPane2, ...props }),
   },
   codeEditor: {
     hide: () => false,

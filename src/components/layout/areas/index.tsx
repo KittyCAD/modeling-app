@@ -152,7 +152,7 @@ const textToCadPane = Object.freeze({
   },
 } satisfies SidebarPane)
 
-const textToCadPane2 = Object.freeze({
+export const textToCadPane2 = Object.freeze({
   id: 'text-to-cad-2',
   icon: 'sparkles',
   keybinding: 'Ctrl + T',
