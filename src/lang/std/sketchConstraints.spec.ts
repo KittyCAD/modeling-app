@@ -8,12 +8,34 @@ import {
 import { topLevelRange } from '@src/lang/util'
 import type { Sketch, SourceRange } from '@src/lang/wasm'
 import { assertParse, recast, sketchFromKclValue } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type RustContext from '@src/lib/rustContext'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+
+let instanceInThisFile: ModuleType = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+let rustContextInThisFile: RustContext = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
 beforeAll(async () => {
-  await initPromise
+  const { instance, engineCommandManager, rustContext } =
+    await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  engineCommandManagerInThisFile = engineCommandManager
+  rustContextInThisFile = rustContext
+})
+
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
 })
 
 // testing helper function
@@ -32,9 +54,14 @@ async function testingSwapSketchFnCall({
   const startIndex = inputCode.indexOf(callToSwap)
   expect(startIndex).toBeGreaterThanOrEqual(0)
   const range = topLevelRange(startIndex, startIndex + callToSwap.length)
-  const ast = assertParse(inputCode)
+  const ast = assertParse(inputCode, instanceInThisFile)
 
-  const execState = await enginelessExecutor(ast)
+  const execState = await enginelessExecutor(
+    ast,
+    undefined,
+    undefined,
+    rustContextInThisFile
+  )
   const selections = {
     graphSelections: [
       {
@@ -54,10 +81,11 @@ async function testingSwapSketchFnCall({
     selectionRanges: selections,
     transformInfos,
     referenceSegName: '',
+    wasmInstance: instanceInThisFile,
   })
   if (err(ast2)) return Promise.reject(ast2)
 
-  const newCode = recast(ast2.modifiedAst)
+  const newCode = recast(ast2.modifiedAst, instanceInThisFile)
   if (err(newCode)) return Promise.reject(newCode)
 
   return {
@@ -366,7 +394,12 @@ part001 = startSketchOn(XY)
   |> line(end = [2.14, 1.35]) // normal-segment
   |> xLine(length = 3.54)`
   it('normal case works', async () => {
-    const execState = await enginelessExecutor(assertParse(code))
+    const execState = await enginelessExecutor(
+      assertParse(code, instanceInThisFile),
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const index = code.indexOf('// normal-segment') - 7
     const sg = sketchFromKclValue(
       execState.variables['part001'],
@@ -387,7 +420,12 @@ part001 = startSketchOn(XY)
     })
   })
   it('verify it works when the segment is in the `start` property', async () => {
-    const execState = await enginelessExecutor(assertParse(code))
+    const execState = await enginelessExecutor(
+      assertParse(code, instanceInThisFile),
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const index = code.indexOf('// segment-in-start') - 7
     const _segment = getSketchSegmentFromSourceRange(
       sketchFromKclValue(execState.variables['part001'], 'part001') as Sketch,

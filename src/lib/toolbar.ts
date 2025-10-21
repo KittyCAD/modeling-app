@@ -3,7 +3,7 @@ import type { EventFrom, StateFrom } from 'xstate'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
-import { commandBarActor } from '@src/lib/singletons'
+import { commandBarActor, kclManager } from '@src/lib/singletons'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
@@ -740,15 +740,33 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               }),
             icon: 'arc',
             status: 'available',
-            disabled: (state) =>
-              (!isEditingExistingSketch(state.context) &&
-                !state.matches({ Sketch: 'Tangential arc to' })) ||
-              pipeHasCircle(state.context),
-            disabledReason: (state) =>
-              !isEditingExistingSketch(state.context) &&
-              !state.matches({ Sketch: 'Tangential arc to' })
+            disabled: (state) => {
+              const theKclManager = state.context.kclManager
+                ? state.context.kclManager
+                : kclManager
+              return (
+                (!isEditingExistingSketch({
+                  sketchDetails: state.context.sketchDetails,
+                  kclManager: theKclManager,
+                }) &&
+                  !state.matches({ Sketch: 'Tangential arc to' })) ||
+                pipeHasCircle({
+                  sketchDetails: state.context.sketchDetails,
+                  kclManager: theKclManager,
+                })
+              )
+            },
+            disabledReason: (state) => {
+              const theKclManager = state.context.kclManager
+                ? state.context.kclManager
+                : kclManager
+              return !isEditingExistingSketch({
+                sketchDetails: state.context.sketchDetails,
+                kclManager: theKclManager,
+              }) && !state.matches({ Sketch: 'Tangential arc to' })
                 ? "Cannot start a tangential arc because there's no previous line to be tangential to.  Try drawing a line first or selecting an existing sketch to edit."
-                : undefined,
+                : undefined
+            },
             title: 'Tangential Arc',
             hotkey: (state) =>
               state.matches({ Sketch: 'Tangential arc to' })

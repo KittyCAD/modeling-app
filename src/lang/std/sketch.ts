@@ -94,6 +94,7 @@ import {
 import { cross2d, distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
 import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 import type { Coords2d } from '@src/lang/util'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const STRAIGHT_SEGMENT_ERR = () =>
   new Error('Invalid input, expected "straight-segment"')
@@ -2379,7 +2380,14 @@ export const circleThreePoint: SketchLineHelperKw = {
 }
 
 export const angledLine: SketchLineHelperKw = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback, snaps }) => {
+  add: ({
+    node,
+    pathToNode,
+    segmentInput,
+    replaceExistingCallback,
+    snaps,
+    wasmInstance,
+  }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -2408,8 +2416,12 @@ export const angledLine: SketchLineHelperKw = {
             createLocalName(snaps?.previousArcTag),
             []
           )
-      : createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
-    const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
+      : createLiteral(roundOff(getAngle(from, to), 0), 'Deg', wasmInstance)
+    const newLengthVal = createLiteral(
+      roundOff(getLength(from, to), 2),
+      undefined,
+      wasmInstance
+    )
     const newLine = createCallExpressionStdLibKw('angledLine', null, [
       createLabeledArg(ARG_ANGLE, newAngleVal),
       createLabeledArg(ARG_LENGTH, newLengthVal),
@@ -2495,6 +2507,7 @@ export const angledLineOfXLength: SketchLineHelperKw = {
     pathToNode,
     segmentInput,
     replaceExistingCallback,
+    wasmInstance,
   }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { from, to } = segmentInput
@@ -2519,8 +2532,16 @@ export const angledLineOfXLength: SketchLineHelperKw = {
     if (err(sketch)) {
       return sketch
     }
-    const angle = createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
-    const xLength = createLiteral(roundOff(Math.abs(from[0] - to[0]), 2) || 0.1)
+    const angle = createLiteral(
+      roundOff(getAngle(from, to), 0),
+      'Deg',
+      wasmInstance
+    )
+    const xLength = createLiteral(
+      roundOff(Math.abs(from[0] - to[0]), 2) || 0.1,
+      undefined,
+      wasmInstance
+    )
     let newLine: Expr
     if (replaceExistingCallback) {
       const result = replaceExistingCallback([
@@ -2609,6 +2630,7 @@ export const angledLineOfYLength: SketchLineHelperKw = {
     pathToNode,
     segmentInput,
     replaceExistingCallback,
+    wasmInstance,
   }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { from, to } = segmentInput
@@ -2631,8 +2653,16 @@ export const angledLineOfYLength: SketchLineHelperKw = {
     const sketch = sketchFromKclValue(variables[variableName], variableName)
     if (err(sketch)) return sketch
 
-    const angle = createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
-    const yLength = createLiteral(roundOff(Math.abs(from[1] - to[1]), 2) || 0.1)
+    const angle = createLiteral(
+      roundOff(getAngle(from, to), 0),
+      'Deg',
+      wasmInstance
+    )
+    const yLength = createLiteral(
+      roundOff(Math.abs(from[1] - to[1]), 2) || 0.1,
+      undefined,
+      wasmInstance
+    )
     let newLine: Expr
     if (replaceExistingCallback) {
       const result = replaceExistingCallback([
@@ -2715,7 +2745,13 @@ export const angledLineOfYLength: SketchLineHelperKw = {
 }
 
 export const angledLineToX: SketchLineHelperKw = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
+  add: ({
+    node,
+    pathToNode,
+    segmentInput,
+    replaceExistingCallback,
+    wasmInstance,
+  }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -2727,8 +2763,12 @@ export const angledLineToX: SketchLineHelperKw = {
     if (err(nodeMeta)) return nodeMeta
 
     const { node: pipe } = nodeMeta
-    const angle = createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
-    const xArg = createLiteral(roundOff(to[0], 2))
+    const angle = createLiteral(
+      roundOff(getAngle(from, to), 0),
+      'Deg',
+      wasmInstance
+    )
+    const xArg = createLiteral(roundOff(to[0], 2), undefined, wasmInstance)
     if (replaceExistingCallback) {
       const result = replaceExistingCallback([
         {
@@ -2802,7 +2842,13 @@ export const angledLineToX: SketchLineHelperKw = {
 }
 
 export const angledLineToY: SketchLineHelperKw = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
+  add: ({
+    node,
+    pathToNode,
+    segmentInput,
+    replaceExistingCallback,
+    wasmInstance,
+  }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -2815,8 +2861,12 @@ export const angledLineToY: SketchLineHelperKw = {
 
     const { node: pipe } = nodeMeta
 
-    const angle = createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
-    const yArg = createLiteral(roundOff(to[1], 2))
+    const angle = createLiteral(
+      roundOff(getAngle(from, to), 0),
+      'Deg',
+      wasmInstance
+    )
+    const yArg = createLiteral(roundOff(to[1], 2), undefined, wasmInstance)
 
     if (replaceExistingCallback) {
       const result = replaceExistingCallback([
@@ -3480,6 +3530,7 @@ export function replaceSketchLine({
   segmentInput,
   replaceExistingCallback,
   referencedSegment,
+  wasmInstance,
 }: {
   node: Node<Program>
   variables: VariableMap
@@ -3488,6 +3539,7 @@ export function replaceSketchLine({
   segmentInput: SegmentInputs
   replaceExistingCallback: (rawArgs: RawArgs) => CreatedSketchExprResult | Error
   referencedSegment?: Path
+  wasmInstance?: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -3508,6 +3560,7 @@ export function replaceSketchLine({
     referencedSegment,
     segmentInput,
     replaceExistingCallback,
+    wasmInstance,
   })
   if (err(addRetVal)) return addRetVal
 
