@@ -19,7 +19,7 @@ jobs:
   npm-build-wasm:
     uses: ./.github/workflows/build-wasm.yml
 
-  npm-test-unit:
+  npm-test:
     runs-on: namespace-profile-ubuntu-2-cores
     needs: npm-build-wasm
     steps:
@@ -62,42 +62,6 @@ jobs:
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: unit
-
-  npm-test-integration:
-    runs-on: namespace-profile-ubuntu-2-cores
-    needs: npm-build-wasm
-    steps:
-      - uses: actions/checkout@v5
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'npm'
-
-      - run: npm install
-      - uses: taiki-e/install-action@5ab30948b991e8d6aa5a6c1e33c6aea130c6de65
-        with:
-          tool: wasm-pack
-
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-
-      - name: Copy prepared wasm
-        run: |
-          ls -R prepared-wasm
-          cp prepared-wasm/kcl_wasm_lib_bg.wasm public
-          mkdir rust/kcl-wasm-lib/pkg
-          cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
-
-      - name: Copy prepared ts-rs bindings
-        run: |
-          ls -R prepared-ts-rs-bindings
-          mkdir rust/kcl-lib/bindings
-          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
-
-      - name: Install Chromium Browser
-        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        run: npm run playwright install chromium --with-deps
 
       - name: npm run test:integration
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
