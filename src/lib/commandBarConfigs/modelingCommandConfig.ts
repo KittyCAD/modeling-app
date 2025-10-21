@@ -38,6 +38,7 @@ import {
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
 import { addSubtract, addUnion } from '@src/lang/modifyAst/boolean'
+import { addHelix } from '@src/lang/modifyAst/geometry'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -941,6 +942,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a helix or spiral in 3D about an axis.',
     icon: 'helix',
     needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addHelix({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Helix']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) {
+        return Promise.reject(modRes)
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1024,6 +1043,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Fillet edge',
     icon: 'fillet3d',
     needsReview: true,
+    // TODO: add reviewMessage with mock exec once refactored
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1047,6 +1067,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Chamfer edge',
     icon: 'chamfer3d',
     needsReview: true,
+    // TODO: add reviewMessage with mock exec once refactored
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
