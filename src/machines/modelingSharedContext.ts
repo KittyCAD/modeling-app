@@ -4,7 +4,6 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
   currentMode: 'modeling',
   currentTool: 'none',
   toastId: null,
-  keepDefaultPlaneVisibility: false,
   machineManager: {
     machines: [],
     machineApiIp: null,

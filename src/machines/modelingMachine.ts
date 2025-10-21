@@ -1015,18 +1015,6 @@ export const modelingMachine = setup({
         return { xy: true, xz: true, yz: true }
       },
     }),
-    'show default planes sketch no face': assign({
-      defaultPlaneVisibility: ({ context }) => {
-        // When right-clicking / "Start sketch on selection" we don't want to show the default planes
-        if (context.keepDefaultPlaneVisibility) {
-          context.keepDefaultPlaneVisibility = false
-          return context.defaultPlaneVisibility
-        }
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        kclManager.showPlanes()
-        return { xy: true, xz: true, yz: true }
-      },
-    }),
     'show default planes if no errors': assign({
       defaultPlaneVisibility: ({ context }) => {
         if (!kclManager.hasErrors()) {
@@ -1036,6 +1024,16 @@ export const modelingMachine = setup({
         }
         return { ...context.defaultPlaneVisibility }
       },
+    }),
+    'show planes sketch no face': assign(({ event, context }) => {
+      // When entering via right-click "Start sketch on selection", show planes only if not requested to keep current visibility
+      if (event.type !== 'Enter sketch') return {}
+      if (event.data?.keepDefaultPlaneVisibility) {
+        return { defaultPlaneVisibility: { ...context.defaultPlaneVisibility } }
+      }
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      kclManager.showPlanes()
+      return { defaultPlaneVisibility: { xy: true, xz: true, yz: true } }
     }),
     'setup noPoints onClick listener': ({
       context: { sketchDetails, currentTool },
@@ -3278,14 +3276,6 @@ export const modelingMachine = setup({
               () => {
                 sceneInfra.animate()
               },
-              assign(({ event, context }) => {
-                if (event.type !== 'Enter sketch') return {}
-                return {
-                  keepDefaultPlaneVisibility:
-                    Boolean(event.data?.keepDefaultPlaneVisibility) ||
-                    context.keepDefaultPlaneVisibility,
-                }
-              }),
             ],
             guard: 'no kcl errors',
           },
@@ -4564,7 +4554,7 @@ export const modelingMachine = setup({
     'Sketch no face': {
       entry: [
         'disable copilot',
-        'show default planes sketch no face',
+        'show planes sketch no face',
         'set selection filter to faces only',
         'enter sketching mode',
       ],
