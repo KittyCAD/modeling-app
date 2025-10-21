@@ -9,6 +9,7 @@
 import type {
   base64_decode as Base64Decode,
   change_default_units as ChangeDefaultUnits,
+  change_experimental_features as ChangeExperimentalFeatures,
   coredump as CoreDump,
   default_app_settings as DefaultAppSettings,
   default_project_settings as DefaultProjectSettings,
@@ -107,6 +108,11 @@ export const kcl_settings: typeof KclSettings = (...args) => {
 }
 export const change_default_units: typeof ChangeDefaultUnits = (...args) => {
   return getModule().change_default_units(...args)
+}
+export const change_experimental_features: typeof ChangeExperimentalFeatures = (
+  ...args
+) => {
+  return getModule().change_experimental_features(...args)
 }
 export const is_kcl_empty_or_only_settings: typeof IsKclEmptyOrOnlySettings = (
   ...args

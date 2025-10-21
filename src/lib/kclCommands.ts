@@ -12,12 +12,13 @@ import {
 } from '@src/lang/wasm'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
+  DEFAULT_EXPERIMENTAL_FEATURES,
   DEFAULT_DEFAULT_LENGTH_UNIT,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { copyFileShareLink } from '@src/lib/links'
-import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
 import {
   codeManager,
   editorManager,
@@ -31,6 +32,7 @@ import { getNodeFromPath } from '@src/lang/queryAst'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { setExperimentalFeatures } from '@src/lib/kclHelpers'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -94,6 +96,52 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         } else {
           toast.error(
             'Failed to set per-file units: no value provided to submit function. This is a bug.'
+          )
+        }
+      },
+    },
+    {
+      name: 'set-file-experimental-features',
+      displayName: 'Set experimental features flag',
+      description: 'Set the experimental features flag in the current file.',
+      needsReview: false,
+      groupId: 'code',
+      icon: 'code',
+      args: {
+        level: {
+          required: true,
+          inputType: 'options',
+          defaultValue:
+            kclManager.fileSettings.experimentalFeatures?.type ||
+            DEFAULT_EXPERIMENTAL_FEATURES.type,
+          options: () =>
+            warningLevels.map((l) => {
+              return {
+                name: l.type,
+                value: l.type,
+                isCurrent: kclManager.fileSettings.experimentalFeatures
+                  ? l.type === kclManager.fileSettings.experimentalFeatures.type
+                  : l.type === DEFAULT_EXPERIMENTAL_FEATURES.type,
+              }
+            }),
+        },
+      },
+      onSubmit: (data) => {
+        if (typeof data === 'object' && 'level' in data) {
+          setExperimentalFeatures({ type: data.level })
+            .then((result) => {
+              if (err(result)) {
+                reportRejection(result)
+                return
+              }
+              toast.success(
+                `Updated experimental features level to ${data.level}`
+              )
+            })
+            .catch(reportRejection)
+        } else {
+          toast.error(
+            'Failed to set experimental features level: no value provided to submit function. This is a bug.'
           )
         }
       },
