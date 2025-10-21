@@ -879,7 +879,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'booleanIntersect',
     needsReview: true,
     reviewMessage: async (context) => {
-      const modRes = addUnion({
+      const modRes = addIntersect({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Intersect']),
         ast: kclManager.ast,
         artifactGraph: kclManager.artifactGraph,
