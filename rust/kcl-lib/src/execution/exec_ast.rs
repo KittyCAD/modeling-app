@@ -780,7 +780,9 @@ impl ExecutorContext {
                 // Check the KCL @(feature_tree = ) annotation.
                 let include_in_feature_tree = attrs.unwrap_or_default().include_in_feature_tree;
                 if let Some(attrs) = attrs
-                    && (attrs.impl_ == annotations::Impl::Rust || attrs.impl_ == annotations::Impl::RustConstraint)
+                    && (attrs.impl_ == annotations::Impl::Rust
+                        || attrs.impl_ == annotations::Impl::RustConstrainable
+                        || attrs.impl_ == annotations::Impl::RustConstraint)
                 {
                     if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
                         let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
