@@ -4,7 +4,8 @@ description: Error from executing sketch_block_line_simple.kcl
 ---
 KCL Semantic error
 
-  × semantic: Only arrays can be indexed, but you're trying to index a segment
+  × semantic: Only objects can have members accessed with dot notation, but
+  │ you're trying to access a segment
     ╭─[11:8]
  10 │ 
  11 │ assert(s.l1.start.x, isEqualTo = 1mm)
