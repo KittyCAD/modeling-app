@@ -113,6 +113,7 @@ pub mod exec {
     pub use crate::execution::{ArtifactCommand, Operation};
     pub use crate::execution::{
         DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
+        annotations::WarningLevel,
         types::{NumericType, UnitType},
     };
 }
@@ -150,6 +151,7 @@ pub mod pretty {
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
+use crate::exec::WarningLevel;
 #[allow(unused_imports)]
 use crate::log::{log, logln};
 
@@ -232,6 +234,13 @@ impl Program {
     ) -> Result<Self, KclError> {
         Ok(Self {
             ast: self.ast.change_default_units(length_units)?,
+            original_file_contents: self.original_file_contents.clone(),
+        })
+    }
+
+    pub fn change_experimental_features(&self, warning_level: Option<WarningLevel>) -> Result<Self, KclError> {
+        Ok(Self {
+            ast: self.ast.change_experimental_features(warning_level)?,
             original_file_contents: self.original_file_contents.clone(),
         })
     }

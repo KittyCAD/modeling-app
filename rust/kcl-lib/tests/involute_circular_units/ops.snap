@@ -327,60 +327,6 @@ description: Operations executed involute_circular_units.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "polar",
-      "unlabeledArg": null,
-      "labeledArgs": {
-        "angle": {
-          "value": {
-            "type": "Number",
-            "value": 0.299199300341885,
-            "ty": {
-              "radians": null,
-              "type": "Known",
-              "type": "Angle"
-            }
-          },
-          "sourceRange": []
-        },
-        "length": {
-          "value": {
-            "type": "Number",
-            "value": 4.933386259126019,
-            "ty": {
-              "type": "Default",
-              "len": "cm",
-              "angle": "degrees"
-            }
-          },
-          "sourceRange": []
-        }
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 10
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 7
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
       "name": "subtract2d",
       "unlabeledArg": {
         "value": {

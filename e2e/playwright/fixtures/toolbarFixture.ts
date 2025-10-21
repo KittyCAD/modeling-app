@@ -51,6 +51,7 @@ export class ToolbarFixture {
   featureTreePane!: Locator
   gizmo!: Locator
   gizmoDisabled!: Locator
+  experimentalFeaturesMenu!: Locator
   loadButton!: Locator
   /** User button for the user sidebar menu */
   userSidebarButton!: Locator
@@ -101,6 +102,10 @@ export class ToolbarFixture {
     // element or two different elements can represent these states.
     this.gizmo = page.getByTestId('gizmo')
     this.gizmoDisabled = page.getByTestId('gizmo-disabled')
+
+    this.experimentalFeaturesMenu = page.getByTestId(
+      'experimental-features-menu'
+    )
 
     this.userSidebarButton = page.getByTestId('user-sidebar-toggle')
     this.projectSidebarToggle = page.getByTestId('project-sidebar-toggle')
