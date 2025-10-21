@@ -73,7 +73,7 @@ export function useEngineConnectionSubscriptions() {
         ? ({ data }) => {
             void selectSketchPlane(
               data.entity_id,
-              Boolean(context.store.useNewSketchMode?.current)
+              context.store.useNewSketchMode?.current
             )
           }
         : () => {},
@@ -85,7 +85,7 @@ export function useEngineConnectionSubscriptions() {
 
 export async function selectSketchPlane(
   planeOrFaceId: string | undefined,
-  useNewSketchMode: boolean
+  useNewSketchMode: boolean | undefined
 ) {
   try {
     if (!planeOrFaceId) return
