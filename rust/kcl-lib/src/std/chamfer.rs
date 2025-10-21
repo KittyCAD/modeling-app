@@ -26,7 +26,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
     let length: TyF64 = args.get_kw_arg("length", &RuntimeType::length(), exec_state)?;
     let tags = args.kw_arg_edge_array_and_source("tags")?;
-    let second_length = args.get_kw_arg_opt("secondLength", &RuntimeType::num_any(), exec_state)?;
+    let second_length = args.get_kw_arg_opt("secondLength", &RuntimeType::length(), exec_state)?;
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
     let swap = args.get_kw_arg_opt("swap", &RuntimeType::bool(), exec_state)?;
     // TODO: custom profiles not ready yet
@@ -87,7 +87,7 @@ async fn inner_chamfer(
         && angle.gt(&Angle::quarter_circle())
     {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "The angle of a chamfer cannot exceed 90 degrees.".to_string(),
+            "The angle of a chamfer cannot must be less than 90 degrees.".to_string(),
             vec![args.source_range],
         )));
     }

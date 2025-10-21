@@ -193,7 +193,7 @@ export fn chamfer(
   /// The paths you want to chamfer
   tags: [Edge; 1+],
   /// Use a second length for the second face. Incompatible with `angle`
-  secondLength?: number,
+  secondLength?: number(Length),
   /// The angle between the edges. Incompatible with `secondLength`
   angle?: number(Angle),
   /// Swap the `secondLength` or `angle` to be relative to the second face
