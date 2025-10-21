@@ -6,10 +6,17 @@ import {
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
+  handleSelectionBatch,
 } from '@src/lib/selections'
-import { kclManager } from '@src/lib/singletons'
+import { kclManager, engineCommandManager } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
+import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import {
+  setSelectionFilter,
+  setSelectionFilterToDefault,
+} from '@src/lib/selectionFilterUtils'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
@@ -26,11 +33,51 @@ export default function CommandBarSelectionMixedInput({
   const commandBarState = useCommandBarState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const [hasAutoSkipped, setHasAutoSkipped] = useState(false)
+  const [hasCoercedSelections, setHasCoercedSelections] = useState(false)
+  const [hasClearedSelection, setHasClearedSelection] = useState(false)
   const selection: Selections = useSelector(arg.machineActor, selectionSelector)
 
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(selection)
   }, [selection])
+
+  // Coerce selections to bodies if this argument requires bodies
+  useEffect(() => {
+    // Only run once per component mount
+    if (hasCoercedSelections) return
+
+    // Signal that coercion phase is complete - allows second useEffect to set selection filter
+    setHasCoercedSelections(true)
+
+    if (!selection || selection.graphSelections.length === 0) return
+
+    // Check if this argument only accepts body types (path, sweep, compositeSolid)
+    // These are the artifact types that represent 3D bodies/objects
+    const onlyAcceptsBodies = arg.selectionTypes?.every(
+      (type) => type === 'sweep' || type === 'compositeSolid' || type === 'path'
+    )
+
+    if (!onlyAcceptsBodies) return // Command accepts non-body types
+    if (!arg.machineActor) return // No state machine to update
+
+    const coercedSelections = coerceSelectionsToBody(
+      selection,
+      kclManager.artifactGraph
+    )
+    if (err(coercedSelections)) return // Coercion failed, skip update
+
+    // Immediately update the modeling machine state with coerced selection
+    // This needs to happen BEFORE the selection filter is applied
+    arg.machineActor.send({
+      type: 'Set selection',
+      data: {
+        selectionType: 'completeSelection',
+        selection: coercedSelections,
+      },
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only run on mount
+  }, [])
+
   const isArgRequired =
     arg.required instanceof Function
       ? arg.required(commandBarState.context)
@@ -52,6 +99,19 @@ export default function CommandBarSelectionMixedInput({
     inputRef.current?.focus()
   }, [selection, inputRef])
 
+  // Clear selection in UI if needed
+  useEffect(() => {
+    if (arg.clearSelectionFirst) {
+      engineCommandManager.modelingSend({
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+        },
+      })
+      setHasClearedSelection(true)
+    }
+  }, [arg.clearSelectionFirst])
+
   // Only auto-skip on initial mount if we have a valid selection
   // different from the component CommandBarSelectionInput in the the dependency array
   // is empty
@@ -67,11 +127,29 @@ export default function CommandBarSelectionMixedInput({
   }, [arg.name])
 
   // Set selection filter if needed, and reset it when the component unmounts
+  // This runs after coercion completes and updates the selection
   useEffect(() => {
-    arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
-    return () => kclManager.defaultSelectionFilter(selection)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [arg.selectionFilter])
+    if (arg.selectionFilter && hasCoercedSelections) {
+      // Batch the filter change with selection restoration
+      // This is critical for body-only commands where we've coerced face/edge selections to bodies
+      setSelectionFilter(
+        arg.selectionFilter,
+        engineCommandManager,
+        selection,
+        handleSelectionBatch
+      )
+    }
+    return () => {
+      if (arg.selectionFilter && hasCoercedSelections) {
+        // Restore default filter with selections on cleanup
+        setSelectionFilterToDefault(
+          engineCommandManager,
+          selection,
+          handleSelectionBatch
+        )
+      }
+    }
+  }, [arg.selectionFilter, selection, hasCoercedSelections])
 
   // Watch for outside teardowns of this component
   // (such as clicking another argument in the command palette header)
@@ -85,12 +163,16 @@ export default function CommandBarSelectionMixedInput({
             otherSelections: [],
           }
 
-      if (canSubmitSelection && resolvedSelection) {
+      if (
+        !(arg.clearSelectionFirst && !hasClearedSelection) &&
+        canSubmitSelection &&
+        resolvedSelection
+      ) {
         onSubmit(resolvedSelection)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [])
+  }, [hasClearedSelection])
 
   function handleChange() {
     inputRef.current?.focus()

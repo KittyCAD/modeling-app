@@ -105,6 +105,7 @@ export type Command<
   hideFromSearch?: boolean
   disabled?: boolean
   status?: CommandStatus
+  mlBranding?: boolean
 }
 
 export type CommandConfig<
@@ -190,6 +191,7 @@ export type CommandArgumentConfig<
       selectionTypes: Artifact['type'][]
       selectionFilter?: EntityType[]
       multiple: boolean
+      clearSelectionFirst?: boolean
       allowNoSelection?: boolean
       validation?: ({
         data,
@@ -364,6 +366,7 @@ export type CommandArgument<
       selectionTypes: Artifact['type'][]
       selectionFilter?: EntityType[]
       multiple: boolean
+      clearSelectionFirst?: boolean
       allowNoSelection?: boolean
       validation?: ({
         data,

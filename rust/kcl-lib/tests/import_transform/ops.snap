@@ -3,7 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_transform.kcl
 ---
 {
-  "rust/kcl-lib/tests/import_transform/2-5-long-m8-chc-screw.stl": [],
   "rust/kcl-lib/tests/import_transform/input.kcl": [
     {
       "type": "GroupBegin",
@@ -218,9 +217,6 @@ description: Operations executed import_transform.kcl
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -326,14 +322,5 @@ description: Operations executed import_transform.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

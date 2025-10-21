@@ -123,7 +123,7 @@ beforeAll(async () => {
   await new Promise((resolve) => {
     engineCommandManager
       .start({
-        token: env().VITE_KITTYCAD_API_TOKEN || '',
+        token: env().VITE_ZOO_API_TOKEN || '',
         width: 256,
         height: 256,
         setStreamIsReady: () => {
@@ -169,6 +169,27 @@ const executeCode = async (code: string) => {
   return { ast, artifactGraph }
 }
 
+function createSelectionFromArtifacts(
+  artifacts: Artifact[],
+  artifactGraph: ArtifactGraph
+): Selections {
+  const graphSelections = artifacts.flatMap((artifact) => {
+    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
+    if (!codeRefs || codeRefs.length === 0) {
+      return []
+    }
+
+    return {
+      codeRef: codeRefs[0],
+      artifact,
+    } as Selection
+  })
+  return {
+    graphSelections,
+    otherSelections: [],
+  }
+}
+
 function createSelectionFromPathArtifact(
   artifacts: (Artifact & { codeRef: CodeRef })[]
 ): Selections {
@@ -195,14 +216,34 @@ async function ENGINELESS_getAstAndSketchSelections(code: string) {
   return { artifactGraph, ast, sketches }
 }
 
-async function getAstAndSketchSelections(code: string) {
+async function getAstAndSketchSelections(
+  code: string,
+  count: number | undefined = undefined
+) {
   const { ast, artifactGraph } = await getAstAndArtifactGraph(code)
   const artifacts = [...artifactGraph.values()].filter((a) => a.type === 'path')
   if (artifacts.length === 0) {
     throw new Error('Artifact not found in the graph')
   }
-  const sketches = createSelectionFromPathArtifact(artifacts)
+
+  const sketches = createSelectionFromPathArtifact(
+    artifacts.slice(count ? -count : undefined)
+  )
   return { artifactGraph, ast, sketches }
+}
+
+function getFacesFromBox(artifactGraph: ArtifactGraph, count: number) {
+  const twoWalls = [...artifactGraph.values()]
+    .filter((a) => a.type === 'wall')
+    .slice(0, count)
+  return createSelectionFromArtifacts(twoWalls, artifactGraph)
+}
+
+function getCapFromCylinder(artifactGraph: ArtifactGraph) {
+  const endFace = [...artifactGraph.values()].find(
+    (a) => a.type === 'cap' && a.subType === 'end'
+  )
+  return createSelectionFromArtifacts([endFace!], artifactGraph)
 }
 
 async function getKclCommandValue(value: string) {
@@ -268,7 +309,7 @@ const createSelectionWithFirstMatchingArtifact = async (
   return { selection }
 }
 
-describe('transforms.test.ts', () => {
+describe('transforms.spec.ts', () => {
   describe('Testing addTranslate', () => {
     async function runAddTranslateTest(code: string) {
       const {
@@ -804,7 +845,7 @@ appearance(extrude001, color = '#00FF00')`
   })
 })
 
-describe('tagManagement.test.ts', () => {
+describe('tagManagement.spec.ts', () => {
   // Tests for modifyAstWithTagsForSelection
   describe('modifyAstWithTagsForSelection', () => {
     const basicExampleCode = `
@@ -1006,7 +1047,7 @@ extrude001 = extrude(sketch001, length = 15)
   })
 })
 
-describe('sweeps.test.ts', () => {
+describe('sweeps.spec.ts', () => {
   const circleProfileCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)`
   const circleAndRectProfilesCode = `sketch001 = startSketchOn(XY)
@@ -1020,10 +1061,10 @@ profile002 = rectangle(
 
   describe('Testing addExtrude', () => {
     it('should add a basic extrude call', async () => {
-      const { ast, sketches } =
+      const { ast, artifactGraph, sketches } =
         await getAstAndSketchSelections(circleProfileCode)
       const length = await getKclCommandValue('1')
-      const result = addExtrude({ ast, sketches, length })
+      const result = addExtrude({ ast, artifactGraph, sketches, length })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst)
       expect(newCode).toContain(circleProfileCode)
@@ -1032,11 +1073,11 @@ profile002 = rectangle(
     })
 
     it('should add a basic multi-profile extrude call', async () => {
-      const { ast, sketches } = await getAstAndSketchSelections(
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
         circleAndRectProfilesCode
       )
       const length = await getKclCommandValue('1')
-      const result = addExtrude({ ast, sketches, length })
+      const result = addExtrude({ ast, artifactGraph, sketches, length })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst)
       expect(newCode).toContain(circleProfileCode)
@@ -1047,10 +1088,16 @@ profile002 = rectangle(
     })
 
     it('should add an extrude call with symmetric true', async () => {
-      const { ast, sketches } =
+      const { ast, artifactGraph, sketches } =
         await getAstAndSketchSelections(circleProfileCode)
       const length = await getKclCommandValue('1')
-      const result = addExtrude({ ast, sketches, length, symmetric: true })
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        length,
+        symmetric: true,
+      })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst)
       expect(newCode).toContain(circleProfileCode)
@@ -1061,13 +1108,14 @@ profile002 = rectangle(
     })
 
     it('should add an extrude call with bidirectional length and twist angle', async () => {
-      const { ast, sketches } =
+      const { ast, artifactGraph, sketches } =
         await getAstAndSketchSelections(circleProfileCode)
       const length = await getKclCommandValue('10')
       const bidirectionalLength = await getKclCommandValue('20')
       const twistAngle = await getKclCommandValue('30')
       const result = addExtrude({
         ast,
+        artifactGraph,
         sketches,
         length,
         bidirectionalLength,
@@ -1088,12 +1136,14 @@ profile002 = rectangle(
     it('should edit an extrude call from symmetric true to false and new length', async () => {
       const extrudeCode = `${circleProfileCode}
 extrude001 = extrude(profile001, length = 1, symmetric = true)`
-      const { ast, sketches } = await getAstAndSketchSelections(extrudeCode)
+      const { ast, artifactGraph, sketches } =
+        await getAstAndSketchSelections(extrudeCode)
       const length = await getKclCommandValue('2')
       const symmetric = false
       const nodeToEdit = createPathToNodeForLastVariable(ast)
       const result = addExtrude({
         ast,
+        artifactGraph,
         sketches,
         length,
         symmetric,
@@ -1107,10 +1157,16 @@ extrude001 = extrude(profile001, length = 2)`)
     })
 
     it('should add an extrude call with method NEW', async () => {
-      const { ast, sketches } =
+      const { ast, artifactGraph, sketches } =
         await getAstAndSketchSelections(circleProfileCode)
       const length = await getKclCommandValue('1')
-      const result = addExtrude({ ast, sketches, length, method: 'NEW' })
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        length,
+        method: 'NEW',
+      })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst)
       expect(newCode).toContain(circleProfileCode)
@@ -1118,6 +1174,152 @@ extrude001 = extrude(profile001, length = 2)`)
         `extrude001 = extrude(profile001, length = 1, method = NEW)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst)
+    })
+
+    it('should add an extrude call to a wall', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> angledLine(angle = 0deg, length = 0.07, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 0.07)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1)
+plane001 = offsetPlane(XZ, offset = 1)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        code,
+        1
+      )
+      const to = getFacesFromBox(artifactGraph, 1)
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        to,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst)
+      expect(newCode).toContain(
+        `extrude002 = extrude(profile002, to = planeOf(extrude001, face = rectangleSegmentA001))`
+      )
+    })
+
+    it('should add an extrude call to an untagged wall', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 1)
+  |> line(endAbsolute = [0, 1])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1)
+plane001 = offsetPlane(XZ, offset = 1)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        code,
+        1
+      )
+      const to = getFacesFromBox(artifactGraph, 1)
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        to,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst)
+      expect(newCode).toContain(`sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 1, tag = $seg01)
+  |> line(endAbsolute = [0, 1])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1)
+plane001 = offsetPlane(XZ, offset = 1)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
+extrude002 = extrude(profile002, to = planeOf(extrude001, face = seg01))`)
+    })
+
+    it('should add an extrude call to an end cap', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+plane001 = offsetPlane(XY, offset = 2)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        code,
+        1
+      )
+      const to = getCapFromCylinder(artifactGraph)
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        to,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst)
+      expect(newCode).toContain(`${code}
+extrude002 = extrude(profile002, to = planeOf(extrude001, face = END))`)
+    })
+
+    // TODO: this isn't producing the right results yet
+    // https://github.com/KittyCAD/engine/issues/3855
+    it('should add an extrude call to a chamfer face', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 1, tag = $seg01)
+  |> line(endAbsolute = [0, 1])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 0.5,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )
+plane001 = offsetPlane(XY, offset = 2)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        code,
+        1
+      )
+      const to = createSelectionFromArtifacts(
+        [...artifactGraph.values()].filter((a) => a.type === 'edgeCut'),
+        artifactGraph
+      )
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        to,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst)
+      expect(newCode).toContain(`sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 1, tag = $seg01)
+  |> line(endAbsolute = [0, 1])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 0.5,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+       tag = $seg02,
+     )
+plane001 = offsetPlane(XY, offset = 2)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
+extrude002 = extrude(profile002, to = planeOf(extrude001, face = seg02))`)
     })
   })
 
@@ -1559,7 +1761,7 @@ helix001 = helix(
   })
 })
 
-describe('pattern3D.test.ts', () => {
+describe('pattern3D.spec.ts', () => {
   async function getAstAndArtifactGraph(code: string) {
     const ast = assertParse(code)
     if (err(ast)) throw ast
@@ -2439,7 +2641,7 @@ extrude(exampleSketch, length = -5)
   })
 })
 
-describe('geometry.test.ts', () => {
+describe('geometry.spec.ts', () => {
   describe('Testing addHelix', () => {
     it('should add a standalone call on default axis selection', async () => {
       const expectedNewLine = `helix001 = helix(
@@ -2685,7 +2887,7 @@ helix001 = helix(
   })
 })
 
-describe('faces.test.ts', () => {
+describe('faces.spec.ts', () => {
   async function getAstAndArtifactGraph(code: string) {
     const ast = assertParse(code)
     await kclManager.executeAst({ ast })
@@ -2817,20 +3019,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
          getCommonEdge(faces = [seg01, seg02])
        ],
      )`
-
-  function getCapFromCylinder(artifactGraph: ArtifactGraph) {
-    const endFace = [...artifactGraph.values()].find(
-      (a) => a.type === 'cap' && a.subType === 'end'
-    )
-    return createSelectionFromArtifacts([endFace!], artifactGraph)
-  }
-
-  function getFacesFromBox(artifactGraph: ArtifactGraph, count: number) {
-    const twoWalls = [...artifactGraph.values()]
-      .filter((a) => a.type === 'wall')
-      .slice(0, count)
-    return createSelectionFromArtifacts(twoWalls, artifactGraph)
-  }
 
   describe('Testing addShell', () => {
     it('should add a basic shell call on cylinder end cap', async () => {
@@ -3365,7 +3553,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
   })
 })
 
-describe('addEdgeTreatment.test.ts', () => {
+describe('addEdgeTreatment.spec.ts', () => {
   const dependencies = {
     kclManager,
     engineCommandManager,
@@ -4393,7 +4581,7 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
   })
 })
 
-describe('boolean.test.ts', () => {
+describe('boolean.spec.ts', () => {
   describe('Testing addSubtract', () => {
     async function runAddSubtractTest(code: string, toolCount = 1) {
       const ast = assertParse(code)
@@ -4466,7 +4654,7 @@ extrude003 = extrude(profile003, length = -1)`
   })
 })
 
-describe('operations.test.ts', () => {
+describe('operations.spec.ts', () => {
   function stdlib(name: string): Operation {
     return {
       type: 'StdLibCall',
@@ -4661,6 +4849,32 @@ describe('operations.test.ts', () => {
       const variableName = getOperationVariableName(op, program)
       expect(variableName).toBe('myVar')
     })
+    it('finds the alias name from a module instance', async () => {
+      const op = moduleBegin('foo.kcl')
+      if (op.type !== 'GroupBegin') {
+        throw new Error('Expected operation to be a GroupBegin')
+      }
+      const code = `import "foo.kcl" as bar`
+      // Make the path match the code.
+      op.nodePath = await buildNodePath(code, code)
+
+      const program = assertParse(code)
+      const variableName = getOperationVariableName(op, program)
+      expect(variableName).toBe('bar')
+    })
+    it('fails to find the alias name from a module instance without alias', async () => {
+      const op = moduleBegin('foo.kcl')
+      if (op.type !== 'GroupBegin') {
+        throw new Error('Expected operation to be a GroupBegin')
+      }
+      const code = `import "foo.kcl"`
+      // Make the path match the code.
+      op.nodePath = await buildNodePath(code, code)
+
+      const program = assertParse(code)
+      const variableName = getOperationVariableName(op, program)
+      expect(variableName).toBeUndefined()
+    })
     it('finds the variable name inside a function with simple assignment', async () => {
       const op = stdlib('stdLibFn')
       if (op.type !== 'StdLibCall') {
@@ -4712,7 +4926,7 @@ describe('operations.test.ts', () => {
   })
 })
 
-describe('kclHelpers.test.ts', () => {
+describe('kclHelpers.spec.ts', () => {
   describe('KCL expression calculations', () => {
     it('calculates a simple expression without units', async () => {
       const actual = await getCalculatedKclExpressionValue('1 + 2')
@@ -4936,7 +5150,7 @@ describe('kclHelpers.test.ts', () => {
   })
 })
 
-describe('getSafeInsertIndex.test.ts', () => {
+describe('getSafeInsertIndex.spec.ts', () => {
   describe(`getSafeInsertIndex`, () => {
     it(`expression with no identifiers`, () => {
       const baseProgram = assertParse(`x = 5 + 2
@@ -4996,7 +5210,7 @@ z = x + y`)
   })
 })
 
-describe('utils2d.test.ts', () => {
+describe('utils2d.spec.ts', () => {
   describe('test isPointsCW', () => {
     test('basic test', () => {
       const points: Coords2d[] = [
@@ -5082,7 +5296,7 @@ describe('utils2d.test.ts', () => {
   })
 })
 
-describe('rectangleTool.test.ts', () => {
+describe('rectangleTool.spec.ts', () => {
   describe('library rectangleTool helper functions', () => {
     describe('updateCenterRectangleSketch', () => {
       // regression test for https://github.com/KittyCAD/modeling-app/issues/5157
@@ -5153,7 +5367,7 @@ profile001 = startProfile(at = [80, 120])
   })
 })
 
-describe('recast.test.ts', () => {
+describe('recast.spec.ts', () => {
   describe('recast', () => {
     it('recasts a simple program', () => {
       const code = '1 + 2'
@@ -5517,7 +5731,7 @@ mySk1 = startSketchOn(XY)
   }
 })
 
-describe('getNodePathFromSourceRange.test.ts', () => {
+describe('getNodePathFromSourceRange.spec.ts', () => {
   describe('testing getNodePathFromSourceRange', () => {
     it('test it gets the right path for a `lineTo` CallExpression within a SketchExpression', () => {
       const code = `
@@ -5626,7 +5840,7 @@ b1 = cube(pos = [0,0], scale = 10)`
 })
 
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
-describe('modelingMachine.test.ts', () => {
+describe('modelingMachine.spec.ts', () => {
   // Define mock implementations that will be referenced in vi.mock calls
   vi.mock('@src/components/SetHorVertDistanceModal', () => ({
     createInfoModal: vi.fn(() => ({
@@ -6520,8 +6734,8 @@ p3 = [342.51, 216.38],
 
             // Now that we're in sketchIdle state, test the "Constrain with named value" event
             actor.send({
-              type: 'Delete segment',
-              data: constraint.pathToNode,
+              type: 'Delete segments',
+              data: [constraint.pathToNode],
             })
 
             // Wait for the state to change in response to the constraint
@@ -6940,7 +7154,7 @@ p3 = [342.51, 216.38],
   })
 })
 
-describe('getTagDeclaratorsInProgram.test.ts', () => {
+describe('getTagDeclaratorsInProgram.spec.ts', () => {
   function tagDeclaratorWithIndex(
     value: string,
     start: number,

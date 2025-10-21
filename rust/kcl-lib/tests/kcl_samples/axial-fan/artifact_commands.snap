@@ -3473,7 +3473,6 @@ description: Artifact commands axial-fan.kcl
       }
     }
   ],
-  "public/kcl-samples/axial-fan/main.kcl": [],
   "public/kcl-samples/axial-fan/motor.kcl": [
     {
       "cmdId": "[uuid]",
@@ -3909,20 +3908,5 @@ description: Artifact commands axial-fan.kcl
         "ambient_occlusion": 0.0
       }
     }
-  ],
-  "public/kcl-samples/axial-fan/parameters.kcl": [],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

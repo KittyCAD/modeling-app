@@ -28,6 +28,7 @@ export class ToolbarFixture {
   revolveButton!: Locator
   offsetPlaneButton!: Locator
   helixButton!: Locator
+  translateButton!: Locator
   patternCircularButton!: Locator
   patternLinearButton!: Locator
   startSketchBtn!: Locator
@@ -49,6 +50,7 @@ export class ToolbarFixture {
   featureTreePane!: Locator
   gizmo!: Locator
   gizmoDisabled!: Locator
+  experimentalFeaturesMenu!: Locator
   loadButton!: Locator
   /** User button for the user sidebar menu */
   userSidebarButton!: Locator
@@ -72,6 +74,7 @@ export class ToolbarFixture {
     this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.helixButton = page.getByTestId('helix')
+    this.translateButton = page.getByTestId('translate')
     this.patternCircularButton = page.getByTestId('pattern-circular-3d')
     this.patternLinearButton = page.getByTestId('pattern-linear-3d')
     this.startSketchBtn = page.getByTestId('sketch')
@@ -97,6 +100,10 @@ export class ToolbarFixture {
     // element or two different elements can represent these states.
     this.gizmo = page.getByTestId('gizmo')
     this.gizmoDisabled = page.getByTestId('gizmo-disabled')
+
+    this.experimentalFeaturesMenu = page.getByTestId(
+      'experimental-features-menu'
+    )
 
     this.userSidebarButton = page.getByTestId('user-sidebar-toggle')
     this.projectSidebarToggle = page.getByTestId('project-sidebar-toggle')

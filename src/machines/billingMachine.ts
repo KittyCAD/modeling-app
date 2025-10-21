@@ -59,6 +59,13 @@ export const billingMachine = setup({
           return input.context
         }
 
+        if (!input.event.apiToken) {
+          console.log(
+            'BillingTransition.Update was skipped as the token is missing'
+          )
+          return input.context
+        }
+
         const client = createKCClient(input.event.apiToken)
         const billing = await getBillingInfo(client)
         if (BillingError.from(billing)) {
@@ -66,11 +73,11 @@ export const billingMachine = setup({
         }
 
         return {
+          ...BILLING_CONTEXT_DEFAULTS,
           credits: billing.credits,
           allowance: billing.allowance,
           isOrg: billing.isOrg,
           hasSubscription: billing.hasSubscription,
-          lastFetch: new Date(),
         }
       }
     ),
@@ -109,6 +116,8 @@ export const billingMachine = setup({
             target: BillingState.Waiting,
             // Yep, this is hard to follow. XState, why!
             actions: assign({
+              // Clear out the rest of the fields here
+              ...BILLING_CONTEXT_DEFAULTS,
               // TODO: we shouldn't need this cast here
               error: ({ event }) => event.error as BillingError,
             }),

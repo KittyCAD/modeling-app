@@ -48,7 +48,7 @@ export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
  * Determine which token do we have persisted to initialize the auth machine
  */
 const persistedCookie = getCookie()
-const persistedDevToken = env().VITE_KITTYCAD_API_TOKEN
+const persistedDevToken = env().VITE_ZOO_API_TOKEN
 export const persistedToken = persistedDevToken || persistedCookie || ''
 console.log('Initial persisted token')
 console.table([
@@ -198,7 +198,7 @@ async function getUser(input: { token?: string }) {
    * We do not want to store a token or a user since the developer is running
    * the application and dependencies locally. They know what they are doing.
    */
-  if (env().VITE_KITTYCAD_API_TOKEN === 'localhost') {
+  if (env().VITE_ZOO_API_TOKEN === 'localhost') {
     return {
       user: undefined,
       token: 'localhost',
@@ -254,12 +254,12 @@ function getCookieByName(cname: string): string | null {
 async function getAndSyncStoredToken(input: {
   token?: string
 }): Promise<string> {
-  // dev mode
-  const VITE_KITTYCAD_API_TOKEN = env().VITE_KITTYCAD_API_TOKEN
-  if (VITE_KITTYCAD_API_TOKEN) {
+  // Local mode
+  const localToken = env().VITE_ZOO_API_TOKEN
+  if (localToken) {
     console.log('Token used for authentication')
-    console.table([['api token', !!VITE_KITTYCAD_API_TOKEN]])
-    return VITE_KITTYCAD_API_TOKEN
+    console.table([['api token', !!localToken]])
+    return localToken
   }
 
   const environmentName = env().VITE_KITTYCAD_BASE_DOMAIN
@@ -281,7 +281,7 @@ async function getAndSyncStoredToken(input: {
   console.table([
     ['persisted token', !!inputToken],
     ['cookie', !!cookieToken],
-    ['api token', !!VITE_KITTYCAD_API_TOKEN],
+    ['api token', !!localToken],
     ['file token', !!fileToken],
   ])
 

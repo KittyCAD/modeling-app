@@ -34,6 +34,11 @@ export function useOnPeerConnectionClose({
       onFailure
     )
 
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.dataChannelClose,
+      onFailure
+    )
+
     return () => {
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.peerConnectionClosed,
@@ -47,6 +52,11 @@ export function useOnPeerConnectionClose({
 
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.peerConnectionFailed,
+        onFailure
+      )
+
+      engineCommandManager.removeEventListener(
+        EngineCommandManagerEvents.dataChannelClose,
         onFailure
       )
     }

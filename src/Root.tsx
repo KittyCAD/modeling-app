@@ -1,3 +1,4 @@
+import { Auth } from '@src/Auth'
 import { AppStateProvider } from '@src/AppState'
 import LspProvider from '@src/components/LspProvider'
 import { MachineManagerProvider } from '@src/components/MachineManagerProvider'
@@ -21,32 +22,34 @@ function RootLayout() {
   return (
     <OpenInDesktopAppHandler>
       <RouteProvider>
-        {/* It's possible the ML agent will interact with the user
+        <Auth>
+          {/* It's possible the ML agent will interact with the user
         on the project view or anywhere else in the app in the future. It should
         work regardless of the LSP or sketching being available, as users
         may simply want to ask it questions. */}
-        <MlEphantManagerReactContext.Provider
-          options={{
-            input: {
-              apiToken,
-            },
-          }}
-        >
-          <LspProvider>
-            <KclContextProvider>
-              <AppStateProvider>
-                <MachineManagerProvider>
-                  {isDesktop() ? (
-                    <SystemIOMachineLogicListenerDesktop />
-                  ) : (
-                    <SystemIOMachineLogicListenerWeb />
-                  )}
-                  <Outlet />
-                </MachineManagerProvider>
-              </AppStateProvider>
-            </KclContextProvider>
-          </LspProvider>
-        </MlEphantManagerReactContext.Provider>
+          <MlEphantManagerReactContext.Provider
+            options={{
+              input: {
+                apiToken,
+              },
+            }}
+          >
+            <LspProvider>
+              <KclContextProvider>
+                <AppStateProvider>
+                  <MachineManagerProvider>
+                    {isDesktop() ? (
+                      <SystemIOMachineLogicListenerDesktop />
+                    ) : (
+                      <SystemIOMachineLogicListenerWeb />
+                    )}
+                    <Outlet />
+                  </MachineManagerProvider>
+                </AppStateProvider>
+              </KclContextProvider>
+            </LspProvider>
+          </MlEphantManagerReactContext.Provider>
+        </Auth>
       </RouteProvider>
     </OpenInDesktopAppHandler>
   )

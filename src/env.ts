@@ -1,5 +1,4 @@
 import type { EnvironmentConfigurationRuntime } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
 
 export function generateDomainsFromBaseDomain(baseDomain: string) {
   return {
@@ -15,7 +14,7 @@ export type EnvironmentVariables = {
   readonly VITE_KITTYCAD_BASE_DOMAIN: string | undefined
   readonly VITE_KITTYCAD_API_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_API_WEBSOCKET_URL: string | undefined
-  readonly VITE_KITTYCAD_API_TOKEN: string | undefined
+  readonly VITE_ZOO_API_TOKEN: string | undefined
   readonly VITE_KITTYCAD_SITE_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_SITE_APP_URL: string | undefined
   readonly POOL: string | undefined
@@ -120,7 +119,12 @@ export default (): EnvironmentVariables => {
    * A built binary will allow the user to sign into different environments on the desktop
    */
   const environment = getEnvironmentFromThisFile(BASE_DOMAIN)
-  if (isDesktop() && environment && environment.domain) {
+  if (
+    typeof window !== 'undefined' &&
+    window.electron &&
+    environment &&
+    environment.domain
+  ) {
     const environmentDomains = generateDomainsFromBaseDomain(environment.domain)
     API_URL = environmentDomains.API_URL
     SITE_URL = environmentDomains.SITE_URL
@@ -145,8 +149,10 @@ export default (): EnvironmentVariables => {
     VITE_KITTYCAD_BASE_DOMAIN: BASE_DOMAIN || undefined,
     VITE_KITTYCAD_API_BASE_URL: API_URL || undefined,
     VITE_KITTYCAD_API_WEBSOCKET_URL: WEBSOCKET_URL || undefined,
-    VITE_KITTYCAD_API_TOKEN:
-      (env.VITE_KITTYCAD_API_TOKEN as string) || undefined,
+    VITE_ZOO_API_TOKEN:
+      (env.VITE_ZOO_API_TOKEN as string) ||
+      (env.VITE_KITTYCAD_API_TOKEN as string) ||
+      undefined,
     VITE_KITTYCAD_SITE_BASE_URL: SITE_URL || undefined,
     VITE_KITTYCAD_SITE_APP_URL: APP_URL || undefined,
     POOL: pool, // TODO: Rename to ENGINE_POOL to be more descriptive

@@ -1486,6 +1486,7 @@ fn function_decl(i: &mut TokenSlice) -> ModalResult<Node<FunctionExpression>> {
     let open = open_paren(i)?;
     let start = open.start;
     let params = parameters(i)?;
+    ignore_whitespace(i);
     close_paren(i)?;
     ignore_whitespace(i);
     // Optional return type.
@@ -4743,6 +4744,14 @@ height = [obj["a"] -1, 0]"#;
     #[test]
     fn test_anon_fn() {
         crate::parsing::top_level_parse("foo(num=42, closure=fn(x) { return x + 1 })").unwrap();
+    }
+
+    #[test]
+    fn test_fn_optional_parameter_with_default_value_and_trailing_whitespace() {
+        // Use whitespace before the close paren.
+        let code = r#"fn foo(x?: string = "default" ) {}"#;
+
+        crate::parsing::top_level_parse(code).unwrap();
     }
 
     #[test]

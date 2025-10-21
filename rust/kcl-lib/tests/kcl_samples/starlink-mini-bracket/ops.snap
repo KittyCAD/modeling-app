@@ -386,55 +386,6 @@ description: Operations executed starlink-mini-bracket.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "units::toRadians",
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 8.0,
-          "ty": {
-            "type": "Default",
-            "len": "in",
-            "angle": "degrees"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 10
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          },
-          {
-            "type": "BinaryRight"
-          },
-          {
-            "type": "BinaryRight"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
       "name": "extrude",
       "unlabeledArg": {
         "value": {
@@ -516,55 +467,6 @@ description: Operations executed starlink-mini-bracket.kcl
           {
             "type": "PipeBodyItem",
             "index": 0
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "units::toRadians",
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 14.0,
-          "ty": {
-            "type": "Default",
-            "len": "in",
-            "angle": "degrees"
-          }
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 11
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "PipeBodyItem",
-            "index": 3
-          },
-          {
-            "type": "CallKwArg",
-            "index": 0
-          },
-          {
-            "type": "BinaryRight"
-          },
-          {
-            "type": "BinaryRight"
-          },
-          {
-            "type": "CallKwUnlabeledArg"
           }
         ]
       },
@@ -1235,9 +1137,6 @@ description: Operations executed starlink-mini-bracket.kcl
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -1343,14 +1242,5 @@ description: Operations executed starlink-mini-bracket.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

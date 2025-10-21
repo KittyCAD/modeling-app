@@ -2,7 +2,7 @@
 
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    exec::{NumericType, UnitType},
+    exec::{NumericType, UnitType, WarningLevel},
     pretty::NumericSuffix,
     CoreDump, Program, SourceRange,
 };
@@ -328,6 +328,21 @@ pub fn change_default_units(code: &str, len_str: &str) -> Result<String, String>
     let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
 
     let new_program = program.change_default_units(len).map_err(|e| e.to_string())?;
+
+    let formatted = new_program.recast();
+
+    Ok(formatted)
+}
+
+/// Takes a kcl string and Meta settings and changes the meta settings in the kcl string.
+#[wasm_bindgen]
+pub fn change_experimental_features(code: &str, level_str: &str) -> Result<String, String> {
+    console_error_panic_hook::set_once();
+
+    let level: Option<WarningLevel> = serde_json::from_str(level_str).map_err(|e| e.to_string())?;
+    let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
+
+    let new_program = program.change_experimental_features(level).map_err(|e| e.to_string())?;
 
     let formatted = new_program.recast();
 
