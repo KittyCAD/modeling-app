@@ -165,6 +165,7 @@ export type ModelingMachineEvent =
       type: 'Enter sketch'
       data?: {
         forceNewSketch?: boolean
+        keepDefaultPlaneVisibility?: boolean
       }
     }
   | { type: 'Sketch On Face' }
@@ -1009,6 +1010,18 @@ export const modelingMachine = setup({
     }),
     'show default planes': assign({
       defaultPlaneVisibility: () => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        kclManager.showPlanes()
+        return { xy: true, xz: true, yz: true }
+      },
+    }),
+    'show default planes sketch no face': assign({
+      defaultPlaneVisibility: ({ context }) => {
+        // When right-clicking / "Start sketch on selection" we don't want to show the default planes
+        if (context.keepDefaultPlaneVisibility) {
+          context.keepDefaultPlaneVisibility = false
+          return context.defaultPlaneVisibility
+        }
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         kclManager.showPlanes()
         return { xy: true, xz: true, yz: true }
@@ -3265,6 +3278,14 @@ export const modelingMachine = setup({
               () => {
                 sceneInfra.animate()
               },
+              assign(({ event, context }) => {
+                if (event.type !== 'Enter sketch') return {}
+                return {
+                  keepDefaultPlaneVisibility:
+                    Boolean(event.data?.keepDefaultPlaneVisibility) ||
+                    context.keepDefaultPlaneVisibility,
+                }
+              }),
             ],
             guard: 'no kcl errors',
           },
@@ -4543,7 +4564,7 @@ export const modelingMachine = setup({
     'Sketch no face': {
       entry: [
         'disable copilot',
-        'show default planes',
+        'show default planes sketch no face',
         'set selection filter to faces only',
         'enter sketching mode',
       ],

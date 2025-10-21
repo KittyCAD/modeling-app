@@ -223,6 +223,8 @@ export interface ModelingMachineContext {
   currentTool: SketchTool
   toastId: string | null
   machineManager: MachineManager
+  // When true, entering sketch via specific UI flows should keep current default plane visibility
+  keepDefaultPlaneVisibility: boolean
   selection: string[]
   selectionRanges: Selections
   sketchDetails: SketchDetails | null

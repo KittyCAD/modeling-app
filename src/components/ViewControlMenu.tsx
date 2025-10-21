@@ -120,7 +120,7 @@ export function useViewControlMenuItems() {
           if (planeOrFaceId) {
             sceneInfra.modelingSend({
               type: 'Enter sketch',
-              data: { forceNewSketch: true },
+              data: { forceNewSketch: true, keepDefaultPlaneVisibility: true },
             })
 
             void selectSketchPlane(
