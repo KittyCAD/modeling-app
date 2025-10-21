@@ -12,7 +12,7 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
+import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 import {
   getEdgeCutMeta,
   getSelectedPlaneAsNode,
@@ -240,6 +240,16 @@ function getFacesExprsFromSelection(
       return []
     }
   })
+}
+
+// Check if an artifact is a face type (cap, wall, or edgeCut)
+export function isFaceArtifact(artifact: Artifact | undefined): boolean {
+  return (
+    artifact !== undefined &&
+    (artifact.type === 'cap' ||
+      artifact.type === 'wall' ||
+      artifact.type === 'edgeCut')
+  )
 }
 
 // Sort of an opposite of getFacesExprsFromSelection above, used for edit flows
