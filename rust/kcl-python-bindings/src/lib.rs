@@ -652,7 +652,9 @@ fn lint(code: String) -> PyResult<Vec<Discovered>> {
     Ok(lints)
 }
 
-/// Customize a snapshot.
+/// Result from linting and fixing automatically.
+/// Shows the new code after applying fixes,
+/// and any lints that couldn't be automatically applied.
 #[derive(Serialize, Debug, Clone)]
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
 #[pyclass]
