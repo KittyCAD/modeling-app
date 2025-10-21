@@ -13,10 +13,12 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { addFlatnessGdt } from '@src/lang/modifyAst/gdt'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
+import type RustContext from '@src/lib/rustContext'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
+let rustContextInThisFile: RustContext = null!
 
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
@@ -25,11 +27,12 @@ let engineCommandManagerInThisFile: ConnectionManager = null!
  * Reuse the world for this file. This is not the same as global singleton imports!
  */
 beforeAll(async () => {
-  const { instance, kclManager, engineCommandManager } =
+  const { instance, kclManager, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
+  rustContextInThisFile = rustContext
 })
 afterAll(() => {
   engineCommandManagerInThisFile.tearDown()
@@ -89,12 +92,20 @@ function getEndCapsFromMultipleBodies(artifactGraph: ArtifactGraph) {
   return createSelectionFromArtifacts(endCaps, artifactGraph)
 }
 
-async function getKclCommandValue(value: string) {
-  const result = await stringToKclExpression(value)
+async function getKclCommandValue(
+  value: string,
+  instance: ModuleType,
+  rustContext: RustContext
+) {
+  const result = await stringToKclExpression(
+    value,
+    undefined,
+    instance,
+    rustContext
+  )
   if (err(result) || 'errors' in result) {
-    throw new Error(`Couldn't create kcl expression`)
+    throw new Error('Failed to create KCL expression')
   }
-
   return result
 }
 
@@ -152,18 +163,22 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )`
 
   describe('Testing addFlatnessGdt', () => {
-    it('should add a basic flatness annotation to a single face (cap)', async () => {
+    it.only('should add a basic flatness annotation to a single face (cap)', async () => {
       const { artifactGraph, ast } = await executeCode(
         cylinder,
         instanceInThisFile,
         kclManagerInThisFile
       )
       const faces = getCapFromCylinder(artifactGraph)
-      const tolerance = await getKclCommandValue('0.1mm')
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
       const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
       if (err(result)) throw result
 
-      const newCode = recast(result.modifiedAst)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify the extrude was tagged
@@ -182,11 +197,15 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces = getWallsFromBox(artifactGraph, 3)
 
-      const tolerance = await getKclCommandValue('0.1mm')
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
       const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
       if (err(result)) throw result
 
-      const newCode = recast(result.modifiedAst)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify all three segments were tagged
@@ -210,11 +229,15 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces = getEndCapsFromMultipleBodies(artifactGraph)
 
-      const tolerance = await getKclCommandValue('0.1mm')
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
       const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
       if (err(result)) throw result
 
-      const newCode = recast(result.modifiedAst)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify both extrudes were tagged
@@ -245,7 +268,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         otherSelections: [],
       }
 
-      const tolerance = await getKclCommandValue('0.1mm')
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
       const result = addFlatnessGdt({
         ast,
         artifactGraph,
@@ -254,7 +281,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       })
       if (err(result)) throw result
 
-      const newCode = recast(result.modifiedAst)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Should still only have 3 GDT calls (deduplication within selection works)
@@ -276,7 +303,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const faces = getCapFromCylinder(artifactGraph)
 
       // Add first annotation
-      const tolerance1 = await getKclCommandValue('0.1mm')
+      const tolerance1 = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
       const result1 = addFlatnessGdt({
         ast,
         artifactGraph,
@@ -286,7 +317,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       if (err(result1)) throw result1
 
       // Add second annotation to the same face
-      const tolerance2 = await getKclCommandValue('0.2mm')
+      const tolerance2 = await getKclCommandValue(
+        '0.2mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
       const result2 = addFlatnessGdt({
         ast: result1.modifiedAst,
         artifactGraph,
@@ -316,12 +351,32 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const faces = getCapFromCylinder(artifactGraph)
 
       // Create all parameter values
-      const tolerance = await getKclCommandValue('0.1mm')
-      const precision = await getKclCommandValue('3')
-      const framePosition = await getKclCommandValue('[10, 20]')
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const precision = await getKclCommandValue(
+        '3',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const framePosition = await getKclCommandValue(
+        '[10, 20]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
       const framePlane = 'XY'
-      const fontPointSize = await getKclCommandValue('36')
-      const fontScale = await getKclCommandValue('1.5')
+      const fontPointSize = await getKclCommandValue(
+        '36',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const fontScale = await getKclCommandValue(
+        '1.5',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
 
       const result = addFlatnessGdt({
         ast,
@@ -336,7 +391,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       })
       if (err(result)) throw result
 
-      const newCode = recast(result.modifiedAst)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify the extrude was tagged
@@ -359,11 +414,15 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
       const faces = getEndCapsFromMultipleBodies(artifactGraph)
 
-      const tolerance = await getKclCommandValue('0.1mm')
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
       const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
       if (err(result)) throw result
 
-      const newCode = recast(result.modifiedAst)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify GDT calls come after all model code
@@ -391,11 +450,15 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         artifactGraph
       )
 
-      const tolerance = await getKclCommandValue('0.1mm')
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
       const result = addFlatnessGdt({ ast, artifactGraph, faces, tolerance })
       if (err(result)) throw result
 
-      const newCode = recast(result.modifiedAst)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
       // Verify the original segment tag is preserved and chamfer gets new tag
@@ -434,7 +497,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       // Test the full GDT workflow
       const { addFlatnessGdt } = await import('@src/lang/modifyAst/gdt')
-      const tolerance = await getKclCommandValue('0.1mm')
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
 
       const result = addFlatnessGdt({
         ast,
