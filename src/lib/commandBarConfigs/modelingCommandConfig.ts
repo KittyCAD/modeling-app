@@ -39,6 +39,13 @@ import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
 import { addSubtract, addUnion } from '@src/lang/modifyAst/boolean'
 import { addHelix } from '@src/lang/modifyAst/geometry'
+import {
+  addAppearance,
+  addClone,
+  addRotate,
+  addScale,
+  addTranslate,
+} from '@src/lang/modifyAst/transforms'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -1175,6 +1182,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
     icon: 'extrude',
     needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addAppearance({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Appearance']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) {
+        return Promise.reject(modRes)
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1206,6 +1231,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Set translation on solid or sketch.',
     icon: 'move',
     needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addTranslate({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Translate']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) {
+        return Promise.reject(modRes)
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1242,6 +1285,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Set rotation on solid or sketch.',
     icon: 'rotate',
     needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addRotate({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Rotate']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) {
+        return Promise.reject(modRes)
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1278,6 +1339,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Set scale on solid or sketch.',
     icon: 'scale',
     needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addScale({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Scale']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) {
+        return Promise.reject(modRes)
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1314,6 +1393,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Clone a solid or sketch.',
     icon: 'clone',
     needsReview: true,
+    reviewMessage: async (context) => {
+      const modRes = addClone({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Clone']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) {
+        return Promise.reject(modRes)
+      }
+
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) {
+        return Promise.reject(execRes)
+      }
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
