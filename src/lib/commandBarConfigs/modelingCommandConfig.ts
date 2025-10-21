@@ -37,7 +37,11 @@ import {
 } from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
-import { addSubtract, addUnion } from '@src/lang/modifyAst/boolean'
+import {
+  addIntersect,
+  addSubtract,
+  addUnion,
+} from '@src/lang/modifyAst/boolean'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
   addAppearance,
