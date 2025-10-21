@@ -1026,10 +1026,10 @@ export const modelingMachine = setup({
       },
     }),
     'show planes sketch no face': assign(({ event, context }) => {
-      // When entering via right-click "Start sketch on selection", show planes only if not requested to keep current visibility
       if (event.type !== 'Enter sketch') return {}
       if (event.data?.keepDefaultPlaneVisibility) {
-        return { defaultPlaneVisibility: { ...context.defaultPlaneVisibility } }
+        // When entering via right-click "Start sketch on selection", show planes only if not requested to keep current visibility
+        return {}
       }
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       kclManager.showPlanes()
