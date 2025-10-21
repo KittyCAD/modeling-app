@@ -181,6 +181,7 @@ export fn chamfer(
   /// Chamfering cuts away two faces to create a third face.
   /// This argument determines the angle between the two cut edges.
   /// Requires `length`, incompatible with `secondLength`.
+  /// The valid range is 0deg < angle < 90deg.
   angle?: number(Angle),
   /// Create a new tag which refers to this chamfer
   tag?: TagDecl,
