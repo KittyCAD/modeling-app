@@ -353,11 +353,6 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
       </ul>
       {activePanes.length === 0 ? (
         <></>
-      ) : activePanes.length === 1 ? (
-        <LayoutNode
-          layout={activePanes[0].item}
-          onClose={() => onToggleItem(false, activePanes[0].item.id)}
-        />
       ) : (
         <SplitLayoutContents
           direction={
