@@ -165,13 +165,22 @@ export fn fillet(
 export fn chamfer(
   /// The solid whose edges should be chamfered
   @solid: Solid,
-  /// The length of the chamfer
+  /// Chamfering cuts away two faces to create a third face.
+  /// This is the length to chamfer away from each face.
+  /// The larger this length to chamfer away, the larger the
+  /// new face will be.
   length: number(Length),
   /// The paths you want to chamfer
   tags: [Edge; 1+],
-  /// Use a second length for the second face. Incompatible with `angle`
+  /// Chamfering cuts away two faces to create a third face.
+  /// If this argument isn't given, the lengths chamfered away from both
+  /// the first and second face are both given by `length`.
+  /// If this argument _is_ given, it determines how much is cut away
+  /// from the second face. Incompatible with `angle`.
   secondLength?: number(Length),
-  /// The angle between the edges. Incompatible with `secondLength`
+  /// Chamfering cuts away two faces to create a third face.
+  /// This argument determines the angle between the two cut edges.
+  /// Requires `length`, incompatible with `secondLength`.
   angle?: number(Angle),
   /// Create a new tag which refers to this chamfer
   tag?: TagDecl,
