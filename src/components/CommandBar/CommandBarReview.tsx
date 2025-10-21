@@ -13,7 +13,6 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     context: { argumentsToSubmit, selectedCommand },
   } = commandBarState
 
-  // TODO: figure out if we really want to add state here?
   const [reviewMessage, setReviewMessage] = useState<
     string | React.ReactNode | undefined
   >()
