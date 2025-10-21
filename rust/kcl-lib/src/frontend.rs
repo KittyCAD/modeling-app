@@ -7,7 +7,7 @@ use crate::{
     ExecutorContext, Program,
     fmt::format_number_literal,
     frontend::{
-        scene::{
+        api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, Settings,
             SourceDelta, SourceRef, Version,
         },
@@ -18,7 +18,7 @@ use crate::{
     walk::NodeMut,
 };
 
-pub(crate) mod scene;
+pub(crate) mod api;
 pub(crate) mod sketch;
 mod traverse;
 
@@ -62,14 +62,14 @@ impl SketchApi for FrontendState {
         _file: FileId,
         _version: Version,
         args: SketchArgs,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta, ObjectId)> {
         // TODO: Check version.
 
         // Create updated KCL source from args.
         let plane_ast = match &args.on {
             // TODO: sketch-api: implement ObjectId to source.
-            scene::Plane::Object(_) => todo!(),
-            scene::Plane::Default(plane) => ast_name_expr(plane.to_string()),
+            api::Plane::Object(_) => todo!(),
+            api::Plane::Default(plane) => ast_name_expr(plane.to_string()),
         };
         let sketch_ast = ast::SketchBlock {
             arguments: vec![ast::LabeledArg {
@@ -162,7 +162,7 @@ impl SketchApi for FrontendState {
         _file: FileId,
         _version: Version,
         _sketch: ObjectId,
-    ) -> scene::Result<SceneGraphDelta> {
+    ) -> api::Result<SceneGraphDelta> {
         todo!()
     }
 
@@ -171,7 +171,7 @@ impl SketchApi for FrontendState {
         _ctx: &ExecutorContext,
         _version: Version,
         sketch: ObjectId,
-    ) -> scene::Result<SceneGraph> {
+    ) -> api::Result<SceneGraph> {
         // TODO: Check version.
         if self.scene_graph.sketch_mode != Some(sketch) {
             return Err(Error {
@@ -195,7 +195,7 @@ impl SketchApi for FrontendState {
         sketch: ObjectId,
         segment: SegmentCtor,
         _label: Option<String>,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
         match segment {
             SegmentCtor::Line(ctor) => self.add_line(ctx, sketch, ctor).await,
@@ -212,7 +212,7 @@ impl SketchApi for FrontendState {
         sketch: ObjectId,
         segment_id: ObjectId,
         segment: SegmentCtor,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
         match segment {
             SegmentCtor::Line(ctor) => self.edit_line(ctx, sketch, segment_id, ctor).await,
@@ -228,7 +228,7 @@ impl SketchApi for FrontendState {
         _version: Version,
         _sketch: ObjectId,
         _segment_id: ObjectId,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         todo!()
     }
 
@@ -238,7 +238,7 @@ impl SketchApi for FrontendState {
         _version: Version,
         _sketch: ObjectId,
         _constraint: Constraint,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         todo!()
     }
 
@@ -249,7 +249,7 @@ impl SketchApi for FrontendState {
         _sketch: ObjectId,
         _constraint_id: ObjectId,
         _constraint: Constraint,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         todo!()
     }
 
@@ -259,7 +259,7 @@ impl SketchApi for FrontendState {
         _version: Version,
         _sketch: ObjectId,
         _constraint_id: ObjectId,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         todo!()
     }
 }
@@ -270,7 +270,7 @@ impl FrontendState {
         ctx: &ExecutorContext,
         sketch: ObjectId,
         ctor: LineCtor,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // Create updated KCL source from args.
         let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
@@ -388,7 +388,7 @@ impl FrontendState {
         sketch: ObjectId,
         line: ObjectId,
         ctor: LineCtor,
-    ) -> scene::Result<(SourceDelta, SceneGraphDelta)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // Create updated KCL source from args.
         let new_start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let new_end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;

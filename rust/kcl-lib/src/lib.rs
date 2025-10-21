@@ -152,7 +152,7 @@ pub mod pretty {
 pub mod front {
     pub use crate::frontend::{
         FrontendState,
-        scene::{
+        api::{
             Error, Expr, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane, ProjectId, Result,
             SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, StandardPlane, Version,
         },
