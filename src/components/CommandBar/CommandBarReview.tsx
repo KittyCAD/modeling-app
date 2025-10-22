@@ -13,9 +13,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     context: { argumentsToSubmit, selectedCommand },
   } = commandBarState
 
-  const [reviewMessage, setReviewMessage] = useState<
-    string | React.ReactNode | undefined
-  >()
+  const [reviewMessage, setReviewMessage] = useState<React.ReactNode>()
   const [reviewError, setReviewError] = useState<string | undefined>()
 
   useHotkeys('backspace+meta', stepBack, {
