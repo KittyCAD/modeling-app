@@ -9,7 +9,7 @@ describe('settings.spec.ts', () => {
   describe('Testing setExperimentalFeatures', async () => {
     const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
 
-    it('should add the annotation and set the flag if not present', async () => {
+    it('should add the annotation and set the flag if not present', () => {
       const newAst = setExperimentalFeatures('', { type: 'Allow' }, instance)
       if (err(newAst)) {
         throw newAst
