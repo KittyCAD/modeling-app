@@ -129,7 +129,7 @@ impl SketchApi for FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let mut outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
+        let mut outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
