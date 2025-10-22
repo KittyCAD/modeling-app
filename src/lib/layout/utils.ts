@@ -384,7 +384,9 @@ export function collapseSplitChildPaneNode({
   targetNode: panesLayoutNode,
 }: IRootAndTargetLayout) {
   if (!panesLayoutNode || panesLayoutNode.type !== LayoutType.Panes) {
-    console.error(`Invalid panesLayoutNode, ID: ${panesLayoutNode?.id || 'undefined'}`)
+    console.error(
+      `Invalid panesLayoutNode, ID: ${panesLayoutNode?.id || 'undefined'}`
+    )
     return rootLayout
   }
 

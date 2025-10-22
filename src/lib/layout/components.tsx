@@ -537,6 +537,7 @@ function ActionButton({ action, side }: { action: Action; side: Side }) {
           className="hover:b-3 border-transparent p-2 m-0 rounded-none border-0 hover:bg-2 focus-visible:outline"
           disabled={disabledReason !== undefined}
           onClick={() => resolvedAction.execute()}
+          data-testid={`${action.id}-pane-button`}
         >
           <CustomIcon name={action.icon} className="w-5 h-5" aria-hidden />
           <span className="sr-only">{action.label}</span>
