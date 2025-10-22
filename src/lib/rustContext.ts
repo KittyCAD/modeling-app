@@ -29,7 +29,7 @@ import { getModule } from '@src/lib/wasm_lib_wrapper'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SourceDelta } from '@rust/kcl-lib/bindings/SourceDelta'
-import { SceneGraphDelta } from '@rust/kcl-lib/bindings/SceneGraphDelta'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/SceneGraphDelta'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true
