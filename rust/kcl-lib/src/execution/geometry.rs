@@ -18,7 +18,7 @@ use crate::{
         ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier,
         types::{NumericType, adjust_length},
     },
-    front::ObjectId,
+    front::{Freedom, ObjectId},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
     std::{args::TyF64, sketch::PlaneData},
 };
@@ -1712,6 +1712,8 @@ pub struct Segment {
     // TODO: sketch-api: implement other segment types.
     pub start: [TyF64; 2],
     pub end: [TyF64; 2],
+    pub start_freedom: Freedom,
+    pub end_freedom: Freedom,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }

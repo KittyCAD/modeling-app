@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
-use kcl_ezpz::Constraint;
+use kcl_ezpz::{Constraint, SolveOutcome};
 use kittycad_modeling_cmds::units::UnitLength;
 
 use crate::{
@@ -1020,13 +1020,12 @@ impl Node<SketchBlock> {
             exec_state.warn(CompilationError::err(range, message), annotations::WARN_SOLVER);
         }
         // Substitute solutions back into sketch variables.
-        let variables =
-            substitute_sketch_vars(variables, &solve_outcome.final_values, solver_numeric_type(exec_state))?;
+        let variables = substitute_sketch_vars(variables, &solve_outcome, solver_numeric_type(exec_state))?;
         let mut solved_segments = Vec::with_capacity(sketch_block_state.needed_by_engine.len());
         for unsolved_segment in sketch_block_state.needed_by_engine.clone() {
             solved_segments.push(substitute_sketch_var_in_segment(
                 unsolved_segment,
-                &solve_outcome.final_values,
+                &solve_outcome,
                 solver_numeric_type(exec_state),
             )?);
         }
@@ -1103,25 +1102,29 @@ fn normalize_to_solver_unit(
 
 fn substitute_sketch_vars(
     variables: IndexMap<String, KclValue>,
-    solutions: &[f64],
+    solve_outcome: &SolveOutcome,
     solution_ty: NumericType,
 ) -> Result<HashMap<String, KclValue>, KclError> {
     let mut subbed = HashMap::with_capacity(variables.len());
     for (name, value) in variables {
-        let subbed_value = substitute_sketch_var(value, solutions, solution_ty)?;
+        let subbed_value = substitute_sketch_var(value, solve_outcome, solution_ty)?;
         subbed.insert(name, subbed_value);
     }
     Ok(subbed)
 }
 
-fn substitute_sketch_var(value: KclValue, solutions: &[f64], solution_ty: NumericType) -> Result<KclValue, KclError> {
+fn substitute_sketch_var(
+    value: KclValue,
+    solve_outcome: &SolveOutcome,
+    solution_ty: NumericType,
+) -> Result<KclValue, KclError> {
     match value {
         KclValue::Uuid { .. } => Ok(value),
         KclValue::Bool { .. } => Ok(value),
         KclValue::Number { .. } => Ok(value),
         KclValue::String { .. } => Ok(value),
         KclValue::SketchVar { value: var } => {
-            let Some(solution) = solutions.get(var.id.0) else {
+            let Some(solution) = solve_outcome.final_values.get(var.id.0) else {
                 let message = format!("No solution for sketch variable with id {}", var.id.0);
                 debug_assert!(false, "{}", &message);
                 return Err(KclError::new_internal(KclErrorDetails::new(
@@ -1138,14 +1141,14 @@ fn substitute_sketch_var(value: KclValue, solutions: &[f64], solution_ty: Numeri
         KclValue::Tuple { value, meta } => {
             let subbed = value
                 .into_iter()
-                .map(|v| substitute_sketch_var(v, solutions, solution_ty))
+                .map(|v| substitute_sketch_var(v, solve_outcome, solution_ty))
                 .collect::<Result<Vec<_>, KclError>>()?;
             Ok(KclValue::Tuple { value: subbed, meta })
         }
         KclValue::HomArray { value, ty } => {
             let subbed = value
                 .into_iter()
-                .map(|v| substitute_sketch_var(v, solutions, solution_ty))
+                .map(|v| substitute_sketch_var(v, solve_outcome, solution_ty))
                 .collect::<Result<Vec<_>, KclError>>()?;
             Ok(KclValue::HomArray { value: subbed, ty })
         }
@@ -1156,7 +1159,7 @@ fn substitute_sketch_var(value: KclValue, solutions: &[f64], solution_ty: Numeri
         } => {
             let subbed = value
                 .into_iter()
-                .map(|(k, v)| substitute_sketch_var(v, solutions, solution_ty).map(|v| (k, v)))
+                .map(|(k, v)| substitute_sketch_var(v, solve_outcome, solution_ty).map(|v| (k, v)))
                 .collect::<Result<HashMap<_, _>, KclError>>()?;
             Ok(KclValue::Object {
                 value: subbed,
@@ -1173,7 +1176,7 @@ fn substitute_sketch_var(value: KclValue, solutions: &[f64], solution_ty: Numeri
             value: abstract_segment,
         } => match abstract_segment.repr {
             SegmentRepr::Unsolved { segment } => {
-                let subbed = substitute_sketch_var_in_segment(segment, solutions, solution_ty)?;
+                let subbed = substitute_sketch_var_in_segment(segment, solve_outcome, solution_ty)?;
                 Ok(KclValue::Segment {
                     value: Box::new(AbstractSegment {
                         repr: SegmentRepr::Solved { segment: subbed },
@@ -1201,33 +1204,40 @@ fn substitute_sketch_var(value: KclValue, solutions: &[f64], solution_ty: Numeri
 
 fn substitute_sketch_var_in_segment(
     segment: UnsolvedSegment,
-    solutions: &[f64],
+    solve_outcome: &SolveOutcome,
     solution_ty: NumericType,
 ) -> Result<Segment, KclError> {
     let srs = segment.meta.iter().map(|m| m.source_range).collect::<Vec<_>>();
-    let start_x = substitute_sketch_var_in_unsolved_expr(&segment.start[0], solutions, solution_ty, &srs)?;
-    let start_y = substitute_sketch_var_in_unsolved_expr(&segment.start[1], solutions, solution_ty, &srs)?;
-    let end_x = substitute_sketch_var_in_unsolved_expr(&segment.end[0], solutions, solution_ty, &srs)?;
-    let end_y = substitute_sketch_var_in_unsolved_expr(&segment.end[1], solutions, solution_ty, &srs)?;
+    let (start_x, start_x_freedom) =
+        substitute_sketch_var_in_unsolved_expr(&segment.start[0], solve_outcome, solution_ty, &srs)?;
+    let (start_y, start_y_freedom) =
+        substitute_sketch_var_in_unsolved_expr(&segment.start[1], solve_outcome, solution_ty, &srs)?;
+    let (end_x, end_x_freedom) =
+        substitute_sketch_var_in_unsolved_expr(&segment.end[0], solve_outcome, solution_ty, &srs)?;
+    let (end_y, end_y_freedom) =
+        substitute_sketch_var_in_unsolved_expr(&segment.end[1], solve_outcome, solution_ty, &srs)?;
     let start = [start_x, start_y];
     let end = [end_x, end_y];
     Ok(Segment {
         start,
         end,
+        start_freedom: start_x_freedom.merge(start_y_freedom),
+        end_freedom: end_x_freedom.merge(end_y_freedom),
         meta: segment.meta,
     })
 }
 
 fn substitute_sketch_var_in_unsolved_expr(
     unsolved_expr: &UnsolvedExpr,
-    solutions: &[f64],
+    solve_outcome: &SolveOutcome,
     solution_ty: NumericType,
     source_ranges: &[SourceRange],
-) -> Result<TyF64, KclError> {
+) -> Result<(TyF64, Freedom), KclError> {
     match unsolved_expr {
-        UnsolvedExpr::Known(n) => Ok(n.clone()),
+        // TODO: sketch-api: is this right?
+        UnsolvedExpr::Known(n) => Ok((n.clone(), Freedom::Fixed)),
         UnsolvedExpr::Unknown(var_id) => {
-            let Some(solution) = solutions.get(var_id.0) else {
+            let Some(solution) = solve_outcome.final_values.get(var_id.0) else {
                 let message = format!("No solution for sketch variable with id {}", var_id.0);
                 debug_assert!(false, "{}", &message);
                 return Err(KclError::new_internal(KclErrorDetails::new(
@@ -1235,7 +1245,12 @@ fn substitute_sketch_var_in_unsolved_expr(
                     source_ranges.to_vec(),
                 )));
             };
-            Ok(TyF64::new(*solution, solution_ty))
+            let freedom = if solve_outcome.unsatisfied.contains(&var_id.0) {
+                Freedom::Free
+            } else {
+                Freedom::Fixed
+            };
+            Ok((TyF64::new(*solution, solution_ty), freedom))
         }
     }
 }
@@ -1270,8 +1285,7 @@ fn create_segment_scene_objects(
                 position: start_point2d.clone(),
                 ctor: None,
                 owner: Some(segment_object_id),
-                // TODO: sketch-api: implement
-                freedom: Freedom::Free,
+                freedom: segment.start_freedom,
                 constraints: Vec::new(),
             })),
             label: Default::default(),
@@ -1298,8 +1312,7 @@ fn create_segment_scene_objects(
                 position: end_point2d.clone(),
                 ctor: None,
                 owner: Some(segment_object_id),
-                // TODO: sketch-api: implement
-                freedom: Freedom::Free,
+                freedom: segment.end_freedom,
                 constraints: Vec::new(),
             })),
             label: Default::default(),
