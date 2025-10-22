@@ -11,7 +11,7 @@ use crate::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
             SourceRef, Version,
         },
-        sketch::{Constraint, LineCtor, Point2d, Segment, SegmentCtor, SketchApi, SketchArgs},
+        sketch::{Constraint, LineCtor, Point2d, Segment, SegmentCtor, SketchApi, SketchArgs, SketchExecOutcome},
         traverse::dfs_mut,
     },
     parsing::ast::types as ast,
@@ -206,7 +206,7 @@ impl SketchApi for FrontendState {
         sketch: ObjectId,
         segment: SegmentCtor,
         _label: Option<String>,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta, sketch::SketchExecOutcome)> {
         // TODO: Check version.
         match segment {
             SegmentCtor::Line(ctor) => self.add_line(ctx, sketch, ctor).await,
@@ -281,7 +281,7 @@ impl FrontendState {
         ctx: &ExecutorContext,
         sketch: ObjectId,
         ctor: LineCtor,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
         // Create updated KCL source from args.
         let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
@@ -394,7 +394,11 @@ impl FrontendState {
             new_objects: new_object_ids,
             exec_outcome: outcome,
         };
-        Ok((src_delta, scene_graph_delta))
+        let sketch_exec_outcome = SketchExecOutcome {
+            segments: Vec::new(),
+            constraints: Vec::new(),
+        };
+        Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
     }
 
     async fn edit_line(
@@ -758,7 +762,7 @@ mod tests {
                 }),
             },
         };
-        let (src_delta, scene_delta) = frontend.add_line(&ctx, sketch_id, line_ctor).await.unwrap();
+        let (src_delta, scene_delta, _) = frontend.add_line(&ctx, sketch_id, line_ctor).await.unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)

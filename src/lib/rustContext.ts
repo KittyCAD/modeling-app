@@ -259,12 +259,13 @@ export default class RustContext {
     }
   }
 
-  /** Add a segment to a sketch. */
-  async addSegment(
+  /** Add a segment to a sketch using the stub implementation. */
+  async addSegmentStub(
     version: number,
     sketch: number,
     segment: SegmentCtor,
-    label?: string
+    label: string,
+    settings: DeepPartial<Configuration>
   ): Promise<{
     kclSource: { text: string }
     sketchExecOutcome: { segments: any[]; constraints: any[] }
@@ -276,7 +277,8 @@ export default class RustContext {
         version,
         sketch,
         JSON.stringify(segment),
-        label
+        label,
+        JSON.stringify(settings)
       )
       return JSON.parse(result)
     } catch (e: any) {

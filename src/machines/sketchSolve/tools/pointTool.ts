@@ -2,6 +2,7 @@ import { assertEvent, fromPromise, setup } from 'xstate'
 
 import { sceneInfra, rustContext } from '@src/lib/singletons'
 import type { SegmentCtor } from '@rust/kcl-lib/bindings/SegmentCtor'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 type PointEvent =
   | { type: 'unequip' }
@@ -65,11 +66,12 @@ export const machine = setup({
           console.log('Adding point segment:', segmentCtor)
 
           // Call the addSegment method using the singleton rustContext
-          const result = await rustContext.addSegment(
+          const result = await rustContext.addSegmentStub(
             1, // version - TODO: Get this from actual context
             0, // sketchId - TODO: Get this from actual context
             segmentCtor,
-            'point-tool-point' // label
+            'point-tool-point', // label
+            await jsAppSettings()
           )
 
           console.log('Point segment added successfully:', result)

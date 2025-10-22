@@ -1,7 +1,9 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::front::{Error, File, FileId, LifecycleApi, ObjectId, ProjectId, SegmentCtor, SketchApi, SketchApiStub, Version};
+use kcl_lib::front::{
+    Error, File, FileId, LifecycleApi, ObjectId, ProjectId, SegmentCtor, SketchApi, SketchApiStub, Version,
+};
 use wasm_bindgen::prelude::*;
 
 use crate::{Context, TRUE_BUG};
@@ -178,6 +180,7 @@ impl Context {
         sketch: usize,
         segment: &str,
         label: Option<String>,
+        settings: &str,
     ) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
 
@@ -185,9 +188,12 @@ impl Context {
             .map_err(|e| JsValue::from_serde(&Error::deserialize("segment", e)).unwrap())?;
 
         // For now, use the stub implementation
-        let sketch_api = SketchApiStub;
+        let mut sketch_api = SketchApiStub;
+        let ctx = self
+            .create_executor_ctx(settings, None, true)
+            .map_err(|e| format!("Could not create KCL executor context for add segment. {TRUE_BUG} Details: {e}"))?;
         let result = sketch_api
-            .add_segment(Version(version), ObjectId(sketch), segment, label)
+            .add_segment(&ctx, Version(version), ObjectId(sketch), segment, label)
             .await
             .map_err(|e: Error| JsValue::from_serde(&e).unwrap())?;
 
