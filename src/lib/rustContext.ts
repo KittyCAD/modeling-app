@@ -262,6 +262,41 @@ export default class RustContext {
     }
   }
 
+  /** Add a segment to a sketch. */
+  async addSegment(
+    version: number,
+    sketch: number,
+    segment: SegmentCtor,
+    label: string,
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+    sketchExecOutcome: SketchExecOutcome
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: string = await instance.add_segment(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(segment),
+        label,
+        JSON.stringify(settings)
+      )
+      const tuple: [SourceDelta, SceneGraphDelta, SketchExecOutcome] =
+        JSON.parse(result)
+      return {
+        kclSource: tuple[0],
+        sceneGraphDelta: tuple[1],
+        sketchExecOutcome: tuple[2],
+      }
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
   /** Add a segment to a sketch using the stub implementation. */
   async addSegmentStub(
     version: number,
@@ -271,6 +306,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>
   ): Promise<{
     kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
     sketchExecOutcome: SketchExecOutcome
   }> {
     const instance = this._checkInstance()
@@ -287,6 +323,7 @@ export default class RustContext {
         JSON.parse(result)
       return {
         kclSource: tuple[0],
+        sceneGraphDelta: tuple[1],
         sketchExecOutcome: tuple[2],
       }
     } catch (e: any) {
