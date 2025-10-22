@@ -795,5 +795,44 @@ sketch(on = XY) {
         // TODO: These IDs are wrong. They shouldn't reuse IDs from the previous
         // run.
         assert_eq!(scene_delta.new_objects, vec![ObjectId(0), ObjectId(1), ObjectId(2)]);
+
+        // The new objects are the end points and then the line.
+        let line = *scene_delta.new_objects.last().unwrap();
+
+        let line_ctor = LineCtor {
+            start: Point2d {
+                x: Expr::Number(Number {
+                    value: 1.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 2.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            end: Point2d {
+                x: Expr::Number(Number {
+                    value: 13.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 14.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+        };
+        let (src_delta, scene_delta) = frontend.edit_line(&mock_ctx, sketch_id, line, line_ctor).await.unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::line(start = [1mm, 2mm], end = [13mm, 14mm])
+}
+"
+        );
+        // TODO: These IDs are wrong. They shouldn't reuse IDs from the previous
+        // run.
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(0), ObjectId(1), ObjectId(2)]);
     }
 }
