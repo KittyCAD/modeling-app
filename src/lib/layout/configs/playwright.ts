@@ -51,7 +51,7 @@ export const playwrightLayoutConfig: Layout = {
         },
         {
           id: DefaultLayoutPaneID.Files,
-          label: 'File Explorer',
+          label: 'Project Files',
           type: LayoutType.Simple,
           areaType: AreaType.Files,
           icon: 'folder',
