@@ -437,28 +437,31 @@ function PaneButton({
     >
       <Switch
         id={pane.id}
-        name={pane.id}
         checked={parentActiveIndices.includes(childIndex)}
         aria-pressed={parentActiveIndices.includes(childIndex)}
+        aria-details={`tooltip-${pane.id}`}
         onChange={(checked) => onChange(checked)}
         className={`ui-checked:border-primary dark:ui-checked:border-primary hover:b-3 border-transparent dark:border-transparent p-2 m-0 rounded-none border-0 hover:bg-2 ${resolvedAreaType?.cssClassOverrides?.button || ''}`}
         style={{ [buttonBorderWidthProp]: '2px' }}
         data-testid={`${pane.id}-pane-button`}
       >
-        <CustomIcon name={pane.icon} className="w-5 h-5" />
-        <Tooltip
-          position={logicalSideToTooltipPosition(getOppositeSide(side))}
-          contentClassName="max-w-none flex items-center gap-4"
-        >
-          <span className="flex-1">{pane.label}</span>
-          {resolvedAreaType?.shortcut ? (
-            <kbd className="hotkey text-xs capitalize">
-              {hotkeyDisplay(resolvedAreaType.shortcut, platform)}
-            </kbd>
-          ) : null}
-        </Tooltip>
-        <NotificationBadge pane={pane} />
+        <CustomIcon name={pane.icon} className="w-5 h-5" aria-hidden />
+        <span className="sr-only">{pane.label}</span>
       </Switch>
+      <Tooltip
+        id={`tooltip-${pane.id}`}
+        position={logicalSideToTooltipPosition(getOppositeSide(side))}
+        contentClassName="max-w-none flex items-center gap-4"
+        hoverOnly
+      >
+        <span className="flex-1">{pane.label}</span>
+        {resolvedAreaType?.shortcut ? (
+          <kbd className="hotkey text-xs capitalize">
+            {hotkeyDisplay(resolvedAreaType.shortcut, platform)}
+          </kbd>
+        ) : null}
+      </Tooltip>
+      <NotificationBadge pane={pane} />
     </div>
   )
 }
@@ -521,16 +524,25 @@ function ActionButton({ action, side }: { action: Action; side: Side }) {
 
   return (
     !hidden && (
-      <button
-        key={action.id}
-        type="button"
-        className="hover:b-3 border-transparent p-2 m-0 rounded-none border-0 hover:bg-2"
-        disabled={disabledReason !== undefined}
-        onClick={() => resolvedAction.execute()}
-        data-testid={`${action.id}-pane-button`}
+      <div
+        id={`${action.id}-button-holder`}
+        className="relative"
+        data-onboarding-id={`${action.id}-pane-button`}
+        key={`${action.id}-button-holder`}
       >
-        <CustomIcon name={action.icon} className="w-5 h-5" />
+        <button
+          key={action.id}
+          type="button"
+          aria-details={`tooltip-${action.id}`}
+          className="hover:b-3 border-transparent p-2 m-0 rounded-none border-0 hover:bg-2 focus-visible:outline"
+          disabled={disabledReason !== undefined}
+          onClick={() => resolvedAction.execute()}
+        >
+          <CustomIcon name={action.icon} className="w-5 h-5" aria-hidden />
+          <span className="sr-only">{action.label}</span>
+        </button>
         <Tooltip
+          id={`tooltip-${action.id}`}
           position={logicalSideToTooltipPosition(getOppositeSide(side))}
           contentClassName={`max-w-none flex flex-col gap-2 ${
             side === 'inline-start'
@@ -539,6 +551,7 @@ function ActionButton({ action, side }: { action: Action; side: Side }) {
                 ? 'text-right'
                 : ''
           }`}
+          hoverOnly
         >
           <div className="flex items-center gap-4">
             <span className="flex-1">{action.label}</span>
@@ -552,7 +565,7 @@ function ActionButton({ action, side }: { action: Action; side: Side }) {
             <span className="text-3">{disabledReason}</span>
           )}
         </Tooltip>
-      </button>
+      </div>
     )
   )
 }

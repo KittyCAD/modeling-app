@@ -945,7 +945,7 @@ test(
     await expect(u.codeLocator).toContainText('templateGap')
     await expect(u.codeLocator).toContainText('minClampingDistance')
 
-    await page.getByTestId('files-pane-button').click()
+    await page.getByRole('switch', { name: 'Project Files' }).click()
     await toolbar.openFile('otherThingToClickOn.kcl')
 
     await expect(u.codeLocator).toContainText(
