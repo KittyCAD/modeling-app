@@ -232,6 +232,18 @@ impl ExecState {
         ObjectId(self.mod_local.object_id_generator.next_id())
     }
 
+    pub fn peek_object_id(&self, amount: usize) -> ObjectId {
+        ObjectId(self.mod_local.object_id_generator.peek_id() + amount)
+    }
+
+    /// Consume the next ID, asserting that it's equal to one that was obtained
+    /// with [`Self::peek_object_id`].
+    pub fn assert_next_object_id(&mut self, expected: ObjectId) -> ObjectId {
+        let new = ObjectId(self.mod_local.object_id_generator.next_id());
+        debug_assert_eq!(new, expected);
+        new
+    }
+
     pub fn add_scene_object(&mut self, obj: Object, source_range: SourceRange) -> ObjectId {
         let id = obj.id;
         debug_assert!(id.0 == self.mod_local.scene_objects.len());

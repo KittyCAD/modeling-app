@@ -33,4 +33,9 @@ where
 
         next_id
     }
+
+    /// Get the next ID without incrementing.
+    pub fn peek_id(&self) -> T {
+        self.next_id
+    }
 }
