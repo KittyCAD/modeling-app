@@ -468,7 +468,10 @@ export const commandBarMachine = setup({
           }
         }
 
-        if (input.selectedCommand?.reviewValidation) {
+        if (
+          input.selectedCommand?.needsReview &&
+          input.selectedCommand.reviewValidation
+        ) {
           const result = await input.selectedCommand.reviewValidation(input)
           if (err(result)) {
             return Promise.reject({ message: result.message })
