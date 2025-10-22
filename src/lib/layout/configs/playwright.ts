@@ -24,7 +24,7 @@ export const playwrightLayoutConfig: Layout = {
   label: 'root',
   type: LayoutType.Splits,
   orientation: 'inline',
-  /** Chosen merely to match existing snapsnots as closely as possible */
+  /** Chosen merely to match existing snapshots as closely as possible */
   sizes: [46, 54],
   children: [
     {
