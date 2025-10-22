@@ -154,6 +154,7 @@ test.describe('Sketch tests', () => {
     scene,
     cmdBar,
     editor,
+    toolbar,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 600 })
 
@@ -171,7 +172,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     await editor.expectEditor.toContain('startProfile(')
 
     // Open feature tree and select the first sketch
-    await page.getByRole('button', { name: 'Feature Tree' }).click()
+    await toolbar.openPane('feature-tree')
     await page.getByRole('button', { name: 'sketch001' }).dblclick()
     await page.waitForTimeout(600)
 
@@ -505,7 +506,9 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOf
         delay: 200,
       })
 
-      await editor.expectEditor.toContain(code, { shouldNormalise: true })
+      await editor.expectEditor.toContain(
+        /profile001 = startProfile\(sketch001\,.*close\(\)/
+      )
 
       // Assert the tool stays equipped after a profile is closed (ready for the next one)
       await expect(

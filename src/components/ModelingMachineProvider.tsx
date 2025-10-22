@@ -1291,7 +1291,7 @@ export const ModelingMachineProvider = ({
 
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
-    const rootLayout = getLayout()
+    const rootLayout = structuredClone(getLayout())
     const openPanes = getOpenPanes({ rootLayout })
     if (data.menuLabel === 'View.Panes.Feature tree') {
       setLayout(
