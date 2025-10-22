@@ -1184,8 +1184,7 @@ export const modelingMachine = setup({
         // When entering via right-click "Start sketch on selection", show planes only if not requested to keep current visibility
         return {}
       }
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      kclManager.showPlanes()
+      void kclManager.showPlanes()
       return { defaultPlaneVisibility: { xy: true, xz: true, yz: true } }
     }),
     'setup noPoints onClick listener': ({
