@@ -129,7 +129,7 @@ impl SketchApi for FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let mut outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
+        let mut outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -137,6 +137,9 @@ impl SketchApi for FrontendState {
             }
         })?;
 
+        #[cfg(not(feature = "artifact-graph"))]
+        let sketch_id = ObjectId(0);
+        #[cfg(feature = "artifact-graph")]
         let sketch_id = outcome
             .source_range_to_object
             .get(&sketch_source_range)
@@ -147,7 +150,10 @@ impl SketchApi for FrontendState {
         let src_delta = SourceDelta { text: new_source };
         // Store the object in the scene.
         self.scene_graph.sketch_mode = Some(sketch_id);
-        self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
+        #[cfg(feature = "artifact-graph")]
+        {
+            self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
+        }
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -194,7 +200,10 @@ impl SketchApi for FrontendState {
             }
         })?;
 
-        self.scene_graph.objects = outcome.scene_objects;
+        #[cfg(feature = "artifact-graph")]
+        {
+            self.scene_graph.objects = outcome.scene_objects;
+        }
 
         Ok(self.scene_graph.clone())
     }
@@ -364,30 +373,37 @@ impl FrontendState {
             }
         })?;
 
-        let segment_id = outcome
-            .source_range_to_object
-            .get(&line_source_range)
-            .copied()
-            .ok_or_else(|| Error {
-                msg: format!("Source range of line not found: {line_source_range:?}"),
+        #[cfg(not(feature = "artifact-graph"))]
+        let new_object_ids = Vec::new();
+        #[cfg(feature = "artifact-graph")]
+        let new_object_ids = {
+            let segment_id = outcome
+                .source_range_to_object
+                .get(&line_source_range)
+                .copied()
+                .ok_or_else(|| Error {
+                    msg: format!("Source range of line not found: {line_source_range:?}"),
+                })?;
+            let segment_object = outcome.scene_objects.get(segment_id.0).ok_or_else(|| Error {
+                msg: format!("Segment not found: {segment_id:?}"),
             })?;
-        let segment_object = outcome.scene_objects.get(segment_id.0).ok_or_else(|| Error {
-            msg: format!("Segment not found: {segment_id:?}"),
-        })?;
-        let ObjectKind::Segment(segment) = &segment_object.kind else {
-            return Err(Error {
-                msg: format!("Object is not a segment: {segment_object:?}"),
-            });
+            let ObjectKind::Segment(segment) = &segment_object.kind else {
+                return Err(Error {
+                    msg: format!("Object is not a segment: {segment_object:?}"),
+                });
+            };
+            let Segment::Line(line) = segment else {
+                return Err(Error {
+                    msg: format!("Segment is not a line: {segment:?}"),
+                });
+            };
+            vec![line.start, line.end, segment_id]
         };
-        let Segment::Line(line) = segment else {
-            return Err(Error {
-                msg: format!("Segment is not a line: {segment:?}"),
-            });
-        };
-        let new_object_ids = vec![line.start, line.end, segment_id];
-
         let src_delta = SourceDelta { text: new_source };
-        self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
+        #[cfg(feature = "artifact-graph")]
+        {
+            self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
+        }
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -475,7 +491,10 @@ impl FrontendState {
         })?;
 
         let src_delta = SourceDelta { text: new_source };
-        self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
+        #[cfg(feature = "artifact-graph")]
+        {
+            self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
+        }
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -715,7 +734,7 @@ mod tests {
         let mut frontend = FrontendState::new();
         frontend.program = program;
 
-        let ctx = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
 
         let sketch_args = SketchArgs {
             on: api::Plane::Default(api::StandardPlane::XY),
@@ -740,6 +759,7 @@ mod tests {
         );
         assert_eq!(scene_delta.new_graph.objects.len(), 1);
 
+        let mock_ctx = ExecutorContext::new_mock(None).await;
         let line_ctor = LineCtor {
             start: Point2d {
                 x: Expr::Number(Number {
@@ -762,7 +782,7 @@ mod tests {
                 }),
             },
         };
-        let (src_delta, scene_delta, _) = frontend.add_line(&ctx, sketch_id, line_ctor).await.unwrap();
+        let (src_delta, scene_delta, _) = frontend.add_line(&mock_ctx, sketch_id, line_ctor).await.unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)

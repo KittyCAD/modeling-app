@@ -81,10 +81,12 @@ pub struct ExecOutcome {
     #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
     /// Objects in the scene, created from execution.
+    #[cfg(feature = "artifact-graph")]
     #[serde(skip)]
     pub scene_objects: Vec<Object>,
     /// Map from source range to object ID for lookup of objects by their source
     /// range.
+    #[cfg(feature = "artifact-graph")]
     #[serde(skip)]
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     /// Non-fatal errors and warnings.

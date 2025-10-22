@@ -1033,29 +1033,33 @@ impl Node<SketchBlock> {
         // Create scene objects after unknowns are solved.
         let segment_object_ids = create_segment_scene_objects(&solved_segments, range, exec_state)?;
 
-        // Create the sketch block scene object.
-        let sketch_id = exec_state.next_object_id();
-        let arg_on: Option<crate::execution::Plane> = args.get_kw_arg_opt("on", &RuntimeType::plane(), exec_state)?;
-        let on_object = arg_on.and_then(|plane| plane.object_id);
-        let scene_object = Object {
-            id: sketch_id,
-            kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
-                args: crate::front::SketchArgs {
-                    on: on_object
-                        .map(crate::front::Plane::Object)
-                        .unwrap_or(crate::front::Plane::Default(crate::front::StandardPlane::XY)),
-                },
-                segments: segment_object_ids,
+        #[cfg(feature = "artifact-graph")]
+        {
+            // Create the sketch block scene object.
+            let sketch_id = exec_state.next_object_id();
+            let arg_on: Option<crate::execution::Plane> =
+                args.get_kw_arg_opt("on", &RuntimeType::plane(), exec_state)?;
+            let on_object = arg_on.and_then(|plane| plane.object_id);
+            let scene_object = Object {
+                id: sketch_id,
+                kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
+                    args: crate::front::SketchArgs {
+                        on: on_object
+                            .map(crate::front::Plane::Object)
+                            .unwrap_or(crate::front::Plane::Default(crate::front::StandardPlane::XY)),
+                    },
+                    segments: segment_object_ids,
+                    // TODO: sketch-api: implement
+                    constraints: Vec::new(),
+                }),
+                label: Default::default(),
+                comments: Default::default(),
                 // TODO: sketch-api: implement
-                constraints: Vec::new(),
-            }),
-            label: Default::default(),
-            comments: Default::default(),
-            // TODO: sketch-api: implement
-            artifact_id: 0,
-            source: range.into(),
-        };
-        exec_state.add_scene_object(scene_object, range);
+                artifact_id: 0,
+                source: range.into(),
+            };
+            exec_state.add_scene_object(scene_object, range);
+        }
 
         // TODO: sketch-api: send everything to the engine.
 
@@ -1255,6 +1259,16 @@ fn substitute_sketch_var_in_unsolved_expr(
     }
 }
 
+#[cfg(not(feature = "artifact-graph"))]
+fn create_segment_scene_objects(
+    _segments: &[Segment],
+    _sketch_block_range: SourceRange,
+    _exec_state: &mut ExecState,
+) -> Result<Vec<ObjectId>, KclError> {
+    Ok(Vec::new())
+}
+
+#[cfg(feature = "artifact-graph")]
 fn create_segment_scene_objects(
     segments: &[Segment],
     sketch_block_range: SourceRange,

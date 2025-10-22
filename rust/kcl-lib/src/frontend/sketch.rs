@@ -411,7 +411,9 @@ impl SketchApi for SketchApiStub {
                     operations: Default::default(),
                     #[cfg(feature = "artifact-graph")]
                     artifact_graph: Default::default(),
+                    #[cfg(feature = "artifact-graph")]
                     scene_objects: Default::default(),
+                    #[cfg(feature = "artifact-graph")]
                     source_range_to_object: Default::default(),
                     errors: Default::default(),
                     filenames: Default::default(),

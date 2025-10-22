@@ -1,4 +1,6 @@
-use std::{collections::BTreeMap, str::FromStr, sync::Arc};
+#[cfg(feature = "artifact-graph")]
+use std::collections::BTreeMap;
+use std::{str::FromStr, sync::Arc};
 
 use anyhow::Result;
 use indexmap::IndexMap;
@@ -6,8 +8,6 @@ use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[cfg(feature = "artifact-graph")]
-use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 use crate::{
     CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs, SourceRange,
     errors::{KclError, KclErrorDetails, Severity},
@@ -20,9 +20,13 @@ use crate::{
         types::NumericType,
     },
     front::{Object, ObjectId},
-    id::IncIdGenerator,
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
+};
+#[cfg(feature = "artifact-graph")]
+use crate::{
+    execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId},
+    id::IncIdGenerator,
 };
 
 /// State for executing a program.
@@ -81,6 +85,13 @@ pub struct ModuleArtifactState {
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
+    /// [`ObjectId`] generator.
+    pub object_id_generator: IncIdGenerator<usize>,
+    /// Objects in the scene, created from execution.
+    pub scene_objects: Vec<Object>,
+    /// Map from source range to object ID for lookup of objects by their source
+    /// range.
+    pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
 }
 
 #[cfg(not(feature = "artifact-graph"))]
@@ -112,13 +123,6 @@ pub(super) struct ModuleState {
     pub(super) path: ModulePath,
     /// Artifacts for only this module.
     pub artifacts: ModuleArtifactState,
-    /// [`ObjectId`] generator.
-    pub object_id_generator: IncIdGenerator<usize>,
-    /// Objects in the scene, created from execution.
-    pub scene_objects: Vec<Object>,
-    /// Map from source range to object ID for lookup of objects by their source
-    /// range.
-    pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
 
     pub(super) allowed_warnings: Vec<&'static str>,
     pub(super) denied_warnings: Vec<&'static str>,
@@ -213,8 +217,10 @@ impl ExecState {
             operations: self.global.root_module_artifacts.operations,
             #[cfg(feature = "artifact-graph")]
             artifact_graph: self.global.artifacts.graph,
-            scene_objects: self.mod_local.scene_objects,
-            source_range_to_object: self.mod_local.source_range_to_object,
+            #[cfg(feature = "artifact-graph")]
+            scene_objects: self.global.root_module_artifacts.scene_objects,
+            #[cfg(feature = "artifact-graph")]
+            source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
             errors: self.global.errors,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
@@ -228,27 +234,31 @@ impl ExecState {
         &mut self.mod_local.stack
     }
 
+    #[cfg(feature = "artifact-graph")]
     pub fn next_object_id(&mut self) -> ObjectId {
-        ObjectId(self.mod_local.object_id_generator.next_id())
+        ObjectId(self.mod_local.artifacts.object_id_generator.next_id())
     }
 
+    #[cfg(feature = "artifact-graph")]
     pub fn peek_object_id(&self, amount: usize) -> ObjectId {
-        ObjectId(self.mod_local.object_id_generator.peek_id() + amount)
+        ObjectId(self.mod_local.artifacts.object_id_generator.peek_id() + amount)
     }
 
     /// Consume the next ID, asserting that it's equal to one that was obtained
     /// with [`Self::peek_object_id`].
+    #[cfg(feature = "artifact-graph")]
     pub fn assert_next_object_id(&mut self, expected: ObjectId) -> ObjectId {
-        let new = ObjectId(self.mod_local.object_id_generator.next_id());
+        let new = ObjectId(self.mod_local.artifacts.object_id_generator.next_id());
         debug_assert_eq!(new, expected);
         new
     }
 
+    #[cfg(feature = "artifact-graph")]
     pub fn add_scene_object(&mut self, obj: Object, source_range: SourceRange) -> ObjectId {
         let id = obj.id;
-        debug_assert!(id.0 == self.mod_local.scene_objects.len());
-        self.mod_local.scene_objects.push(obj);
-        self.mod_local.source_range_to_object.insert(source_range, id);
+        debug_assert!(id.0 == self.mod_local.artifacts.scene_objects.len());
+        self.mod_local.artifacts.scene_objects.push(obj);
+        self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
         id
     }
 
@@ -545,6 +555,8 @@ impl ModuleArtifactState {
         self.unprocessed_commands.extend(other.unprocessed_commands);
         self.commands.extend(other.commands);
         self.operations.extend(other.operations);
+        self.scene_objects.extend(other.scene_objects);
+        self.source_range_to_object.extend(other.source_range_to_object);
     }
 
     // Move unprocessed artifact commands so that we don't try to process them
@@ -572,9 +584,6 @@ impl ModuleState {
             path,
             settings: Default::default(),
             artifacts: Default::default(),
-            object_id_generator: Default::default(),
-            scene_objects: Default::default(),
-            source_range_to_object: Default::default(),
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
             inside_stdlib: false,

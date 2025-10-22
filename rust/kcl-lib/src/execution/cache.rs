@@ -111,8 +111,10 @@ impl GlobalState {
             operations: self.exec_state.root_module_artifacts.operations,
             #[cfg(feature = "artifact-graph")]
             artifact_graph: self.exec_state.artifacts.graph,
-            scene_objects: self.main.exec_state.scene_objects,
-            source_range_to_object: self.main.exec_state.source_range_to_object,
+            #[cfg(feature = "artifact-graph")]
+            scene_objects: self.exec_state.root_module_artifacts.scene_objects,
+            #[cfg(feature = "artifact-graph")]
+            source_range_to_object: self.exec_state.root_module_artifacts.source_range_to_object,
             errors: self.exec_state.errors,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }

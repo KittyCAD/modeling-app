@@ -1,5 +1,7 @@
+use serde::Serialize;
+
 /// An auto-incrementing integer ID generator.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct IncIdGenerator<T> {
     next_id: T,
 }
