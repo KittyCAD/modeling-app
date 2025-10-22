@@ -837,7 +837,10 @@ impl NumericType {
     fn coerce(&self, val: &KclValue) -> Result<KclValue, CoercionError> {
         let (value, ty, meta) = match val {
             KclValue::Number { value, ty, meta } => (value, ty, meta),
-            KclValue::SketchVar { value } => (&value.initial_value, &value.ty, &value.meta),
+            // For coercion purposes, sketch vars pass through unchanged since
+            // they will be resolved later to a number. We need the sketch var
+            // ID.
+            KclValue::SketchVar { .. } => return Ok(val.clone()),
             _ => return Err(val.into()),
         };
 
