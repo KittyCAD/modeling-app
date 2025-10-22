@@ -1,5 +1,5 @@
 .PHONY: all
-all: check test
+all: check test-unit
 
 ###############################################################################
 # INSTALL
@@ -127,7 +127,7 @@ E2E_MODE ?= none
 endif
 
 .PHONY: test
-test: test-unit test-integration
+test: test-unit test-integration test-e2e-web
 
 .PHONY: test-unit
 test-unit: install public/kcl_wasm_lib_bg.wasm ## Run the unit tests
@@ -147,7 +147,7 @@ test-e2e-web: install build ## Run the web e2e tests
 ifdef E2E_GREP
 	npm run test:e2e:web -- --headed --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES) "$(PW_ARGS)"
 else
-	npm run test:e2e:web -- --headed --workers='100%' "$(PW_ARGS)"
+	npm run test:e2e:web -- --workers='100%' "$(PW_ARGS)"
 endif
 
 .PHONY: test-e2e-desktop
@@ -166,7 +166,7 @@ endif
 ifdef E2E_GREP
 	npm run test:snapshots -- --headed --update-snapshots=$(E2E_MODE) --grep="$(E2E_GREP)"
 else
-	npm run test:snapshots -- --headed --update-snapshots=$(E2E_MODE)
+	npm run test:snapshots -- --update-snapshots=$(E2E_MODE)
 endif
 
 ###############################################################################
