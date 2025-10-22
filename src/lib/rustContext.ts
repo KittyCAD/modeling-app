@@ -29,6 +29,7 @@ import { getModule } from '@src/lib/wasm_lib_wrapper'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SourceDelta } from '@rust/kcl-api/bindings/SourceDelta'
+import { SceneGraphDelta } from '@rust/kcl-lib/bindings/SceneGraphDelta'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true
@@ -275,14 +276,19 @@ export default class RustContext {
     const instance = this._checkInstance()
 
     try {
-      const result = await instance.add_segment_stub(
+      const result: string = await instance.add_segment_stub(
         version,
         sketch,
         JSON.stringify(segment),
         label,
         JSON.stringify(settings)
       )
-      return JSON.parse(result)
+      const tuple: [SourceDelta, SceneGraphDelta, SketchExecOutcome] =
+        JSON.parse(result)
+      return {
+        kclSource: tuple[0],
+        sketchExecOutcome: tuple[2],
+      }
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)
       return Promise.reject(err)
