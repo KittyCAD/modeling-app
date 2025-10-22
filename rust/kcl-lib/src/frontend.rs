@@ -792,9 +792,7 @@ sketch(on = XY) {
 }
 "
         );
-        // TODO: These IDs are wrong. They shouldn't reuse IDs from the previous
-        // run.
-        assert_eq!(scene_delta.new_objects, vec![ObjectId(0), ObjectId(1), ObjectId(2)]);
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(1), ObjectId(2), ObjectId(3)]);
 
         // The new objects are the end points and then the line.
         let line = *scene_delta.new_objects.last().unwrap();

@@ -933,6 +933,36 @@ impl Node<SketchBlock> {
         let mut args = Args::new_no_args(range, ctx.clone());
         args.labeled = labeled;
 
+        #[cfg(feature = "artifact-graph")]
+        let sketch_id = {
+            // Create the sketch block scene object. This needs to happen before
+            // scene objects created inside the sketch block so that its ID is
+            // stable across sketch block edits.
+            let sketch_id = exec_state.next_object_id();
+            let arg_on: Option<crate::execution::Plane> =
+                args.get_kw_arg_opt("on", &RuntimeType::plane(), exec_state)?;
+            let on_object = arg_on.and_then(|plane| plane.object_id);
+            let sketch_scene_object = Object {
+                id: sketch_id,
+                kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
+                    args: crate::front::SketchArgs {
+                        on: on_object
+                            .map(crate::front::Plane::Object)
+                            .unwrap_or(crate::front::Plane::Default(crate::front::StandardPlane::XY)),
+                    },
+                    segments: Default::default(),
+                    constraints: Default::default(),
+                }),
+                label: Default::default(),
+                comments: Default::default(),
+                // TODO: sketch-api: implement
+                artifact_id: 0,
+                source: range.into(),
+            };
+            exec_state.add_scene_object(sketch_scene_object, range);
+            sketch_id
+        };
+
         let (return_result, variables, sketch_block_state) = {
             // Don't early return until the stack frame is popped!
             self.prep_mem(exec_state.mut_stack().snapshot(), exec_state);
@@ -1035,30 +1065,22 @@ impl Node<SketchBlock> {
 
         #[cfg(feature = "artifact-graph")]
         {
-            // Create the sketch block scene object.
-            let sketch_id = exec_state.next_object_id();
-            let arg_on: Option<crate::execution::Plane> =
-                args.get_kw_arg_opt("on", &RuntimeType::plane(), exec_state)?;
-            let on_object = arg_on.and_then(|plane| plane.object_id);
-            let scene_object = Object {
-                id: sketch_id,
-                kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
-                    args: crate::front::SketchArgs {
-                        on: on_object
-                            .map(crate::front::Plane::Object)
-                            .unwrap_or(crate::front::Plane::Default(crate::front::StandardPlane::XY)),
-                    },
-                    segments: segment_object_ids,
-                    // TODO: sketch-api: implement
-                    constraints: Vec::new(),
-                }),
-                label: Default::default(),
-                comments: Default::default(),
-                // TODO: sketch-api: implement
-                artifact_id: 0,
-                source: range.into(),
+            // Update the sketch scene object with the segments.
+            let Some(sketch_object) = exec_state.mod_local.artifacts.scene_objects.get_mut(sketch_id.0) else {
+                let message = format!("Sketch object not found after it was just created; id={:?}", sketch_id);
+                debug_assert!(false, "{}", &message);
+                return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
             };
-            exec_state.add_scene_object(scene_object, range);
+            let ObjectKind::Sketch(sketch) = &mut sketch_object.kind else {
+                let message = format!(
+                    "Expected Sketch object after it was just created to be a sketch kind; id={:?}, actual={:?}",
+                    sketch_id, sketch_object
+                );
+                debug_assert!(false, "{}", &message);
+                return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
+            };
+            sketch.segments.extend(segment_object_ids);
+            // TODO: sketch-api: update constraints also.
         }
 
         // TODO: sketch-api: send everything to the engine.
