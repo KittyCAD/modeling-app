@@ -128,14 +128,29 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (typeof data === 'object' && 'level' in data) {
-          setExperimentalFeatures({ type: data.level })
+          const newAst = setExperimentalFeatures({ type: data.level })
+          if (err(newAst)) {
+            toast.error(
+              `Failed to set file experimental features level: ${newAst.message}`
+            )
+            return
+          }
+          updateModelingState(newAst, EXECUTION_TYPE_REAL, {
+            kclManager,
+            editorManager,
+            codeManager,
+            rustContext,
+          })
             .then((result) => {
               if (err(result)) {
-                reportRejection(result)
+                toast.error(
+                  `Failed to set file experimental features level: ${result.message}`
+                )
                 return
               }
+
               toast.success(
-                `Updated experimental features level to ${data.level}`
+                `Updated file experimental features level to ${data.level}`
               )
             })
             .catch(reportRejection)

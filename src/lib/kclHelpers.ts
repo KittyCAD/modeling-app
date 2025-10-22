@@ -7,9 +7,11 @@ import {
   parse,
   resultIsOk,
   changeExperimentalFeatures,
+  type Program,
 } from '@src/lang/wasm'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { KclExpression } from '@src/lib/commandTypes'
-import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
+import { codeManager, rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'
@@ -154,14 +156,22 @@ export function getStringValue(code: string, range: SourceRange): string {
   return code.slice(range[0], range[1]).replaceAll(`'`, ``).replaceAll(`"`, ``)
 }
 
-export async function setExperimentalFeatures(
+export function setExperimentalFeatures(
   level: WarningLevel
-): Promise<void | Error> {
+): Node<Program> | Error {
   const newCode = changeExperimentalFeatures(codeManager.code, level)
   if (err(newCode)) {
-    return new Error(`Failed to set experimental features: ${newCode.message}`)
+    return newCode
   }
-  codeManager.updateCodeStateEditor(newCode)
-  await codeManager.writeToFile()
-  await kclManager.executeCode()
+
+  const result = parse(newCode)
+  if (err(result)) {
+    return result
+  }
+
+  if (result.program === null) {
+    return new Error('Empty program returned')
+  }
+
+  return result.program
 }
