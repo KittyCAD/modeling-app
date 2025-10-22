@@ -6,10 +6,9 @@ import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 describe('settings.spec.ts', () => {
-  describe('Testing setExperimentalFeatures', async () => {
-    const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-
-    it('should add the annotation and set the flag if not present', () => {
+  describe('Testing setExperimentalFeatures', () => {
+    it('should add the annotation and set the flag if not present', async () => {
+      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
       const newAst = setExperimentalFeatures('', { type: 'Allow' }, instance)
       if (err(newAst)) {
         throw newAst
@@ -19,7 +18,8 @@ describe('settings.spec.ts', () => {
       expect(newCode).toBe(`@settings(experimentalFeatures = allow)\n`)
     })
 
-    it('should set the flag if the annotation exists', () => {
+    it('should set the flag if the annotation exists', async () => {
+      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
       const code = `@settings(experimentalFeatures = warn)\n`
       const newAst = setExperimentalFeatures(code, { type: 'Deny' }, instance)
       if (err(newAst)) {
