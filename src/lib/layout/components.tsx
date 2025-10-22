@@ -451,7 +451,7 @@ function PaneButton({
       <Tooltip
         id={`tooltip-${pane.id}`}
         position={logicalSideToTooltipPosition(getOppositeSide(side))}
-        contentClassName="max-w-none flex items-center gap-4"
+        contentClassName="text-xs max-w-none flex items-center gap-4"
         hoverOnly
       >
         <span className="flex-1">{pane.label}</span>
@@ -544,7 +544,7 @@ function ActionButton({ action, side }: { action: Action; side: Side }) {
         <Tooltip
           id={`tooltip-${action.id}`}
           position={logicalSideToTooltipPosition(getOppositeSide(side))}
-          contentClassName={`max-w-none flex flex-col gap-2 ${
+          contentClassName={`text-xs max-w-none flex flex-col gap-2 ${
             side === 'inline-start'
               ? 'text-left'
               : side === 'inline-end'
