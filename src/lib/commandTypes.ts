@@ -295,6 +295,23 @@ export type CommandArgumentConfig<
         context: CommandBarContext
       }) => Promise<boolean | string>
     }
+  | {
+      inputType: 'vector2d'
+      defaultValue?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => string)
+      defaultValueFromContext?: (context: C) => OutputType
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
+    }
 )
 
 export type CommandArgument<
@@ -459,6 +476,22 @@ export type CommandArgument<
     }
   | {
       inputType: 'vector3d'
+      defaultValue?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => string)
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
+    }
+  | {
+      inputType: 'vector2d'
       defaultValue?:
         | string
         | ((

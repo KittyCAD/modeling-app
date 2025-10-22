@@ -567,6 +567,101 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
         ],
       },
+      'break',
+      {
+        id: 'gdt',
+        array: [
+          {
+            id: 'gdt-flatness',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'GDT Flatness', groupId: 'modeling' },
+              }),
+            status: 'experimental',
+            title: 'Flatness',
+            icon: 'gdtFlatness',
+            description:
+              'Specifies flatness tolerance - how much a surface can deviate from perfectly flat.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-gdt-flatness'
+                ),
+              },
+            ],
+          },
+          {
+            id: 'gdt-datum',
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Datum',
+            icon: 'gdtDatum',
+            description:
+              'Defines reference surfaces for measuring other geometric tolerances.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-gdt-datum'),
+              },
+            ],
+          },
+          {
+            id: 'gdt-profile',
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Profile',
+            description:
+              'Specifies how much a surface or edge can deviate from its ideal shape.',
+            links: [],
+          },
+          {
+            id: 'gdt-position',
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Position',
+            description:
+              'Controls location tolerance of holes, pins, and other features.',
+            links: [],
+          },
+          {
+            id: 'gdt-perpendicularity',
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Perpendicularity',
+            description:
+              'Specifies how perpendicular one feature must be to another.',
+            links: [],
+          },
+          {
+            id: 'gdt-parallelism',
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Parallelism',
+            description:
+              'Specifies how parallel one feature must be to another.',
+            links: [],
+          },
+          {
+            id: 'gdt-dimension',
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Dimension',
+            description: 'Adds size dimensions with manufacturing tolerances.',
+            links: [],
+          },
+          {
+            id: 'gdt-note',
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Note',
+            description:
+              'Adds text notes for manufacturing instructions or inspection requirements.',
+            links: [],
+          },
+        ],
+      },
     ],
   },
   sketching: {

@@ -16,9 +16,17 @@ import {
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_TRANSFORM,
   KCL_DEFAULT_ORIGIN,
+  KCL_DEFAULT_ORIGIN_2D,
   KCL_AXIS_X,
   KCL_AXIS_Y,
   KCL_AXIS_Z,
+  KCL_PLANE_XY,
+  KCL_PLANE_XZ,
+  KCL_PLANE_YZ,
+  KCL_DEFAULT_TOLERANCE,
+  KCL_DEFAULT_PRECISION,
+  KCL_DEFAULT_FONT_POINT_SIZE,
+  KCL_DEFAULT_FONT_SCALE,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -267,6 +275,16 @@ export type ModelingCommandSchema = {
     distance: KclCommandValue
     axis: string
     useOriginal?: boolean
+  }
+  'GDT Flatness': {
+    nodeToEdit?: PathToNode
+    faces: Selections
+    tolerance: KclCommandValue
+    precision?: KclCommandValue
+    framePosition?: KclCommandValue
+    framePlane?: string
+    fontPointSize?: KclCommandValue
+    fontScale?: KclCommandValue
   }
   'Boolean Subtract': {
     solids: Selections
@@ -1382,6 +1400,60 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       useOriginal: {
         inputType: 'boolean',
+        required: false,
+      },
+    },
+  },
+  'GDT Flatness': {
+    description:
+      'Add flatness geometric dimensioning & tolerancing annotation to faces.',
+    icon: 'gdtFlatness',
+    needsReview: true,
+    status: 'experimental',
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      faces: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        multiple: true,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      tolerance: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TOLERANCE,
+        required: true,
+      },
+      precision: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_PRECISION,
+        required: false,
+      },
+      framePosition: {
+        inputType: 'vector2d',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        required: false,
+      },
+      framePlane: {
+        inputType: 'options',
+        defaultValue: KCL_PLANE_XY,
+        options: [
+          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
+          { name: 'XZ Plane', value: KCL_PLANE_XZ },
+          { name: 'YZ Plane', value: KCL_PLANE_YZ },
+        ],
+        required: false,
+      },
+      fontPointSize: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
+        required: false,
+      },
+      fontScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SCALE,
         required: false,
       },
     },

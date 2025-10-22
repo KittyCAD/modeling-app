@@ -14,9 +14,11 @@ import {
   getNodeFromPath,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
+import type { StdLibCallOp } from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
+  getCodeRefsByArtifactId,
   getEdgeCutConsumedCodeRef,
 } from '@src/lang/std/artifactGraph'
 import {
@@ -34,7 +36,7 @@ import type {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
@@ -63,6 +65,114 @@ interface StdLibCallInfo {
     | PrepareToEditFailurePayload
   supportsAppearance?: boolean
   supportsTransform?: boolean
+}
+
+// Helper functions for argument extraction
+async function extractKclArgument(
+  operation: StdLibCallOp,
+  argName: string,
+  isArray = false
+): Promise<KclCommandValue | { error: string }> {
+  const arg = operation.labeledArgs?.[argName]
+  if (!arg?.sourceRange) {
+    return { error: `Missing or invalid ${argName} argument` }
+  }
+
+  const result = await stringToKclExpression(
+    codeManager.code.slice(arg.sourceRange[0], arg.sourceRange[1]),
+    isArray
+  )
+
+  if (err(result) || 'errors' in result) {
+    return { error: `Failed to parse ${argName} argument as KCL expression` }
+  }
+
+  return result
+}
+
+/**
+ * Extracts face selections for GDT annotations.
+ *
+ * Handles following types of face selections through direct tagging:
+ * - Segment faces: Tagged directly on segments, converted to wall artifacts
+ * - Cap faces: Tagged directly on sweeps using tagEnd/tagStart
+ * GDT uses direct tagging for explicit face references.
+ */
+function extractFaceSelections(facesArg: any): Selection[] | { error: string } {
+  const faceValues: any[] =
+    facesArg.value.type === 'Array' ? facesArg.value.value : [facesArg.value]
+
+  const graphSelections: Selection[] = []
+
+  for (const v of faceValues) {
+    if (v.type !== 'TagIdentifier' || !v.artifact_id) {
+      continue
+    }
+
+    const artifact = kclManager.artifactGraph.get(v.artifact_id)
+    if (!artifact) {
+      continue
+    }
+
+    let targetArtifact = artifact
+    let targetCodeRefs = getCodeRefsByArtifactId(
+      v.artifact_id,
+      kclManager.artifactGraph
+    )
+
+    // Handle segment faces: Convert segment artifacts to wall artifacts for 3D operations
+    if (artifact.type === 'segment') {
+      const wallArtifact = Array.from(kclManager.artifactGraph.values()).find(
+        (candidate) =>
+          candidate.type === 'wall' && candidate.segId === artifact.id
+      )
+
+      if (wallArtifact) {
+        targetArtifact = wallArtifact
+        const wallCodeRefs = getCodeRefsByArtifactId(
+          wallArtifact.id,
+          kclManager.artifactGraph
+        )
+
+        if (wallCodeRefs && wallCodeRefs.length > 0) {
+          targetCodeRefs = wallCodeRefs
+        } else {
+          const segArtifact = getArtifactOfTypes(
+            { key: artifact.id, types: ['segment'] },
+            kclManager.artifactGraph
+          )
+          if (!err(segArtifact)) {
+            targetCodeRefs = [segArtifact.codeRef]
+          }
+        }
+      }
+    }
+
+    // Cap faces (from tagEnd/tagStart) are handled directly
+    // as they already reference the correct cap artifacts
+    if (targetCodeRefs && targetCodeRefs.length > 0) {
+      graphSelections.push({
+        artifact: targetArtifact,
+        codeRef: targetCodeRefs[0],
+      })
+    }
+  }
+
+  if (graphSelections.length === 0) {
+    return { error: 'No valid face selections found in TagIdentifier objects' }
+  }
+
+  return graphSelections
+}
+
+function extractStringArgument(
+  operation: StdLibCallOp,
+  argName: string
+): string | undefined {
+  const arg = operation.labeledArgs?.[argName]
+  return arg?.sourceRange
+    ? codeManager.code.slice(arg.sourceRange[0], arg.sourceRange[1])
+    : undefined
 }
 
 /**
@@ -1508,6 +1618,72 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
 }
 
 /**
+ * Prepares GDT Flatness annotations for editing.
+ *
+ * Supports following types of face selections through direct tagging:
+ * - Segment faces: Tagged directly on sketch segments (e.g., from line(), arc())
+ * - Cap faces: Tagged directly on sweep expressions using tagEnd/tagStart
+ * GDT uses explicit tagging for predictable face references.
+ */
+const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
+  operation,
+}) => {
+  const baseCommand = {
+    name: 'GDT Flatness',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const facesArg = operation.labeledArgs?.['faces']
+  if (!facesArg || !facesArg.sourceRange) {
+    return { reason: 'Missing or invalid faces argument' }
+  }
+
+  // Extract face selections
+  const graphSelections = extractFaceSelections(facesArg)
+  if ('error' in graphSelections) {
+    return { reason: graphSelections.error }
+  }
+
+  const faces = { graphSelections, otherSelections: [] }
+
+  const tolerance = await extractKclArgument(operation, 'tolerance')
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+  const optionalArgs = await Promise.all([
+    extractKclArgument(operation, 'precision'),
+    extractKclArgument(operation, 'framePosition', true),
+    extractKclArgument(operation, 'fontPointSize'),
+    extractKclArgument(operation, 'fontScale'),
+  ])
+
+  const [precision, framePosition, fontPointSize, fontScale] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
+
+  const framePlane = extractStringArgument(operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Flatness'] = {
+    faces,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    fontPointSize,
+    fontScale,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
  */
@@ -1554,6 +1730,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   'gdt::flatness': {
     label: 'Flatness',
     icon: 'gdtFlatness',
+    prepareToEdit: prepareToEditGdtFlatness,
   },
   helix: {
     label: 'Helix',
@@ -1767,6 +1944,12 @@ export function getOperationVariableName(
   if (op.type === 'VariableDeclaration') {
     return op.name
   }
+
+  // Handle GDT operations - they don't have variable names as they're standalone statements
+  if (op.type === 'StdLibCall' && op.name.startsWith('gdt::')) {
+    return undefined
+  }
+
   if (
     op.type !== 'StdLibCall' &&
     !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall') &&

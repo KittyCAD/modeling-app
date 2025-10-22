@@ -392,6 +392,7 @@ export const commandBarMachine = setup({
                 !(
                   argConfig.inputType === 'kcl' ||
                   argConfig.inputType === 'vector3d' ||
+                  argConfig.inputType === 'vector2d' ||
                   argConfig.skip
                 )
               const hasInvalidKclValue =
