@@ -108,7 +108,7 @@ export function createProjectCommands({
         })
       }
     },
-    reviewMessage: async ({ argumentsToSubmit }) =>
+    reviewMessage: ({ argumentsToSubmit }) =>
       CommandBarOverwriteWarning({
         heading: 'Are you sure you want to delete?',
         message: `This will permanently delete the project "${argumentsToSubmit.name}" and all its contents.`,
@@ -250,7 +250,7 @@ export function createProjectCommands({
         },
       },
     },
-    reviewMessage: async (commandBarContext) => {
+    reviewMessage(commandBarContext) {
       return isDesktop()
         ? `Will add the contents from URL to a new ${
             commandBarContext.argumentsToSubmit.method === 'newProject'

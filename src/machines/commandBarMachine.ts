@@ -6,6 +6,7 @@ import type {
   KclCommandValue,
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
+import { err } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import { assign, fromPromise, setup } from 'xstate'
 
@@ -14,6 +15,7 @@ export type CommandBarContext = {
   selectedCommand?: Command
   currentArgument?: CommandArgument<unknown> & { name: string }
   argumentsToSubmit: { [x: string]: unknown }
+  reviewValidationError?: string
   machineManager: MachineManager
 }
 
@@ -122,6 +124,16 @@ export const commandBarMachine = setup({
         selectedCommand?.onSubmit({ context, event })
       }
     },
+    'Set review validation error': assign({
+      reviewValidationError: ({ context, event }) => {
+        const { selectedCommand } = context
+        if (!selectedCommand) return undefined
+        if (event.type !== 'xstate.error.actor.validateArguments') {
+          return undefined
+        }
+        return event.error.message
+      },
+    }),
     'Clear selected command': assign({
       selectedCommand: undefined,
     }),
@@ -364,101 +376,109 @@ export const commandBarMachine = setup({
       }
     ),
     'Validate all arguments': fromPromise(
-      ({ input }: { input: CommandBarContext }) => {
-        return new Promise((resolve, reject) => {
-          for (const [argName, argConfig] of Object.entries(
-            input.selectedCommand!.args!
-          )) {
-            let arg = input.argumentsToSubmit[argName]
-            let argValue = typeof arg === 'function' ? arg(input) : arg
+      async ({ input }: { input: CommandBarContext }) => {
+        for (const [argName, argConfig] of Object.entries(
+          input.selectedCommand!.args!
+        )) {
+          let arg = input.argumentsToSubmit[argName]
+          let argValue = typeof arg === 'function' ? arg(input) : arg
 
-            try {
-              const isRequired =
-                typeof argConfig.required === 'function'
-                  ? argConfig.required(input)
-                  : argConfig.required
+          try {
+            const isRequired =
+              typeof argConfig.required === 'function'
+                ? argConfig.required(input)
+                : argConfig.required
 
-              const resolvedDefaultValue =
-                'defaultValue' in argConfig
-                  ? typeof argConfig.defaultValue === 'function'
-                    ? argConfig.defaultValue(input)
-                    : argConfig.defaultValue
-                  : undefined
+            const resolvedDefaultValue =
+              'defaultValue' in argConfig
+                ? typeof argConfig.defaultValue === 'function'
+                  ? argConfig.defaultValue(input)
+                  : argConfig.defaultValue
+                : undefined
 
-              const hasMismatchedDefaultValueType =
-                isRequired &&
-                resolvedDefaultValue !== undefined &&
-                typeof argValue !== typeof resolvedDefaultValue &&
-                !(
-                  argConfig.inputType === 'kcl' ||
-                  argConfig.inputType === 'vector3d' ||
-                  argConfig.inputType === 'vector2d' ||
-                  argConfig.skip
-                )
-              const hasInvalidKclValue =
-                argConfig.inputType === 'kcl' &&
-                isRequired &&
-                !(argValue as Partial<KclCommandValue> | undefined)?.valueAst
-              const hasInvalidOptionsValue =
-                isRequired &&
-                'options' in argConfig &&
-                !(
-                  typeof argConfig.options === 'function'
-                    ? argConfig.options(
-                        input,
-                        argConfig.machineActor?.getSnapshot().context
-                      )
-                    : argConfig.options
-                ).some((o) => {
-                  // Objects are only equal by reference in JavaScript, so we compare stringified values.
-                  // GOTCHA: this means that JS class instances will behave badly as option arg values I believe.
-                  if (
-                    typeof o.value === 'object' &&
-                    typeof argValue === 'object'
-                  ) {
-                    return JSON.stringify(o.value) === JSON.stringify(argValue)
-                  } else {
-                    return o.value === argValue
-                  }
-                })
+            const hasMismatchedDefaultValueType =
+              isRequired &&
+              resolvedDefaultValue !== undefined &&
+              typeof argValue !== typeof resolvedDefaultValue &&
+              !(
+                argConfig.inputType === 'kcl' ||
+                argConfig.inputType === 'vector3d' ||
+                argConfig.inputType === 'vector2d' ||
+                argConfig.skip
+              )
+            const hasInvalidKclValue =
+              argConfig.inputType === 'kcl' &&
+              isRequired &&
+              !(argValue as Partial<KclCommandValue> | undefined)?.valueAst
+            const hasInvalidOptionsValue =
+              isRequired &&
+              'options' in argConfig &&
+              !(
+                typeof argConfig.options === 'function'
+                  ? argConfig.options(
+                      input,
+                      argConfig.machineActor?.getSnapshot().context
+                    )
+                  : argConfig.options
+              ).some((o) => {
+                // Objects are only equal by reference in JavaScript, so we compare stringified values.
+                // GOTCHA: this means that JS class instances will behave badly as option arg values I believe.
+                if (
+                  typeof o.value === 'object' &&
+                  typeof argValue === 'object'
+                ) {
+                  return JSON.stringify(o.value) === JSON.stringify(argValue)
+                } else {
+                  return o.value === argValue
+                }
+              })
 
-              if (
-                hasMismatchedDefaultValueType ||
-                hasInvalidKclValue ||
-                hasInvalidOptionsValue
-              ) {
-                return reject({
-                  message: 'Argument payload is of the wrong type',
-                  arg: {
-                    ...argConfig,
-                    name: argName,
-                  },
-                })
-              }
-
-              if (
-                (argConfig.inputType !== 'boolean' &&
-                argConfig.inputType !== 'options'
-                  ? !argValue
-                  : argValue === undefined) &&
-                isRequired
-              ) {
-                return reject({
-                  message: 'Argument payload is falsy but is required',
-                  arg: {
-                    ...argConfig,
-                    name: argName,
-                  },
-                })
-              }
-            } catch (e) {
-              console.error('Error validating argument', context, e)
-              return reject(e)
+            if (
+              hasMismatchedDefaultValueType ||
+              hasInvalidKclValue ||
+              hasInvalidOptionsValue
+            ) {
+              return Promise.reject({
+                message: 'Argument payload is of the wrong type',
+                arg: {
+                  ...argConfig,
+                  name: argName,
+                },
+              })
             }
-          }
 
-          return resolve(input.argumentsToSubmit)
-        })
+            if (
+              (argConfig.inputType !== 'boolean' &&
+              argConfig.inputType !== 'options'
+                ? !argValue
+                : argValue === undefined) &&
+              isRequired
+            ) {
+              return Promise.reject({
+                message: 'Argument payload is falsy but is required',
+                arg: {
+                  ...argConfig,
+                  name: argName,
+                },
+              })
+            }
+          } catch (e) {
+            console.error('Error validating argument', context, e)
+            return Promise.reject(e)
+          }
+        }
+
+        console.log('just before reviewValidation', input.selectedCommand)
+        if (input.selectedCommand?.reviewValidation) {
+          console.log('found reviewValidation')
+          const result = await input.selectedCommand.reviewValidation(input)
+          console.log('result', result)
+          if (err(result)) {
+            return Promise.reject({ message: result.message })
+          }
+        }
+
+        return input.argumentsToSubmit
       }
     ),
   },
@@ -473,6 +493,7 @@ export const commandBarMachine = setup({
       codeBasedSelections: [],
     },
     argumentsToSubmit: {},
+    reviewValidationError: undefined,
     machineManager: {
       machines: [],
       machineApiIp: null,
@@ -610,6 +631,7 @@ export const commandBarMachine = setup({
           {
             target: 'Review',
             guard: 'Command needs review',
+            actions: ['Set review validation error'],
           },
           {
             target: 'Closed',
@@ -617,6 +639,11 @@ export const commandBarMachine = setup({
           },
         ],
         onError: [
+          {
+            target: 'Review',
+            guard: 'Command needs review',
+            actions: ['Set review validation error'],
+          },
           {
             target: 'Gathering arguments',
             actions: ['Set current argument to first non-skippable'],
