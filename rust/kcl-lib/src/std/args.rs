@@ -17,6 +17,7 @@ use crate::{
     },
     parsing::ast::types::TagNode,
     std::{
+        axis_or_reference::SketchFaceOrTaggedFace,
         shapes::{PolygonType, SketchOrSurface},
         sketch::FaceTag,
         sweep::SweepPath,
@@ -484,6 +485,28 @@ impl<'a> FromKclValue<'a> for Vec<TagIdentifier> {
 impl<'a> FromKclValue<'a> for Vec<KclValue> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         Some(arg.clone().into_array())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Vec<SketchFaceOrTaggedFace> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let items = arg
+            .clone()
+            .into_array()
+            .iter()
+            .map(|v| {
+                if let Some(sketch) = v.as_sketch() {
+                    Some(SketchFaceOrTaggedFace::Sketch(Box::new(sketch.clone())))
+                } else if let Some(face_tag) = FaceTag::from_kcl_val(v) {
+                    Some(SketchFaceOrTaggedFace::Face(face_tag))
+                } else if let Some(tag_id) = TagIdentifier::from_kcl_val(v) {
+                    Some(SketchFaceOrTaggedFace::TaggedFace(tag_id))
+                } else {
+                    None
+                }
+            })
+            .collect::<Option<Vec<_>>>()?;
+        Some(items)
     }
 }
 
@@ -1001,6 +1024,18 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
             .or_else(|| case6(arg).map(Self::TaggedEdgeOrFace))
             .or_else(|| case7(arg).map(Self::Plane))
             .or_else(|| case8(arg).map(Self::Sketch))
+    }
+}
+
+impl<'a> FromKclValue<'a> for SketchFaceOrTaggedFace {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = Box::<Sketch>::from_kcl_val;
+        let case2 = TagIdentifier::from_kcl_val;
+        let case3 = FaceTag::from_kcl_val;
+        case1(arg)
+            .map(Self::Sketch)
+            .or_else(|| case2(arg).map(Self::TaggedFace))
+            .or_else(|| case3(arg).map(Self::Face))
     }
 }
 

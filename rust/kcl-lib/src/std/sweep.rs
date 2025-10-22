@@ -97,7 +97,7 @@ async fn inner_sweep(
 
         solids.push(
             do_post_extrude(
-                sketch,
+                &sketch.clone().into(),
                 id.into(),
                 sectional.unwrap_or(false),
                 &super::extrude::NamedCapTags {

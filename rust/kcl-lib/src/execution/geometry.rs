@@ -9,7 +9,10 @@ use kittycad_modeling_cmds::{
 };
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
+use sha2::digest::impl_oid_carrier;
 
+use crate::std::Args;
+use crate::std::sketch::FaceTag;
 use crate::{
     engine::{DEFAULT_PLANE_INFO, PlaneName},
     errors::{KclError, KclErrorDetails},
@@ -671,42 +674,6 @@ fn is_true(b: &bool) -> bool {
     *b
 }
 
-impl Sketch {
-    // Tell the engine to enter sketch mode on the sketch.
-    // Run a specific command, then exit sketch mode.
-    pub(crate) fn build_sketch_mode_cmds(
-        &self,
-        exec_state: &mut ExecState,
-        inner_cmd: ModelingCmdReq,
-    ) -> Vec<ModelingCmdReq> {
-        vec![
-            // Before we extrude, we need to enable the sketch mode.
-            // We do this here in case extrude is called out of order.
-            ModelingCmdReq {
-                cmd: ModelingCmd::from(mcmd::EnableSketchMode {
-                    animated: false,
-                    ortho: false,
-                    entity_id: self.on.id(),
-                    adjust_camera: false,
-                    planar_normal: if let SketchSurface::Plane(plane) = &self.on {
-                        // We pass in the normal for the plane here.
-                        let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
-                        Some(normal.into())
-                    } else {
-                        None
-                    },
-                }),
-                cmd_id: exec_state.next_uuid().into(),
-            },
-            inner_cmd,
-            ModelingCmdReq {
-                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
-                cmd_id: exec_state.next_uuid().into(),
-            },
-        ]
-    }
-}
-
 /// A sketch type.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -734,6 +701,111 @@ impl SketchSurface {
             SketchSurface::Plane(plane) => plane.info.y_axis,
             SketchSurface::Face(face) => face.y_axis,
         }
+    }
+}
+
+/// A Sketch, Face, or TaggedFace.
+#[derive(Debug, Clone, PartialEq)]
+pub enum SketchFaceOrTaggedFace {
+    /// Sketch.
+    Sketch(Box<Sketch>),
+    /// Face.
+    Face(FaceTag),
+    /// Tagged face.
+    TaggedFace(TagIdentifier),
+}
+
+impl SketchFaceOrTaggedFace {
+    /// Get the relevant id.
+    pub async fn id(
+        &self,
+        exec_state: &mut ExecState,
+        args: &Args,
+        must_be_planar: bool,
+    ) -> Result<uuid::Uuid, KclError> {
+        match self {
+            SketchFaceOrTaggedFace::Sketch(sketch) => Ok(sketch.id),
+            SketchFaceOrTaggedFace::Face(face_tag) => {
+                face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await
+            }
+            SketchFaceOrTaggedFace::TaggedFace(tag_id) => {
+                if let Some(cur_info) = tag_id.get_cur_info() {
+                    Ok(cur_info.id)
+                } else {
+                    Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Tagged face not found".to_owned(),
+                        vec![args.source_range],
+                    )))
+                }
+            }
+        }
+    }
+
+    pub(crate) async fn build_sketch_mode_cmds(
+        &self,
+        exec_state: &mut ExecState,
+        args: &Args,
+        inner_cmd: ModelingCmdReq,
+    ) -> Vec<ModelingCmdReq> {
+        let on_id = match self {
+            SketchFaceOrTaggedFace::Sketch(sketch) => Ok(sketch.on.id()),
+            SketchFaceOrTaggedFace::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, &args, true).await,
+            SketchFaceOrTaggedFace::TaggedFace(tag_id) => {
+                if let Some(cur_info) = tag_id.get_cur_info() {
+                    Ok(cur_info.id)
+                } else {
+                    Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Tagged face not found".to_owned(),
+                        vec![args.source_range],
+                    )))
+                }
+            }
+        };
+
+        if on_id.is_err() {
+            return vec![];
+        }
+
+        let on_id = on_id.unwrap();
+        let plane_normal = match self {
+            SketchFaceOrTaggedFace::Sketch(sketch) => {
+                if let SketchSurface::Plane(plane) = &sketch.on {
+                    // We pass in the normal for the plane here.
+                    let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                    Some(normal.into())
+                } else {
+                    None
+                }
+            }
+            _ => None,
+        };
+
+        vec![
+            // Before we extrude, we need to enable the sketch mode.
+            // We do this here in case extrude is called out of order.
+            ModelingCmdReq {
+                cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                    animated: false,
+                    ortho: false,
+                    entity_id: on_id,
+                    adjust_camera: false,
+                    planar_normal: plane_normal,
+                }),
+                cmd_id: exec_state.next_uuid().into(),
+            },
+            inner_cmd,
+            ModelingCmdReq {
+                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+                cmd_id: exec_state.next_uuid().into(),
+            },
+        ]
+    }
+
+}
+
+impl From<Sketch> for SketchFaceOrTaggedFace {
+    fn from(value: Sketch) -> Self {
+        SketchFaceOrTaggedFace::Sketch(Box::new(value))
     }
 }
 

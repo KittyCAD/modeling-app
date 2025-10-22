@@ -546,7 +546,7 @@ export fn ellipse(
 @(impl = std_rust, feature_tree = true)
 export fn extrude(
   /// Which sketch or sketches should be extruded.
-  @sketches: [Sketch; 1+],
+  @sketches: [Sketch | Face | TaggedFace; 1+],
   /// How far to extrude the given sketches. Incompatible with `to`.
   length?: number(Length),
   /// Reference to extrude to. Incompatible with `length` and `twistAngle`.

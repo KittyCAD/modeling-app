@@ -61,6 +61,22 @@ impl RuntimeType {
         )
     }
 
+    /// `[Face; 1+]`
+    pub fn faces() -> Self {
+        RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Face)),
+            ArrayLen::Minimum(1),
+        )
+    }
+
+    /// `[TaggedFace; 1+]`
+    pub fn tagged_faces() -> Self {
+        RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::TaggedFace)),
+            ArrayLen::Minimum(1),
+        )
+    }
+
     /// `[Solid; 1+]`
     pub fn solids() -> Self {
         RuntimeType::Array(

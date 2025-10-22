@@ -3,6 +3,7 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use kcl_api::sketch::Sketch;
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{
     ModelingCmd, each_cmd as mcmd,
@@ -22,7 +23,8 @@ use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch, SketchSurface, Solid,
+        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch,
+        SketchFaceOrTaggedFace, SketchSurface, Solid,
         types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
@@ -31,7 +33,15 @@ use crate::{
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let sketches = args.get_unlabeled_kw_arg(
+        "sketches",
+        &RuntimeType::Union(vec![
+            RuntimeType::sketches(),
+            RuntimeType::faces(),
+            RuntimeType::tagged_faces(),
+        ]),
+        exec_state,
+    )?;
     let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
     let to = args.get_kw_arg_opt(
         "to",
@@ -82,7 +92,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
 #[allow(clippy::too_many_arguments)]
 async fn inner_extrude(
-    sketches: Vec<Sketch>,
+    sketches: Vec<SketchFaceOrTaggedFace>,
     length: Option<TyF64>,
     to: Option<Point3dAxis3dOrGeometryReference>,
     symmetric: Option<bool>,
@@ -141,6 +151,7 @@ async fn inner_extrude(
 
     for sketch in &sketches {
         let id = exec_state.next_uuid();
+        let sketch_or_face_id = sketch.id(exec_state, &args, false).await?;
         let cmd = match (&twist_angle, &twist_angle_step, &twist_center, length.clone(), &to) {
             (Some(angle), angle_step, center, Some(length), None) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
@@ -152,7 +163,7 @@ async fn inner_extrude(
                         .unwrap_or(15.0),
                 );
                 ModelingCmd::from(mcmd::TwistExtrude {
-                    target: sketch.id.into(),
+                    target: sketch_or_face_id.into(),
                     distance: LengthUnit(length.to_mm()),
                     faces: Default::default(),
                     center_2d: center,
@@ -162,7 +173,7 @@ async fn inner_extrude(
                 })
             }
             (None, None, None, Some(length), None) => ModelingCmd::from(mcmd::Extrude {
-                target: sketch.id.into(),
+                target: sketch_or_face_id.into(),
                 distance: LengthUnit(length.to_mm()),
                 faces: Default::default(),
                 opposite: opposite.clone(),
@@ -170,7 +181,7 @@ async fn inner_extrude(
             }),
             (None, None, None, None, Some(to)) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(mcmd::ExtrudeToReference {
-                    target: sketch.id.into(),
+                    target: sketch_or_face_id.into(),
                     reference: ExtrudeReference::Point {
                         point: KPoint3d {
                             x: LengthUnit(point[0].to_mm()),
@@ -183,7 +194,7 @@ async fn inner_extrude(
                 }),
                 Point3dAxis3dOrGeometryReference::Axis { direction, origin } => {
                     ModelingCmd::from(mcmd::ExtrudeToReference {
-                        target: sketch.id.into(),
+                        target: sketch_or_face_id.into(),
                         reference: ExtrudeReference::Axis {
                             axis: KPoint3d {
                                 x: direction[0].to_mm(),
@@ -219,7 +230,7 @@ async fn inner_extrude(
                         plane.id
                     };
                     ModelingCmd::from(mcmd::ExtrudeToReference {
-                        target: sketch.id.into(),
+                        target: sketch_or_face_id.into(),
                         reference: ExtrudeReference::EntityReference { entity_id: plane_id },
                         faces: Default::default(),
                         extrude_method,
@@ -228,7 +239,7 @@ async fn inner_extrude(
                 Point3dAxis3dOrGeometryReference::Edge(edge_ref) => {
                     let edge_id = edge_ref.get_engine_id(exec_state, &args)?;
                     ModelingCmd::from(mcmd::ExtrudeToReference {
-                        target: sketch.id.into(),
+                        target: sketch_or_face_id.into(),
                         reference: ExtrudeReference::EntityReference { entity_id: edge_id },
                         faces: Default::default(),
                         extrude_method,
@@ -237,14 +248,14 @@ async fn inner_extrude(
                 Point3dAxis3dOrGeometryReference::Face(face_tag) => {
                     let face_id = face_tag.get_face_id_from_tag(exec_state, &args, false).await?;
                     ModelingCmd::from(mcmd::ExtrudeToReference {
-                        target: sketch.id.into(),
+                        target: sketch_or_face_id.into(),
                         reference: ExtrudeReference::EntityReference { entity_id: face_id },
                         faces: Default::default(),
                         extrude_method,
                     })
                 }
                 Point3dAxis3dOrGeometryReference::Sketch(sketch_ref) => ModelingCmd::from(mcmd::ExtrudeToReference {
-                    target: sketch.id.into(),
+                    target: sketch_or_face_id.into(),
                     reference: ExtrudeReference::EntityReference {
                         entity_id: sketch_ref.id,
                     },
@@ -252,7 +263,7 @@ async fn inner_extrude(
                     extrude_method,
                 }),
                 Point3dAxis3dOrGeometryReference::Solid(solid) => ModelingCmd::from(mcmd::ExtrudeToReference {
-                    target: sketch.id.into(),
+                    target: sketch_or_face_id.into(),
                     reference: ExtrudeReference::EntityReference { entity_id: solid.id },
                     faces: Default::default(),
                     extrude_method,
@@ -261,7 +272,7 @@ async fn inner_extrude(
                     let tagged_edge_or_face = args.get_tag_engine_info(exec_state, tag)?;
                     let tagged_edge_or_face_id = tagged_edge_or_face.id;
                     ModelingCmd::from(mcmd::ExtrudeToReference {
-                        target: sketch.id.into(),
+                        target: sketch_or_face_id.into(),
                         reference: ExtrudeReference::EntityReference {
                             entity_id: tagged_edge_or_face_id,
                         },
@@ -295,7 +306,8 @@ async fn inner_extrude(
                 )));
             }
         };
-        let cmds = sketch.build_sketch_mode_cmds(exec_state, ModelingCmdReq { cmd_id: id.into(), cmd });
+
+        let cmds = sketch.build_sketch_mode_cmds(exec_state, &args, ModelingCmdReq { cmd_id: id.into(), cmd }).await;
         exec_state
             .batch_modeling_cmds(ModelingCmdMeta::from_args_id(&args, id), &cmds)
             .await?;
@@ -329,7 +341,7 @@ pub(crate) struct NamedCapTags<'a> {
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn do_post_extrude<'a>(
-    sketch: &Sketch,
+    sketch: &SketchFaceOrTaggedFace,
     solid_id: ArtifactId,
     sectional: bool,
     named_cap_tags: &'a NamedCapTags<'a>,
@@ -340,28 +352,58 @@ pub(crate) async fn do_post_extrude<'a>(
 ) -> Result<Solid, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
+
+    let id = sketch.id(exec_state, args, false).await?;
     exec_state
         .batch_modeling_cmd(
             args.into(),
-            ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id }),
+            ModelingCmd::from(mcmd::ObjectBringToFront { object_id: id }),
         )
         .await?;
 
-    let any_edge_id = if let Some(edge_id) = sketch.mirror {
-        edge_id
-    } else if let Some(id) = edge_id {
-        id
-    } else {
-        // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
-        // So, let's just use the first one.
-        let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
-            return Err(KclError::new_type(KclErrorDetails::new(
-                "Expected a non-empty sketch".to_owned(),
-                vec![args.source_range],
-            )));
-        };
-        any_edge_id
-    };
+    let any_edge_id = match sketch {
+        SketchFaceOrTaggedFace::Sketch(sketch) => {
+            if let Some(edge_id) = sketch.mirror {
+                edge_id
+            } else if let Some(id) = edge_id {
+                id
+            } else {
+                // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
+                // So, let's just use the first one.
+                let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
+                    return Err(KclError::new_type(KclErrorDetails::new(
+                        "Expected a non-empty sketch".to_owned(),
+                        vec![args.source_range],
+                    )));
+                };
+                any_edge_id
+            }
+        },
+        SketchFaceOrTaggedFace::Face(face_tag) => {
+            let face_id = face_tag.get_face_id_from_tag(exec_state, args, false).await?;
+            // We need to get an edge from the face.
+            let solid3d_info = exec_state
+                .send_modeling_cmd(
+                    args.into(),
+                    ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
+                        edge_id: face_id, // Just pass the face id here, we just need any edge from the face.
+                        object_id: face_tag.solid.id,
+                    }),
+                )
+    },
+    SketchFaceOrTaggedFace::TaggedFace(tagged_face) => {
+        let face_id = tagged_face.get_face_id_from_tag(exec_state, args, false).await?;
+        // We need to get an edge from the face.
+        let solid3d_info = exec_state
+            .send_modeling_cmd(
+                args.into(),
+                ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
+                    edge_id: face_id, // Just pass the face id here, we just need any edge from the face.
+                    object_id: tagged_face.solid.id,
+                }),
+            )
+    },
+    };   
 
     let mut sketch = sketch.clone();
     sketch.is_closed = true;
@@ -503,7 +545,6 @@ pub(crate) async fn do_post_extrude<'a>(
         edge_cuts: vec![],
     })
 }
-
 #[derive(Default)]
 struct Faces {
     /// Maps curve ID to face ID for each side.

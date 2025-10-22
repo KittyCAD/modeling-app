@@ -197,7 +197,7 @@ async fn inner_revolve(
 
         solids.push(
             do_post_extrude(
-                sketch,
+                &sketch.clone().into(),
                 new_solid_id.into(),
                 false,
                 &super::extrude::NamedCapTags {
