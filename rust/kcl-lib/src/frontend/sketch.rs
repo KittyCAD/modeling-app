@@ -38,7 +38,7 @@ pub trait SketchApi {
         sketch: ObjectId,
         segment: SegmentCtor,
         label: Option<String>,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)>;
 
     async fn edit_segment(
         &mut self,
@@ -327,7 +327,10 @@ pub struct PointHandle {
 #[ts(export)]
 pub enum SolveConstraint {
     // e.g. Make these things coincident.
-    Relation { kind: RelationKind, segment_ids: Vec<String> },
+    Relation {
+        kind: RelationKind,
+        segment_ids: Vec<String>,
+    },
     // If segment2 is given, it's the perpendicular distance between them.
     Dimension {
         segment1_id: String,
@@ -378,7 +381,12 @@ impl SketchApi for SketchApiStub {
         todo!("edit_sketch not implemented")
     }
 
-    async fn exit_sketch(&mut self, _ctx: &ExecutorContext, _version: Version, _sketch: ObjectId) -> Result<SceneGraph> {
+    async fn exit_sketch(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _version: Version,
+        _sketch: ObjectId,
+    ) -> Result<SceneGraph> {
         todo!("exit_sketch not implemented")
     }
 
@@ -389,12 +397,27 @@ impl SketchApi for SketchApiStub {
         _sketch: ObjectId,
         _segment: SegmentCtor,
         _label: Option<String>,
-    ) -> Result<(SourceDelta, SketchExecOutcome)> {
+    ) -> Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
         // Return empty stub data
         Ok((
-            SourceDelta {
-                text: String::new(),
-            },
+            SourceDelta { text: String::new() },
+            SceneGraphDelta::new(
+                SceneGraph::empty(ProjectId(0), FileId(0), Version(0)),
+                Default::default(),
+                false,
+                crate::ExecOutcome {
+                    variables: Default::default(),
+                    #[cfg(feature = "artifact-graph")]
+                    operations: Default::default(),
+                    #[cfg(feature = "artifact-graph")]
+                    artifact_graph: Default::default(),
+                    scene_objects: Default::default(),
+                    source_range_to_object: Default::default(),
+                    errors: Default::default(),
+                    filenames: Default::default(),
+                    default_planes: Default::default(),
+                },
+            ),
             SketchExecOutcome {
                 segments: Vec::new(),
                 constraints: Vec::new(),

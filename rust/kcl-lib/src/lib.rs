@@ -158,8 +158,8 @@ pub mod front {
         },
         sketch::{
             Arc, ArcCtor, Circle, CircleCtor, Freedom, Line, LineCtor, MidPointLineCtor, Point, Point2d, PointCtor,
-            Segment, SegmentCtor, Sketch, SketchApi, SketchArgs, StartOrEnd, TangentArcCtor, ThreePointArcCtor,
-            ThreePointCircleCtor,
+            Segment, SegmentCtor, Sketch, SketchApi, SketchApiStub, SketchArgs, SketchExecOutcome, StartOrEnd,
+            TangentArcCtor, ThreePointArcCtor, ThreePointCircleCtor,
         },
     };
 }
