@@ -695,7 +695,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
             layoutName: `${LAYOUT_PERSIST_PREFIX}default`,
             layoutPayload: JSON.stringify({
               version: 'v1',
-              layout: setOpenPanes(playwrightLayoutConfig, paneIds),
+              layout: setOpenPanes(structuredClone(playwrightLayoutConfig), paneIds),
             } satisfies LayoutWithMetadata),
           }
         )
