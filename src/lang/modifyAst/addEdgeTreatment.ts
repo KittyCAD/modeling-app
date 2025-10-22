@@ -27,10 +27,7 @@ import {
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { getSweepArtifactFromSelection } from '@src/lang/std/artifactGraph'
-import {
-  addTagForSketchOnFace,
-  sketchLineHelperMapKw,
-} from '@src/lang/std/sketch'
+import { sketchLineHelperMapKw } from '@src/lang/std/sketch'
 import { findKwArg } from '@src/lang/util'
 import {
   type ArtifactGraph,
@@ -46,7 +43,6 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { type EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 
 // Edge Treatment Types
 export enum EdgeTreatmentType {
@@ -276,45 +272,6 @@ export function getPathToExtrudeForSegmentSelection(
   const pathToExtrudeNode = sweepArtifact.codeRef.pathToNode
 
   return { pathToSegmentNode, pathToExtrudeNode }
-}
-
-export function mutateAstWithTagForSketchSegment(
-  astClone: Node<Program>,
-  pathToSegmentNode: PathToNode,
-  edgeCutMeta: EdgeCutInfo | null = null
-): { modifiedAst: Node<Program>; tag: string } | Error {
-  const segmentNode = getNodeFromPath<CallExpressionKw>(
-    astClone,
-    pathToSegmentNode,
-    ['CallExpressionKw']
-  )
-  if (err(segmentNode)) return segmentNode
-
-  // Check whether selection is a valid segment
-  if (
-    !segmentNode.node.callee ||
-    !(
-      segmentNode.node.callee.name.name in sketchLineHelperMapKw ||
-      segmentNode.node.callee.name.name === 'chamfer'
-    )
-  ) {
-    return new Error('Selection is not a sketch segment or chamfer')
-  }
-
-  // Add tag to the sketch segment or use existing tag
-  // a helper function that creates the updated node and applies the changes to the AST
-  const taggedSegment = addTagForSketchOnFace(
-    {
-      pathToNode: pathToSegmentNode,
-      node: astClone,
-    },
-    segmentNode.node.callee.name.name,
-    edgeCutMeta
-  )
-  if (err(taggedSegment)) return taggedSegment
-  const { tag } = taggedSegment
-
-  return { modifiedAst: astClone, tag }
 }
 
 export function getEdgeTagCall(

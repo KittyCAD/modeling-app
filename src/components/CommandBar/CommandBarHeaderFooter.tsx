@@ -186,6 +186,8 @@ function CommandBarHeaderFooter({
                           )
                         ) : arg.inputType === 'vector3d' ? (
                           (argValue as KclCommandValue).valueCalculated
+                        ) : arg.inputType === 'vector2d' ? (
+                          (argValue as KclCommandValue).valueCalculated
                         ) : arg.inputType === 'text' &&
                           !arg.valueSummary &&
                           typeof argValue === 'string' ? (
