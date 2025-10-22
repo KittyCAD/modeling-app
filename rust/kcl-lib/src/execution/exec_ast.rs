@@ -144,8 +144,16 @@ impl ExecutorContext {
         (KclError, Option<EnvironmentRef>, Option<ModuleArtifactState>),
     > {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
-
-        let mut local_state = ModuleState::new(path.clone(), exec_state.stack().memory.clone(), Some(module_id));
+        #[cfg(not(feature = "artifact-graph"))]
+        let next_object_id = 0;
+        #[cfg(feature = "artifact-graph")]
+        let next_object_id = exec_state.global.root_module_artifacts.scene_objects.len();
+        let mut local_state = ModuleState::new(
+            path.clone(),
+            exec_state.stack().memory.clone(),
+            Some(module_id),
+            next_object_id,
+        );
         if !preserve_mem {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
         }

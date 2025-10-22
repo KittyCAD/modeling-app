@@ -139,7 +139,7 @@ impl ExecState {
     pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
             global: GlobalState::new(&exec_context.settings),
-            mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default()),
+            mod_local: ModuleState::new(ModulePath::Main, ProgramMemory::new(), Default::default(), 0),
         }
     }
 
@@ -148,7 +148,7 @@ impl ExecState {
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::new(self.mod_local.path.clone(), ProgramMemory::new(), Default::default()),
+            mod_local: ModuleState::new(self.mod_local.path.clone(), ProgramMemory::new(), Default::default(), 0),
         };
     }
 
@@ -572,7 +572,12 @@ impl ModuleArtifactState {
 }
 
 impl ModuleState {
-    pub(super) fn new(path: ModulePath, memory: Arc<ProgramMemory>, module_id: Option<ModuleId>) -> Self {
+    pub(super) fn new(
+        path: ModulePath,
+        memory: Arc<ProgramMemory>,
+        module_id: Option<ModuleId>,
+        next_object_id: usize,
+    ) -> Self {
         ModuleState {
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
@@ -583,7 +588,13 @@ impl ModuleState {
             explicit_length_units: false,
             path,
             settings: Default::default(),
+            #[cfg(not(feature = "artifact-graph"))]
             artifacts: Default::default(),
+            #[cfg(feature = "artifact-graph")]
+            artifacts: ModuleArtifactState {
+                object_id_generator: IncIdGenerator::new(next_object_id),
+                ..Default::default()
+            },
             allowed_warnings: Vec::new(),
             denied_warnings: Vec::new(),
             inside_stdlib: false,
