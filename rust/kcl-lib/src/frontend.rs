@@ -365,7 +365,7 @@ impl FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let mut outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
+        let mut outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -482,7 +482,7 @@ impl FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let mut outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
+        let mut outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -759,7 +759,6 @@ mod tests {
         );
         assert_eq!(scene_delta.new_graph.objects.len(), 1);
 
-        let mock_ctx = ExecutorContext::new_mock(None).await;
         let line_ctor = LineCtor {
             start: Point2d {
                 x: Expr::Number(Number {
@@ -782,7 +781,7 @@ mod tests {
                 }),
             },
         };
-        let (src_delta, scene_delta, _) = frontend.add_line(&mock_ctx, sketch_id, line_ctor).await.unwrap();
+        let (src_delta, scene_delta, _) = frontend.add_line(&ctx, sketch_id, line_ctor).await.unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
@@ -819,7 +818,7 @@ sketch(on = XY) {
                 }),
             },
         };
-        let (src_delta, scene_delta) = frontend.edit_line(&mock_ctx, sketch_id, line, line_ctor).await.unwrap();
+        let (src_delta, scene_delta) = frontend.edit_line(&ctx, sketch_id, line, line_ctor).await.unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
@@ -829,8 +828,7 @@ sketch(on = XY) {
 }
 "
         );
-        // TODO: These IDs are wrong. They shouldn't reuse IDs from the previous
-        // run.
-        assert_eq!(scene_delta.new_objects, vec![ObjectId(0), ObjectId(1), ObjectId(2)]);
+        assert_eq!(scene_delta.new_objects, vec![]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 4);
     }
 }

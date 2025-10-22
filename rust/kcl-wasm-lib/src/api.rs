@@ -160,7 +160,7 @@ impl Context {
             serde_json::from_str(label_json).map_err(|e| format!("Could not deserialize label: {e}"))?;
 
         let ctx = self
-            .create_executor_ctx(settings, None, true)
+            .create_executor_ctx(settings, None, false)
             .map_err(|e| format!("Could not create KCL executor context for add segment. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
@@ -223,7 +223,7 @@ impl Context {
             serde_json::from_str(segment_json).map_err(|e| format!("Could not deserialize SegmentCtor: {e}"))?;
 
         let ctx = self
-            .create_executor_ctx(settings, None, true)
+            .create_executor_ctx(settings, None, false)
             .map_err(|e| format!("Could not create KCL executor context for edit segment. {TRUE_BUG} Details: {e}"))?;
 
         let frontend = Arc::clone(&self.frontend);
