@@ -4,13 +4,12 @@ use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    front::{FrontendState, SketchApi},
-    wasm_engine::FileManager,
-    EngineManager, ExecOutcome, KclError, KclErrorWithOutputs, Program, ProjectManager,
+    front::FrontendState, wasm_engine::FileManager, EngineManager, ExecOutcome, KclError, KclErrorWithOutputs, Program,
+    ProjectManager,
 };
 use wasm_bindgen::prelude::*;
 
-const TRUE_BUG: &str = "This is a bug in KCL and not in your code, please report this to Zoo.";
+pub(crate) const TRUE_BUG: &str = "This is a bug in KCL and not in your code, please report this to Zoo.";
 
 #[wasm_bindgen]
 pub struct Context {
@@ -19,7 +18,7 @@ pub struct Context {
     fs: Arc<FileManager>,
     mock_engine: Arc<Box<dyn EngineManager>>,
     pub(crate) project_manager: ProjectManager,
-    frontend: Arc<tokio::sync::RwLock<FrontendState>>,
+    pub(crate) frontend: Arc<tokio::sync::RwLock<FrontendState>>,
 }
 
 #[wasm_bindgen]
@@ -54,7 +53,7 @@ impl Context {
         })
     }
 
-    fn create_executor_ctx(
+    pub(crate) fn create_executor_ctx(
         &self,
         settings: &str,
         path: Option<String>,
@@ -204,138 +203,5 @@ impl Context {
             Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
             Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
         }
-    }
-
-    /// Create new sketch and enter sketch mode.
-    #[wasm_bindgen]
-    pub async fn new_sketch(
-        &self,
-        project_json: &str,
-        file_json: &str,
-        version_json: &str,
-        args_json: &str,
-        settings: &str,
-    ) -> Result<JsValue, JsValue> {
-        console_error_panic_hook::set_once();
-
-        let project: kcl_lib::front::ProjectId =
-            serde_json::from_str(project_json).map_err(|e| format!("Could not deserialize ProjectId: {e}"))?;
-        let file: kcl_lib::front::FileId =
-            serde_json::from_str(file_json).map_err(|e| format!("Could not deserialize FileId: {e}"))?;
-        let version: kcl_lib::front::Version =
-            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let args: kcl_lib::front::SketchArgs =
-            serde_json::from_str(args_json).map_err(|e| format!("Could not deserialize SketchArgs: {e}"))?;
-
-        let ctx = self
-            .create_executor_ctx(settings, None, true)
-            .map_err(|e| format!("Could not create KCL executor context for new sketch. {TRUE_BUG} Details: {e}"))?;
-
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
-        let result = guard
-            .new_sketch(&ctx, project, file, version, args)
-            .await
-            .map_err(|e| format!("Failed to create new sketch: {:?}", e))?;
-
-        Ok(JsValue::from_serde(&result)
-            .map_err(|e| format!("Could not serialize new sketch result. {TRUE_BUG} Details: {e}"))?)
-    }
-
-    /// Exit sketch mode.
-    #[wasm_bindgen]
-    pub async fn exit_sketch(&self, version_json: &str, sketch_json: &str, settings: &str) -> Result<JsValue, JsValue> {
-        console_error_panic_hook::set_once();
-
-        let version: kcl_lib::front::Version =
-            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
-            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-
-        let ctx = self
-            .create_executor_ctx(settings, None, false)
-            .map_err(|e| format!("Could not create KCL executor context for exit sketch. {TRUE_BUG} Details: {e}"))?;
-
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
-        let result = guard
-            .exit_sketch(&ctx, version, sketch)
-            .await
-            .map_err(|e| format!("Failed to exit sketch: {:?}", e))?;
-
-        Ok(JsValue::from_serde(&result)
-            .map_err(|e| format!("Could not serialize exit sketch result. {TRUE_BUG} Details: {e}"))?)
-    }
-
-    /// Add segment to sketch.
-    #[wasm_bindgen]
-    pub async fn add_segment(
-        &self,
-        version_json: &str,
-        sketch_json: &str,
-        segment_json: &str,
-        label_json: &str,
-        settings: &str,
-    ) -> Result<JsValue, JsValue> {
-        console_error_panic_hook::set_once();
-
-        let version: kcl_lib::front::Version =
-            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
-            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
-        let segment: kcl_lib::front::SegmentCtor =
-            serde_json::from_str(segment_json).map_err(|e| format!("Could not deserialize SegmentCtor: {e}"))?;
-        let label: Option<String> =
-            serde_json::from_str(label_json).map_err(|e| format!("Could not deserialize label: {e}"))?;
-
-        let ctx = self
-            .create_executor_ctx(settings, None, true)
-            .map_err(|e| format!("Could not create KCL executor context for add segment. {TRUE_BUG} Details: {e}"))?;
-
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
-        let result = guard
-            .add_segment(&ctx, version, sketch, segment, label)
-            .await
-            .map_err(|e| format!("Failed to add segment to sketch: {:?}", e))?;
-
-        Ok(JsValue::from_serde(&result)
-            .map_err(|e| format!("Could not serialize add segment result. {TRUE_BUG} Details: {e}"))?)
-    }
-
-    /// Edit segment in sketch.
-    #[wasm_bindgen]
-    pub async fn edit_segment(
-        &self,
-        version_json: &str,
-        sketch_json: &str,
-        segment_id_json: &str,
-        segment_json: &str,
-        settings: &str,
-    ) -> Result<JsValue, JsValue> {
-        console_error_panic_hook::set_once();
-
-        let version: kcl_lib::front::Version =
-            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
-        let sketch: kcl_lib::front::ObjectId =
-            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
-        let segment_id: kcl_lib::front::ObjectId = serde_json::from_str(segment_id_json)
-            .map_err(|e| format!("Could not deserialize segment ObjectId: {e}"))?;
-        let segment: kcl_lib::front::SegmentCtor =
-            serde_json::from_str(segment_json).map_err(|e| format!("Could not deserialize SegmentCtor: {e}"))?;
-
-        let ctx = self
-            .create_executor_ctx(settings, None, true)
-            .map_err(|e| format!("Could not create KCL executor context for edit segment. {TRUE_BUG} Details: {e}"))?;
-
-        let frontend = Arc::clone(&self.frontend);
-        let mut guard = frontend.write().await;
-        let result = guard
-            .edit_segment(&ctx, version, sketch, segment_id, segment)
-            .await
-            .map_err(|e| format!("Failed to edit segment in sketch: {:?}", e))?;
-
-        Ok(JsValue::from_serde(&result)
-            .map_err(|e| format!("Could not serialize edit segment result. {TRUE_BUG} Details: {e}"))?)
     }
 }
