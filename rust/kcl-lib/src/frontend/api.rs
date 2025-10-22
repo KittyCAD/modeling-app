@@ -91,7 +91,7 @@ pub struct File {
     pub text: String,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 pub struct Object {
     pub id: ObjectId,
     pub kind: ObjectKind,
@@ -102,7 +102,7 @@ pub struct Object {
 }
 
 #[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 pub enum ObjectKind {
     Plane(Plane),
     Sketch(crate::frontend::sketch::Sketch),
@@ -113,7 +113,7 @@ pub enum ObjectKind {
     Sweep,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 pub enum Plane {
     Object(ObjectId),
     Default(StandardPlane),
@@ -152,7 +152,7 @@ impl std::str::FromStr for StandardPlane {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 pub enum SourceRef {
     Simple(SourceRange),
     BackTrace(Vec<SourceRange>),

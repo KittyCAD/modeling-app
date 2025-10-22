@@ -115,7 +115,7 @@ pub(super) struct ModuleState {
     /// [`ObjectId`] generator.
     pub object_id_generator: IncIdGenerator<usize>,
     /// Objects in the scene, created from execution.
-    pub scene_objects: IndexMap<ObjectId, Object>,
+    pub scene_objects: Vec<Object>,
     /// Map from source range to object ID for lookup of objects by their source
     /// range.
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
@@ -213,6 +213,7 @@ impl ExecState {
             operations: self.global.root_module_artifacts.operations,
             #[cfg(feature = "artifact-graph")]
             artifact_graph: self.global.artifacts.graph,
+            scene_objects: self.mod_local.scene_objects,
             source_range_to_object: self.mod_local.source_range_to_object,
             errors: self.global.errors,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
@@ -233,7 +234,8 @@ impl ExecState {
 
     pub fn add_scene_object(&mut self, obj: Object, source_range: SourceRange) -> ObjectId {
         let id = obj.id;
-        self.mod_local.scene_objects.insert(id, obj);
+        debug_assert!(id.0 == self.mod_local.scene_objects.len());
+        self.mod_local.scene_objects.push(obj);
         self.mod_local.source_range_to_object.insert(source_range, id);
         id
     }

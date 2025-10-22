@@ -37,7 +37,7 @@ use crate::{
         import_graph::{Universe, UniverseMap},
         typed_path::TypedPath,
     },
-    front::ObjectId,
+    front::{Object, ObjectId},
     fs::FileManager,
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
@@ -80,6 +80,9 @@ pub struct ExecOutcome {
     /// Output artifact graph.
     #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
+    /// Objects in the scene, created from execution.
+    #[serde(skip)]
+    pub scene_objects: Vec<Object>,
     /// Map from source range to object ID for lookup of objects by their source
     /// range.
     #[serde(skip)]
