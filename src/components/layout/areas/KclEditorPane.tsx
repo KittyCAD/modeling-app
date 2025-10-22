@@ -19,7 +19,7 @@ import {
   indentOnInput,
   syntaxHighlighting,
 } from '@codemirror/language'
-import { lintGutter, lintKeymap } from '@codemirror/lint'
+import { diagnosticCount, lintGutter, lintKeymap } from '@codemirror/lint'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import type { Extension } from '@codemirror/state'
 import { EditorState, Prec, Transaction } from '@codemirror/state'
