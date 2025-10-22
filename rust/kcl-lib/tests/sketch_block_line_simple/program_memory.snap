@@ -47,7 +47,9 @@ description: Variables in memory after executing sketch_block_line_simple.kcl
                       "type": "Length"
                     }
                   }
-                ]
+                ],
+                "startFreedom": "Fixed",
+                "endFreedom": "Fixed"
               }
             }
           }
