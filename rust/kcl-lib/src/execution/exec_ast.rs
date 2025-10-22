@@ -1031,14 +1031,13 @@ impl Node<SketchBlock> {
             )?);
         }
 
-        // Create scene objects in the engine after unknowns are solved for.
+        // Create scene objects after unknowns are solved.
         let segment_object_ids = create_segment_scene_objects(&solved_segments, range, exec_state)?;
 
         // Create the sketch block scene object.
         let sketch_id = exec_state.next_object_id();
         let arg_on: Option<crate::execution::Plane> = args.get_kw_arg_opt("on", &RuntimeType::plane(), exec_state)?;
         let on_object = arg_on.and_then(|plane| plane.object_id);
-        // TODO: sketch-api: send this to the engine.
         let scene_object = Object {
             id: sketch_id,
             kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
@@ -1058,6 +1057,8 @@ impl Node<SketchBlock> {
             source: range.into(),
         };
         exec_state.add_scene_object(scene_object, range);
+
+        // TODO: sketch-api: send everything to the engine.
 
         let metadata = Metadata {
             source_range: SourceRange::from(self),
@@ -1339,7 +1340,6 @@ fn create_segment_scene_objects(
         };
         segment_object_ids.push(segment_object.id);
         exec_state.add_scene_object(segment_object, segment_range);
-        // TODO: sketch-api: create the segment in the engine.
     }
     Ok(segment_object_ids)
 }
