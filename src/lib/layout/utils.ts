@@ -417,20 +417,24 @@ export function collapseSplitChildPaneNode({
   }
 
   // Need to reach into the DOM to get the elements to measure
-  const parentElement = getPanelGroupElement(splitsLayoutNode.id)
-  const childElement = getPanelElement(panesLayoutNode.id)
+  const parentElement = globalThis.document
+    ? getPanelGroupElement(splitsLayoutNode.id)
+    : undefined
+  const childElement = globalThis.document
+    ? getPanelElement(panesLayoutNode.id)
+    : undefined
   const toolbarElement = childElement?.querySelector('[data-pane-toolbar]')
-  if (!parentElement || indexOfSplit < 0 || !toolbarElement) {
-    console.error(
-      `Could not find elements to collapse pane layout, split layout ID: ${splitsLayoutNode.id}`
-    )
-    return rootLayout
-  }
+  const canMeasure = parentElement && toolbarElement
 
   const directionToMeasure =
     splitsLayoutNode.orientation === 'inline' ? 'width' : 'height'
-  const parentSize = parentElement.getBoundingClientRect()[directionToMeasure]
-  const toolbarSize = toolbarElement.getBoundingClientRect()[directionToMeasure]
+  // Just use fallback values if we don't have elements
+  const parentSize = canMeasure
+    ? parentElement.getBoundingClientRect()[directionToMeasure]
+    : 100
+  const toolbarSize = canMeasure
+    ? toolbarElement.getBoundingClientRect()[directionToMeasure]
+    : 5
 
   const newSizeAsPercentage = (toolbarSize / parentSize) * 100
   const sizeDelta = Math.abs(
