@@ -13,10 +13,8 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import {
-  getEdgeTagCall,
-  mutateAstWithTagForSketchSegment,
-} from '@src/lang/modifyAst/addEdgeTreatment'
+import { getEdgeTagCall } from '@src/lang/modifyAst/addEdgeTreatment'
+import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
   getVariableExprsFromSelection,
