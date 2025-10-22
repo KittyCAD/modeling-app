@@ -1252,7 +1252,7 @@ fn create_segment_scene_objects(
             .first()
             .map(|m| m.source_range)
             .unwrap_or(sketch_block_range);
-        let segment_object_id = exec_state.next_object_id();
+        let segment_object_id = exec_state.peek_object_id(2);
 
         let start_point2d = TyF64::to_point2d(&segment.start).map_err(|_| {
             KclError::new_internal(KclErrorDetails::new(
@@ -1311,7 +1311,7 @@ fn create_segment_scene_objects(
         exec_state.add_scene_object(end_point_object, segment_range);
 
         let segment_object = Object {
-            id: segment_object_id,
+            id: exec_state.assert_next_object_id(segment_object_id),
             kind: ObjectKind::Segment(crate::front::Segment::Line(crate::front::Line {
                 start: start_point_object_id,
                 end: end_point_object_id,

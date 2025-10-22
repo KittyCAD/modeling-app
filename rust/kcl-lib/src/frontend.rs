@@ -285,10 +285,10 @@ impl FrontendState {
         // Create updated KCL source from args.
         let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
-        let line_ast = ast::Expr::CallExpressionKw(Box::new(ast::CallExpressionKw::new(
-            LINE_FN,
-            None,
-            vec![
+        let line_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(LINE_FN)),
+            unlabeled: None,
+            arguments: vec![
                 ast::LabeledArg {
                     label: Some(ast::Identifier::new(LINE_START_PARAM)),
                     arg: start_ast,
@@ -298,7 +298,9 @@ impl FrontendState {
                     arg: end_ast,
                 },
             ],
-        )));
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
 
         // Look up existing sketch.
         let sketch_id = sketch;
@@ -369,7 +371,7 @@ impl FrontendState {
             .ok_or_else(|| Error {
                 msg: format!("Source range of line not found: {line_source_range:?}"),
             })?;
-        let segment_object = self.scene_graph.objects.get(segment_id.0).ok_or_else(|| Error {
+        let segment_object = outcome.scene_objects.get(segment_id.0).ok_or_else(|| Error {
             msg: format!("Segment not found: {segment_id:?}"),
         })?;
         let ObjectKind::Segment(segment) = &segment_object.kind else {
@@ -382,7 +384,7 @@ impl FrontendState {
                 msg: format!("Segment is not a line: {segment:?}"),
             });
         };
-        let new_object_ids = vec![segment_id, line.start, line.end];
+        let new_object_ids = vec![line.start, line.end, segment_id];
 
         let src_delta = SourceDelta { text: new_source };
         self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
@@ -656,6 +658,29 @@ fn ast_name(name: String) -> ast::Node<ast::Name> {
     }
 }
 
+fn ast_sketch2_name(name: &str) -> ast::Name {
+    ast::Name {
+        name: ast::Node {
+            inner: ast::Identifier {
+                name: name.to_owned(),
+                digest: None,
+            },
+            start: Default::default(),
+            end: Default::default(),
+            module_id: Default::default(),
+            outer_attrs: Default::default(),
+            pre_comments: Default::default(),
+            comment_start: Default::default(),
+        },
+        path: vec![ast::Node::no_src(ast::Identifier {
+            name: "sketch2".to_owned(),
+            digest: None,
+        })],
+        abs_path: false,
+        digest: None,
+    }
+}
+
 fn ast_node_from_source_range_mut(
     ast: &mut ast::Node<ast::Program>,
     source_range: SourceRange,
@@ -666,5 +691,85 @@ fn ast_node_from_source_range_mut(
     match control {
         ControlFlow::Continue(_) => Err(anyhow!("Source range not found: {source_range:?}")),
         ControlFlow::Break(break_value) => Ok(break_value),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        front::{Plane, Sketch, StandardPlane},
+        pretty::NumericSuffix,
+    };
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_add_line() {
+        let initial_source = "@settings(experimentalFeatures = allow)\n";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+
+        let sketch_args = SketchArgs {
+            on: api::Plane::Default(api::StandardPlane::XY),
+        };
+        let (_src_delta, scene_delta, sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), Version(0), sketch_args)
+            .await
+            .unwrap();
+        assert_eq!(sketch_id, ObjectId(0));
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(0)]);
+        let sketch_object = &scene_delta.new_graph.objects[0];
+        assert_eq!(sketch_object.id, ObjectId(0));
+        assert_eq!(
+            sketch_object.kind,
+            ObjectKind::Sketch(Sketch {
+                args: SketchArgs {
+                    on: Plane::Default(StandardPlane::XY)
+                },
+                segments: vec![],
+                constraints: vec![],
+            })
+        );
+        assert_eq!(scene_delta.new_graph.objects.len(), 1);
+
+        let line_ctor = LineCtor {
+            start: Point2d {
+                x: Expr::Number(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            end: Point2d {
+                x: Expr::Number(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+        };
+        let (src_delta, scene_delta) = frontend.add_line(&ctx, sketch_id, line_ctor).await.unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::line(start = [0mm, 0mm], end = [10mm, 10mm])
+}
+"
+        );
+        // TODO: These IDs are wrong. They shouldn't reuse IDs from the previous
+        // run.
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(0), ObjectId(1), ObjectId(2)]);
     }
 }
