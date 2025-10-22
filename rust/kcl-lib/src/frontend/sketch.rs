@@ -101,7 +101,7 @@ pub struct SketchArgs {
 #[ts(export, rename = "ApiPoint")]
 pub struct Point {
     pub position: Point2d<Number>,
-    pub ctor: Option<Point2d<Expr>>,
+    pub ctor: Option<PointCtor>,
     pub owner: Option<ObjectId>,
     pub freedom: Freedom,
     pub constraints: Vec<ObjectId>,
@@ -127,7 +127,7 @@ pub enum Segment {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub enum SegmentCtor {
-    Point(Point2d<Expr>),
+    Point(PointCtor),
     Line(LineCtor),
     MidPointLine(MidPointLineCtor),
     Arc(ArcCtor),
@@ -135,6 +135,12 @@ pub enum SegmentCtor {
     TangentArc(TangentArcCtor),
     Circle(CircleCtor),
     ThreePointCircle(ThreePointCircleCtor),
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct PointCtor {
+    pub position: Point2d<Expr>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
