@@ -13,7 +13,6 @@ import { Toolbar } from '@src/Toolbar'
 import {
   type SidebarPane,
   sidebarPanesLeft,
-  sidebarPanesRight,
   textToCadPane2,
 } from '@src/components/layout/areas'
 import { LayoutPanel } from '@src/components/layout/Panel'
