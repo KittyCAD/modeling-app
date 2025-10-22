@@ -9,12 +9,11 @@ where
     T: Default,
 {
     fn default() -> Self {
-        Self { next_id: T::default() }
+        Self::new(T::default())
     }
 }
 
 impl<T> IncIdGenerator<T> {
-    #[allow(dead_code)]
     pub fn new(next_id: T) -> Self {
         Self { next_id }
     }
