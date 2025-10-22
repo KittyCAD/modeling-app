@@ -120,7 +120,7 @@ impl SketchApi for FrontendState {
             .ast
             .body
             .last()
-            .map(|item| SourceRange::new(item.start(), item.end(), item.module_id()))
+            .map(SourceRange::from)
             .ok_or_else(|| Error {
                 msg: "No AST body items after adding sketch".to_owned(),
             })?;
