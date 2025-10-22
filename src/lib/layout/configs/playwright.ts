@@ -24,7 +24,8 @@ export const playwrightLayoutConfig: Layout = {
   label: 'root',
   type: LayoutType.Splits,
   orientation: 'inline',
-  sizes: [45, 55],
+  /** Chosen merely to match existing snapsnots as closely as possible */
+  sizes: [46, 54],
   children: [
     {
       id: DefaultLayoutToolbarID.Left,
