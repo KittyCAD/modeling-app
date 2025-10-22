@@ -769,7 +769,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           ['blind'].includes(context.argumentsToSubmit.holeBody as string),
         hidden: (context) =>
           !['blind'].includes(context.argumentsToSubmit.holeBody as string),
-        defaultValue: KCL_DEFAULT_LENGTH,
+        defaultValue: '1',
       },
       holeType: {
         inputType: 'options',
@@ -790,7 +790,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           !['counterbore'].includes(
             context.argumentsToSubmit.holeType as string
           ),
-        defaultValue: KCL_DEFAULT_LENGTH,
+        defaultValue: '1',
       },
       counterboreDiameter: {
         inputType: 'kcl',
@@ -802,7 +802,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           !['counterbore'].includes(
             context.argumentsToSubmit.holeType as string
           ),
-        defaultValue: KCL_DEFAULT_LENGTH,
+        defaultValue: '2',
       },
       countersinkAngle: {
         inputType: 'kcl',
@@ -826,7 +826,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           !['countersink'].includes(
             context.argumentsToSubmit.holeType as string
           ),
-        defaultValue: KCL_DEFAULT_LENGTH,
+        defaultValue: '2',
       },
       holeBottom: {
         inputType: 'options',
