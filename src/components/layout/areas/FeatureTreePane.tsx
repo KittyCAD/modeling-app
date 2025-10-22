@@ -61,6 +61,7 @@ import {
   DefaultLayoutPaneID,
   getOpenPanes,
   setOpenPanes,
+  togglePaneLayoutNode,
 } from '@src/lib/layout'
 
 export const FeatureTreePane = () => {
@@ -82,10 +83,13 @@ export const FeatureTreePane = () => {
       },
       actions: {
         openCodePane: () => {
-          const rootLayout = getLayout()
-          const openPanes = getOpenPanes({ rootLayout })
+          const rootLayout = structuredClone(getLayout())
           setLayout(
-            setOpenPanes(rootLayout, [...openPanes, DefaultLayoutPaneID.Code])
+            togglePaneLayoutNode({
+              rootLayout,
+              targetNodeId: DefaultLayoutPaneID.Code,
+              shouldExpand: true,
+            })
           )
         },
         scrollToError: () => {
