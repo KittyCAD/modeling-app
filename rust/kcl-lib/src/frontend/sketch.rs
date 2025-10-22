@@ -83,7 +83,7 @@ pub trait SketchApi {
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, rename = "ApiSketch")]
 pub struct Sketch {
     pub args: SketchArgs,
@@ -91,7 +91,7 @@ pub struct Sketch {
     pub constraints: Vec<ObjectId>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct SketchArgs {
     pub on: Plane,
@@ -240,20 +240,20 @@ pub struct ThreePointCircleCtor {
     pub p3: Point2d<Expr>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, rename = "ApiConstraint")]
 pub enum Constraint {
     Coincident(Coincident),
     Parallel(Parallel),
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct Coincident {
     points: Vec<ObjectId>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, optional_fields)]
 pub struct Parallel {
     lines: Vec<ObjectId>,
