@@ -98,6 +98,7 @@ import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
+import { addFlatnessGdt } from '@src/lang/modifyAst/gdt'
 import {
   addAppearance,
   addClone,
@@ -162,6 +163,7 @@ import {
   type EquipTool,
   sketchSolveMachine,
 } from '@src/machines/sketchSolve/sketchSolveMode'
+import { setExperimentalFeatures } from '@src/lib/kclHelpers'
 import type CodeManager from '@src/lang/codeManager'
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
@@ -267,6 +269,7 @@ export type ModelingMachineEvent =
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
+  | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
   | {
       type:
         | 'Add circle origin'
@@ -3767,6 +3770,50 @@ export const modelingMachine = setup({
         )
       }
     ),
+    gdtFlatnessAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['GDT Flatness'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        // Remove once it isn't experimental anymore
+        if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
+          const result = await setExperimentalFeatures({ type: 'Allow' })
+          if (err(result)) {
+            return Promise.reject(result)
+          }
+        }
+
+        const { ast, artifactGraph } = kclManager
+        const result = addFlatnessGdt({
+          ...input,
+          ast,
+          artifactGraph,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+            rustContext,
+          },
+          {
+            focusPath: [result.pathToNode],
+            skipErrorsOnMockExecution: true, // Skip validation since gdt::flatness may not be available in runtime yet
+          }
+        )
+      }
+    ),
     exportFromEngine: fromPromise(
       async ({}: { input?: ModelingCommandSchema['Export'] }) => {
         return undefined as Error | undefined
@@ -4275,6 +4322,12 @@ export const modelingMachine = setup({
 
         Clone: {
           target: 'Applying clone',
+          reenter: true,
+          guard: 'no kcl errors',
+        },
+
+        'GDT Flatness': {
+          target: 'Applying GDT Flatness',
           reenter: true,
           guard: 'no kcl errors',
         },
@@ -6073,6 +6126,22 @@ export const modelingMachine = setup({
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Flatness': {
+      invoke: {
+        src: 'gdtFlatnessAstMod',
+        id: 'gdtFlatnessAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'GDT Flatness') return undefined
+          return event.data
         },
         onDone: ['idle'],
         onError: {

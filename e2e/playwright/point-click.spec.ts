@@ -3634,4 +3634,540 @@ solid001 = extrude(sketch001, length = 5)`
       await editor.expectEditor.not.toContain('patternLinear3d(')
     })
   })
+
+  test('GDT Flatness from command bar', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 30)
+extrude001 = extrude(sketch001, length = 30)
+    `
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      // Close panes to ensure toolbar buttons are visible
+      await toolbar.closePane('feature-tree')
+      await toolbar.closePane('code')
+    })
+
+    // Adjusted coordinates to center screen for clicking on cap
+    const testPoint = { x: 500, y: 200 }
+    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    await test.step('Add GDT Flatness to the scene', async () => {
+      await test.step('Open GDT Flatness command from toolbar', async () => {
+        await toolbar.gdtFlatnessButton.click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'GDT Flatness',
+          currentArgKey: 'faces',
+          currentArgValue: '',
+          headerArguments: {
+            Faces: '',
+            Tolerance: '',
+          },
+          highlightedHeaderArg: 'faces',
+        })
+      })
+
+      await test.step('Select face and configure basic parameters', async () => {
+        await test.step('Select face', async () => {
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'faces',
+            currentArgValue: '',
+            headerArguments: {
+              Faces: '',
+              Tolerance: '',
+            },
+            highlightedHeaderArg: 'faces',
+          })
+          await clickOnCap()
+        })
+
+        await test.step('Configure tolerance', async () => {
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'tolerance',
+            currentArgValue: '0.1mm',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '',
+            },
+            highlightedHeaderArg: 'tolerance',
+          })
+          // Set tolerance to 0.1mm
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.1mm')
+        })
+
+        await test.step('Review basic parameters', async () => {
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+            },
+          })
+        })
+      })
+
+      await test.step('Configure optional parameters', async () => {
+        await test.step('Configure precision', async () => {
+          await cmdBar.clickOptionalArgument('precision')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'precision',
+            currentArgValue: '3',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '',
+            },
+            highlightedHeaderArg: 'precision',
+          })
+          // Update precision from 3 to 5
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('5')
+          await cmdBar.progressCmdBar()
+          // Review changes to precision
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+            },
+          })
+        })
+
+        await test.step('Configure frame position', async () => {
+          await cmdBar.clickOptionalArgument('framePosition')
+
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'framePosition',
+            currentArgValue: '[0, 0]',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '',
+            },
+            highlightedHeaderArg: 'framePosition',
+          })
+          // Update frame position from [0, 0] to [10, 10]
+          await page.getByTestId('vector2d-x-input').fill('10')
+          await page.getByTestId('vector2d-y-input').fill('10')
+          await cmdBar.progressCmdBar()
+          // Review changes to frame position
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+            },
+          })
+        })
+
+        await test.step('Configure frame plane', async () => {
+          await cmdBar.clickOptionalArgument('framePlane')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'framePlane',
+            currentArgValue: '',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: '',
+            },
+            highlightedHeaderArg: 'framePlane',
+          })
+          // Select XY plane and auto-progress
+          await cmdBar.selectOption({ name: 'XY' }).click()
+          // Review changes to frame plane
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+            },
+          })
+        })
+
+        await test.step('Configure font point size', async () => {
+          await cmdBar.clickOptionalArgument('fontPointSize')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'fontPointSize',
+            currentArgValue: '36',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '',
+            },
+            highlightedHeaderArg: 'fontPointSize',
+          })
+          // Update font point size from 36 to 48
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('48')
+          await cmdBar.progressCmdBar()
+          // Review changes to font point size
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+            },
+          })
+        })
+
+        await test.step('Configure font scale', async () => {
+          await cmdBar.clickOptionalArgument('fontScale')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'fontScale',
+            currentArgValue: '1.0',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '',
+            },
+            highlightedHeaderArg: 'fontScale',
+          })
+          // Update font scale from 1 to 1.5
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('1.5')
+          await cmdBar.progressCmdBar()
+          // Review changes to font scale
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+          })
+        })
+      })
+
+      await test.step('Submit and verify all parameters', async () => {
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain('gdt::flatness(')
+        await editor.expectEditor.toContain('faces = [capEnd001]')
+        await editor.expectEditor.toContain('tolerance = 0.1mm')
+        await editor.expectEditor.toContain('precision = 5')
+        await editor.expectEditor.toContain('framePosition = [10, 10]')
+        await editor.expectEditor.toContain('framePlane = XY')
+        await editor.expectEditor.toContain('fontPointSize = 48')
+        await editor.expectEditor.toContain('fontScale = 1.5')
+      })
+    })
+
+    await test.step('Edit GDT Flatness', async () => {
+      await test.step('Open edit mode from feature tree', async () => {
+        await toolbar.openPane('feature-tree')
+        const gdtOperation = await toolbar.getFeatureTreeOperation(
+          'Flatness',
+          0
+        )
+        await gdtOperation.dblclick()
+        // Should open the command bar in edit mode
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'GDT Flatness',
+          currentArgKey: 'tolerance',
+          currentArgValue: '0.1mm',
+          headerArguments: {
+            Tolerance: '0.1mm',
+            Precision: '5',
+            FramePosition: '[10, 10]',
+            FramePlane: 'XY',
+            FontPointSize: '48',
+            FontScale: '1.5',
+          },
+          highlightedHeaderArg: 'tolerance',
+        })
+      })
+
+      await test.step('Edit parameters', async () => {
+        await test.step('Edit tolerance', async () => {
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'tolerance',
+            currentArgValue: '0.1mm',
+            headerArguments: {
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+            highlightedHeaderArg: 'tolerance',
+          })
+          // Update tolerance from 0.1mm to 0.2mm
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.2mm')
+          await cmdBar.progressCmdBar()
+          // Review changes to tolerance
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+          })
+        })
+
+        await test.step('Edit precision', async () => {
+          await page.getByRole('button', { name: 'Precision' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'precision',
+            currentArgValue: '5',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+            highlightedHeaderArg: 'precision',
+          })
+          // Update precision from 5 to 3
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('3')
+          await cmdBar.progressCmdBar()
+          // Review changes to precision
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+          })
+        })
+
+        await test.step('Edit frame position', async () => {
+          await page.getByRole('button', { name: 'FramePosition' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'framePosition',
+            currentArgValue: '[10, 10]',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+            highlightedHeaderArg: 'framePosition',
+          })
+          // Update frame position from [10, 10] to [20, 30]
+          await page.getByTestId('vector2d-x-input').fill('20')
+          await page.getByTestId('vector2d-y-input').fill('30')
+          await cmdBar.progressCmdBar()
+          // Review changes to frame position
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[20, 30]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+          })
+        })
+
+        await test.step('Edit frame plane', async () => {
+          await page.getByRole('button', { name: 'FramePlane' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'framePlane',
+            currentArgValue: '',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[20, 30]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+            highlightedHeaderArg: 'framePlane',
+          })
+          // Update frame plane from XY to XZ
+          await cmdBar.selectOption({ name: 'XZ' }).click()
+          // Review changes to frame plane
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[20, 30]',
+              FramePlane: 'XZ',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+          })
+        })
+
+        await test.step('Edit font point size', async () => {
+          await page.getByRole('button', { name: 'FontPointSize' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'fontPointSize',
+            currentArgValue: '48',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[20, 30]',
+              FramePlane: 'XZ',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+            highlightedHeaderArg: 'fontPointSize',
+          })
+          // Update font point size from 48 to 24
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('24')
+          await cmdBar.progressCmdBar()
+          // Review changes to font point size
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[20, 30]',
+              FramePlane: 'XZ',
+              FontPointSize: '24',
+              FontScale: '1.5',
+            },
+          })
+        })
+
+        await test.step('Edit font scale', async () => {
+          await page.getByRole('button', { name: 'FontScale' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'fontScale',
+            currentArgValue: '1.5',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[20, 30]',
+              FramePlane: 'XZ',
+              FontPointSize: '24',
+              FontScale: '1.5',
+            },
+            highlightedHeaderArg: 'fontScale',
+          })
+          // Update font scale from 1.5 to 2.0
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('2.0')
+          await cmdBar.progressCmdBar()
+          // Review changes to font scale
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[20, 30]',
+              FramePlane: 'XZ',
+              FontPointSize: '24',
+              FontScale: '2',
+            },
+          })
+        })
+      })
+
+      await test.step('Submit and verify all parameters', async () => {
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain('gdt::flatness(')
+        await editor.expectEditor.toContain('faces = [capEnd001]')
+        await editor.expectEditor.toContain('tolerance = 0.2mm')
+        await editor.expectEditor.toContain('precision = 3')
+        await editor.expectEditor.toContain('framePosition = [20, 30]')
+        await editor.expectEditor.toContain('framePlane = XZ')
+        await editor.expectEditor.toContain('fontPointSize = 24')
+        await editor.expectEditor.toContain('fontScale = 2')
+      })
+    })
+
+    await test.step('Delete GDT Flatness', async () => {
+      await toolbar.openPane('feature-tree')
+      const gdtOperation = await toolbar.getFeatureTreeOperation('Flatness', 0)
+      // Delete the GDT operation
+      await gdtOperation.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain('gdt::flatness(')
+    })
+  })
 })
