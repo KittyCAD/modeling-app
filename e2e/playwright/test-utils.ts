@@ -34,11 +34,8 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
-import {
-  type LayoutWithMetadata,
-  playwrightLayoutConfig,
-  setOpenPanes,
-} from '@src/lib/layout'
+import { type LayoutWithMetadata, setOpenPanes } from '@src/lib/layout'
+import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')

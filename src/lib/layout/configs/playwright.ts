@@ -1,9 +1,5 @@
-import {
-  ActionType,
-  AreaType,
-  LayoutType,
-  type Layout,
-} from '@src/lib/layout/types'
+import { ActionType, AreaType, LayoutType } from '@src/lib/layout/types'
+import type { Layout } from '@src/lib/layout/types'
 import {
   DefaultLayoutPaneID,
   DefaultLayoutToolbarID,
