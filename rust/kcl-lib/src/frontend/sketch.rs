@@ -107,12 +107,30 @@ pub struct Point {
     pub constraints: Vec<ObjectId>,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub enum Freedom {
     Free,
     Partial,
     Fixed,
+}
+
+impl Freedom {
+    pub fn merge(self, other: Self) -> Self {
+        match self {
+            Self::Free => match other {
+                Self::Free => Self::Free,
+                Self::Partial => Self::Partial,
+                Self::Fixed => Self::Partial,
+            },
+            Self::Partial => Self::Partial,
+            Self::Fixed => match other {
+                Self::Free => Self::Partial,
+                Self::Partial => Self::Partial,
+                Self::Fixed => Self::Fixed,
+            },
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
