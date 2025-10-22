@@ -1,4 +1,3 @@
-import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import { executeAstMock } from '@src/lang/langHelpers'
 import {
   type SourceRange,
@@ -6,12 +5,9 @@ import {
   formatNumberValue,
   parse,
   resultIsOk,
-  changeExperimentalFeatures,
-  type Program,
 } from '@src/lang/wasm'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { KclExpression } from '@src/lib/commandTypes'
-import { codeManager, rustContext } from '@src/lib/singletons'
+import { rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'
@@ -154,24 +150,4 @@ export async function stringToKclExpression(
 
 export function getStringValue(code: string, range: SourceRange): string {
   return code.slice(range[0], range[1]).replaceAll(`'`, ``).replaceAll(`"`, ``)
-}
-
-export function setExperimentalFeatures(
-  level: WarningLevel
-): Node<Program> | Error {
-  const newCode = changeExperimentalFeatures(codeManager.code, level)
-  if (err(newCode)) {
-    return newCode
-  }
-
-  const result = parse(newCode)
-  if (err(result)) {
-    return result
-  }
-
-  if (result.program === null) {
-    return new Error('Empty program returned')
-  }
-
-  return result.program
 }

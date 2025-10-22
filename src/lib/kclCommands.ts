@@ -32,7 +32,7 @@ import { getNodeFromPath } from '@src/lang/queryAst'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { setExperimentalFeatures } from '@src/lib/kclHelpers'
+import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -128,7 +128,9 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (typeof data === 'object' && 'level' in data) {
-          const newAst = setExperimentalFeatures({ type: data.level })
+          const newAst = setExperimentalFeatures(codeManager.code, {
+            type: data.level,
+          })
           if (err(newAst)) {
             toast.error(
               `Failed to set file experimental features level: ${newAst.message}`

@@ -15,7 +15,7 @@ import { err, reportRejection } from '@src/lib/trap'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { warningLevels } from '@src/lib/settings/settingsTypes'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
-import { setExperimentalFeatures } from '@src/lib/kclHelpers'
+import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 
 export function ExperimentalFeaturesMenu() {
@@ -50,7 +50,10 @@ export function ExperimentalFeaturesMenu() {
                     <button
                       className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                       onClick={() => {
-                        const newAst = setExperimentalFeatures(level)
+                        const newAst = setExperimentalFeatures(
+                          codeManager.code,
+                          level
+                        )
                         if (err(newAst)) {
                           toast.error(
                             `Failed to set file experimental features level: ${newAst.message}`
