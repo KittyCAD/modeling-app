@@ -166,6 +166,8 @@ export fn helix(
   /// Radius of the helix.
   @(includeInSnippet = true)
   radius?: number(Length),
+  /// Center of the helix. This is not necessary if the helix is created around an edge or cylinder.
+  center?: Point3d,
   /// Axis to use for the helix.
   @(includeInSnippet = true)
   axis?: Axis3d | Edge,

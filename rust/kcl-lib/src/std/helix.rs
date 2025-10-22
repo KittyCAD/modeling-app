@@ -20,6 +20,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let revolutions: TyF64 = args.get_kw_arg("revolutions", &RuntimeType::count(), exec_state)?;
     let ccw = args.get_kw_arg_opt("ccw", &RuntimeType::bool(), exec_state)?;
     let radius: Option<TyF64> = args.get_kw_arg_opt("radius", &RuntimeType::length(), exec_state)?;
+    let center: Option<Vec<TyF64>> = args.get_kw_arg_opt("center", &RuntimeType::point3d(), exec_state)?;
     let axis: Option<Axis3dOrEdgeReference> = args.get_kw_arg_opt(
         "axis",
         &RuntimeType::Union(vec![
@@ -84,6 +85,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         angle_start.n,
         ccw,
         radius,
+        center,
         axis,
         length,
         cylinder,
@@ -100,6 +102,7 @@ async fn inner_helix(
     angle_start: f64,
     ccw: Option<bool>,
     radius: Option<TyF64>,
+    center: Option<Vec<TyF64>>,
     axis: Option<Axis3dOrEdgeReference>,
     length: Option<TyF64>,
     cylinder: Option<Solid>,
@@ -161,10 +164,18 @@ async fn inner_helix(
                                 y: direction[1].to_mm(),
                                 z: direction[2].to_mm(),
                             },
-                            center: Point3d {
-                                x: LengthUnit(origin[0].to_mm()),
-                                y: LengthUnit(origin[1].to_mm()),
-                                z: LengthUnit(origin[2].to_mm()),
+                            center: if let Some(center) = center {
+                                Point3d {
+                                    x: LengthUnit(center[0].to_mm()),
+                                    y: LengthUnit(center[1].to_mm()),
+                                    z: LengthUnit(center[2].to_mm()),
+                                }
+                            } else {
+                                Point3d {
+                                    x: LengthUnit(origin[0].to_mm()),
+                                    y: LengthUnit(origin[1].to_mm()),
+                                    z: LengthUnit(origin[2].to_mm()),
+                                }
                             },
                         }),
                     )
