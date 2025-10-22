@@ -3,8 +3,8 @@ import { assertEvent, fromPromise, setup } from 'xstate'
 import { sceneInfra, rustContext } from '@src/lib/singletons'
 import type { SegmentCtor } from '@rust/kcl-lib/bindings/SegmentCtor'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import type { SourceDelta } from '@rust/kcl-api/bindings/SourceDelta'
-import type { SketchExecOutcome } from '@rust/kcl-api/bindings/SketchExecOutcome'
+import type { SourceDelta } from '@rust/kcl-lib/bindings/SourceDelta'
+import type { SketchExecOutcome } from '@rust/kcl-lib/bindings/SketchExecOutcome'
 
 const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
 const CONFIRMING_DIMENSIONS_DONE = `xstate.done.actor.0.Point tool.${CONFIRMING_DIMENSIONS}`
