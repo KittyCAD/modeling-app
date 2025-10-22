@@ -144,7 +144,7 @@ impl SketchApi for FrontendState {
             .ok_or_else(|| Error {
                 msg: format!("Source range of sketch not found: {sketch_source_range:?}"),
             })?;
-        let src_delta = SourceDelta {};
+        let src_delta = SourceDelta { text: new_source };
         // Store the object in the scene.
         self.scene_graph.sketch_mode = Some(sketch_id);
         let scene_graph_delta = SceneGraphDelta {
@@ -373,7 +373,7 @@ impl FrontendState {
         };
         let new_object_ids = vec![segment_id, line.start, line.end];
 
-        let src_delta = SourceDelta {};
+        let src_delta = SourceDelta { text: new_source };
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -455,7 +455,7 @@ impl FrontendState {
             }
         })?;
 
-        let src_delta = SourceDelta {};
+        let src_delta = SourceDelta { text: new_source };
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
