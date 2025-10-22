@@ -169,7 +169,7 @@ impl SketchApi for FrontendState {
 
     async fn exit_sketch(
         &mut self,
-        _ctx: &ExecutorContext,
+        ctx: &ExecutorContext,
         _version: Version,
         sketch: ObjectId,
     ) -> api::Result<SceneGraph> {
@@ -184,7 +184,16 @@ impl SketchApi for FrontendState {
         }
         self.scene_graph.sketch_mode = None;
 
-        // TODO: Execute
+        // Execute.
+        let outcome = ctx.run_with_caching(self.program.clone()).await.map_err(|err| {
+            // TODO: sketch-api: Yeah, this needs to change. We need to
+            // return the full error.
+            Error {
+                msg: err.error.message().to_owned(),
+            }
+        })?;
+
+        self.scene_graph.objects = outcome.scene_objects;
 
         Ok(self.scene_graph.clone())
     }
