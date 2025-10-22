@@ -79,6 +79,7 @@ export const KclEditorPane = () => {
     return () => {
       kclEditorActor.send({ type: 'setKclEditorMounted', data: false })
       kclEditorActor.send({ type: 'setLastSelectionEvent', data: undefined })
+      kclManager.diagnostics = []
     }
   }, [])
 
@@ -206,8 +207,17 @@ export const KclEditorPane = () => {
 
             // Update diagnostics as they are cleared when the editor is unmounted.
             // Without this, errors would not be shown when closing and reopening the editor.
-            // We do this because we trust the cache on the rust side to not recompute all the engine commands
-            kclManager.executeCode().catch(reportRejection)
+            kclManager
+              .safeParse(codeManager.code)
+              .then(() => {
+                // On first load of this component, ensure we show the current errors
+                // in the editor.
+                // Make sure we don't add them twice.
+                if (diagnosticCount(_editorView.state) === 0) {
+                  kclManager.setDiagnosticsForCurrentErrors()
+                }
+              })
+              .catch(reportRejection)
           }}
         />
       </div>
