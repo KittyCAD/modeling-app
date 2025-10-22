@@ -20,6 +20,7 @@ import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import { useSelector } from '@xstate/react'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 export const RouteProviderContext = createContext({})
 
@@ -104,6 +105,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
           if (!isCodeTheSame(code, codeManager.code)) {
             codeManager.updateCodeStateEditor(code)
             await kclManager.executeCode()
+            await resetCameraPosition()
           }
         }
       } else if (
