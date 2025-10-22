@@ -4175,9 +4175,7 @@ extrude001 = extrude(sketch001, length = 30)
     toolbar,
     cmdBar,
   }) => {
-    // TODO: remove settings at first once the race condition is is solved
-    const initialCode = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XZ)
+    const initialCode = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [-5, -5])
   |> angledLine(angle = 0deg, length = 10, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 10)

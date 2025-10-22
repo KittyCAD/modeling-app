@@ -3255,19 +3255,23 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Remove once Hole isn't experimental anymore
+        // Remove once this command isn't experimental anymore
+        let astWithNewSetting: Node<Program> | undefined
         if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
-          const result = await setExperimentalFeatures({ type: 'Allow' })
-          if (err(result)) {
-            return Promise.reject(result)
+          const ast = setExperimentalFeatures(codeManager.code, {
+            type: 'Allow',
+          })
+          if (err(ast)) {
+            return Promise.reject(ast)
           }
+
+          astWithNewSetting = ast
         }
 
-        const { ast, artifactGraph } = kclManager
         const astResult = addHole({
           ...input,
-          ast,
-          artifactGraph,
+          ast: astWithNewSetting ?? kclManager.ast,
+          artifactGraph: kclManager.artifactGraph,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
