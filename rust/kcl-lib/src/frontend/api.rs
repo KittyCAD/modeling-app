@@ -63,7 +63,9 @@ impl SceneGraphDelta {
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
-pub struct SourceDelta {}
+pub struct SourceDelta {
+    pub text: String,
+}
 
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, rename = "ApiObjectId")]
