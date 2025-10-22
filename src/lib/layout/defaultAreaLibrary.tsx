@@ -3,6 +3,7 @@ import {
   editorManager,
   getLayout,
   getSettings,
+  setLayout,
   useToken,
 } from '@src/lib/singletons'
 import env from '@src/env'
@@ -26,24 +27,19 @@ import { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo } from 'react'
-import {
-  defaultLayout,
-  getOpenPanes,
-  setOpenPanes,
-} from '@src/lib/layout/utils'
+import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 
 const onCodeNotificationClick: MouseEventHandler = (e) => {
   e.preventDefault()
-  const layout = getLayout()
-  setOpenPanes(
-    layout || defaultLayout,
-    Array.from(
-      new Set(getOpenPanes({ rootLayout: layout })).add(
-        DefaultLayoutPaneID.Code
-      )
-    )
+  const rootLayout = structuredClone(getLayout())
+  setLayout(
+    togglePaneLayoutNode({
+      rootLayout,
+      targetNodeId: DefaultLayoutPaneID.Code,
+      shouldExpand: true,
+    })
   )
   editorManager.scrollToFirstErrorDiagnosticIfExists()
 }

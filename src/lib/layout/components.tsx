@@ -248,7 +248,8 @@ function SplitLayoutContents({
                 id={a.id}
                 order={i}
                 defaultSize={layout.sizes[i]}
-                className={`flex bg-default ${disableFlex ? '!flex-none' : ''}`}
+                className={`flex bg-default ${disableFlex ? '!flex-none !overflow-visible' : ''}`}
+                minSize={2}
               >
                 <LayoutNode layout={a} onClose={() => onClose?.(a.id)} />
               </Panel>
@@ -478,10 +479,6 @@ function NotificationBadge({ pane }: { pane: PaneChild }) {
     onClick: () => {},
     title: undefined,
   }
-
-  useEffect(() => {
-    console.log('ARE WE RERENDERING?', pane.id, value)
-  }, [value, pane.id])
 
   return value ? (
     <p

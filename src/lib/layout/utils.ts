@@ -344,7 +344,6 @@ export function expandSplitChildPaneNode({
   const indexOfSplit = splitsLayoutNode.children.findIndex(
     (child) => child.id === panesLayoutNode.id
   )
-  splitsLayoutNode.children[indexOfSplit] = panesLayoutNode
 
   /**
    * Only need to expand if the child pane node is on a side that is the same
@@ -353,21 +352,26 @@ export function expandSplitChildPaneNode({
   const paneToolbarIsInLineWithSplit = panesLayoutNode.side.includes(
     splitsLayoutNode.orientation
   )
-  if (
-    !panesLayoutNode.onExpandSize ||
-    !paneToolbarIsInLineWithSplit ||
-    indexOfSplit < 0
-  ) {
+  if (!paneToolbarIsInLineWithSplit || indexOfSplit < 0) {
     return rootLayout
   }
 
-  const sizeDelta = Math.abs(
-    panesLayoutNode.onExpandSize - splitsLayoutNode.sizes[indexOfSplit]
-  )
   const childIndexToTransferDeltaFrom =
     indexOfSplit === 0 ? 1 : indexOfSplit - 1
 
-  splitsLayoutNode.sizes[indexOfSplit] = panesLayoutNode.onExpandSize
+  // We persist `onExpandSize` to save the user's last pane layout size,
+  // but if that isn't set for whatever reason we should just split the
+  // available space evenly
+  const sizeToExpandTo =
+    panesLayoutNode.onExpandSize && panesLayoutNode.onExpandSize > 10
+      ? panesLayoutNode.onExpandSize
+      : (splitsLayoutNode.sizes[indexOfSplit] +
+          splitsLayoutNode.sizes[childIndexToTransferDeltaFrom]) /
+        2
+  const sizeDelta = Math.abs(
+    sizeToExpandTo - splitsLayoutNode.sizes[indexOfSplit]
+  )
+  splitsLayoutNode.sizes[indexOfSplit] = sizeToExpandTo
   panesLayoutNode.onExpandSize = undefined
   splitsLayoutNode.sizes[childIndexToTransferDeltaFrom] -= sizeDelta
   splitsLayoutNode.children[indexOfSplit] = panesLayoutNode
@@ -464,7 +468,7 @@ export function shouldEnableResizeHandle(
   const isLastPane = index >= allPanes.length - 1
   const nextPane = !isLastPane ? allPanes[index + 1] : undefined
   const isCollapsedPaneLayout = (l: Layout | undefined) =>
-    l?.type === LayoutType.Panes && l.onExpandSize !== undefined
+    l?.type === LayoutType.Panes && l.activeIndices.length === 0
   const nextIsCollapsed = isCollapsedPaneLayout(nextPane)
   const thisIsCollapsed = isCollapsedPaneLayout(currentPane)
 
@@ -477,7 +481,7 @@ export function shouldDisableFlex(
 ): boolean {
   const isCollapsedPaneLayout =
     currentSplitChild.type === LayoutType.Panes &&
-    currentSplitChild.onExpandSize !== undefined
+    currentSplitChild.activeIndices.length === 0
   const isParentSplit = parentLayout.type === LayoutType.Splits
   // Only need to collapse if the child pane node is on a side that is the same
   // as its parent's orientation.
@@ -524,10 +528,12 @@ export function togglePaneLayoutNode({
     .findIndex((activeItem) => activeItem.id === targetNodeId)
   const isInActiveItems = indexInActiveItems >= 0
 
+  // Needs to open and isn't already in the opened panes
   if (shouldExpand && !isInActiveItems) {
     paneLayout.activeIndices.push(indexInChildren)
     paneLayout.activeIndices.sort()
 
+    // Already has open siblings, needs to calculate its size among them
     if (paneLayout.sizes.length > 1) {
       const newActiveIndex = paneLayout.activeIndices.indexOf(indexInChildren)
 
@@ -541,9 +547,13 @@ export function togglePaneLayoutNode({
         paneLayout.sizes[activeIndexToSplit] = halfSize
         paneLayout.sizes.splice(newActiveIndex, 0, halfSize)
       }
+
+      // Has just one open sibling
     } else if (paneLayout.sizes.length === 1) {
       paneLayout.sizes = [50, 50]
     } else {
+      // First opened pane, which means we probably need to expand the Pane layout in
+      // its parent Split layout so we can see the opened pane child.
       paneLayout.sizes = [100]
       return expandSplitChildPaneNode({ rootLayout, targetNode: paneLayout })
     }

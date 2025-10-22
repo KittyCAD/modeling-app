@@ -442,16 +442,6 @@ sketch001 = startSketchOn(XZ)
 
       await u.openDebugPanel()
 
-      const code = `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn(-XZ)
-profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOff(
-        scale * 34.8
-      )}])
-    |> xLine(length = ${roundOff(scale * 154.22)})
-    |> yLine(length = -${roundOff(scale * 139.2)})
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()`
-
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
@@ -473,7 +463,7 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOf
       await page.mouse.move(700, 200, { steps: 10 })
       await page.mouse.click(700, 200, { delay: 200 })
       await editor.expectEditor.toContain(
-        `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(-XZ)`
+        '@settings(defaultLengthUnit = in)sketch001 = startSketchOn(-XZ)'
       )
 
       await editor.closePane()

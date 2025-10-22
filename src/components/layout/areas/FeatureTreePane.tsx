@@ -60,7 +60,6 @@ import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
   DefaultLayoutPaneID,
   getOpenPanes,
-  setOpenPanes,
   togglePaneLayoutNode,
 } from '@src/lib/layout'
 

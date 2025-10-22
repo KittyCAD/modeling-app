@@ -1,5 +1,6 @@
 import { useMachine, useSelector } from '@xstate/react'
-import React, { createContext, useContext, useEffect, useRef } from 'react'
+import type React from 'react'
+import { createContext, useContext, useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -119,7 +120,7 @@ import type { WebContentSendPayload } from '@src/menu/channels'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
-import { getOpenPanes, setOpenPanes } from '@src/lib/layout/utils'
+import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -1292,30 +1293,25 @@ export const ModelingMachineProvider = ({
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
     const rootLayout = structuredClone(getLayout())
-    const openPanes = getOpenPanes({ rootLayout })
+    const toggle = (id: DefaultLayoutPaneID) =>
+      setLayout(
+        togglePaneLayoutNode({
+          rootLayout,
+          targetNodeId: id,
+          shouldExpand: true,
+        })
+      )
+
     if (data.menuLabel === 'View.Panes.Feature tree') {
-      setLayout(
-        setOpenPanes(rootLayout, [
-          ...openPanes,
-          DefaultLayoutPaneID.FeatureTree,
-        ])
-      )
+      toggle(DefaultLayoutPaneID.FeatureTree)
     } else if (data.menuLabel === 'View.Panes.KCL code') {
-      setLayout(
-        setOpenPanes(rootLayout, [...openPanes, DefaultLayoutPaneID.Code])
-      )
+      toggle(DefaultLayoutPaneID.Code)
     } else if (data.menuLabel === 'View.Panes.Project files') {
-      setLayout(
-        setOpenPanes(rootLayout, [...openPanes, DefaultLayoutPaneID.Files])
-      )
+      toggle(DefaultLayoutPaneID.Files)
     } else if (data.menuLabel === 'View.Panes.Variables') {
-      setLayout(
-        setOpenPanes(rootLayout, [...openPanes, DefaultLayoutPaneID.Variables])
-      )
+      toggle(DefaultLayoutPaneID.Variables)
     } else if (data.menuLabel === 'View.Panes.Logs') {
-      setLayout(
-        setOpenPanes(rootLayout, [...openPanes, DefaultLayoutPaneID.Logs])
-      )
+      toggle(DefaultLayoutPaneID.Logs)
     } else if (data.menuLabel === 'Design.Start sketch') {
       modelingSend({
         type: 'Enter sketch',
