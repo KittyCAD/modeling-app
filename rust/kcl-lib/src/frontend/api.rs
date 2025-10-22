@@ -6,7 +6,7 @@ use kcl_error::{CompilationError, SourceRange};
 use serde::{Deserialize, Serialize};
 
 pub use crate::ExecutorSettings as Settings;
-use crate::pretty::NumericSuffix;
+use crate::{ExecOutcome, pretty::NumericSuffix};
 
 pub trait LifecycleApi {
     async fn open_project(&self, project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<()>;
@@ -43,20 +43,27 @@ impl SceneGraph {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
 #[ts(export)]
 pub struct SceneGraphDelta {
     pub new_graph: SceneGraph,
     pub new_objects: Vec<ObjectId>,
     pub invalidates_ids: bool,
+    pub exec_outcome: ExecOutcome,
 }
 
 impl SceneGraphDelta {
-    pub fn new(new_graph: SceneGraph, new_objects: Vec<ObjectId>, invalidates_ids: bool) -> Self {
+    pub fn new(
+        new_graph: SceneGraph,
+        new_objects: Vec<ObjectId>,
+        invalidates_ids: bool,
+        exec_outcome: ExecOutcome,
+    ) -> Self {
         SceneGraphDelta {
             new_graph,
             new_objects,
             invalidates_ids,
+            exec_outcome,
         }
     }
 }

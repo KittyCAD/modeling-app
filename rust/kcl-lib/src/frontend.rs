@@ -129,7 +129,7 @@ impl SketchApi for FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
+        let mut outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -147,11 +147,12 @@ impl SketchApi for FrontendState {
         let src_delta = SourceDelta { text: new_source };
         // Store the object in the scene.
         self.scene_graph.sketch_mode = Some(sketch_id);
-        self.scene_graph.objects = outcome.scene_objects;
+        self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
             new_objects: vec![sketch_id],
+            exec_outcome: outcome,
         };
         Ok((src_delta, scene_graph_delta, sketch_id))
     }
@@ -353,7 +354,7 @@ impl FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
+        let mut outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -384,11 +385,12 @@ impl FrontendState {
         let new_object_ids = vec![segment_id, line.start, line.end];
 
         let src_delta = SourceDelta { text: new_source };
-        self.scene_graph.objects = outcome.scene_objects;
+        self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
             new_objects: new_object_ids,
+            exec_outcome: outcome,
         };
         Ok((src_delta, scene_graph_delta))
     }
@@ -458,7 +460,7 @@ impl FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
+        let mut outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -467,11 +469,12 @@ impl FrontendState {
         })?;
 
         let src_delta = SourceDelta { text: new_source };
-        self.scene_graph.objects = outcome.scene_objects;
+        self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
             new_objects: Vec::new(),
+            exec_outcome: outcome,
         };
         Ok((src_delta, scene_graph_delta))
     }
