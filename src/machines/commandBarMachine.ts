@@ -28,7 +28,10 @@ export type CommandBarMachineEvent =
       data: { command: Command; argDefaultValues?: { [x: string]: unknown } }
     }
   | { type: 'Deselect command' }
-  | { type: 'Submit command'; output: { [x: string]: unknown } }
+  | {
+      type: 'Submit command'
+      output: { argumentsToSubmit: { [x: string]: unknown } }
+    }
   | {
       type: 'Add argument'
       data: { argument: CommandArgumentWithName<unknown> }
@@ -56,7 +59,10 @@ export type CommandBarMachineEvent =
     }
   | {
       type: 'xstate.done.actor.validateArguments'
-      output: { [x: string]: unknown }
+      output: {
+        argumentsToSubmit: { [x: string]: unknown }
+        reviewValidationError?: string
+      }
     }
   | {
       type: 'xstate.error.actor.validateArguments'
@@ -114,7 +120,7 @@ export const commandBarMachine = setup({
       ) {
         const resolvedArgs = {} as { [x: string]: unknown }
         for (const [argName, argValue] of Object.entries(
-          getCommandArgumentKclValuesOnly(event.output)
+          getCommandArgumentKclValuesOnly(event.output.argumentsToSubmit)
         )) {
           resolvedArgs[argName] =
             typeof argValue === 'function' ? argValue(context) : argValue
@@ -128,10 +134,10 @@ export const commandBarMachine = setup({
       reviewValidationError: ({ context, event }) => {
         const { selectedCommand } = context
         if (!selectedCommand) return undefined
-        if (event.type !== 'xstate.error.actor.validateArguments') {
+        if (event.type !== 'xstate.done.actor.validateArguments') {
           return undefined
         }
-        return event.error.message
+        return event.output.reviewValidationError
       },
     }),
     'Clear selected command': assign({
@@ -468,17 +474,21 @@ export const commandBarMachine = setup({
           }
         }
 
+        let reviewValidationError: string | undefined
         if (
           input.selectedCommand?.needsReview &&
           input.selectedCommand.reviewValidation
         ) {
           const result = await input.selectedCommand.reviewValidation(input)
           if (err(result)) {
-            return Promise.reject({ message: result.message })
+            reviewValidationError = result.message
           }
         }
 
-        return input.argumentsToSubmit
+        return {
+          argumentsToSubmit: input.argumentsToSubmit,
+          reviewValidationError,
+        }
       }
     ),
   },
@@ -639,11 +649,6 @@ export const commandBarMachine = setup({
           },
         ],
         onError: [
-          {
-            target: 'Review',
-            guard: 'Command needs review',
-            actions: ['Set review validation error'],
-          },
           {
             target: 'Gathering arguments',
             actions: ['Set current argument to first non-skippable'],

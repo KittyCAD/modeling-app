@@ -57,7 +57,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     e.preventDefault()
     commandBarActor.send({
       type: 'Submit command',
-      output: argumentsToSubmit,
+      output: { argumentsToSubmit },
     })
   }
 
