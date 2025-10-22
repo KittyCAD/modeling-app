@@ -2,14 +2,24 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing sketch_block_line_simple.kcl
 ---
-KCL Semantic error
+KCL Type error
 
-  × semantic: Only integers >= 0 can be used as the index of an array, but
-  │ you're using a string
-    ╭─[11:8]
+  × type: assert failed: Expected 5 to be equal to 1 but it wasn't
+    ╭─[11:1]
  10 │ 
- 11 │ assert(s.l1.start.x, isEqualTo = 1mm)
-    ·        ──────┬─────
-    ·              ╰── tests/sketch_block_line_simple/input.kcl
- 12 │ assert(s.l1.start.y, isEqualTo = 2mm)
+ 11 │ assert(s.l1.start[0], isEqualTo = 1mm)
+    · ───────────────────┬──────────────────┬
+    ·                    ╰── tests/sketch_block_line_simple/input.kcl
+    ·                    ╰── tests/sketch_block_line_simple/input.kcl
+ 12 │ assert(s.l1.start[1], isEqualTo = 2mm)
     ╰────
+  ╰─▶ KCL Type error
+      
+        × type: assert failed: Expected 5 to be equal to 1 but it wasn't
+          ╭─[11:1]
+       10 │
+       11 │ assert(s.l1.start[0], isEqualTo = 1mm)
+          · ───────────────────┬──────────────────
+          ·                    ╰── tests/sketch_block_line_simple/input.kcl
+       12 │ assert(s.l1.start[1], isEqualTo = 2mm)
+          ╰────

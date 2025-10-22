@@ -8,5 +8,5 @@ s = sketch() {
   y == 2mm
 }
 
-assert(s.l1.start.x, isEqualTo = 1mm)
-assert(s.l1.start.y, isEqualTo = 2mm)
+assert(s.l1.start[0], isEqualTo = 1mm)
+assert(s.l1.start[1], isEqualTo = 2mm)
