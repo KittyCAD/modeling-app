@@ -1,6 +1,6 @@
 [package]
 name = "kcl-api"
-version = "0.1.103"
+version = "0.1.104"
 edition = "2024"
 description = "KCL interpreter API"
 license = "MIT"
@@ -12,7 +12,7 @@ wasm-bindgen = "0.2.99"
 indexmap.workspace = true
 kcl-error = { version = "0.1", path = "../kcl-error" }
 serde = { workspace = true }
-ts-rs = { version = "11.0.1", features = [
+ts-rs = { version = "11.1.0", features = [
   "uuid-impl",
   "url-impl",
   "chrono-impl",
