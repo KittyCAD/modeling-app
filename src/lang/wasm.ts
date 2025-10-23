@@ -816,10 +816,14 @@ export function changeDefaultUnits(
  */
 export function changeExperimentalFeatures(
   kcl: string,
-  warningLevel: WarningLevel | null = null
+  warningLevel: WarningLevel | null = null,
+  instance?: ModuleType
 ): string | Error {
   try {
-    return change_experimental_features(kcl, JSON.stringify(warningLevel))
+    const level = JSON.stringify(warningLevel)
+    return instance
+      ? instance.change_experimental_features(kcl, level)
+      : change_experimental_features(kcl, level)
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })

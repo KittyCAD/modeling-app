@@ -1,4 +1,3 @@
-import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import { executeAstMock } from '@src/lang/langHelpers'
 import {
   type SourceRange,
@@ -6,10 +5,9 @@ import {
   formatNumberValue,
   parse,
   resultIsOk,
-  changeExperimentalFeatures,
 } from '@src/lang/wasm'
 import type { KclExpression } from '@src/lib/commandTypes'
-import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
+import { rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'
@@ -152,16 +150,4 @@ export async function stringToKclExpression(
 
 export function getStringValue(code: string, range: SourceRange): string {
   return code.slice(range[0], range[1]).replaceAll(`'`, ``).replaceAll(`"`, ``)
-}
-
-export async function setExperimentalFeatures(
-  level: WarningLevel
-): Promise<void | Error> {
-  const newCode = changeExperimentalFeatures(codeManager.code, level)
-  if (err(newCode)) {
-    return new Error(`Failed to set experimental features: ${newCode.message}`)
-  }
-  codeManager.updateCodeStateEditor(newCode)
-  await codeManager.writeToFile()
-  await kclManager.executeCode()
 }
