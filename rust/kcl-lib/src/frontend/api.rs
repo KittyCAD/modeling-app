@@ -19,7 +19,7 @@ pub trait LifecycleApi {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct SceneGraph {
     pub project: ProjectId,
     pub file: FileId,
@@ -44,7 +44,7 @@ impl SceneGraph {
 }
 
 #[derive(Debug, Clone, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct SceneGraphDelta {
     pub new_graph: SceneGraph,
     pub new_objects: Vec<ObjectId>,
@@ -69,29 +69,29 @@ impl SceneGraphDelta {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct SourceDelta {
     pub text: String,
 }
 
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiObjectId")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectId")]
 pub struct ObjectId(pub usize);
 
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Ord, PartialOrd, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiVersion")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiVersion")]
 pub struct Version(pub usize);
 
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiProjectId")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiProjectId")]
 pub struct ProjectId(pub usize);
 
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiFileId")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiFileId")]
 pub struct FileId(pub usize);
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiFile")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiFile")]
 pub struct File {
     pub id: FileId,
     pub path: String,
@@ -99,6 +99,7 @@ pub struct File {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiObject")]
 pub struct Object {
     pub id: ObjectId,
     pub kind: ObjectKind,
@@ -110,6 +111,8 @@ pub struct Object {
 
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectKind")]
+#[serde(tag = "type")]
 pub enum ObjectKind {
     Plane(Plane),
     Sketch(crate::frontend::sketch::Sketch),
@@ -121,12 +124,15 @@ pub enum ObjectKind {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiPlane")]
+#[serde(tag = "type")]
 pub enum Plane {
     Object(ObjectId),
     Default(StandardPlane),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiStandardPlane")]
 pub enum StandardPlane {
     #[serde(rename = "XY")]
     XY,
@@ -160,6 +166,8 @@ impl std::str::FromStr for StandardPlane {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiSourceRef")]
+#[serde(tag = "type")]
 pub enum SourceRef {
     Simple(SourceRange),
     BackTrace(Vec<SourceRange>),
@@ -172,14 +180,15 @@ impl From<SourceRange> for SourceRef {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct Number {
     pub value: f64,
     pub units: NumericSuffix,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(tag = "type")]
 pub enum Expr {
     Number(Number),
     Var(Number),
@@ -187,7 +196,7 @@ pub enum Expr {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct Error {
     pub msg: String,
 }

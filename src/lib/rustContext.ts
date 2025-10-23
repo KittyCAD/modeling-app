@@ -1,14 +1,18 @@
 import toast from 'react-hot-toast'
 
-import type { ApiFile } from '@rust/kcl-lib/bindings/ApiFile'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
-import type { SegmentCtor } from '@rust/kcl-lib/bindings/SegmentCtor'
-import type { SketchExecOutcome } from '@rust/kcl-lib/bindings/SketchExecOutcome'
+import type {
+  ApiFile,
+  SceneGraphDelta,
+  SegmentCtor,
+  SketchExecOutcome,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { BSON } from 'bson'
 
@@ -28,8 +32,6 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getModule } from '@src/lib/wasm_lib_wrapper'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { SourceDelta } from '@rust/kcl-lib/bindings/SourceDelta'
-import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/SceneGraphDelta'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true

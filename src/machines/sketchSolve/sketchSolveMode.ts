@@ -11,8 +11,10 @@ import type { SetSelections } from '@src/machines/modelingSharedTypes'
 import { machine as centerRectTool } from '@src/machines/sketchSolve/tools/centerRectTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
-import type { SketchExecOutcome } from '@rust/kcl-lib/bindings/SketchExecOutcome'
-import type { SourceDelta } from '@rust/kcl-lib/bindings/SourceDelta'
+import type {
+  SketchExecOutcome,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 
 const equipTools = Object.freeze({
   centerRectTool,

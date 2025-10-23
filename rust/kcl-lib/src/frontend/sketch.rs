@@ -84,7 +84,7 @@ pub trait SketchApi {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiSketch")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiSketch")]
 pub struct Sketch {
     pub args: SketchArgs,
     pub segments: Vec<ObjectId>,
@@ -92,13 +92,13 @@ pub struct Sketch {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct SketchArgs {
     pub on: Plane,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiPoint")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiPoint")]
 pub struct Point {
     pub position: Point2d<Number>,
     pub ctor: Option<PointCtor>,
@@ -108,7 +108,7 @@ pub struct Point {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub enum Freedom {
     Free,
     Partial,
@@ -134,7 +134,8 @@ impl Freedom {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiSegment")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiSegment")]
+#[serde(tag = "type")]
 pub enum Segment {
     Point(Point),
     Line(Line),
@@ -143,7 +144,8 @@ pub enum Segment {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(tag = "type")]
 pub enum SegmentCtor {
     Point(PointCtor),
     Line(LineCtor),
@@ -156,20 +158,20 @@ pub enum SegmentCtor {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct PointCtor {
     pub position: Point2d<Expr>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiPoint2d")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiPoint2d")]
 pub struct Point2d<U: std::fmt::Debug + Clone + ts_rs::TS> {
     pub x: U,
     pub y: U,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiLine")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiLine")]
 pub struct Line {
     pub start: ObjectId,
     pub end: ObjectId,
@@ -184,28 +186,29 @@ pub struct Line {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct LineCtor {
     pub start: Point2d<Expr>,
     pub end: Point2d<Expr>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct MidPointLineCtor {
     pub midpoint: Point2d<Expr>,
     pub start_or_end: StartOrEnd<Point2d<Expr>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiStartOrEnd")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiStartOrEnd")]
+#[serde(tag = "type")]
 pub enum StartOrEnd<T> {
     Start(T),
     End(T),
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiArc")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiArc")]
 pub struct Arc {
     pub start: ObjectId,
     pub end: ObjectId,
@@ -216,7 +219,7 @@ pub struct Arc {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct ArcCtor {
     pub start: Point2d<Expr>,
     pub end: Point2d<Expr>,
@@ -224,7 +227,7 @@ pub struct ArcCtor {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct ThreePointArcCtor {
     pub start: Point2d<Expr>,
     pub end: Point2d<Expr>,
@@ -232,7 +235,7 @@ pub struct ThreePointArcCtor {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct TangentArcCtor {
     pub start: Point2d<Expr>,
     pub end: Point2d<Expr>,
@@ -240,7 +243,7 @@ pub struct TangentArcCtor {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiCircle")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiCircle")]
 pub struct Circle {
     pub start: ObjectId,
     pub radius: Number,
@@ -250,14 +253,14 @@ pub struct Circle {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct CircleCtor {
     pub center: Point2d<Expr>,
     pub radius: Expr,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct ThreePointCircleCtor {
     pub p1: Point2d<Expr>,
     pub p2: Point2d<Expr>,
@@ -265,27 +268,28 @@ pub struct ThreePointCircleCtor {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, rename = "ApiConstraint")]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiConstraint")]
+#[serde(tag = "type")]
 pub enum Constraint {
     Coincident(Coincident),
     Parallel(Parallel),
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct Coincident {
     points: Vec<ObjectId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, optional_fields)]
+#[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Parallel {
     lines: Vec<ObjectId>,
     distance: Option<Number>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct SketchExecOutcome {
     // The solved segments, including their locations so that they can be drawn.
     pub segments: Vec<SolveSegment>,
@@ -294,13 +298,14 @@ pub struct SketchExecOutcome {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(tag = "type")]
 pub enum SolveSegment {
     Point(SolvePointSegment),
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct SolvePointSegment {
     pub object_id: String,
     pub constrained_status: ConstrainedStatus,
@@ -309,7 +314,7 @@ pub struct SolvePointSegment {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub enum ConstrainedStatus {
     None,
     Partial,
@@ -318,13 +323,14 @@ pub enum ConstrainedStatus {
 
 // Handles, i.e. UI elements that the user can interact with.
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct PointHandle {
     pub position: Point2d<Number>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(tag = "type")]
 pub enum SolveConstraint {
     // e.g. Make these things coincident.
     Relation {
@@ -345,7 +351,7 @@ pub enum SolveConstraint {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub enum RelationKind {
     Coincidence,
     Horizontal,

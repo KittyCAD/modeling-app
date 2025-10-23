@@ -1,10 +1,12 @@
 import { assertEvent, fromPromise, setup } from 'xstate'
 
 import { sceneInfra, rustContext } from '@src/lib/singletons'
-import type { SegmentCtor } from '@rust/kcl-lib/bindings/SegmentCtor'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import type { SourceDelta } from '@rust/kcl-lib/bindings/SourceDelta'
-import type { SketchExecOutcome } from '@rust/kcl-lib/bindings/SketchExecOutcome'
+import type {
+  SegmentCtor,
+  SketchExecOutcome,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
 
 const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
 const CONFIRMING_DIMENSIONS_DONE = `xstate.done.actor.0.Point tool.${CONFIRMING_DIMENSIONS}`
@@ -76,11 +78,10 @@ export const machine = setup({
         try {
           // TODO not sure if we should be sending through units with this
           const segmentCtor: SegmentCtor = {
-            Point: {
-              position: {
-                x: { Number: { value: x, units: 'Mm' } } as any,
-                y: { Number: { value: y, units: 'Mm' } } as any,
-              },
+            type: 'Point',
+            position: {
+              x: { type: 'Number', value: x, units: 'Mm' },
+              y: { type: 'Number', value: y, units: 'Mm' },
             },
           }
 

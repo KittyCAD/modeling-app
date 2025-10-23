@@ -163,9 +163,7 @@ impl LifecycleApi for ProjectManager {
 
 // Dummy struct to ensure we export the types from the API crate :-(
 #[derive(ts_rs::TS, serde::Serialize)]
-#[ts(export)]
+#[ts(export, export_to = "FrontendApi.ts")]
 pub struct IgnoreMe {
-    pub a: crate::front::Error,
-    pub b: crate::front::SceneGraphDelta,
-    pub c: crate::front::File,
+    pub a: crate::front::File,
 }
