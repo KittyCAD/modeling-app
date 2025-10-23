@@ -240,12 +240,6 @@ export const mlEphantManagerMachine2 = setup({
 
       return await new Promise<Partial<MlEphantManagerContext2>>(
         (onFulfilled, onRejected) => {
-          /**
-           * onRejected we need to pass the conversation id to the error handler
-           * to write it to the context within an action. This will allow us to use
-           * the conversation id across multiple reeenters if this promise fails for any reason.
-           */
-
           ws.addEventListener('message', function (event: MessageEvent<any>) {
             let response: unknown
             if (!isString(event.data)) {
@@ -285,6 +279,8 @@ export const mlEphantManagerMachine2 = setup({
               )
             ) {
               ws.close()
+              // Pass that the conversation is not found to the onError handler which will set the conversationId
+              // to undefined to get us a new id.
               onRejected(MlEphantSetupErrors.ConversationNotFound)
               return
             }
