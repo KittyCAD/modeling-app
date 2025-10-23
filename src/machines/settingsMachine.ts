@@ -375,7 +375,7 @@ export const settingsMachine = setup({
       const newCurrentProjection = context.modeling.cameraProjection.current
       const rootContext = self.system.get('root')?.getSnapshot().context
       const sceneInfra = rootContext?.sceneInfra
-      sceneInfra?.camControls.setEngineCameraProjection(newCurrentProjection)
+      sceneInfra?.camControls?.setEngineCameraProjection(newCurrentProjection)
     },
     sendThemeToWatcher: sendTo('watchSystemTheme', ({ context }) => ({
       type: 'update.themeWatcher',
