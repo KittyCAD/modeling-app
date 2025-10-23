@@ -468,7 +468,7 @@ clonedCube = clone(cube)
             let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
 
             assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.sketch, cloned_tag_info.sketch);
+            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
             assert_ne!(tag_info.path, cloned_tag_info.path);
             assert_eq!(tag_info.surface, None);
             assert_eq!(cloned_tag_info.surface, None);
@@ -534,7 +534,7 @@ clonedCube = clone(cube)
             let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
 
             assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.sketch, cloned_tag_info.sketch);
+            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
             assert_ne!(tag_info.path, cloned_tag_info.path);
             assert_ne!(tag_info.surface, cloned_tag_info.surface);
         }
@@ -606,7 +606,7 @@ clonedCube = clone(cube)
             let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
 
             assert_ne!(tag_info.id, cloned_tag_info.id);
-            assert_ne!(tag_info.sketch, cloned_tag_info.sketch);
+            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
             assert_ne!(tag_info.path, cloned_tag_info.path);
             assert_ne!(tag_info.surface, cloned_tag_info.surface);
         }
