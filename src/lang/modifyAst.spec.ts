@@ -68,6 +68,9 @@ beforeEach(async () => {
     return
   }
 
+  // TODO: Remove this simulated engine timeout
+  await new Promise((resolve) => setTimeout(resolve, 31000))
+
   const { instance, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
