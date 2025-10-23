@@ -30,6 +30,8 @@ import { useCallback, useMemo } from 'react'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
+import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
+import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
 
 const onCodeNotificationClick: MouseEventHandler = (e) => {
   e.preventDefault()
@@ -72,8 +74,7 @@ export const defaultAreaLibrary = Object.freeze({
   codeEditor: {
     hide: () => false,
     shortcut: 'Shift + C',
-    Component: (props: Partial<Closeable>) =>
-      PaneToArea({ pane: sidebarPanesLeft[1], ...props }),
+    Component: KclEditorPane,
     useNotifications() {
       const kclContext = useKclContext()
       const value = kclContext.diagnostics.filter(
@@ -87,8 +88,7 @@ export const defaultAreaLibrary = Object.freeze({
   files: {
     hide: () => !isDesktop(),
     shortcut: 'Shift + F',
-    Component: (props: Partial<Closeable>) =>
-      PaneToArea({ pane: sidebarPanesLeft[2], ...props }),
+    Component: ProjectExplorerPane,
     useNotifications() {
       const title = 'Project files have runtime errors'
       const kclContext = useKclContext()

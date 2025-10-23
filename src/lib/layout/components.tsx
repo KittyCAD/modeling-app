@@ -186,7 +186,8 @@ function LayoutNode({
     case LayoutType.Panes:
       return <PaneLayout layout={layout} key={`node-${layout.id}`} />
     default:
-      return areaLibrary[layout.areaType].Component({ onClose })
+      const { Component, ...props } = areaLibrary[layout.areaType]
+      return Component({ areaConfig: props, layout, onClose })
   }
 }
 

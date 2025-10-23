@@ -12,6 +12,15 @@ export enum AreaType {
   Debug = 'debug',
 }
 
+export type AreaTypeComponentProps = {
+  areaConfig: Omit<AreaTypeDefinition, 'Component'>
+  layout: Layout
+} & Partial<Closeable>
+
+/**
+ * A registered areaType that can be used for a SimpleLayout.
+ * This is where all "real" custom UI gets defined, in the `Component` property.
+ */
 export type AreaTypeDefinition = {
   hide: () => boolean
   shortcut?: string
@@ -27,7 +36,7 @@ export type AreaTypeDefinition = {
       | undefined
     >
   >
-  Component: React.FC<Partial<Closeable>>
+  Component: React.FC<AreaTypeComponentProps>
 }
 
 export enum ActionType {

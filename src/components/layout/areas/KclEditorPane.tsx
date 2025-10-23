@@ -53,6 +53,9 @@ import {
   kclEditorActor,
   selectionEventSelector,
 } from '@src/machines/kclEditorMachine'
+import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { KclEditorMenu } from '@src/compontents/layout/areas/KclEditorMenu'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -64,7 +67,26 @@ export const editorShortcutMeta = {
   },
 }
 
-export const KclEditorPane = () => {
+export const KclEditorPane = (props: AreaTypeComponentProps) => {
+  return (
+    <LayoutPanel
+      title={props.layout.label}
+      id={`${props.layout.id}-pane`}
+      className="border-none"
+    >
+      <LayoutPanelHeader
+        id={props.layout.id}
+        icon="code"
+        title={props.layout.label}
+        Menu={<KclEditorMenu />}
+        onClose={props.onClose}
+      />
+      <KclEditorPaneContents />
+    </LayoutPanel>
+  )
+}
+
+export const KclEditorPaneContents = () => {
   const context = useSettings()
   const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
   const editorIsMounted = useSelector(kclEditorActor, editorIsMountedSelector)

@@ -16,7 +16,7 @@ export interface LayoutPanelProps {
   title: ReactNode
   Menu?: React.ReactNode | React.FC
   detailsTestId?: string
-  onClose: () => void
+  onClose?: () => void
 }
 
 export const LayoutPanelHeader = ({
@@ -48,7 +48,9 @@ export const LayoutPanelHeader = ({
           bgClassName: 'bg-transparent dark:bg-transparent',
         }}
         className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none"
-        onClick={() => onClose()}
+        onClick={() =>
+          onClose?.() || console.error(`No onClose defined for panel ${id}`)
+        }
       >
         <Tooltip position="bottom-right">Close</Tooltip>
       </ActionButton>
@@ -61,7 +63,6 @@ export const LayoutPanel = ({
   children,
   className,
   detailsTestId,
-  onClose,
   title,
   ...props
 }: LayoutPanelProps) => {
