@@ -711,7 +711,7 @@ pub enum SketchFaceOrTaggedFace {
     /// Face.
     Face(FaceTag),
     /// Tagged face.
-    TaggedFace(TagIdentifier),
+    TaggedFace(Box<TagIdentifier>),
 }
 
 impl SketchFaceOrTaggedFace {

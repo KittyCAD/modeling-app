@@ -3,6 +3,7 @@ use std::num::NonZeroU32;
 use anyhow::Result;
 use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use serde::Serialize;
+use serde_json::value;
 
 use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
@@ -499,7 +500,7 @@ impl<'a> FromKclValue<'a> for Vec<SketchFaceOrTaggedFace> {
                 } else if let Some(face_tag) = FaceTag::from_kcl_val(v) {
                     Some(SketchFaceOrTaggedFace::Face(face_tag))
                 } else if let Some(tag_id) = TagIdentifier::from_kcl_val(v) {
-                    Some(SketchFaceOrTaggedFace::TaggedFace(tag_id))
+                    Some(SketchFaceOrTaggedFace::TaggedFace(Box::new(tag_id)))
                 } else {
                     None
                 }
@@ -1029,7 +1030,7 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
 impl<'a> FromKclValue<'a> for SketchFaceOrTaggedFace {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let case1 = Box::<Sketch>::from_kcl_val;
-        let case2 = TagIdentifier::from_kcl_val;
+        let case2 = Box::<TagIdentifier>::from_kcl_val;
         let case3 = FaceTag::from_kcl_val;
         case1(arg)
             .map(Self::Sketch)
@@ -1245,6 +1246,15 @@ impl<'a> FromKclValue<'a> for Box<Plane> {
 impl<'a> FromKclValue<'a> for Box<Sketch> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Sketch { value } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Box<TagIdentifier> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::TagIdentifier(value) = arg else {
             return None;
         };
         Some(value.to_owned())
