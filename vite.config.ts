@@ -13,6 +13,9 @@ export default defineConfig(({ command, mode }) => {
   const runMillion = process.env.RUN_MILLION
 
   return {
+    define: {
+      'import.meta.env.VERCEL_ENV': JSON.stringify(process.env.VERCEL_ENV),
+    },
     server: {
       open: true,
       port: 3000,
