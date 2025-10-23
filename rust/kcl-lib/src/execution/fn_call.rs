@@ -2,9 +2,17 @@ use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
 use crate::{
-    errors::{KclError, KclErrorDetails}, execution::{
-        annotations, cad_op::{Group, OpArg, OpKclValue, Operation}, kcl_value::{FunctionBody, FunctionSource}, memory, types::RuntimeType, BodyType, ExecState, ExecutorContext, Geometry, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier
-    }, parsing::ast::types::{CallExpressionKw, Node, Type}, CompilationError, NodePath, SourceRange
+    CompilationError, NodePath, SourceRange,
+    errors::{KclError, KclErrorDetails},
+    execution::{
+        BodyType, ExecState, ExecutorContext, Geometry, KclValue, Metadata, StatementKind, TagEngineInfo,
+        TagIdentifier, annotations,
+        cad_op::{Group, OpArg, OpKclValue, Operation},
+        kcl_value::{FunctionBody, FunctionSource},
+        memory,
+        types::RuntimeType,
+    },
+    parsing::ast::types::{CallExpressionKw, Node, Type},
 };
 
 #[derive(Debug, Clone)]

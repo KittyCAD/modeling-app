@@ -93,7 +93,7 @@ async fn inner_loft(
     sketch.id = id;
     Ok(Box::new(
         do_post_extrude(
-            &sketch.clone().into(),
+            &sketch,
             id.into(),
             false,
             &super::extrude::NamedCapTags {

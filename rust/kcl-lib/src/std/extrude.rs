@@ -3,7 +3,6 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
-use kcl_api::sketch::Sketch;
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{
     ModelingCmd, each_cmd as mcmd,
@@ -23,8 +22,8 @@ use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path,
-        SketchFaceOrTaggedFace, SketchSurface, Solid,
+        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, SketchFaceOrTaggedFace,
+        SketchSurface, Solid,
         types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
@@ -307,12 +306,11 @@ async fn inner_extrude(
             }
         };
 
-        let cmds = sketch.build_sketch_mode_cmds(exec_state, &args, ModelingCmdReq { cmd_id: id.into(), cmd }).await;
-        exec_state
-            .batch_modeling_cmds(ModelingCmdMeta::from_args_id(&args, id), &cmds)
-            .await?;
-
         if let Some(post_extr_sketch) = sketch.sketch() {
+            let cmds = post_extr_sketch.build_sketch_mode_cmds(exec_state, ModelingCmdReq { cmd_id: id.into(), cmd });
+            exec_state
+                .batch_modeling_cmds(ModelingCmdMeta::from_args_id(&args, id), &cmds)
+                .await?;
             solids.push(
                 do_post_extrude(
                     &post_extr_sketch,
@@ -348,7 +346,7 @@ pub(crate) struct NamedCapTags<'a> {
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn do_post_extrude<'a>(
-    sketch: &Sketch,
+    sketch: &crate::exec::Sketch,
     solid_id: ArtifactId,
     sectional: bool,
     named_cap_tags: &'a NamedCapTags<'a>,
@@ -360,11 +358,10 @@ pub(crate) async fn do_post_extrude<'a>(
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
 
-    let id = sketch.id(exec_state, args, false).await?;
     exec_state
         .batch_modeling_cmd(
             args.into(),
-            ModelingCmd::from(mcmd::ObjectBringToFront { object_id: id }),
+            ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id }),
         )
         .await?;
 
@@ -374,15 +371,15 @@ pub(crate) async fn do_post_extrude<'a>(
         id
     } else {
         // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
-                // So, let's just use the first one.
-                let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
-                    return Err(KclError::new_type(KclErrorDetails::new(
-                        "Expected a non-empty sketch".to_owned(),
-                        vec![args.source_range],
-                    )));
-                };
-                any_edge_id
-            };
+        // So, let's just use the first one.
+        let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Expected a non-empty sketch".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        any_edge_id
+    };
     let mut sketch = sketch.clone();
     sketch.is_closed = true;
 

@@ -1168,7 +1168,7 @@ pub(crate) async fn inner_start_profile(
         },
     };
 
-    let sketch = Sketch {
+    let mut sketch = Sketch {
         id: path_id,
         original_id: path_id,
         artifact_id: path_id.into(),
@@ -1178,26 +1178,17 @@ pub(crate) async fn inner_start_profile(
         units,
         mirror: Default::default(),
         meta: vec![args.source_range.into()],
-        tags: if let Some(tag) = &tag {
-            let mut tag_identifier: TagIdentifier = tag.into();
-            tag_identifier.info = vec![(
-                exec_state.stack().current_epoch(),
-                TagEngineInfo {
-                    id: current_path.geo_meta.id,
-                    sketch: path_id,
-                    path: Some(Path::Base {
-                        base: current_path.clone(),
-                    }),
-                    surface: None,
-                },
-            )];
-            IndexMap::from([(tag.name.to_string(), tag_identifier)])
-        } else {
-            Default::default()
-        },
-        start: current_path,
+        tags: Default::default(),
+        start: current_path.clone(),
         is_closed: false,
     };
+    if let Some(tag) = &tag {
+        let path = Path::Base {
+            base: current_path.clone(),
+        };
+        sketch.add_tag(tag, &path, exec_state, None);
+    }
+
     Ok(sketch)
 }
 

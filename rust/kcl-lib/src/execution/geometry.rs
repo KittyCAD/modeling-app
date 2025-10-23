@@ -742,86 +742,24 @@ impl SketchFaceOrTaggedFace {
 
     pub fn sketch(&self) -> Option<Sketch> {
         match self {
-            SketchFaceOrTaggedFace::Sketch(sketch) => Some(sketch),
+            SketchFaceOrTaggedFace::Sketch(sketch) => Some((**sketch).clone()),
             SketchFaceOrTaggedFace::Face(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => Some(sketch.clone()),
                 Some(Geometry::Solid(solid)) => Some(solid.sketch.clone()),
                 _ => None,
-            }
+            },
             SketchFaceOrTaggedFace::TaggedFace(tag_id) => {
                 if let Some(cur_info) = tag_id.geometry() {
                     match cur_info {
                         Geometry::Sketch(sketch) => Some(sketch.clone()),
                         Geometry::Solid(solid) => Some(solid.sketch.clone()),
-                        _ => None,
                     }
                 } else {
                     None
                 }
-            },
+            }
         }
     }
-
-    pub(crate) async fn build_sketch_mode_cmds(
-        &self,
-        exec_state: &mut ExecState,
-        args: &Args,
-        inner_cmd: ModelingCmdReq,
-    ) -> Vec<ModelingCmdReq> {
-        let on_id = match self {
-            SketchFaceOrTaggedFace::Sketch(sketch) => Ok(sketch.on.id()),
-            SketchFaceOrTaggedFace::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, &args, true).await,
-            SketchFaceOrTaggedFace::TaggedFace(tag_id) => {
-                if let Some(cur_info) = tag_id.get_cur_info() {
-                    Ok(cur_info.id)
-                } else {
-                    Err(KclError::new_semantic(KclErrorDetails::new(
-                        "Tagged face not found".to_owned(),
-                        vec![args.source_range],
-                    )))
-                }
-            }
-        };
-
-        if on_id.is_err() {
-            return vec![];
-        }
-
-        let on_id = on_id.unwrap();
-        let plane_normal = match self {
-            SketchFaceOrTaggedFace::Sketch(sketch) => {
-                if let SketchSurface::Plane(plane) = &sketch.on {
-                    // We pass in the normal for the plane here.
-                    let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
-                    Some(normal.into())
-                } else {
-                    None
-                }
-            }
-            _ => None,
-        };
-
-        vec![
-            // Before we extrude, we need to enable the sketch mode.
-            // We do this here in case extrude is called out of order.
-            ModelingCmdReq {
-                cmd: ModelingCmd::from(mcmd::EnableSketchMode {
-                    animated: false,
-                    ortho: false,
-                    entity_id: on_id,
-                    adjust_camera: false,
-                    planar_normal: plane_normal,
-                }),
-                cmd_id: exec_state.next_uuid().into(),
-            },
-            inner_cmd,
-            ModelingCmdReq {
-                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
-                cmd_id: exec_state.next_uuid().into(),
-            },
-        ]
-    }
-
 }
 
 impl From<Sketch> for SketchFaceOrTaggedFace {
@@ -930,6 +868,40 @@ impl Sketch {
             return GetTangentialInfoFromPathsResult::PreviousPoint(self.start.to);
         };
         path.get_tangential_info()
+    }
+
+    // Tell the engine to enter sketch mode on the sketch.
+    // Run a specific command, then exit sketch mode.
+    pub(crate) fn build_sketch_mode_cmds(
+        &self,
+        exec_state: &mut ExecState,
+        inner_cmd: ModelingCmdReq,
+    ) -> Vec<ModelingCmdReq> {
+        vec![
+            // Before we extrude, we need to enable the sketch mode.
+            // We do this here in case extrude is called out of order.
+            ModelingCmdReq {
+                cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                    animated: false,
+                    ortho: false,
+                    entity_id: self.on.id(),
+                    adjust_camera: false,
+                    planar_normal: if let SketchSurface::Plane(plane) = &self.on {
+                        // We pass in the normal for the plane here.
+                        let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+                        Some(normal.into())
+                    } else {
+                        None
+                    },
+                }),
+                cmd_id: exec_state.next_uuid().into(),
+            },
+            inner_cmd,
+            ModelingCmdReq {
+                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+                cmd_id: exec_state.next_uuid().into(),
+            },
+        ]
     }
 }
 
