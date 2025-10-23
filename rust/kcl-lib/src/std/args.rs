@@ -498,7 +498,9 @@ impl<'a> FromKclValue<'a> for Vec<SketchFaceOrTaggedFace> {
                     Some(SketchFaceOrTaggedFace::Sketch(Box::new(sketch.clone())))
                 } else if let Some(face_tag) = FaceTag::from_kcl_val(v) {
                     Some(SketchFaceOrTaggedFace::Face(face_tag))
-                } else { TagIdentifier::from_kcl_val(v).map(|tag_id| SketchFaceOrTaggedFace::TaggedFace(Box::new(tag_id))) }
+                } else {
+                    TagIdentifier::from_kcl_val(v).map(|tag_id| SketchFaceOrTaggedFace::TaggedFace(Box::new(tag_id)))
+                }
             })
             .collect::<Option<Vec<_>>>()?;
         Some(items)
