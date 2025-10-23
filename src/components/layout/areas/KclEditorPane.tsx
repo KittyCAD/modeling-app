@@ -55,7 +55,7 @@ import {
 } from '@src/machines/kclEditorMachine'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { KclEditorMenu } from '@src/compontents/layout/areas/KclEditorMenu'
+import { KclEditorMenu } from '@src/components/layout/areas/KclEditorMenu'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -78,7 +78,7 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
         id={props.layout.id}
         icon="code"
         title={props.layout.label}
-        Menu={<KclEditorMenu />}
+        Menu={KclEditorMenu}
         onClose={props.onClose}
       />
       <KclEditorPaneContents />

@@ -58,12 +58,34 @@ import { base64Decode } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
+  type AreaTypeComponentProps,
   DefaultLayoutPaneID,
   getOpenPanes,
   togglePaneLayoutNode,
 } from '@src/lib/layout'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 
-export const FeatureTreePane = () => {
+export function FeatureTreePane(props: AreaTypeComponentProps) {
+  return (
+    <LayoutPanel
+      title={props.layout.label}
+      id={`${props.layout.id}-pane`}
+      className="border-none"
+    >
+      <LayoutPanelHeader
+        id={props.layout.id}
+        icon="model"
+        title={props.layout.label}
+        Menu={FeatureTreeMenu}
+        onClose={props.onClose}
+      />
+      <FeatureTreePaneContents />
+    </LayoutPanel>
+  )
+}
+
+export const FeatureTreePaneContents = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
   const layout = useLayout()

@@ -11,27 +11,22 @@ import { ConnectionStream } from '@src/components/ConnectionStream'
 import Gizmo from '@src/components/Gizmo'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { Toolbar } from '@src/Toolbar'
-import {
-  type SidebarPane,
-  sidebarPanesLeft,
-  textToCadPane2,
-} from '@src/components/layout/areas'
-import { LayoutPanel } from '@src/components/layout/Panel'
-import type {
-  AreaType,
-  AreaTypeDefinition,
-  Closeable,
-} from '@src/lib/layout/types'
+import type { AreaType, AreaTypeDefinition } from '@src/lib/layout/types'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useKclContext } from '@src/lang/KclProvider'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import type { MouseEventHandler } from 'react'
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
 import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
+import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/MlEphantConversationPaneWrapper'
+import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
+import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
+import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
+import { DebugPane } from '@src/components/layout/areas/DebugPane'
 
 const onCodeNotificationClick: MouseEventHandler = (e) => {
   e.preventDefault()
@@ -54,8 +49,7 @@ export const defaultAreaLibrary = Object.freeze({
   featureTree: {
     hide: () => false,
     shortcut: 'Shift + T',
-    Component: (props: Partial<Closeable>) =>
-      PaneToArea({ pane: sidebarPanesLeft[0], ...props }),
+    Component: FeatureTreePane,
   },
   modeling: {
     hide: () => false,
@@ -68,8 +62,7 @@ export const defaultAreaLibrary = Object.freeze({
       button:
         'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
     },
-    Component: (props: Partial<Closeable>) =>
-      PaneToArea({ pane: textToCadPane2, ...props }),
+    Component: MlEphantConversationPaneWrapper,
   },
   codeEditor: {
     hide: () => false,
@@ -110,20 +103,17 @@ export const defaultAreaLibrary = Object.freeze({
   variables: {
     hide: () => false,
     shortcut: 'Shift + V',
-    Component: (props: Partial<Closeable>) =>
-      PaneToArea({ pane: sidebarPanesLeft[3], ...props }),
+    Component: MemoryPane,
   },
   logs: {
     hide: () => false,
     shortcut: 'Shift + L',
-    Component: (props: Partial<Closeable>) =>
-      PaneToArea({ pane: sidebarPanesLeft[4], ...props }),
+    Component: LogsPane,
   },
   debug: {
     hide: () => getSettings().app.showDebugPanel.current === false,
     shortcut: 'Shift + D',
-    Component: (props: Partial<Closeable>) =>
-      PaneToArea({ pane: sidebarPanesLeft[5], ...props }),
+    Component: DebugPane,
   },
 } satisfies Record<AreaType, AreaTypeDefinition>)
 
@@ -166,26 +156,5 @@ function ModelingArea() {
         <Gizmo />
       </div>
     </div>
-  )
-}
-
-function PaneToArea({
-  pane,
-  onClose,
-}: Partial<Closeable> & { pane: SidebarPane }) {
-  const onCloseWithFallback = useCallback(
-    () => onClose?.() || console.warn('no onClose defined for', pane.id),
-    [onClose, pane.id]
-  )
-  return (
-    <LayoutPanel
-      icon={pane.icon}
-      title={pane.sidebarName}
-      onClose={onCloseWithFallback}
-      id={`${pane.id}-pane`}
-      className="border-none"
-    >
-      {pane.Content({ id: pane.id, onClose: onCloseWithFallback })}
-    </LayoutPanel>
   )
 }
