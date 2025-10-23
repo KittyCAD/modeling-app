@@ -3,6 +3,8 @@ use std::ops::ControlFlow;
 use anyhow::{anyhow, bail};
 use kcl_error::SourceRange;
 
+#[cfg(feature = "artifact-graph")]
+use crate::frontend::sketch::Segment;
 use crate::{
     ExecutorContext, Program,
     fmt::format_number_literal,
@@ -11,7 +13,7 @@ use crate::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
             SourceRef, Version,
         },
-        sketch::{Constraint, LineCtor, Point2d, Segment, SegmentCtor, SketchApi, SketchArgs, SketchExecOutcome},
+        sketch::{Constraint, LineCtor, Point2d, SegmentCtor, SketchApi, SketchArgs, SketchExecOutcome},
         traverse::dfs_mut,
     },
     parsing::ast::types as ast,
@@ -124,12 +126,14 @@ impl SketchApi for FrontendState {
             .ok_or_else(|| Error {
                 msg: "No AST body items after adding sketch".to_owned(),
             })?;
+        #[cfg(not(feature = "artifact-graph"))]
+        let _ = sketch_source_range;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
         // Execute.
-        let mut outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
+        let outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -151,9 +155,11 @@ impl SketchApi for FrontendState {
         // Store the object in the scene.
         self.scene_graph.sketch_mode = Some(sketch_id);
         #[cfg(feature = "artifact-graph")]
-        {
+        let outcome = {
+            let mut outcome = outcome;
             self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
-        }
+            outcome
+        };
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -199,6 +205,8 @@ impl SketchApi for FrontendState {
                 msg: err.error.message().to_owned(),
             }
         })?;
+        #[cfg(not(feature = "artifact-graph"))]
+        drop(outcome);
 
         #[cfg(feature = "artifact-graph")]
         {
@@ -360,12 +368,14 @@ impl FrontendState {
             .ok_or_else(|| Error {
                 msg: format!("Source range of line not found in sketch block: {sketch_block_range:?}"),
             })?;
+        #[cfg(not(feature = "artifact-graph"))]
+        let _ = line_source_range;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
         // Execute.
-        let mut outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
+        let outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -401,9 +411,11 @@ impl FrontendState {
         };
         let src_delta = SourceDelta { text: new_source };
         #[cfg(feature = "artifact-graph")]
-        {
+        let outcome = {
+            let mut outcome = outcome;
             self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
-        }
+            outcome
+        };
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -482,7 +494,7 @@ impl FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let mut outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
+        let outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -492,9 +504,11 @@ impl FrontendState {
 
         let src_delta = SourceDelta { text: new_source };
         #[cfg(feature = "artifact-graph")]
-        {
+        let outcome = {
+            let mut outcome = outcome;
             self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
-        }
+            outcome
+        };
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,

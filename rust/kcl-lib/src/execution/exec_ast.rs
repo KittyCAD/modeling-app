@@ -5,6 +5,8 @@ use indexmap::IndexMap;
 use kcl_ezpz::{Constraint, SolveOutcome};
 use kittycad_modeling_cmds::units::UnitLength;
 
+#[cfg(feature = "artifact-graph")]
+use crate::front::{Object, ObjectKind};
 use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
@@ -21,7 +23,7 @@ use crate::{
         types::{NumericType, PrimitiveType, RuntimeType},
     },
     fmt,
-    front::{Freedom, Object, ObjectId, ObjectKind},
+    front::{Freedom, ObjectId},
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
@@ -1071,6 +1073,8 @@ impl Node<SketchBlock> {
         // Create scene objects after unknowns are solved.
         let segment_object_ids = create_segment_scene_objects(&solved_segments, range, exec_state)?;
 
+        #[cfg(not(feature = "artifact-graph"))]
+        drop(segment_object_ids);
         #[cfg(feature = "artifact-graph")]
         {
             // Update the sketch scene object with the segments.

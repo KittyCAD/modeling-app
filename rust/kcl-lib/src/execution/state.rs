@@ -19,13 +19,13 @@ use crate::{
         memory::{ProgramMemory, Stack},
         types::NumericType,
     },
-    front::{Object, ObjectId},
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
     execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId},
+    front::{Object, ObjectId},
     id::IncIdGenerator,
 };
 
@@ -578,6 +578,8 @@ impl ModuleState {
         module_id: Option<ModuleId>,
         next_object_id: usize,
     ) -> Self {
+        #[cfg(not(feature = "artifact-graph"))]
+        let _ = next_object_id;
         ModuleState {
             id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),

@@ -1,6 +1,8 @@
 //! The executor for the AST.
 
-use std::{collections::BTreeMap, sync::Arc};
+#[cfg(feature = "artifact-graph")]
+use std::collections::BTreeMap;
+use std::sync::Arc;
 
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
@@ -28,6 +30,8 @@ pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
+#[cfg(feature = "artifact-graph")]
+use crate::front::{Object, ObjectId};
 use crate::{
     CompilationError, ExecError, KclErrorWithOutputs, SourceRange,
     engine::{EngineManager, GridScaleBehavior},
@@ -37,7 +41,6 @@ use crate::{
         import_graph::{Universe, UniverseMap},
         typed_path::TypedPath,
     },
-    front::{Object, ObjectId},
     fs::FileManager,
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
