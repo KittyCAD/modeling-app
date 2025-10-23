@@ -3,7 +3,6 @@ use std::num::NonZeroU32;
 use anyhow::Result;
 use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use serde::Serialize;
-use serde_json::value;
 
 use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
