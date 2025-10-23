@@ -48,7 +48,11 @@ let editorManagerInThisFile: EditorManager = null!
  *
  * Reuse the world for this file. This is not the same as global singleton imports!
  */
-beforeAll(async () => {
+beforeEach(async () => {
+  if (instanceInThisFile) {
+    return
+  }
+
   const {
     instance,
     kclManager,
