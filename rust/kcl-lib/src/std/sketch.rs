@@ -3,7 +3,6 @@
 use std::f64;
 
 use anyhow::Result;
-use indexmap::IndexMap;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq};
@@ -23,7 +22,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
-        Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
+        Sketch, SketchSurface, Solid, TagIdentifier, annotations,
         types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
