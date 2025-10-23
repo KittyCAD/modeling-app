@@ -1,13 +1,22 @@
 import { Popover } from '@headlessui/react'
 import toast from 'react-hot-toast'
 
-import { DEFAULT_EXPERIMENTAL_FEATURES } from '@src/lib/constants'
-import { kclManager } from '@src/lib/singletons'
+import {
+  DEFAULT_EXPERIMENTAL_FEATURES,
+  EXECUTION_TYPE_REAL,
+} from '@src/lib/constants'
+import {
+  codeManager,
+  editorManager,
+  kclManager,
+  rustContext,
+} from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { warningLevels } from '@src/lib/settings/settingsTypes'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
-import { setExperimentalFeatures } from '@src/lib/kclHelpers'
+import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
 
 export function ExperimentalFeaturesMenu() {
   const currentLevel: WarningLevel =
@@ -41,20 +50,35 @@ export function ExperimentalFeaturesMenu() {
                     <button
                       className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                       onClick={() => {
-                        setExperimentalFeatures(level)
-                          .then((result) => {
-                            if (err(result)) {
-                              toast.error(
-                                `Failed to set file experimental features level: ${result.message}`
-                              )
-                              return
-                            }
-
-                            toast.success(
-                              `Updated file experimental features level to ${level.type}`
-                            )
+                        const newAst = setExperimentalFeatures(
+                          codeManager.code,
+                          level
+                        )
+                        if (err(newAst)) {
+                          toast.error(
+                            `Failed to set file experimental features level: ${newAst.message}`
+                          )
+                        } else {
+                          updateModelingState(newAst, EXECUTION_TYPE_REAL, {
+                            kclManager,
+                            editorManager,
+                            codeManager,
+                            rustContext,
                           })
-                          .catch(reportRejection)
+                            .then((result) => {
+                              if (err(result)) {
+                                toast.error(
+                                  `Failed to set file experimental features level: ${result.message}`
+                                )
+                                return
+                              }
+
+                              toast.success(
+                                `Updated file experimental features level to ${level.type}`
+                              )
+                            })
+                            .catch(reportRejection)
+                        }
                         close()
                       }}
                     >
