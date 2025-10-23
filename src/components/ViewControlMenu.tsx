@@ -7,23 +7,20 @@ import {
   ContextMenuItem,
 } from '@src/components/ContextMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { getSelectedPlaneId } from '@src/lang/queryAst'
+import { getSelectedSketchTarget } from '@src/lang/queryAst'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import {
-  selectDefaultSketchPlane,
-  selectOffsetSketchPlane,
-} from '@src/lib/selections'
-import { kclManager, sceneInfra, settingsActor } from '@src/lib/singletons'
+import { sceneInfra, settingsActor } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
-import { err, reportRejection } from '@src/lib/trap'
+import { reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
-  const selectedPlaneId = getSelectedPlaneId(
+  const planeOrFaceId = getSelectedSketchTarget(
     modelingState.context.selectionRanges
   )
 
@@ -120,26 +117,19 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
-          if (selectedPlaneId) {
+          if (planeOrFaceId) {
             sceneInfra.modelingSend({
               type: 'Enter sketch',
-              data: { forceNewSketch: true },
+              data: { forceNewSketch: true, keepDefaultPlaneVisibility: true },
             })
 
-            const defaultSketchPlaneSelected =
-              selectDefaultSketchPlane(selectedPlaneId)
-            if (
-              !err(defaultSketchPlaneSelected) &&
-              defaultSketchPlaneSelected
-            ) {
-              return
-            }
-
-            const artifact = kclManager.artifactGraph.get(selectedPlaneId)
-            void selectOffsetSketchPlane(artifact)
+            void selectSketchPlane(
+              planeOrFaceId,
+              modelingState.context.store.useNewSketchMode?.current
+            )
           }
         }}
-        disabled={!selectedPlaneId}
+        disabled={!planeOrFaceId}
       >
         Start sketch on selection
       </ContextMenuItem>,
@@ -166,10 +156,11 @@ export function useViewControlMenuItems() {
     ],
     [
       shouldLockView,
-      selectedPlaneId,
+      planeOrFaceId,
       firstValidSelection,
       modelingSend,
       modelingState.context.store.openPanes,
+      modelingState.context.store.useNewSketchMode,
       sketching,
       snapToGrid,
     ]

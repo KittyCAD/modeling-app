@@ -1251,6 +1251,33 @@ export function getSelectedPlaneId(selectionRanges: Selections): string | null {
   return null
 }
 
+// Returns the plane/wall/cap/edgeCut within the current selection that can be used to start a sketch on.
+export function getSelectedSketchTarget(
+  selectionRanges: Selections
+): string | null {
+  const defaultPlane = selectionRanges.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
+  if (defaultPlane) {
+    return defaultPlane.id
+  }
+
+  // Try to find an offset plane or wall or cap or chamfer edgeCut
+  const planeSelection = selectionRanges.graphSelections.find((selection) => {
+    const artifactType = selection.artifact?.type || ''
+    return (
+      ['plane', 'wall', 'cap'].includes(artifactType) ||
+      (selection.artifact?.type === 'edgeCut' &&
+        selection.artifact?.subType === 'chamfer')
+    )
+  })
+  if (planeSelection) {
+    return planeSelection.artifact?.id || null
+  }
+
+  return null
+}
+
 export function getSelectedPlaneAsNode(
   selection: Selections,
   variables: VariableMap
