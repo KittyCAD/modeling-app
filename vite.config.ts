@@ -53,12 +53,12 @@ export default defineConfig(({ command, mode }) => {
       mockReset: true,
       reporters: process.env.GITHUB_ACTIONS
         ? ['dot', 'github-actions']
-        : // Gotcha: 'hanging-process' is very noisey, turn off by default on localhost
+        : // Gotcha: 'hanging-process' is very noisy, turn off by default on localhost
           // : ['verbose', 'hanging-process'],
           ['verbose'],
-      testTimeout: 2000,
-      hookTimeout: 1000,
-      teardownTimeout: 1000,
+      testTimeout: 2_000,
+      hookTimeout: 1_000,
+      teardownTimeout: 1_000,
       retry: 5,
     },
     build: {
