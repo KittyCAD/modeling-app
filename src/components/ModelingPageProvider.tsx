@@ -73,12 +73,8 @@ export const ModelingPageProvider = ({
   useEffect(() => {
     const filePath =
       PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
-    const {
-      RouteTelemetryCommand,
-      RouteHomeCommand,
-      RouteSettingsCommand,
-      RouteLayoutCommand,
-    } = createRouteCommands(navigate, location, filePath)
+    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
+      createRouteCommands(navigate, location, filePath)
     commandBarActor.send({
       type: 'Remove commands',
       data: {
@@ -86,7 +82,6 @@ export const ModelingPageProvider = ({
           RouteTelemetryCommand,
           RouteHomeCommand,
           RouteSettingsCommand,
-          RouteLayoutCommand,
         ],
       },
     })

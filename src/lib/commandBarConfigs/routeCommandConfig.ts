@@ -50,22 +50,9 @@ export function createRouteCommands(
     },
   }
 
-  const RouteLayoutCommand: Command = {
-    name: 'Go to Layout Tester',
-    displayName: `Go to Layout Tester`,
-    description: 'Go to the tester page for the new layout system',
-    groupId: 'routes',
-    icon: 'settings',
-    needsReview: false,
-    onSubmit: (_data) => {
-      navigate('/layout')
-    },
-  }
-
   return {
     RouteTelemetryCommand,
     RouteHomeCommand,
     RouteSettingsCommand,
-    RouteLayoutCommand,
   }
 }
