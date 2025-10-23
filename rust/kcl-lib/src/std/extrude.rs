@@ -23,7 +23,7 @@ use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Sketch,
+        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path,
         SketchFaceOrTaggedFace, SketchSurface, Solid,
         types::{PrimitiveType, RuntimeType},
     },
@@ -312,22 +312,29 @@ async fn inner_extrude(
             .batch_modeling_cmds(ModelingCmdMeta::from_args_id(&args, id), &cmds)
             .await?;
 
-        solids.push(
-            do_post_extrude(
-                sketch,
-                id.into(),
-                false,
-                &NamedCapTags {
-                    start: tag_start.as_ref(),
-                    end: tag_end.as_ref(),
-                },
-                extrude_method,
-                exec_state,
-                &args,
-                None,
-            )
-            .await?,
-        );
+        if let Some(post_extr_sketch) = sketch.sketch() {
+            solids.push(
+                do_post_extrude(
+                    &post_extr_sketch,
+                    id.into(),
+                    false,
+                    &NamedCapTags {
+                        start: tag_start.as_ref(),
+                        end: tag_end.as_ref(),
+                    },
+                    extrude_method,
+                    exec_state,
+                    &args,
+                    None,
+                )
+                .await?,
+            );
+        } else {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Expected a sketch for extrusion".to_owned(),
+                vec![args.source_range],
+            )));
+        }
     }
 
     Ok(solids)
@@ -341,7 +348,7 @@ pub(crate) struct NamedCapTags<'a> {
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn do_post_extrude<'a>(
-    sketch: &SketchFaceOrTaggedFace,
+    sketch: &Sketch,
     solid_id: ArtifactId,
     sectional: bool,
     named_cap_tags: &'a NamedCapTags<'a>,
@@ -361,14 +368,12 @@ pub(crate) async fn do_post_extrude<'a>(
         )
         .await?;
 
-    let any_edge_id = match sketch {
-        SketchFaceOrTaggedFace::Sketch(sketch) => {
-            if let Some(edge_id) = sketch.mirror {
-                edge_id
-            } else if let Some(id) = edge_id {
-                id
-            } else {
-                // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
+    let any_edge_id = if let Some(edge_id) = sketch.mirror {
+        edge_id
+    } else if let Some(id) = edge_id {
+        id
+    } else {
+        // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
                 // So, let's just use the first one.
                 let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
                     return Err(KclError::new_type(KclErrorDetails::new(
@@ -377,34 +382,7 @@ pub(crate) async fn do_post_extrude<'a>(
                     )));
                 };
                 any_edge_id
-            }
-        },
-        SketchFaceOrTaggedFace::Face(face_tag) => {
-            let face_id = face_tag.get_face_id_from_tag(exec_state, args, false).await?;
-            // We need to get an edge from the face.
-            let solid3d_info = exec_state
-                .send_modeling_cmd(
-                    args.into(),
-                    ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
-                        edge_id: face_id, // Just pass the face id here, we just need any edge from the face.
-                        object_id: face_tag.solid.id,
-                    }),
-                )
-    },
-    SketchFaceOrTaggedFace::TaggedFace(tagged_face) => {
-        let face_id = tagged_face.get_face_id_from_tag(exec_state, args, false).await?;
-        // We need to get an edge from the face.
-        let solid3d_info = exec_state
-            .send_modeling_cmd(
-                args.into(),
-                ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
-                    edge_id: face_id, // Just pass the face id here, we just need any edge from the face.
-                    object_id: tagged_face.solid.id,
-                }),
-            )
-    },
-    };   
-
+            };
     let mut sketch = sketch.clone();
     sketch.is_closed = true;
 

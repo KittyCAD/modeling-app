@@ -144,7 +144,7 @@ async fn fix_tags_and_references(
             // Do the after extrude things to update those ids, based on the new sketch
             // information.
             let new_solid = do_post_extrude(
-                &(solid.sketch.clone().into()),
+                &solid.sketch,
                 new_geometry_id.into(),
                 solid.sectional,
                 &NamedCapTags {

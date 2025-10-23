@@ -16,6 +16,7 @@ use super::{
     shapes::{get_radius, get_radius_labelled},
     utils::{untype_array, untype_point},
 };
+use crate::execution::Geometry;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
 use crate::{
@@ -95,6 +96,13 @@ impl FaceTag {
                 "Could not find the face corresponding to this tag".to_string(),
                 vec![args.source_range],
             ))),
+        }
+    }
+
+    pub fn geometry(&self) -> Option<Geometry> {
+        match self {
+            FaceTag::Tag(t) => t.geometry(),
+            _ => None,
         }
     }
 }

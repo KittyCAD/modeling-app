@@ -7,21 +7,13 @@ use serde::Serialize;
 use super::fillet::EdgeReference;
 pub use crate::execution::fn_call::Args;
 use crate::{
-    CompilationError, ModuleId, SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch, SketchSurface,
-        Solid, TagIdentifier, annotations,
-        kcl_value::FunctionSource,
-        types::{NumericType, PrimitiveType, RuntimeType, UnitType},
-    },
-    parsing::ast::types::TagNode,
-    std::{
-        axis_or_reference::SketchFaceOrTaggedFace,
+    errors::{KclError, KclErrorDetails}, execution::{
+        annotations, kcl_value::FunctionSource, types::{NumericType, PrimitiveType, RuntimeType, UnitType}, ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch, SketchFaceOrTaggedFace, SketchSurface, Solid, TagIdentifier
+    }, parsing::ast::types::TagNode, std::{
         shapes::{PolygonType, SketchOrSurface},
         sketch::FaceTag,
         sweep::SweepPath,
-    },
+    }, CompilationError, ModuleId, SourceRange
 };
 
 const ERROR_STRING_SKETCH_TO_SOLID_HELPER: &str =

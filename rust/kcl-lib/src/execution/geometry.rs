@@ -9,7 +9,6 @@ use kittycad_modeling_cmds::{
 };
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
-use sha2::digest::impl_oid_carrier;
 
 use crate::std::Args;
 use crate::std::sketch::FaceTag;
@@ -741,6 +740,28 @@ impl SketchFaceOrTaggedFace {
         }
     }
 
+    pub fn sketch(&self) -> Option<Sketch> {
+        match self {
+            SketchFaceOrTaggedFace::Sketch(sketch) => Some(sketch),
+            SketchFaceOrTaggedFace::Face(face_tag) => match face_tag.geometry() {
+                Some(Geometry::Sketch(sketch)) => Some(sketch.clone()),
+                Some(Geometry::Solid(solid)) => Some(solid.sketch.clone()),
+                _ => None,
+            }
+            SketchFaceOrTaggedFace::TaggedFace(tag_id) => {
+                if let Some(cur_info) = tag_id.geometry() {
+                    match cur_info {
+                        Geometry::Sketch(sketch) => Some(sketch.clone()),
+                        Geometry::Solid(solid) => Some(solid.sketch.clone()),
+                        _ => None,
+                    }
+                } else {
+                    None
+                }
+            },
+        }
+    }
+
     pub(crate) async fn build_sketch_mode_cmds(
         &self,
         exec_state: &mut ExecState,
@@ -865,7 +886,7 @@ impl Sketch {
             exec_state.stack().current_epoch(),
             TagEngineInfo {
                 id: base.geo_meta.id,
-                sketch: self.id,
+                geometry: Geometry::Sketch(self.clone()),
                 path: Some(current_path.clone()),
                 surface: surface.cloned(),
             },
