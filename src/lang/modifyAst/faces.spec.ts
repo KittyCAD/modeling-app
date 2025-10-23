@@ -653,6 +653,182 @@ hole001 = hole::hole(
     })
   })
 
+  // Hole utils test
+  const cylinderForHole = `@settings(experimentalFeatures = allow)
+sketch001 = startSketchOn(XZ)
+profile001 = circle(sketch001, center = [0, 0], diameter = 10)
+extrude001 = extrude(profile001, length = 10)`
+  const flatSimpleHole = `${cylinderForHole}
+hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [0, 0],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeType =   hole::simple(),
+)`
+
+  async function getHoleOp(code: string) {
+    const { operations } = await getAstAndArtifactGraph(
+      code,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'hole::hole'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.labeledArgs) {
+      throw new Error('Hole operation not found')
+    }
+
+    return op
+  }
+
+  describe('Testing retrieveHoleBodyArgs', () => {
+    it('should return an error on undefined', async () => {
+      expect(
+        await retrieveHoleBodyArgs(
+          undefined,
+          instanceInThisFile,
+          rustContextInThisFile
+        )
+      ).toBeInstanceOf(Error)
+    })
+
+    it('should retrieve the string type, the blind depth and diameter', async () => {
+      const op = await getHoleOp(flatSimpleHole)
+      const result = await retrieveHoleBodyArgs(
+        op.labeledArgs.holeBody,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      if (err(result)) throw result
+      expect(result.holeBody).toEqual('blind')
+      expect(result.blindDiameter.valueCalculated).toEqual('1')
+      expect(result.blindDepth.valueCalculated).toEqual('5')
+    })
+  })
+
+  describe('Testing retrieveHoleBottomArgs', () => {
+    it('should return an error on undefined', async () => {
+      expect(
+        await retrieveHoleBottomArgs(
+          undefined,
+          instanceInThisFile,
+          rustContextInThisFile
+        )
+      ).toBeInstanceOf(Error)
+    })
+
+    it('should retrieve the string type on flat', async () => {
+      const op = await getHoleOp(flatSimpleHole)
+      const result = await retrieveHoleBottomArgs(
+        op.labeledArgs?.holeBottom,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      if (err(result)) throw result
+      expect(result.holeBottom).toEqual('flat')
+      expect(result.drillPointAngle).toBeUndefined()
+    })
+
+    it('should retrieve the string type on drilled and angle', async () => {
+      const drillHole = `${cylinderForHole}
+hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [0, 0],
+  holeBottom =   hole::drill(pointAngle = 110deg),
+  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeType =   hole::simple(),
+)`
+      const op = await getHoleOp(drillHole)
+      const result = await retrieveHoleBottomArgs(
+        op.labeledArgs?.holeBottom,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      if (err(result)) throw result
+      expect(result.holeBottom).toEqual('drill')
+      expect(result.drillPointAngle?.valueText).toEqual('110deg')
+    })
+  })
+
+  describe('Testing retrieveHoleTypeArgs', () => {
+    it('should return an error on undefined', async () => {
+      expect(
+        await retrieveHoleTypeArgs(
+          undefined,
+          instanceInThisFile,
+          rustContextInThisFile
+        )
+      ).toBeInstanceOf(Error)
+    })
+
+    it('should retrieve the string type on simple', async () => {
+      const op = await getHoleOp(flatSimpleHole)
+      const result = await retrieveHoleTypeArgs(
+        op.labeledArgs?.holeType,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      if (err(result)) throw result
+      expect(result.holeType).toEqual('simple')
+      expect(result.countersinkAngle).toBeUndefined()
+      expect(result.countersinkDiameter).toBeUndefined()
+      expect(result.counterboreDepth).toBeUndefined()
+      expect(result.counterboreDiameter).toBeUndefined()
+    })
+
+    it('should retrieve the string type on countersink, plus angle and diameter', async () => {
+      const countersinkHole = `${cylinderForHole}
+hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [0, 0],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeType =   hole::countersink(angle = 90deg, diameter = 2),
+)`
+      const op = await getHoleOp(countersinkHole)
+      const result = await retrieveHoleTypeArgs(
+        op.labeledArgs?.holeType,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      if (err(result)) throw result
+      expect(result.holeType).toEqual('countersink')
+      expect(result.countersinkAngle?.valueText).toEqual('90deg')
+      expect(result.countersinkDiameter?.valueText).toEqual('2')
+      expect(result.counterboreDepth).toBeUndefined()
+      expect(result.counterboreDiameter).toBeUndefined()
+    })
+
+    it('should retrieve the string type on counterbore, plus depth and diameter', async () => {
+      const countersinkHole = `${cylinderForHole}
+hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [0, 0],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeType =   hole::counterbore(depth = 1, diameter = 2),
+)`
+      const op = await getHoleOp(countersinkHole)
+      const result = await retrieveHoleTypeArgs(
+        op.labeledArgs?.holeType,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      if (err(result)) throw result
+      expect(result.holeType).toEqual('counterbore')
+      expect(result.countersinkAngle).toBeUndefined()
+      expect(result.countersinkDiameter).toBeUndefined()
+      expect(result.counterboreDepth?.valueText).toEqual('1')
+      expect(result.counterboreDiameter?.valueText).toEqual('2')
+    })
+  })
+
   describe('Testing retrieveFaceSelectionsFromOpArgs', () => {
     it('should find the solid and face of basic shell on cylinder cap', async () => {
       const circleProfileInVar = `sketch001 = startSketchOn(XY)
@@ -1167,182 +1343,6 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
       expect(result?.type).toEqual('edgeCut')
       expect(result?.subType).toEqual('adjacent')
       expect(result?.tagName).toEqual('seg01')
-    })
-  })
-
-  // Hole utils test
-  const cylinderForHole = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XZ)
-profile001 = circle(sketch001, center = [0, 0], diameter = 10)
-extrude001 = extrude(profile001, length = 10)`
-  const flatSimpleHole = `${cylinderForHole}
-hole001 = hole::hole(
-  extrude001,
-  face = END,
-  cutAt = [0, 0],
-  holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = 5, diameter = 1),
-  holeType =   hole::simple(),
-)`
-
-  async function getHoleOp(code: string) {
-    const { operations } = await getAstAndArtifactGraph(
-      code,
-      instanceInThisFile,
-      kclManagerInThisFile
-    )
-    const op = operations.find(
-      (o) => o.type === 'StdLibCall' && o.name === 'hole::hole'
-    )
-    if (!op || op.type !== 'StdLibCall' || !op.labeledArgs) {
-      throw new Error('Hole operation not found')
-    }
-
-    return op
-  }
-
-  describe('Testing retrieveHoleBodyArgs', () => {
-    it('should return an error on undefined', async () => {
-      expect(
-        await retrieveHoleBodyArgs(
-          undefined,
-          instanceInThisFile,
-          rustContextInThisFile
-        )
-      ).toBeInstanceOf(Error)
-    })
-
-    it('should retrieve the string type, the blind depth and diameter', async () => {
-      const op = await getHoleOp(flatSimpleHole)
-      const result = await retrieveHoleBodyArgs(
-        op.labeledArgs.holeBody,
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      if (err(result)) throw result
-      expect(result.holeBody).toEqual('blind')
-      expect(result.blindDiameter.valueCalculated).toEqual('1')
-      expect(result.blindDepth.valueCalculated).toEqual('5')
-    })
-  })
-
-  describe('Testing retrieveHoleBottomArgs', () => {
-    it('should return an error on undefined', async () => {
-      expect(
-        await retrieveHoleBottomArgs(
-          undefined,
-          instanceInThisFile,
-          rustContextInThisFile
-        )
-      ).toBeInstanceOf(Error)
-    })
-
-    it('should retrieve the string type on flat', async () => {
-      const op = await getHoleOp(flatSimpleHole)
-      const result = await retrieveHoleBottomArgs(
-        op.labeledArgs?.holeBottom,
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      if (err(result)) throw result
-      expect(result.holeBottom).toEqual('flat')
-      expect(result.drillPointAngle).toBeUndefined()
-    })
-
-    it('should retrieve the string type on drilled and angle', async () => {
-      const drillHole = `${cylinderForHole}
-hole001 = hole::hole(
-  extrude001,
-  face = END,
-  cutAt = [0, 0],
-  holeBottom =   hole::drill(pointAngle = 110deg),
-  holeBody =   hole::blind(depth = 5, diameter = 1),
-  holeType =   hole::simple(),
-)`
-      const op = await getHoleOp(drillHole)
-      const result = await retrieveHoleBottomArgs(
-        op.labeledArgs?.holeBottom,
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      if (err(result)) throw result
-      expect(result.holeBottom).toEqual('drill')
-      expect(result.drillPointAngle?.valueText).toEqual('110deg')
-    })
-  })
-
-  describe('Testing retrieveHoleTypeArgs', () => {
-    it('should return an error on undefined', async () => {
-      expect(
-        await retrieveHoleTypeArgs(
-          undefined,
-          instanceInThisFile,
-          rustContextInThisFile
-        )
-      ).toBeInstanceOf(Error)
-    })
-
-    it('should retrieve the string type on simple', async () => {
-      const op = await getHoleOp(flatSimpleHole)
-      const result = await retrieveHoleTypeArgs(
-        op.labeledArgs?.holeType,
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      if (err(result)) throw result
-      expect(result.holeType).toEqual('simple')
-      expect(result.countersinkAngle).toBeUndefined()
-      expect(result.countersinkDiameter).toBeUndefined()
-      expect(result.counterboreDepth).toBeUndefined()
-      expect(result.counterboreDiameter).toBeUndefined()
-    })
-
-    it('should retrieve the string type on countersink, plus angle and diameter', async () => {
-      const countersinkHole = `${cylinderForHole}
-hole001 = hole::hole(
-  extrude001,
-  face = END,
-  cutAt = [0, 0],
-  holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = 5, diameter = 1),
-  holeType =   hole::countersink(angle = 90deg, diameter = 2),
-)`
-      const op = await getHoleOp(countersinkHole)
-      const result = await retrieveHoleTypeArgs(
-        op.labeledArgs?.holeType,
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      if (err(result)) throw result
-      expect(result.holeType).toEqual('countersink')
-      expect(result.countersinkAngle?.valueText).toEqual('90deg')
-      expect(result.countersinkDiameter?.valueText).toEqual('2')
-      expect(result.counterboreDepth).toBeUndefined()
-      expect(result.counterboreDiameter).toBeUndefined()
-    })
-
-    it('should retrieve the string type on counterbore, plus depth and diameter', async () => {
-      const countersinkHole = `${cylinderForHole}
-hole001 = hole::hole(
-  extrude001,
-  face = END,
-  cutAt = [0, 0],
-  holeBottom =   hole::flat(),
-  holeBody =   hole::blind(depth = 5, diameter = 1),
-  holeType =   hole::counterbore(depth = 1, diameter = 2),
-)`
-      const op = await getHoleOp(countersinkHole)
-      const result = await retrieveHoleTypeArgs(
-        op.labeledArgs?.holeType,
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      if (err(result)) throw result
-      expect(result.holeType).toEqual('counterbore')
-      expect(result.countersinkAngle).toBeUndefined()
-      expect(result.countersinkDiameter).toBeUndefined()
-      expect(result.counterboreDepth?.valueText).toEqual('1')
-      expect(result.counterboreDiameter?.valueText).toEqual('2')
     })
   })
 })

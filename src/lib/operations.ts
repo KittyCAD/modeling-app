@@ -701,9 +701,7 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
 
   // 2.1 Convert the required arg from string to KclExpression
   const cutAt = await extractKclArgument(operation, 'cutAt')
-  if ('error' in cutAt) {
-    return { reason: cutAt.error }
-  }
+  if ('error' in cutAt) return { reason: cutAt.error }
 
   // 2.2 Handle the holeBody required 'mode' arg and its related optional args
   const body = await retrieveHoleBodyArgs(operation.labeledArgs?.holeBody)

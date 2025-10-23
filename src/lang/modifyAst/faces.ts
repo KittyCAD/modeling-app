@@ -157,7 +157,7 @@ export function addHole({
   const modifiedAst = structuredClone(ast)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Setting this to 'false' is likely breaking hole on hole.
+  // Setting this to 'false' as it should be is breaking hole on hole.
   // This is believed to be due to an empty nodePath and pathToNode on the subtract artifact,
   // see https://github.com/KittyCAD/modeling-app/issues/8616
   const lastChildLookup = false
@@ -304,6 +304,245 @@ export function addHole({
   return {
     modifiedAst,
     pathToNode,
+  }
+}
+
+// Util functions for hole edit flows
+export async function retrieveHoleBodyArgs(
+  opArg: OpArg | undefined,
+  instance?: ModuleType,
+  providedRustContext?: RustContext
+) {
+  let holeBody: HoleBody | undefined
+  let blindDepth: KclExpression | undefined
+  let blindDiameter: KclExpression | undefined
+  if (opArg?.value.type !== 'Object') {
+    return new Error("Couldn't retrieve hole body arguments as an object")
+  }
+
+  const opArgValue = opArg.value.value
+  if (
+    'blindDepth' in opArgValue &&
+    opArgValue.blindDepth?.type === 'Number' &&
+    'diameter' in opArgValue &&
+    opArgValue.diameter?.type === 'Number'
+  ) {
+    holeBody = 'blind'
+    const depthStr = formatNumberValue(
+      opArgValue.blindDepth.value,
+      opArgValue.blindDepth.ty,
+      instance
+    )
+    if (err(depthStr)) return depthStr
+    const depthResult = await stringToKclExpression(
+      depthStr,
+      false,
+      instance,
+      providedRustContext
+    )
+    if (err(depthResult) || 'errors' in depthResult) {
+      return new Error("Couldn't retrieve blindDepth argument")
+    }
+    blindDepth = depthResult
+
+    const diameterStr = formatNumberValue(
+      opArgValue.diameter.value,
+      opArgValue.diameter.ty,
+      instance
+    )
+    if (err(diameterStr)) return diameterStr
+    const diameterResult = await stringToKclExpression(
+      diameterStr,
+      false,
+      instance,
+      providedRustContext
+    )
+    if (err(diameterResult) || 'errors' in diameterResult) {
+      return new Error("Couldn't retrieve diameter argument")
+    }
+    blindDiameter = diameterResult
+  } else {
+    return new Error(
+      "Couldn't retrieve hole body arguments: couldn't determine type"
+    )
+  }
+
+  return { holeBody, blindDepth, blindDiameter }
+}
+
+export async function retrieveHoleBottomArgs(
+  opArg: OpArg | undefined,
+  instance?: ModuleType,
+  providedRustContext?: RustContext
+) {
+  let holeBottom: HoleBottom | undefined
+  let drillPointAngle: KclExpression | undefined
+  if (opArg?.value.type !== 'Object') {
+    return new Error("Couldn't retrieve hole bottom arguments as an object")
+  }
+
+  const opArgValue = opArg.value.value
+  if (
+    'drillBitAngle' in opArgValue &&
+    opArgValue.drillBitAngle?.type === 'Number'
+  ) {
+    if (opArgValue.drillBitAngle.value === 180) {
+      holeBottom = 'flat'
+    } else {
+      holeBottom = 'drill'
+      const angleStr = formatNumberValue(
+        opArgValue.drillBitAngle.value,
+        opArgValue.drillBitAngle.ty,
+        instance
+      )
+      if (err(angleStr)) return angleStr
+      const angleResult = await stringToKclExpression(
+        angleStr,
+        false,
+        instance,
+        providedRustContext
+      )
+      if (err(angleResult) || 'errors' in angleResult) {
+        return new Error("Couldn't retrieve drillBitAngle argument")
+      }
+      drillPointAngle = angleResult
+    }
+  } else {
+    return new Error(
+      "Couldn't retrieve holeBottom argument: couldn't determine type"
+    )
+  }
+
+  return { holeBottom, drillPointAngle }
+}
+
+export async function retrieveHoleTypeArgs(
+  opArg: OpArg | undefined,
+  instance?: ModuleType,
+  providedRustContext?: RustContext
+) {
+  let holeType: HoleType | undefined
+  let counterboreDepth: KclExpression | undefined
+  let counterboreDiameter: KclExpression | undefined
+  let countersinkAngle: KclExpression | undefined
+  let countersinkDiameter: KclExpression | undefined
+  if (opArg?.value.type !== 'Object') {
+    return new Error("Couldn't retrieve hole bottom arguments as an object")
+  }
+
+  const holeTypeValue = opArg.value.value
+  // TODO: figure out if we could pull types out of KCL-defined modules?
+  // https://github.com/KittyCAD/modeling-app/blob/2666d89427c3350ededccb055ee0b2eceec12d4d/rust/kcl-lib/std/hole.kcl#L8-L10
+  const holeTypeSimpleFeatureId = 0
+  const holeTypeCounterboreFeatureId = 1
+  const holeTypeCountersinkFeatureId = 2
+  if (
+    !('feature' in holeTypeValue && holeTypeValue.feature?.type === 'Number')
+  ) {
+    return new Error(
+      "Couldn't retrieve holeType argument: couldn't determine type"
+    )
+  }
+
+  const feature = holeTypeValue.feature.value
+  if (feature === holeTypeSimpleFeatureId) {
+    holeType = 'simple'
+  } else if (
+    feature === holeTypeCounterboreFeatureId &&
+    'depth' in holeTypeValue &&
+    holeTypeValue.depth?.type === 'Number' &&
+    'diameter' in holeTypeValue &&
+    holeTypeValue.diameter?.type === 'Number'
+  ) {
+    holeType = 'counterbore'
+    const depthStr = formatNumberValue(
+      holeTypeValue.depth.value,
+      holeTypeValue.depth.ty,
+      instance
+    )
+    if (err(depthStr)) return depthStr
+    const depthResult = await stringToKclExpression(
+      depthStr,
+      false,
+      instance,
+      providedRustContext
+    )
+    if (err(depthResult) || 'errors' in depthResult) {
+      return new Error("Couldn't retrieve depth argument")
+    }
+    counterboreDepth = depthResult
+
+    const diameterStr = formatNumberValue(
+      holeTypeValue.diameter.value,
+      holeTypeValue.diameter.ty,
+      instance
+    )
+    if (err(diameterStr)) return diameterStr
+    const diameterResult = await stringToKclExpression(
+      diameterStr,
+      false,
+      instance,
+      providedRustContext
+    )
+    if (err(diameterResult) || 'errors' in diameterResult) {
+      return new Error("Couldn't retrieve counterboreDiameter argument")
+    }
+    counterboreDiameter = diameterResult
+  } else if (
+    feature === holeTypeCountersinkFeatureId &&
+    'angle' in holeTypeValue &&
+    holeTypeValue.angle?.type === 'Number' &&
+    'diameter' in holeTypeValue &&
+    holeTypeValue.diameter?.type === 'Number'
+  ) {
+    holeType = 'countersink'
+    const angleStr = formatNumberValue(
+      holeTypeValue.angle.value,
+      holeTypeValue.angle.ty,
+      instance
+    )
+    if (err(angleStr)) return angleStr
+    const angleResult = await stringToKclExpression(
+      angleStr,
+      false,
+      instance,
+      providedRustContext
+    )
+    if (err(angleResult) || 'errors' in angleResult) {
+      return new Error("Couldn't retrieve countersinkAngle argument")
+    }
+    countersinkAngle = angleResult
+
+    const diameterStr = formatNumberValue(
+      holeTypeValue.diameter.value,
+      holeTypeValue.diameter.ty,
+      instance
+    )
+    if (err(diameterStr)) {
+      return new Error("Couldn't format countersinkDiameter argument")
+    }
+    const diameterResult = await stringToKclExpression(
+      diameterStr,
+      false,
+      instance,
+      providedRustContext
+    )
+    if (err(diameterResult) || 'errors' in diameterResult) {
+      return new Error("Couldn't retrieve countersinkDiameter argument")
+    }
+    countersinkDiameter = diameterResult
+  } else {
+    return new Error(
+      "Couldn't retrieve holeType argument: couldn't determine type"
+    )
+  }
+
+  return {
+    holeType,
+    counterboreDepth,
+    counterboreDiameter,
+    countersinkAngle,
+    countersinkDiameter,
   }
 }
 
@@ -655,243 +894,4 @@ export function buildSolidsAndFacesExprs(
   }
 
   return { solidsExpr, facesExpr, pathIfPipe }
-}
-
-// Util functions for hole edit flows
-export async function retrieveHoleBodyArgs(
-  opArg: OpArg | undefined,
-  instance?: ModuleType,
-  providedRustContext?: RustContext
-) {
-  let holeBody: HoleBody | undefined
-  let blindDepth: KclExpression | undefined
-  let blindDiameter: KclExpression | undefined
-  if (opArg?.value.type !== 'Object') {
-    return new Error("Couldn't retrieve hole body arguments as an object")
-  }
-
-  const opArgValue = opArg.value.value
-  if (
-    'blindDepth' in opArgValue &&
-    opArgValue.blindDepth?.type === 'Number' &&
-    'diameter' in opArgValue &&
-    opArgValue.diameter?.type === 'Number'
-  ) {
-    holeBody = 'blind'
-    const depthStr = formatNumberValue(
-      opArgValue.blindDepth.value,
-      opArgValue.blindDepth.ty,
-      instance
-    )
-    if (err(depthStr)) return depthStr
-    const depthResult = await stringToKclExpression(
-      depthStr,
-      false,
-      instance,
-      providedRustContext
-    )
-    if (err(depthResult) || 'errors' in depthResult) {
-      return new Error("Couldn't retrieve blindDepth argument")
-    }
-    blindDepth = depthResult
-
-    const diameterStr = formatNumberValue(
-      opArgValue.diameter.value,
-      opArgValue.diameter.ty,
-      instance
-    )
-    if (err(diameterStr)) return diameterStr
-    const diameterResult = await stringToKclExpression(
-      diameterStr,
-      false,
-      instance,
-      providedRustContext
-    )
-    if (err(diameterResult) || 'errors' in diameterResult) {
-      return new Error("Couldn't retrieve diameter argument")
-    }
-    blindDiameter = diameterResult
-  } else {
-    return new Error(
-      "Couldn't retrieve hole body arguments: couldn't determine type"
-    )
-  }
-
-  return { holeBody, blindDepth, blindDiameter }
-}
-
-export async function retrieveHoleBottomArgs(
-  opArg: OpArg | undefined,
-  instance?: ModuleType,
-  providedRustContext?: RustContext
-) {
-  let holeBottom: HoleBottom | undefined
-  let drillPointAngle: KclExpression | undefined
-  if (opArg?.value.type !== 'Object') {
-    return new Error("Couldn't retrieve hole bottom arguments as an object")
-  }
-
-  const opArgValue = opArg.value.value
-  if (
-    'drillBitAngle' in opArgValue &&
-    opArgValue.drillBitAngle?.type === 'Number'
-  ) {
-    if (opArgValue.drillBitAngle.value === 180) {
-      holeBottom = 'flat'
-    } else {
-      holeBottom = 'drill'
-      const angleStr = formatNumberValue(
-        opArgValue.drillBitAngle.value,
-        opArgValue.drillBitAngle.ty,
-        instance
-      )
-      if (err(angleStr)) return angleStr
-      const angleResult = await stringToKclExpression(
-        angleStr,
-        false,
-        instance,
-        providedRustContext
-      )
-      if (err(angleResult) || 'errors' in angleResult) {
-        return new Error("Couldn't retrieve drillBitAngle argument")
-      }
-      drillPointAngle = angleResult
-    }
-  } else {
-    return new Error(
-      "Couldn't retrieve holeBottom argument: couldn't determine type"
-    )
-  }
-
-  return { holeBottom, drillPointAngle }
-}
-
-export async function retrieveHoleTypeArgs(
-  opArg: OpArg | undefined,
-  instance?: ModuleType,
-  providedRustContext?: RustContext
-) {
-  let holeType: HoleType | undefined
-  let counterboreDepth: KclExpression | undefined
-  let counterboreDiameter: KclExpression | undefined
-  let countersinkAngle: KclExpression | undefined
-  let countersinkDiameter: KclExpression | undefined
-  if (opArg?.value.type !== 'Object') {
-    return new Error("Couldn't retrieve hole bottom arguments as an object")
-  }
-
-  const holeTypeValue = opArg.value.value
-  // TODO: figure out if we could pull types out of KCL-defined modules?
-  // https://github.com/KittyCAD/modeling-app/blob/2666d89427c3350ededccb055ee0b2eceec12d4d/rust/kcl-lib/std/hole.kcl#L8-L10
-  const holeTypeSimpleFeatureId = 0
-  const holeTypeCounterboreFeatureId = 1
-  const holeTypeCountersinkFeatureId = 2
-  if (
-    !('feature' in holeTypeValue && holeTypeValue.feature?.type === 'Number')
-  ) {
-    return new Error(
-      "Couldn't retrieve holeType argument: couldn't determine type"
-    )
-  }
-
-  const feature = holeTypeValue.feature.value
-  if (feature === holeTypeSimpleFeatureId) {
-    holeType = 'simple'
-  } else if (
-    feature === holeTypeCounterboreFeatureId &&
-    'depth' in holeTypeValue &&
-    holeTypeValue.depth?.type === 'Number' &&
-    'diameter' in holeTypeValue &&
-    holeTypeValue.diameter?.type === 'Number'
-  ) {
-    holeType = 'counterbore'
-    const depthStr = formatNumberValue(
-      holeTypeValue.depth.value,
-      holeTypeValue.depth.ty,
-      instance
-    )
-    if (err(depthStr)) return depthStr
-    const depthResult = await stringToKclExpression(
-      depthStr,
-      false,
-      instance,
-      providedRustContext
-    )
-    if (err(depthResult) || 'errors' in depthResult) {
-      return new Error("Couldn't retrieve depth argument")
-    }
-    counterboreDepth = depthResult
-
-    const diameterStr = formatNumberValue(
-      holeTypeValue.diameter.value,
-      holeTypeValue.diameter.ty,
-      instance
-    )
-    if (err(diameterStr)) return diameterStr
-    const diameterResult = await stringToKclExpression(
-      diameterStr,
-      false,
-      instance,
-      providedRustContext
-    )
-    if (err(diameterResult) || 'errors' in diameterResult) {
-      return new Error("Couldn't retrieve counterboreDiameter argument")
-    }
-    counterboreDiameter = diameterResult
-  } else if (
-    feature === holeTypeCountersinkFeatureId &&
-    'angle' in holeTypeValue &&
-    holeTypeValue.angle?.type === 'Number' &&
-    'diameter' in holeTypeValue &&
-    holeTypeValue.diameter?.type === 'Number'
-  ) {
-    holeType = 'countersink'
-    const angleStr = formatNumberValue(
-      holeTypeValue.angle.value,
-      holeTypeValue.angle.ty,
-      instance
-    )
-    if (err(angleStr)) return angleStr
-    const angleResult = await stringToKclExpression(
-      angleStr,
-      false,
-      instance,
-      providedRustContext
-    )
-    if (err(angleResult) || 'errors' in angleResult) {
-      return new Error("Couldn't retrieve countersinkAngle argument")
-    }
-    countersinkAngle = angleResult
-
-    const diameterStr = formatNumberValue(
-      holeTypeValue.diameter.value,
-      holeTypeValue.diameter.ty,
-      instance
-    )
-    if (err(diameterStr)) {
-      return new Error("Couldn't format countersinkDiameter argument")
-    }
-    const diameterResult = await stringToKclExpression(
-      diameterStr,
-      false,
-      instance,
-      providedRustContext
-    )
-    if (err(diameterResult) || 'errors' in diameterResult) {
-      return new Error("Couldn't retrieve countersinkDiameter argument")
-    }
-    countersinkDiameter = diameterResult
-  } else {
-    return new Error(
-      "Couldn't retrieve holeType argument: couldn't determine type"
-    )
-  }
-
-  return {
-    holeType,
-    counterboreDepth,
-    counterboreDiameter,
-    countersinkAngle,
-    countersinkDiameter,
-  }
 }
