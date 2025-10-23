@@ -214,14 +214,14 @@ export function parseAction(action: unknown): Action | Error {
     )
   ) {
     return new Error(
-      `Layout has ${action.actionType ? 'invalid' : 'missing'} type ${action.actionType ?? ''}`
+      `Action has ${action.actionType ? 'invalid' : 'missing'} type ${action.actionType ?? ''}. It will be dropped.`
     )
   }
 
   // Having a missing or invalid icon is fatal
   if (!(typeof action.icon === 'string' && isCustomIconName(action.icon))) {
     return new Error(
-      `Layout has ${action.actionType ? 'invalid' : 'missing'} type ${action.actionType ?? ''}`
+      `Action with ID $${action.id} is missing or invalid icon name. It will be dropped.`
     )
   }
 
