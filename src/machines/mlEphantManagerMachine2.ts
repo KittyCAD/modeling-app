@@ -25,6 +25,10 @@ import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/pr
 
 import toast from 'react-hot-toast'
 
+export enum MlEphantSetupErrors {
+  ConversationNotFound = 'conversation not found',
+}
+
 type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends {
   type: 'user'
 }
@@ -199,11 +203,16 @@ export const mlEphantManagerMachine2 = setup({
     ): Promise<Partial<MlEphantManagerContext2>> {
       assertEvent(args.input.event, MlEphantManagerStates2.Setup)
 
+      // On future reenters of this actor it will not have args.input.event
+      // You must read from the context for the cached conversationId
+      const maybeConversationId =
+        args.input.event.conversationId || args.input.context.conversationId
+
       const ws = await Socket(
         WebSocket,
         '/ws/ml/copilot' +
-          (args.input.event.conversationId
-            ? `?conversation_id=${args.input.event.conversationId}&replay=true`
+          (maybeConversationId
+            ? `?conversation_id=${maybeConversationId}&replay=true`
             : ''),
         args.input.context.apiToken
       )
@@ -231,6 +240,12 @@ export const mlEphantManagerMachine2 = setup({
 
       return await new Promise<Partial<MlEphantManagerContext2>>(
         (onFulfilled, onRejected) => {
+          /**
+           * onRejected we need to pass the conversation id to the error handler
+           * to write it to the context within an action. This will allow us to use
+           * the conversation id across multiple reeenters if this promise fails for any reason.
+           */
+
           ws.addEventListener('message', function (event: MessageEvent<any>) {
             let response: unknown
             if (!isString(event.data)) {
@@ -265,10 +280,12 @@ export const mlEphantManagerMachine2 = setup({
 
             if (
               'error' in response &&
-              response.error.detail.includes('conversation not found')
+              response.error.detail.includes(
+                MlEphantSetupErrors.ConversationNotFound
+              )
             ) {
               ws.close()
-              onRejected()
+              onRejected(MlEphantSetupErrors.ConversationNotFound)
               return
             }
 
@@ -441,6 +458,17 @@ export const mlEphantManagerMachine2 = setup({
         },
         onError: {
           target: MlEphantManagerStates2.Setup,
+          actions: [
+            assign(({ event, context }) => {
+              if (event.error === MlEphantSetupErrors.ConversationNotFound) {
+                // set the conversation Id to undefined to have the reenter make a new conversation id
+                return { conversationId: undefined }
+              }
+
+              // otherwise keep the same one
+              return { conversationId: context.conversationId }
+            }),
+          ],
           reenter: true,
         },
       },
