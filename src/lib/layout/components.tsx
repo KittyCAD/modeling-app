@@ -389,7 +389,7 @@ function ResizeHandle({
   return (
     <PanelResizeHandle
       disabled={disabled}
-      className={`relative group/handle ${direction === 'vertical' ? 'h-0.5' : 'w-0.5'} ${disabled ? 'bg-default' : ''}`}
+      className={`relative group/handle ${direction === 'vertical' ? 'h-[1px]' : 'w-[1px]'} ${disabled ? 'bg-default' : ''}`}
       id={id}
     >
       <div
