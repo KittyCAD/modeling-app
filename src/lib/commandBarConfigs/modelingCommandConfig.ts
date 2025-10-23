@@ -37,6 +37,7 @@ import type {
   ModelingMachineContext,
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
+import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -153,15 +154,15 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments, note that we'll be inferring solids from faces here
     face: Selections
     cutAt: KclCommandValue
-    holeBody: 'blind'
+    holeBody: HoleBody
     blindDepth?: KclCommandValue
     blindDiameter?: KclCommandValue
-    holeType: 'simple' | 'counterbore' | 'countersink'
+    holeType: HoleType
     counterboreDepth?: KclCommandValue
     counterboreDiameter?: KclCommandValue
     countersinkAngle?: KclCommandValue
     countersinkDiameter?: KclCommandValue
-    holeBottom: 'flat' | 'drill'
+    holeBottom: HoleBottom
     drillPointAngle?: KclCommandValue
   }
   Fillet: {
