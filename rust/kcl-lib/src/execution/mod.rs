@@ -12,6 +12,7 @@ pub use cache::{bust_cache, clear_mem_cache};
 #[cfg(feature = "artifact-graph")]
 pub use cad_op::Group;
 pub use cad_op::Operation;
+pub(crate) use exec_ast::normalize_to_solver_unit;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;

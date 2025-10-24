@@ -1118,7 +1118,7 @@ fn solver_numeric_type(exec_state: &ExecState) -> NumericType {
 
 /// When giving input to the solver, all numbers must be given in the same
 /// units.
-fn normalize_to_solver_unit(
+pub(crate) fn normalize_to_solver_unit(
     value: &KclValue,
     source_range: SourceRange,
     exec_state: &mut ExecState,

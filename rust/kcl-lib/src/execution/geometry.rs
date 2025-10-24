@@ -1694,6 +1694,15 @@ pub enum UnsolvedExpr {
     Unknown(SketchVarId),
 }
 
+impl UnsolvedExpr {
+    pub fn var(&self) -> Option<SketchVarId> {
+        match self {
+            UnsolvedExpr::Known(_) => None,
+            UnsolvedExpr::Unknown(id) => Some(*id),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
