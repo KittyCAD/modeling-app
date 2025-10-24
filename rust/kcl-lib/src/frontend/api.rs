@@ -169,13 +169,13 @@ impl std::str::FromStr for StandardPlane {
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiSourceRef")]
 #[serde(tag = "type")]
 pub enum SourceRef {
-    Simple(SourceRange),
-    BackTrace(Vec<SourceRange>),
+    Simple { range: SourceRange },
+    BackTrace { ranges: Vec<SourceRange> },
 }
 
 impl From<SourceRange> for SourceRef {
     fn from(value: SourceRange) -> Self {
-        Self::Simple(value)
+        Self::Simple { range: value }
     }
 }
 
