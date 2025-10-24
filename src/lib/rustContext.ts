@@ -299,19 +299,18 @@ export default class RustContext {
     const instance = this._checkInstance()
 
     try {
-      const result: string = await instance.add_segment(
-        JSON.stringify(version),
-        JSON.stringify(sketch),
-        JSON.stringify(segment),
-        label,
-        JSON.stringify(settings)
-      )
-      const tuple: [SourceDelta, SceneGraphDelta, SketchExecOutcome] =
-        JSON.parse(result)
+      const result: [SourceDelta, SceneGraphDelta, SketchExecOutcome] =
+        await instance.add_segment(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(segment),
+          label,
+          JSON.stringify(settings)
+        )
       return {
-        kclSource: tuple[0],
-        sceneGraphDelta: tuple[1],
-        sketchExecOutcome: tuple[2],
+        kclSource: result[0],
+        sceneGraphDelta: result[1],
+        sketchExecOutcome: result[2],
       }
     } catch (e: any) {
       // TODO: sketch-api: const err = errFromErrWithOutputs(e)
