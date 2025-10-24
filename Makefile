@@ -166,6 +166,11 @@ else
 	npm run test:snapshots -- --headed --update-snapshots=$(E2E_MODE)
 endif
 
+.PHONY: glass-skeleton
+glass-skeleton:
+	$(MAKE) test-e2e-desktop MAKE_GLASS_SKELETON=yes
+	
+
 ###############################################################################
 # CLEAN
 

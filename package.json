@@ -12,6 +12,7 @@
   "main": ".vite/build/main.js",
   "license": "MIT",
   "workspaces": [
+    "../glass-skeleton/recorder",
     "packages/codemirror-lang-kcl",
     "packages/codemirror-lsp-client",
     "rust/kcl-language-server"

@@ -1,6 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { test as playwrightTestFn } from '@playwright/test'
+import { test as playwrightTestFn, beforeEach, afterEach } from '@playwright/test'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 
+import { GlassSkeletonRecorder } from 'playwright-glass-skeleton'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
   ElectronZoo,
@@ -94,8 +97,49 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
   ],
 })
 
-const test = playwrightTestFnWithFixtures_.extend<Fixtures>(
+const playwrightTestFnWithFixtures__ = playwrightTestFnWithFixtures_.extend<Fixtures>(
   fixturesBasedOnProcessEnvPlatform
 )
+
+// Add the Glass Skeleton as a fixture to promise a fresh skeleton state
+const test = playwrightTestFnWithFixtures__.extend<{ glassSkeleton?: GlassSkeletonRecorder }>({
+  glassSkeleton: async ({ page }, use) => {
+    const glassSkeleton = process.env.MAKE_GLASS_SKELETON
+      // These are functions because those properties are late-bound.
+      ? new GlassSkeletonRecorder({
+        type: 'playwright',
+        page,
+        fs: {
+          writeFile: fs.writeFile,
+          mkdir: fs.mkdir,
+        },
+        path: {
+          resolve: path.resolve,
+        },
+        resources: [{
+          protocol: GlassSkeletonRecorder.SupportedProtocol.WebSocket,
+          urlRegExpStr: 'wss://api.dev.zoo.dev',
+          removeMatchingRegExpStrs: [
+            'api-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}',
+          ]
+        }]
+      })
+      : undefined
+    await use(glassSkeleton)
+  }
+})
+// These exist because otherwise the page is not navigated to yet.
+beforeEach(async ({ glassSkeleton }) => {
+  if (glassSkeleton === undefined) return
+  await glassSkeleton.start()
+})
+afterEach(async ({ glassSkeleton }, testInfo) => {
+  if (glassSkeleton === undefined) return
+  await glassSkeleton.stop()
+  void glassSkeleton.save({
+    outputDir: path.resolve(testInfo.outputPath(), '..'),
+    outputName:  testInfo.titlePath.join('-').toLowerCase().trim().replace(/'"/g, '').replaceAll(' ', '-') + '.bson'
+  })
+})
 
 export { test }
