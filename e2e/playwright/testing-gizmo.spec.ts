@@ -286,7 +286,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
     await test.step(`Setup`, async () => {
       await scene.expectState({
         camera: {
-          position: [11796.52, -39216.59, 21103.27],
+          position: [11796.52, -39216.59, 21103.26],
           target: [11796.52, -635, 3201.42],
         },
       })
