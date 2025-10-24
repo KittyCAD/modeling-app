@@ -27,7 +27,6 @@ import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
 import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
-import { MlEphantConversationPaneWrapper2 } from '@src/components/layout/areas/MlEphantConversationPaneWrapper2'
 
 const onCodeNotificationClick: MouseEventHandler = (e) => {
   e.preventDefault()
@@ -64,15 +63,6 @@ export const defaultAreaLibrary = Object.freeze({
         'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
     },
     Component: MlEphantConversationPaneWrapper,
-  },
-  ttc2: {
-    hide: () => false,
-    shortcut: 'Ctrl + T',
-    cssClassOverrides: {
-      button:
-        'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
-    },
-    Component: MlEphantConversationPaneWrapper2,
   },
   codeEditor: {
     hide: () => false,

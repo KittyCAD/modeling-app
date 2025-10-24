@@ -18,7 +18,6 @@ export enum DefaultLayoutPaneID {
   FeatureTree = 'feature-tree',
   Files = 'files',
   TTC = 'ttc',
-  TTC2 = 'ttc2',
   Variables = 'variables',
   Logs = 'logs',
 }
@@ -141,20 +140,12 @@ export const defaultLayoutConfig: Layout = {
       activeIndices: [0],
       sizes: [],
       splitOrientation: 'block',
-      // TODO: do this based on IS_STAGING_OR_DEBUG?
       children: [
         {
           id: DefaultLayoutPaneID.TTC,
           label: 'Text-to-CAD',
           type: LayoutType.Simple,
           areaType: AreaType.TTC,
-          icon: 'sparkles',
-        },
-        {
-          id: DefaultLayoutPaneID.TTC2,
-          label: 'Text-to-CAD',
-          type: LayoutType.Simple,
-          areaType: AreaType.TTC2,
           icon: 'sparkles',
         },
       ],
