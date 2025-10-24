@@ -38,6 +38,7 @@ export const MlEphantConversationPane2 = (props: {
   settings: typeof settings
   user?: User
 }) => {
+  const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
   const conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
@@ -190,6 +191,9 @@ export const MlEphantConversationPane2 = (props: {
   useEffect(() => {
     const ttcPromptParam = searchParams.get(SEARCH_PARAM_PROMPT_KEY)
     if (ttcPromptParam) {
+      setDefaultPrompt(ttcPromptParam)
+
+      // Now clear that param
       const newSearchParams = new URLSearchParams(searchParams)
       newSearchParams.delete(SEARCH_PARAM_PROMPT_KEY)
       setSearchParams(newSearchParams, { replace: true })
@@ -210,7 +214,7 @@ export const MlEphantConversationPane2 = (props: {
       disabled={isProcessing}
       hasPromptCompleted={isProcessing}
       userAvatarSrc={props.user?.image}
-      defaultPrompt={searchParams.get(SEARCH_PARAM_PROMPT_KEY) ?? ''}
+      defaultPrompt={defaultPrompt}
     />
   )
 }

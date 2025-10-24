@@ -299,7 +299,7 @@ export const MlEphantConversationInput = (
   props: MlEphantConversationInputProps
 ) => {
   const refDiv = useRef<HTMLTextAreaElement>(null)
-  const [value, setValue] = useState<string>(props.defaultPrompt)
+  const [value, setValue] = useState<string>('')
   const [heightConvo, setHeightConvo] = useState(0)
   const [forcedTools, setForcedTools] = useState<Set<MlCopilotTool>>(new Set())
   const [excludedTools, setExcludedTools] = useState<Set<MlCopilotTool>>(
@@ -327,6 +327,9 @@ export const MlEphantConversationInput = (
     setForcedTools(new Set(forcedTools))
     setExcludedTools(new Set(excludedTools))
   }
+
+  // Without this the cursor ends up at the start of the text
+  useEffect(() => setValue(props.defaultPrompt), [props.defaultPrompt])
 
   useEffect(() => {
     if (
