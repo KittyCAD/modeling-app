@@ -29,7 +29,7 @@ export interface MlEphantConversationProps {
   disabled?: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
-  defaultPrompt: string
+  defaultPrompt?: string
 }
 
 const ML_COPILOT_TOOLS: Readonly<MlCopilotTool[]> = Object.freeze([
@@ -253,7 +253,7 @@ interface MlEphantConversationInputProps {
   billingContext: BillingContext
   onProcess: MlEphantConversationProps['onProcess']
   disabled?: boolean
-  defaultPrompt: string
+  defaultPrompt?: string
 }
 
 function BillingStatusBarItem(props: { billingContext: BillingContext }) {
@@ -329,7 +329,7 @@ export const MlEphantConversationInput = (
   }
 
   // Without this the cursor ends up at the start of the text
-  useEffect(() => setValue(props.defaultPrompt), [props.defaultPrompt])
+  useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
 
   useEffect(() => {
     if (
