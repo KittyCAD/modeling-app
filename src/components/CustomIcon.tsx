@@ -857,6 +857,14 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  layout: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16.5 15.5H3.5V5.5H16.5V15.5ZM4.5 14.5H7.5V6.5H4.5V14.5ZM8.5 14.5H15.5V12H8.5V14.5ZM8.5 11H15.5V6.5H8.5V11Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   line: (
     <svg
       viewBox="0 0 20 20"
