@@ -460,19 +460,22 @@ export function collapseSplitChildPaneNode({
   return rootLayout
 }
 
-export function shouldEnableResizeHandle(
-  currentPane: Layout,
-  index: number,
-  allPanes: Layout[]
-): boolean {
-  const isLastPane = index >= allPanes.length - 1
-  const nextPane = !isLastPane ? allPanes[index + 1] : undefined
-  const isCollapsedPaneLayout = (l: Layout | undefined) =>
-    l?.type === LayoutType.Panes && l.activeIndices.length === 0
-  const nextIsCollapsed = isCollapsedPaneLayout(nextPane)
-  const thisIsCollapsed = isCollapsedPaneLayout(currentPane)
+export const isCollapsedPaneLayout = (l: Layout | undefined) =>
+  l?.type === LayoutType.Panes && l.activeIndices.length === 0
 
-  return !(isLastPane || nextIsCollapsed || thisIsCollapsed)
+export function shouldEnableResizeHandle(
+  currentSplitChild: Layout,
+  index: number,
+  allSplitChildren: Layout[]
+): boolean {
+  const isLastSplitChild = index >= allSplitChildren.length - 1
+  const nextSplitChild = !isLastSplitChild
+    ? allSplitChildren[index + 1]
+    : undefined
+  const nextIsCollapsed = isCollapsedPaneLayout(nextSplitChild)
+  const thisIsCollapsed = isCollapsedPaneLayout(currentSplitChild)
+
+  return !(isLastSplitChild || nextIsCollapsed || thisIsCollapsed)
 }
 
 export function shouldDisableFlex(

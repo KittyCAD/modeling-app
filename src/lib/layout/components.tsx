@@ -16,7 +16,14 @@ import { AreaType } from '@src/lib/layout/types'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Switch } from '@headlessui/react'
-import { createContext, Fragment, useContext, useEffect, useRef } from 'react'
+import {
+  createContext,
+  Fragment,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import {
   getOppositeSide,
   getOppositionDirection,
@@ -35,6 +42,7 @@ import {
   saveLayout,
   shouldDisableFlex,
   defaultLayout,
+  isCollapsedPaneLayout,
 } from '@src/lib/layout/utils'
 import type {
   IUpdateNodeSizes,
@@ -185,9 +193,10 @@ function LayoutNode({
       return <SplitLayout layout={layout} key={`node-${layout.id}`} />
     case LayoutType.Panes:
       return <PaneLayout layout={layout} key={`node-${layout.id}`} />
-    default:
+    default: {
       const { Component, ...props } = areaLibrary[layout.areaType]
       return Component({ areaConfig: props, layout, onClose })
+    }
   }
 }
 
@@ -217,6 +226,7 @@ function SplitLayoutContents({
   layout: Layout
   onClose?: (id: string) => void
 }) {
+  const [newSizes, setNewSizes] = useState<number[]>([])
   const { updateSplitSizes } = useLayoutState()
   const hasValidChildren = 'children' in layout && isArray(layout.children)
   const hasValidSizes =
@@ -228,42 +238,44 @@ function SplitLayoutContents({
     return <></>
   }
 
-  function onSplitDrag(newSizes: number[]) {
-    updateSplitSizes({ targetNodeId: layout.id, newSizes })
+  function onHandleDrag(isDragging: boolean) {
+    if (!isDragging) {
+      updateSplitSizes({ targetNodeId: layout.id, newSizes })
+    }
   }
+
   return (
     layout.children.length && (
       <PanelGroup
         id={layout.id}
         direction={direction}
         className="bg-3"
-        onLayout={onSplitDrag}
+        onLayout={(l) => setNewSizes(l)}
       >
         {layout.children.map((a, i, arr) => {
           const disableResize = !shouldEnableResizeHandle(a, i, arr)
           const disableFlex = shouldDisableFlex(a, layout)
+          const isCollapsed = isCollapsedPaneLayout(a)
+          const size = isCollapsed ? undefined : layout.sizes[i]
           return (
-            <Fragment key={`${layout.id}${a.id}`}>
+            <Fragment key={`${a.id}-${i}-${isCollapsed}-${size}`}>
               <Panel
-                key={`panel-${a.id}`}
                 id={a.id}
                 order={i}
-                defaultSize={layout.sizes[i]}
+                defaultSize={size}
                 className={`flex bg-default ${disableFlex ? '!flex-none !overflow-visible' : ''}`}
                 minSize={2}
               >
                 <LayoutNode layout={a} onClose={() => onClose?.(a.id)} />
               </Panel>
-              {i < layout.sizes.length - 1 ? (
-                <ResizeHandle
-                  direction={direction}
-                  key={`handle-${a.id}`}
-                  id={`handle-${a.id}`}
-                  disabled={disableResize}
-                  layout={layout}
-                  currentIndex={i}
-                />
-              ) : null}
+              <ResizeHandle
+                direction={direction}
+                id={`handle-${a.id}`}
+                disabled={disableResize}
+                layout={layout}
+                currentIndex={i}
+                onDragging={onHandleDrag}
+              />
             </Fragment>
           )
         })}
@@ -379,18 +391,21 @@ function ResizeHandle({
   direction,
   id,
   disabled,
+  onDragging,
 }: {
   direction: Direction
   id: string
   disabled: boolean
   layout: Layout
   currentIndex: number
+  onDragging: (isDragging: boolean) => void
 }) {
   return (
     <PanelResizeHandle
       disabled={disabled}
       className={`relative group/handle ${direction === 'vertical' ? 'h-[1px]' : 'w-[1px]'} ${disabled ? 'bg-default' : ''}`}
       id={id}
+      onDragging={onDragging}
     >
       <div
         className={`hidden group-data-[resize-handle-state=hover]/handle:grid place-content-center z-10 py-1 absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 rounded-sm bg-3 border b-5 ${direction === 'horizontal' ? '' : 'rotate-90'}`}

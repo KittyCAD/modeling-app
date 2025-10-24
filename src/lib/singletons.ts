@@ -210,13 +210,13 @@ const appMachine = setup({
   on: {
     [AppMachineEventType.SetLayout]: {
       actions: [
-        assign({ layout: ({ event }) => event.layout }),
+        assign({ layout: ({ event }) => structuredClone(event.layout) }),
         ({ event }) => saveLayout({ layout: event.layout }),
       ],
     },
     [AppMachineEventType.ResetLayout]: {
       actions: [
-        assign({ layout: defaultLayoutConfig }),
+        assign({ layout: structuredClone(defaultLayoutConfig) }),
         ({ context }) => saveLayout({ layout: context.layout }),
       ],
     },
