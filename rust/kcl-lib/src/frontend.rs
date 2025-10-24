@@ -367,7 +367,7 @@ impl FrontendState {
         // Add the point to the AST of the sketch block.
         let mut new_ast = self.program.ast.clone();
         let sketch_block_range = self
-            .ast_from_object_id_mut(
+            .mutate_ast(
                 &mut new_ast,
                 sketch_id,
                 AstMutateCommand::AddSketchBlockExprStmt { expr: point_ast },
@@ -516,7 +516,7 @@ impl FrontendState {
         // Add the line to the AST of the sketch block.
         let mut new_ast = self.program.ast.clone();
         let sketch_block_range = self
-            .ast_from_object_id_mut(
+            .mutate_ast(
                 &mut new_ast,
                 sketch_id,
                 AstMutateCommand::AddSketchBlockExprStmt { expr: line_ast },
@@ -663,7 +663,7 @@ impl FrontendState {
 
         // Modify the line AST.
         let mut new_ast = self.program.ast.clone();
-        self.ast_from_object_id_mut(
+        self.mutate_ast(
             &mut new_ast,
             line_id,
             AstMutateCommand::EditLine {
@@ -715,7 +715,7 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta))
     }
 
-    fn ast_from_object_id_mut(
+    fn mutate_ast(
         &mut self,
         ast: &mut ast::Node<ast::Program>,
         object_id: ObjectId,
@@ -727,9 +727,22 @@ impl FrontendState {
             .get(object_id.0)
             .ok_or_else(|| anyhow!("Object not found: {object_id:?}"))?;
         match &sketch_object.source {
-            SourceRef::Simple { range } => ast_node_from_source_range_mut(ast, *range, command),
+            SourceRef::Simple { range } => mutate_ast_node_by_source_range(ast, *range, command),
             SourceRef::BackTrace { .. } => bail!("BackTrace source refs not supported yet"),
         }
+    }
+}
+
+fn mutate_ast_node_by_source_range(
+    ast: &mut ast::Node<ast::Program>,
+    source_range: SourceRange,
+    command: AstMutateCommand,
+) -> anyhow::Result<SourceRange> {
+    let context = AstMutateContext { source_range, command };
+    let control = dfs_mut(ast, &context, filter_and_process);
+    match control {
+        ControlFlow::Continue(_) => Err(anyhow!("Source range not found: {source_range:?}")),
+        ControlFlow::Break(break_value) => Ok(break_value),
     }
 }
 
@@ -918,19 +931,6 @@ fn ast_sketch2_name(name: &str) -> ast::Name {
         })],
         abs_path: false,
         digest: None,
-    }
-}
-
-fn ast_node_from_source_range_mut(
-    ast: &mut ast::Node<ast::Program>,
-    source_range: SourceRange,
-    command: AstMutateCommand,
-) -> anyhow::Result<SourceRange> {
-    let context = AstMutateContext { source_range, command };
-    let control = dfs_mut(ast, &context, filter_and_process);
-    match control {
-        ControlFlow::Continue(_) => Err(anyhow!("Source range not found: {source_range:?}")),
-        ControlFlow::Break(break_value) => Ok(break_value),
     }
 }
 
