@@ -7,7 +7,7 @@ import {
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { GlassSkeletonRecorder } from 'playwright-glass-skeleton'
+import { GlassSkeletonRecorder } from 'glass-skeleton-recorder'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
   ElectronZoo,
