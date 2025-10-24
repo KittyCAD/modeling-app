@@ -163,7 +163,7 @@ import {
   type EquipTool,
   sketchSolveMachine,
 } from '@src/machines/sketchSolve/sketchSolveMode'
-import { setExperimentalFeatures } from '@src/lib/kclHelpers'
+import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import type CodeManager from '@src/lang/codeManager'
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
@@ -3780,19 +3780,23 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Remove once it isn't experimental anymore
+        // Remove once this command isn't experimental anymore
+        let astWithNewSetting: Node<Program> | undefined
         if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
-          const result = await setExperimentalFeatures({ type: 'Allow' })
-          if (err(result)) {
-            return Promise.reject(result)
+          const ast = setExperimentalFeatures(codeManager.code, {
+            type: 'Allow',
+          })
+          if (err(ast)) {
+            return Promise.reject(ast)
           }
+
+          astWithNewSetting = ast
         }
 
-        const { ast, artifactGraph } = kclManager
         const result = addFlatnessGdt({
           ...input,
-          ast,
-          artifactGraph,
+          ast: astWithNewSetting ?? kclManager.ast,
+          artifactGraph: kclManager.artifactGraph,
         })
         if (err(result)) {
           return Promise.reject(result)
