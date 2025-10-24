@@ -8,8 +8,13 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type {
   ApiFile,
+  ApiFileId,
+  ApiObjectId,
+  ApiProjectId,
+  ApiVersion,
   SceneGraphDelta,
   SegmentCtor,
+  SketchArgs,
   SketchExecOutcome,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -284,12 +289,69 @@ export default class RustContext {
     }
   }
 
+  /** Add a new sketch and enter sketch mode. */
+  async newSketch(
+    project: ApiProjectId,
+    file: ApiFileId,
+    version: ApiVersion,
+    sketchArgs: SketchArgs,
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+    sketchId: ApiObjectId
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: [SourceDelta, SceneGraphDelta, ApiObjectId] =
+        await instance.new_sketch(
+          JSON.stringify(project),
+          JSON.stringify(file),
+          JSON.stringify(version),
+          JSON.stringify(sketchArgs),
+          JSON.stringify(settings)
+        )
+      return {
+        kclSource: result[0],
+        sceneGraphDelta: result[1],
+        sketchId: result[2],
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
+  /** Exit sketch mode. */
+  async exitSketch(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    settings: DeepPartial<Configuration>
+  ): Promise<SceneGraphDelta> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: SceneGraphDelta = await instance.exit_sketch(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(settings)
+      )
+      return result
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
   /** Add a segment to a sketch. */
   async addSegment(
-    version: number,
-    sketch: number,
+    version: ApiVersion,
+    sketch: ApiObjectId,
     segment: SegmentCtor,
-    label: string,
+    label: string | undefined,
     settings: DeepPartial<Configuration>
   ): Promise<{
     kclSource: SourceDelta
@@ -350,6 +412,41 @@ export default class RustContext {
       }
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
+  /** Edit a segment in a sketch. */
+  async editSegment(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    segmentId: ApiObjectId,
+    segment: SegmentCtor,
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+    sketchExecOutcome: SketchExecOutcome
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: [SourceDelta, SceneGraphDelta, SketchExecOutcome] =
+        await instance.edit_segment(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(segmentId),
+          JSON.stringify(segment),
+          JSON.stringify(settings)
+        )
+      return {
+        kclSource: result[0],
+        sceneGraphDelta: result[1],
+        sketchExecOutcome: result[2],
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
       return Promise.reject(err)
     }
   }
