@@ -294,23 +294,25 @@ function ReviewingButton({
       buttonRef.current.focus()
     }
   }, [])
+  const resolvedIconClassName = disabled ? '!text-3' : iconClassName
+  const resolvedBgClassName = disabled ? '!bg-3' : bgClassName
   return (
     <ActionButton
       Element="button"
       ref={buttonRef}
       type="submit"
       form="review-form"
-      className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current ${disabled ? 'bg-opacity-50' : bgClassName}`}
+      className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current ${resolvedBgClassName}`}
       tabIndex={0}
       data-testid="command-bar-submit"
       disabled={disabled}
       iconEnd={{
         icon: 'checkmark',
-        bgClassName: `p-1 rounded-sm ${disabled ? 'bg-opacity-50' : bgClassName}`,
-        iconClassName: `${iconClassName}`,
+        bgClassName: `p-1 rounded-sm ${resolvedBgClassName}`,
+        iconClassName: `${resolvedIconClassName}`,
       }}
     >
-      <span className={`pl-2 ${iconClassName}`}>Submit</span>
+      <span className={`pl-2 ${resolvedIconClassName}`}>Submit</span>
     </ActionButton>
   )
 }
