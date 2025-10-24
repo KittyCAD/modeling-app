@@ -1,3 +1,4 @@
+import { isDesktop } from '@src/lib/isDesktop'
 import {
   ActionType,
   AreaType,
@@ -59,8 +60,8 @@ export const defaultLayoutConfig: Layout = {
       label: 'left-toolbar',
       type: LayoutType.Panes,
       side: 'inline-start',
-      activeIndices: [0, 2],
-      sizes: [50, 50],
+      activeIndices: isDesktop() ? [0, 2] : [0],
+      sizes: isDesktop() ? [50, 50] : [100],
       splitOrientation: 'block',
       children: [
         {
@@ -138,7 +139,7 @@ export const defaultLayoutConfig: Layout = {
       type: LayoutType.Panes,
       side: 'inline-end',
       activeIndices: [0],
-      sizes: [],
+      sizes: [100],
       splitOrientation: 'block',
       children: [
         {
