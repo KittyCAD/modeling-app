@@ -13,6 +13,7 @@ import type {
   ActionType,
 } from '@src/lib/layout/types'
 import { AreaType } from '@src/lib/layout/types'
+import type { ImperativePanelGroupHandle } from 'react-resizable-panels'
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Switch } from '@headlessui/react'
@@ -226,6 +227,7 @@ function SplitLayoutContents({
   layout: Layout
   onClose?: (id: string) => void
 }) {
+  const ref = useRef<ImperativePanelGroupHandle>(null)
   const [newSizes, setNewSizes] = useState<number[]>([])
   const { updateSplitSizes } = useLayoutState()
   const hasValidChildren = 'children' in layout && isArray(layout.children)
@@ -233,6 +235,26 @@ function SplitLayoutContents({
     'sizes' in layout &&
     isArray(layout.sizes) &&
     layout.sizes.every(Number.isFinite)
+  const sizes = hasValidSizes ? layout.sizes : undefined
+
+  // We don't want to fully rerender the layout and all its children on resize of split panes,
+  // so we only rerender when IDs shift (look at the `key` on the Fragment below)
+  // and instead we watch for changes here and imperatively resize this Split layout
+  // via react-resizable-panels' imperative ref API.
+  useEffect(() => {
+    const currentLayout = ref.current?.getLayout()
+    if (!currentLayout || !hasValidSizes || !sizes) {
+      return
+    }
+
+    if (sizes.length === currentLayout.length) {
+      ref.current?.setLayout(sizes)
+    } else {
+      console.error(
+        `Attempted to set Split layout sizes imperatively to a mismatched array of sizes. ID: ${layout.id}, real sizes: ${currentLayout}, attempted: ${sizes}`
+      )
+    }
+  }, [sizes, hasValidSizes, layout.id])
 
   if (!hasValidChildren || !hasValidSizes) {
     return <></>
@@ -251,6 +273,7 @@ function SplitLayoutContents({
         direction={direction}
         className="bg-3"
         onLayout={(l) => setNewSizes(l)}
+        ref={ref}
       >
         {layout.children.map((a, i, arr) => {
           const disableResize = !shouldEnableResizeHandle(a, i, arr)
@@ -258,9 +281,10 @@ function SplitLayoutContents({
           const isCollapsed = isCollapsedPaneLayout(a)
           const size = isCollapsed ? undefined : layout.sizes[i]
           return (
-            <Fragment key={`${a.id}-${i}-${isCollapsed}-${size}`}>
+            <Fragment key={`${a.id}-${i}-${isCollapsed}`}>
               <Panel
                 id={a.id}
+                key={a.id}
                 order={i}
                 defaultSize={size}
                 className={`flex bg-default ${disableFlex ? '!flex-none !overflow-visible' : ''}`}
