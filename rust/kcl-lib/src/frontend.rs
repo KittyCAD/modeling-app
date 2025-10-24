@@ -1,4 +1,4 @@
-use std::ops::ControlFlow;
+use std::{cell::Cell, ops::ControlFlow};
 
 use anyhow::{anyhow, bail};
 use kcl_error::SourceRange;
@@ -18,7 +18,7 @@ use crate::{
         traverse::dfs_mut,
     },
     parsing::ast::types as ast,
-    walk::NodeMut,
+    walk::{NodeMut, Visitable},
 };
 
 pub(crate) mod api;
@@ -388,33 +388,9 @@ impl FrontendState {
             });
         };
 
-        let point_source_range = new_program
-            .ast
-            .body
-            .iter()
-            .find_map(|item| {
-                if let ast::BodyItem::ExpressionStatement(expr_stmt) = item
-                    && expr_stmt.module_id == sketch_block_range.module_id()
-                    && expr_stmt.start == sketch_block_range.start()
-                    // End shouldn't match since we added something.
-                    && expr_stmt.end >= sketch_block_range.end()
-                    && let ast::Expr::SketchBlock(sketch_block) = &expr_stmt.expression
-                {
-                    return sketch_block.body.items.last().map(SourceRange::from);
-                }
-                if let ast::BodyItem::VariableDeclaration(var_dec) = item
-                    && let ast::Expr::SketchBlock(sketch_block) = &var_dec.declaration.init
-                    && sketch_block.module_id == sketch_block_range.module_id()
-                    && sketch_block.start == sketch_block_range.start()
-                    // End shouldn't match since we added something.
-                    && sketch_block.end >= sketch_block_range.end()
-                {
-                    return sketch_block.body.items.last().map(SourceRange::from);
-                }
-                None
-            })
-            .ok_or_else(|| Error {
-                msg: format!("Source range of point not found in sketch block: {sketch_block_range:?}"),
+        let point_source_range =
+            find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
+                msg: format!("Source range of point not found in sketch block: {sketch_block_range:?}; {err:?}"),
             })?;
         #[cfg(not(feature = "artifact-graph"))]
         let _ = point_source_range;
@@ -536,34 +512,9 @@ impl FrontendState {
                 msg: "No AST produced after adding line".to_string(),
             });
         };
-
-        let line_source_range = new_program
-            .ast
-            .body
-            .iter()
-            .find_map(|item| {
-                if let ast::BodyItem::ExpressionStatement(expr_stmt) = item
-                    && expr_stmt.module_id == sketch_block_range.module_id()
-                    && expr_stmt.start == sketch_block_range.start()
-                    // End shouldn't match since we added a line.
-                    && expr_stmt.end >= sketch_block_range.end()
-                    && let ast::Expr::SketchBlock(sketch_block) = &expr_stmt.expression
-                {
-                    return sketch_block.body.items.last().map(SourceRange::from);
-                }
-                if let ast::BodyItem::VariableDeclaration(var_dec) = item
-                    && let ast::Expr::SketchBlock(sketch_block) = &var_dec.declaration.init
-                    && sketch_block.module_id == sketch_block_range.module_id()
-                    && sketch_block.start == sketch_block_range.start()
-                    // End shouldn't match since we added something.
-                    && sketch_block.end >= sketch_block_range.end()
-                {
-                    return sketch_block.body.items.last().map(SourceRange::from);
-                }
-                None
-            })
-            .ok_or_else(|| Error {
-                msg: format!("Source range of line not found in sketch block: {sketch_block_range:?}"),
+        let line_source_range =
+            find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
+                msg: format!("Source range of line not found in sketch block: {sketch_block_range:?}; {err:?}"),
             })?;
         #[cfg(not(feature = "artifact-graph"))]
         let _ = line_source_range;
@@ -815,6 +766,70 @@ fn process(command: &AstMutateCommand, node: NodeMut) -> ControlFlow<()> {
         }
     }
     ControlFlow::Continue(())
+}
+
+struct FindSketchBlockSourceRange {
+    /// The source range of the sketch block before mutation.
+    target_before_mutation: SourceRange,
+    /// The source range of the sketch block's last body item after mutation. We
+    /// need to use a [Cell] since the [crate::walk::Visitor] trait requires a
+    /// shared reference.
+    found: Cell<Option<SourceRange>>,
+}
+
+impl<'a> crate::walk::Visitor<'a> for &FindSketchBlockSourceRange {
+    type Error = crate::front::Error;
+
+    fn visit_node(&self, node: crate::walk::Node<'a>) -> anyhow::Result<bool, Self::Error> {
+        let Ok(node_range) = SourceRange::try_from(&node) else {
+            return Ok(true);
+        };
+
+        if let crate::walk::Node::SketchBlock(sketch_block) = node {
+            if node_range.module_id() == self.target_before_mutation.module_id()
+                && node_range.start() == self.target_before_mutation.start()
+                // End shouldn't match since we added something.
+                && node_range.end() >= self.target_before_mutation.end()
+            {
+                self.found.set(sketch_block.body.items.last().map(SourceRange::from));
+                return Ok(false);
+            } else {
+                // We found a different sketch block. No need to descend into
+                // its children since sketch blocks cannot be nested.
+                return Ok(true);
+            }
+        }
+
+        for child in node.children().iter() {
+            if !child.visit(*self)? {
+                return Ok(false);
+            }
+        }
+
+        Ok(true)
+    }
+}
+
+/// After adding an item to a sketch block, find the sketch block, and get the
+/// source range of the added item. We assume that the added item is the last
+/// item in the sketch block and that the sketch block's source range has grown,
+/// but not moved from its starting offset.
+///
+/// TODO: Do we need to format *before* mutation in case formatting moves the
+/// sketch block forward?
+fn find_sketch_block_added_item(
+    ast: &ast::Node<ast::Program>,
+    range_before_mutation: SourceRange,
+) -> api::Result<SourceRange> {
+    let find = FindSketchBlockSourceRange {
+        target_before_mutation: range_before_mutation,
+        found: Cell::new(None),
+    };
+    let node = crate::walk::Node::from(ast);
+    node.visit(&find)?;
+    find.found.into_inner().ok_or_else(|| api::Error {
+        msg: format!("Source range after mutation not found for range before mutation: {range_before_mutation:?}; Did you try formatting (i.e. call recast) before calling this?"),
+    })
 }
 
 fn source_from_ast(ast: &ast::Node<ast::Program>) -> String {
