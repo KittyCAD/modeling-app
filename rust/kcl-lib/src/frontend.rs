@@ -402,6 +402,15 @@ impl FrontendState {
                 {
                     return sketch_block.body.items.last().map(SourceRange::from);
                 }
+                if let ast::BodyItem::VariableDeclaration(var_dec) = item
+                    && let ast::Expr::SketchBlock(sketch_block) = &var_dec.declaration.init
+                    && sketch_block.module_id == sketch_block_range.module_id()
+                    && sketch_block.start == sketch_block_range.start()
+                    // End shouldn't match since we added something.
+                    && sketch_block.end >= sketch_block_range.end()
+                {
+                    return sketch_block.body.items.last().map(SourceRange::from);
+                }
                 None
             })
             .ok_or_else(|| Error {
@@ -539,6 +548,15 @@ impl FrontendState {
                     // End shouldn't match since we added a line.
                     && expr_stmt.end >= sketch_block_range.end()
                     && let ast::Expr::SketchBlock(sketch_block) = &expr_stmt.expression
+                {
+                    return sketch_block.body.items.last().map(SourceRange::from);
+                }
+                if let ast::BodyItem::VariableDeclaration(var_dec) = item
+                    && let ast::Expr::SketchBlock(sketch_block) = &var_dec.declaration.init
+                    && sketch_block.module_id == sketch_block_range.module_id()
+                    && sketch_block.start == sketch_block_range.start()
+                    // End shouldn't match since we added something.
+                    && sketch_block.end >= sketch_block_range.end()
                 {
                     return sketch_block.body.items.last().map(SourceRange::from);
                 }
