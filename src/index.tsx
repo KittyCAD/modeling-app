@@ -20,6 +20,7 @@ import {
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
+import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 
 markOnce('code/willAuth')
 initializeWindowExceptionHandler()
@@ -41,6 +42,14 @@ initPromise
     })
   })
   .catch(reportRejection)
+
+// Monkey patch to prevent issues in the web app with automated browser translation
+// This mitigates https://github.com/KittyCAD/modeling-app/issues/8667, until
+// we roll out our own i18n solution and can disable browser translation altogether.
+// https://github.com/KittyCAD/modeling-app/issues/4959
+if (!window.electron) {
+  monkeyPatchForBrowserTranslation()
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
