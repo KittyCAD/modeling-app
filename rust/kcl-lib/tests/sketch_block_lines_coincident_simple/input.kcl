@@ -1,0 +1,40 @@
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  // Coincident: line end and point.
+  l1 = sketch2::line(start = [1mm, 2mm], end = [var 10mm, var 11mm])
+  p1 = sketch2::point(at = [3mm, 4mm])
+  sketch2::coincident([l1.end, p1])
+  // Coincident: point and line start.
+  l2 = sketch2::line(start = [var 10mm, var 11mm], end = [12mm, 13mm])
+  p2 = sketch2::point(at = [14mm, 15mm])
+  sketch2::coincident([p2, l2.start])
+  // Coincident: line start and line end.
+  l3 = sketch2::line(start = [var 20mm, var 21mm], end = [23mm, 24mm])
+  l4 = sketch2::line(start = [30mm, 31mm], end = [var 32mm, var 33mm])
+  sketch2::coincident([l3.start, l4.end])
+  sketch2::coincident([l3.start, [40mm, 41mm]])
+}
+
+assert(s.l1.start[0], isEqualTo = 1mm)
+assert(s.l1.start[1], isEqualTo = 2mm)
+assert(s.l1.end[0], isEqualTo = 3mm)
+assert(s.l1.end[1], isEqualTo = 4mm)
+assert(s.p1.at[0], isEqualTo = 3mm)
+assert(s.p1.at[1], isEqualTo = 4mm)
+
+assert(s.l2.start[0], isEqualTo = 14mm)
+assert(s.l2.start[1], isEqualTo = 15mm)
+assert(s.l2.end[0], isEqualTo = 12mm)
+assert(s.l2.end[1], isEqualTo = 13mm)
+assert(s.p2.at[0], isEqualTo = 14mm)
+assert(s.p2.at[1], isEqualTo = 15mm)
+
+assert(s.l3.start[0], isEqualTo = 40mm)
+assert(s.l3.start[1], isEqualTo = 41mm)
+assert(s.l3.end[0], isEqualTo = 23mm)
+assert(s.l3.end[1], isEqualTo = 24mm)
+assert(s.l4.start[0], isEqualTo = 30mm)
+assert(s.l4.start[1], isEqualTo = 31mm)
+assert(s.l4.end[0], isEqualTo = 40mm)
+assert(s.l4.end[1], isEqualTo = 41mm)

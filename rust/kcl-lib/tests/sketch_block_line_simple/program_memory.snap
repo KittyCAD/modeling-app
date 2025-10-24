@@ -12,44 +12,48 @@ description: Variables in memory after executing sketch_block_line_simple.kcl
           "repr": {
             "Solved": {
               "segment": {
-                "start": [
-                  {
-                    "n": 1.0,
-                    "ty": {
-                      "mm": null,
-                      "type": "Known",
-                      "type": "Length"
-                    }
-                  },
-                  {
-                    "n": 2.0,
-                    "ty": {
-                      "mm": null,
-                      "type": "Known",
-                      "type": "Length"
-                    }
+                "kind": {
+                  "line": {
+                    "start": [
+                      {
+                        "n": 1.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "end": [
+                      {
+                        "n": 10.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "start_freedom": "Fixed",
+                    "end_freedom": "Fixed"
                   }
-                ],
-                "end": [
-                  {
-                    "n": 10.0,
-                    "ty": {
-                      "mm": null,
-                      "type": "Known",
-                      "type": "Length"
-                    }
-                  },
-                  {
-                    "n": 0.0,
-                    "ty": {
-                      "mm": null,
-                      "type": "Known",
-                      "type": "Length"
-                    }
-                  }
-                ],
-                "startFreedom": "Fixed",
-                "endFreedom": "Fixed"
+                }
               }
             }
           }
