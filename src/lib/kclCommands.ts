@@ -326,7 +326,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             return kclManager.execState.operations.flatMap((op) => {
               if (op.type !== 'VariableDeclaration') return []
               if (op.value.type !== 'Number') return []
-              const value = pathToNodeFromRustNodePath(op.nodePath)
+              const value = pathToNodeFromRustNodePath(op.nodePath).slice(0, -1)
               return { name: op.name, value }
             })
           },
@@ -369,8 +369,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         const newAst = structuredClone(kclManager.ast)
         const variableNode = getNodeFromPath<Node<VariableDeclarator>>(
           newAst,
-          nodeToEdit,
-          'VariableDeclarator'
+          nodeToEdit
         )
 
         if (

@@ -197,7 +197,7 @@ const prepareToEditParameter: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // 2. The nodeToEdit is much simpler to transform.
-  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
+  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath).slice(0, -1)
 
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
