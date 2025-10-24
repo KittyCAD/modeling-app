@@ -11,7 +11,6 @@ import { LayoutType } from '@src/lib/layout/types'
 import type React from 'react'
 import { capitaliseFC, throttle } from '@src/lib/utils'
 import type { TooltipProps } from '@src/components/Tooltip'
-import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels'
 import {
   DefaultLayoutToolbarID,
   defaultLayoutConfig,
@@ -422,38 +421,14 @@ export function collapseSplitChildPaneNode({
     return rootLayout
   }
 
-  // Need to reach into the DOM to get the elements to measure
-  const parentElement = globalThis.document
-    ? getPanelGroupElement(splitsLayoutNode.id)
-    : undefined
-  const childElement = globalThis.document
-    ? getPanelElement(panesLayoutNode.id)
-    : undefined
-  const toolbarElement = childElement?.querySelector('[data-pane-toolbar]')
-  const canMeasure = parentElement && toolbarElement
-
-  const directionToMeasure =
-    splitsLayoutNode.orientation === 'inline' ? 'width' : 'height'
-  // Just use fallback values if we don't have elements
-  const parentSize = canMeasure
-    ? parentElement.getBoundingClientRect()[directionToMeasure]
-    : 100
-  const toolbarSize = canMeasure
-    ? toolbarElement.getBoundingClientRect()[directionToMeasure]
-    : 5
-
-  const newSizeAsPercentage = (toolbarSize / parentSize) * 100
-  const sizeDelta = Math.abs(
-    newSizeAsPercentage - splitsLayoutNode.sizes[indexOfSplit]
-  )
   const childIndexToTransferDeltaTo = indexOfSplit === 0 ? 1 : indexOfSplit - 1
 
   // Mutate all the values-by-reference to make the split
   // containing the pane layout only as large as its toolbar
   panesLayoutNode.onExpandSize = splitsLayoutNode.sizes[indexOfSplit]
   const newSizes = [...splitsLayoutNode.sizes]
-  newSizes[indexOfSplit] = newSizeAsPercentage
-  newSizes[childIndexToTransferDeltaTo] += sizeDelta
+  newSizes[childIndexToTransferDeltaTo] += splitsLayoutNode.sizes[indexOfSplit]
+  newSizes[indexOfSplit] = 0
   splitsLayoutNode.sizes = newSizes
   splitsLayoutNode.children[indexOfSplit] = panesLayoutNode
 
