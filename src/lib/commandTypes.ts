@@ -87,11 +87,9 @@ export type Command<
   groupId: T['id']
   needsReview: boolean
   reviewMessage?:
-    | string
     | ReactNode
-    | ((
-        commandBarContext: { argumentsToSubmit: Record<string, unknown> } // Should be the commandbarMachine's context, but it creates a circular dependency
-      ) => string | ReactNode)
+    | ((commandBarContext: CommandBarContext) => ReactNode)
+  reviewValidation?: (context: CommandBarContext) => Promise<void | Error>
   machineActor?: Actor<T>
   onSubmit: (data?: CommandSchema) => void
   onCancel?: () => void
