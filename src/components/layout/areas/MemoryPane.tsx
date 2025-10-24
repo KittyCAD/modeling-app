@@ -14,6 +14,8 @@ import type { VariableMap } from '@src/lang/wasm'
 import { humanDisplayNumber, sketchFromKclValueOptional } from '@src/lang/wasm'
 import { Reason, trap } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 
 export const MemoryPaneMenu = () => {
   const { variables } = useKclContext()
@@ -47,7 +49,26 @@ export const MemoryPaneMenu = () => {
   )
 }
 
-export const MemoryPane = () => {
+export function MemoryPane(props: AreaTypeComponentProps) {
+  return (
+    <LayoutPanel
+      title={props.layout.label}
+      id={`${props.layout.id}-pane`}
+      className="border-none"
+    >
+      <LayoutPanelHeader
+        id={props.layout.id}
+        icon="make-variable"
+        title={props.layout.label}
+        Menu={MemoryPaneMenu}
+        onClose={props.onClose}
+      />
+      <MemoryPaneContents />
+    </LayoutPanel>
+  )
+}
+
+export const MemoryPaneContents = () => {
   const theme = useResolvedTheme()
   const { variables } = useKclContext()
   const { state } = useModelingContext()

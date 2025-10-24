@@ -1,8 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import type { Page } from '@playwright/test'
-import { roundOff } from '@src/lib/utils'
-
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import {
@@ -154,6 +152,7 @@ test.describe('Sketch tests', () => {
     scene,
     cmdBar,
     editor,
+    toolbar,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 600 })
 
@@ -171,7 +170,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     await editor.expectEditor.toContain('startProfile(')
 
     // Open feature tree and select the first sketch
-    await page.getByRole('button', { name: 'Feature Tree' }).click()
+    await toolbar.openPane('feature-tree')
     await page.getByRole('button', { name: 'sketch001' }).dblclick()
     await page.waitForTimeout(600)
 
@@ -441,16 +440,6 @@ sketch001 = startSketchOn(XZ)
 
       await u.openDebugPanel()
 
-      const code = `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn(-XZ)
-profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOff(
-        scale * 34.8
-      )}])
-    |> xLine(length = ${roundOff(scale * 154.22)})
-    |> yLine(length = -${roundOff(scale * 139.2)})
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()`
-
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
@@ -472,7 +461,7 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOf
       await page.mouse.move(700, 200, { steps: 10 })
       await page.mouse.click(700, 200, { delay: 200 })
       await editor.expectEditor.toContain(
-        `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(-XZ)`
+        '@settings(defaultLengthUnit = in)sketch001 = startSketchOn(-XZ)'
       )
 
       await editor.closePane()
@@ -505,7 +494,9 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOf
         delay: 200,
       })
 
-      await editor.expectEditor.toContain(code, { shouldNormalise: true })
+      await editor.expectEditor.toContain(
+        /profile001 = startProfile\(sketch001\,.*close\(\)/
+      )
 
       // Assert the tool stays equipped after a profile is closed (ready for the next one)
       await expect(

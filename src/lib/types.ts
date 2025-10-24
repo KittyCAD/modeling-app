@@ -10,6 +10,7 @@ import type { ActorRefFrom } from 'xstate'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { billingMachine } from '@src/machines/billingMachine'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import type { Layout } from '@src/lib/layout'
 
 export type IndexLoaderData = {
   code: string | null
@@ -123,6 +124,18 @@ export type AsyncFn<F extends (...args: any[]) => any> = WithReturnType<
   Promise<unknown>
 >
 
+export enum AppMachineEventType {
+  SetLayout = 'setLayout',
+  ResetLayout = 'resetLayout',
+}
+
+export type AppMachineEvent =
+  | {
+      type: AppMachineEventType.SetLayout
+      layout: Layout
+    }
+  | { type: AppMachineEventType.ResetLayout }
+
 export type AppMachineContext = {
   codeManager: CodeManager
   kclManager: KclManager
@@ -134,6 +147,7 @@ export type AppMachineContext = {
   systemIOActor?: ActorRefFrom<typeof systemIOMachine>
   commandBarActor?: ActorRefFrom<typeof commandBarMachine>
   billingActor?: ActorRefFrom<typeof billingMachine>
+  layout: Layout
 }
 
 export type FileMeta =

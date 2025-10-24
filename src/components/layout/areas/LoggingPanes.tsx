@@ -2,8 +2,28 @@ import ReactJsonView from '@microlink/react-json-view'
 
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 import { useKclContext } from '@src/lang/KclProvider'
+import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 
-export const LogsPane = () => {
+export function LogsPane(props: AreaTypeComponentProps) {
+  return (
+    <LayoutPanel
+      title={props.layout.label}
+      id={`${props.layout.id}-pane`}
+      className="border-none"
+    >
+      <LayoutPanelHeader
+        id={props.layout.id}
+        icon="logs"
+        title={props.layout.id}
+        Menu={null}
+        onClose={props.onClose}
+      />
+      <LogsPaneContent />
+    </LayoutPanel>
+  )
+}
+export const LogsPaneContent = () => {
   const theme = useResolvedTheme()
   const { logs } = useKclContext()
   return (

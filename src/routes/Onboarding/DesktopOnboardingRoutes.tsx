@@ -26,6 +26,7 @@ import {
 } from '@src/routes/Onboarding/utils'
 import { useEffect, useState } from 'react'
 import { type RouteObject, useRouteLoaderData } from 'react-router-dom'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -247,7 +248,7 @@ function FeatureTreePane() {
   useOnboardingHighlight('feature-tree-pane-button')
 
   // Open the feature tree pane on mount, close on unmount
-  useOnboardingPanes(['feature-tree'])
+  useOnboardingPanes([DefaultLayoutPaneID.FeatureTree])
 
   // navigate to the "generated" file
   useEffect(() => {
@@ -293,7 +294,7 @@ function CodePane() {
   useOnboardingHighlight('code-pane-button')
 
   // Open the code pane on mount, close on unmount
-  useOnboardingPanes(['code'])
+  useOnboardingPanes([DefaultLayoutPaneID.Code])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-end">
@@ -324,7 +325,7 @@ function ProjectPane() {
   useOnboardingHighlight('files-pane-button')
 
   // Open the code pane on mount, close on unmount
-  useOnboardingPanes(['files'])
+  useOnboardingPanes([DefaultLayoutPaneID.Files])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-end">
@@ -351,7 +352,7 @@ function OtherPanes() {
   useOnboardingHighlight('variables-pane-button')
 
   // Open the panes on mount, close on unmount
-  useOnboardingPanes(['logs', 'variables'])
+  useOnboardingPanes([DefaultLayoutPaneID.Logs, DefaultLayoutPaneID.Variables])
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-end">
@@ -376,7 +377,7 @@ function PromptToEdit() {
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/prompt-to-edit'
 
   // Open the text-to-cad pane
-  useOnboardingPanes(['text-to-cad'], ['text-to-cad'])
+  useOnboardingPanes([DefaultLayoutPaneID.TTC], [DefaultLayoutPaneID.TTC])
 
   // navigate to the main assembly file
   useEffect(() => {
@@ -422,7 +423,7 @@ function PromptToEditPrompt() {
     'Change the fan diameter to be 150 mm and update the housing size and mounting hole placements to accommodate for the change. Change the housing to be purple.'
 
   // Open the text-to-cad pane
-  useOnboardingPanes(['text-to-cad'], ['text-to-cad'])
+  useOnboardingPanes([DefaultLayoutPaneID.TTC], [DefaultLayoutPaneID.TTC])
 
   // Fill in the prompt if available
   useEffect(() => {
@@ -498,7 +499,7 @@ function PromptToEditResult() {
     '/desktop/prompt-to-edit-result'
 
   // Open the code pane on mount, close on unmount
-  useOnboardingPanes(['code'])
+  useOnboardingPanes([DefaultLayoutPaneID.Code])
 
   useEffect(() => {
     // Navigate to the `main.kcl` file
@@ -620,8 +621,16 @@ function OnboardingConclusion() {
   useOnboardingHighlight('app-logo')
   // Close the panes on mount, close on unmount
   useOnboardingPanes(
-    ['feature-tree', 'code', 'files'],
-    ['feature-tree', 'code', 'files']
+    [
+      DefaultLayoutPaneID.FeatureTree,
+      DefaultLayoutPaneID.Code,
+      DefaultLayoutPaneID.Files,
+    ],
+    [
+      DefaultLayoutPaneID.FeatureTree,
+      DefaultLayoutPaneID.Code,
+      DefaultLayoutPaneID.Files,
+    ]
   )
 
   return (

@@ -3,7 +3,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import type EditorManager from '@src/editor/manager'
 import usePlatform from '@src/hooks/usePlatform'
-import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 import type { HTMLProps, MouseEventHandler } from 'react'
 
 export function UndoRedoButtons({

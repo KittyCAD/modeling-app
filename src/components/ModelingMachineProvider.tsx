@@ -1,11 +1,6 @@
 import { useMachine, useSelector } from '@xstate/react'
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react'
+import type React from 'react'
+import { createContext, useContext, useEffect, useRef } from 'react'
 import type { MutableRefObject } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -50,13 +45,17 @@ import { err, reportRejection, trap, reject } from '@src/lib/trap'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 
-import { commandBarActor, settingsActor } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  getLayout,
+  setLayout,
+  settingsActor,
+} from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { platform, uuidv4 } from '@src/lib/utils'
 
 import type { MachineManager } from '@src/components/MachineManagerProvider'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
-import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
 import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
 import {
@@ -109,10 +108,7 @@ import type {
   ExtrudeFacePlane,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
-import {
-  getPersistedContext,
-  modelingMachine,
-} from '@src/machines/modelingMachine'
+import { modelingMachine } from '@src/machines/modelingMachine'
 import { modelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import { useFolders } from '@src/machines/systemIO/hooks'
 
@@ -123,6 +119,8 @@ import {
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
+import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -179,7 +177,6 @@ export const ModelingMachineProvider = ({
   }, [projects, loaderData, file])
 
   const streamRef = useRef<HTMLDivElement>(null)
-  const persistedContext = useMemo(() => getPersistedContext(), [])
 
   const isCommandBarClosed = useSelector(
     commandBarActor,
@@ -1283,7 +1280,6 @@ export const ModelingMachineProvider = ({
         ...modelingMachineDefaultContext,
         store: {
           ...modelingMachineDefaultContext.store,
-          ...persistedContext,
           cameraProjection,
           useNewSketchMode,
         },
@@ -1296,58 +1292,26 @@ export const ModelingMachineProvider = ({
 
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
-    const openPanes = modelingActor.getSnapshot().context.store.openPanes
+    const rootLayout = structuredClone(getLayout())
+    const toggle = (id: DefaultLayoutPaneID) =>
+      setLayout(
+        togglePaneLayoutNode({
+          rootLayout,
+          targetNodeId: id,
+          shouldExpand: true,
+        })
+      )
+
     if (data.menuLabel === 'View.Panes.Feature tree') {
-      const featureTree: SidebarId = 'feature-tree'
-      const alwaysAddFeatureTree: SidebarId[] = [
-        ...new Set([...openPanes, featureTree]),
-      ]
-      modelingSend({
-        type: 'Set context',
-        data: {
-          openPanes: alwaysAddFeatureTree,
-        },
-      })
+      toggle(DefaultLayoutPaneID.FeatureTree)
     } else if (data.menuLabel === 'View.Panes.KCL code') {
-      const code: SidebarId = 'code'
-      const alwaysAddCode: SidebarId[] = [...new Set([...openPanes, code])]
-      modelingSend({
-        type: 'Set context',
-        data: {
-          openPanes: alwaysAddCode,
-        },
-      })
+      toggle(DefaultLayoutPaneID.Code)
     } else if (data.menuLabel === 'View.Panes.Project files') {
-      const projectFiles: SidebarId = 'files'
-      const alwaysAddProjectFiles: SidebarId[] = [
-        ...new Set([...openPanes, projectFiles]),
-      ]
-      modelingSend({
-        type: 'Set context',
-        data: {
-          openPanes: alwaysAddProjectFiles,
-        },
-      })
+      toggle(DefaultLayoutPaneID.Files)
     } else if (data.menuLabel === 'View.Panes.Variables') {
-      const variables: SidebarId = 'variables'
-      const alwaysAddVariables: SidebarId[] = [
-        ...new Set([...openPanes, variables]),
-      ]
-      modelingSend({
-        type: 'Set context',
-        data: {
-          openPanes: alwaysAddVariables,
-        },
-      })
+      toggle(DefaultLayoutPaneID.Variables)
     } else if (data.menuLabel === 'View.Panes.Logs') {
-      const logs: SidebarId = 'logs'
-      const alwaysAddLogs: SidebarId[] = [...new Set([...openPanes, logs])]
-      modelingSend({
-        type: 'Set context',
-        data: {
-          openPanes: alwaysAddLogs,
-        },
-      })
+      toggle(DefaultLayoutPaneID.Logs)
     } else if (data.menuLabel === 'Design.Start sketch') {
       modelingSend({
         type: 'Enter sketch',

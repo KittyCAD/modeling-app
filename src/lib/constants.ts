@@ -317,3 +317,8 @@ export const NUMBER_OF_ENGINE_RETRIES = 5
  *Global timeout on pending commands, it will be bad if we hit this case.
  */
 export const PENDING_COMMAND_TIMEOUT = 60_000
+
+/** Timeout in MS to save layout */
+export const LAYOUT_SAVE_THROTTLE = 500
+/** prefix for localStorage persisted layout data */
+export const LAYOUT_PERSIST_PREFIX = 'layout-'
