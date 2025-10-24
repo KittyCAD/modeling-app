@@ -13,7 +13,6 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { getEdgeTagCall } from '@src/lang/modifyAst/addEdgeTreatment'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
@@ -37,6 +36,7 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { buildSolidsAndFacesExprs } from '@src/lang/modifyAst/faces'
+import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 
 export function addExtrude({
   ast,

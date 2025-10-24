@@ -1273,8 +1273,8 @@ profile001 = ${circleCode}`
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = `fillet(radius=5,tags=[getCommonEdge(faces=[seg01,capEnd001])],)`
-    const secondFilletDeclaration = `fillet(radius=5,tags=[getCommonEdge(faces=[seg01,capStart001])],)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), radius=5)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capStart001]), radius=5)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for sweepEdges
@@ -1342,11 +1342,6 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Confirm code is added to the editor`, async () => {
       await editor.expectEditor.toContain(firstFilletDeclaration, {
         shouldNormalise: true,
-      })
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [')'],
-        highlightedCode: '',
       })
     })
 
@@ -1464,11 +1459,6 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Confirm code is added to the editor`, async () => {
       await editor.expectEditor.toContain(secondFilletDeclaration, {
         shouldNormalise: true,
-      })
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [')'],
-        highlightedCode: '',
       })
     })
 

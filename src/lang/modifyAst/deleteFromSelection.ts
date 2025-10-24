@@ -8,7 +8,6 @@ import {
   createLiteral,
   createObjectExpression,
 } from '@src/lang/create'
-import { deleteEdgeTreatment } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   findPipesWithImportAlias,
   getNodeFromPath,
@@ -36,6 +35,7 @@ import type {
 import type { Selection } from '@src/machines/modelingSharedTypes'
 import { err, reportRejection } from '@src/lib/trap'
 import { isArray, roundOff } from '@src/lib/utils'
+import { deleteEdgeTreatment } from '@src/lang/modifyAst/edges'
 
 export async function deleteFromSelection(
   ast: Node<Program>,

@@ -151,8 +151,9 @@ export type ModelingCommandSchema = {
     // Enables editing workflow
     nodeToEdit?: PathToNode
     // KCL stdlib arguments
-    selection: Selections
+    selection: Selections // this is named 'tags' in the stdlib
     radius: KclCommandValue
+    tag?: string
   }
   Chamfer: {
     // Enables editing workflow
@@ -889,6 +890,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+      },
+      tag: {
+        inputType: 'tagDeclarator',
+        required: false,
+        // TODO: add validation like for Clone command
       },
     },
   },
