@@ -19,13 +19,6 @@ import type {
 } from '@src/machines/mlEphantManagerMachine2'
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
-
-/** URL query param key we watch for prompt input
- *  we should never set this search param from the app,
- *  only read and delete.
- */
-const SEARCH_PARAM_PROMPT_KEY = 'ttc-prompt'
 
 export interface MlEphantConversationProps {
   isLoading: boolean
@@ -36,6 +29,7 @@ export interface MlEphantConversationProps {
   disabled?: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
+  defaultPrompt: string
 }
 
 const ML_COPILOT_TOOLS: Readonly<MlCopilotTool[]> = Object.freeze([
@@ -259,6 +253,7 @@ interface MlEphantConversationInputProps {
   billingContext: BillingContext
   onProcess: MlEphantConversationProps['onProcess']
   disabled?: boolean
+  defaultPrompt: string
 }
 
 function BillingStatusBarItem(props: { billingContext: BillingContext }) {
@@ -304,7 +299,7 @@ export const MlEphantConversationInput = (
   props: MlEphantConversationInputProps
 ) => {
   const refDiv = useRef<HTMLTextAreaElement>(null)
-  const [value, setValue] = useState<string>('')
+  const [value, setValue] = useState<string>(props.defaultPrompt)
   const [heightConvo, setHeightConvo] = useState(0)
   const [forcedTools, setForcedTools] = useState<Set<MlCopilotTool>>(new Set())
   const [excludedTools, setExcludedTools] = useState<Set<MlCopilotTool>>(
@@ -314,7 +309,6 @@ export const MlEphantConversationInput = (
     []
   )
   const [isAnimating, setAnimating] = useState(false)
-  const [searchParams, setSearchParams] = useSearchParams()
 
   const onRemoveTool = (tool: MlCopilotTool) => {
     forcedTools.delete(tool)
@@ -344,16 +338,6 @@ export const MlEphantConversationInput = (
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [value.length])
-
-  useEffect(() => {
-    const ttcPromptParam = searchParams.get(SEARCH_PARAM_PROMPT_KEY)
-    if (ttcPromptParam) {
-      setValue(ttcPromptParam)
-      const newSearchParams = new URLSearchParams(searchParams)
-      newSearchParams.delete(SEARCH_PARAM_PROMPT_KEY)
-      setSearchParams(newSearchParams, { replace: true })
-    }
-  }, [searchParams, setSearchParams])
 
   const onClick = () => {
     if (props.disabled) return
@@ -532,6 +516,7 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
               disabled={props.disabled || props.isLoading}
               onProcess={onProcess}
               billingContext={props.billingContext}
+              defaultPrompt={props.defaultPrompt}
             />
           </div>
         </div>
