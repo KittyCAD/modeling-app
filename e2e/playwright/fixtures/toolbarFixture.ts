@@ -25,6 +25,7 @@ export class ToolbarFixture {
   filletButton!: Locator
   chamferButton!: Locator
   shellButton!: Locator
+  holeButton!: Locator
   revolveButton!: Locator
   offsetPlaneButton!: Locator
   helixButton!: Locator
@@ -72,6 +73,7 @@ export class ToolbarFixture {
     this.filletButton = page.getByTestId('fillet3d')
     this.chamferButton = page.getByTestId('chamfer3d')
     this.shellButton = page.getByTestId('shell')
+    this.holeButton = page.getByTestId('hole')
     this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.helixButton = page.getByTestId('helix')
