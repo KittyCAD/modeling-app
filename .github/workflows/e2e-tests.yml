@@ -420,8 +420,8 @@ jobs:
         env:
           FAIL_ON_CONSOLE_ERRORS: true
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
-          TAB_API_URL: ${{ vars.TAB_API_URL }}
-          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          TAB_API_URL: https://b83c3ddd8bb3.ngrok.app
+          TAB_API_KEY: localhost
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: e2e:desktop
