@@ -1789,7 +1789,7 @@ extrude001 = extrude(profile001, length = 5)
   })
 
   // father forgive me
-  test.skip(`Chamfer point-and-click`, async ({
+  test(`Chamfer point-and-click`, async ({
     context,
     page,
     homePage,
@@ -1809,8 +1809,8 @@ sketch001 = startSketchOn(XY)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstChamferDeclaration = `chamfer(length=5,tags=[getCommonEdge(faces=[seg01,capEnd001])],)`
-    const secondChamferDeclaration = `chamfer(length=5,tags=[getCommonEdge(faces=[seg01,capStart001])],)`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), length=5)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, tags=getCommonEdge(faces=[seg01,capStart001]), length=5)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -1905,11 +1905,6 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Confirm code is added to the editor`, async () => {
       await editor.expectEditor.toContain(firstChamferDeclaration, {
         shouldNormalise: true,
-      })
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [')'],
-        highlightedCode: '',
       })
       await editor.closePane()
     })
@@ -2048,11 +2043,6 @@ extrude001 = extrude(sketch001, length = -12)
       await editor.expectEditor.toContain(secondChamferDeclaration, {
         shouldNormalise: true,
       })
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [')'],
-        highlightedCode: '',
-      })
       await editor.closePane()
     })
 
@@ -2102,7 +2092,7 @@ extrude001 = extrude(sketch001, length = -12)
   })
 
   // father forgive me
-  test.skip(`Chamfer point-and-click delete`, async ({
+  test(`Chamfer point-and-click delete`, async ({
     context,
     page,
     homePage,

@@ -114,7 +114,7 @@ export function addChamfer({
     call,
     pathToEdit: nodeToEdit,
     pathIfNewPipe: pathIfPipe,
-    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SHELL,
+    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.CHAMFER,
   })
   if (err(pathToNode)) {
     return pathToNode
