@@ -23,10 +23,12 @@ import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMe
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
 import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
 import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/MlEphantConversationPaneWrapper'
+import { MlEphantConversationPaneWrapper2 } from '@src/components/layout/areas/MlEphantConversationPaneWrapper2'
 import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
 import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 const onCodeNotificationClick: MouseEventHandler = (e) => {
   e.preventDefault()
@@ -62,7 +64,9 @@ export const defaultAreaLibrary = Object.freeze({
       button:
         'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
     },
-    Component: MlEphantConversationPaneWrapper,
+    Component: IS_STAGING_OR_DEBUG
+      ? MlEphantConversationPaneWrapper2
+      : MlEphantConversationPaneWrapper,
   },
   codeEditor: {
     hide: () => false,
