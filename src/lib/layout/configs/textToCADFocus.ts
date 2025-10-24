@@ -20,7 +20,7 @@ export const textToCADFocusConfig: Layout = {
   label: 'root',
   type: LayoutType.Splits,
   orientation: 'inline',
-  sizes: [50, 50],
+  sizes: [0, 50, 50],
   children: [
     {
       id: DefaultLayoutToolbarID.Left,
