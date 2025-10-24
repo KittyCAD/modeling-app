@@ -16,10 +16,20 @@ import {
   selectDefaultSketchPlane,
   selectOffsetSketchPlane,
 } from '@src/lib/selections'
-import { kclManager, sceneInfra, settingsActor } from '@src/lib/singletons'
+import {
+  getLayout,
+  kclManager,
+  sceneInfra,
+  settingsActor,
+} from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
+import {
+  DefaultLayoutPaneID,
+  getOpenPanes,
+  setOpenPanes,
+} from '@src/lib/layout'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
@@ -83,17 +93,15 @@ export function useViewControlMenuItems() {
         Center view on selection
       </ContextMenuItem>,
       <ContextMenuItem
+        key="go-to-selection"
         onClick={() => {
           if (firstValidSelection?.codeRef?.range) {
             // First, open the code pane if it's not already open
-            if (!modelingState.context.store.openPanes.includes('code')) {
-              modelingSend({
-                type: 'Set context',
-                data: {
-                  openPanes: [...modelingState.context.store.openPanes, 'code'],
-                },
-              })
-            }
+            const rootLayout = getLayout()
+            setOpenPanes(rootLayout, [
+              ...getOpenPanes({ rootLayout }),
+              DefaultLayoutPaneID.Code,
+            ])
 
             // Navigate to the source code location
             modelingSend({
@@ -169,7 +177,6 @@ export function useViewControlMenuItems() {
       selectedPlaneId,
       firstValidSelection,
       modelingSend,
-      modelingState.context.store.openPanes,
       sketching,
       snapToGrid,
     ]

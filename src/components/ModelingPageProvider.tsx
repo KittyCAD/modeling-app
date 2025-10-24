@@ -88,7 +88,9 @@ export const ModelingPageProvider = ({
     if (location.pathname === PATHS.HOME) {
       commandBarActor.send({
         type: 'Add commands',
-        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
+        data: {
+          commands: [RouteTelemetryCommand, RouteSettingsCommand],
+        },
       })
     } else if (location.pathname.includes(PATHS.FILE)) {
       commandBarActor.send({

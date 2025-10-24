@@ -36,9 +36,12 @@ import {
   commandBarActor,
   editorManager,
   engineCommandManager,
+  getLayout,
   kclManager,
   rustContext,
   sceneInfra,
+  setLayout,
+  useLayout,
 } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import {
@@ -54,10 +57,38 @@ import toast from 'react-hot-toast'
 import { base64Decode } from '@src/lang/wasm'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
+import {
+  type AreaTypeComponentProps,
+  DefaultLayoutPaneID,
+  getOpenPanes,
+  togglePaneLayoutNode,
+} from '@src/lib/layout'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 
-export const FeatureTreePane = () => {
+export function FeatureTreePane(props: AreaTypeComponentProps) {
+  return (
+    <LayoutPanel
+      title={props.layout.label}
+      id={`${props.layout.id}-pane`}
+      className="border-none"
+    >
+      <LayoutPanelHeader
+        id={props.layout.id}
+        icon="model"
+        title={props.layout.label}
+        Menu={FeatureTreeMenu}
+        onClose={props.onClose}
+      />
+      <FeatureTreePaneContents />
+    </LayoutPanel>
+  )
+}
+
+export const FeatureTreePaneContents = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
+  const layout = useLayout()
   const { send: modelingSend, state: modelingState } = useModelingContext()
 
   const sketchNoFace = modelingState.matches('Sketch no face')
@@ -67,17 +98,20 @@ export const FeatureTreePane = () => {
     featureTreeMachine.provide({
       guards: {
         codePaneIsOpen: () =>
-          modelingState.context.store.openPanes.includes('code') &&
-          editorManager.getEditorView() !== null,
+          getOpenPanes({ rootLayout: getLayout() }).includes(
+            DefaultLayoutPaneID.Code
+          ) && editorManager.getEditorView() !== null,
       },
       actions: {
         openCodePane: () => {
-          modelingSend({
-            type: 'Set context',
-            data: {
-              openPanes: [...modelingState.context.store.openPanes, 'code'],
-            },
-          })
+          const rootLayout = structuredClone(getLayout())
+          setLayout(
+            togglePaneLayoutNode({
+              rootLayout,
+              targetNodeId: DefaultLayoutPaneID.Code,
+              shouldExpand: true,
+            })
+          )
         },
         scrollToError: () => {
           editorManager.scrollToFirstErrorDiagnosticIfExists()
@@ -190,12 +224,14 @@ export const FeatureTreePane = () => {
 
   // Watch for changes in the open panes and send an event to the feature tree machine
   useEffect(() => {
-    const codeOpen = modelingState.context.store.openPanes.includes('code')
+    const codeOpen = getOpenPanes({ rootLayout: layout }).includes(
+      DefaultLayoutPaneID.Code
+    )
     if (codeOpen && isEditorMounted) {
       featureTreeSend({ type: 'codePaneOpened' })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [modelingState.context.store.openPanes, isEditorMounted])
+  }, [layout, isEditorMounted, featureTreeSend])
 
   // Watch for changes in the selection and send an event to the feature tree machine
   useEffect(() => {

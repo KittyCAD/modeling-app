@@ -23,6 +23,7 @@ import {
   shouldShowSettingInput,
 } from '@src/lib/settings/settingsUtils'
 import {
+  appActor,
   codeManager,
   kclManager,
   settingsActor,
@@ -35,6 +36,7 @@ import {
   catchOnboardingWarnError,
 } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
+import { AppMachineEventType } from '@src/lib/types'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -229,6 +231,24 @@ export const AllSettingsFields = forwardRef(
                 Reset {searchParamTab}-level settings
               </ActionButton>
             </div>
+          </SettingsSection>
+          <SettingsSection
+            title="Layout"
+            description="Reset to the default layout"
+          >
+            <ActionButton
+              Element="button"
+              onClick={() => {
+                appActor.send({ type: AppMachineEventType.ResetLayout })
+              }}
+              iconStart={{
+                icon: 'refresh',
+                size: 'sm',
+                className: 'p-1',
+              }}
+            >
+              Reset Layout
+            </ActionButton>
           </SettingsSection>
           <h2 id="settings-about" className="text-2xl mt-6 font-bold">
             About Design Studio

@@ -1,4 +1,4 @@
-import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 
 describe('hotkeyDisplay', () => {
   it('displays mod', async () => {

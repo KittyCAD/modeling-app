@@ -39,6 +39,8 @@ import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
 import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
+import { TestLayout } from '@src/lib/layout/TestLayout'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -142,6 +144,15 @@ const router = createRouter([
         errorElement: <ErrorPage />,
         element: <SignIn />,
       },
+      ...(IS_STAGING_OR_DEBUG
+        ? [
+            {
+              path: '/layout',
+              errorElement: <ErrorPage />,
+              element: <TestLayout />,
+            },
+          ]
+        : []),
     ],
   },
 ])
