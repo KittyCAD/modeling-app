@@ -294,7 +294,8 @@ export default class RustContext {
         sketchExecOutcome: tuple[2],
       }
     } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
       return Promise.reject(err)
     }
   }

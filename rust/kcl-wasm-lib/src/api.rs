@@ -145,7 +145,7 @@ impl Context {
         version_json: &str,
         sketch_json: &str,
         segment_json: &str,
-        label_json: &str,
+        label: Option<String>,
         settings: &str,
     ) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
@@ -156,8 +156,6 @@ impl Context {
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
         let segment: kcl_lib::front::SegmentCtor =
             serde_json::from_str(segment_json).map_err(|e| format!("Could not deserialize SegmentCtor: {e}"))?;
-        let label: Option<String> =
-            serde_json::from_str(label_json).map_err(|e| format!("Could not deserialize label: {e}"))?;
 
         let ctx = self
             .create_executor_ctx(settings, None, false)
