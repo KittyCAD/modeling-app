@@ -39,6 +39,7 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
+import { retrieveEdgeSelectionsFromOpArgs } from '@src/lang/modifyAst/edges'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -610,6 +611,62 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
     }
   }
 
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
+ * Gather up the argument values for the Chamfer command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditChamfer: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'Chamfer',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  // 1. Map the unlabeled and faces arguments to solid2d selections
+  if (!operation.unlabeledArg || !operation.labeledArgs?.tags) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const selection = retrieveEdgeSelectionsFromOpArgs(
+    operation.labeledArgs.tags,
+    kclManager.artifactGraph
+  )
+  if (err(selection)) return { reason: selection.message }
+
+  // 2. Convert the length argument from a string to a KCL expression
+  const length = await extractKclArgument(operation, 'length')
+  if ('error' in length) return { reason: length.error }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(operation, 'secondLength'),
+    extractKclArgument(operation, 'angle'),
+  ])
+
+  const [secondLength, angle] = optionalArgs.map((arg) =>
+    'error' in arg ? undefined : arg
+  )
+
+  const tag = extractStringArgument(operation, 'tag')
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Chamfer'] = {
+    selection,
+    length,
+    secondLength,
+    angle,
+    tag,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
   return {
     ...baseCommand,
     argDefaultValues,
@@ -1447,8 +1504,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   chamfer: {
     label: 'Chamfer',
     icon: 'chamfer3d',
-    prepareToEdit: prepareToEditEdgeTreatment,
-    // modelingEvent: 'Chamfer',
+    prepareToEdit: prepareToEditChamfer,
   },
   conic: {
     label: 'Conic',

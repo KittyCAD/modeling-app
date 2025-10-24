@@ -68,10 +68,7 @@ import {
   insertNamedConstant,
   replaceValueAtNodePath,
 } from '@src/lang/modifyAst'
-import type {
-  ChamferParameters,
-  FilletParameters,
-} from '@src/lang/modifyAst/addEdgeTreatment'
+import type { FilletParameters } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   EdgeTreatmentType,
   editEdgeTreatment,
@@ -3402,67 +3399,7 @@ export const modelingMachine = setup({
         const theRustContext = input.rustContext
           ? input.rustContext
           : rustContext
-        // const theEngineCommandManager = input.engineCommandManager
-        //   ? input.engineCommandManager
-        //   : engineCommandManager
 
-        // const dependencies = {
-        //   kclManager: theKclManager,
-        //   engineCommandManager: theEngineCommandManager,
-        //   editorManager: theEditorManager,
-        //   codeManager: theCodeManager,
-        // }
-
-        // // Apply or edit chamfer
-        // if (nodeToEdit) {
-        //   // Edit existing chamfer
-        //   // selection is not the edge treatment itself,
-        //   // but just the first edge in the chamfer expression >
-        //   // we need to find the edgeCut artifact
-        //   // and build a new selection from it
-        //   // TODO: this is a bit of a hack, we should be able
-        //   // to get the edgeCut artifact from the selection
-        //   const firstSelection = selection.graphSelections[0]
-        //   const edgeCutArtifact = Array.from(
-        //     theKclManager.artifactGraph.values()
-        //   ).find(
-        //     (artifact) =>
-        //       artifact.type === 'edgeCut' &&
-        //       artifact.consumedEdgeId === firstSelection.artifact?.id
-        //   )
-        //   if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
-        //     return Promise.reject(
-        //       new Error(
-        //         'Failed to retrieve edgeCut artifact from sweepEdge selection'
-        //       )
-        //     )
-        //   }
-        //   const edgeTreatmentSelection = {
-        //     artifact: edgeCutArtifact,
-        //     codeRef: edgeCutArtifact.codeRef,
-        //   }
-
-        //   const editResult = await editEdgeTreatment(
-        //     ast,
-        //     edgeTreatmentSelection,
-        //     parameters
-        //   )
-        //   if (err(editResult)) return Promise.reject(editResult)
-
-        //   modifiedAst = editResult.modifiedAst
-        //   focusPath = [editResult.pathToEdgeTreatmentNode]
-        // } else {
-        //   // Apply chamfer to selection
-        //   const chamferResult = await modifyAstWithEdgeTreatmentAndTag(
-        //     ast,
-        //     selection,
-        //     parameters,
-        //     dependencies
-        //   )
-        //   if (err(chamferResult)) return Promise.reject(chamferResult)
-        //   modifiedAst = chamferResult.modifiedAst
-        //   focusPath = chamferResult.pathToEdgeTreatmentNode
-        // }
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
