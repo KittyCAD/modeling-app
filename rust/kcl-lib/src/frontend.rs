@@ -190,13 +190,17 @@ impl SketchApi for FrontendState {
         sketch: ObjectId,
     ) -> api::Result<SceneGraph> {
         // TODO: Check version.
+        #[cfg(not(target_arch = "wasm32"))]
+        let _ = sketch;
+        #[cfg(target_arch = "wasm32")]
         if self.scene_graph.sketch_mode != Some(sketch) {
-            return Err(Error {
-                msg: format!(
-                    "Not currently in sketch mode editing the given sketch: current={:?}, given={sketch:?}",
-                    self.scene_graph.sketch_mode
-                ),
-            });
+            web_sys::console::warn_1(
+                &format!(
+                    "WARNING: exit_sketch: current state's sketch mode ID doesn't match the given sketch ID; state={:#?}, given={sketch:?}",
+                    &self.scene_graph.sketch_mode
+                )
+                .into(),
+            );
         }
         self.scene_graph.sketch_mode = None;
 
