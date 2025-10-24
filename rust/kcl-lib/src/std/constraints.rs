@@ -2,9 +2,55 @@ use anyhow::Result;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{AbstractSegment, ExecState, KclValue, SegmentRepr, UnsolvedSegment, types::RuntimeType},
+    execution::{
+        AbstractSegment, ExecState, KclValue, SegmentRepr, UnsolvedSegment, UnsolvedSegmentKind, types::RuntimeType,
+    },
     std::Args,
 };
+
+pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let at: Vec<KclValue> = args.get_kw_arg("at", &RuntimeType::point2d(), exec_state)?;
+    if at.len() != 2 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "at must be a 2D point".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+    let Some(at_x) = at.first().unwrap().clone().as_unsolved_expr() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "at x must be a number or sketch var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let Some(at_y) = at.get(1).unwrap().clone().as_unsolved_expr() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "at y must be a number or sketch var".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let segment = UnsolvedSegment {
+        kind: UnsolvedSegmentKind::Point { position: [at_x, at_y] },
+        meta: vec![args.source_range.into()],
+    };
+
+    // Save the segment to be sent to the engine after solving.
+    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line() can only be used inside a sketch block".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    sketch_state.needed_by_engine.push(segment.clone());
+
+    let meta = segment.meta.clone();
+    let abstract_segment = AbstractSegment {
+        repr: SegmentRepr::Unsolved { segment },
+        meta,
+    };
+    Ok(KclValue::Segment {
+        value: Box::new(abstract_segment),
+    })
+}
 
 pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let start: Vec<KclValue> = args.get_kw_arg("start", &RuntimeType::point2d(), exec_state)?;
@@ -48,8 +94,10 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         )));
     };
     let segment = UnsolvedSegment {
-        start: [start_x, start_y],
-        end: [end_x, end_y],
+        kind: UnsolvedSegmentKind::Line {
+            start: [start_x, start_y],
+            end: [end_x, end_y],
+        },
         meta: vec![args.source_range.into()],
     };
 

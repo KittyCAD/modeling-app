@@ -8,6 +8,7 @@ use crate::frontend::sketch::Segment;
 use crate::{
     ExecutorContext, Program,
     fmt::format_number_literal,
+    front::PointCtor,
     frontend::{
         api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
@@ -24,6 +25,8 @@ pub(crate) mod api;
 pub(crate) mod sketch;
 mod traverse;
 
+const POINT_FN: &str = "point";
+const POINT_AT_PARAM: &str = "at";
 const LINE_FN: &str = "line";
 const LINE_START_PARAM: &str = "start";
 const LINE_END_PARAM: &str = "end";
@@ -226,6 +229,7 @@ impl SketchApi for FrontendState {
     ) -> api::Result<(SourceDelta, SceneGraphDelta, sketch::SketchExecOutcome)> {
         // TODO: Check version.
         match segment {
+            SegmentCtor::Point(ctor) => self.add_point(ctx, sketch, ctor).await,
             SegmentCtor::Line(ctor) => self.add_line(ctx, sketch, ctor).await,
             _ => Err(Error {
                 msg: format!("segment ctor not implemented yet: {segment:?}"),
@@ -293,6 +297,149 @@ impl SketchApi for FrontendState {
 }
 
 impl FrontendState {
+    async fn add_point(
+        &mut self,
+        ctx: &ExecutorContext,
+        sketch: ObjectId,
+        ctor: PointCtor,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
+        // Create updated KCL source from args.
+        let at_ast = to_ast_point2d(&ctor.position).map_err(|err| Error { msg: err.to_string() })?;
+        let point_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(POINT_FN)),
+            unlabeled: None,
+            arguments: vec![ast::LabeledArg {
+                label: Some(ast::Identifier::new(POINT_AT_PARAM)),
+                arg: at_ast,
+            }],
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+
+        // Look up existing sketch.
+        let sketch_id = sketch;
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| {
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::error_1(
+                &format!(
+                    "Sketch not found; sketch_id={sketch_id:?}, self.scene_graph.objects={:#?}",
+                    &self.scene_graph.objects
+                )
+                .into(),
+            );
+            Error {
+                msg: format!("Sketch not found: {sketch:?}"),
+            }
+        })?;
+        let ObjectKind::Sketch(_) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+        // Add the point to the AST of the sketch block.
+        let mut new_ast = self.program.ast.clone();
+        let sketch_block_range = self
+            .ast_from_object_id_mut(
+                &mut new_ast,
+                sketch_id,
+                AstMutateCommand::AddSketchBlockExprStmt { expr: point_ast },
+            )
+            .map_err(|err| Error { msg: err.to_string() })?;
+        // Convert to string source to create real source ranges.
+        let new_source = source_from_ast(&new_ast);
+        // Parse the new KCL source.
+        let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
+        if !errors.is_empty() {
+            return Err(Error {
+                msg: format!("Error parsing KCL source after adding point: {errors:?}"),
+            });
+        }
+        let Some(new_program) = new_program else {
+            return Err(Error {
+                msg: "No AST produced after adding point".to_string(),
+            });
+        };
+
+        let point_source_range = new_program
+            .ast
+            .body
+            .iter()
+            .find_map(|item| {
+                if let ast::BodyItem::ExpressionStatement(expr_stmt) = item
+                    && expr_stmt.module_id == sketch_block_range.module_id()
+                    && expr_stmt.start == sketch_block_range.start()
+                    // End shouldn't match since we added something.
+                    && expr_stmt.end >= sketch_block_range.end()
+                    && let ast::Expr::SketchBlock(sketch_block) = &expr_stmt.expression
+                {
+                    return sketch_block.body.items.last().map(SourceRange::from);
+                }
+                None
+            })
+            .ok_or_else(|| Error {
+                msg: format!("Source range of point not found in sketch block: {sketch_block_range:?}"),
+            })?;
+        #[cfg(not(feature = "artifact-graph"))]
+        let _ = point_source_range;
+
+        // Make sure to only set this if there are no errors.
+        self.program = new_program.clone();
+
+        // Execute.
+        let outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
+            // TODO: sketch-api: Yeah, this needs to change. We need to
+            // return the full error.
+            Error {
+                msg: err.error.message().to_owned(),
+            }
+        })?;
+
+        #[cfg(not(feature = "artifact-graph"))]
+        let new_object_ids = Vec::new();
+        #[cfg(feature = "artifact-graph")]
+        let new_object_ids = {
+            let segment_id = outcome
+                .source_range_to_object
+                .get(&point_source_range)
+                .copied()
+                .ok_or_else(|| Error {
+                    msg: format!("Source range of point not found: {point_source_range:?}"),
+                })?;
+            let segment_object = outcome.scene_objects.get(segment_id.0).ok_or_else(|| Error {
+                msg: format!("Segment not found: {segment_id:?}"),
+            })?;
+            let ObjectKind::Segment(segment) = &segment_object.kind else {
+                return Err(Error {
+                    msg: format!("Object is not a segment: {segment_object:?}"),
+                });
+            };
+            let Segment::Point(_) = segment else {
+                return Err(Error {
+                    msg: format!("Segment is not a point: {segment:?}"),
+                });
+            };
+            vec![segment_id]
+        };
+        let src_delta = SourceDelta { text: new_source };
+        #[cfg(feature = "artifact-graph")]
+        let outcome = {
+            let mut outcome = outcome;
+            self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
+            outcome
+        };
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            invalidates_ids: false,
+            new_objects: new_object_ids,
+            exec_outcome: outcome,
+        };
+        let sketch_exec_outcome = SketchExecOutcome {
+            segments: Vec::new(),
+            constraints: Vec::new(),
+        };
+        Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
+    }
+
     async fn add_line(
         &mut self,
         ctx: &ExecutorContext,
@@ -332,7 +479,11 @@ impl FrontendState {
         // Add the line to the AST of the sketch block.
         let mut new_ast = self.program.ast.clone();
         let sketch_block_range = self
-            .ast_from_object_id_mut(&mut new_ast, sketch_id, AstMutateCommand::AddLine { line: line_ast })
+            .ast_from_object_id_mut(
+                &mut new_ast,
+                sketch_id,
+                AstMutateCommand::AddSketchBlockExprStmt { expr: line_ast },
+            )
             .map_err(|err| Error { msg: err.to_string() })?;
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
@@ -543,8 +694,14 @@ struct AstMutateContext {
 
 #[allow(clippy::large_enum_variant)]
 enum AstMutateCommand {
-    AddLine { line: ast::Expr },
-    EditLine { start: ast::Expr, end: ast::Expr },
+    /// Add an expression statement to the sketch block.
+    AddSketchBlockExprStmt {
+        expr: ast::Expr,
+    },
+    EditLine {
+        start: ast::Expr,
+        end: ast::Expr,
+    },
 }
 
 fn filter_and_process(ctx: &AstMutateContext, node: NodeMut) -> ControlFlow<SourceRange> {
@@ -560,14 +717,14 @@ fn filter_and_process(ctx: &AstMutateContext, node: NodeMut) -> ControlFlow<Sour
 
 fn process(command: &AstMutateCommand, node: NodeMut) -> ControlFlow<()> {
     match command {
-        AstMutateCommand::AddLine { line } => {
+        AstMutateCommand::AddSketchBlockExprStmt { expr } => {
             if let NodeMut::SketchBlock(sketch_block) = node {
                 sketch_block
                     .body
                     .items
                     .push(ast::BodyItem::ExpressionStatement(ast::Node {
                         inner: ast::ExpressionStatement {
-                            expression: line.clone(),
+                            expression: expr.clone(),
                             digest: None,
                         },
                         start: Default::default(),
@@ -738,6 +895,66 @@ mod tests {
         front::{Plane, Sketch, StandardPlane},
         pretty::NumericSuffix,
     };
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_add_point() {
+        let initial_source = "@settings(experimentalFeatures = allow)\n";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        frontend.program = program;
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+
+        let sketch_args = SketchArgs {
+            on: api::Plane::Default(api::StandardPlane::XY),
+        };
+        let (_src_delta, scene_delta, sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), Version(0), sketch_args)
+            .await
+            .unwrap();
+        assert_eq!(sketch_id, ObjectId(0));
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(0)]);
+        let sketch_object = &scene_delta.new_graph.objects[0];
+        assert_eq!(sketch_object.id, ObjectId(0));
+        assert_eq!(
+            sketch_object.kind,
+            ObjectKind::Sketch(Sketch {
+                args: SketchArgs {
+                    on: Plane::Default(StandardPlane::XY)
+                },
+                segments: vec![],
+                constraints: vec![],
+            })
+        );
+        assert_eq!(scene_delta.new_graph.objects.len(), 1);
+
+        let point_ctor = PointCtor {
+            position: Point2d {
+                x: Expr::Number(Number {
+                    value: 1.0,
+                    units: NumericSuffix::Inch,
+                }),
+                y: Expr::Number(Number {
+                    value: 2.0,
+                    units: NumericSuffix::Inch,
+                }),
+            },
+        };
+        let (src_delta, scene_delta, _) = frontend.add_point(&ctx, sketch_id, point_ctor).await.unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [1in, 2in])
+}
+"
+        );
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(1)]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 2);
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_new_sketch_add_line() {

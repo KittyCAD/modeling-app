@@ -1698,9 +1698,7 @@ pub enum UnsolvedExpr {
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct UnsolvedSegment {
-    // TODO: sketch-api: implement other segment types.
-    pub start: [UnsolvedExpr; 2],
-    pub end: [UnsolvedExpr; 2],
+    pub kind: UnsolvedSegmentKind,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -1708,14 +1706,39 @@ pub struct UnsolvedSegment {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
+pub enum UnsolvedSegmentKind {
+    Point {
+        position: [UnsolvedExpr; 2],
+    },
+    Line {
+        start: [UnsolvedExpr; 2],
+        end: [UnsolvedExpr; 2],
+    },
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
 pub struct Segment {
-    // TODO: sketch-api: implement other segment types.
-    pub start: [TyF64; 2],
-    pub end: [TyF64; 2],
-    pub start_freedom: Freedom,
-    pub end_freedom: Freedom,
+    pub kind: SegmentKind,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum SegmentKind {
+    Point {
+        position: [TyF64; 2],
+        freedom: Freedom,
+    },
+    Line {
+        start: [TyF64; 2],
+        end: [TyF64; 2],
+        start_freedom: Freedom,
+        end_freedom: Freedom,
+    },
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]

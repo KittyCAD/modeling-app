@@ -88,7 +88,7 @@ export const machine = setup({
           console.log('Adding point segment:', segmentCtor)
 
           // Call the addSegment method using the singleton rustContext
-          const result = await rustContext.addSegmentStub(
+          const result = await rustContext.addSegment(
             1, // version - TODO: Get this from actual context
             0, // sketchId - TODO: Get this from actual context
             segmentCtor,

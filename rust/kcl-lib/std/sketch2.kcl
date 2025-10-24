@@ -6,6 +6,11 @@
 import Point2d, Segment from "std::types"
 
 @(impl = std_rust_constrainable, experimental = true, feature_tree = false)
+export fn point(
+  at: Point2d,
+): Segment {}
+
+@(impl = std_rust_constrainable, experimental = true, feature_tree = false)
 export fn line(
   start: Point2d,
   end?: Point2d,

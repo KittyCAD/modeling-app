@@ -13,8 +13,8 @@ use crate::{
     exec::UnitType,
     execution::{
         AbstractSegment, BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta,
-        ModuleArtifactState, Operation, PlaneType, Segment, SegmentRepr, StatementKind, TagIdentifier, UnsolvedExpr,
-        UnsolvedSegment, annotations,
+        ModuleArtifactState, Operation, PlaneType, Segment, SegmentKind, SegmentRepr, StatementKind, TagIdentifier,
+        UnsolvedExpr, UnsolvedSegment, UnsolvedSegmentKind, annotations,
         cad_op::OpKclValue,
         fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
@@ -1246,23 +1246,43 @@ fn substitute_sketch_var_in_segment(
     solution_ty: NumericType,
 ) -> Result<Segment, KclError> {
     let srs = segment.meta.iter().map(|m| m.source_range).collect::<Vec<_>>();
-    let (start_x, start_x_freedom) =
-        substitute_sketch_var_in_unsolved_expr(&segment.start[0], solve_outcome, solution_ty, &srs)?;
-    let (start_y, start_y_freedom) =
-        substitute_sketch_var_in_unsolved_expr(&segment.start[1], solve_outcome, solution_ty, &srs)?;
-    let (end_x, end_x_freedom) =
-        substitute_sketch_var_in_unsolved_expr(&segment.end[0], solve_outcome, solution_ty, &srs)?;
-    let (end_y, end_y_freedom) =
-        substitute_sketch_var_in_unsolved_expr(&segment.end[1], solve_outcome, solution_ty, &srs)?;
-    let start = [start_x, start_y];
-    let end = [end_x, end_y];
-    Ok(Segment {
-        start,
-        end,
-        start_freedom: start_x_freedom.merge(start_y_freedom),
-        end_freedom: end_x_freedom.merge(end_y_freedom),
-        meta: segment.meta,
-    })
+    match &segment.kind {
+        UnsolvedSegmentKind::Point { position } => {
+            let (position_x, position_x_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&position[0], solve_outcome, solution_ty, &srs)?;
+            let (position_y, position_y_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&position[1], solve_outcome, solution_ty, &srs)?;
+            let position = [position_x, position_y];
+            Ok(Segment {
+                kind: SegmentKind::Point {
+                    position,
+                    freedom: position_x_freedom.merge(position_y_freedom),
+                },
+                meta: segment.meta,
+            })
+        }
+        UnsolvedSegmentKind::Line { start, end } => {
+            let (start_x, start_x_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, &srs)?;
+            let (start_y, start_y_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&start[1], solve_outcome, solution_ty, &srs)?;
+            let (end_x, end_x_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&end[0], solve_outcome, solution_ty, &srs)?;
+            let (end_y, end_y_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&end[1], solve_outcome, solution_ty, &srs)?;
+            let start = [start_x, start_y];
+            let end = [end_x, end_y];
+            Ok(Segment {
+                kind: SegmentKind::Line {
+                    start,
+                    end,
+                    start_freedom: start_x_freedom.merge(start_y_freedom),
+                    end_freedom: end_x_freedom.merge(end_y_freedom),
+                },
+                meta: segment.meta,
+            })
+        }
+    }
 }
 
 fn substitute_sketch_var_in_unsolved_expr(
@@ -1316,91 +1336,125 @@ fn create_segment_scene_objects(
             .first()
             .map(|m| m.source_range)
             .unwrap_or(sketch_block_range);
-        let segment_object_id = exec_state.peek_object_id(2);
 
-        let start_point2d = TyF64::to_point2d(&segment.start).map_err(|_| {
-            KclError::new_internal(KclErrorDetails::new(
-                format!(
-                    "Error converting start point runtime type to API value: {:?}",
-                    &segment.start
-                ),
-                vec![sketch_block_range],
-            ))
-        })?;
-        let start_point_object = Object {
-            id: exec_state.next_object_id(),
-            kind: ObjectKind::Segment(crate::front::Segment::Point(crate::front::Point {
-                position: start_point2d.clone(),
-                ctor: None,
-                owner: Some(segment_object_id),
-                freedom: segment.start_freedom,
-                constraints: Vec::new(),
-            })),
-            label: Default::default(),
-            comments: Default::default(),
-            // TODO: sketch-api: implement
-            artifact_id: 0,
-            source: source.clone(),
-        };
-        let start_point_object_id = start_point_object.id;
-        exec_state.add_scene_object(start_point_object, segment_range);
+        match &segment.kind {
+            SegmentKind::Point { position, freedom } => {
+                let point2d = TyF64::to_point2d(position).map_err(|_| {
+                    KclError::new_internal(KclErrorDetails::new(
+                        format!("Error converting start point runtime type to API value: {:?}", position),
+                        vec![sketch_block_range],
+                    ))
+                })?;
+                let point_object = Object {
+                    id: exec_state.next_object_id(),
+                    kind: ObjectKind::Segment(crate::front::Segment::Point(crate::front::Point {
+                        position: point2d.clone(),
+                        ctor: Some(crate::front::PointCtor {
+                            position: crate::front::Point2d {
+                                x: crate::front::Expr::Number(point2d.x),
+                                y: crate::front::Expr::Number(point2d.y),
+                            },
+                        }),
+                        owner: None,
+                        freedom: *freedom,
+                        constraints: Vec::new(),
+                    })),
+                    label: Default::default(),
+                    comments: Default::default(),
+                    // TODO: sketch-api: implement
+                    artifact_id: 0,
+                    source: source.clone(),
+                };
+                segment_object_ids.push(point_object.id);
+                exec_state.add_scene_object(point_object, segment_range);
+            }
+            SegmentKind::Line {
+                start,
+                end,
+                start_freedom,
+                end_freedom,
+            } => {
+                let segment_object_id = exec_state.peek_object_id(2);
 
-        let end_point2d = TyF64::to_point2d(&segment.end).map_err(|_| {
-            KclError::new_internal(KclErrorDetails::new(
-                format!(
-                    "Error converting end point runtime type to API value: {:?}",
-                    &segment.end
-                ),
-                vec![sketch_block_range],
-            ))
-        })?;
-        let end_point_object = Object {
-            id: exec_state.next_object_id(),
-            kind: ObjectKind::Segment(crate::front::Segment::Point(crate::front::Point {
-                position: end_point2d.clone(),
-                ctor: None,
-                owner: Some(segment_object_id),
-                freedom: segment.end_freedom,
-                constraints: Vec::new(),
-            })),
-            label: Default::default(),
-            comments: Default::default(),
-            // TODO: sketch-api: implement
-            artifact_id: 0,
-            source: source.clone(),
-        };
-        let end_point_object_id = end_point_object.id;
-        exec_state.add_scene_object(end_point_object, segment_range);
+                let start_point2d = TyF64::to_point2d(start).map_err(|_| {
+                    KclError::new_internal(KclErrorDetails::new(
+                        format!("Error converting start point runtime type to API value: {:?}", start),
+                        vec![sketch_block_range],
+                    ))
+                })?;
+                let start_point_object = Object {
+                    id: exec_state.next_object_id(),
+                    kind: ObjectKind::Segment(crate::front::Segment::Point(crate::front::Point {
+                        position: start_point2d.clone(),
+                        ctor: None,
+                        owner: Some(segment_object_id),
+                        freedom: *start_freedom,
+                        constraints: Vec::new(),
+                    })),
+                    label: Default::default(),
+                    comments: Default::default(),
+                    // TODO: sketch-api: implement
+                    artifact_id: 0,
+                    source: source.clone(),
+                };
+                let start_point_object_id = start_point_object.id;
+                exec_state.add_scene_object(start_point_object, segment_range);
 
-        let segment_object = Object {
-            id: exec_state.assert_next_object_id(segment_object_id),
-            kind: ObjectKind::Segment(crate::front::Segment::Line(crate::front::Line {
-                start: start_point_object_id,
-                end: end_point_object_id,
-                ctor: crate::front::SegmentCtor::Line(crate::front::LineCtor {
-                    start: crate::front::Point2d {
-                        // TODO: sketch-api: use original input expressions
-                        // instead of numbers.
-                        x: crate::front::Expr::Number(start_point2d.x),
-                        y: crate::front::Expr::Number(start_point2d.y),
-                    },
-                    end: crate::front::Point2d {
-                        // TODO: sketch-api: use original input expressions
-                        // instead of numbers.
-                        x: crate::front::Expr::Number(end_point2d.x),
-                        y: crate::front::Expr::Number(end_point2d.y),
-                    },
-                }),
-                ctor_applicable: true,
-            })),
-            label: Default::default(),
-            comments: Default::default(),
-            // TODO: sketch-api: implement
-            artifact_id: 0,
-            source,
-        };
-        segment_object_ids.push(segment_object.id);
-        exec_state.add_scene_object(segment_object, segment_range);
+                let end_point2d = TyF64::to_point2d(end).map_err(|_| {
+                    KclError::new_internal(KclErrorDetails::new(
+                        format!("Error converting end point runtime type to API value: {:?}", end),
+                        vec![sketch_block_range],
+                    ))
+                })?;
+                let end_point_object = Object {
+                    id: exec_state.next_object_id(),
+                    kind: ObjectKind::Segment(crate::front::Segment::Point(crate::front::Point {
+                        position: end_point2d.clone(),
+                        ctor: None,
+                        owner: Some(segment_object_id),
+                        freedom: *end_freedom,
+                        constraints: Vec::new(),
+                    })),
+                    label: Default::default(),
+                    comments: Default::default(),
+                    // TODO: sketch-api: implement
+                    artifact_id: 0,
+                    source: source.clone(),
+                };
+                let end_point_object_id = end_point_object.id;
+                exec_state.add_scene_object(end_point_object, segment_range);
+
+                let segment_object = Object {
+                    id: exec_state.assert_next_object_id(segment_object_id),
+                    kind: ObjectKind::Segment(crate::front::Segment::Line(crate::front::Line {
+                        start: start_point_object_id,
+                        end: end_point_object_id,
+                        ctor: crate::front::SegmentCtor::Line(crate::front::LineCtor {
+                            start: crate::front::Point2d {
+                                // TODO: sketch-api: use original input expressions
+                                // instead of numbers.
+                                x: crate::front::Expr::Number(start_point2d.x),
+                                y: crate::front::Expr::Number(start_point2d.y),
+                            },
+                            end: crate::front::Point2d {
+                                // TODO: sketch-api: use original input expressions
+                                // instead of numbers.
+                                x: crate::front::Expr::Number(end_point2d.x),
+                                y: crate::front::Expr::Number(end_point2d.y),
+                            },
+                        }),
+                        ctor_applicable: true,
+                    })),
+                    label: Default::default(),
+                    comments: Default::default(),
+                    // TODO: sketch-api: implement
+                    artifact_id: 0,
+                    source,
+                };
+                segment_object_ids.push(segment_object.id);
+                exec_state.add_scene_object(segment_object, segment_range);
+            }
+        }
     }
     Ok(segment_object_ids)
 }
@@ -1637,60 +1691,185 @@ impl Node<MemberExpression> {
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
             (KclValue::Segment { value: segment }, Property::String(property), false) => match property.as_str() {
-                "start" => match &segment.repr {
+                "at" => match &segment.repr {
                     SegmentRepr::Unsolved { segment } => {
-                        // TODO: assert that types of all elements are the same.
-                        Ok(KclValue::HomArray {
-                            value: vec![
-                                KclValue::from_unsolved_expr(segment.start[0].clone(), segment.meta.clone()),
-                                KclValue::from_unsolved_expr(segment.start[1].clone(), segment.meta.clone()),
-                            ],
-                            ty: RuntimeType::any(),
-                        })
+                        match &segment.kind {
+                            UnsolvedSegmentKind::Point { position } => {
+                                // TODO: assert that types of all elements are the same.
+                                Ok(KclValue::HomArray {
+                                    value: vec![
+                                        KclValue::from_unsolved_expr(position[0].clone(), segment.meta.clone()),
+                                        KclValue::from_unsolved_expr(position[1].clone(), segment.meta.clone()),
+                                    ],
+                                    ty: RuntimeType::any(),
+                                })
+                            }
+                            UnsolvedSegmentKind::Line { .. } => Err(KclError::new_undefined_value(
+                                KclErrorDetails::new(
+                                    format!("Property '{property}' not found in segment"),
+                                    vec![self.clone().into()],
+                                ),
+                                None,
+                            )),
+                        }
                     }
                     SegmentRepr::Solved { segment } => {
-                        // TODO: assert that types of all elements are the same.
-                        Ok(KclValue::array_from_point2d(
-                            [segment.start[0].n, segment.start[1].n],
-                            segment.start[0].ty,
-                            segment.meta.clone(),
-                        ))
+                        match &segment.kind {
+                            SegmentKind::Point { position, .. } => {
+                                // TODO: assert that types of all elements are the same.
+                                Ok(KclValue::array_from_point2d(
+                                    [position[0].n, position[1].n],
+                                    position[0].ty,
+                                    segment.meta.clone(),
+                                ))
+                            }
+                            SegmentKind::Line { .. } => Err(KclError::new_undefined_value(
+                                KclErrorDetails::new(
+                                    format!("Property '{property}' not found in segment"),
+                                    vec![self.clone().into()],
+                                ),
+                                None,
+                            )),
+                        }
+                    }
+                    SegmentRepr::InEngine { segment, .. } => match &segment.kind {
+                        SegmentKind::Point { position, .. } => {
+                            // TODO: assert that types of all elements are the same.
+                            Ok(KclValue::array_from_point2d(
+                                [position[0].n, position[1].n],
+                                position[0].ty,
+                                segment.meta.clone(),
+                            ))
+                        }
+                        SegmentKind::Line { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                    },
+                },
+                "start" => match &segment.repr {
+                    SegmentRepr::Unsolved { segment } => {
+                        match &segment.kind {
+                            UnsolvedSegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                                KclErrorDetails::new(
+                                    format!("Property '{property}' not found in point segment"),
+                                    vec![self.clone().into()],
+                                ),
+                                None,
+                            )),
+                            UnsolvedSegmentKind::Line { start, .. } => {
+                                // TODO: assert that types of all elements are the same.
+                                Ok(KclValue::HomArray {
+                                    value: vec![
+                                        KclValue::from_unsolved_expr(start[0].clone(), segment.meta.clone()),
+                                        KclValue::from_unsolved_expr(start[1].clone(), segment.meta.clone()),
+                                    ],
+                                    ty: RuntimeType::any(),
+                                })
+                            }
+                        }
+                    }
+                    SegmentRepr::Solved { segment } => {
+                        match &segment.kind {
+                            SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                                KclErrorDetails::new(
+                                    format!("Property '{property}' not found in point segment"),
+                                    vec![self.clone().into()],
+                                ),
+                                None,
+                            )),
+                            SegmentKind::Line { start, .. } => {
+                                // TODO: assert that types of all elements are the same.
+                                Ok(KclValue::array_from_point2d(
+                                    [start[0].n, start[1].n],
+                                    start[0].ty,
+                                    segment.meta.clone(),
+                                ))
+                            }
+                        }
                     }
                     SegmentRepr::InEngine { segment, .. } => {
-                        // TODO: assert that types of all elements are the same.
-                        Ok(KclValue::array_from_point2d(
-                            [segment.start[0].n, segment.start[1].n],
-                            segment.start[0].ty,
-                            segment.meta.clone(),
-                        ))
+                        match &segment.kind {
+                            SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                                KclErrorDetails::new(
+                                    format!("Property '{property}' not found in point segment"),
+                                    vec![self.clone().into()],
+                                ),
+                                None,
+                            )),
+                            SegmentKind::Line { start, .. } => {
+                                // TODO: assert that types of all elements are the same.
+                                Ok(KclValue::array_from_point2d(
+                                    [start[0].n, start[1].n],
+                                    start[0].ty,
+                                    segment.meta.clone(),
+                                ))
+                            }
+                        }
                     }
                 },
                 "end" => match &segment.repr {
                     SegmentRepr::Unsolved { segment } => {
-                        // TODO: assert that types of all elements are the same.
-                        Ok(KclValue::HomArray {
-                            value: vec![
-                                KclValue::from_unsolved_expr(segment.end[0].clone(), segment.meta.clone()),
-                                KclValue::from_unsolved_expr(segment.end[1].clone(), segment.meta.clone()),
-                            ],
-                            ty: RuntimeType::any(),
-                        })
+                        match &segment.kind {
+                            UnsolvedSegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                                KclErrorDetails::new(
+                                    format!("Property '{property}' not found in point segment"),
+                                    vec![self.clone().into()],
+                                ),
+                                None,
+                            )),
+                            UnsolvedSegmentKind::Line { end, .. } => {
+                                // TODO: assert that types of all elements are the same.
+                                Ok(KclValue::HomArray {
+                                    value: vec![
+                                        KclValue::from_unsolved_expr(end[0].clone(), segment.meta.clone()),
+                                        KclValue::from_unsolved_expr(end[1].clone(), segment.meta.clone()),
+                                    ],
+                                    ty: RuntimeType::any(),
+                                })
+                            }
+                        }
                     }
                     SegmentRepr::Solved { segment } => {
-                        // TODO: assert that types of all elements are the same.
-                        Ok(KclValue::array_from_point2d(
-                            [segment.end[0].n, segment.end[1].n],
-                            segment.end[0].ty,
-                            segment.meta.clone(),
-                        ))
+                        match &segment.kind {
+                            SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                                KclErrorDetails::new(
+                                    format!("Property '{property}' not found in point segment"),
+                                    vec![self.clone().into()],
+                                ),
+                                None,
+                            )),
+                            SegmentKind::Line { end, .. } => {
+                                // TODO: assert that types of all elements are the same.
+                                Ok(KclValue::array_from_point2d(
+                                    [end[0].n, end[1].n],
+                                    end[0].ty,
+                                    segment.meta.clone(),
+                                ))
+                            }
+                        }
                     }
                     SegmentRepr::InEngine { segment, .. } => {
-                        // TODO: assert that types of all elements are the same.
-                        Ok(KclValue::array_from_point2d(
-                            [segment.end[0].n, segment.end[1].n],
-                            segment.end[0].ty,
-                            segment.meta.clone(),
-                        ))
+                        match &segment.kind {
+                            SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                                KclErrorDetails::new(
+                                    format!("Property '{property}' not found in point segment"),
+                                    vec![self.clone().into()],
+                                ),
+                                None,
+                            )),
+                            SegmentKind::Line { end, .. } => {
+                                // TODO: assert that types of all elements are the same.
+                                Ok(KclValue::array_from_point2d(
+                                    [end[0].n, end[1].n],
+                                    end[0].ty,
+                                    segment.meta.clone(),
+                                ))
+                            }
+                        }
                     }
                 },
                 other => Err(KclError::new_undefined_value(
