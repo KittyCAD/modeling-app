@@ -151,7 +151,7 @@ function ModelingArea() {
   const pool = searchParams?.get('pool') || env().POOL || null
 
   return (
-    <div className="relative z-0 flex flex-col flex-1 items-center overflow-hidden">
+    <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
       <Toolbar />
       <ConnectionStream pool={pool} authToken={authToken} />
       <div className="absolute bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
