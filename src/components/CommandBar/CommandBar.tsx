@@ -7,12 +7,8 @@ import CommandBarReview from '@src/components/CommandBar/CommandBarReview'
 import CommandComboBox from '@src/components/CommandComboBox'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { engineCommandManager } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
-import toast from 'react-hot-toast'
-import { EngineConnectionStateType } from '@src/network/utils'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
@@ -20,7 +16,6 @@ export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 export const CommandBar = () => {
   const { pathname } = useLocation()
   const commandBarState = useCommandBarState()
-  const { immediateState } = useNetworkContext()
   const {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
