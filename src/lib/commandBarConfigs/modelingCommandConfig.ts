@@ -30,13 +30,38 @@ import {
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { kclManager } from '@src/lib/singletons'
+import { kclManager, rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type {
   ModelingMachineContext,
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
+import {
+  addExtrude,
+  addLoft,
+  addRevolve,
+  addSweep,
+} from '@src/lang/modifyAst/sweeps'
+import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
+import { addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
+import {
+  addIntersect,
+  addSubtract,
+  addUnion,
+} from '@src/lang/modifyAst/boolean'
+import { addHelix } from '@src/lang/modifyAst/geometry'
+import {
+  addAppearance,
+  addClone,
+  addRotate,
+  addScale,
+  addTranslate,
+} from '@src/lang/modifyAst/transforms'
+import {
+  addPatternCircular3D,
+  addPatternLinear3D,
+} from '@src/lang/modifyAst/pattern3D'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -471,6 +496,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Pull a sketch into 3D along its normal or perpendicular.',
     icon: 'extrude',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addExtrude({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Extrude']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -540,6 +578,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Create a 3D body by moving a sketch region along an arbitrary path.',
     icon: 'sweep',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addSweep({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Sweep']),
+        ast: kclManager.ast,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -585,6 +635,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a 3D body by blending between two or more sketches',
     icon: 'loft',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addLoft({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Loft']),
+        ast: kclManager.ast,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -623,6 +685,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addRevolve({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Revolve']),
+        ast: kclManager.ast,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -695,6 +769,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Hollow out a 3D solid.',
     icon: 'shell',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addShell({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Shell']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -717,6 +804,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Subtract one solid from another.',
     icon: 'booleanSubtract',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addSubtract({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Subtract']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       solids: {
         ...objectsTypesAndFilters,
@@ -739,6 +839,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Union multiple solids into a single solid.',
     icon: 'booleanUnion',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addUnion({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Union']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       solids: {
         ...objectsTypesAndFilters,
@@ -754,6 +867,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a solid from the intersection of two solids.',
     icon: 'booleanIntersect',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addIntersect({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Intersect']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       solids: {
         ...objectsTypesAndFilters,
@@ -768,6 +894,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'Offset plane': {
     description: 'Offset a plane.',
     icon: 'plane',
+    needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addOffsetPlane({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Offset plane']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+        variables: kclManager.variables,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -791,6 +932,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a helix or spiral in 3D about an axis.',
     icon: 'helix',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addHelix({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Helix']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -874,6 +1028,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Fillet edge',
     icon: 'fillet3d',
     needsReview: true,
+    // TODO: add reviewMessage with mock exec once refactored
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -902,6 +1057,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Chamfer edge',
     icon: 'chamfer3d',
     needsReview: true,
+    // TODO: add reviewMessage with mock exec once refactored
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1024,6 +1180,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
     icon: 'extrude',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addAppearance({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Appearance']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1055,6 +1224,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Set translation on solid or sketch.',
     icon: 'move',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addTranslate({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Translate']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1091,6 +1273,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Set rotation on solid or sketch.',
     icon: 'rotate',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addRotate({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Rotate']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1127,6 +1322,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Set scale on solid or sketch.',
     icon: 'scale',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addScale({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Scale']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1163,6 +1371,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Clone a solid or sketch.',
     icon: 'clone',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addClone({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Clone']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1204,6 +1425,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a circular pattern of 3D solids around an axis.',
     icon: 'patternCircular3d',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addPatternCircular3D({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Pattern Circular 3D']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1254,6 +1488,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Create a linear pattern of 3D solids along an axis.',
     icon: 'patternLinear3d',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const modRes = addPatternLinear3D({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Pattern Linear 3D']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
