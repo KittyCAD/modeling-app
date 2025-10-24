@@ -301,6 +301,30 @@ impl SketchApi for FrontendState {
 }
 
 impl FrontendState {
+    pub async fn hack_set_program(&mut self, ctx: &ExecutorContext, program: Program) -> api::Result<()> {
+        self.program = program.clone();
+
+        // Execute so that the objects are updated and available for the next
+        // API call.
+        let outcome = ctx.run_with_caching(program).await.map_err(|err| {
+            // TODO: sketch-api: Yeah, this needs to change. We need to
+            // return the full error.
+            Error {
+                msg: err.error.message().to_owned(),
+            }
+        })?;
+
+        #[cfg(not(feature = "artifact-graph"))]
+        drop(outcome);
+        #[cfg(feature = "artifact-graph")]
+        {
+            let mut outcome = outcome;
+            self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
+        };
+
+        Ok(())
+    }
+
     async fn add_point(
         &mut self,
         ctx: &ExecutorContext,

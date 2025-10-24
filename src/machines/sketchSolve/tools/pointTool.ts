@@ -1,6 +1,6 @@
 import { assertEvent, fromPromise, setup } from 'xstate'
 
-import { sceneInfra, rustContext } from '@src/lib/singletons'
+import { sceneInfra, rustContext, kclManager } from '@src/lib/singletons'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type {
   SegmentCtor,
@@ -76,6 +76,10 @@ export const machine = setup({
         const [x, y] = pointData
 
         try {
+          await rustContext.hackSetProgram(
+            kclManager.ast,
+            await jsAppSettings()
+          )
           // TODO not sure if we should be sending through units with this
           const segmentCtor: SegmentCtor = {
             type: 'Point',
