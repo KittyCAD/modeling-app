@@ -6,8 +6,8 @@ import { addModuleImport, insertNamedConstant } from '@src/lang/modifyAst'
 import {
   changeDefaultUnits,
   isPathToNode,
+  pathToNodeFromRustNodePath,
   type PathToNode,
-  type SourceRange,
   type VariableDeclarator,
 } from '@src/lang/wasm'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
@@ -31,7 +31,6 @@ import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 
 interface KclCommandConfig {
@@ -325,26 +324,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           required: true,
           options() {
             return (
-              Object.entries(kclManager.execState.variables)
-                // TODO: @franknoirot && @jtran would love to make this go away soon 🥺
-                .filter(([_, variable]) => variable?.type === 'Number')
-                .map(([name, _variable]) => {
-                  const node = getVariableDeclaration(kclManager.ast, name)
-                  if (node === undefined) return
-
-                  // TODO: @pierremtb is making things worse here
-                  let start = node.start
-                  if (node.visibility && node.visibility !== 'default') {
-                    start = start + node.visibility.length + 1
-                  }
-
-                  const range: SourceRange = [start, node.end, node.moduleId]
-                  const pathToNode = getNodePathFromSourceRange(
-                    kclManager.ast,
-                    range
-                  )
+              Object.values(kclManager.execState.operations)
+                .flatMap((op) => {
+                  if (op.type !== 'VariableDeclaration') return []
+                  const pathToNode = pathToNodeFromRustNodePath(
+                    op.nodePath
+                  ).slice(0, -1) // Like in prepareToEditParameter
                   return {
-                    name,
+                    name: op.name,
                     value: pathToNode,
                   }
                 })
