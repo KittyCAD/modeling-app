@@ -1,9 +1,12 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::front::{
-    Error, File, FileId, LifecycleApi, ObjectId, ProjectId, SceneGraphDelta, SegmentCtor, SketchApi, SketchApiStub,
-    SketchExecOutcome, SourceDelta, Version,
+use kcl_lib::{
+    front::{
+        Error, File, FileId, LifecycleApi, ObjectId, ProjectId, SceneGraphDelta, SegmentCtor, SketchApi, SketchApiStub,
+        SketchExecOutcome, SourceDelta, Version,
+    },
+    Program,
 };
 use wasm_bindgen::prelude::*;
 
@@ -75,6 +78,29 @@ impl Context {
             .refresh(ProjectId(project))
             .await
             .map_err(|e: Error| JsValue::from_serde(&e).unwrap())
+    }
+
+    /// Set the current program AST and execute it. Temporary hack for
+    /// development purposes only.
+    #[wasm_bindgen]
+    pub async fn hack_set_program(&self, program_ast_json: &str, settings: &str) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let program: Program =
+            serde_json::from_str(program_ast_json).map_err(|e| format!("Could not deserialize KCL AST: {e}"))?;
+
+        let ctx = self
+            .create_executor_ctx(settings, None, false)
+            .map_err(|e| format!("Could not create KCL executor context for new sketch. {TRUE_BUG} Details: {e}"))?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        guard
+            .hack_set_program(&ctx, program)
+            .await
+            .map_err(|e| format!("Failed to execute new program: {:?}", e))?;
+
+        Ok(JsValue::undefined())
     }
 
     /// Create new sketch and enter sketch mode.
