@@ -197,6 +197,7 @@ const prepareToEditParameter: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // 2. The nodeToEdit is much simpler to transform.
+  // We need the VariableDeclarator PathToNode though, so we slice it
   const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath).slice(0, -1)
 
   // 3. Assemble the default argument values for the command,
