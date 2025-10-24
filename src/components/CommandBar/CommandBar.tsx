@@ -40,26 +40,6 @@ export const CommandBar = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [pathname])
 
-  /**
-   * if the engine connection is about to end, we don't want users
-   * to be able to perform commands that might require that connection,
-   * so we just close the command palette.
-   * TODO: instead, let each command control whether it is disabled, and
-   * don't just bail out
-   */
-  useEffect(() => {
-    if (
-      !commandBarActor.getSnapshot().matches('Closed') &&
-      engineCommandManager.connection &&
-      (immediateState.type === EngineConnectionStateType.Disconnecting ||
-        immediateState.type === EngineConnectionStateType.Disconnected)
-    ) {
-      commandBarActor.send({ type: 'Close' })
-      toast.error('Exiting command flow because engine disconnected')
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [immediateState, commandBarActor])
-
   // Hook up keyboard shortcuts
   useHotkeyWrapper([COMMAND_PALETTE_HOTKEY], () => {
     if (commandBarState.context.commands.length === 0) return
