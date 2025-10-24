@@ -806,6 +806,12 @@ openSketch = startSketchOn(XY)
         commandName: 'Offset plane',
       })
       await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: { Plane: '1 plane', Offset: '5' },
+        commandName: 'Offset plane',
+      })
+      await cmdBar.submit()
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
@@ -3638,7 +3644,7 @@ solid001 = extrude(sketch001, length = 5)`
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `@settings(defaultLengthUnit = in, experimentalFeatures = allow)
+    const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 30)
 extrude001 = extrude(sketch001, length = 30)
@@ -3892,6 +3898,7 @@ extrude001 = extrude(sketch001, length = 30)
       await test.step('Submit and verify all parameters', async () => {
         await cmdBar.progressCmdBar()
         await scene.settled(cmdBar)
+        await editor.expectEditor.toContain('experimentalFeatures = allow')
         await editor.expectEditor.toContain('gdt::flatness(')
         await editor.expectEditor.toContain('faces = [capEnd001]')
         await editor.expectEditor.toContain('tolerance = 0.1mm')
