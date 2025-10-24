@@ -1702,7 +1702,7 @@ extrude001 = extrude(profile001, length = 5)
 `
     const taggedSegment1 = `xLine(length = -10, tag = $seg01)`
     const taggedSegment2 = `yLine(length = -1, tag = $seg02)`
-    const filletExpression = `fillet(radius = 1000, tags = [getCommonEdge(faces = [seg01, seg02])])`
+    const filletExpression = `fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, seg02]), radius = 1000)`
 
     // Locators
     // TODO: find a way to select sweepEdges in a different way
