@@ -806,6 +806,12 @@ openSketch = startSketchOn(XY)
         commandName: 'Offset plane',
       })
       await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: { Plane: '1 plane', Offset: '5' },
+        commandName: 'Offset plane',
+      })
+      await cmdBar.submit()
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {

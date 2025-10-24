@@ -74,12 +74,13 @@ export function addExtrude({
       pathToNode: PathToNode
     }
   | Error {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, nodeToEdit)
+  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
   if (err(vars)) {
     return vars
   }
@@ -95,7 +96,7 @@ export function addExtrude({
       to,
       artifactGraph,
       modifiedAst,
-      nodeToEdit
+      mNodeToEdit
     )
     if (err(result)) {
       return result
@@ -157,7 +158,7 @@ export function addExtrude({
 
   // Insert variables for labeled arguments if provided
   if (length && 'variableName' in length && length.variableName) {
-    insertVariableAndOffsetPathToNode(length, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(length, modifiedAst, mNodeToEdit)
   }
   if (
     bidirectionalLength &&
@@ -167,25 +168,25 @@ export function addExtrude({
     insertVariableAndOffsetPathToNode(
       bidirectionalLength,
       modifiedAst,
-      nodeToEdit
+      mNodeToEdit
     )
   }
   if (twistAngle && 'variableName' in twistAngle && twistAngle.variableName) {
-    insertVariableAndOffsetPathToNode(twistAngle, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(twistAngle, modifiedAst, mNodeToEdit)
   }
   if (
     twistAngleStep &&
     'variableName' in twistAngleStep &&
     twistAngleStep.variableName
   ) {
-    insertVariableAndOffsetPathToNode(twistAngleStep, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(twistAngleStep, modifiedAst, mNodeToEdit)
   }
   if (
     twistCenter &&
     'variableName' in twistCenter &&
     twistCenter.variableName
   ) {
-    insertVariableAndOffsetPathToNode(twistCenter, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(twistCenter, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -193,7 +194,7 @@ export function addExtrude({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE,
   })
@@ -231,12 +232,13 @@ export function addSweep({
       pathToNode: PathToNode
     }
   | Error {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, nodeToEdit)
+  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
   if (err(vars)) {
     return vars
   }
@@ -280,7 +282,7 @@ export function addSweep({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP,
   })
@@ -318,12 +320,13 @@ export function addLoft({
       pathToNode: PathToNode
     }
   | Error {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, nodeToEdit)
+  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
   if (err(vars)) {
     return vars
   }
@@ -361,14 +364,14 @@ export function addLoft({
 
   // Insert variables for labeled arguments if provided
   if (vDegree && 'variableName' in vDegree && vDegree.variableName) {
-    insertVariableAndOffsetPathToNode(vDegree, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(vDegree, modifiedAst, mNodeToEdit)
   }
   if (
     baseCurveIndex &&
     'variableName' in baseCurveIndex &&
     baseCurveIndex.variableName
   ) {
-    insertVariableAndOffsetPathToNode(baseCurveIndex, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(baseCurveIndex, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -376,7 +379,7 @@ export function addLoft({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.LOFT,
   })
@@ -418,12 +421,13 @@ export function addRevolve({
       pathToNode: PathToNode
     }
   | Error {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, nodeToEdit)
+  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
   if (err(vars)) {
     return vars
   }
@@ -465,7 +469,7 @@ export function addRevolve({
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in angle && angle.variableName) {
-    insertVariableAndOffsetPathToNode(angle, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
   }
 
   if (
@@ -476,7 +480,7 @@ export function addRevolve({
     insertVariableAndOffsetPathToNode(
       bidirectionalAngle,
       modifiedAst,
-      nodeToEdit
+      mNodeToEdit
     )
   }
 
@@ -485,7 +489,7 @@ export function addRevolve({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE,
   })
