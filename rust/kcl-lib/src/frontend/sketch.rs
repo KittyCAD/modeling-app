@@ -63,7 +63,7 @@ pub trait SketchApi {
         version: Version,
         sketch: ObjectId,
         constraint: Constraint,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)>;
 
     async fn edit_constraint(
         &mut self,
@@ -278,14 +278,14 @@ pub enum Constraint {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Coincident {
-    points: Vec<ObjectId>,
+    pub points: Vec<ObjectId>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Parallel {
-    lines: Vec<ObjectId>,
-    distance: Option<Number>,
+    pub lines: Vec<ObjectId>,
+    pub distance: Option<Number>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
@@ -460,7 +460,7 @@ impl SketchApi for SketchApiStub {
         _version: Version,
         _sketch: ObjectId,
         _constraint: Constraint,
-    ) -> Result<(SourceDelta, SceneGraphDelta)> {
+    ) -> Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
         todo!("add_constraint not implemented")
     }
 

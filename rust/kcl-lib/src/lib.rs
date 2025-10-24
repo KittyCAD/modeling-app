@@ -158,9 +158,9 @@ pub mod front {
             SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, StandardPlane, Version,
         },
         sketch::{
-            Arc, ArcCtor, Circle, CircleCtor, Freedom, Line, LineCtor, MidPointLineCtor, Point, Point2d, PointCtor,
-            Segment, SegmentCtor, Sketch, SketchApi, SketchApiStub, SketchArgs, SketchExecOutcome, StartOrEnd,
-            TangentArcCtor, ThreePointArcCtor, ThreePointCircleCtor,
+            Arc, ArcCtor, Circle, CircleCtor, Constraint, Freedom, Line, LineCtor, MidPointLineCtor, Point, Point2d,
+            PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchApiStub, SketchArgs, SketchExecOutcome,
+            StartOrEnd, TangentArcCtor, ThreePointArcCtor, ThreePointCircleCtor,
         },
     };
 }

@@ -3,8 +3,6 @@ use std::{cell::Cell, ops::ControlFlow};
 use anyhow::{anyhow, bail};
 use kcl_error::SourceRange;
 
-#[cfg(feature = "artifact-graph")]
-use crate::frontend::sketch::Segment;
 use crate::{
     ExecutorContext, Program,
     fmt::format_number_literal,
@@ -14,7 +12,9 @@ use crate::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
             SourceRef, Version,
         },
-        sketch::{Constraint, LineCtor, Point2d, SegmentCtor, SketchApi, SketchArgs, SketchExecOutcome},
+        sketch::{
+            Coincident, Constraint, LineCtor, Point2d, Segment, SegmentCtor, SketchApi, SketchArgs, SketchExecOutcome,
+        },
         traverse::dfs_mut,
     },
     parsing::ast::types as ast,
@@ -30,6 +30,7 @@ const POINT_AT_PARAM: &str = "at";
 const LINE_FN: &str = "line";
 const LINE_START_PARAM: &str = "start";
 const LINE_END_PARAM: &str = "end";
+const COINCIDENT_FN: &str = "coincident";
 
 #[derive(Debug, Clone)]
 pub struct FrontendState {
@@ -270,12 +271,18 @@ impl SketchApi for FrontendState {
 
     async fn add_constraint(
         &mut self,
-        _ctx: &ExecutorContext,
+        ctx: &ExecutorContext,
         _version: Version,
-        _sketch: ObjectId,
-        _constraint: Constraint,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
-        todo!()
+        sketch: ObjectId,
+        constraint: Constraint,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta, sketch::SketchExecOutcome)> {
+        // TODO: Check version.
+        match constraint {
+            Constraint::Coincident(coincident) => self.add_coincident(ctx, sketch, coincident).await,
+            _ => Err(Error {
+                msg: format!("constraint not implemented yet: {constraint:?}"),
+            }),
+        }
     }
 
     async fn edit_constraint(
@@ -664,6 +671,56 @@ impl FrontendState {
             exec_outcome: outcome,
         };
         Ok((src_delta, scene_graph_delta))
+    }
+
+    async fn add_coincident(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _sketch: ObjectId,
+        coincident: Coincident,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta, sketch::SketchExecOutcome)> {
+        if coincident.points.len() != 2 {
+            return Err(Error {
+                msg: format!(
+                    "Coincident constraint must have exactly 2 points, got {}",
+                    coincident.points.len()
+                ),
+            });
+        }
+        // Look up existing sketch.
+        let pt0_id = coincident.points[0];
+        let pt1_id = coincident.points[1];
+        let pt0_object = self.scene_graph.objects.get(pt0_id.0).ok_or_else(|| Error {
+            msg: format!("Point not found: {pt0_id:?}"),
+        })?;
+        let pt1_object = self.scene_graph.objects.get(pt1_id.0).ok_or_else(|| Error {
+            msg: format!("Point not found: {pt1_id:?}"),
+        })?;
+        let ObjectKind::Segment(Segment::Point(pt0)) = &pt0_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a point: {pt0_object:?}"),
+            });
+        };
+        let ObjectKind::Segment(Segment::Point(pt1)) = &pt1_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a point: {pt1_object:?}"),
+            });
+        };
+
+        // Create updated KCL source from args.
+        //
+        // TODO: sketch-api: map the runtime objects back to variable names and
+        // properties of those variables?
+        let _coincident_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(COINCIDENT_FN)),
+            unlabeled: None,
+            arguments: Vec::new(),
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+        Err(Error {
+            msg: format!("add_coincident implementation not done yet: pt0={pt0:?}, pt1={pt1:?}"),
+        })
     }
 
     fn mutate_ast(
