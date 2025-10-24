@@ -1003,7 +1003,7 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_new_sketch_add_line() {
+    async fn test_new_sketch_add_line_edit_line() {
         let initial_source = "@settings(experimentalFeatures = allow)\n";
 
         let program = Program::parse(initial_source).unwrap().0.unwrap();
@@ -1106,6 +1106,58 @@ sketch(on = XY) {
 "
         );
         assert_eq!(scene_delta.new_objects, vec![]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 4);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_add_line_when_sketch_block_uses_variable() {
+        let initial_source = "@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+
+        let line_ctor = LineCtor {
+            start: Point2d {
+                x: Expr::Number(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 0.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+            end: Point2d {
+                x: Expr::Number(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+                y: Expr::Number(Number {
+                    value: 10.0,
+                    units: NumericSuffix::Mm,
+                }),
+            },
+        };
+        let (src_delta, scene_delta, _) = frontend.add_line(&ctx, sketch_id, line_ctor).await.unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  sketch2::line(start = [0mm, 0mm], end = [10mm, 10mm])
+}
+"
+        );
+        assert_eq!(scene_delta.new_objects, vec![ObjectId(1), ObjectId(2), ObjectId(3)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
     }
 }
