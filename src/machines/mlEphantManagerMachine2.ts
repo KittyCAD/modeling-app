@@ -64,6 +64,12 @@ export type MlEphantManagerEvents2 =
       conversationId: undefined
     }
   | {
+      type: 'cacheSetupAndConnect'
+      refParentSend: (event: MlEphantManagerEvents2) => void
+      // If not present, a new conversation is created.
+      conversationId?: string
+    }
+  | {
       type: MlEphantManagerStates2.Setup
       refParentSend: (event: MlEphantManagerEvents2) => void
       // If not present, a new conversation is created.
@@ -112,6 +118,10 @@ export interface MlEphantManagerContext2 {
   lastMessageId?: number
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
+  cachedSetup?: {
+    refParentSend?: (event: MlEphantManagerEvents2) => void
+    conversationId?: string
+  }
 }
 
 export const mlEphantDefaultContext2 = (args: {
@@ -196,6 +206,18 @@ export const mlEphantManagerMachine2 = setup({
         toast.error(event.error.message)
       }
     },
+    cacheSetup: assign({
+      cachedSetup: ({ event }) => {
+        assertEvent(event, 'cacheSetupAndConnect')
+        return {
+          refParentSend: event.refParentSend,
+          conversationId: event.conversationId,
+        }
+      },
+    }),
+    clearCacheSetup: assign({
+      cachedSetup: undefined,
+    }),
   },
   actors: {
     [MlEphantManagerStates2.Setup]: fromPromise(async function (
@@ -206,7 +228,8 @@ export const mlEphantManagerMachine2 = setup({
       // On future reenters of this actor it will not have args.input.event
       // You must read from the context for the cached conversationId
       const maybeConversationId =
-        args.input.event.conversationId || args.input.context.conversationId
+        args.input.context?.cachedSetup?.conversationId
+      const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
 
       const ws = await Socket(
         WebSocket,
@@ -354,10 +377,14 @@ export const mlEphantManagerMachine2 = setup({
               return
             }
 
-            args.input.event.refParentSend({
-              type: MlEphantManagerTransitions2.ResponseReceive,
-              response,
-            })
+            if (theRefParentSend) {
+              theRefParentSend({
+                type: MlEphantManagerTransitions2.ResponseReceive,
+                response,
+              })
+            } else {
+              onRejected('no ref parent send')
+            }
           })
 
           ws.addEventListener('close', function (event: Event) {
@@ -427,7 +454,13 @@ export const mlEphantManagerMachine2 = setup({
   context: mlEphantDefaultContext2,
   states: {
     [S.Await]: {
-      on: transitions([MlEphantManagerStates2.Setup]),
+      on: {
+        cacheSetupAndConnect: {
+          target: MlEphantManagerStates2.Setup,
+          actions: ['cacheSetup'],
+        },
+        ...transitions([MlEphantManagerStates2.Setup]),
+      },
     },
     [MlEphantManagerStates2.Setup]: {
       invoke: {
@@ -436,6 +469,7 @@ export const mlEphantManagerMachine2 = setup({
             MlEphantManagerStates2.Setup,
             'xstate.done.state.(machine).ready',
             'xstate.error.actor.0.(machine).setup',
+            'cacheSetupAndConnect',
           ])
 
           return {
@@ -450,7 +484,7 @@ export const mlEphantManagerMachine2 = setup({
         src: MlEphantManagerStates2.Setup,
         onDone: {
           target: MlEphantManagerStates2.Ready,
-          actions: [assign(({ event }) => event.output)],
+          actions: [assign(({ event }) => event.output), 'clearCacheSetup'],
         },
         onError: {
           target: MlEphantManagerStates2.Setup,
@@ -458,11 +492,21 @@ export const mlEphantManagerMachine2 = setup({
             assign(({ event, context }) => {
               if (event.error === MlEphantSetupErrors.ConversationNotFound) {
                 // set the conversation Id to undefined to have the reenter make a new conversation id
-                return { conversationId: undefined }
+                return {
+                  cachedSetup: {
+                    refParentSend: context.cachedSetup?.refParentSend,
+                    conversationId: undefined,
+                  },
+                }
               }
 
               // otherwise keep the same one
-              return { conversationId: context.conversationId }
+              return {
+                cachedSetup: {
+                  refParentSend: context.cachedSetup?.refParentSend,
+                  conversationId: context.cachedSetup?.conversationId,
+                },
+              }
             }),
           ],
           reenter: true,
