@@ -7,6 +7,7 @@ import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type {
+  ApiConstraint,
   ApiFile,
   ApiFileId,
   ApiObjectId,
@@ -437,6 +438,39 @@ export default class RustContext {
           JSON.stringify(sketch),
           JSON.stringify(segmentId),
           JSON.stringify(segment),
+          JSON.stringify(settings)
+        )
+      return {
+        kclSource: result[0],
+        sceneGraphDelta: result[1],
+        sketchExecOutcome: result[2],
+      }
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
+  /** Add a constraint to a sketch. */
+  async addConstraint(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    constraint: ApiConstraint,
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+    sketchExecOutcome: SketchExecOutcome
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: [SourceDelta, SceneGraphDelta, SketchExecOutcome] =
+        await instance.add_constraint(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(constraint),
           JSON.stringify(settings)
         )
       return {

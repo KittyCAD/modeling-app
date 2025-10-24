@@ -260,4 +260,37 @@ impl Context {
         Ok(JsValue::from_serde(&result)
             .map_err(|e| format!("Could not serialize edit segment result. {TRUE_BUG} Details: {e}"))?)
     }
+
+    /// Add a constraint to sketch.
+    #[wasm_bindgen]
+    pub async fn add_constraint(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        constraint_json: &str,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let version: kcl_lib::front::Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: kcl_lib::front::ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
+        let constraint: kcl_lib::front::Constraint =
+            serde_json::from_str(constraint_json).map_err(|e| format!("Could not deserialize ConstraintCtor: {e}"))?;
+
+        let ctx = self.create_executor_ctx(settings, None, false).map_err(|e| {
+            format!("Could not create KCL executor context for add constraint. {TRUE_BUG} Details: {e}")
+        })?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let result = guard
+            .add_constraint(&ctx, version, sketch, constraint)
+            .await
+            .map_err(|e| format!("Failed to add constraint to sketch: {:?}", e))?;
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize add constraint result. {TRUE_BUG} Details: {e}"))?)
+    }
 }
