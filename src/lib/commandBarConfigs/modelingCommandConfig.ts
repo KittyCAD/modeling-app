@@ -158,8 +158,11 @@ export type ModelingCommandSchema = {
     // Enables editing workflow
     nodeToEdit?: PathToNode
     // KCL stdlib arguments
-    selection: Selections
+    selection: Selections // this is named 'tags' in the stdlib
     length: KclCommandValue
+    secondLength?: KclCommandValue
+    angle?: KclCommandValue
+    tag?: string
   }
   'Offset plane': {
     // Enables editing workflow
@@ -909,6 +912,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+      },
+      secondLength: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: false,
+      },
+      angle: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_DEGREE,
+        required: false,
+      },
+      tag: {
+        inputType: 'tagDeclarator',
+        required: false,
+        // TODO: add validation like for Clone command
       },
     },
   },

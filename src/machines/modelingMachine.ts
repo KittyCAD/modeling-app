@@ -171,6 +171,7 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type RustContext from '@src/lib/rustContext'
+import { addChamfer } from '@src/lang/modifyAst/edges'
 
 export type ModelingMachineEvent =
   | {
@@ -3379,89 +3380,89 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        // Extract inputs
         const theKclManager = input.kclManager ? input.kclManager : kclManager
 
-        const ast = theKclManager.ast
-        let modifiedAst = structuredClone(ast)
-        let focusPath: PathToNode[] = []
-        const { nodeToEdit, selection, length } = input.data
-
-        const parameters: ChamferParameters = {
-          type: EdgeTreatmentType.Chamfer,
-          length,
+        const { ast, artifactGraph } = theKclManager
+        const astResult = addChamfer({
+          ...input.data,
+          ast,
+          artifactGraph,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
         }
+
+        const { modifiedAst, pathToNode } = astResult
         const theCodeManager = input.codeManager
           ? input.codeManager
           : codeManager
         const theEditorManager = input.editorManager
           ? input.editorManager
           : editorManager
-        const theEngineCommandManager = input.engineCommandManager
-          ? input.engineCommandManager
-          : engineCommandManager
-
-        const dependencies = {
-          kclManager: theKclManager,
-          engineCommandManager: theEngineCommandManager,
-          editorManager: theEditorManager,
-          codeManager: theCodeManager,
-        }
-
-        // Apply or edit chamfer
-        if (nodeToEdit) {
-          // Edit existing chamfer
-          // selection is not the edge treatment itself,
-          // but just the first edge in the chamfer expression >
-          // we need to find the edgeCut artifact
-          // and build a new selection from it
-          // TODO: this is a bit of a hack, we should be able
-          // to get the edgeCut artifact from the selection
-          const firstSelection = selection.graphSelections[0]
-          const edgeCutArtifact = Array.from(
-            theKclManager.artifactGraph.values()
-          ).find(
-            (artifact) =>
-              artifact.type === 'edgeCut' &&
-              artifact.consumedEdgeId === firstSelection.artifact?.id
-          )
-          if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
-            return Promise.reject(
-              new Error(
-                'Failed to retrieve edgeCut artifact from sweepEdge selection'
-              )
-            )
-          }
-          const edgeTreatmentSelection = {
-            artifact: edgeCutArtifact,
-            codeRef: edgeCutArtifact.codeRef,
-          }
-
-          const editResult = await editEdgeTreatment(
-            ast,
-            edgeTreatmentSelection,
-            parameters
-          )
-          if (err(editResult)) return Promise.reject(editResult)
-
-          modifiedAst = editResult.modifiedAst
-          focusPath = [editResult.pathToEdgeTreatmentNode]
-        } else {
-          // Apply chamfer to selection
-          const chamferResult = await modifyAstWithEdgeTreatmentAndTag(
-            ast,
-            selection,
-            parameters,
-            dependencies
-          )
-          if (err(chamferResult)) return Promise.reject(chamferResult)
-          modifiedAst = chamferResult.modifiedAst
-          focusPath = chamferResult.pathToEdgeTreatmentNode
-        }
         const theRustContext = input.rustContext
           ? input.rustContext
           : rustContext
+        // const theEngineCommandManager = input.engineCommandManager
+        //   ? input.engineCommandManager
+        //   : engineCommandManager
 
+        // const dependencies = {
+        //   kclManager: theKclManager,
+        //   engineCommandManager: theEngineCommandManager,
+        //   editorManager: theEditorManager,
+        //   codeManager: theCodeManager,
+        // }
+
+        // // Apply or edit chamfer
+        // if (nodeToEdit) {
+        //   // Edit existing chamfer
+        //   // selection is not the edge treatment itself,
+        //   // but just the first edge in the chamfer expression >
+        //   // we need to find the edgeCut artifact
+        //   // and build a new selection from it
+        //   // TODO: this is a bit of a hack, we should be able
+        //   // to get the edgeCut artifact from the selection
+        //   const firstSelection = selection.graphSelections[0]
+        //   const edgeCutArtifact = Array.from(
+        //     theKclManager.artifactGraph.values()
+        //   ).find(
+        //     (artifact) =>
+        //       artifact.type === 'edgeCut' &&
+        //       artifact.consumedEdgeId === firstSelection.artifact?.id
+        //   )
+        //   if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
+        //     return Promise.reject(
+        //       new Error(
+        //         'Failed to retrieve edgeCut artifact from sweepEdge selection'
+        //       )
+        //     )
+        //   }
+        //   const edgeTreatmentSelection = {
+        //     artifact: edgeCutArtifact,
+        //     codeRef: edgeCutArtifact.codeRef,
+        //   }
+
+        //   const editResult = await editEdgeTreatment(
+        //     ast,
+        //     edgeTreatmentSelection,
+        //     parameters
+        //   )
+        //   if (err(editResult)) return Promise.reject(editResult)
+
+        //   modifiedAst = editResult.modifiedAst
+        //   focusPath = [editResult.pathToEdgeTreatmentNode]
+        // } else {
+        //   // Apply chamfer to selection
+        //   const chamferResult = await modifyAstWithEdgeTreatmentAndTag(
+        //     ast,
+        //     selection,
+        //     parameters,
+        //     dependencies
+        //   )
+        //   if (err(chamferResult)) return Promise.reject(chamferResult)
+        //   modifiedAst = chamferResult.modifiedAst
+        //   focusPath = chamferResult.pathToEdgeTreatmentNode
+        // }
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
@@ -3472,7 +3473,7 @@ export const modelingMachine = setup({
             rustContext: theRustContext,
           },
           {
-            focusPath: focusPath,
+            focusPath: [pathToNode],
           }
         )
       }
