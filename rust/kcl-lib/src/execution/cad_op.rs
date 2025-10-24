@@ -269,7 +269,7 @@ impl From<&KclValue> for OpKclValue {
             },
             KclValue::Segment { value } => match &value.repr {
                 crate::execution::geometry::SegmentRepr::Unsolved { .. } => {
-                    debug_assert!(false, "Unsolved segment cannot be represented in operations");
+                    // Arguments to constraint functions will be unsolved.
                     Self::KclNone {}
                 }
                 crate::execution::geometry::SegmentRepr::Solved { .. } => {

@@ -35,5 +35,11 @@ export fn arc(
   { start, end, center, interior }
 }
 
+/// Constrain points to be coincident.
+///
+/// Currently limited to two points.
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
+export fn coincident(@points: [Point2d | Segment; 2]) {}
+
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn parallel(@input: [Segment; 2+], distance?: number(Length)) {}
