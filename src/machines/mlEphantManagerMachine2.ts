@@ -27,6 +27,7 @@ import toast from 'react-hot-toast'
 
 export enum MlEphantSetupErrors {
   ConversationNotFound = 'conversation not found',
+  NoRefParentSend = 'no ref parent send',
 }
 
 type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends {
@@ -52,6 +53,7 @@ export enum MlEphantManagerTransitions2 {
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
   ConversationClose = 'conversation-close',
+  CacheSetupAndConnect = 'cache-setup-and-connect',
 }
 
 export type MlEphantManagerEvents2 =
@@ -64,7 +66,7 @@ export type MlEphantManagerEvents2 =
       conversationId: undefined
     }
   | {
-      type: 'cacheSetupAndConnect'
+      type: MlEphantManagerTransitions2.CacheSetupAndConnect
       refParentSend: (event: MlEphantManagerEvents2) => void
       // If not present, a new conversation is created.
       conversationId?: string
@@ -208,7 +210,7 @@ export const mlEphantManagerMachine2 = setup({
     },
     cacheSetup: assign({
       cachedSetup: ({ event }) => {
-        assertEvent(event, 'cacheSetupAndConnect')
+        assertEvent(event, MlEphantManagerTransitions2.CacheSetupAndConnect)
         return {
           refParentSend: event.refParentSend,
           conversationId: event.conversationId,
@@ -383,7 +385,7 @@ export const mlEphantManagerMachine2 = setup({
                 response,
               })
             } else {
-              onRejected('no ref parent send')
+              onRejected(MlEphantSetupErrors.NoRefParentSend)
             }
           })
 
@@ -455,7 +457,7 @@ export const mlEphantManagerMachine2 = setup({
   states: {
     [S.Await]: {
       on: {
-        cacheSetupAndConnect: {
+        [MlEphantManagerTransitions2.CacheSetupAndConnect]: {
           target: MlEphantManagerStates2.Setup,
           actions: ['cacheSetup'],
         },
@@ -469,7 +471,7 @@ export const mlEphantManagerMachine2 = setup({
             MlEphantManagerStates2.Setup,
             'xstate.done.state.(machine).ready',
             'xstate.error.actor.0.(machine).setup',
-            'cacheSetupAndConnect',
+            MlEphantManagerTransitions2.CacheSetupAndConnect,
           ])
 
           return {

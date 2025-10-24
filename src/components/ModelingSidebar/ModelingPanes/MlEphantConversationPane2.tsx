@@ -110,7 +110,7 @@ export const MlEphantConversationPane2 = (props: {
     // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
     if (props.theProject !== undefined) {
       props.mlEphantManagerActor.send({
-        type: 'cacheSetupAndConnect',
+        type: MlEphantManagerTransitions2.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
         conversationId,
       })
