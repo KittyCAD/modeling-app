@@ -727,8 +727,8 @@ impl FrontendState {
             .get(object_id.0)
             .ok_or_else(|| anyhow!("Object not found: {object_id:?}"))?;
         match &sketch_object.source {
-            SourceRef::Simple(range) => ast_node_from_source_range_mut(ast, *range, command),
-            SourceRef::BackTrace(_) => bail!("BackTrace source refs not supported yet"),
+            SourceRef::Simple { range } => ast_node_from_source_range_mut(ast, *range, command),
+            SourceRef::BackTrace { .. } => bail!("BackTrace source refs not supported yet"),
         }
     }
 }
