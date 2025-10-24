@@ -331,11 +331,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
                 .map(([name, _variable]) => {
                   const node = getVariableDeclaration(kclManager.ast, name)
                   if (node === undefined) return
-                  const range: SourceRange = [
-                    node.start,
-                    node.end,
-                    node.moduleId,
-                  ]
+
+                  // TODO: @pierremtb is making things worse here
+                  let start = node.start
+                  if (node.visibility && node.visibility !== 'default') {
+                    start = start + node.visibility.length + 1
+                  }
+
+                  const range: SourceRange = [start, node.end, node.moduleId]
                   const pathToNode = getNodePathFromSourceRange(
                     kclManager.ast,
                     range
