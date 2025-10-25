@@ -147,6 +147,10 @@ impl TagIdentifier {
             self.info.push((*oe, ot.clone()));
         }
     }
+
+    pub fn geometry(&self) -> Option<Geometry> {
+        self.get_cur_info().map(|info| info.geometry.clone())
+    }
 }
 
 impl Eq for TagIdentifier {}
@@ -194,8 +198,8 @@ impl std::hash::Hash for TagIdentifier {
 pub struct TagEngineInfo {
     /// The id of the tagged object.
     pub id: uuid::Uuid,
-    /// The sketch the tag is on.
-    pub sketch: uuid::Uuid,
+    /// The geometry the tag is on.
+    pub geometry: Geometry,
     /// The path the tag is on.
     pub path: Option<Path>,
     /// The surface information for the tag.
