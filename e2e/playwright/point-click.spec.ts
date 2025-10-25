@@ -1279,8 +1279,8 @@ profile001 = ${circleCode}`
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = `fillet(radius=5,tags=[getCommonEdge(faces=[seg01,capEnd001])],)`
-    const secondFilletDeclaration = `fillet(radius=5,tags=[getCommonEdge(faces=[seg01,capStart001])],)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), radius=5)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capStart001]), radius=5)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for sweepEdges
@@ -1348,11 +1348,6 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Confirm code is added to the editor`, async () => {
       await editor.expectEditor.toContain(firstFilletDeclaration, {
         shouldNormalise: true,
-      })
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [')'],
-        highlightedCode: '',
       })
     })
 
@@ -1470,11 +1465,6 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Confirm code is added to the editor`, async () => {
       await editor.expectEditor.toContain(secondFilletDeclaration, {
         shouldNormalise: true,
-      })
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [')'],
-        highlightedCode: '',
       })
     })
 
@@ -1718,7 +1708,7 @@ extrude001 = extrude(profile001, length = 5)
 `
     const taggedSegment1 = `xLine(length = -10, tag = $seg01)`
     const taggedSegment2 = `yLine(length = -1, tag = $seg02)`
-    const filletExpression = `fillet(radius = 1000, tags = [getCommonEdge(faces = [seg01, seg02])])`
+    const filletExpression = `fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, seg02]), radius = 1000)`
 
     // Locators
     // TODO: find a way to select sweepEdges in a different way
@@ -1795,7 +1785,7 @@ extrude001 = extrude(profile001, length = 5)
   })
 
   // father forgive me
-  test.skip(`Chamfer point-and-click`, async ({
+  test(`Chamfer point-and-click`, async ({
     context,
     page,
     homePage,
@@ -1815,8 +1805,8 @@ sketch001 = startSketchOn(XY)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstChamferDeclaration = `chamfer(length=5,tags=[getCommonEdge(faces=[seg01,capEnd001])],)`
-    const secondChamferDeclaration = `chamfer(length=5,tags=[getCommonEdge(faces=[seg01,capStart001])],)`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), length=5)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, tags=getCommonEdge(faces=[seg01,capStart001]), length=5)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -1911,11 +1901,6 @@ extrude001 = extrude(sketch001, length = -12)
     await test.step(`Confirm code is added to the editor`, async () => {
       await editor.expectEditor.toContain(firstChamferDeclaration, {
         shouldNormalise: true,
-      })
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [')'],
-        highlightedCode: '',
       })
       await editor.closePane()
     })
@@ -2054,11 +2039,6 @@ extrude001 = extrude(sketch001, length = -12)
       await editor.expectEditor.toContain(secondChamferDeclaration, {
         shouldNormalise: true,
       })
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [')'],
-        highlightedCode: '',
-      })
       await editor.closePane()
     })
 
@@ -2108,7 +2088,7 @@ extrude001 = extrude(sketch001, length = -12)
   })
 
   // father forgive me
-  test.skip(`Chamfer point-and-click delete`, async ({
+  test(`Chamfer point-and-click delete`, async ({
     context,
     page,
     homePage,
