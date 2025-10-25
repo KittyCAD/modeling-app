@@ -4,7 +4,7 @@ use anyhow::{anyhow, bail};
 use kcl_error::SourceRange;
 
 use crate::{
-    ExecutorContext, Program,
+    ExecOutcome, ExecutorContext, Program,
     fmt::format_number_literal,
     front::PointCtor,
     frontend::{
@@ -158,12 +158,7 @@ impl SketchApi for FrontendState {
         let src_delta = SourceDelta { text: new_source };
         // Store the object in the scene.
         self.scene_graph.sketch_mode = Some(sketch_id);
-        #[cfg(feature = "artifact-graph")]
-        let outcome = {
-            let mut outcome = outcome;
-            self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
-            outcome
-        };
+        let outcome = self.update_state_after_exec(outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -213,13 +208,8 @@ impl SketchApi for FrontendState {
                 msg: err.error.message().to_owned(),
             }
         })?;
-        #[cfg(not(feature = "artifact-graph"))]
-        drop(outcome);
 
-        #[cfg(feature = "artifact-graph")]
-        {
-            self.scene_graph.objects = outcome.scene_objects;
-        }
+        self.update_state_after_exec(outcome);
 
         Ok(self.scene_graph.clone())
     }
@@ -321,13 +311,7 @@ impl FrontendState {
             }
         })?;
 
-        #[cfg(not(feature = "artifact-graph"))]
-        drop(outcome);
-        #[cfg(feature = "artifact-graph")]
-        {
-            let mut outcome = outcome;
-            self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
-        };
+        self.update_state_after_exec(outcome);
 
         Ok(())
     }
@@ -441,12 +425,7 @@ impl FrontendState {
             vec![segment_id]
         };
         let src_delta = SourceDelta { text: new_source };
-        #[cfg(feature = "artifact-graph")]
-        let outcome = {
-            let mut outcome = outcome;
-            self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
-            outcome
-        };
+        let outcome = self.update_state_after_exec(outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -565,12 +544,7 @@ impl FrontendState {
             vec![line.start, line.end, segment_id]
         };
         let src_delta = SourceDelta { text: new_source };
-        #[cfg(feature = "artifact-graph")]
-        let outcome = {
-            let mut outcome = outcome;
-            self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
-            outcome
-        };
+        let outcome = self.update_state_after_exec(outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -658,12 +632,7 @@ impl FrontendState {
         })?;
 
         let src_delta = SourceDelta { text: new_source };
-        #[cfg(feature = "artifact-graph")]
-        let outcome = {
-            let mut outcome = outcome;
-            self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
-            outcome
-        };
+        let outcome = self.update_state_after_exec(outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: false,
@@ -721,6 +690,17 @@ impl FrontendState {
         Err(Error {
             msg: format!("add_coincident implementation not done yet: pt0={pt0:?}, pt1={pt1:?}"),
         })
+    }
+
+    fn update_state_after_exec(&mut self, outcome: ExecOutcome) -> ExecOutcome {
+        #[cfg(not(feature = "artifact-graph"))]
+        return outcome;
+        #[cfg(feature = "artifact-graph")]
+        {
+            let mut outcome = outcome;
+            self.scene_graph.objects = std::mem::take(&mut outcome.scene_objects);
+            outcome
+        }
     }
 
     fn mutate_ast(
