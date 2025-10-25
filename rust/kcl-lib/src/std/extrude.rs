@@ -313,6 +313,7 @@ async fn inner_extrude(
                 exec_state,
                 &args,
                 None,
+                None,
             )
             .await?,
         );
@@ -337,6 +338,7 @@ pub(crate) async fn do_post_extrude<'a>(
     exec_state: &mut ExecState,
     args: &Args,
     edge_id: Option<Uuid>,
+    clone_id_map: Option<&HashMap<Uuid, Uuid>>, // old sketch id -> new sketch id
 ) -> Result<Solid, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
@@ -418,17 +420,42 @@ pub(crate) async fn do_post_extrude<'a>(
     } = analyze_faces(exec_state, args, face_infos).await;
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let no_engine_commands = args.ctx.no_engine_commands().await;
+    println!("clone_id_map: {:?}", clone_id_map);
+    println!("is sketch clone? {:?}", sketch.clone.is_some());
+    println!("face_id_map: {:?}", face_id_map);
     let mut new_value: Vec<ExtrudeSurface> = Vec::with_capacity(sketch.paths.len() + sketch.inner_paths.len() + 2);
     let outer_surfaces = sketch.paths.iter().flat_map(|path| {
         if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
             surface_of(path, *actual_face_id)
         } else if no_engine_commands {
+            crate::log::logln!(
+                "No face ID found for path ID {:?}, but in no-engine-commands mode, so faking it",
+                path.get_base().geo_meta.id
+            );
             // Only pre-populate the extrude surface if we are in mock mode.
             fake_extrude_surface(exec_state, path)
+        } else if sketch.clone.is_some()
+            && let Some(clone_map) = clone_id_map
+        {
+            println!("No face ID found for path ID {:?}, but sketch is a clone, so looking up the clone path ID", path.get_base().geo_meta.id);
+            let new_path = clone_map.get(&(path.get_base().geo_meta.id));
+            println!("new_path: {:?}", new_path);
+            println!("Found clone path ID {:?} for original path ID {:?}", new_path, path.get_base().geo_meta.id);
+            match face_id_map.get(new_path.unwrap()) {
+                Some(Some(actual_face_id)) => 
+                {println!("found actual_face_id {:?} for clone path ID {:?}", actual_face_id, new_path);
+                clone_surface_of(path, *new_path.unwrap(), *actual_face_id)}
+                _ => None,
+            }
         } else {
+            crate::log::logln!(
+                "No face ID found for path ID {:?}, and not in no-engine-commands mode, so skipping it",
+                path.get_base().geo_meta.id
+            );
             None
         }
     });
+
     new_value.extend(outer_surfaces);
     let inner_surfaces = sketch.inner_paths.iter().flat_map(|path| {
         if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
@@ -578,6 +605,51 @@ fn surface_of(path: &Path, actual_face_id: Uuid) -> Option<ExtrudeSurface> {
                 tag: path.get_base().tag.clone(),
                 geo_meta: GeoMeta {
                     id: path.get_base().geo_meta.id,
+                    metadata: path.get_base().geo_meta.metadata,
+                },
+            });
+            Some(extrude_surface)
+        }
+    }
+}
+
+fn clone_surface_of(path: &Path, clone_path_id: Uuid, actual_face_id: Uuid) -> Option<ExtrudeSurface> {
+    match path {
+        Path::Arc { .. }
+        | Path::TangentialArc { .. }
+        | Path::TangentialArcTo { .. }
+        // TODO: (bc) fix me
+        | Path::Ellipse { .. }
+        | Path::Conic {.. }
+        | Path::Circle { .. }
+        | Path::CircleThreePoint { .. } => {
+            let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
+                face_id: actual_face_id,
+                tag: path.get_base().tag.clone(),
+                geo_meta: GeoMeta {
+                    id: clone_path_id,
+                    metadata: path.get_base().geo_meta.metadata,
+                },
+            });
+            Some(extrude_surface)
+        }
+        Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
+            let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
+                face_id: actual_face_id,
+                tag: path.get_base().tag.clone(),
+                geo_meta: GeoMeta {
+                    id: clone_path_id,
+                    metadata: path.get_base().geo_meta.metadata,
+                },
+            });
+            Some(extrude_surface)
+        }
+        Path::ArcThreePoint { .. } => {
+            let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
+                face_id: actual_face_id,
+                tag: path.get_base().tag.clone(),
+                geo_meta: GeoMeta {
+                    id: clone_path_id,
                     metadata: path.get_base().geo_meta.metadata,
                 },
             });
