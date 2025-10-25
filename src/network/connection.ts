@@ -88,6 +88,9 @@ export class Connection extends EventTarget {
   // Unit testing requirements
   isUsingUnitTestingConnection: boolean = false
 
+  /** Did the whole universe align and gift you a connection? */
+  connected = false
+
   // callback functions
   handleOnDataChannelMessage: (event: MessageEvent<any>) => void
   tearDownManager: (options?: ManagerTearDown) => void
@@ -288,6 +291,9 @@ export class Connection extends EventTarget {
       this.deferredMediaStreamAndWebrtcStatsCollector.promise,
       this.deferredSdpAnswer.promise,
     ])
+
+    // Praise be, tell the world the good news
+    this.connected = true
 
     // Gotcha: tricky to await initiateConnectionExclusive, there are multiple locations for firing?
     return this.deferredConnection.promise
