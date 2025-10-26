@@ -242,6 +242,7 @@ impl SketchApi for FrontendState {
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
         match segment {
+            SegmentCtor::Point(ctor) => self.edit_point(ctx, sketch, segment_id, ctor).await,
             SegmentCtor::Line(ctor) => self.edit_line(ctx, sketch, segment_id, ctor).await,
             _ => Err(Error {
                 msg: format!("segment ctor not implemented yet: {segment:?}"),
@@ -552,6 +553,82 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
     }
 
+    async fn edit_point(
+        &mut self,
+        ctx: &ExecutorContext,
+        sketch: ObjectId,
+        point: ObjectId,
+        ctor: PointCtor,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+        // Create updated KCL source from args.
+        let new_at_ast = to_ast_point2d(&ctor.position).map_err(|err| Error { msg: err.to_string() })?;
+
+        // Look up existing sketch.
+        let sketch_id = sketch;
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
+            msg: format!("Sketch not found: {sketch:?}"),
+        })?;
+        let ObjectKind::Sketch(sketch) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+        sketch.segments.iter().find(|o| **o == point).ok_or_else(|| Error {
+            msg: format!("Line not found in sketch: point={point:?}, sketch={sketch:?}"),
+        })?;
+        // Look up existing line.
+        let point_id = point;
+        let point_object = self.scene_graph.objects.get(point_id.0).ok_or_else(|| Error {
+            msg: format!("Line not found in scene graph: point={point:?}"),
+        })?;
+        let ObjectKind::Segment(_) = &point_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {point_object:?}"),
+            });
+        };
+
+        // Modify the point AST.
+        let mut new_ast = self.program.ast.clone();
+        self.mutate_ast(&mut new_ast, point_id, AstMutateCommand::EditPoint { at: new_at_ast })
+            .map_err(|err| Error { msg: err.to_string() })?;
+        // Convert to string source to create real source ranges.
+        let new_source = source_from_ast(&new_ast);
+        // Parse the new KCL source.
+        let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
+        if !errors.is_empty() {
+            return Err(Error {
+                msg: format!("Error parsing KCL source after modifying point: {errors:?}"),
+            });
+        }
+        let Some(new_program) = new_program else {
+            return Err(Error {
+                msg: "No AST produced after modifying point".to_string(),
+            });
+        };
+
+        // TODO: sketch-api: make sure to only set this if there are no errors.
+        self.program = new_program.clone();
+
+        // Execute.
+        let outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
+            // TODO: sketch-api: Yeah, this needs to change. We need to
+            // return the full error.
+            Error {
+                msg: err.error.message().to_owned(),
+            }
+        })?;
+
+        let src_delta = SourceDelta { text: new_source };
+        let outcome = self.update_state_after_exec(outcome);
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            invalidates_ids: false,
+            new_objects: Vec::new(),
+            exec_outcome: outcome,
+        };
+        Ok((src_delta, scene_graph_delta))
+    }
+
     async fn edit_line(
         &mut self,
         ctx: &ExecutorContext,
@@ -794,6 +871,9 @@ enum AstMutateCommand {
     AddSketchBlockExprStmt {
         expr: ast::Expr,
     },
+    EditPoint {
+        at: ast::Expr,
+    },
     EditLine {
         start: ast::Expr,
         end: ast::Expr,
@@ -830,6 +910,20 @@ fn process(command: &AstMutateCommand, node: NodeMut) -> ControlFlow<()> {
                         pre_comments: Default::default(),
                         comment_start: Default::default(),
                     }));
+                return ControlFlow::Break(());
+            }
+        }
+        AstMutateCommand::EditPoint { at } => {
+            if let NodeMut::CallExpressionKw(call) = node {
+                if call.callee.name.name != POINT_FN {
+                    return ControlFlow::Continue(());
+                }
+                // Update the arguments.
+                for labeled_arg in &mut call.arguments {
+                    if labeled_arg.label.as_ref().map(|id| id.name.as_str()) == Some(POINT_AT_PARAM) {
+                        labeled_arg.arg = at.clone();
+                    }
+                }
                 return ControlFlow::Break(());
             }
         }
@@ -1044,7 +1138,7 @@ mod tests {
     };
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_new_sketch_add_point() {
+    async fn test_new_sketch_add_point_edit_point() {
         let initial_source = "@settings(experimentalFeatures = allow)\n";
 
         let program = Program::parse(initial_source).unwrap().0.unwrap();
@@ -1103,6 +1197,36 @@ sketch(on = XY) {
         assert_eq!(scene_delta.new_objects, vec![ObjectId(1)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 2);
         assert_eq!(sketch_exec_outcome.segments.len(), 1);
+
+        let point_id = *scene_delta.new_objects.last().unwrap();
+
+        let point_ctor = PointCtor {
+            position: Point2d {
+                x: Expr::Number(Number {
+                    value: 3.0,
+                    units: NumericSuffix::Inch,
+                }),
+                y: Expr::Number(Number {
+                    value: 4.0,
+                    units: NumericSuffix::Inch,
+                }),
+            },
+        };
+        let (src_delta, scene_delta) = frontend
+            .edit_point(&ctx, sketch_id, point_id, point_ctor)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [3in, 4in])
+}
+"
+        );
+        assert_eq!(scene_delta.new_objects, vec![]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 2);
     }
 
     #[tokio::test(flavor = "multi_thread")]
