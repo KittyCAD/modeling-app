@@ -239,7 +239,7 @@ impl SketchApi for FrontendState {
         sketch: ObjectId,
         segment_id: ObjectId,
         segment: SegmentCtor,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
         // TODO: Check version.
         match segment {
             SegmentCtor::Point(ctor) => self.edit_point(ctx, sketch, segment_id, ctor).await,
@@ -559,7 +559,7 @@ impl FrontendState {
         sketch: ObjectId,
         point: ObjectId,
         ctor: PointCtor,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
         // Create updated KCL source from args.
         let new_at_ast = to_ast_point2d(&ctor.position).map_err(|err| Error { msg: err.to_string() })?;
 
@@ -626,7 +626,8 @@ impl FrontendState {
             new_objects: Vec::new(),
             exec_outcome: outcome,
         };
-        Ok((src_delta, scene_graph_delta))
+        let sketch_exec_outcome = self.sketch_exec_outcome(sketch_id)?;
+        Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
     }
 
     async fn edit_line(
@@ -635,7 +636,7 @@ impl FrontendState {
         sketch: ObjectId,
         line: ObjectId,
         ctor: LineCtor,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
         // Create updated KCL source from args.
         let new_start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let new_end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
@@ -710,7 +711,8 @@ impl FrontendState {
             new_objects: Vec::new(),
             exec_outcome: outcome,
         };
-        Ok((src_delta, scene_graph_delta))
+        let sketch_exec_outcome = self.sketch_exec_outcome(sketch_id)?;
+        Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
     }
 
     async fn add_coincident(
@@ -1212,7 +1214,7 @@ sketch(on = XY) {
                 }),
             },
         };
-        let (src_delta, scene_delta) = frontend
+        let (src_delta, scene_delta, sketch_exec_outcome) = frontend
             .edit_point(&ctx, sketch_id, point_id, point_ctor)
             .await
             .unwrap();
@@ -1227,6 +1229,7 @@ sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 2);
+        assert_eq!(sketch_exec_outcome.segments.len(), 1);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1324,7 +1327,8 @@ sketch(on = XY) {
                 }),
             },
         };
-        let (src_delta, scene_delta) = frontend.edit_line(&ctx, sketch_id, line, line_ctor).await.unwrap();
+        let (src_delta, scene_delta, sketch_exec_outcome) =
+            frontend.edit_line(&ctx, sketch_id, line, line_ctor).await.unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
@@ -1336,6 +1340,8 @@ sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
+        // TODO: SketchExecOutcome hasn't implemented lines yet.
+        assert_eq!(sketch_exec_outcome.segments.len(), 0);
     }
 
     #[tokio::test(flavor = "multi_thread")]

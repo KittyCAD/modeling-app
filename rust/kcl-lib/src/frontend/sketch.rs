@@ -47,7 +47,7 @@ pub trait SketchApi {
         sketch: ObjectId,
         segment_id: ObjectId,
         segment: SegmentCtor,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
+    ) -> Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)>;
 
     async fn delete_segment(
         &mut self,
@@ -450,7 +450,7 @@ impl SketchApi for SketchApiStub {
         _sketch: ObjectId,
         _segment_id: ObjectId,
         _segment: SegmentCtor,
-    ) -> Result<(SourceDelta, SceneGraphDelta)> {
+    ) -> Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
         todo!("edit_segment not implemented")
     }
 
