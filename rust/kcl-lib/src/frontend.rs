@@ -432,10 +432,7 @@ impl FrontendState {
             new_objects: new_object_ids,
             exec_outcome: outcome,
         };
-        let sketch_exec_outcome = SketchExecOutcome {
-            segments: Vec::new(),
-            constraints: Vec::new(),
-        };
+        let sketch_exec_outcome = self.sketch_exec_outcome(sketch_id)?;
         Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
     }
 
@@ -551,10 +548,7 @@ impl FrontendState {
             new_objects: new_object_ids,
             exec_outcome: outcome,
         };
-        let sketch_exec_outcome = SketchExecOutcome {
-            segments: Vec::new(),
-            constraints: Vec::new(),
-        };
+        let sketch_exec_outcome = self.sketch_exec_outcome(sketch_id)?;
         Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
     }
 
@@ -689,6 +683,61 @@ impl FrontendState {
         })));
         Err(Error {
             msg: format!("add_coincident implementation not done yet: pt0={pt0:?}, pt1={pt1:?}"),
+        })
+    }
+
+    fn sketch_exec_outcome(&self, sketch_id: ObjectId) -> api::Result<SketchExecOutcome> {
+        let Some(sketch_object) = self.scene_graph.objects.get(sketch_id.0) else {
+            return Err(Error {
+                msg: format!("Sketch object not found; id={sketch_id:?}"),
+            });
+        };
+        let ObjectKind::Sketch(sketch) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object with given id is not a sketch; id={sketch_id:?}, object={sketch_object:?}"),
+            });
+        };
+        let mut found_unsupported = false;
+        let segments = sketch
+            .segments
+            .iter()
+            .copied()
+            .filter_map(|segment_id| {
+                let Some(segment_object) = self.scene_graph.objects.get(segment_id.0) else {
+                    return Some(Err(Error {
+                        msg: format!("Segment object in sketch segments not found; id={segment_id:?}"),
+                    }));
+                };
+                let ObjectKind::Segment(segment) = &segment_object.kind else {
+                    return Some(Err(Error {
+                        msg: format!(
+                            "Segment object in sketch segments expected to be a segment but found {segment_object:?}",
+                        ),
+                    }));
+                };
+                let Segment::Point(point) = segment else {
+                    found_unsupported = true;
+                    return None;
+                };
+                Some(Ok(sketch::SolveSegment::Point(sketch::SolvePointSegment {
+                    object_id: segment_id.0.to_string(),
+                    constrained_status: point.freedom.into(),
+                    handles: vec![sketch::PointHandle {
+                        position: point.position.clone(),
+                    }],
+                    position: point.position.clone(),
+                })))
+            })
+            .collect::<api::Result<Vec<_>>>()?;
+        if found_unsupported {
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::warn_1(
+                &"WARNING: sketch_exec_outcome: only points are supported, not other segment types".into(),
+            );
+        }
+        Ok(SketchExecOutcome {
+            segments,
+            constraints: Default::default(),
         })
     }
 
@@ -1040,7 +1089,8 @@ mod tests {
                 }),
             },
         };
-        let (src_delta, scene_delta, _) = frontend.add_point(&ctx, sketch_id, point_ctor).await.unwrap();
+        let (src_delta, scene_delta, sketch_exec_outcome) =
+            frontend.add_point(&ctx, sketch_id, point_ctor).await.unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
@@ -1052,6 +1102,7 @@ sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_objects, vec![ObjectId(1)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 2);
+        assert_eq!(sketch_exec_outcome.segments.len(), 1);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1110,7 +1161,8 @@ sketch(on = XY) {
                 }),
             },
         };
-        let (src_delta, scene_delta, _) = frontend.add_line(&ctx, sketch_id, line_ctor).await.unwrap();
+        let (src_delta, scene_delta, sketch_exec_outcome) =
+            frontend.add_line(&ctx, sketch_id, line_ctor).await.unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
@@ -1121,6 +1173,7 @@ sketch(on = XY) {
 "
         );
         assert_eq!(scene_delta.new_objects, vec![ObjectId(1), ObjectId(2), ObjectId(3)]);
+        assert_eq!(sketch_exec_outcome.segments.len(), 0);
 
         // The new objects are the end points and then the line.
         let line = *scene_delta.new_objects.last().unwrap();
@@ -1199,7 +1252,8 @@ s = sketch(on = XY) {}
                 }),
             },
         };
-        let (src_delta, scene_delta, _) = frontend.add_line(&ctx, sketch_id, line_ctor).await.unwrap();
+        let (src_delta, scene_delta, sketch_exec_outcome) =
+            frontend.add_line(&ctx, sketch_id, line_ctor).await.unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
@@ -1211,5 +1265,7 @@ s = sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_objects, vec![ObjectId(1), ObjectId(2), ObjectId(3)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
+        // TODO: SketchExecOutcome hasn't implemented lines yet.
+        assert_eq!(sketch_exec_outcome.segments.len(), 0);
     }
 }

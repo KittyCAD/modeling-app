@@ -321,6 +321,16 @@ pub enum ConstrainedStatus {
     Full,
 }
 
+impl From<Freedom> for ConstrainedStatus {
+    fn from(value: Freedom) -> Self {
+        match value {
+            Freedom::Free => Self::None,
+            Freedom::Partial => Self::Partial,
+            Freedom::Fixed => Self::Full,
+        }
+    }
+}
+
 // Handles, i.e. UI elements that the user can interact with.
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
