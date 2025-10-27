@@ -1,4 +1,4 @@
-import { getIdentifiersInProgram } from '@src/lang/queryAst/getIndentifiersInProgram'
+import { getIdentifiersInProgram } from '@src/lang/queryAst/getIdentifiersInProgram'
 import { assertParse } from '@src/lang/wasm'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 

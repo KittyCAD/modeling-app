@@ -30,7 +30,11 @@ import {
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { kclManager, rustContext } from '@src/lib/singletons'
+import {
+  engineCommandManager,
+  kclManager,
+  rustContext,
+} from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type {
@@ -96,6 +100,13 @@ const objectsTypesAndFilters: {
 } = {
   selectionTypes: ['path', 'sweep', 'compositeSolid'],
   selectionFilter: ['object'],
+}
+
+const hasEngineConnection = (): true | Error => {
+  return (
+    engineCommandManager.connection?.connected ||
+    new Error('No engine connection to send command')
+  )
 }
 
 export type ModelingCommandSchema = {
@@ -497,6 +508,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'extrude',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addExtrude({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Extrude']),
         ast: kclManager.ast,
@@ -579,6 +594,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'sweep',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addSweep({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Sweep']),
         ast: kclManager.ast,
@@ -636,6 +655,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'loft',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addLoft({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Loft']),
         ast: kclManager.ast,
@@ -686,6 +709,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'revolve',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addRevolve({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Revolve']),
         ast: kclManager.ast,
@@ -770,6 +797,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'shell',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addShell({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Shell']),
         ast: kclManager.ast,
@@ -805,6 +836,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'booleanSubtract',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addSubtract({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Subtract']),
         ast: kclManager.ast,
@@ -840,6 +875,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'booleanUnion',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addUnion({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Union']),
         ast: kclManager.ast,
@@ -868,6 +907,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'booleanIntersect',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addIntersect({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Boolean Intersect']),
         ast: kclManager.ast,
@@ -896,6 +939,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'plane',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addOffsetPlane({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Offset plane']),
         ast: kclManager.ast,
@@ -933,6 +980,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'helix',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addHelix({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Helix']),
         ast: kclManager.ast,
@@ -1181,6 +1232,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'extrude',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addAppearance({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Appearance']),
         ast: kclManager.ast,
@@ -1225,6 +1280,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'move',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addTranslate({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Translate']),
         ast: kclManager.ast,
@@ -1274,6 +1333,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'rotate',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addRotate({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Rotate']),
         ast: kclManager.ast,
@@ -1323,6 +1386,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'scale',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addScale({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Scale']),
         ast: kclManager.ast,
@@ -1372,6 +1439,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'clone',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addClone({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Clone']),
         ast: kclManager.ast,
@@ -1426,6 +1497,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'patternCircular3d',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addPatternCircular3D({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Pattern Circular 3D']),
         ast: kclManager.ast,
@@ -1489,6 +1564,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'patternLinear3d',
     needsReview: true,
     reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
       const modRes = addPatternLinear3D({
         ...(context.argumentsToSubmit as ModelingCommandSchema['Pattern Linear 3D']),
         ast: kclManager.ast,
