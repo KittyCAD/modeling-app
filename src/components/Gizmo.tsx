@@ -41,6 +41,7 @@ export default function Gizmo() {
   const settings = useSettings()
   const menuItems = useViewControlMenuItems()
   const wrapperRef = useRef<HTMLDivElement>(null!)
+  const rendererRef = useRef<WebGLRenderer | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const raycasterIntersect = useRef<Intersection | null>(null)
   const cameraPassiveUpdateTimer = useRef(0)
@@ -70,6 +71,10 @@ export default function Gizmo() {
 
     // Add camera to scene so child light is evaluated
     sceneRef.current.add(camera)
+
+    if (rendererRef.current) {
+      rendererRef.current.render(sceneRef.current, camera)
+    }
 
     return () => {
       if (previousCamera?.parent) {
@@ -104,6 +109,7 @@ export default function Gizmo() {
     const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true })
     renderer.setSize(120, 120)
     renderer.setPixelRatio(window.devicePixelRatio)
+    rendererRef.current = renderer
 
     const ambient = new AmbientLight(0xffffff, 1.3)
     sceneRef.current.add(ambient)
@@ -171,7 +177,7 @@ export default function Gizmo() {
       }
     }
 
-    const handleMouseMove = (event: MouseEvent) => {
+    const onMouseMove = (event: MouseEvent) => {
       const { left, top, width, height } = canvas.getBoundingClientRect()
       const mousePos = new Vector2(
         ((event.clientX - left) / width) * 2 - 1,
@@ -181,12 +187,12 @@ export default function Gizmo() {
       doRayCast(mousePos)
     }
 
-    const handleClick = () => {
+    const onClick = () => {
       // If orbits are disabled, skip click logic
       if (!raycasterIntersect.current) {
         // If we have no current intersection (e.g., orbit disabled), do a forced raycast at the last mouse position
         if (lastMouse.current) {
-          doRayCast(lastMouse, true)
+          doRayCast(lastMouse.current, true)
         }
         if (!raycasterIntersect.current) {
           return
@@ -206,8 +212,8 @@ export default function Gizmo() {
 
     // Add the event listener to the div wrapper around the canvas
     const canvasParent = wrapperRef.current
-    canvasParent.addEventListener('mousemove', handleMouseMove)
-    canvasParent.addEventListener('click', handleClick)
+    canvasParent.addEventListener('mousemove', onMouseMove)
+    canvasParent.addEventListener('click', onClick)
 
     const clock = new Clock()
     const clientCamera = sceneInfra.camControls.camera
@@ -232,8 +238,8 @@ export default function Gizmo() {
     return () => {
       renderer.dispose()
 
-      canvasParent.removeEventListener('mousemove', handleMouseMove)
-      canvasParent.removeEventListener('click', handleClick)
+      canvasParent.removeEventListener('mousemove', onMouseMove)
+      canvasParent.removeEventListener('click', onClick)
       sceneInfra.camControls.cameraChange.remove(animate)
     }
   }, [])
