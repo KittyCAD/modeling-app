@@ -78,6 +78,7 @@ export interface IElectronAPI {
       NODE_ENV: string
       VITE_KITTYCAD_BASE_DOMAIN: string
       VITE_KITTYCAD_API_WEBSOCKET_URL: string
+      VITE_COPILOT_API_WEBSOCKET_URL: string
       VITE_KITTYCAD_API_TOKEN: string // legacy token name
       VITE_ZOO_API_TOKEN: string
     }

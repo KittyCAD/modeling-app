@@ -11,3 +11,7 @@ export function withSiteBaseURL(path: string): string {
 export function withWebSocketURL(path: string): string {
   return env().VITE_KITTYCAD_API_WEBSOCKET_URL + path
 }
+
+export function withCopilotBaseURL(path: string): string {
+  return (env().VITE_COPILOT_API_WEBSOCKET_URL ?? '') + path
+}

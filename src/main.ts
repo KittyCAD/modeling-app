@@ -71,6 +71,8 @@ dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 process.env.NODE_ENV ??= viteEnv.MODE
 process.env.VITE_KITTYCAD_API_WEBSOCKET_URL ??=
   viteEnv.VITE_KITTYCAD_API_WEBSOCKET_URL
+process.env.VITE_COPILOT_API_WEBSOCKET_URL ??=
+  viteEnv.VITE_COPILOT_API_WEBSOCKET_URL
 process.env.VITE_KITTYCAD_BASE_DOMAIN ??= viteEnv.VITE_KITTYCAD_BASE_DOMAIN
 
 // Likely convenient to keep for debugging

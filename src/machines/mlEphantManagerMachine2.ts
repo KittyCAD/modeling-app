@@ -7,6 +7,7 @@ import type {
 import { assertEvent, assign, setup, fromPromise } from 'xstate'
 import { createActorContext } from '@xstate/react'
 import type { ActorRefFrom } from 'xstate'
+import { withCopilotBaseURL } from '@src/lib/withBaseURL'
 
 import { S, transitions } from '@src/machines/utils'
 import { getKclVersion } from '@src/lib/kclVersion'
@@ -27,6 +28,7 @@ import toast from 'react-hot-toast'
 
 export enum MlEphantSetupErrors {
   ConversationNotFound = 'conversation not found',
+  InvalidConversationId = 'Invalid conversation_id',
   NoRefParentSend = 'no ref parent send',
 }
 
@@ -235,7 +237,7 @@ export const mlEphantManagerMachine2 = setup({
 
       const ws = await Socket(
         WebSocket,
-        '/ws/ml/copilot' +
+        withCopilotBaseURL('/ws/ml/copilot') +
           (maybeConversationId
             ? `?conversation_id=${maybeConversationId}&replay=true`
             : ''),
@@ -299,9 +301,12 @@ export const mlEphantManagerMachine2 = setup({
 
             if (
               'error' in response &&
-              response.error.detail.includes(
+              (response.error.detail.includes(
                 MlEphantSetupErrors.ConversationNotFound
-              )
+              ) ||
+                response.error.detail.includes(
+                  MlEphantSetupErrors.InvalidConversationId
+                ))
             ) {
               ws.close()
               // Pass that the conversation is not found to the onError handler which will set the conversationId

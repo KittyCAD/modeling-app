@@ -291,6 +291,7 @@ contextBridge.exposeInMainWorld('electron', {
         'NODE_ENV',
         'VITE_KITTYCAD_BASE_DOMAIN',
         'VITE_KITTYCAD_API_WEBSOCKET_URL',
+        'VITE_COPILOT_API_WEBSOCKET_URL',
         'VITE_ZOO_API_TOKEN',
       ])
     ),
