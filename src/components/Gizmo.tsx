@@ -31,20 +31,10 @@ import {
   useViewControlMenuItems,
 } from '@src/components/ViewControlMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { AxisNames } from '@src/lib/constants'
 import { sceneInfra } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
-
-const FACE_TO_AXIS: Record<string, AxisNames> = {
-  face_front: AxisNames.NEG_Y,
-  face_back: AxisNames.Y,
-  face_right: AxisNames.X,
-  face_left: AxisNames.NEG_X,
-  face_top: AxisNames.Z,
-  face_bottom: AxisNames.NEG_Z,
-}
 
 export default function Gizmo() {
   const { state: modelingState } = useModelingContext()
@@ -134,14 +124,13 @@ export default function Gizmo() {
         root.scale.set(0.675, 0.675, 0.675)
         sceneRef.current.add(root)
 
-        const clickableFaces: StandardMesh[] = []
-        Object.keys(FACE_TO_AXIS).forEach((name) => {
-          const obj = root.getObjectByName(name)
-          if (isStandardMesh(obj)) {
-            clickableFaces.push(obj)
-          }
+        const clickable: StandardMesh[] = []
+        root.traverse((obj) => {
+          if (!obj || !obj.name) return
+          if (!isStandardMesh(obj)) return
+          if (isOrientationTargetName(obj.name)) clickable.push(obj)
         })
-        raycasterObjectsRef.current = clickableFaces
+        raycasterObjectsRef.current = clickable
 
         const maxAnisotropy = renderer.capabilities.getMaxAnisotropy()
         applyMaxAnisotropyToObject(root, maxAnisotropy)
@@ -156,7 +145,6 @@ export default function Gizmo() {
 
     const raycaster = new Raycaster()
     const doRayCast = (mouse: Vector2, force = false) => {
-      // Allow forced raycasts on click even if orbiting is disabled
       if (force || !disableOrbitRef.current) {
         updateRayCaster(
           raycasterObjectsRef.current,
@@ -338,12 +326,13 @@ const initializeMouseEvents = (
     }
     let obj: Object3D | null = raycasterIntersect.current.object
     // Go up to a parent whose name matches if needed
-    while (obj && !FACE_TO_AXIS[obj.name]) {
+    while (obj && !isOrientationTargetName(obj.name)) {
       obj = obj.parent
     }
     const pickedName = obj?.name || raycasterIntersect.current.object.name
-    const axisName = FACE_TO_AXIS[pickedName] ?? pickedName
-    animateCamToAxis(sceneInfra, axisName).catch(reportRejection)
+    const targetQuat = orientationQuaternionForName(pickedName)
+    if (!targetQuat) return
+    animateCamToQuaternion(sceneInfra, targetQuat).catch(reportRejection)
   }
 
   // Add the event listener to the div wrapper around the canvas
@@ -457,37 +446,82 @@ function applyMaxAnisotropyToObject(obj: Object3D, maxAnisotropy: number) {
   })
 }
 
-async function animateCamToAxis(sceneInfra: SceneInfra, axis: AxisNames) {
+// New: animate directly to a quaternion (no engine vantage lookAt)
+async function animateCamToQuaternion(
+  sceneInfra: SceneInfra,
+  targetQuat: Quaternion
+) {
   const camControls = sceneInfra.camControls
   camControls.syncDirection = 'clientToEngine'
-
   try {
-    sceneInfra.stop()
-    camControls.enableRotate = true
-
-    const cam = camControls.camera
-    const target = camControls.target.clone()
-    const distance = cam.position.distanceTo(target)
-    const up = new Vector3(0, 0, 1)
-
-    const eye = target.clone()
-    if (axis === AxisNames.X) eye.x += distance
-    else if (axis === AxisNames.NEG_X) eye.x -= distance
-    else if (axis === AxisNames.Y) eye.y += distance
-    else if (axis === AxisNames.NEG_Y) eye.y -= distance
-    else if (axis === AxisNames.Z) eye.z += distance
-    else if (axis === AxisNames.NEG_Z) eye.z -= distance
-
-    const lookMat = new Matrix4().lookAt(eye, target, up)
-    const targetQuat = new Quaternion().setFromRotationMatrix(lookMat)
-
     sceneInfra.animate()
-    await camControls.tweenCameraToQuaternion(targetQuat, target, 500, false)
-    camControls.enableRotate = true
-    sceneInfra.stop()
+    await camControls.tweenCameraToQuaternion(
+      targetQuat,
+      camControls.target.clone(),
+      500,
+      false
+    )
   } finally {
+    sceneInfra.stop()
+    camControls.enableRotate = true
     camControls.syncDirection = 'engineToClient'
   }
+}
+
+// Orientation targets supported by the GLB
+function isOrientationTargetName(name: string): boolean {
+  return (
+    name.startsWith('face_') ||
+    name.startsWith('edge_') ||
+    name.startsWith('corner_')
+  )
+}
+
+// Compute the camera orientation quaternion for a given orientation name.
+// Camera looks from +Z towards origin by default, so we rotate that view accordingly.
+function orientationQuaternionForName(name: string): Quaternion | null {
+  const q = new Quaternion()
+  const up = new Vector3(0, 0, 1)
+  const target = new Vector3(0, 0, 0)
+
+  // derive an eye direction from the name
+  // faces: axis aligned; edges: 45° between two axes; corners: towards the vertex (1,1,1) combos
+  const dir = new Vector3()
+  if (name.startsWith('face_')) {
+    if (name.endsWith('front')) dir.set(0, -1, 0)
+    else if (name.includes('back')) dir.set(0, 1, 0)
+    else if (name.includes('right')) dir.set(1, 0, 0)
+    else if (name.includes('left')) dir.set(-1, 0, 0)
+    else if (name.includes('top')) dir.set(0, 0, 1)
+    else if (name.includes('bottom')) dir.set(0, 0, -1)
+  } else if (name.startsWith('edge_')) {
+    // edges are equal mixes of two axes (unit, then normalized)
+    if (name.includes('front')) dir.add(new Vector3(0, -1, 0))
+    if (name.includes('back')) dir.add(new Vector3(0, 1, 0))
+    if (name.includes('left')) dir.add(new Vector3(-1, 0, 0))
+    if (name.includes('right')) dir.add(new Vector3(1, 0, 0))
+    if (name.includes('top')) dir.add(new Vector3(0, 0, 1))
+    if (name.includes('bottom')) dir.add(new Vector3(0, 0, -1))
+  } else if (name.startsWith('corner')) {
+    // corners mix three axes
+    if (name.includes('front')) dir.add(new Vector3(0, -1, 0))
+    if (name.includes('back')) dir.add(new Vector3(0, 1, 0))
+    if (name.includes('left')) dir.add(new Vector3(-1, 0, 0))
+    if (name.includes('right')) dir.add(new Vector3(1, 0, 0))
+    if (name.includes('top')) dir.add(new Vector3(0, 0, 1))
+    if (name.includes('bottom')) dir.add(new Vector3(0, 0, -1))
+  } else {
+    return null
+  }
+
+  if (dir.lengthSq() === 0) return null
+  dir.normalize()
+
+  // Build a lookAt quaternion placing the eye along the dir vector
+  const distance = 1
+  const eye = target.clone().add(dir.clone().multiplyScalar(distance))
+  const m = new Matrix4().lookAt(eye, target, up)
+  return q.setFromRotationMatrix(m)
 }
 
 type StandardMesh = Mesh<BufferGeometry, MeshStandardMaterial>
