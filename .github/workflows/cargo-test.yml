@@ -132,7 +132,7 @@ jobs:
           cd rust
           cargo nextest archive --workspace --features artifact-graph --archive-file nextest-archive.tar.zst
       - name: Upload archive to workflow
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: nextest-archive
           path: rust/nextest-archive.tar.zst
@@ -171,7 +171,7 @@ jobs:
           OS_NAME: ${{ env.OS_NAME }}
       - uses: taiki-e/install-action@nextest
       - name: Download archive
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: nextest-archive
       - name: Run tests
