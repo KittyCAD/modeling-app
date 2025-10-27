@@ -160,52 +160,85 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
             };
             match (&unsolved0.kind, &unsolved1.kind) {
                 (UnsolvedSegmentKind::Point { position: pos0 }, UnsolvedSegmentKind::Point { position: pos1 }) => {
-                    let p0_x = pos0[0].var().ok_or_else(|| {
-                        KclError::new_semantic(KclErrorDetails::new(
-                            "When given points, input point at index 0 must be a sketch var for both x and y coordinates to constrain as coincident"
-                                .to_owned(),
-                            vec![args.source_range],
-                        ))
-                    })?;
-                    let p0_y = pos0[1].var().ok_or_else(|| {
-                        KclError::new_semantic(KclErrorDetails::new(
-                            "When given points, input point at index 0 must be a sketch var for both x and y coordinates to constrain as coincident"
-                                .to_owned(),
-                            vec![args.source_range],
-                        ))
-                    })?;
-                    let p1_x = pos1[0].var().ok_or_else(|| {
-                        KclError::new_semantic(KclErrorDetails::new(
-                            format!("When given points, input point at index 1 must be a sketch var for both x and y coordinates to constrain as coincident; found {:?}", pos1[0]),
-                            vec![args.source_range],
-                        ))
-                    })?;
-                    let p1_y = pos1[1].var().ok_or_else(|| {
-                        KclError::new_semantic(KclErrorDetails::new(
-                            "When given points, input point at index 1 must be a sketch var for both x and y coordinates to constrain as coincident"
-                                .to_owned(),
-                            vec![args.source_range],
-                        ))
-                    })?;
-                    let constraint = kcl_ezpz::Constraint::PointsCoincident(
-                        kcl_ezpz::datatypes::DatumPoint::new_xy(
-                            p0_x.to_constraint_id(range)?,
-                            p0_y.to_constraint_id(range)?,
-                        ),
-                        kcl_ezpz::datatypes::DatumPoint::new_xy(
-                            p1_x.to_constraint_id(range)?,
-                            p1_y.to_constraint_id(range)?,
-                        ),
-                    );
-                    // Save the constraint to be used for solving.
-                    let Some(sketch_state) = exec_state.sketch_block_mut() else {
-                        return Err(KclError::new_semantic(KclErrorDetails::new(
-                            "coincident() can only be used inside a sketch block".to_owned(),
-                            vec![args.source_range],
-                        )));
-                    };
-                    sketch_state.constraints.push(constraint);
-                    Ok(KclValue::none())
+                    let p0_x = &pos0[0];
+                    let p0_y = &pos0[1];
+                    match (p0_x, p0_y) {
+                        (UnsolvedExpr::Unknown(p0_x), UnsolvedExpr::Unknown(p0_y)) => {
+                            let p1_x = &pos1[0];
+                            let p1_y = &pos1[1];
+                            match (p1_x, p1_y) {
+                                (UnsolvedExpr::Unknown(p1_x), UnsolvedExpr::Unknown(p1_y)) => {
+                                    let constraint = kcl_ezpz::Constraint::PointsCoincident(
+                                        kcl_ezpz::datatypes::DatumPoint::new_xy(
+                                            p0_x.to_constraint_id(range)?,
+                                            p0_y.to_constraint_id(range)?,
+                                        ),
+                                        kcl_ezpz::datatypes::DatumPoint::new_xy(
+                                            p1_x.to_constraint_id(range)?,
+                                            p1_y.to_constraint_id(range)?,
+                                        ),
+                                    );
+                                    // Save the constraint to be used for solving.
+                                    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                                            "coincident() can only be used inside a sketch block".to_owned(),
+                                            vec![args.source_range],
+                                        )));
+                                    };
+                                    sketch_state.constraints.push(constraint);
+                                    Ok(KclValue::none())
+                                }
+                                (UnsolvedExpr::Known(p1_x), UnsolvedExpr::Known(p1_y)) => {
+                                    let p1_x = KclValue::Number {
+                                        value: p1_x.n,
+                                        ty: p1_x.ty,
+                                        meta: vec![args.source_range.into()],
+                                    };
+                                    let p1_y = KclValue::Number {
+                                        value: p1_y.n,
+                                        ty: p1_y.ty,
+                                        meta: vec![args.source_range.into()],
+                                    };
+                                    let (constraint_x, constraint_y) =
+                                        coincident_constraints_fixed(*p0_x, *p0_y, &p1_x, &p1_y, exec_state, &args)?;
+
+                                    // Save the constraint to be used for solving.
+                                    let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                                            "coincident() can only be used inside a sketch block".to_owned(),
+                                            vec![args.source_range],
+                                        )));
+                                    };
+                                    sketch_state.constraints.push(constraint_x);
+                                    sketch_state.constraints.push(constraint_y);
+                                    Ok(KclValue::none())
+                                }
+                                (UnsolvedExpr::Known(_), UnsolvedExpr::Unknown(_))
+                                | (UnsolvedExpr::Unknown(_), UnsolvedExpr::Known(_)) => {
+                                    // TODO: sketch-api: unimplemented
+                                    Err(KclError::new_semantic(KclErrorDetails::new(
+                                        "Unimplemented: When given points, input point at index 0 must be a sketch var for both x and y coordinates to constrain as coincident".to_owned(),
+                                        vec![args.source_range],
+                                    )))
+                                }
+                            }
+                        }
+                        (UnsolvedExpr::Known(_p0_x), UnsolvedExpr::Known(_p0_y)) => {
+                            // TODO: sketch-api: unimplemented
+                            Err(KclError::new_semantic(KclErrorDetails::new(
+                                "Unimplemented: When given points, input point at index 0 must be a sketch var for both x and y coordinates to constrain as coincident".to_owned(),
+                                vec![args.source_range],
+                            )))
+                        }
+                        (UnsolvedExpr::Known(_), UnsolvedExpr::Unknown(_))
+                        | (UnsolvedExpr::Unknown(_), UnsolvedExpr::Known(_)) => {
+                            // The segment is a point with one sketch var.
+                            Err(KclError::new_semantic(KclErrorDetails::new(
+                                "When given points, input point at index 0 must be a sketch var for both x and y coordinates to constrain as coincident".to_owned(),
+                                vec![args.source_range],
+                            )))
+                        }
+                    }
                 }
                 _ => Err(KclError::new_semantic(KclErrorDetails::new(
                     "both inputs must be points".to_owned(),

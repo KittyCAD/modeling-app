@@ -1,4 +1,4 @@
-use std::{cell::Cell, ops::ControlFlow};
+use std::{cell::Cell, collections::HashSet, ops::ControlFlow};
 
 use anyhow::{anyhow, bail};
 use kcl_error::SourceRange;
@@ -12,16 +12,18 @@ use crate::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
             SourceRef, Version,
         },
+        modify::{find_defined_names, next_free_name},
         sketch::{
             Coincident, Constraint, LineCtor, Point2d, Segment, SegmentCtor, SketchApi, SketchArgs, SketchExecOutcome,
         },
-        traverse::dfs_mut,
+        traverse::{TraversalReturn, Visitor, dfs_mut},
     },
     parsing::ast::types as ast,
     walk::{NodeMut, Visitable},
 };
 
 pub(crate) mod api;
+mod modify;
 pub(crate) mod sketch;
 mod traverse;
 
@@ -358,7 +360,7 @@ impl FrontendState {
         };
         // Add the point to the AST of the sketch block.
         let mut new_ast = self.program.ast.clone();
-        let sketch_block_range = self
+        let (sketch_block_range, _) = self
             .mutate_ast(
                 &mut new_ast,
                 sketch_id,
@@ -475,7 +477,7 @@ impl FrontendState {
         };
         // Add the line to the AST of the sketch block.
         let mut new_ast = self.program.ast.clone();
-        let sketch_block_range = self
+        let (sketch_block_range, _) = self
             .mutate_ast(
                 &mut new_ast,
                 sketch_id,
@@ -717,8 +719,8 @@ impl FrontendState {
 
     async fn add_coincident(
         &mut self,
-        _ctx: &ExecutorContext,
-        _sketch: ObjectId,
+        ctx: &ExecutorContext,
+        sketch: ObjectId,
         coincident: Coincident,
     ) -> api::Result<(SourceDelta, SceneGraphDelta, sketch::SketchExecOutcome)> {
         if coincident.points.len() != 2 {
@@ -729,40 +731,139 @@ impl FrontendState {
                 ),
             });
         }
-        // Look up existing sketch.
+        let sketch_id = sketch;
+
+        // Create updated KCL source from args.
+        let mut new_ast = self.program.ast.clone();
+
+        // Map the runtime objects back to variable names.
+
         let pt0_id = coincident.points[0];
-        let pt1_id = coincident.points[1];
         let pt0_object = self.scene_graph.objects.get(pt0_id.0).ok_or_else(|| Error {
             msg: format!("Point not found: {pt0_id:?}"),
         })?;
+        let ObjectKind::Segment(pt0_segment) = &pt0_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {pt0_object:?}"),
+            });
+        };
+        let Segment::Point(_) = pt0_segment else {
+            return Err(Error {
+                msg: format!("Only points are currently supported: {pt0_object:?}"),
+            });
+        };
+        let pt0_ast = self.get_or_insert_ast_reference(&mut new_ast, &pt0_object.source.clone(), "point")?;
+
+        let pt1_id = coincident.points[1];
         let pt1_object = self.scene_graph.objects.get(pt1_id.0).ok_or_else(|| Error {
             msg: format!("Point not found: {pt1_id:?}"),
         })?;
-        let ObjectKind::Segment(Segment::Point(pt0)) = &pt0_object.kind else {
+        let ObjectKind::Segment(pt1_segment) = &pt1_object.kind else {
             return Err(Error {
-                msg: format!("Object is not a point: {pt0_object:?}"),
+                msg: format!("Object is not a segment: {pt1_object:?}"),
             });
         };
-        let ObjectKind::Segment(Segment::Point(pt1)) = &pt1_object.kind else {
+        let Segment::Point(_) = pt1_segment else {
             return Err(Error {
-                msg: format!("Object is not a point: {pt1_object:?}"),
+                msg: format!("Only points are currently supported: {pt1_object:?}"),
             });
         };
+        let pt1_ast = self.get_or_insert_ast_reference(&mut new_ast, &pt1_object.source.clone(), "point")?;
 
-        // Create updated KCL source from args.
-        //
-        // TODO: sketch-api: map the runtime objects back to variable names and
-        // properties of those variables?
-        let _coincident_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        // Create the coincident() call.
+        let coincident_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
             callee: ast::Node::no_src(ast_sketch2_name(COINCIDENT_FN)),
-            unlabeled: None,
-            arguments: Vec::new(),
+            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+                ast::ArrayExpression {
+                    elements: vec![pt0_ast, pt1_ast],
+                    digest: None,
+                    non_code_meta: Default::default(),
+                },
+            )))),
+            arguments: Default::default(),
             digest: None,
             non_code_meta: Default::default(),
         })));
-        Err(Error {
-            msg: format!("add_coincident implementation not done yet: pt0={pt0:?}, pt1={pt1:?}"),
-        })
+
+        // Add the line to the AST of the sketch block.
+        let (sketch_block_range, _) = self
+            .mutate_ast(
+                &mut new_ast,
+                sketch_id,
+                AstMutateCommand::AddSketchBlockExprStmt { expr: coincident_ast },
+            )
+            .map_err(|err| Error { msg: err.to_string() })?;
+        // Convert to string source to create real source ranges.
+        let new_source = source_from_ast(&new_ast);
+        // Parse the new KCL source.
+        let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
+        if !errors.is_empty() {
+            return Err(Error {
+                msg: format!("Error parsing KCL source after adding line: {errors:?}"),
+            });
+        }
+        let Some(new_program) = new_program else {
+            return Err(Error {
+                msg: "No AST produced after adding line".to_string(),
+            });
+        };
+        let _coincident_source_range =
+            find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
+                msg: format!("Source range of line not found in sketch block: {sketch_block_range:?}; {err:?}"),
+            })?;
+
+        // Make sure to only set this if there are no errors.
+        self.program = new_program.clone();
+
+        // Execute.
+        let outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
+            // TODO: sketch-api: Yeah, this needs to change. We need to
+            // return the full error.
+            Error {
+                msg: err.error.message().to_owned(),
+            }
+        })?;
+
+        let src_delta = SourceDelta { text: new_source };
+        let outcome = self.update_state_after_exec(outcome);
+        let scene_graph_delta = SceneGraphDelta {
+            new_graph: self.scene_graph.clone(),
+            invalidates_ids: false,
+            new_objects: Vec::new(),
+            exec_outcome: outcome,
+        };
+        let sketch_exec_outcome = self.sketch_exec_outcome(sketch_id)?;
+        Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
+    }
+
+    /// Return the AST expression referencing the variable at the given source
+    /// ref. If no such variable exists, insert a new variable declaration with
+    /// the given prefix.
+    ///
+    /// In the future, this could return a complex expression referencing
+    /// properties of the variable (e.g., `line1.start`), but we haven't
+    /// implemented that yet.
+    fn get_or_insert_ast_reference(
+        &mut self,
+        ast: &mut ast::Node<ast::Program>,
+        source_ref: &SourceRef,
+        prefix: &str,
+    ) -> api::Result<ast::Expr> {
+        let range = expect_single_source_range(source_ref)?;
+        let (_, ret) = mutate_ast_node_by_source_range(
+            ast,
+            range,
+            AstMutateCommand::AddVariableDeclaration {
+                prefix: prefix.to_owned(),
+            },
+        )
+        .map_err(|err| Error { msg: err.to_string() })?;
+        let AstMutateCommandReturn::Name(var_name) = ret else {
+            return Err(Error {
+                msg: "Expected variable name returned from AddVariableDeclaration".to_string(),
+            });
+        };
+        Ok(ast::Expr::Name(Box::new(ast::Name::new(&var_name))))
     }
 
     fn sketch_exec_outcome(&self, sketch_id: ObjectId) -> api::Result<SketchExecOutcome> {
@@ -836,7 +937,7 @@ impl FrontendState {
         ast: &mut ast::Node<ast::Program>,
         object_id: ObjectId,
         command: AstMutateCommand,
-    ) -> anyhow::Result<SourceRange> {
+    ) -> anyhow::Result<(SourceRange, AstMutateCommandReturn)> {
         let sketch_object = self
             .scene_graph
             .objects
@@ -849,29 +950,56 @@ impl FrontendState {
     }
 }
 
+fn expect_single_source_range(source_ref: &SourceRef) -> api::Result<SourceRange> {
+    match source_ref {
+        SourceRef::Simple { range } => Ok(*range),
+        SourceRef::BackTrace { ranges } => {
+            if ranges.len() != 1 {
+                return Err(Error {
+                    msg: format!(
+                        "Expected single source range in SourceRef, got {}; ranges={ranges:#?}",
+                        ranges.len(),
+                    ),
+                });
+            }
+            Ok(ranges[0])
+        }
+    }
+}
+
 fn mutate_ast_node_by_source_range(
     ast: &mut ast::Node<ast::Program>,
     source_range: SourceRange,
     command: AstMutateCommand,
-) -> anyhow::Result<SourceRange> {
-    let context = AstMutateContext { source_range, command };
-    let control = dfs_mut(ast, &context, filter_and_process);
+) -> anyhow::Result<(SourceRange, AstMutateCommandReturn)> {
+    let mut context = AstMutateContext {
+        source_range,
+        command,
+        defined_names_stack: Default::default(),
+    };
+    let control = dfs_mut(ast, &mut context);
     match control {
         ControlFlow::Continue(_) => Err(anyhow!("Source range not found: {source_range:?}")),
         ControlFlow::Break(break_value) => Ok(break_value),
     }
 }
 
+#[derive(Debug)]
 struct AstMutateContext {
     source_range: SourceRange,
     command: AstMutateCommand,
+    defined_names_stack: Vec<HashSet<String>>,
 }
 
+#[derive(Debug)]
 #[allow(clippy::large_enum_variant)]
 enum AstMutateCommand {
     /// Add an expression statement to the sketch block.
     AddSketchBlockExprStmt {
         expr: ast::Expr,
+    },
+    AddVariableDeclaration {
+        prefix: String,
     },
     EditPoint {
         at: ast::Expr,
@@ -882,19 +1010,67 @@ enum AstMutateCommand {
     },
 }
 
-fn filter_and_process(ctx: &AstMutateContext, node: NodeMut) -> ControlFlow<SourceRange> {
-    // Make sure the node matches the source range.
-    let Ok(node_range) = SourceRange::try_from(&node) else {
-        return ControlFlow::Continue(());
-    };
-    if node_range != ctx.source_range {
-        return ControlFlow::Continue(());
-    }
-    process(&ctx.command, node).map_break(|_| ctx.source_range)
+#[derive(Debug)]
+enum AstMutateCommandReturn {
+    None,
+    Name(String),
 }
 
-fn process(command: &AstMutateCommand, node: NodeMut) -> ControlFlow<()> {
-    match command {
+impl Visitor for AstMutateContext {
+    type Break = (SourceRange, AstMutateCommandReturn);
+    type Continue = ();
+
+    fn visit(&mut self, node: NodeMut<'_>) -> TraversalReturn<Self::Break, Self::Continue> {
+        filter_and_process(self, node)
+    }
+
+    fn finish(&mut self, node: NodeMut<'_>) {
+        match &node {
+            NodeMut::Program(_) | NodeMut::SketchBlock(_) => {
+                self.defined_names_stack.pop();
+            }
+            _ => {}
+        }
+    }
+}
+fn filter_and_process(
+    ctx: &mut AstMutateContext,
+    node: NodeMut,
+) -> TraversalReturn<(SourceRange, AstMutateCommandReturn)> {
+    let Ok(node_range) = SourceRange::try_from(&node) else {
+        // Nodes that can't be converted to a range aren't interesting.
+        return TraversalReturn::new_continue(());
+    };
+    // If we're adding a variable declaration, we need to look at variable
+    // declaration expressions to see if it already has a variable, before
+    // continuing. The variable declaration's source range won't match the
+    // target; its init expression will.
+    if let AstMutateCommand::AddVariableDeclaration { .. } = &ctx.command
+        && let NodeMut::VariableDeclaration(var_decl) = &node
+    {
+        let expr_range = SourceRange::from(&var_decl.declaration.init);
+        if expr_range == ctx.source_range {
+            // We found the variable declaration expression. It doesn't need
+            // to be added.
+            return TraversalReturn::new_break((node_range, AstMutateCommandReturn::Name(var_decl.name().to_owned())));
+        }
+    }
+
+    if let NodeMut::Program(program) = &node {
+        ctx.defined_names_stack.push(find_defined_names(*program));
+    } else if let NodeMut::SketchBlock(block) = &node {
+        ctx.defined_names_stack.push(find_defined_names(&block.body));
+    }
+
+    // Make sure the node matches the source range.
+    if node_range != ctx.source_range {
+        return TraversalReturn::new_continue(());
+    }
+    process(ctx, node).map_break(|cmd_return| (ctx.source_range, cmd_return))
+}
+
+fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<AstMutateCommandReturn> {
+    match &ctx.command {
         AstMutateCommand::AddSketchBlockExprStmt { expr } => {
             if let NodeMut::SketchBlock(sketch_block) = node {
                 sketch_block
@@ -912,13 +1088,36 @@ fn process(command: &AstMutateCommand, node: NodeMut) -> ControlFlow<()> {
                         pre_comments: Default::default(),
                         comment_start: Default::default(),
                     }));
-                return ControlFlow::Break(());
+                return TraversalReturn::new_break(AstMutateCommandReturn::None);
+            }
+        }
+        AstMutateCommand::AddVariableDeclaration { prefix } => {
+            if let NodeMut::VariableDeclaration(inner) = node {
+                return TraversalReturn::new_break(AstMutateCommandReturn::Name(inner.name().to_owned()));
+            }
+            if let NodeMut::ExpressionStatement(expr_stmt) = node {
+                let empty_defined_names = HashSet::new();
+                let defined_names = ctx.defined_names_stack.last().unwrap_or(&empty_defined_names);
+                let Ok(name) = next_free_name(prefix, defined_names) else {
+                    // TODO: Return an error instead?
+                    return TraversalReturn::new_break(AstMutateCommandReturn::None);
+                };
+                let mutate_node =
+                    ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(ast::VariableDeclaration::new(
+                        ast::VariableDeclarator::new(&name, expr_stmt.expression.clone()),
+                        ast::ItemVisibility::Default,
+                        ast::VariableKind::Const,
+                    ))));
+                return TraversalReturn {
+                    mutate_body_item: Some(mutate_node),
+                    control_flow: ControlFlow::Break(AstMutateCommandReturn::Name(name)),
+                };
             }
         }
         AstMutateCommand::EditPoint { at } => {
             if let NodeMut::CallExpressionKw(call) = node {
                 if call.callee.name.name != POINT_FN {
-                    return ControlFlow::Continue(());
+                    return TraversalReturn::new_continue(());
                 }
                 // Update the arguments.
                 for labeled_arg in &mut call.arguments {
@@ -926,13 +1125,13 @@ fn process(command: &AstMutateCommand, node: NodeMut) -> ControlFlow<()> {
                         labeled_arg.arg = at.clone();
                     }
                 }
-                return ControlFlow::Break(());
+                return TraversalReturn::new_break(AstMutateCommandReturn::None);
             }
         }
         AstMutateCommand::EditLine { start, end } => {
             if let NodeMut::CallExpressionKw(call) = node {
                 if call.callee.name.name != LINE_FN {
-                    return ControlFlow::Continue(());
+                    return TraversalReturn::new_continue(());
                 }
                 // Update the arguments.
                 for labeled_arg in &mut call.arguments {
@@ -943,11 +1142,11 @@ fn process(command: &AstMutateCommand, node: NodeMut) -> ControlFlow<()> {
                         labeled_arg.arg = end.clone();
                     }
                 }
-                return ControlFlow::Break(());
+                return TraversalReturn::new_break(AstMutateCommandReturn::None);
             }
         }
     }
-    ControlFlow::Continue(())
+    TraversalReturn::new_continue(())
 }
 
 struct FindSketchBlockSourceRange {
@@ -1397,5 +1596,42 @@ s = sketch(on = XY) {
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
         // TODO: SketchExecOutcome hasn't implemented lines yet.
         assert_eq!(sketch_exec_outcome.segments.len(), 0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_two_points_coincident() {
+        let initial_source = "@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = sketch2::point(at = [var 1, var 2])
+  sketch2::point(at = [3, 4])
+}";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+        let point0_id = frontend.scene_graph.objects.get(1).unwrap().id;
+        let point1_id = frontend.scene_graph.objects.get(2).unwrap().id;
+
+        let coincident = Coincident {
+            points: vec![point0_id, point1_id],
+        };
+        let (src_delta, _, _) = frontend.add_coincident(&ctx, sketch_id, coincident).await.unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = sketch2::point(at = [var 1, var 2])
+  point2 = sketch2::point(at = [3, 4])
+  sketch2::coincident([point1, point2])
+}
+"
+        );
     }
 }

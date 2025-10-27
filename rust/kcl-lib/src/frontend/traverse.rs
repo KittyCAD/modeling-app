@@ -5,426 +5,516 @@ use std::ops::ControlFlow;
 
 use crate::{parsing::ast::types as ast, walk::NodeMut};
 
+pub(super) struct TraversalReturn<B, C = ()> {
+    pub mutate_body_item: Option<ast::BodyItem>,
+    pub control_flow: ControlFlow<B, C>,
+}
+
+pub(super) trait Visitor {
+    type Break;
+    type Continue;
+
+    /// Called when encountering a node for the first time, before its children.
+    fn visit(&mut self, node: NodeMut) -> TraversalReturn<Self::Break, Self::Continue>;
+
+    /// Called after all children of the node have been visited and the
+    /// traversal has completed this subtree.
+    fn finish(&mut self, node: NodeMut);
+}
+
+impl<B, C> TraversalReturn<B, C> {
+    pub fn new_break(b: B) -> Self {
+        TraversalReturn {
+            mutate_body_item: None,
+            control_flow: ControlFlow::Break(b),
+        }
+    }
+
+    pub fn new_continue(c: C) -> Self {
+        TraversalReturn {
+            mutate_body_item: None,
+            control_flow: ControlFlow::Continue(c),
+        }
+    }
+
+    pub fn is_break(&self) -> bool {
+        self.control_flow.is_break()
+    }
+
+    pub fn map_break<D>(self, f: impl FnOnce(B) -> D) -> TraversalReturn<D, C> {
+        let control_flow = self.control_flow.map_break(f);
+        TraversalReturn {
+            mutate_body_item: self.mutate_body_item,
+            control_flow,
+        }
+    }
+}
+
 /// Pre-order DFS traversal of the AST, applying `f` to each node. If `f`
 /// returns `ControlFlow::Break`, the traversal is stopped and the `ControlFlow`
 /// value is returned.
-pub(super) fn dfs_mut<B, C, Ctx>(
+pub(super) fn dfs_mut<V: Visitor>(
     program: &mut ast::Node<ast::Program>,
-    context: &Ctx,
-    f: fn(&Ctx, NodeMut) -> ControlFlow<B, C>,
-) -> ControlFlow<B, C> {
+    visitor: &mut V,
+) -> ControlFlow<V::Break, V::Continue> {
     let node = NodeMut::from(&mut *program);
-    let mut control = f(context, node);
-    if control.is_break() {
-        return control;
+    let mut ret = visitor.visit(node);
+    if ret.is_break() {
+        return ret.control_flow;
     }
     for body_item in &mut program.body {
-        control = dfs_mut_body_item(body_item, context, f);
-        if control.is_break() {
-            return control;
+        ret = dfs_mut_body_item(body_item, visitor);
+        // Allow the function to mutate the body item to a different variant of
+        // the enum.
+        if let Some(new_body_item) = ret.mutate_body_item.take() {
+            *body_item = new_body_item;
+        }
+        if ret.is_break() {
+            return ret.control_flow;
         }
     }
-    control
+    let node = NodeMut::from(&mut *program);
+    visitor.finish(node);
+
+    ret.control_flow
 }
 
-fn dfs_mut_body_item<B, C, Ctx>(
+fn dfs_mut_body_item<V: Visitor>(
     body_item: &mut ast::BodyItem,
-    context: &Ctx,
-    f: fn(&Ctx, NodeMut) -> ControlFlow<B, C>,
-) -> ControlFlow<B, C> {
+    visitor: &mut V,
+) -> TraversalReturn<V::Break, V::Continue> {
     let node = NodeMut::from(&mut *body_item);
-    let mut control = f(context, node);
-    if control.is_break() {
-        return control;
+    let mut ret = visitor.visit(node);
+    if ret.is_break() {
+        return ret;
     }
     match body_item {
         ast::BodyItem::ImportStatement(_) => {}
         ast::BodyItem::ExpressionStatement(node) => {
-            control = dfs_mut_expr(&mut node.expression, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.expression, visitor);
+            if ret.is_break() {
+                return ret;
             }
         }
         ast::BodyItem::VariableDeclaration(node) => {
-            control = dfs_mut_expr(&mut node.declaration.init, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.declaration.init, visitor);
+            if ret.is_break() {
+                return ret;
             }
         }
         ast::BodyItem::TypeDeclaration(_) => {}
         ast::BodyItem::ReturnStatement(node) => {
-            control = dfs_mut_expr(&mut node.argument, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.argument, visitor);
+            if ret.is_break() {
+                return ret;
             }
         }
     }
-    control
+    ret
 }
 
-fn dfs_mut_expr<B, C, Ctx>(
-    expr: &mut ast::Expr,
-    context: &Ctx,
-    f: fn(&Ctx, NodeMut) -> ControlFlow<B, C>,
-) -> ControlFlow<B, C> {
+fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalReturn<V::Break, V::Continue> {
     let node = NodeMut::from(&mut *expr);
-    let mut control = f(context, node);
-    if control.is_break() {
-        return control;
+    let mut ret = visitor.visit(node);
+    if ret.is_break() {
+        return ret;
     }
     match expr {
         ast::Expr::Literal(node) => {
-            control = f(context, NodeMut::from(&mut **node));
+            ret = visitor.visit(NodeMut::from(&mut **node));
         }
         ast::Expr::Name(node) => {
-            control = f(context, NodeMut::from(&mut **node));
+            ret = visitor.visit(NodeMut::from(&mut **node));
         }
         ast::Expr::TagDeclarator(node) => {
-            control = f(context, NodeMut::from(&mut **node));
+            ret = visitor.visit(NodeMut::from(&mut **node));
         }
         ast::Expr::BinaryExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_binary_part(&mut node.left, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_binary_part(&mut node.left, visitor);
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_binary_part(&mut node.right, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_binary_part(&mut node.right, visitor);
+            if ret.is_break() {
+                return ret;
             }
+            let node = NodeMut::from(&mut **node);
+            visitor.finish(node);
         }
         ast::Expr::FunctionExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
             for body_item in &mut node.body.body {
-                control = dfs_mut_body_item(body_item, context, f);
-                if control.is_break() {
-                    return control;
+                ret = dfs_mut_body_item(body_item, visitor);
+                // Allow the function to mutate the body item to a different
+                // variant of the enum.
+                if let Some(new_body_item) = ret.mutate_body_item.take() {
+                    *body_item = new_body_item;
+                }
+                if ret.is_break() {
+                    return ret;
                 }
             }
+            let node = NodeMut::from(&mut **node);
+            visitor.finish(node);
         }
         ast::Expr::CallExpressionKw(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
             for (_, arg) in &mut node.iter_arguments_mut() {
-                control = dfs_mut_expr(arg, context, f);
-                if control.is_break() {
-                    return control;
+                ret = dfs_mut_expr(arg, visitor);
+                if ret.is_break() {
+                    return ret;
                 }
             }
         }
         ast::Expr::PipeExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
             for expr in &mut node.body {
-                control = dfs_mut_expr(expr, context, f);
-                if control.is_break() {
-                    return control;
+                ret = dfs_mut_expr(expr, visitor);
+                if ret.is_break() {
+                    return ret;
                 }
             }
         }
         ast::Expr::PipeSubstitution(node) => {
-            control = f(context, NodeMut::from(&mut **node));
+            ret = visitor.visit(NodeMut::from(&mut **node));
         }
         ast::Expr::ArrayExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
             for expr in &mut node.elements {
-                control = dfs_mut_expr(expr, context, f);
-                if control.is_break() {
-                    return control;
+                ret = dfs_mut_expr(expr, visitor);
+                if ret.is_break() {
+                    return ret;
                 }
             }
         }
         ast::Expr::ArrayRangeExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_expr(&mut node.start_element, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.start_element, visitor);
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_expr(&mut node.end_element, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.end_element, visitor);
+            if ret.is_break() {
+                return ret;
             }
         }
         ast::Expr::ObjectExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
             for property in &mut node.properties {
-                control = f(context, NodeMut::from(&mut property.key));
-                if control.is_break() {
-                    return control;
+                ret = visitor.visit(NodeMut::from(&mut property.key));
+                if ret.is_break() {
+                    return ret;
                 }
-                control = dfs_mut_expr(&mut property.value, context, f);
-                if control.is_break() {
-                    return control;
+                ret = dfs_mut_expr(&mut property.value, visitor);
+                if ret.is_break() {
+                    return ret;
                 }
             }
         }
         ast::Expr::MemberExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_expr(&mut node.object, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.object, visitor);
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_expr(&mut node.property, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.property, visitor);
+            if ret.is_break() {
+                return ret;
             }
         }
         ast::Expr::UnaryExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_binary_part(&mut node.argument, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_binary_part(&mut node.argument, visitor);
+            if ret.is_break() {
+                return ret;
             }
         }
         ast::Expr::IfExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_expr(&mut node.cond, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.cond, visitor);
+            if ret.is_break() {
+                return ret;
             }
+            visitor.visit(NodeMut::from(&mut *node.then_val));
             for body_item in &mut node.then_val.body {
-                control = dfs_mut_body_item(body_item, context, f);
-                if control.is_break() {
-                    return control;
+                ret = dfs_mut_body_item(body_item, visitor);
+                // Allow the function to mutate the body item to a different
+                // variant of the enum.
+                if let Some(new_body_item) = ret.mutate_body_item.take() {
+                    *body_item = new_body_item;
+                }
+                if ret.is_break() {
+                    return ret;
                 }
             }
+            visitor.finish(NodeMut::from(&mut *node.then_val));
             for else_if in &mut node.else_ifs {
-                control = dfs_mut_expr(&mut else_if.cond, context, f);
-                if control.is_break() {
-                    return control;
+                ret = dfs_mut_expr(&mut else_if.cond, visitor);
+                if ret.is_break() {
+                    return ret;
                 }
+                visitor.visit(NodeMut::from(&mut *else_if.then_val));
                 for body_item in &mut else_if.then_val.body {
-                    control = dfs_mut_body_item(body_item, context, f);
-                    if control.is_break() {
-                        return control;
+                    ret = dfs_mut_body_item(body_item, visitor);
+                    // Allow the function to mutate the body item to a different
+                    // variant of the enum.
+                    if let Some(new_body_item) = ret.mutate_body_item.take() {
+                        *body_item = new_body_item;
+                    }
+                    if ret.is_break() {
+                        return ret;
                     }
                 }
+                visitor.finish(NodeMut::from(&mut *else_if.then_val));
             }
         }
         ast::Expr::LabelledExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_expr(&mut node.expr, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.expr, visitor);
+            if ret.is_break() {
+                return ret;
             }
         }
         ast::Expr::AscribedExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_expr(&mut node.expr, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.expr, visitor);
+            if ret.is_break() {
+                return ret;
             }
         }
         ast::Expr::SketchBlock(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
             for (_, arg) in &mut node.iter_arguments_mut() {
-                control = dfs_mut_expr(arg, context, f);
-                if control.is_break() {
-                    return control;
+                ret = dfs_mut_expr(arg, visitor);
+                if ret.is_break() {
+                    return ret;
                 }
             }
             for body_item in &mut node.body.items {
-                control = dfs_mut_body_item(body_item, context, f);
-                if control.is_break() {
-                    return control;
+                ret = dfs_mut_body_item(body_item, visitor);
+                // Allow the function to mutate the body item to a different
+                // variant of the enum.
+                if let Some(new_body_item) = ret.mutate_body_item.take() {
+                    *body_item = new_body_item;
+                }
+                if ret.is_break() {
+                    return ret;
                 }
             }
+            let node = NodeMut::from(&mut **node);
+            visitor.finish(node);
         }
         ast::Expr::SketchVar(node) => {
-            control = f(context, NodeMut::from(&mut **node));
+            ret = visitor.visit(NodeMut::from(&mut **node));
         }
         ast::Expr::None(_) => {}
     }
-    control
+    ret
 }
 
-fn dfs_mut_binary_part<B, C, Ctx>(
+fn dfs_mut_binary_part<V: Visitor>(
     binary_part: &mut ast::BinaryPart,
-    context: &Ctx,
-    f: fn(&Ctx, NodeMut) -> ControlFlow<B, C>,
-) -> ControlFlow<B, C> {
+    visitor: &mut V,
+) -> TraversalReturn<V::Break, V::Continue> {
     let node = NodeMut::from(&mut *binary_part);
-    let mut control = f(context, node);
-    if control.is_break() {
-        return control;
+    let mut ret = visitor.visit(node);
+    if ret.is_break() {
+        return ret;
     }
     match binary_part {
         ast::BinaryPart::Literal(node) => {
-            control = f(context, NodeMut::from(&mut **node));
+            ret = visitor.visit(NodeMut::from(&mut **node));
         }
         ast::BinaryPart::Name(node) => {
-            control = f(context, NodeMut::from(&mut **node));
+            ret = visitor.visit(NodeMut::from(&mut **node));
         }
         ast::BinaryPart::BinaryExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_binary_part(&mut node.left, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_binary_part(&mut node.left, visitor);
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_binary_part(&mut node.right, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_binary_part(&mut node.right, visitor);
+            if ret.is_break() {
+                return ret;
             }
         }
         ast::BinaryPart::CallExpressionKw(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
             for (_, arg) in &mut node.iter_arguments_mut() {
-                control = dfs_mut_expr(arg, context, f);
-                if control.is_break() {
-                    return control;
+                ret = dfs_mut_expr(arg, visitor);
+                if ret.is_break() {
+                    return ret;
                 }
             }
         }
         ast::BinaryPart::UnaryExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_binary_part(&mut node.argument, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_binary_part(&mut node.argument, visitor);
+            if ret.is_break() {
+                return ret;
             }
         }
         ast::BinaryPart::MemberExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_expr(&mut node.object, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.object, visitor);
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_expr(&mut node.property, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.property, visitor);
+            if ret.is_break() {
+                return ret;
             }
         }
         ast::BinaryPart::ArrayExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
             for expr in &mut node.elements {
-                control = dfs_mut_expr(expr, context, f);
-                if control.is_break() {
-                    return control;
+                ret = dfs_mut_expr(expr, visitor);
+                if ret.is_break() {
+                    return ret;
                 }
             }
         }
         ast::BinaryPart::ArrayRangeExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_expr(&mut node.start_element, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.start_element, visitor);
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_expr(&mut node.end_element, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.end_element, visitor);
+            if ret.is_break() {
+                return ret;
             }
         }
         ast::BinaryPart::ObjectExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
             for property in &mut node.properties {
-                control = f(context, NodeMut::from(&mut property.key));
-                if control.is_break() {
-                    return control;
+                ret = visitor.visit(NodeMut::from(&mut property.key));
+                if ret.is_break() {
+                    return ret;
                 }
-                control = dfs_mut_expr(&mut property.value, context, f);
-                if control.is_break() {
-                    return control;
+                ret = dfs_mut_expr(&mut property.value, visitor);
+                if ret.is_break() {
+                    return ret;
                 }
             }
         }
         ast::BinaryPart::IfExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_expr(&mut node.cond, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.cond, visitor);
+            if ret.is_break() {
+                return ret;
             }
+            visitor.visit(NodeMut::from(&mut *node.then_val));
             for body_item in &mut node.then_val.body {
-                control = dfs_mut_body_item(body_item, context, f);
-                if control.is_break() {
-                    return control;
+                ret = dfs_mut_body_item(body_item, visitor);
+                // Allow the function to mutate the body item to a different
+                // variant of the enum.
+                if let Some(new_body_item) = ret.mutate_body_item.take() {
+                    *body_item = new_body_item;
+                }
+                if ret.is_break() {
+                    return ret;
                 }
             }
+            visitor.finish(NodeMut::from(&mut *node.then_val));
             for else_if in &mut node.else_ifs {
-                control = dfs_mut_expr(&mut else_if.cond, context, f);
-                if control.is_break() {
-                    return control;
+                ret = dfs_mut_expr(&mut else_if.cond, visitor);
+                if ret.is_break() {
+                    return ret;
                 }
+                visitor.visit(NodeMut::from(&mut *else_if.then_val));
                 for body_item in &mut else_if.then_val.body {
-                    control = dfs_mut_body_item(body_item, context, f);
-                    if control.is_break() {
-                        return control;
+                    ret = dfs_mut_body_item(body_item, visitor);
+                    // Allow the function to mutate the body item to a different
+                    // variant of the enum.
+                    if let Some(new_body_item) = ret.mutate_body_item.take() {
+                        *body_item = new_body_item;
+                    }
+                    if ret.is_break() {
+                        return ret;
                     }
                 }
+                visitor.finish(NodeMut::from(&mut *else_if.then_val));
             }
         }
         ast::BinaryPart::AscribedExpression(node) => {
-            control = f(context, NodeMut::from(&mut **node));
-            if control.is_break() {
-                return control;
+            ret = visitor.visit(NodeMut::from(&mut **node));
+            if ret.is_break() {
+                return ret;
             }
-            control = dfs_mut_expr(&mut node.expr, context, f);
-            if control.is_break() {
-                return control;
+            ret = dfs_mut_expr(&mut node.expr, visitor);
+            if ret.is_break() {
+                return ret;
             }
         }
         ast::BinaryPart::SketchVar(node) => {
-            control = f(context, NodeMut::from(&mut **node));
+            ret = visitor.visit(NodeMut::from(&mut **node));
         }
     }
-    control
+    ret
 }
