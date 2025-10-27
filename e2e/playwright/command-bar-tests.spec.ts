@@ -756,6 +756,7 @@ export exported = 2`,
     { tag: '@web' },
     async ({ page, cmdBar }) => {
       await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
+      await cmdBar.expectCommandName('Settings · app · theme')
       await cmdBar.expectState({
         stage: 'arguments',
         commandName: 'Settings · app · theme',
