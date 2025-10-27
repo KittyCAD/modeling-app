@@ -1,13 +1,20 @@
 import { Dialog } from '@headlessui/react'
 import type { MouseEvent, RefObject } from 'react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import type { ActionIconProps } from '@src/components/ActionIcon'
 import { ActionIcon } from '@src/components/ActionIcon'
 import usePlatform from '@src/hooks/usePlatform'
-import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
 
 export interface ContextMenuProps
   extends Omit<React.HTMLAttributes<HTMLUListElement>, 'children'> {
@@ -151,7 +158,9 @@ export function ContextMenu({
             className="relative flex flex-col gap-0.5 items-stretch content-stretch"
             onClick={() => setOpen(false)}
           >
-            {...items}
+            {items.map((item, i) => (
+              <Fragment key={`${i}-${item.key}`}>{item}</Fragment>
+            ))}
           </ul>
         </Dialog.Panel>
       </div>

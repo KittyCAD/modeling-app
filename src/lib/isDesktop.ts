@@ -2,7 +2,7 @@
 // Thank you
 export function isDesktop(): boolean {
   return typeof navigator !== 'undefined' &&
-    typeof window.navigator !== 'undefined'
+    typeof globalThis.window?.navigator !== 'undefined'
     ? navigator.userAgent.toLowerCase().indexOf('electron') > -1
     : true
 }
