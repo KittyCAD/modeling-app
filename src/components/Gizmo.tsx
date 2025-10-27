@@ -68,9 +68,9 @@ export default function Gizmo() {
       modelingState.matches('Sketch') &&
       !settings.app.allowOrbitInSketchMode.current
     if (wrapperRef.current) {
-      wrapperRef.current.style.filter = disableOrbitRef.current
-        ? 'grayscale(100%)'
-        : 'none'
+      // wrapperRef.current.style.filter = disableOrbitRef.current
+      //   ? 'grayscale(100%)'
+      //   : 'none'
       wrapperRef.current.style.cursor = disableOrbitRef.current
         ? 'not-allowed'
         : 'auto'
@@ -114,41 +114,20 @@ export default function Gizmo() {
       (gltf) => {
         const root = gltf.scene
         root.position.set(0, 0, 0)
-        // Scale to fit nicely in the orthographic frustum
         root.scale.set(0.675, 0.675, 0.675)
         scene.add(root)
 
         const clickableFaces: Object3D[] = []
         Object.keys(FACE_TO_AXIS).forEach((name) => {
           const obj = root.getObjectByName(name)
-          if (obj) {
-            // Ensure raycasting can work on Mesh; if group, pick first mesh child
-            let pick: Object3D | null = obj
-            if ((obj as Mesh).isMesh !== true && obj.children.length) {
-              const meshChild = obj.getObjectByProperty(
-                'type',
-                'Mesh'
-              ) as Object3D | null
-              if (meshChild) pick = meshChild
-            }
-            if (pick) {
-              pick.name = name
-              // Ensure unique material instance per face to avoid shared mutations
-              const pickMesh = pick as Mesh
-              if (isArray(pickMesh.material)) {
-                pickMesh.material = pickMesh.material.map((m) => m.clone())
-              } else if (pickMesh.material) {
-                pickMesh.material = pickMesh.material.clone()
-              }
-              clickableFaces.push(pick)
-            }
+          if (isStandardMesh(obj)) {
+            clickableFaces.push(obj)
           }
         })
         raycasterObjectsRef.current = clickableFaces
 
-        // Max anisotropy for all textures in this gizmo
-        const maxAniso = renderer.capabilities.getMaxAnisotropy()
-        applyMaxAnisotropyToObject(root, maxAniso)
+        const maxAnisotropy = renderer.capabilities.getMaxAnisotropy()
+        applyMaxAnisotropyToObject(root, maxAnisotropy)
       },
       undefined,
       (e) => {
@@ -168,12 +147,11 @@ export default function Gizmo() {
           mouse,
           camera,
           raycasterIntersect,
-          renderer,
-          scene,
           hoveredObjectRef,
           originalMaterialsRef,
           hoverMaterialRef
         )
+        renderer.render(scene, camera)
       } else {
         // Reset hovered highlight
         if (hoveredObjectRef.current) {
@@ -337,11 +315,15 @@ const initializeMouseEvents = (
     if (!raycasterIntersect.current) {
       // If we have no current intersection (e.g., orbit disabled), do a forced raycast at the last mouse position
       doRayCast(mouse, true)
-      if (!raycasterIntersect.current) return
+      if (!raycasterIntersect.current) {
+        return
+      }
     }
     let obj: Object3D | null = raycasterIntersect.current.object
-    // Ascend to a parent whose name matches a known face if needed
-    while (obj && !FACE_TO_AXIS[obj.name]) obj = obj.parent
+    // Go up to a parent whose name matches if needed
+    while (obj && !FACE_TO_AXIS[obj.name]) {
+      obj = obj.parent
+    }
     const pickedName = obj?.name || raycasterIntersect.current.object.name
     const axisName = FACE_TO_AXIS[pickedName] ?? pickedName
     animateCamToAxis(sceneInfra, axisName).catch(reportRejection)
@@ -366,8 +348,6 @@ const updateRayCaster = (
   mouse: Vector2,
   camera: Camera,
   raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>,
-  renderer: WebGLRenderer,
-  scene: Scene,
   hoveredObjectRef: MutableRefObject<Object3D | null>,
   originalMaterialsRef: MutableRefObject<Map<string, Material | Material[]>>,
   hoverMaterialRef: MutableRefObject<Material | null>
@@ -398,8 +378,6 @@ const updateRayCaster = (
   } else {
     raycasterIntersect.current = null
   }
-
-  renderer.render(scene, camera)
 }
 
 function applyHighlight(
@@ -493,7 +471,10 @@ async function animateCamToAxis(sceneInfra: SceneInfra, axis: AxisNames) {
 }
 
 type StandardMesh = Mesh<BufferGeometry, MeshStandardMaterial>
-function isStandardMesh(object: Object3D): object is StandardMesh {
+function isStandardMesh(object: Object3D | undefined): object is StandardMesh {
+  if (!object) {
+    return false
+  }
   const mesh = object as Mesh
   if (mesh.material instanceof MeshStandardMaterial) {
     return true
