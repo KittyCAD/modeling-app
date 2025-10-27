@@ -11,7 +11,6 @@ import type {
   ExtrudeFacePlane,
   DefaultPlane,
   OffsetPlane,
-  Store,
   SketchTool,
   PlaneVisibilityMap,
   ModelingMachineContext,
@@ -86,7 +85,7 @@ import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
-import { addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
+import { addOffsetPlane, addShell, addHole } from '@src/lang/modifyAst/faces'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
   addExtrude,
@@ -138,8 +137,7 @@ import type {
 import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { EXECUTION_TYPE_REAL, VALID_PANE_IDS } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
+import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   getEventForSegmentSelection,
@@ -251,6 +249,7 @@ export type ModelingMachineEvent =
   | { type: 'Sweep'; data?: ModelingCommandSchema['Sweep'] }
   | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
   | { type: 'Shell'; data?: ModelingCommandSchema['Shell'] }
+  | { type: 'Hole'; data?: ModelingCommandSchema['Hole'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
@@ -311,7 +310,6 @@ export type ModelingMachineEvent =
       type: 'xstate.done.actor.setup-client-side-sketch-segments9'
     }
   | { type: 'Set mouse state'; data: MouseState }
-  | { type: 'Set context'; data: Partial<Store> }
   | {
       type: 'Set Segment Overlays'
       data: SegmentOverlayPayload
@@ -366,41 +364,6 @@ export type ModelingMachineEvent =
       type: 'sketch solve tool changed'
       data: { tool: EquipTool | null }
     }
-
-// export type MoveDesc = { line: number; snippet: string }
-
-export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
-
-interface PersistedModelingContext {
-  openPanes: Store['openPanes']
-}
-
-type PersistedKeys = keyof PersistedModelingContext
-export const PersistedValues: PersistedKeys[] = ['openPanes']
-
-export const getPersistedContext = (): Partial<PersistedModelingContext> => {
-  const fallbackContextObject = {
-    openPanes: isDesktop()
-      ? (['feature-tree', 'code', 'files'] satisfies Store['openPanes'])
-      : (['feature-tree', 'code'] satisfies Store['openPanes']),
-  }
-
-  try {
-    const c: Partial<PersistedModelingContext> =
-      (typeof window !== 'undefined' &&
-        JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) ||
-      fallbackContextObject
-
-    // filter out any invalid IDs at read time
-    if (c.openPanes) {
-      c.openPanes = c.openPanes.filter((p) => VALID_PANE_IDS.includes(p))
-    }
-    return c
-  } catch (e) {
-    console.error(e)
-    return fallbackContextObject
-  }
-}
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
 
@@ -1314,28 +1277,6 @@ export const modelingMachine = setup({
           console.warn('error', e)
         })
     },
-    'Set context': assign({
-      store: ({ context: { store }, event }) => {
-        if (event.type !== 'Set context') return store
-        if (!event.data) return store
-
-        const result = {
-          ...store,
-          ...event.data,
-        }
-        const persistedContext: Partial<PersistedModelingContext> = {}
-        for (const key of PersistedValues) {
-          persistedContext[key] = result[key]
-        }
-        if (typeof window !== 'undefined') {
-          window.localStorage.setItem(
-            PERSIST_MODELING_CONTEXT,
-            JSON.stringify(persistedContext)
-          )
-        }
-        return result
-      },
-    }),
     'remove draft entities': ({ context }) => {
       const theSceneInfra = context.sceneInfra ? context.sceneInfra : sceneInfra
       const draftPoint = theSceneInfra.scene.getObjectByName(DRAFT_POINT)
@@ -2907,7 +2848,7 @@ export const modelingMachine = setup({
           ...input.data,
         })
         if (err(astResult)) {
-          return Promise.reject(new Error("Couldn't add extrude statement"))
+          return Promise.reject(astResult)
         }
 
         const { modifiedAst, pathToNode } = astResult
@@ -3250,6 +3191,57 @@ export const modelingMachine = setup({
           },
           {
             focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
+    holeAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Hole'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        // Remove once this command isn't experimental anymore
+        let astWithNewSetting: Node<Program> | undefined
+        if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
+          const ast = setExperimentalFeatures(codeManager.code, {
+            type: 'Allow',
+          })
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const astResult = addHole({
+          ...input,
+          ast: astWithNewSetting ?? kclManager.ast,
+          artifactGraph: kclManager.artifactGraph,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+            rustContext,
+          },
+          {
+            focusPath: [pathToNode],
+            // This is needed because hole::hole is experimental,
+            // and mock exec will fail due to that
+            skipErrorsOnMockExecution: true,
           }
         )
       }
@@ -4270,6 +4262,12 @@ export const modelingMachine = setup({
 
         Shell: {
           target: 'Applying shell',
+          reenter: true,
+          guard: 'no kcl errors',
+        },
+
+        Hole: {
+          target: 'Applying hole',
           reenter: true,
           guard: 'no kcl errors',
         },
@@ -5958,6 +5956,22 @@ export const modelingMachine = setup({
       },
     },
 
+    'Applying hole': {
+      invoke: {
+        src: 'holeAstMod',
+        id: 'holeAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Hole') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
     'Applying fillet': {
       invoke: {
         src: 'filletAstMod',
@@ -6337,11 +6351,6 @@ export const modelingMachine = setup({
     'Set mouse state': {
       reenter: false,
       actions: 'Set mouse state',
-    },
-
-    'Set context': {
-      reenter: false,
-      actions: 'Set context',
     },
 
     'Set Segment Overlays': {

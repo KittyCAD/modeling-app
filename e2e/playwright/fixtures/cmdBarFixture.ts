@@ -197,6 +197,12 @@ export class CmdBarFixture {
     }
   }
   expectState = async (expected: CmdBarSerialised) => {
+    if (expected.stage === 'review') {
+      // TODO: this was added to fix flaky tests that #8595 caused,
+      // since increasing the timeout in the .poll call below didn't help.
+      await this.page.waitForTimeout(1000)
+    }
+
     return expect.poll(() => this._serialiseCmdBar()).toEqual(expected)
   }
   /**
@@ -438,10 +444,7 @@ export class CmdBarFixture {
 
   async expectCommandName(value: string) {
     // Check the placeholder project name exists
-    const actual = await this.cmdBarElement
-      .getByTestId('command-name')
-      .textContent()
-    const expected = value
-    expect(actual).toBe(expected)
+    const cmdNameElement = this.cmdBarElement.getByTestId('command-name')
+    return await expect(cmdNameElement).toHaveText(value)
   }
 }

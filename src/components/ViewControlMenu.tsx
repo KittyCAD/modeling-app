@@ -12,11 +12,16 @@ import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { sceneInfra, settingsActor } from '@src/lib/singletons'
+import { getLayout, sceneInfra, settingsActor } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
+import {
+  DefaultLayoutPaneID,
+  getOpenPanes,
+  setOpenPanes,
+} from '@src/lib/layout'
 
 export function useViewControlMenuItems() {
   const { state: modelingState, send: modelingSend } = useModelingContext()
@@ -80,17 +85,15 @@ export function useViewControlMenuItems() {
         Center view on selection
       </ContextMenuItem>,
       <ContextMenuItem
+        key="go-to-selection"
         onClick={() => {
           if (firstValidSelection?.codeRef?.range) {
             // First, open the code pane if it's not already open
-            if (!modelingState.context.store.openPanes.includes('code')) {
-              modelingSend({
-                type: 'Set context',
-                data: {
-                  openPanes: [...modelingState.context.store.openPanes, 'code'],
-                },
-              })
-            }
+            const rootLayout = getLayout()
+            setOpenPanes(rootLayout, [
+              ...getOpenPanes({ rootLayout }),
+              DefaultLayoutPaneID.Code,
+            ])
 
             // Navigate to the source code location
             modelingSend({
@@ -159,7 +162,6 @@ export function useViewControlMenuItems() {
       planeOrFaceId,
       firstValidSelection,
       modelingSend,
-      modelingState.context.store.openPanes,
       modelingState.context.store.useNewSketchMode,
       sketching,
       snapToGrid,

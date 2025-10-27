@@ -46,15 +46,16 @@ export function addPatternCircular3D({
   useOriginal?: boolean
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  // Clone the AST to avoid mutating the original
+  // Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // Prepare function arguments from selected solids
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
     modifiedAst,
-    nodeToEdit,
+    mNodeToEdit,
     lastChildLookup,
     artifactGraph
   )
@@ -137,7 +138,7 @@ export function addPatternCircular3D({
 
   // Insert variables for labeled arguments only when we actually use the variable
   if ('variableName' in instances && instances.variableName) {
-    insertVariableAndOffsetPathToNode(instances, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(instances, modifiedAst, mNodeToEdit)
   }
   // Only insert axis variable if we used valueOrVariable (not for strings or arrays)
   if (
@@ -146,7 +147,7 @@ export function addPatternCircular3D({
     'variableName' in axis &&
     axis.variableName
   ) {
-    insertVariableAndOffsetPathToNode(axis, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(axis, modifiedAst, mNodeToEdit)
   }
   // Only insert center variable if we used valueOrVariable (not for arrays)
   if (
@@ -154,17 +155,17 @@ export function addPatternCircular3D({
     'variableName' in center &&
     center.variableName
   ) {
-    insertVariableAndOffsetPathToNode(center, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(center, modifiedAst, mNodeToEdit)
   }
   if (arcDegrees && 'variableName' in arcDegrees && arcDegrees.variableName) {
-    insertVariableAndOffsetPathToNode(arcDegrees, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(arcDegrees, modifiedAst, mNodeToEdit)
   }
 
   // Insert the function call into the AST at the appropriate location
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PATTERN,
   })
@@ -197,15 +198,16 @@ export function addPatternLinear3D({
   useOriginal?: boolean
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  // Clone the AST to avoid mutating the original
+  // Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // Prepare function arguments from selected solids
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
     modifiedAst,
-    nodeToEdit,
+    mNodeToEdit,
     lastChildLookup,
     artifactGraph
   )
@@ -257,10 +259,10 @@ export function addPatternLinear3D({
 
   // Insert variables for labeled arguments only when we actually use the variable
   if ('variableName' in instances && instances.variableName) {
-    insertVariableAndOffsetPathToNode(instances, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(instances, modifiedAst, mNodeToEdit)
   }
   if ('variableName' in distance && distance.variableName) {
-    insertVariableAndOffsetPathToNode(distance, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(distance, modifiedAst, mNodeToEdit)
   }
   // Only insert axis variable if we used valueOrVariable (not for strings or arrays)
   if (
@@ -269,14 +271,14 @@ export function addPatternLinear3D({
     'variableName' in axis &&
     axis.variableName
   ) {
-    insertVariableAndOffsetPathToNode(axis, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(axis, modifiedAst, mNodeToEdit)
   }
 
   // Insert the function call into the AST at the appropriate location
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.PATTERN,
   })

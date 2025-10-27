@@ -4,7 +4,7 @@ import { type settings } from '@src/lib/settings/initialSettings'
 import type CodeManager from '@src/lang/codeManager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type { SystemIOActor } from '@src/lib/singletons'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { MlEphantConversation2 } from '@src/components/MlEphantConversation2'
 import type { MlEphantManagerActor2 } from '@src/machines/mlEphantManagerMachine2'
@@ -19,6 +19,12 @@ import type { FileEntry, Project } from '@src/lib/project'
 import type { BillingActor } from '@src/machines/billingMachine'
 import { useSelector } from '@xstate/react'
 import type { User, MlCopilotServerMessage, MlCopilotTool } from '@kittycad/lib'
+import { useSearchParams } from 'react-router-dom'
+/** URL query param key we watch for prompt input
+ *  we should never set this search param from the app,
+ *  only read and delete.
+ */
+const SEARCH_PARAM_PROMPT_KEY = 'ttc-prompt'
 
 export const MlEphantConversationPane2 = (props: {
   mlEphantManagerActor: MlEphantManagerActor2
@@ -32,6 +38,8 @@ export const MlEphantConversationPane2 = (props: {
   settings: typeof settings
   user?: User
 }) => {
+  const [defaultPrompt, setDefaultPrompt] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
   const conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
   })
@@ -110,7 +118,7 @@ export const MlEphantConversationPane2 = (props: {
     // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
     if (props.theProject !== undefined) {
       props.mlEphantManagerActor.send({
-        type: MlEphantManagerStates2.Setup,
+        type: MlEphantManagerTransitions2.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
         conversationId,
       })
@@ -178,6 +186,20 @@ export const MlEphantConversationPane2 = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [props.settings.meta.id.current])
 
+  // We watch the URL for a query parameter to set the defaultPrompt
+  // for the conversation.
+  useEffect(() => {
+    const ttcPromptParam = searchParams.get(SEARCH_PARAM_PROMPT_KEY)
+    if (ttcPromptParam) {
+      setDefaultPrompt(ttcPromptParam)
+
+      // Now clear that param
+      const newSearchParams = new URLSearchParams(searchParams)
+      newSearchParams.delete(SEARCH_PARAM_PROMPT_KEY)
+      setSearchParams(newSearchParams, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
+
   return (
     <MlEphantConversation2
       isLoading={conversation === undefined}
@@ -192,6 +214,7 @@ export const MlEphantConversationPane2 = (props: {
       disabled={isProcessing}
       hasPromptCompleted={isProcessing}
       userAvatarSrc={props.user?.image}
+      defaultPrompt={defaultPrompt}
     />
   )
 }

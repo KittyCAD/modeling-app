@@ -25,6 +25,11 @@ import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/pr
 
 import toast from 'react-hot-toast'
 
+export enum MlEphantSetupErrors {
+  ConversationNotFound = 'conversation not found',
+  NoRefParentSend = 'no ref parent send',
+}
+
 type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends {
   type: 'user'
 }
@@ -48,6 +53,7 @@ export enum MlEphantManagerTransitions2 {
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
   ConversationClose = 'conversation-close',
+  CacheSetupAndConnect = 'cache-setup-and-connect',
 }
 
 export type MlEphantManagerEvents2 =
@@ -58,6 +64,12 @@ export type MlEphantManagerEvents2 =
   | {
       type: 'xstate.error.actor.0.(machine).setup'
       conversationId: undefined
+    }
+  | {
+      type: MlEphantManagerTransitions2.CacheSetupAndConnect
+      refParentSend: (event: MlEphantManagerEvents2) => void
+      // If not present, a new conversation is created.
+      conversationId?: string
     }
   | {
       type: MlEphantManagerStates2.Setup
@@ -108,6 +120,10 @@ export interface MlEphantManagerContext2 {
   lastMessageId?: number
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
+  cachedSetup?: {
+    refParentSend?: (event: MlEphantManagerEvents2) => void
+    conversationId?: string
+  }
 }
 
 export const mlEphantDefaultContext2 = (args: {
@@ -192,6 +208,18 @@ export const mlEphantManagerMachine2 = setup({
         toast.error(event.error.message)
       }
     },
+    cacheSetup: assign({
+      cachedSetup: ({ event }) => {
+        assertEvent(event, MlEphantManagerTransitions2.CacheSetupAndConnect)
+        return {
+          refParentSend: event.refParentSend,
+          conversationId: event.conversationId,
+        }
+      },
+    }),
+    clearCacheSetup: assign({
+      cachedSetup: undefined,
+    }),
   },
   actors: {
     [MlEphantManagerStates2.Setup]: fromPromise(async function (
@@ -199,11 +227,17 @@ export const mlEphantManagerMachine2 = setup({
     ): Promise<Partial<MlEphantManagerContext2>> {
       assertEvent(args.input.event, MlEphantManagerStates2.Setup)
 
+      // On future reenters of this actor it will not have args.input.event
+      // You must read from the context for the cached conversationId
+      const maybeConversationId =
+        args.input.context?.cachedSetup?.conversationId
+      const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
+
       const ws = await Socket(
         WebSocket,
         '/ws/ml/copilot' +
-          (args.input.event.conversationId
-            ? `?conversation_id=${args.input.event.conversationId}&replay=true`
+          (maybeConversationId
+            ? `?conversation_id=${maybeConversationId}&replay=true`
             : ''),
         args.input.context.apiToken
       )
@@ -265,10 +299,14 @@ export const mlEphantManagerMachine2 = setup({
 
             if (
               'error' in response &&
-              response.error.detail.includes('conversation not found')
+              response.error.detail.includes(
+                MlEphantSetupErrors.ConversationNotFound
+              )
             ) {
               ws.close()
-              onRejected()
+              // Pass that the conversation is not found to the onError handler which will set the conversationId
+              // to undefined to get us a new id.
+              onRejected(MlEphantSetupErrors.ConversationNotFound)
               return
             }
 
@@ -341,10 +379,14 @@ export const mlEphantManagerMachine2 = setup({
               return
             }
 
-            args.input.event.refParentSend({
-              type: MlEphantManagerTransitions2.ResponseReceive,
-              response,
-            })
+            if (theRefParentSend) {
+              theRefParentSend({
+                type: MlEphantManagerTransitions2.ResponseReceive,
+                response,
+              })
+            } else {
+              onRejected(MlEphantSetupErrors.NoRefParentSend)
+            }
           })
 
           ws.addEventListener('close', function (event: Event) {
@@ -414,7 +456,13 @@ export const mlEphantManagerMachine2 = setup({
   context: mlEphantDefaultContext2,
   states: {
     [S.Await]: {
-      on: transitions([MlEphantManagerStates2.Setup]),
+      on: {
+        [MlEphantManagerTransitions2.CacheSetupAndConnect]: {
+          target: MlEphantManagerStates2.Setup,
+          actions: ['cacheSetup'],
+        },
+        ...transitions([MlEphantManagerStates2.Setup]),
+      },
     },
     [MlEphantManagerStates2.Setup]: {
       invoke: {
@@ -423,6 +471,7 @@ export const mlEphantManagerMachine2 = setup({
             MlEphantManagerStates2.Setup,
             'xstate.done.state.(machine).ready',
             'xstate.error.actor.0.(machine).setup',
+            MlEphantManagerTransitions2.CacheSetupAndConnect,
           ])
 
           return {
@@ -437,10 +486,31 @@ export const mlEphantManagerMachine2 = setup({
         src: MlEphantManagerStates2.Setup,
         onDone: {
           target: MlEphantManagerStates2.Ready,
-          actions: [assign(({ event }) => event.output)],
+          actions: [assign(({ event }) => event.output), 'clearCacheSetup'],
         },
         onError: {
           target: MlEphantManagerStates2.Setup,
+          actions: [
+            assign(({ event, context }) => {
+              if (event.error === MlEphantSetupErrors.ConversationNotFound) {
+                // set the conversation Id to undefined to have the reenter make a new conversation id
+                return {
+                  cachedSetup: {
+                    refParentSend: context.cachedSetup?.refParentSend,
+                    conversationId: undefined,
+                  },
+                }
+              }
+
+              // otherwise keep the same one
+              return {
+                cachedSetup: {
+                  refParentSend: context.cachedSetup?.refParentSend,
+                  conversationId: context.cachedSetup?.conversationId,
+                },
+              }
+            }),
+          ],
           reenter: true,
         },
       },
