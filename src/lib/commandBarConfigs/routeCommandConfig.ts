@@ -50,5 +50,9 @@ export function createRouteCommands(
     },
   }
 
-  return { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand }
+  return {
+    RouteTelemetryCommand,
+    RouteHomeCommand,
+    RouteSettingsCommand,
+  }
 }
