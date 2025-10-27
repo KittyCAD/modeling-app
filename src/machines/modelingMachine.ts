@@ -76,7 +76,7 @@ import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
-import { addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
+import { addOffsetPlane, addShell, addHole } from '@src/lang/modifyAst/faces'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
   addExtrude,
@@ -240,6 +240,7 @@ export type ModelingMachineEvent =
   | { type: 'Sweep'; data?: ModelingCommandSchema['Sweep'] }
   | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
   | { type: 'Shell'; data?: ModelingCommandSchema['Shell'] }
+  | { type: 'Hole'; data?: ModelingCommandSchema['Hole'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
@@ -3176,6 +3177,57 @@ export const modelingMachine = setup({
         )
       }
     ),
+    holeAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Hole'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        // Remove once this command isn't experimental anymore
+        let astWithNewSetting: Node<Program> | undefined
+        if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
+          const ast = setExperimentalFeatures(codeManager.code, {
+            type: 'Allow',
+          })
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const astResult = addHole({
+          ...input,
+          ast: astWithNewSetting ?? kclManager.ast,
+          artifactGraph: kclManager.artifactGraph,
+        })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+            rustContext,
+          },
+          {
+            focusPath: [pathToNode],
+            // This is needed because hole::hole is experimental,
+            // and mock exec will fail due to that
+            skipErrorsOnMockExecution: true,
+          }
+        )
+      }
+    ),
     filletAstMod: fromPromise(
       async ({
         input,
@@ -4072,6 +4124,12 @@ export const modelingMachine = setup({
 
         Shell: {
           target: 'Applying shell',
+          reenter: true,
+          guard: 'no kcl errors',
+        },
+
+        Hole: {
+          target: 'Applying hole',
           reenter: true,
           guard: 'no kcl errors',
         },
@@ -5751,6 +5809,22 @@ export const modelingMachine = setup({
             kclManager: context.kclManager,
             editorManager: context.editorManager,
           }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying hole': {
+      invoke: {
+        src: 'holeAstMod',
+        id: 'holeAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Hole') return undefined
+          return event.data
         },
         onDone: ['idle'],
         onError: {

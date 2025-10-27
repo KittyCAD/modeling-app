@@ -41,6 +41,8 @@ import type {
   ModelingMachineContext,
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
+
+import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
 import {
   addExtrude,
   addLoft,
@@ -182,6 +184,23 @@ export type ModelingCommandSchema = {
     // KCL stdlib arguments, note that we'll be inferring solids from faces here
     faces: Selections
     thickness: KclCommandValue
+  }
+  Hole: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments, note that we'll be inferring solids from faces here
+    face: Selections
+    cutAt: KclCommandValue
+    holeBody: HoleBody
+    blindDepth?: KclCommandValue
+    blindDiameter?: KclCommandValue
+    holeType: HoleType
+    counterboreDepth?: KclCommandValue
+    counterboreDiameter?: KclCommandValue
+    countersinkAngle?: KclCommandValue
+    countersinkDiameter?: KclCommandValue
+    holeBottom: HoleBottom
+    drillPointAngle?: KclCommandValue
   }
   Fillet: {
     // Enables editing workflow
@@ -828,6 +847,126 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+      },
+    },
+  },
+  Hole: {
+    description: 'Standard holes that could be drilled or cut into a 3D solid.',
+    icon: 'hole',
+    needsReview: true,
+    status: 'experimental',
+    reviewMessage:
+      'The argument cutAt specifies where to place the hole given as absolute coordinates in the global scene. Point selection will be allowed in the future, and more hole bottoms and hole types are coming soon.',
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      face: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        multiple: false,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      cutAt: {
+        inputType: 'kcl',
+        allowArrays: true,
+        required: true,
+        defaultValue: '[0, 0]',
+      },
+      holeBody: {
+        inputType: 'options',
+        required: true,
+        options: [{ name: 'Blind', isCurrent: true, value: 'blind' }],
+      },
+      blindDepth: {
+        inputType: 'kcl',
+        required: (context) =>
+          ['blind'].includes(context.argumentsToSubmit.holeBody as string),
+        hidden: (context) =>
+          !['blind'].includes(context.argumentsToSubmit.holeBody as string),
+        defaultValue: KCL_DEFAULT_LENGTH,
+      },
+      blindDiameter: {
+        inputType: 'kcl',
+        required: (context) =>
+          ['blind'].includes(context.argumentsToSubmit.holeBody as string),
+        hidden: (context) =>
+          !['blind'].includes(context.argumentsToSubmit.holeBody as string),
+        defaultValue: '1',
+      },
+      holeType: {
+        inputType: 'options',
+        required: true,
+        options: [
+          { name: 'Simple', isCurrent: true, value: 'simple' },
+          { name: 'Counterbore', isCurrent: true, value: 'counterbore' },
+          { name: 'Countersink', isCurrent: true, value: 'countersink' },
+        ],
+      },
+      counterboreDepth: {
+        inputType: 'kcl',
+        required: (context) =>
+          ['counterbore'].includes(
+            context.argumentsToSubmit.holeType as string
+          ),
+        hidden: (context) =>
+          !['counterbore'].includes(
+            context.argumentsToSubmit.holeType as string
+          ),
+        defaultValue: '1',
+      },
+      counterboreDiameter: {
+        inputType: 'kcl',
+        required: (context) =>
+          ['counterbore'].includes(
+            context.argumentsToSubmit.holeType as string
+          ),
+        hidden: (context) =>
+          !['counterbore'].includes(
+            context.argumentsToSubmit.holeType as string
+          ),
+        defaultValue: '2',
+      },
+      countersinkAngle: {
+        inputType: 'kcl',
+        required: (context) =>
+          ['countersink'].includes(
+            context.argumentsToSubmit.holeType as string
+          ),
+        hidden: (context) =>
+          !['countersink'].includes(
+            context.argumentsToSubmit.holeType as string
+          ),
+        defaultValue: '90deg',
+      },
+      countersinkDiameter: {
+        inputType: 'kcl',
+        required: (context) =>
+          ['countersink'].includes(
+            context.argumentsToSubmit.holeType as string
+          ),
+        hidden: (context) =>
+          !['countersink'].includes(
+            context.argumentsToSubmit.holeType as string
+          ),
+        defaultValue: '2',
+      },
+      holeBottom: {
+        inputType: 'options',
+        required: true,
+        options: [
+          { name: 'Flat', isCurrent: true, value: 'flat' },
+          { name: 'Drill', isCurrent: false, value: 'drill' },
+        ],
+      },
+      drillPointAngle: {
+        inputType: 'kcl',
+        required: (context) =>
+          ['drill'].includes(context.argumentsToSubmit.holeBottom as string),
+        hidden: (context) =>
+          !['drill'].includes(context.argumentsToSubmit.holeBottom as string),
+        defaultValue: '110deg',
       },
     },
   },
