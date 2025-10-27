@@ -556,6 +556,7 @@ test.describe('Command bar tests', () => {
 b = a * a
 c = 3 + a
 theta = 45deg
+export exported = 1
 `
     await context.folderSetupFn(async (dir) => {
       const testProject = join(dir, projectName)
@@ -682,9 +683,48 @@ theta = 45deg
         stage: 'commandBarClosed',
       })
     })
+    await test.step(`Edit an exported parameter via command bar`, async () => {
+      await cmdBar.cmdBarOpenBtn.click()
+      await cmdBar.chooseCommand('edit parameter')
+      await cmdBar
+        .selectOption({
+          name: 'exported',
+        })
+        .click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Edit parameter',
+        currentArgKey: 'value',
+        currentArgValue: '1',
+        headerArguments: {
+          Name: 'exported',
+          Value: '',
+        },
+        highlightedHeaderArg: 'value',
+      })
+      await cmdBar.argumentInput.locator('[contenteditable]').fill('2')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Edit parameter',
+        headerArguments: {
+          Name: 'exported',
+          Value: '2',
+        },
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'commandBarClosed',
+      })
+    })
 
     await editor.expectEditor.toContain(
-      `a = 5b = a * amyParameter001 = ${newValue}c = 3 + atheta = 45deg + 1deg`
+      `a = 5b = a * a
+myParameter001 = ${newValue}
+c = 3 + a
+theta = 45deg + 1deg
+export exported = 2`,
+      { shouldNormalise: true }
     )
   })
 
