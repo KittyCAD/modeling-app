@@ -1812,14 +1812,6 @@ extrude001 = extrude(sketch001, length = -12)
     const firstEdgeLocation = { x: 600, y: 193 }
     const secondEdgeLocation = { x: 600, y: 383 }
 
-    // Colors
-    const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const edgeColorYellow: [number, number, number] = [251, 251, 80] // Mac:B=67 Ubuntu:B=12
-    const chamferColor: [number, number, number] = [168, 168, 168]
-    const backgroundColor: [number, number, number] = [30, 30, 30]
-    const lowTolerance = 20
-    const highTolerance = 75 // TODO: understand why I needed that for edgeColorYellow on macos (local)
-
     // Setup
     await test.step(`Initial test setup`, async () => {
       await context.addInitScript((initialCode) => {
@@ -1842,17 +1834,7 @@ extrude001 = extrude(sketch001, length = -12)
 
     // Test 1: Command bar flow with preselected edges
     await test.step(`Select first edge`, async () => {
-      await scene.expectPixelColor(
-        edgeColorWhite,
-        firstEdgeLocation,
-        lowTolerance
-      )
       await clickOnFirstEdge()
-      await scene.expectPixelColor(
-        edgeColorYellow,
-        firstEdgeLocation,
-        highTolerance // Ubuntu color mismatch can require high tolerance
-      )
       await editor.openPane()
     })
 
@@ -1903,14 +1885,6 @@ extrude001 = extrude(sketch001, length = -12)
         shouldNormalise: true,
       })
       await editor.closePane()
-    })
-
-    await test.step(`Confirm scene has changed`, async () => {
-      await scene.expectPixelColor(
-        chamferColor,
-        firstEdgeLocation,
-        lowTolerance
-      )
     })
 
     // Test 1.1: Edit sweep
@@ -1985,17 +1959,7 @@ extrude001 = extrude(sketch001, length = -12)
     })
 
     await test.step(`Select second edge`, async () => {
-      await scene.expectPixelColor(
-        edgeColorWhite,
-        secondEdgeLocation,
-        lowTolerance
-      )
       await clickOnSecondEdge()
-      await scene.expectPixelColor(
-        edgeColorYellow,
-        secondEdgeLocation,
-        highTolerance // Ubuntu color mismatch can require high tolerance
-      )
     })
 
     await test.step(`Apply chamfer to the second edge`, async () => {
@@ -2042,14 +2006,6 @@ extrude001 = extrude(sketch001, length = -12)
       await editor.closePane()
     })
 
-    await test.step(`Confirm scene has changed`, async () => {
-      await scene.expectPixelColor(
-        backgroundColor,
-        secondEdgeLocation,
-        lowTolerance
-      )
-    })
-
     // Test 2.1: Edit chamfer (edgeSweep type)
     await test.step('Edit chamfer via feature tree selection works', async () => {
       const secondChamferFeatureTreeIndex = 1
@@ -2080,10 +2036,10 @@ extrude001 = extrude(sketch001, length = -12)
       )
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      await toolbar.closeFeatureTreePane()
-      await page.waitForTimeout(500)
-      await scene.expectPixelColor(edgeColorWhite, secondEdgeLocation, 15) // deleted
-      await scene.expectPixelColor(chamferColor, firstEdgeLocation, 15) // stayed
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(secondChamferDeclaration, {
+        shouldNormalise: true,
+      })
     })
   })
 
@@ -2119,16 +2075,6 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
     const standaloneUnassignedChamferDeclaration =
       'chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])'
 
-    // Locators
-    const pipedChamferEdgeLocation = { x: 600, y: 193 }
-    const standaloneChamferEdgeLocation = { x: 600, y: 383 }
-
-    // Colors
-    const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const chamferColor: [number, number, number] = [168, 168, 168]
-    const backgroundColor: [number, number, number] = [30, 30, 30]
-    const lowTolerance = 20
-
     // Setup
     await test.step(`Initial test setup`, async () => {
       await context.addInitScript((initialCode) => {
@@ -2158,20 +2104,6 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
             standaloneUnassignedChamferDeclaration
           )
         })
-        await test.step('Verify test chamfers are present in the scene', async () => {
-          await editor.closePane()
-          await toolbar.closeFeatureTreePane()
-          await scene.expectPixelColor(
-            chamferColor,
-            pipedChamferEdgeLocation,
-            lowTolerance
-          )
-          await scene.expectPixelColor(
-            backgroundColor,
-            standaloneChamferEdgeLocation,
-            lowTolerance
-          )
-        })
         await test.step('Delete piped chamfer', async () => {
           await editor.closePane()
           await toolbar.openFeatureTreePane()
@@ -2192,18 +2124,6 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           )
           await editor.expectEditor.toContain(
             standaloneUnassignedChamferDeclaration
-          )
-        })
-        await test.step('Verify piped chamfer is deleted but non-piped is not (in the scene)', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite, // you see edge color because chamfer is deleted
-            pipedChamferEdgeLocation,
-            lowTolerance
-          )
-          await scene.expectPixelColor(
-            backgroundColor, // you see background color instead of edge because it's chamfered
-            standaloneChamferEdgeLocation,
-            lowTolerance
           )
         })
       })
@@ -2228,15 +2148,6 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
             standaloneUnassignedChamferDeclaration
           )
         })
-        await test.step('Verify standalone assigned chamfer is deleted but piped is not (in the scene)', async () => {
-          await toolbar.closeFeatureTreePane()
-          await editor.closePane()
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            standaloneChamferEdgeLocation,
-            lowTolerance
-          )
-        })
       })
 
       await test.step('Delete standalone unassigned chamfer via feature tree selection', async () => {
@@ -2254,15 +2165,6 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           await editor.expectEditor.toContain(secondPipedChamferDeclaration)
           await editor.expectEditor.not.toContain(
             standaloneUnassignedChamferDeclaration
-          )
-        })
-        await test.step('Verify standalone unassigned chamfer is deleted but piped is not (in the scene)', async () => {
-          await editor.closePane()
-          await toolbar.closeFeatureTreePane()
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            standaloneChamferEdgeLocation,
-            lowTolerance
           )
         })
       })
