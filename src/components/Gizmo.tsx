@@ -1,8 +1,15 @@
 import { Popover } from '@headlessui/react'
 import type { MutableRefObject } from 'react'
 import { useEffect, useRef } from 'react'
-import type { Camera, Intersection, Object3D } from 'three'
-import type { Mesh, Material, BufferGeometry } from 'three'
+import { OrthographicCamera } from 'three'
+import type {
+  Mesh,
+  Material,
+  BufferGeometry,
+  Camera,
+  Intersection,
+  Object3D,
+} from 'three'
 import {
   Clock,
   Matrix4,
@@ -30,10 +37,6 @@ import { useSettings } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 
-const CANVAS_SIZE = 120
-const FOV = 35
-const CAMERA_DISTANCE = 2.2
-const GIZMO_CUBE_URL = '/clientSideSceneAssets/gizmo_cube.glb'
 const FACE_TO_AXIS: Record<string, AxisNames> = {
   face_front: AxisNames.NEG_Y,
   face_back: AxisNames.Y,
@@ -49,15 +52,40 @@ export default function Gizmo() {
   const menuItems = useViewControlMenuItems()
   const wrapperRef = useRef<HTMLDivElement>(null!)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const raycasterIntersect = useRef<Intersection<Object3D> | null>(null)
+  const raycasterIntersect = useRef<Intersection | null>(null)
   const cameraPassiveUpdateTimer = useRef(0)
   const disableOrbitRef = useRef(false)
-  const raycasterObjectsRef = useRef<Object3D[]>([])
-  const hoveredObjectRef = useRef<Object3D | null>(null)
-  const originalMaterialsRef = useRef<Map<string, Material | Material[]>>(
+  const raycasterObjectsRef = useRef<StandardMesh[]>([])
+  const hoveredObjectRef = useRef<StandardMesh | null>(null)
+  const originalMaterialsRef = useRef<Map<string, MeshStandardMaterial>>(
     new Map()
   )
-  const hoverMaterialRef = useRef<Material | null>(null)
+  const hoverMaterialRef = useRef<MeshStandardMaterial | null>(null)
+
+  const isPerspective =
+    settings.modeling.cameraProjection.current === 'perspective'
+  const cameraRef = useRef<Camera>(createCamera(isPerspective))
+  const sceneRef = useRef(new Scene())
+
+  useEffect(() => {
+    const previousCamera = cameraRef.current
+    const camera = createCamera(isPerspective)
+    cameraRef.current = camera
+
+    // Light that follows the camera
+    const camLight = new DirectionalLight(0xffffff, 1.6)
+    camLight.position.set(2.5, 0.25, 1)
+    camera.add(camLight)
+
+    // Add camera to scene so child light is evaluated
+    sceneRef.current.add(camera)
+
+    return () => {
+      if (previousCamera?.parent) {
+        previousCamera.parent.remove(previousCamera)
+      }
+    }
+  }, [isPerspective])
 
   // Temporary fix for #4040:
   // Disable gizmo orbiting in sketch mode
@@ -83,23 +111,12 @@ export default function Gizmo() {
 
     const canvas = canvasRef.current
     const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true })
-    renderer.setSize(CANVAS_SIZE, CANVAS_SIZE)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.setSize(120, 120)
+    renderer.setPixelRatio(window.devicePixelRatio)
 
-    const scene = new Scene()
-    const camera = createCamera()
-
-    // Minimal lighting for GLTF PBR materials
     const ambient = new AmbientLight(0xffffff, 1.3)
-    scene.add(ambient)
-    // Add camera to scene so child light is evaluated
-    scene.add(camera)
-    // Light that follows the camera
-    const camLight = new DirectionalLight(0xffffff, 1.6)
-    camLight.position.set(2.5, 0.25, 1)
-    camera.add(camLight)
+    sceneRef.current.add(ambient)
 
-    // A subtle lighter-white hover material
     hoverMaterialRef.current = new MeshStandardMaterial({
       color: 0xffffff,
       emissive: 0xffffff,
@@ -110,14 +127,14 @@ export default function Gizmo() {
 
     const loader = new GLTFLoader()
     loader.load(
-      GIZMO_CUBE_URL,
+      '/clientSideSceneAssets/gizmo_cube.glb',
       (gltf) => {
         const root = gltf.scene
         root.position.set(0, 0, 0)
         root.scale.set(0.675, 0.675, 0.675)
-        scene.add(root)
+        sceneRef.current.add(root)
 
-        const clickableFaces: Object3D[] = []
+        const clickableFaces: StandardMesh[] = []
         Object.keys(FACE_TO_AXIS).forEach((name) => {
           const obj = root.getObjectByName(name)
           if (isStandardMesh(obj)) {
@@ -145,13 +162,13 @@ export default function Gizmo() {
           raycasterObjectsRef.current,
           raycaster,
           mouse,
-          camera,
+          cameraRef.current,
           raycasterIntersect,
           hoveredObjectRef,
           originalMaterialsRef,
           hoverMaterialRef
         )
-        renderer.render(scene, camera)
+        renderer.render(sceneRef.current, cameraRef.current)
       } else {
         // Reset hovered highlight
         if (hoveredObjectRef.current) {
@@ -163,9 +180,6 @@ export default function Gizmo() {
         }
         raycasterIntersect.current = null // Clear intersection
       }
-    }
-
-    if (wrapperRef.current) {
     }
 
     const { disposeMouseEvents } = initializeMouseEvents(
@@ -184,13 +198,13 @@ export default function Gizmo() {
     const animate = () => {
       const delta = clock.getDelta()
       updateCameraOrientation(
-        camera,
+        cameraRef.current,
         currentQuaternion,
         sceneInfra.camControls.camera.quaternion,
         delta,
         cameraPassiveUpdateTimer
       )
-      renderer.render(scene, camera)
+      renderer.render(sceneRef.current, cameraRef.current)
     }
     sceneInfra.camControls.cameraChange.add(animate)
 
@@ -248,14 +262,19 @@ function GizmoDropdown({ items }: { items: React.ReactNode[] }) {
   )
 }
 
-const createCamera = (): PerspectiveCamera => {
-  const cam = new PerspectiveCamera(FOV, 1, 0.1, 10)
-  cam.position.set(0, 0, CAMERA_DISTANCE)
-  cam.lookAt(0, 0, 0)
-  return cam
-}
+const createCamera = (
+  isPerspective: boolean
+): PerspectiveCamera | OrthographicCamera => {
+  const camera = isPerspective
+    ? new PerspectiveCamera(35, 1, 0.1, 10)
+    : new OrthographicCamera()
+  if (camera instanceof OrthographicCamera) {
+    camera.zoom = 1.3
+    camera.updateProjectionMatrix()
+  }
 
-// Removed procedural gizmo; faces are provided by GLB nodes
+  return camera
+}
 
 const updateCameraOrientation = (
   camera: Camera,
@@ -271,9 +290,7 @@ const updateCameraOrientation = (
   ) {
     const slerpFactor = 1 - Math.exp(-30 * deltaTime)
     currentQuaternion.slerp(targetQuaternion, slerpFactor).normalize()
-    camera.position
-      .set(0, 0, CAMERA_DISTANCE)
-      .applyQuaternion(currentQuaternion)
+    camera.position.set(0, 0, 2.2).applyQuaternion(currentQuaternion)
     camera.quaternion.copy(currentQuaternion)
     cameraPassiveUpdateTimer.current = 0
   }
@@ -347,10 +364,10 @@ const updateRayCaster = (
   raycaster: Raycaster,
   mouse: Vector2,
   camera: Camera,
-  raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>,
-  hoveredObjectRef: MutableRefObject<Object3D | null>,
-  originalMaterialsRef: MutableRefObject<Map<string, Material | Material[]>>,
-  hoverMaterialRef: MutableRefObject<Material | null>
+  raycasterIntersect: MutableRefObject<Intersection | null>,
+  hoveredObjectRef: MutableRefObject<StandardMesh | null>,
+  originalMaterialsRef: MutableRefObject<Map<string, MeshStandardMaterial>>,
+  hoverMaterialRef: MutableRefObject<MeshStandardMaterial | null>
 ) => {
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(objects, true)
@@ -366,15 +383,17 @@ const updateRayCaster = (
 
   if (intersects.length) {
     const obj = intersects[0].object
-    if (hoveredObjectRef.current !== obj) {
-      applyHighlight(
-        obj,
-        originalMaterialsRef.current,
-        hoverMaterialRef.current
-      )
-      hoveredObjectRef.current = obj
+    if (isStandardMesh(obj)) {
+      if (hoveredObjectRef.current !== obj) {
+        applyHighlight(
+          obj,
+          originalMaterialsRef.current,
+          hoverMaterialRef.current
+        )
+        hoveredObjectRef.current = obj
+      }
+      raycasterIntersect.current = intersects[0] // filter first object
     }
-    raycasterIntersect.current = intersects[0] // filter first object
   } else {
     raycasterIntersect.current = null
   }
@@ -382,20 +401,19 @@ const updateRayCaster = (
 
 function applyHighlight(
   target: Object3D,
-  originalMaterials: Map<string, Material | Material[]>,
-  hoverMaterial: Material | null
+  originalMaterials: Map<string, MeshStandardMaterial>,
+  hoverMaterial: MeshStandardMaterial | null
 ) {
-  const mesh = target as Mesh
+  if (!isStandardMesh(target)) {
+    console.warn('target should be a standard mesh')
+    return
+  }
   if (!hoverMaterial) return
-  if (!originalMaterials.has(mesh.uuid)) {
+  if (!originalMaterials.has(target.uuid)) {
     // Save original material(s)
-    originalMaterials.set(mesh.uuid, mesh.material)
-    // Apply hover material (for multi-material meshes, apply to all slots)
-    if (isArray(mesh.material)) {
-      mesh.material = mesh.material.map(() => hoverMaterial)
-    } else {
-      mesh.material = hoverMaterial
-    }
+    originalMaterials.set(target.uuid, target.material)
+    // Apply hover material
+    target.material = hoverMaterial
   }
 }
 
@@ -404,6 +422,7 @@ function restoreHighlight(
   originalMaterials: Map<string, Material | Material[]>
 ) {
   const mesh = target as Mesh
+
   const record = originalMaterials.get(mesh.uuid)
   if (!record) return
   mesh.material = record
@@ -466,7 +485,6 @@ async function animateCamToAxis(sceneInfra: SceneInfra, axis: AxisNames) {
     await camControls.tweenCameraToQuaternion(targetQuat, target, 500, false)
     camControls.enableRotate = true
     sceneInfra.stop()
-
   } finally {
     camControls.syncDirection = 'engineToClient'
   }
