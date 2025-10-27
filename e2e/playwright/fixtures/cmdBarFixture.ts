@@ -444,10 +444,7 @@ export class CmdBarFixture {
 
   async expectCommandName(value: string) {
     // Check the placeholder project name exists
-    const actual = await this.cmdBarElement
-      .getByTestId('command-name')
-      .textContent()
-    const expected = value
-    expect(actual).toBe(expected)
+    const cmdNameElement = this.cmdBarElement.getByTestId('command-name')
+    return await expect(cmdNameElement).toHaveText(value)
   }
 }

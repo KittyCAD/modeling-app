@@ -754,9 +754,9 @@ export exported = 2`,
   test(
     'Command palette can be opened via query parameter - web',
     { tag: '@web' },
-    async ({ page, cmdBar, scene }) => {
+    async ({ page, cmdBar }) => {
       await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
-      await scene.settled(cmdBar)
+      await cmdBar.expectCommandName('Settings · app · theme')
       await cmdBar.expectState({
         stage: 'arguments',
         commandName: 'Settings · app · theme',
