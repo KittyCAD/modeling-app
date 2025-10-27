@@ -56,6 +56,7 @@ export default function Gizmo() {
     settings.modeling.cameraProjection.current === 'perspective'
   const cameraRef = useRef<Camera>(createCamera(isPerspective))
   const sceneRef = useRef(new Scene())
+  const lastMouse = useRef<Vector2 | null>(null)
 
   useEffect(() => {
     const previousCamera = cameraRef.current
@@ -63,9 +64,9 @@ export default function Gizmo() {
     cameraRef.current = camera
 
     // Light that follows the camera
-    const camLight = new DirectionalLight(0xffffff, 1.6)
-    camLight.position.set(2.5, 0.25, 1)
-    camera.add(camLight)
+    const light = new DirectionalLight(0xffffff, 1.6)
+    light.position.set(2.5, 0.25, 1)
+    camera.add(light)
 
     // Add camera to scene so child light is evaluated
     sceneRef.current.add(camera)
@@ -170,18 +171,47 @@ export default function Gizmo() {
       }
     }
 
-    const { disposeMouseEvents } = initializeMouseEvents(
-      canvas,
-      raycasterIntersect,
-      sceneInfra,
-      disableOrbitRef,
-      doRayCast,
-      wrapperRef
-    )
+    const handleMouseMove = (event: MouseEvent) => {
+      const { left, top, width, height } = canvas.getBoundingClientRect()
+      const mousePos = new Vector2(
+        ((event.clientX - left) / width) * 2 - 1,
+        ((event.clientY - top) / height) * -2 + 1
+      )
+      lastMouse.current = mousePos
+      doRayCast(mousePos)
+    }
+
+    const handleClick = () => {
+      // If orbits are disabled, skip click logic
+      if (!raycasterIntersect.current) {
+        // If we have no current intersection (e.g., orbit disabled), do a forced raycast at the last mouse position
+        if (lastMouse.current) {
+          doRayCast(lastMouse, true)
+        }
+        if (!raycasterIntersect.current) {
+          return
+        }
+      }
+      let obj: Object3D | null = raycasterIntersect.current.object
+      // Go up to a parent whose name matches if needed
+      while (obj && !isOrientationTargetName(obj.name)) {
+        obj = obj.parent
+      }
+      const pickedName = obj?.name || raycasterIntersect.current.object.name
+      const targetQuat = orientationQuaternionForName(pickedName)
+      if (targetQuat) {
+        animateCameraToQuaternion(sceneInfra, targetQuat).catch(reportRejection)
+      }
+    }
+
+    // Add the event listener to the div wrapper around the canvas
+    const canvasParent = wrapperRef.current
+    canvasParent.addEventListener('mousemove', handleMouseMove)
+    canvasParent.addEventListener('click', handleClick)
 
     const clock = new Clock()
     const clientCamera = sceneInfra.camControls.camera
-    let currentQuaternion = new Quaternion().copy(clientCamera.quaternion)
+    const currentQuaternion = new Quaternion().copy(clientCamera.quaternion)
 
     const animate = () => {
       const delta = clock.getDelta()
@@ -193,12 +223,17 @@ export default function Gizmo() {
         cameraPassiveUpdateTimer
       )
       renderer.render(sceneRef.current, cameraRef.current)
+      if (lastMouse.current) {
+        doRayCast(lastMouse.current)
+      }
     }
     sceneInfra.camControls.cameraChange.add(animate)
 
     return () => {
       renderer.dispose()
-      disposeMouseEvents()
+
+      canvasParent.removeEventListener('mousemove', handleMouseMove)
+      canvasParent.removeEventListener('click', handleClick)
       sceneInfra.camControls.cameraChange.remove(animate)
     }
   }, [])
@@ -295,57 +330,6 @@ const quaternionsEqual = (
     Math.abs(q1.z - q2.z) < tolerance &&
     Math.abs(q1.w - q2.w) < tolerance
   )
-}
-
-const initializeMouseEvents = (
-  canvas: HTMLCanvasElement,
-  raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>,
-  sceneInfra: SceneInfra,
-  disableOrbitRef: MutableRefObject<boolean>,
-  doRayCast: (mouse: Vector2, force?: boolean) => void,
-  wrapperRef: React.MutableRefObject<HTMLDivElement>
-): { mouse: Vector2; disposeMouseEvents: () => void } => {
-  const mouse = new Vector2()
-  mouse.x = 1 // fix initial mouse position issue
-
-  const handleMouseMove = (event: MouseEvent) => {
-    const { left, top, width, height } = canvas.getBoundingClientRect()
-    mouse.x = ((event.clientX - left) / width) * 2 - 1
-    mouse.y = ((event.clientY - top) / height) * -2 + 1
-    doRayCast(mouse)
-  }
-
-  const handleClick = () => {
-    // If orbits are disabled, skip click logic
-    if (!raycasterIntersect.current) {
-      // If we have no current intersection (e.g., orbit disabled), do a forced raycast at the last mouse position
-      doRayCast(mouse, true)
-      if (!raycasterIntersect.current) {
-        return
-      }
-    }
-    let obj: Object3D | null = raycasterIntersect.current.object
-    // Go up to a parent whose name matches if needed
-    while (obj && !isOrientationTargetName(obj.name)) {
-      obj = obj.parent
-    }
-    const pickedName = obj?.name || raycasterIntersect.current.object.name
-    const targetQuat = orientationQuaternionForName(pickedName)
-    if (!targetQuat) return
-    animateCamToQuaternion(sceneInfra, targetQuat).catch(reportRejection)
-  }
-
-  // Add the event listener to the div wrapper around the canvas
-  wrapperRef.current.addEventListener('mousemove', handleMouseMove)
-  wrapperRef.current.addEventListener('click', handleClick)
-  const wrapperRefClosure = wrapperRef.current
-
-  const disposeMouseEvents = () => {
-    wrapperRefClosure.removeEventListener('mousemove', handleMouseMove)
-    wrapperRefClosure.removeEventListener('click', handleClick)
-  }
-
-  return { mouse, disposeMouseEvents }
 }
 
 const updateRayCaster = (
@@ -446,8 +430,7 @@ function applyMaxAnisotropyToObject(obj: Object3D, maxAnisotropy: number) {
   })
 }
 
-// New: animate directly to a quaternion (no engine vantage lookAt)
-async function animateCamToQuaternion(
+async function animateCameraToQuaternion(
   sceneInfra: SceneInfra,
   targetQuat: Quaternion
 ) {

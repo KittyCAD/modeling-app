@@ -837,10 +837,10 @@ export class CameraControls {
         this.camera.zoom = this.camera.zoom / this.pendingZoom
         this.pendingZoom = null
 
+        this.camera.updateProjectionMatrix()
         // Keep mouse world point fixed during zoom (without this zooming is pivoted around the camera position,
         // regardless of current mouse position)
         if (this._zoomFocus && this._lastWheelEvent) {
-          this.camera.updateProjectionMatrix()
           // The new focused point in world space after zooming
           const newFocus = this.screenToWorld(this._lastWheelEvent)
           const diff = this._zoomFocus.clone().sub(newFocus)
