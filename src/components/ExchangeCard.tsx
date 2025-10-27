@@ -74,7 +74,7 @@ export const ExchangeCardStatus = (props: {
 
 export const AvatarUser = (props: { src?: string }) => {
   return (
-    <div className="rounded-sm overflow-hidden">
+    <div className="rounded-sm overflow-hidden h-7 w-7">
       {props.src ? (
         <img
           src={props.src || ''}
