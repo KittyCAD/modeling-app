@@ -341,10 +341,10 @@ const fromDataToComponent = (
     switch (type) {
       case 'text': {
         return (
-          <>
-            <Text key={options.key} content={thought.reasoning.content} />
+          <div key={options.key}>
+            <Text content={thought.reasoning.content} />
             <Spacer />
-          </>
+          </div>
         )
       }
       case 'markdown': {
