@@ -272,7 +272,7 @@ function SplitLayoutContents({
         id={layout.id}
         direction={direction}
         className="bg-3"
-        onLayout={(l) => setNewSizes(l)}
+        onLayout={setNewSizes}
         ref={ref}
       >
         {layout.children.map((a, i, arr) => {
@@ -281,7 +281,7 @@ function SplitLayoutContents({
           const isCollapsed = isCollapsedPaneLayout(a)
           const size = isCollapsed ? undefined : layout.sizes[i]
           return (
-            <Fragment key={`${a.id}-${i}-${isCollapsed}`}>
+            <Fragment key={a.id}>
               <Panel
                 id={a.id}
                 key={a.id}
