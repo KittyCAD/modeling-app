@@ -439,12 +439,13 @@ function applyMaxAnisotropyToObject(obj: Object3D, maxAnisotropy: number) {
 }
 
 async function animateCamToAxis(sceneInfra: SceneInfra, axis: AxisNames) {
-  // Temporarily switch to clientToEngine to allow tweening
   const camControls = sceneInfra.camControls
-  const prevSync = camControls.syncDirection
   camControls.syncDirection = 'clientToEngine'
 
   try {
+    sceneInfra.stop()
+    camControls.enableRotate = true
+
     const cam = camControls.camera
     const target = camControls.target.clone()
     const distance = cam.position.distanceTo(target)
@@ -461,12 +462,13 @@ async function animateCamToAxis(sceneInfra: SceneInfra, axis: AxisNames) {
     const lookMat = new Matrix4().lookAt(eye, target, up)
     const targetQuat = new Quaternion().setFromRotationMatrix(lookMat)
 
-    await camControls._tweenCameraToQuaternion(targetQuat, target, 500, false)
+    sceneInfra.animate()
+    await camControls.tweenCameraToQuaternion(targetQuat, target, 500, false)
+    camControls.enableRotate = true
+    sceneInfra.stop()
 
-    // After tween, send engine look_at to reconcile and keep in sync
-    await camControls.updateCameraToAxis(axis)
   } finally {
-    camControls.syncDirection = prevSync
+    camControls.syncDirection = 'engineToClient'
   }
 }
 
