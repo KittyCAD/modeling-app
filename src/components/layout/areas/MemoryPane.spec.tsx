@@ -1,4 +1,4 @@
-import { processMemory } from '@src/components/ModelingSidebar/ModelingPanes/MemoryPane'
+import { processMemory } from '@src/components/layout/areas/MemoryPane'
 import { assertParse } from '@src/lang/wasm'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
