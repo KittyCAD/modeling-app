@@ -36,7 +36,7 @@ const attemptToConnectToEngine = async ({
     void (async () => {
       try {
         if (!authToken) {
-          return reject('authToken is missing on connection initialilzation')
+          return reject('authToken is missing on connection initialization')
         }
 
         if (engineCommandManager.started) {

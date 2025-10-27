@@ -1,6 +1,6 @@
 import { cloneElement } from 'react'
 
-const CustomIconMap = {
+const CustomIconMap = Object.freeze({
   arc: (
     <svg
       viewBox="0 0 20 20"
@@ -854,6 +854,14 @@ const CustomIconMap = {
       <path
         d="M16 12V15H13.5M16 12V9M16 12H13.5M4 12V15H6.5M4 12V9M4 12H6.5M4 9V6H6.5M4 9H6.5M16 9V6H13.5M16 9H13.5M6.5 12V15M6.5 12H7.5M6.5 15H13.5M13.5 15V12M13.5 12H12.5M7.5 12V9M7.5 12H10M7.5 9H8.75M7.5 9H6.5M10 12V9M10 12H12.5M10 9H11.25M10 9H8.75M12.5 12V9M12.5 9H13.5M12.5 9H11.25M13.5 9V6M13.5 6H11.25M11.25 9V6M11.25 6H8.75M8.75 9V6M8.75 6H6.5M6.5 9V6"
         stroke="currentColor"
+      />
+    </svg>
+  ),
+  layout: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16.5 15.5H3.5V5.5H16.5V15.5ZM4.5 14.5H7.5V6.5H4.5V14.5ZM8.5 14.5H15.5V12H8.5V14.5ZM8.5 11H15.5V6.5H8.5V11Z"
+        fill="currentColor"
       />
     </svg>
   ),
@@ -1778,9 +1786,15 @@ const CustomIconMap = {
       </g>
     </svg>
   ),
-} as const
+})
 
 export type CustomIconName = keyof typeof CustomIconMap
+export function isCustomIconName(name: unknown): name is CustomIconName {
+  if (typeof name !== 'string') {
+    return false
+  }
+  return Object.keys(CustomIconMap).indexOf(name) >= 0
+}
 
 export const CustomIcon = ({
   name,
