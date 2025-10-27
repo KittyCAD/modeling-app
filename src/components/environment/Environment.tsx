@@ -69,10 +69,10 @@ export function EnvironmentDescription() {
         </li>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
           <p className="text-chalkboard-100 dark:text-chalkboard-10">
-            WebSocket (real-time-data)
+            WebSockets
           </p>{' '}
           <p className="text-chalkboard-60 dark:text-chalkboard-40">
-            {env().VITE_KITTYCAD_API_WEBSOCKET_URL}
+            {env().VITE_KITTYCAD_WEBSOCKET_URL}
           </p>
           <p className="text-chalkboard-60 dark:text-chalkboard-40">
             {env().VITE_MLEPHANT_WEBSOCKET_URL}
