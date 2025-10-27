@@ -4,6 +4,9 @@ import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import {
   retrieveFaceSelectionsFromOpArgs,
+  retrieveHoleBodyArgs,
+  retrieveHoleBottomArgs,
+  retrieveHoleTypeArgs,
   retrieveNonDefaultPlaneSelectionFromOpArg,
 } from '@src/lang/modifyAst/faces'
 import {
@@ -662,6 +665,81 @@ const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
   const argDefaultValues: ModelingCommandSchema['Shell'] = {
     faces,
     thickness,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
+ * Gather up the argument values for the Hole command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'Hole',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  // 1. Map the unlabeled face arguments to solid2d selections
+  if (!operation.unlabeledArg || !operation.labeledArgs?.face) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const result = retrieveFaceSelectionsFromOpArgs(
+    operation.unlabeledArg,
+    operation.labeledArgs.face,
+    kclManager.artifactGraph
+  )
+  if (err(result)) return { reason: result.message }
+  const { faces: face } = result
+
+  // 2.1 Convert the required arg from string to KclExpression
+  const cutAt = await extractKclArgument(operation, 'cutAt')
+  if ('error' in cutAt) return { reason: cutAt.error }
+
+  // 2.2 Handle the holeBody required 'mode' arg and its related optional args
+  const body = await retrieveHoleBodyArgs(operation.labeledArgs?.holeBody)
+  if (err(body)) return { reason: body.message }
+  const { holeBody, blindDepth, blindDiameter } = body
+
+  // 2.3 Handle the holeBottom required 'mode' arg and its related optional args
+  const bottom = await retrieveHoleBottomArgs(operation.labeledArgs?.holeBottom)
+  if (err(bottom)) return { reason: bottom.message }
+  const { holeBottom, drillPointAngle } = bottom
+
+  // 2.3 Handle the holeType required 'mode' arg and its related optional args
+  const rType = await retrieveHoleTypeArgs(operation.labeledArgs?.holeType)
+  if (err(rType)) return { reason: rType.message }
+  const {
+    holeType,
+    counterboreDepth,
+    counterboreDiameter,
+    countersinkAngle,
+    countersinkDiameter,
+  } = rType
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Hole'] = {
+    face,
+    cutAt,
+    holeType,
+    counterboreDepth,
+    counterboreDiameter,
+    countersinkAngle,
+    countersinkDiameter,
+    holeBody,
+    blindDiameter,
+    blindDepth,
+    holeBottom,
+    drillPointAngle,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -1580,6 +1658,13 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'shell',
     prepareToEdit: prepareToEditShell,
     supportsAppearance: true,
+    supportsTransform: true,
+  },
+  'hole::hole': {
+    label: 'Hole',
+    icon: 'hole',
+    prepareToEdit: prepareToEditHole,
+    supportsAppearance: false,
     supportsTransform: true,
   },
   startSketchOn: {
