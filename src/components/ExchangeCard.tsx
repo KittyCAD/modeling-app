@@ -9,6 +9,7 @@ import ms from 'ms'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
+import { PlaceholderLine } from '@src/components/PlaceholderLine'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -173,10 +174,7 @@ export const ChatBubble = (props: {
           {hasVisibleChildren(props.children) ? (
             props.children
           ) : (
-            <div
-              className="animate-pulse animate-shimmer h-4 w-full p-1 bg-chalkboard-80 rounded"
-              data-testid={props.placeholderTestId}
-            ></div>
+            <PlaceholderLine data-testid={props.placeholderTestId} />
           )}
         </div>
       </div>
