@@ -38,7 +38,7 @@ test.describe('Testing Gizmo', () => {
     },
     {
       testDescription: 'front view',
-      clickPosition: { x: 935, y: 413 },
+      clickPosition: { x: 931, y: 411 },
       expectedCameraPosition: { x: 800, y: -5012.02, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },

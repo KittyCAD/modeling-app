@@ -11,7 +11,6 @@ import type {
   ExtrudeFacePlane,
   DefaultPlane,
   OffsetPlane,
-  Store,
   SketchTool,
   PlaneVisibilityMap,
   ModelingMachineContext,
@@ -138,8 +137,7 @@ import type {
 import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { EXECUTION_TYPE_REAL, VALID_PANE_IDS } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
+import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   getEventForSegmentSelection,
@@ -310,7 +308,6 @@ export type ModelingMachineEvent =
       type: 'xstate.done.actor.setup-client-side-sketch-segments9'
     }
   | { type: 'Set mouse state'; data: MouseState }
-  | { type: 'Set context'; data: Partial<Store> }
   | {
       type: 'Set Segment Overlays'
       data: SegmentOverlayPayload
@@ -365,41 +362,6 @@ export type ModelingMachineEvent =
       type: 'sketch solve tool changed'
       data: { tool: EquipTool | null }
     }
-
-// export type MoveDesc = { line: number; snippet: string }
-
-export const PERSIST_MODELING_CONTEXT = 'persistModelingContext'
-
-interface PersistedModelingContext {
-  openPanes: Store['openPanes']
-}
-
-type PersistedKeys = keyof PersistedModelingContext
-export const PersistedValues: PersistedKeys[] = ['openPanes']
-
-export const getPersistedContext = (): Partial<PersistedModelingContext> => {
-  const fallbackContextObject = {
-    openPanes: isDesktop()
-      ? (['feature-tree', 'code', 'files'] satisfies Store['openPanes'])
-      : (['feature-tree', 'code'] satisfies Store['openPanes']),
-  }
-
-  try {
-    const c: Partial<PersistedModelingContext> =
-      (typeof window !== 'undefined' &&
-        JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) ||
-      fallbackContextObject
-
-    // filter out any invalid IDs at read time
-    if (c.openPanes) {
-      c.openPanes = c.openPanes.filter((p) => VALID_PANE_IDS.includes(p))
-    }
-    return c
-  } catch (e) {
-    console.error(e)
-    return fallbackContextObject
-  }
-}
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
 
@@ -1304,28 +1266,6 @@ export const modelingMachine = setup({
           console.warn('error', e)
         })
     },
-    'Set context': assign({
-      store: ({ context: { store }, event }) => {
-        if (event.type !== 'Set context') return store
-        if (!event.data) return store
-
-        const result = {
-          ...store,
-          ...event.data,
-        }
-        const persistedContext: Partial<PersistedModelingContext> = {}
-        for (const key of PersistedValues) {
-          persistedContext[key] = result[key]
-        }
-        if (typeof window !== 'undefined') {
-          window.localStorage.setItem(
-            PERSIST_MODELING_CONTEXT,
-            JSON.stringify(persistedContext)
-          )
-        }
-        return result
-      },
-    }),
     'remove draft entities': ({ context }) => {
       const theSceneInfra = context.sceneInfra ? context.sceneInfra : sceneInfra
       const draftPoint = theSceneInfra.scene.getObjectByName(DRAFT_POINT)
@@ -2897,7 +2837,7 @@ export const modelingMachine = setup({
           ...input.data,
         })
         if (err(astResult)) {
-          return Promise.reject(new Error("Couldn't add extrude statement"))
+          return Promise.reject(astResult)
         }
 
         const { modifiedAst, pathToNode } = astResult
@@ -6327,11 +6267,6 @@ export const modelingMachine = setup({
     'Set mouse state': {
       reenter: false,
       actions: 'Set mouse state',
-    },
-
-    'Set context': {
-      reenter: false,
-      actions: 'Set context',
     },
 
     'Set Segment Overlays': {
