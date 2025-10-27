@@ -14,11 +14,7 @@ import {
   Vector3,
   WebGLRenderer,
 } from 'three'
-import {
-  AmbientLight,
-  DirectionalLight,
-  MeshStandardMaterial,
-} from 'three'
+import { AmbientLight, DirectionalLight, MeshStandardMaterial } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -499,9 +495,7 @@ async function animateCamToAxis(sceneInfra: SceneInfra, axis: AxisNames) {
 type StandardMesh = Mesh<BufferGeometry, MeshStandardMaterial>
 function isStandardMesh(object: Object3D): object is StandardMesh {
   const mesh = object as Mesh
-  if (
-    mesh.material instanceof MeshStandardMaterial
-  ) {
+  if (mesh.material instanceof MeshStandardMaterial) {
     return true
   } else {
     if (mesh.isMesh) {
