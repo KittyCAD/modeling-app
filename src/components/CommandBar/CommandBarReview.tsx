@@ -10,7 +10,7 @@ import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   const commandBarState = useCommandBarState()
   const {
-    context: { argumentsToSubmit, selectedCommand },
+    context: { argumentsToSubmit, selectedCommand, reviewValidationError },
   } = commandBarState
 
   useHotkeys('backspace+meta', stepBack, {
@@ -57,7 +57,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     e.preventDefault()
     commandBarActor.send({
       type: 'Submit command',
-      output: argumentsToSubmit,
+      output: { argumentsToSubmit },
     })
   }
 
@@ -77,13 +77,24 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     return s
   }, [selectedCommand, commandBarState.context])
   return (
-    <CommandBarHeaderFooter stepBack={stepBack}>
+    <CommandBarHeaderFooter
+      stepBack={stepBack}
+      submitDisabled={!!reviewValidationError}
+    >
       {selectedCommand?.reviewMessage && (
         <>
           <p className="px-4 py-2 text-sm">
             {selectedCommand.reviewMessage instanceof Function
               ? selectedCommand.reviewMessage(commandBarState.context)
               : selectedCommand.reviewMessage}
+          </p>
+          <CommandBarDivider />
+        </>
+      )}
+      {reviewValidationError && (
+        <>
+          <p className="px-4 py-2 text-red-500 text-sm">
+            {reviewValidationError}
           </p>
           <CommandBarDivider />
         </>
