@@ -1,21 +1,25 @@
 import { Popover } from '@headlessui/react'
 import type { MutableRefObject } from 'react'
 import { useEffect, useRef } from 'react'
-import type { Camera, ColorRepresentation, Intersection, Object3D } from 'three'
+import type { Camera, Intersection, Object3D } from 'three'
+import type { Mesh, Material, BufferGeometry } from 'three'
 import {
-  BoxGeometry,
   Clock,
-  Color,
-  Mesh,
-  MeshBasicMaterial,
-  OrthographicCamera,
+  Matrix4,
+  PerspectiveCamera,
   Quaternion,
   Raycaster,
   Scene,
-  SphereGeometry,
   Vector2,
+  Vector3,
   WebGLRenderer,
 } from 'three'
+import {
+  AmbientLight,
+  DirectionalLight,
+  MeshStandardMaterial,
+} from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -28,16 +32,19 @@ import { AxisNames } from '@src/lib/constants'
 import { sceneInfra } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
 
-const CANVAS_SIZE = 80
-const FRUSTUM_SIZE = 0.5
-const AXIS_LENGTH = 0.35
-const AXIS_WIDTH = 0.02
-enum AxisColors {
-  X = '#fa6668',
-  Y = '#11eb6b',
-  Z = '#6689ef',
-  Gray = '#c6c7c2',
+const CANVAS_SIZE = 120
+const FOV = 35
+const CAMERA_DISTANCE = 2.2
+const GIZMO_CUBE_URL = '/clientSideSceneAssets/gizmo_cube.glb'
+const FACE_TO_AXIS: Record<string, AxisNames> = {
+  face_front: AxisNames.NEG_Y,
+  face_back: AxisNames.Y,
+  face_right: AxisNames.X,
+  face_left: AxisNames.NEG_X,
+  face_top: AxisNames.Z,
+  face_bottom: AxisNames.NEG_Z,
 }
 
 export default function Gizmo() {
@@ -49,6 +56,12 @@ export default function Gizmo() {
   const raycasterIntersect = useRef<Intersection<Object3D> | null>(null)
   const cameraPassiveUpdateTimer = useRef(0)
   const disableOrbitRef = useRef(false)
+  const raycasterObjectsRef = useRef<Object3D[]>([])
+  const hoveredObjectRef = useRef<Object3D | null>(null)
+  const originalMaterialsRef = useRef<Map<string, Material | Material[]>>(
+    new Map()
+  )
+  const hoverMaterialRef = useRef<Material | null>(null)
 
   // Temporary fix for #4040:
   // Disable gizmo orbiting in sketch mode
@@ -79,25 +92,101 @@ export default function Gizmo() {
 
     const scene = new Scene()
     const camera = createCamera()
-    const { gizmoAxes, gizmoAxisHeads } = createGizmo()
-    scene.add(...gizmoAxes, ...gizmoAxisHeads)
+
+    // Minimal lighting for GLTF PBR materials
+    const ambient = new AmbientLight(0xffffff, 1.3)
+    scene.add(ambient)
+    // Add camera to scene so child light is evaluated
+    scene.add(camera)
+    // Light that follows the camera
+    const camLight = new DirectionalLight(0xffffff, 1.6)
+    camLight.position.set(2.5, 0.25, 1)
+    camera.add(camLight)
+
+    // A subtle lighter-white hover material
+    hoverMaterialRef.current = new MeshStandardMaterial({
+      color: 0xffffff,
+      emissive: 0xffffff,
+      emissiveIntensity: 0.2,
+      roughness: 0.6,
+      metalness: 0.0,
+    })
+
+    const loader = new GLTFLoader()
+    loader.load(
+      GIZMO_CUBE_URL,
+      (gltf) => {
+        const root = gltf.scene
+        root.position.set(0, 0, 0)
+        // Scale to fit nicely in the orthographic frustum
+        root.scale.set(0.675, 0.675, 0.675)
+        scene.add(root)
+
+        const clickableFaces: Object3D[] = []
+        Object.keys(FACE_TO_AXIS).forEach((name) => {
+          const obj = root.getObjectByName(name)
+          if (obj) {
+            // Ensure raycasting can work on Mesh; if group, pick first mesh child
+            let pick: Object3D | null = obj
+            if ((obj as Mesh).isMesh !== true && obj.children.length) {
+              const meshChild = obj.getObjectByProperty(
+                'type',
+                'Mesh'
+              ) as Object3D | null
+              if (meshChild) pick = meshChild
+            }
+            if (pick) {
+              pick.name = name
+              // Ensure unique material instance per face to avoid shared mutations
+              const pickMesh = pick as Mesh
+              if (isArray(pickMesh.material)) {
+                pickMesh.material = pickMesh.material.map((m) => m.clone())
+              } else if (pickMesh.material) {
+                pickMesh.material = pickMesh.material.clone()
+              }
+              clickableFaces.push(pick)
+            }
+          }
+        })
+        raycasterObjectsRef.current = clickableFaces
+
+        // Max anisotropy for all textures in this gizmo
+        const maxAniso = renderer.capabilities.getMaxAnisotropy()
+        applyMaxAnisotropyToObject(root, maxAniso)
+      },
+      undefined,
+      (e) => {
+        console.log('err', e)
+        // failed to load; leave without clickable faces
+        raycasterObjectsRef.current = []
+      }
+    )
 
     const raycaster = new Raycaster()
-    const raycasterObjects = [...gizmoAxisHeads]
-    const doRayCast = (mouse: Vector2) => {
-      // If orbits are disabled, skip click logic
-      if (!disableOrbitRef.current) {
+    const doRayCast = (mouse: Vector2, force = false) => {
+      // Allow forced raycasts on click even if orbiting is disabled
+      if (force || !disableOrbitRef.current) {
         updateRayCaster(
-          raycasterObjects,
+          raycasterObjectsRef.current,
           raycaster,
           mouse,
           camera,
           raycasterIntersect,
           renderer,
-          scene
+          scene,
+          hoveredObjectRef,
+          originalMaterialsRef,
+          hoverMaterialRef
         )
       } else {
-        raycasterObjects.forEach((object) => object.scale.set(1, 1, 1)) // Reset scales
+        // Reset hovered highlight
+        if (hoveredObjectRef.current) {
+          restoreHighlight(
+            hoveredObjectRef.current,
+            originalMaterialsRef.current
+          )
+          hoveredObjectRef.current = null
+        }
         raycasterIntersect.current = null // Clear intersection
       }
     }
@@ -185,71 +274,17 @@ function GizmoDropdown({ items }: { items: React.ReactNode[] }) {
   )
 }
 
-const createCamera = (): OrthographicCamera => {
-  return new OrthographicCamera(
-    -FRUSTUM_SIZE,
-    FRUSTUM_SIZE,
-    FRUSTUM_SIZE,
-    -FRUSTUM_SIZE,
-    0.5,
-    3
-  )
+const createCamera = (): PerspectiveCamera => {
+  const cam = new PerspectiveCamera(FOV, 1, 0.1, 10)
+  cam.position.set(0, 0, CAMERA_DISTANCE)
+  cam.lookAt(0, 0, 0)
+  return cam
 }
 
-const createGizmo = () => {
-  const gizmoAxes = [
-    createAxis(AXIS_LENGTH, AXIS_WIDTH, AxisColors.X, 0, 'z'),
-    createAxis(AXIS_LENGTH, AXIS_WIDTH, AxisColors.Y, Math.PI / 2, 'z'),
-    createAxis(AXIS_LENGTH, AXIS_WIDTH, AxisColors.Z, -Math.PI / 2, 'y'),
-    createAxis(AXIS_LENGTH, AXIS_WIDTH, AxisColors.Gray, Math.PI, 'z'),
-    createAxis(AXIS_LENGTH, AXIS_WIDTH, AxisColors.Gray, -Math.PI / 2, 'z'),
-    createAxis(AXIS_LENGTH, AXIS_WIDTH, AxisColors.Gray, Math.PI / 2, 'y'),
-  ]
-
-  const gizmoAxisHeads = [
-    createAxisHead(AxisNames.X, AxisColors.X, [AXIS_LENGTH, 0, 0]),
-    createAxisHead(AxisNames.Y, AxisColors.Y, [0, AXIS_LENGTH, 0]),
-    createAxisHead(AxisNames.Z, AxisColors.Z, [0, 0, AXIS_LENGTH]),
-    createAxisHead(AxisNames.NEG_X, AxisColors.Gray, [-AXIS_LENGTH, 0, 0]),
-    createAxisHead(AxisNames.NEG_Y, AxisColors.Gray, [0, -AXIS_LENGTH, 0]),
-    createAxisHead(AxisNames.NEG_Z, AxisColors.Gray, [0, 0, -AXIS_LENGTH]),
-  ]
-
-  return { gizmoAxes, gizmoAxisHeads }
-}
-
-const createAxis = (
-  length: number,
-  width: number,
-  color: ColorRepresentation,
-  rotation = 0,
-  axis = 'x'
-): Mesh => {
-  const geometry = new BoxGeometry(length, width, width)
-  geometry.translate(length / 2, 0, 0)
-  const material = new MeshBasicMaterial({ color: new Color(color) })
-  const mesh = new Mesh(geometry, material)
-  mesh.rotation[axis as 'x' | 'y' | 'z'] = rotation
-  return mesh
-}
-
-const createAxisHead = (
-  name: AxisNames,
-  color: ColorRepresentation,
-  position: number[]
-): Mesh => {
-  const geometry = new SphereGeometry(0.065, 16, 8)
-  const material = new MeshBasicMaterial({ color: new Color(color) })
-  const mesh = new Mesh(geometry, material)
-
-  mesh.position.set(position[0], position[1], position[2])
-  mesh.updateMatrixWorld()
-  mesh.name = name
-  return mesh
-}
+// Removed procedural gizmo; faces are provided by GLB nodes
 
 const updateCameraOrientation = (
-  camera: OrthographicCamera,
+  camera: Camera,
   currentQuaternion: Quaternion,
   targetQuaternion: Quaternion,
   deltaTime: number,
@@ -262,7 +297,9 @@ const updateCameraOrientation = (
   ) {
     const slerpFactor = 1 - Math.exp(-30 * deltaTime)
     currentQuaternion.slerp(targetQuaternion, slerpFactor).normalize()
-    camera.position.set(0, 0, 1).applyQuaternion(currentQuaternion)
+    camera.position
+      .set(0, 0, CAMERA_DISTANCE)
+      .applyQuaternion(currentQuaternion)
     camera.quaternion.copy(currentQuaternion)
     cameraPassiveUpdateTimer.current = 0
   }
@@ -286,7 +323,7 @@ const initializeMouseEvents = (
   raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>,
   sceneInfra: SceneInfra,
   disableOrbitRef: MutableRefObject<boolean>,
-  doRayCast: (mouse: Vector2) => void,
+  doRayCast: (mouse: Vector2, force?: boolean) => void,
   wrapperRef: React.MutableRefObject<HTMLDivElement>
 ): { mouse: Vector2; disposeMouseEvents: () => void } => {
   const mouse = new Vector2()
@@ -301,9 +338,17 @@ const initializeMouseEvents = (
 
   const handleClick = () => {
     // If orbits are disabled, skip click logic
-    if (disableOrbitRef.current || !raycasterIntersect.current) return
-    const axisName = raycasterIntersect.current.object.name as AxisNames
-    sceneInfra.camControls.updateCameraToAxis(axisName).catch(reportRejection)
+    if (!raycasterIntersect.current) {
+      // If we have no current intersection (e.g., orbit disabled), do a forced raycast at the last mouse position
+      doRayCast(mouse, true)
+      if (!raycasterIntersect.current) return
+    }
+    let obj: Object3D | null = raycasterIntersect.current.object
+    // Ascend to a parent whose name matches a known face if needed
+    while (obj && !FACE_TO_AXIS[obj.name]) obj = obj.parent
+    const pickedName = obj?.name || raycasterIntersect.current.object.name
+    const axisName = FACE_TO_AXIS[pickedName] ?? pickedName
+    animateCamToAxis(sceneInfra, axisName).catch(reportRejection)
   }
 
   // Add the event listener to the div wrapper around the canvas
@@ -326,18 +371,142 @@ const updateRayCaster = (
   camera: Camera,
   raycasterIntersect: MutableRefObject<Intersection<Object3D> | null>,
   renderer: WebGLRenderer,
-  scene: Scene
+  scene: Scene,
+  hoveredObjectRef: MutableRefObject<Object3D | null>,
+  originalMaterialsRef: MutableRefObject<Map<string, Material | Material[]>>,
+  hoverMaterialRef: MutableRefObject<Material | null>
 ) => {
   raycaster.setFromCamera(mouse, camera)
-  const intersects = raycaster.intersectObjects(objects)
+  const intersects = raycaster.intersectObjects(objects, true)
 
-  objects.forEach((object) => object.scale.set(1, 1, 1))
+  // Clear previous highlight if any
+  if (
+    hoveredObjectRef.current &&
+    (!intersects.length || hoveredObjectRef.current !== intersects[0].object)
+  ) {
+    restoreHighlight(hoveredObjectRef.current, originalMaterialsRef.current)
+    hoveredObjectRef.current = null
+  }
+
   if (intersects.length) {
-    intersects[0].object.scale.set(1.5, 1.5, 1.5)
+    const obj = intersects[0].object
+    if (hoveredObjectRef.current !== obj) {
+      applyHighlight(
+        obj,
+        originalMaterialsRef.current,
+        hoverMaterialRef.current
+      )
+      hoveredObjectRef.current = obj
+    }
     raycasterIntersect.current = intersects[0] // filter first object
   } else {
     raycasterIntersect.current = null
   }
 
   renderer.render(scene, camera)
+}
+
+function applyHighlight(
+  target: Object3D,
+  originalMaterials: Map<string, Material | Material[]>,
+  hoverMaterial: Material | null
+) {
+  const mesh = target as Mesh
+  if (!hoverMaterial) return
+  if (!originalMaterials.has(mesh.uuid)) {
+    // Save original material(s)
+    originalMaterials.set(mesh.uuid, mesh.material)
+    // Apply hover material (for multi-material meshes, apply to all slots)
+    if (isArray(mesh.material)) {
+      mesh.material = mesh.material.map(() => hoverMaterial)
+    } else {
+      mesh.material = hoverMaterial
+    }
+  }
+}
+
+function restoreHighlight(
+  target: Object3D,
+  originalMaterials: Map<string, Material | Material[]>
+) {
+  const mesh = target as Mesh
+  const record = originalMaterials.get(mesh.uuid)
+  if (!record) return
+  mesh.material = record
+  if (isArray(mesh.material))
+    mesh.material.forEach((m) => (m.needsUpdate = true))
+  else mesh.material.needsUpdate = true
+  originalMaterials.delete(mesh.uuid)
+}
+
+// Without this text on the cube sides becomes blurry on side view angles.
+function applyMaxAnisotropyToObject(obj: Object3D, maxAnisotropy: number) {
+  obj.traverse((node: Object3D) => {
+    if (isStandardMesh(node)) {
+      const mat = node.material
+      const textures = [
+        mat.map,
+        mat.normalMap,
+        mat.roughnessMap,
+        mat.metalnessMap,
+        mat.aoMap,
+        mat.emissiveMap,
+        mat.bumpMap,
+        mat.displacementMap,
+        mat.alphaMap,
+      ]
+      textures.forEach((texture) => {
+        if (texture && texture.anisotropy !== maxAnisotropy) {
+          texture.anisotropy = maxAnisotropy
+        }
+      })
+    }
+  })
+}
+
+async function animateCamToAxis(sceneInfra: SceneInfra, axis: AxisNames) {
+  // Temporarily switch to clientToEngine to allow tweening
+  const camControls = sceneInfra.camControls
+  const prevSync = camControls.syncDirection
+  camControls.syncDirection = 'clientToEngine'
+
+  try {
+    const cam = camControls.camera
+    const target = camControls.target.clone()
+    const distance = cam.position.distanceTo(target)
+    const up = new Vector3(0, 0, 1)
+
+    const eye = target.clone()
+    if (axis === AxisNames.X) eye.x += distance
+    else if (axis === AxisNames.NEG_X) eye.x -= distance
+    else if (axis === AxisNames.Y) eye.y += distance
+    else if (axis === AxisNames.NEG_Y) eye.y -= distance
+    else if (axis === AxisNames.Z) eye.z += distance
+    else if (axis === AxisNames.NEG_Z) eye.z -= distance
+
+    const lookMat = new Matrix4().lookAt(eye, target, up)
+    const targetQuat = new Quaternion().setFromRotationMatrix(lookMat)
+
+    await camControls._tweenCameraToQuaternion(targetQuat, target, 500, false)
+
+    // After tween, send engine look_at to reconcile and keep in sync
+    await camControls.updateCameraToAxis(axis)
+  } finally {
+    camControls.syncDirection = prevSync
+  }
+}
+
+type StandardMesh = Mesh<BufferGeometry, MeshStandardMaterial>
+function isStandardMesh(object: Object3D): object is StandardMesh {
+  const mesh = object as Mesh
+  if (
+    mesh.material instanceof MeshStandardMaterial
+  ) {
+    return true
+  } else {
+    if (mesh.isMesh) {
+      console.warn('mesh is not StandardMesh!', object)
+    }
+    return false
+  }
 }
