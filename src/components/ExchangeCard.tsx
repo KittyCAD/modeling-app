@@ -37,7 +37,7 @@ export const ResponseCardToolBar = (props: {
   }
   return (
     <div className={'pl-9'}>
-      <button
+      { isEndOfStream && <button
         type="button"
         onClick={() => {
           if (!contentForClipboard) {
@@ -62,7 +62,7 @@ export const ResponseCardToolBar = (props: {
         >
           <span>Copy to clipboard</span>
         </Tooltip>
-      </button>
+      </button>}
     </div>
   )
 }
