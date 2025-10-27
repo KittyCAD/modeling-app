@@ -17,7 +17,7 @@ describe('@src/env', () => {
         VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
         VITE_KITTYCAD_API_WEBSOCKET_URL:
           'wss://api.dev.zoo.dev/ws/modeling/commands',
-        VITE_COPILOT_API_WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/ml/copilot',
+        VITE_MLEPHANT_WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/ml/copilot',
         VITE_ZOO_API_TOKEN: 'redacted',
         VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
         VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
@@ -57,7 +57,7 @@ describe('@src/env', () => {
               VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
               VITE_KITTYCAD_API_WEBSOCKET_URL:
                 'wss://api.dev.zoo.dev/ws/modeling/commands',
-              VITE_COPILOT_API_WEBSOCKET_URL:
+              VITE_MLEPHANT_WEBSOCKET_URL:
                 'wss://api.dev.zoo.dev/ws/ml/copilot',
               VITE_ZOO_API_TOKEN: 'redacted',
               VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
@@ -70,7 +70,7 @@ describe('@src/env', () => {
           VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
           VITE_KITTYCAD_API_WEBSOCKET_URL:
             'wss://api.dev.zoo.dev/ws/modeling/commands',
-          VITE_COPILOT_API_WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/ml/copilot',
+          VITE_MLEPHANT_WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/ml/copilot',
           VITE_ZOO_API_TOKEN: 'redacted',
           VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
           VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',

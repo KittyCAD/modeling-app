@@ -14,7 +14,7 @@ export type EnvironmentVariables = {
   readonly VITE_KITTYCAD_BASE_DOMAIN: string | undefined
   readonly VITE_KITTYCAD_API_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_API_WEBSOCKET_URL: string | undefined
-  readonly VITE_COPILOT_API_WEBSOCKET_URL: string | undefined
+  readonly VITE_MLEPHANT_WEBSOCKET_URL: string | undefined
   readonly VITE_ZOO_API_TOKEN: string | undefined
   readonly VITE_KITTYCAD_SITE_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_SITE_APP_URL: string | undefined
@@ -150,7 +150,7 @@ export default (): EnvironmentVariables => {
     VITE_KITTYCAD_BASE_DOMAIN: BASE_DOMAIN || undefined,
     VITE_KITTYCAD_API_BASE_URL: API_URL || undefined,
     VITE_KITTYCAD_API_WEBSOCKET_URL: WEBSOCKET_URL || undefined,
-    VITE_COPILOT_API_WEBSOCKET_URL: env.VITE_COPILOT_API_WEBSOCKET_URL,
+    VITE_MLEPHANT_WEBSOCKET_URL: env.VITE_MLEPHANT_WEBSOCKET_URL,
     VITE_ZOO_API_TOKEN:
       (env.VITE_ZOO_API_TOKEN as string) ||
       (env.VITE_KITTYCAD_API_TOKEN as string) ||

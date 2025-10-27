@@ -75,7 +75,7 @@ export function EnvironmentDescription() {
             {env().VITE_KITTYCAD_API_WEBSOCKET_URL}
           </p>
           <p className="text-chalkboard-60 dark:text-chalkboard-40">
-            {env().VITE_COPILOT_API_WEBSOCKET_URL}
+            {env().VITE_MLEPHANT_WEBSOCKET_URL}
           </p>
         </li>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
