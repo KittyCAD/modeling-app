@@ -66,6 +66,7 @@
     "react-hotkeys-hook": "^4.6.1",
     "react-modal": "^3.16.3",
     "react-modal-promise": "^1.0.2",
+    "react-resizable-panels": "^3.0.6",
     "react-router-dom": "^6.28.0",
     "sketch-helpers": "^0.0.4",
     "three": "^0.175.0",
