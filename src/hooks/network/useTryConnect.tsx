@@ -36,7 +36,7 @@ const attemptToConnectToEngine = async ({
     void (async () => {
       try {
         if (!authToken) {
-          return reject('authToken is missing on connection initialilzation')
+          return reject('authToken is missing on connection initialization')
         }
 
         if (engineCommandManager.started) {
@@ -136,7 +136,7 @@ const attemptToConnectToEngine = async ({
  */
 async function tryConnecting({
   isConnecting,
-  numberOfConnectionAtttempts,
+  numberOfConnectionAttempts,
   authToken,
   videoWrapperRef,
   setAppState,
@@ -147,7 +147,7 @@ async function tryConnecting({
   setShowManualConnect,
 }: {
   isConnecting: React.MutableRefObject<boolean>
-  numberOfConnectionAtttempts: React.MutableRefObject<number>
+  numberOfConnectionAttempts: React.MutableRefObject<number>
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement>
   setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
@@ -174,8 +174,8 @@ async function tryConnecting({
       }, timeToConnect)
 
       async function attempt() {
-        numberOfConnectionAtttempts.current =
-          numberOfConnectionAtttempts.current + 1
+        numberOfConnectionAttempts.current =
+          numberOfConnectionAttempts.current + 1
 
         try {
           await attemptToConnectToEngine({
@@ -190,7 +190,7 @@ async function tryConnecting({
           clearInterval(cancelTimeout)
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: true })
-          numberOfConnectionAtttempts.current = 0
+          numberOfConnectionAttempts.current = 0
           setShowManualConnect(false)
           EngineDebugger.addLog({
             label: 'tryConnecting',
@@ -202,8 +202,8 @@ async function tryConnecting({
           setAppState({ isStreamAcceptingInput: false })
           engineCommandManager.tearDown()
           // Fail after NUMBER_OF_ENGINE_RETRIES
-          if (numberOfConnectionAtttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
-            numberOfConnectionAtttempts.current = 0
+          if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
+            numberOfConnectionAttempts.current = 0
             // Clear if we are going to exit all the attempts
             clearInterval(cancelTimeout)
             return reject(e)
@@ -218,11 +218,11 @@ async function tryConnecting({
 }
 export const useTryConnect = () => {
   const isConnecting = useRef(false)
-  const numberOfConnectionAtttempts = useRef(0)
+  const numberOfConnectionAttempts = useRef(0)
 
   return {
     tryConnecting,
     isConnecting,
-    numberOfConnectionAtttempts,
+    numberOfConnectionAttempts,
   }
 }

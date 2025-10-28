@@ -1,7 +1,6 @@
 [workspace]
 resolver = "2"
 members = [
-  "ezpz",
   "kcl-api",
   "kcl-bumper",
   "kcl-derive-docs",
@@ -20,16 +19,17 @@ members = [
 anyhow = { version = "1" }
 async-trait = "0.1.89"
 bson = { version = "2.15.0", features = ["uuid-1", "chrono"] }
-clap = { version = "4.5.48", features = ["derive"] }
+clap = { version = "4.5.50", features = ["derive"] }
 console_error_panic_hook = "0.1.7"
 dashmap = { version = "6.1.0" }
 http = "1"
-indexmap = "2.11.4"
+indexmap = "2.12.0"
+kcl-ezpz = "0.1.4"
 kittycad = { version = "0.4.2", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.144", features = [
+kittycad-modeling-cmds = { version = "0.2.145", features = [
   "ts-rs",
   "websocket",
 ] }
@@ -38,9 +38,10 @@ miette = "7.6.0"
 pyo3 = { version = "0.25.1" }
 # Build with Python >= 3.10 (set PYO3_PYTHON accordingly)
 pyo3-stub-gen = "0.13.1"
+rayon = "1.11.0"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
-slog = "2.7.0"
+slog = "2.8.2"
 slog-async = "2.8.0"
 slog-json = "2.6.1"
 slog-term = "2.9.2"
@@ -56,7 +57,7 @@ tracing-subscriber = { version = "0.3.20", features = [
   "json",
 ] }
 uuid = { version = "1", features = ["v4", "serde"] }
-zip = { version = "2.4.2", default-features = false }
+zip = { version = "6.0.0", default-features = false }
 
 [workspace.lints.clippy]
 assertions_on_result_states = "warn"
@@ -82,6 +83,7 @@ insta = { opt-level = 3 }
 debug = "line-tables-only"
 
 #Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
-#[patch.crates-io]
-#kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }
-#kittycad-modeling-session = { path = "../../modeling-api/modeling-session" }
+# [patch.crates-io]
+# kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "ben/chamfer_angle" }
+# kittycad-modeling-session = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "ben/chamfer_angle" }
+# #kittycad-modeling-session = { path = "../../modeling-api/modeling-session" }

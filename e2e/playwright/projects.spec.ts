@@ -878,6 +878,45 @@ default project name`, async ({ homePage, toolbar }) => {
 })
 
 test(
+  'project title case sensitive duplication',
+  { tag: '@desktop' },
+  async ({ homePage, page, scene, cmdBar, toolbar }) => {
+    const u = await getUtils(page)
+
+    await test.step('Create project "test" and add KCL', async () => {
+      await homePage.createAndGoToProject('test')
+      await scene.settled(cmdBar)
+
+      const kcl = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> circle(center = [0, 0], radius = 5)
+`
+      await u.pasteCodeInEditor(kcl)
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Return to dashboard', async () => {
+      await toolbar.logoLink.click()
+    })
+
+    await test.step('Create project "Test" and open it', async () => {
+      await homePage.createAndGoToProject('Test')
+      await scene.settled(cmdBar)
+    })
+    await test.step('Verify duplicate resolves to "Test-1" on dashboard', async () => {
+      await toolbar.logoLink.click()
+      await homePage.expectState({
+        projectCards: [
+          { title: 'Test-1', fileCount: 1 },
+          { title: 'test', fileCount: 1 },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+    })
+  }
+)
+
+test(
   'File in the file pane should open with a single click',
   { tag: '@desktop' },
   async ({ context, homePage, page, scene, toolbar }, testInfo) => {
@@ -906,7 +945,7 @@ test(
     await expect(u.codeLocator).toContainText('templateGap')
     await expect(u.codeLocator).toContainText('minClampingDistance')
 
-    await page.getByRole('button', { name: 'Project Files' }).click()
+    await page.getByRole('switch', { name: 'Project Files' }).click()
     await toolbar.openFile('otherThingToClickOn.kcl')
 
     await expect(u.codeLocator).toContainText(

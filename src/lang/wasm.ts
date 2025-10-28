@@ -40,9 +40,11 @@ import openWindow from '@src/lib/openWindow'
 import { Reason, err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   base64_decode,
   change_default_units,
+  change_experimental_features,
   coredump,
   default_app_settings,
   default_project_settings,
@@ -63,6 +65,7 @@ import {
   serialize_configuration,
   serialize_project_configuration,
 } from '@src/lib/wasm_lib_wrapper'
+import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -209,11 +212,16 @@ export function resultIsOk(result: ParseResult): result is SuccessParseResult {
   return !!result.program && result.errors.length === 0
 }
 
-export const parse = (code: string | Error): ParseResult | Error => {
+export const parse = (
+  code: string | Error,
+  instance?: ModuleType
+): ParseResult | Error => {
   if (err(code)) return code
 
   try {
-    const parsed: [Node<Program>, CompilationError[]] = parse_wasm(code)
+    const parsed: [Node<Program>, CompilationError[]] = instance
+      ? instance.parse_wasm(code)
+      : parse_wasm(code)
     let errs = splitErrors(parsed[1])
     return new ParseResult(parsed[0], errs.errors, errs.warnings)
   } catch (e: any) {
@@ -238,8 +246,11 @@ export const parse = (code: string | Error): ParseResult | Error => {
 /**
  * Parse and throw an exception if there are any errors (probably not suitable for use outside of testing).
  */
-export function assertParse(code: string): Node<Program> {
-  const result = parse(code)
+export function assertParse(
+  code: string,
+  instance?: ModuleType
+): Node<Program> {
+  const result = parse(code, instance)
   // eslint-disable-next-line suggest-no-throw/suggest-no-throw
   if (err(result)) throw result
   if (!resultIsOk(result)) {
@@ -384,9 +395,13 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
   )
 }
 
-export const kclLint = async (ast: Program): Promise<Array<Discovered>> => {
+export const kclLint = async (
+  ast: Program,
+  instance?: ModuleType
+): Promise<Array<Discovered>> => {
   try {
-    const discoveredFindings: Array<Discovered> = await kcl_lint(
+    const theKclLint = instance ? instance.kcl_lint : kcl_lint
+    const discoveredFindings: Array<Discovered> = await theKclLint(
       JSON.stringify(ast)
     )
     return discoveredFindings
@@ -397,9 +412,10 @@ export const kclLint = async (ast: Program): Promise<Array<Discovered>> => {
 
 export async function rustImplPathToNode(
   ast: Program,
-  range: SourceRange
+  range: SourceRange,
+  wasmInstance?: ModuleType
 ): Promise<PathToNode> {
-  const nodePath = await nodePathFromRange(ast, range)
+  const nodePath = await nodePathFromRange(ast, range, wasmInstance)
   if (!nodePath) {
     // When a NodePath can't be found, we use an empty PathToNode.
     return []
@@ -409,10 +425,14 @@ export async function rustImplPathToNode(
 
 export async function nodePathFromRange(
   ast: Program,
-  range: SourceRange
+  range: SourceRange,
+  instance?: ModuleType
 ): Promise<NodePath | null> {
   try {
-    const nodePath: NodePath | null = await node_path_from_range(
+    const node_path_from_range_fn = instance
+      ? instance.node_path_from_range
+      : node_path_from_range
+    const nodePath: NodePath | null = await node_path_from_range_fn(
       JSON.stringify(ast),
       JSON.stringify(range)
     )
@@ -424,8 +444,10 @@ export async function nodePathFromRange(
   }
 }
 
-export const recast = (ast: Program): string | Error => {
-  return recast_wasm(JSON.stringify(ast))
+export const recast = (ast: Program, instance?: ModuleType): string | Error => {
+  return instance
+    ? instance.recast_wasm(JSON.stringify(ast))
+    : recast_wasm(JSON.stringify(ast))
 }
 
 /**
@@ -433,10 +455,14 @@ export const recast = (ast: Program): string | Error => {
  */
 export function formatNumberLiteral(
   value: number,
-  suffix: NumericSuffix
+  suffix: NumericSuffix,
+  wasmInstance?: ModuleType
 ): string | Error {
   try {
-    return format_number_literal(value, JSON.stringify(suffix))
+    const the_format_number_literal = wasmInstance
+      ? wasmInstance.format_number_literal
+      : format_number_literal
+    return the_format_number_literal(value, JSON.stringify(suffix))
   } catch (e) {
     return new Error(
       `Error formatting number literal: value=${value}, suffix=${suffix}`,
@@ -450,10 +476,14 @@ export function formatNumberLiteral(
  */
 export function formatNumberValue(
   value: number,
-  numericType: NumericType
+  numericType: NumericType,
+  instance?: ModuleType
 ): string | Error {
   try {
-    return format_number_value(value, JSON.stringify(numericType))
+    const format_number_value_fn = instance
+      ? instance.format_number_value
+      : format_number_value
+    return format_number_value_fn(value, JSON.stringify(numericType))
   } catch (e) {
     return new Error(
       `Error formatting number value: value=${value}, numericType=${numericType}`,
@@ -467,10 +497,14 @@ export function formatNumberValue(
  */
 export function humanDisplayNumber(
   value: number,
-  ty: NumericType
+  ty: NumericType,
+  wasmInstance?: ModuleType
 ): string | Error {
   try {
-    return human_display_number(value, JSON.stringify(ty))
+    const the_human_display_number = wasmInstance
+      ? wasmInstance.human_display_number
+      : human_display_number
+    return the_human_display_number(value, JSON.stringify(ty))
   } catch (e) {
     return new Error(
       `Error formatting number for human display: value=${value}, ty=${JSON.stringify(ty)}`,
@@ -479,8 +513,9 @@ export function humanDisplayNumber(
   }
 }
 
-export function isPointsCCW(points: Coords2d[]): number {
-  return is_points_ccw(new Float64Array(points.flat()))
+export function isPointsCCW(points: Coords2d[], instance?: ModuleType): number {
+  const is_points_ccw_fn = instance ? instance.is_points_ccw : is_points_ccw
+  return is_points_ccw_fn(new Float64Array(points.flat()))
 }
 
 export function getTangentialArcToInfo({
@@ -488,11 +523,13 @@ export function getTangentialArcToInfo({
   arcEndPoint,
   tanPreviousPoint,
   obtuse = true,
+  wasmInstance,
 }: {
   arcStartPoint: Coords2d
   arcEndPoint: Coords2d
   tanPreviousPoint: Coords2d
   obtuse?: boolean
+  wasmInstance?: ModuleType
 }): {
   center: Coords2d
   arcMidPoint: Coords2d
@@ -502,7 +539,10 @@ export function getTangentialArcToInfo({
   ccw: boolean
   arcLength: number
 } {
-  const result = get_tangential_arc_to_info(
+  const the_get_tangential_arc_to_info = wasmInstance
+    ? wasmInstance.get_tangential_arc_to_info
+    : get_tangential_arc_to_info
+  const result = the_get_tangential_arc_to_info(
     arcStartPoint[0],
     arcStartPoint[1],
     arcEndPoint[0],
@@ -732,11 +772,12 @@ export function base64Decode(base64: string): ArrayBuffer | Error {
  * returns null.
  */
 export function kclSettings(
-  kcl: string | Node<Program>
+  kcl: string | Node<Program>,
+  instance?: ModuleType
 ): MetaSettings | null | Error {
   let program: Node<Program>
   if (typeof kcl === 'string') {
-    const parseResult = parse(kcl)
+    const parseResult = parse(kcl, instance)
     if (err(parseResult)) return parseResult
     if (!resultIsOk(parseResult)) {
       return new Error(`parse result had errors`, { cause: parseResult })
@@ -746,7 +787,8 @@ export function kclSettings(
     program = kcl
   }
   try {
-    return kcl_settings(JSON.stringify(program))
+    const theKclSettings = instance ? instance.kcl_settings : kcl_settings
+    return theKclSettings(JSON.stringify(program))
   } catch (e) {
     return new Error('Caught error getting kcl settings', { cause: e })
   }
@@ -762,6 +804,26 @@ export function changeDefaultUnits(
 ): string | Error {
   try {
     return change_default_units(kcl, JSON.stringify(len))
+  } catch (e) {
+    console.error('Caught error changing kcl settings', e)
+    return new Error('Caught error changing kcl settings', { cause: e })
+  }
+}
+
+/**
+ * Change the meta settings for the kcl file.
+ * @returns the new kcl string with the updated settings.
+ */
+export function changeExperimentalFeatures(
+  kcl: string,
+  warningLevel: WarningLevel | null = null,
+  instance?: ModuleType
+): string | Error {
+  try {
+    const level = JSON.stringify(warningLevel)
+    return instance
+      ? instance.change_experimental_features(kcl, level)
+      : change_experimental_features(kcl, level)
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })

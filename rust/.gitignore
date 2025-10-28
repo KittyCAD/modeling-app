@@ -1,0 +1,12 @@
+target
+*.snap.new
+
+/kcl-lib/fuzz/Cargo.lock
+/kcl-language-server-release/Cargo.lock
+/kcl-wasm-lib/pkg
+/lcov.info
+
+# ts-rs
+/kcl-api/bindings
+/kcl-error/bindings
+/kcl-lib/bindings

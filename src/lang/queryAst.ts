@@ -62,6 +62,7 @@ import type {
   Selections,
   EdgeCutInfo,
 } from '@src/machines/modelingSharedTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -76,7 +77,8 @@ export function getNodeFromPath<T>(
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly = false,
   suppressNoise = false,
-  replacement?: any
+  replacement?: any,
+  wasmInstance?: ModuleType
 ):
   | {
       node: T
@@ -103,7 +105,7 @@ export function getNodeFromPath<T>(
         }
       }
       const stackTraceError = new Error()
-      const sourceCode = recast(node)
+      const sourceCode = recast(node, wasmInstance)
       const levels = stackTraceError.stack?.split('\n')
       const aFewFunctionNames: string[] = []
       let tree = ''
@@ -177,7 +179,8 @@ export function getNodeFromPath<T>(
  */
 export function getNodeFromPathCurry(
   node: Program,
-  path: PathToNode
+  path: PathToNode,
+  wasmInstance?: ModuleType
 ): <T>(
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly?: boolean
@@ -188,7 +191,15 @@ export function getNodeFromPathCurry(
     }
   | Error {
   return <T>(stopAt?: SyntaxType | SyntaxType[], returnEarly = false) => {
-    const _node1 = getNodeFromPath<T>(node, path, stopAt, returnEarly)
+    const _node1 = getNodeFromPath<T>(
+      node,
+      path,
+      stopAt,
+      returnEarly,
+      undefined,
+      undefined,
+      wasmInstance
+    )
     if (err(_node1)) return _node1
     const { node: _node, shallowPath } = _node1
     return {
@@ -961,9 +972,10 @@ export function doesSketchPipeNeedSplitting(
  * Given KCL, returns the settings annotation object if it exists.
  */
 export function getSettingsAnnotation(
-  kcl: string | Node<Program>
+  kcl: string | Node<Program>,
+  instance?: ModuleType
 ): KclSettingsAnnotation | Error {
-  const metaSettings = kclSettings(kcl)
+  const metaSettings = kclSettings(kcl, instance)
   if (err(metaSettings)) return metaSettings
 
   const settings: KclSettingsAnnotation = {}
@@ -972,6 +984,7 @@ export function getSettingsAnnotation(
 
   settings.defaultLengthUnit = metaSettings.defaultLengthUnits
   settings.defaultAngleUnit = metaSettings.defaultAngleUnits
+  settings.experimentalFeatures = metaSettings.experimentalFeatures
 
   return settings
 }
@@ -1176,6 +1189,17 @@ export function retrieveSelectionsFromOpArg(
       continue
     }
 
+    const isArtifactFromImportedModule = codeRefs.some(
+      (c) => c.pathToNode.length === 0
+    )
+    if (isArtifactFromImportedModule) {
+      // TODO: retrieve module import alias instead of throwing here
+      // https://github.com/KittyCAD/modeling-app/issues/8463
+      return new Error(
+        "The selected artifact is from an imported module, editing isn't supported yet. Please delete the operation and recreate."
+      )
+    }
+
     graphSelections.push({
       artifact,
       codeRef: codeRefs[0],
@@ -1221,6 +1245,33 @@ export function getSelectedPlaneId(selectionRanges: Selections): string | null {
   )
   if (planeSelection) {
     // Found an offset plane in the selection
+    return planeSelection.artifact?.id || null
+  }
+
+  return null
+}
+
+// Returns the plane/wall/cap/edgeCut within the current selection that can be used to start a sketch on.
+export function getSelectedSketchTarget(
+  selectionRanges: Selections
+): string | null {
+  const defaultPlane = selectionRanges.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
+  if (defaultPlane) {
+    return defaultPlane.id
+  }
+
+  // Try to find an offset plane or wall or cap or chamfer edgeCut
+  const planeSelection = selectionRanges.graphSelections.find((selection) => {
+    const artifactType = selection.artifact?.type || ''
+    return (
+      ['plane', 'wall', 'cap'].includes(artifactType) ||
+      (selection.artifact?.type === 'edgeCut' &&
+        selection.artifact?.subType === 'chamfer')
+    )
+  })
+  if (planeSelection) {
     return planeSelection.artifact?.id || null
   }
 
@@ -1512,11 +1563,14 @@ export function getEdgeCutMeta(
   ast: Node<Program>,
   artifactGraph: ArtifactGraph
 ): null | EdgeCutInfo {
-  let chamferInfo: {
+  let edgeCutInfo: {
     segment: SegmentArtifact
     type: EdgeCutInfo['subType']
   } | null = null
-  if (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer') {
+  if (
+    artifact?.type === 'edgeCut' &&
+    (artifact.subType === 'chamfer' || artifact.subType === 'fillet')
+  ) {
     const consumedArtifact = getArtifactOfTypes(
       {
         key: artifact.consumedEdgeId,
@@ -1527,7 +1581,7 @@ export function getEdgeCutMeta(
     console.log('consumedArtifact', consumedArtifact)
     if (err(consumedArtifact)) return null
     if (consumedArtifact.type === 'segment') {
-      chamferInfo = {
+      edgeCutInfo = {
         type: 'base',
         segment: consumedArtifact,
       }
@@ -1537,16 +1591,16 @@ export function getEdgeCutMeta(
         artifactGraph
       )
       if (err(segment)) return null
-      chamferInfo = {
+      edgeCutInfo = {
         type: consumedArtifact.subType,
         segment,
       }
     }
   }
-  if (!chamferInfo) return null
+  if (!edgeCutInfo) return null
   const segmentCallExpr = getNodeFromPath<CallExpressionKw>(
     ast,
-    chamferInfo?.segment.codeRef.pathToNode || [],
+    edgeCutInfo?.segment.codeRef.pathToNode || [],
     ['CallExpressionKw']
   )
   if (err(segmentCallExpr)) return null
@@ -1559,7 +1613,7 @@ export function getEdgeCutMeta(
 
   return {
     type: 'edgeCut',
-    subType: chamferInfo.type,
+    subType: edgeCutInfo.type,
     tagName: tagDeclarator.value,
   }
 }

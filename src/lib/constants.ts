@@ -1,6 +1,7 @@
 import type { WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 export const APP_NAME = 'Design Studio'
 /** Search string in new project names to increment as an index */
@@ -47,6 +48,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   LOFT: 'loft',
   SWEEP: 'sweep',
   SHELL: 'shell',
+  HOLE: 'hole',
   SEGMENT: 'seg',
   REVOLVE: 'revolve',
   PLANE: 'plane',
@@ -57,6 +59,12 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
+
+/** The default KCL tolerance expression */
+export const KCL_DEFAULT_TOLERANCE = `0.1mm`
+
+/** The default KCL precision expression */
+export const KCL_DEFAULT_PRECISION = `3`
 
 /** The default KCL instances expression */
 export const KCL_DEFAULT_INSTANCES = `3`
@@ -70,8 +78,17 @@ export const KCL_DEFAULT_DEGREE = `360deg`
 /** The default KCL vector3d origin expression */
 export const KCL_DEFAULT_ORIGIN = `[0, 0, 0]`
 
+/** The default KCL vector2d origin expression */
+export const KCL_DEFAULT_ORIGIN_2D = `[0, 0]`
+
 /** The default KCL color expression */
 export const KCL_DEFAULT_COLOR = `#3c73ff`
+
+/** The default KCL font point size expression */
+export const KCL_DEFAULT_FONT_POINT_SIZE = `36`
+
+/** The default KCL font scale expression */
+export const KCL_DEFAULT_FONT_SCALE = `1.0`
 
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
@@ -163,6 +180,15 @@ export const VIEW_NAMES_SEMANTIC = {
   [AxisNames.NEG_Y]: 'Front',
   [AxisNames.NEG_Z]: 'Bottom',
 } as const
+
+/** Plane names in KCL for operations */
+export const KCL_PLANE_XY = 'XY'
+export const KCL_PLANE_XZ = 'XZ'
+export const KCL_PLANE_YZ = 'YZ'
+export const KCL_PLANE_XY_NEG = '-XY'
+export const KCL_PLANE_XZ_NEG = '-XZ'
+export const KCL_PLANE_YZ_NEG = '-YZ'
+
 /** The modeling sidebar buttons' IDs get a suffix to prevent collisions */
 export const SIDEBAR_BUTTON_SUFFIX = '-pane-button'
 
@@ -186,6 +212,13 @@ export const DEFAULT_DEFAULT_ANGLE_UNIT: UnitAngle = 'degrees'
  * default units.
  */
 export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength = 'mm'
+
+/**
+ * When no annotation is in the KCL file to specify the defaults
+ */
+export const DEFAULT_EXPERIMENTAL_FEATURES: WarningLevel = {
+  type: 'Deny',
+}
 
 /** Real execution. */
 export const EXECUTION_TYPE_REAL = 'real'
@@ -285,3 +318,8 @@ export const NUMBER_OF_ENGINE_RETRIES = 5
  *Global timeout on pending commands, it will be bad if we hit this case.
  */
 export const PENDING_COMMAND_TIMEOUT = 60_000
+
+/** Timeout in MS to save layout */
+export const LAYOUT_SAVE_THROTTLE = 500
+/** prefix for localStorage persisted layout data */
+export const LAYOUT_PERSIST_PREFIX = 'layout-'

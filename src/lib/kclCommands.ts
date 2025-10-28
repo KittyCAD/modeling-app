@@ -6,26 +6,32 @@ import { addModuleImport, insertNamedConstant } from '@src/lang/modifyAst'
 import {
   changeDefaultUnits,
   isPathToNode,
+  pathToNodeFromRustNodePath,
   type PathToNode,
-  type SourceRange,
   type VariableDeclarator,
 } from '@src/lang/wasm'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
+  DEFAULT_EXPERIMENTAL_FEATURES,
   DEFAULT_DEFAULT_LENGTH_UNIT,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import { copyFileShareLink } from '@src/lib/links'
-import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
-import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
+import {
+  codeManager,
+  editorManager,
+  kclManager,
+  rustContext,
+} from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -94,6 +100,69 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
     },
     {
+      name: 'set-file-experimental-features',
+      displayName: 'Set experimental features flag',
+      description: 'Set the experimental features flag in the current file.',
+      needsReview: false,
+      groupId: 'code',
+      icon: 'code',
+      args: {
+        level: {
+          required: true,
+          inputType: 'options',
+          defaultValue:
+            kclManager.fileSettings.experimentalFeatures?.type ||
+            DEFAULT_EXPERIMENTAL_FEATURES.type,
+          options: () =>
+            warningLevels.map((l) => {
+              return {
+                name: l.type,
+                value: l.type,
+                isCurrent: kclManager.fileSettings.experimentalFeatures
+                  ? l.type === kclManager.fileSettings.experimentalFeatures.type
+                  : l.type === DEFAULT_EXPERIMENTAL_FEATURES.type,
+              }
+            }),
+        },
+      },
+      onSubmit: (data) => {
+        if (typeof data === 'object' && 'level' in data) {
+          const newAst = setExperimentalFeatures(codeManager.code, {
+            type: data.level,
+          })
+          if (err(newAst)) {
+            toast.error(
+              `Failed to set file experimental features level: ${newAst.message}`
+            )
+            return
+          }
+          updateModelingState(newAst, EXECUTION_TYPE_REAL, {
+            kclManager,
+            editorManager,
+            codeManager,
+            rustContext,
+          })
+            .then((result) => {
+              if (err(result)) {
+                toast.error(
+                  `Failed to set file experimental features level: ${result.message}`
+                )
+                return
+              }
+
+              toast.success(
+                `Updated file experimental features level to ${data.level}`
+              )
+            })
+            .catch(reportRejection)
+        } else {
+          toast.error(
+            'Failed to set experimental features level: no value provided to submit function. This is a bug.'
+          )
+        }
+      },
+    },
+    {
       name: 'Insert',
       description: 'Insert from a file in the current project directory',
       icon: 'import',
@@ -157,9 +226,10 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
-          { kclManager, editorManager, codeManager },
+          { kclManager, editorManager, codeManager, rustContext },
           {
             focusPath: [pathToNode],
+            skipErrorsOnMockExecution: true,
           }
         ).catch(reportRejection)
       },
@@ -225,6 +295,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           kclManager,
           editorManager,
           codeManager,
+          rustContext,
         }).catch(reportRejection)
       },
     },
@@ -252,29 +323,12 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           },
           required: true,
           options() {
-            return (
-              Object.entries(kclManager.execState.variables)
-                // TODO: @franknoirot && @jtran would love to make this go away soon 🥺
-                .filter(([_, variable]) => variable?.type === 'Number')
-                .map(([name, _variable]) => {
-                  const node = getVariableDeclaration(kclManager.ast, name)
-                  if (node === undefined) return
-                  const range: SourceRange = [
-                    node.start,
-                    node.end,
-                    node.moduleId,
-                  ]
-                  const pathToNode = getNodePathFromSourceRange(
-                    kclManager.ast,
-                    range
-                  )
-                  return {
-                    name,
-                    value: pathToNode,
-                  }
-                })
-                .filter((a) => !!a) || []
-            )
+            return kclManager.execState.operations.flatMap((op) => {
+              if (op.type !== 'VariableDeclaration') return []
+              if (op.value.type !== 'Number') return []
+              const value = pathToNodeFromRustNodePath(op.nodePath).slice(0, -1)
+              return { name: op.name, value }
+            })
           },
         },
         value: {
@@ -333,6 +387,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           codeManager,
           editorManager,
           kclManager,
+          rustContext,
         }).catch(reportRejection)
       },
     },

@@ -20,15 +20,41 @@ import {
 import { findKwArg, topLevelRange } from '@src/lang/util'
 import type { Expr, Program } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { allLabels } from '@src/lib/utils'
 import { findAngleLengthPair } from '@src/unitTestUtils'
 
-beforeAll(async () => {
-  await initPromise
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type RustContext from '@src/lib/rustContext'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+
+let instanceInThisFile: ModuleType = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+let rustContextInThisFile: RustContext = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
+beforeEach(async () => {
+  if (instanceInThisFile) {
+    return
+  }
+
+  const { instance, engineCommandManager, rustContext } =
+    await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  engineCommandManagerInThisFile = engineCommandManager
+  rustContextInThisFile = rustContext
+})
+
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
 })
 
 describe('testing getConstraintType', () => {
@@ -87,7 +113,7 @@ describe('testing getConstraintType', () => {
 function getConstraintTypeFromSourceHelper(
   code: string
 ): ReturnType<typeof getConstraintType> | Error {
-  const ast = assertParse(code)
+  const ast = assertParse(code, instanceInThisFile)
 
   const item = ast.body[0]
   if (item.type !== 'ExpressionStatement') {
@@ -124,7 +150,7 @@ function getConstraintTypeFromSourceHelper(
 function getConstraintTypeFromSourceHelper2(
   code: string
 ): ReturnType<typeof getConstraintType> | Error {
-  const ast = assertParse(code)
+  const ast = assertParse(code, instanceInThisFile)
 
   const bodyItem = ast.body[0]
   if (bodyItem.type !== 'ExpressionStatement') {
@@ -205,12 +231,18 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
       inputCode: string,
       selectionRanges: Selections['graphSelections']
     ) {
-      const ast = assertParse(inputCode)
-      const execState = await enginelessExecutor(ast)
+      const ast = assertParse(inputCode, instanceInThisFile)
+      const execState = await enginelessExecutor(
+        ast,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
       const transformInfos = getTransformInfos(
         makeSelections(selectionRanges.slice(1)),
         ast,
-        'equalLength'
+        'equalLength',
+        instanceInThisFile
       )
 
       const transformedSelection = makeSelections(selectionRanges)
@@ -220,15 +252,16 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
         selectionRanges: transformedSelection,
         transformInfos,
         memVars: execState.variables,
+        wasmInstance: instanceInThisFile,
       })
       if (err(newAst)) return Promise.reject(newAst)
 
-      const newCode = recast(newAst.modifiedAst)
+      const newCode = recast(newAst.modifiedAst, instanceInThisFile)
       return newCode
     }
 
     it(`Should reorder when user selects first-to-last`, async () => {
-      const ast = assertParse(inputScript)
+      const ast = assertParse(inputScript, instanceInThisFile)
       const selectionRanges: Selections['graphSelections'] = [
         selectLine(inputScript, 3, ast),
         selectLine(inputScript, 4, ast),
@@ -239,7 +272,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
     })
 
     it(`Should reorder when user selects last-to-first`, async () => {
-      const ast = assertParse(inputScript)
+      const ast = assertParse(inputScript, instanceInThisFile)
       const selectionRanges: Selections['graphSelections'] = [
         selectLine(inputScript, 4, ast),
         selectLine(inputScript, 3, ast),
@@ -326,7 +359,7 @@ part001 = startSketchOn(XY)
   |> yLine(length = segLen(seg01)) // ln-yLineTo-free should convert to yLine
 `
   it('should transform the ast', async () => {
-    const ast = assertParse(inputScript)
+    const ast = assertParse(inputScript, instanceInThisFile)
 
     const selectionRanges: Selections['graphSelections'] = inputScript
       .split('\n')
@@ -339,11 +372,17 @@ part001 = startSketchOn(XY)
         }
       })
 
-    const execState = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(
+      ast,
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges.slice(1)),
       ast,
-      'equalLength'
+      'equalLength',
+      instanceInThisFile
     )
 
     const newAst = transformSecondarySketchLinesTagFirst({
@@ -351,10 +390,11 @@ part001 = startSketchOn(XY)
       selectionRanges: makeSelections(selectionRanges),
       transformInfos,
       memVars: execState.variables,
+      wasmInstance: instanceInThisFile,
     })
     if (err(newAst)) return Promise.reject(newAst)
 
-    const newCode = recast(newAst.modifiedAst)
+    const newCode = recast(newAst.modifiedAst, instanceInThisFile)
     expect(newCode).toBe(expectModifiedScript)
   })
 })
@@ -415,7 +455,7 @@ part001 = startSketchOn(XY)
   |> xLine(endAbsolute = myVar3) // select for horizontal constraint 10
   |> angledLine(angle = 301deg, endAbsoluteY = myVar) // select for vertical constraint 10
 `
-    const ast = assertParse(inputScript)
+    const ast = assertParse(inputScript, instanceInThisFile)
 
     const selectionRanges: Selections['graphSelections'] = inputScript
       .split('\n')
@@ -428,7 +468,12 @@ part001 = startSketchOn(XY)
         }
       })
 
-    const execState = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(
+      ast,
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -444,7 +489,7 @@ part001 = startSketchOn(XY)
     })
     if (err(newAst)) return Promise.reject(newAst)
 
-    const newCode = recast(newAst.modifiedAst)
+    const newCode = recast(newAst.modifiedAst, instanceInThisFile)
     expect(newCode).toBe(expectModifiedScript)
   })
   it('should transform vertical lines the ast', async () => {
@@ -475,7 +520,7 @@ part001 = startSketchOn(XY)
   |> angledLine(angle = 333deg, endAbsoluteX = myVar3) // select for horizontal constraint 10
   |> yLine(endAbsolute = myVar) // select for vertical constraint 10
 `
-    const ast = assertParse(inputScript)
+    const ast = assertParse(inputScript, instanceInThisFile)
 
     const selectionRanges: Selections['graphSelections'] = inputScript
       .split('\n')
@@ -488,7 +533,12 @@ part001 = startSketchOn(XY)
         }
       })
 
-    const execState = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(
+      ast,
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -504,7 +554,7 @@ part001 = startSketchOn(XY)
     })
     if (err(newAst)) return Promise.reject(newAst)
 
-    const newCode = recast(newAst.modifiedAst)
+    const newCode = recast(newAst.modifiedAst, instanceInThisFile)
     expect(newCode).toBe(expectModifiedScript)
   })
 })
@@ -568,7 +618,7 @@ async function helperThing(
   linesOfInterest: string[],
   constraint: ConstraintType
 ): Promise<string> {
-  const ast = assertParse(inputScript)
+  const ast = assertParse(inputScript, instanceInThisFile)
 
   const selectionRanges: Selections['graphSelections'] = inputScript
     .split('\n')
@@ -583,7 +633,12 @@ async function helperThing(
       }
     })
 
-  const execState = await enginelessExecutor(ast)
+  const execState = await enginelessExecutor(
+    ast,
+    undefined,
+    undefined,
+    rustContextInThisFile
+  )
   const transformInfos = getTransformInfos(
     makeSelections(selectionRanges.slice(1)),
     ast,
@@ -598,7 +653,7 @@ async function helperThing(
   })
 
   if (err(newAst)) return Promise.reject(newAst)
-  const recasted = recast(newAst.modifiedAst)
+  const recasted = recast(newAst.modifiedAst, instanceInThisFile)
 
   if (err(recasted)) return Promise.reject(recasted)
   return recasted
@@ -632,7 +687,7 @@ part001 = startSketchOn(XY)
   |> line(end = [1.49, 1.06]) // free
   |> xLine(length = -3.43 + 0) // full
   |> angledLine(angle = 243deg + 0, lengthX = 1.2 + 0) // full`
-    const ast = assertParse(code)
+    const ast = assertParse(code, instanceInThisFile)
     const constraintLevels: ConstraintLevel[] = ['full', 'partial', 'free']
     constraintLevels.forEach((constraintLevel) => {
       const recursivelySearchCommentsAndCheckConstraintLevel = (

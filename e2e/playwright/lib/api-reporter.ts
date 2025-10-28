@@ -75,7 +75,7 @@ class APIReporter implements Reporter {
 
     const payload = {
       // Required information
-      project: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`,
+      project: `${process.env.GITHUB_SERVER_URL}/KittyCAD/modeling-app`,
       suite: process.env.CI_SUITE || 'e2e',
       branch: process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || '',
       commit: process.env.CI_COMMIT_SHA || process.env.GITHUB_SHA || '',

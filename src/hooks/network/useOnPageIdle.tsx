@@ -49,8 +49,8 @@ export const useOnPageIdle = ({
   }, [streamIdleMode])
 
   useEffect(() => {
-    let frameId: ReturnType<typeof window.requestAnimationFrame> = 0
-    const frameLoop = () => {
+    // Check every 1 second to see if you are idle.
+    const interval = setInterval(() => {
       // Do not pause if the user is in the middle of an operation
       if (!modelingMachineState.matches('idle')) {
         // In fact, stop the timeout, because we don't want to trigger the
@@ -75,14 +75,9 @@ export const useOnPageIdle = ({
           idleCallback()
         }
       }
-      frameId = window.requestAnimationFrame(frameLoop)
-    }
-    frameId = window.requestAnimationFrame(frameLoop)
-
-    return () => {
-      window.cancelAnimationFrame(frameId)
-    }
-  }, [modelingMachineState, IDLE_TIME_MS, idleCallback])
+    }, 1_000)
+    return () => clearInterval(interval)
+  }, [IDLE_TIME_MS, idleCallback, modelingMachineState])
 
   useEffect(() => {
     if (!streamIdleMode) return

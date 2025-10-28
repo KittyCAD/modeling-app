@@ -110,8 +110,6 @@ export const ClientSideScene = ({
     container.appendChild(canvas)
     container.appendChild(sceneInfra.labelRenderer.domElement)
 
-    sceneInfra.animate()
-
     const onMouseMove = toSync(sceneInfra.onMouseMove, reportRejection)
     container.addEventListener('mousemove', onMouseMove)
     container.addEventListener('mousedown', sceneInfra.onMouseDown)
@@ -421,7 +419,7 @@ const SegmentMenu = ({
                   : ''
               }
               onClick={() => {
-                send({ type: 'Delete segment', data: pathToNode })
+                send({ type: 'Delete segments', data: [pathToNode] })
               }}
             >
               Delete Segment

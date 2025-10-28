@@ -9,7 +9,6 @@ import {
 } from 'react-router-dom'
 
 import { App } from '@src/App'
-import { Auth } from '@src/Auth'
 import RootLayout from '@src/Root'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
 import { ErrorPage } from '@src/components/ErrorPage'
@@ -40,6 +39,8 @@ import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
 import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
+import { TestLayout } from '@src/lib/layout/TestLayout'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -75,16 +76,14 @@ const router = createRouter([
         path: PATHS.FILE + '/:id',
         errorElement: <ErrorPage />,
         element: (
-          <Auth>
-            <ModelingPageProvider>
-              <ModelingMachineProvider>
-                <CoreDump />
-                <Outlet />
-                <App />
-                <CommandBar />
-              </ModelingMachineProvider>
-            </ModelingPageProvider>
-          </Auth>
+          <ModelingPageProvider>
+            <ModelingMachineProvider>
+              <CoreDump />
+              <Outlet />
+              <App />
+              <CommandBar />
+            </ModelingMachineProvider>
+          </ModelingPageProvider>
         ),
         children: [
           {
@@ -116,11 +115,11 @@ const router = createRouter([
         path: PATHS.HOME,
         errorElement: <ErrorPage />,
         element: (
-          <Auth>
+          <>
             <Outlet />
             <Home />
             <CommandBar />
-          </Auth>
+          </>
         ),
         id: PATHS.HOME,
         loader: homeLoader,
@@ -145,6 +144,15 @@ const router = createRouter([
         errorElement: <ErrorPage />,
         element: <SignIn />,
       },
+      ...(IS_STAGING_OR_DEBUG
+        ? [
+            {
+              path: '/layout',
+              errorElement: <ErrorPage />,
+              element: <TestLayout />,
+            },
+          ]
+        : []),
     ],
   },
 ])

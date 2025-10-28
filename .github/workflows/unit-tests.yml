@@ -21,6 +21,7 @@ jobs:
 
   npm-test-unit:
     runs-on: namespace-profile-ubuntu-2-cores
+    # TODO: Remove unit test dependency on Wasm binary
     needs: npm-build-wasm
     steps:
       - uses: actions/checkout@v5
@@ -31,7 +32,7 @@ jobs:
           cache: 'npm'
 
       - run: npm install
-      - uses: taiki-e/install-action@5ab30948b991e8d6aa5a6c1e33c6aea130c6de65
+      - uses: taiki-e/install-action@c5b1b6f479c32f356cc6f4ba672a47f63853b13b
         with:
           tool: wasm-pack
 
@@ -75,7 +76,7 @@ jobs:
           cache: 'npm'
 
       - run: npm install
-      - uses: taiki-e/install-action@5ab30948b991e8d6aa5a6c1e33c6aea130c6de65
+      - uses: taiki-e/install-action@c5b1b6f479c32f356cc6f4ba672a47f63853b13b
         with:
           tool: wasm-pack
 
@@ -95,20 +96,13 @@ jobs:
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
-      - run: npm run simpleserver:bg
-        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-
-      - name: Install Chromium Browser
-        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        run: npm run playwright install chromium --with-deps
-
       - name: npm run test:integration
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
         run: |-
           xvfb-run -a npm run test:integration || true # let TAB determine failure
           .github/ci-cd-scripts/upload-results.sh
         env:
-          VITE_KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}

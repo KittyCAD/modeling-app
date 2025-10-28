@@ -4,11 +4,37 @@ import { KCLError } from '@src/lang/errors'
 import { topLevelRange } from '@src/lang/util'
 import type { Sketch } from '@src/lang/wasm'
 import { assertParse, sketchFromKclValue } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 
-beforeAll(async () => {
-  await initPromise
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type RustContext from '@src/lib/rustContext'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+
+let instanceInThisFile: ModuleType = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+let rustContextInThisFile: RustContext = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
+beforeEach(async () => {
+  if (instanceInThisFile) {
+    return
+  }
+
+  const { instance, engineCommandManager, rustContext } =
+    await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  engineCommandManagerInThisFile = engineCommandManager
+  rustContextInThisFile = rustContext
+})
+
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
 })
 
 describe('test executor', () => {
@@ -477,8 +503,13 @@ theExtrude = startSketchOn(XY)
 // helpers
 
 async function exe(code: string) {
-  const ast = assertParse(code)
+  const ast = assertParse(code, instanceInThisFile)
 
-  const execState = await enginelessExecutor(ast, true, undefined)
+  const execState = await enginelessExecutor(
+    ast,
+    true,
+    undefined,
+    rustContextInThisFile
+  )
   return execState.variables
 }

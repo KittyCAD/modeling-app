@@ -26,7 +26,7 @@
 ///   framePlane = XZ,
 /// )
 /// ```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, experimental = true, feature_tree = true)
 export fn datum(
   /// The face to be annotated.
   @(includeInSnippet = true)
@@ -89,7 +89,7 @@ export fn datum(
 ///   |> extrude(length = 5)
 /// gdt::flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], framePlane = XZ)
 /// ```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, experimental = true, feature_tree = true)
 export fn flatness(
   /// The faces to be annotated.
   @(includeInSnippet = true)
@@ -97,7 +97,7 @@ export fn flatness(
   /// The amount of deviation from a perfect plane that is acceptable.
   @(includeInSnippet = true)
   tolerance: number(Length),
-  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0`.
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
   @(includeInSnippet = true)
   precision?: number(Count),
   /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.

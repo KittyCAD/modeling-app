@@ -29,6 +29,7 @@ test.describe('Point-and-click tests', () => {
 
     await test.step(`Edit first extrude via feature tree`, async () => {
       await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+      await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
@@ -54,6 +55,7 @@ test.describe('Point-and-click tests', () => {
 
     await test.step(`Edit second extrude via feature tree`, async () => {
       await (await toolbar.getFeatureTreeOperation('Extrude', 1)).dblclick()
+      await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
@@ -81,6 +83,7 @@ test.describe('Point-and-click tests', () => {
 
     await test.step(`Edit third extrude via feature tree`, async () => {
       await (await toolbar.getFeatureTreeOperation('Extrude', 2)).dblclick()
+      await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
@@ -128,6 +131,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
       await toolbar.extrudeButton.click()
       await editor.selectText('circle')
       await cmdBar.progressCmdBar()
+      await cmdBar.clickOptionalArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
@@ -181,6 +185,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
 
     await test.step(`Edit first extrude via feature tree`, async () => {
       await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+      await cmdBar.clickHeaderArgument('length')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
@@ -801,6 +806,12 @@ openSketch = startSketchOn(XY)
         commandName: 'Offset plane',
       })
       await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: { Plane: '1 plane', Offset: '5' },
+        commandName: 'Offset plane',
+      })
+      await cmdBar.submit()
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
@@ -2548,6 +2559,115 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
     })
   })
 
+  test(`Translate point-and-click with segment-to-body coercion`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch = startSketchOn(XY)
+profile = startProfile(sketch, at = [-5, -10])
+  |> xLine(length = 10)
+  |> yLine(length = 20)
+  |> xLine(length = -10)
+  |> close()
+box = extrude(profile, length = 30)`
+    const expectedTranslateCode = `translate(box, x = 50)`
+    const segmentToSelect = `yLine(length = 20)`
+
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+
+    await test.step('Select an edge first (before opening translate)', async () => {
+      await editor.selectText(segmentToSelect)
+      await expect(toolbar.selectionStatus).toContainText('1 segment')
+    })
+
+    await test.step('Open translate via context menu and verify coercion', async () => {
+      await toolbar.translateButton.click()
+
+      // When translate opens with a segment selected, it should coerce to the parent body
+      // The segment belongs to the 'profile' path, which is extruded into 'box'
+      // So the selection should coerce from segment to path (body)
+      await cmdBar.expectState({
+        commandName: 'Translate',
+        currentArgKey: 'objects',
+        currentArgValue: '',
+        headerArguments: {
+          Objects: '',
+        },
+        highlightedHeaderArg: 'objects',
+        stage: 'arguments',
+      })
+
+      await expect(page.getByText('1 path selected')).toBeVisible()
+      await expect(toolbar.selectionStatus).toContainText('1 path')
+    })
+
+    await test.step('Complete command flow', async () => {
+      await test.step('Progress to review since object is already selected', async () => {
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Objects: '1 path',
+          },
+          commandName: 'Translate',
+        })
+      })
+
+      await test.step('Add x translation', async () => {
+        await cmdBar.clickOptionalArgument('x')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'x',
+          currentArgValue: '0',
+          headerArguments: {
+            Objects: '1 path',
+            X: '',
+          },
+          highlightedHeaderArg: 'x',
+          commandName: 'Translate',
+        })
+        await page.keyboard.insertText('50')
+        await cmdBar.progressCmdBar()
+      })
+
+      await test.step('Review and submit', async () => {
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Objects: '1 path',
+            X: '50',
+          },
+          commandName: 'Translate',
+        })
+        await cmdBar.submit()
+        await scene.settled(cmdBar)
+      })
+    })
+
+    await test.step('Verify code was added correctly', async () => {
+      await toolbar.closePane('feature-tree')
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(expectedTranslateCode)
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: [expectedTranslateCode],
+        highlightedCode: '',
+      })
+    })
+  })
+
   test(`Appearance point-and-click`, async ({
     context,
     page,
@@ -3513,5 +3633,728 @@ solid001 = extrude(sketch001, length = 5)`
       await toolbar.closePane('feature-tree')
       await editor.expectEditor.not.toContain('patternLinear3d(')
     })
+  })
+
+  test('GDT Flatness from command bar', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = 30)
+extrude001 = extrude(sketch001, length = 30)
+    `
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      // Close panes to ensure toolbar buttons are visible
+      await toolbar.closePane('feature-tree')
+      await toolbar.closePane('code')
+    })
+
+    // Adjusted coordinates to center screen for clicking on cap
+    const testPoint = { x: 500, y: 200 }
+    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    await test.step('Add GDT Flatness to the scene', async () => {
+      await test.step('Open GDT Flatness command from toolbar', async () => {
+        await toolbar.gdtFlatnessButton.click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'GDT Flatness',
+          currentArgKey: 'faces',
+          currentArgValue: '',
+          headerArguments: {
+            Faces: '',
+            Tolerance: '',
+          },
+          highlightedHeaderArg: 'faces',
+        })
+      })
+
+      await test.step('Select face and configure basic parameters', async () => {
+        await test.step('Select face', async () => {
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'faces',
+            currentArgValue: '',
+            headerArguments: {
+              Faces: '',
+              Tolerance: '',
+            },
+            highlightedHeaderArg: 'faces',
+          })
+          await clickOnCap()
+        })
+
+        await test.step('Configure tolerance', async () => {
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'tolerance',
+            currentArgValue: '0.1mm',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '',
+            },
+            highlightedHeaderArg: 'tolerance',
+          })
+          // Set tolerance to 0.1mm
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.1mm')
+        })
+
+        await test.step('Review basic parameters', async () => {
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+            },
+          })
+        })
+      })
+
+      await test.step('Configure optional parameters', async () => {
+        await test.step('Configure precision', async () => {
+          await cmdBar.clickOptionalArgument('precision')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'precision',
+            currentArgValue: '3',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '',
+            },
+            highlightedHeaderArg: 'precision',
+          })
+          // Update precision from 3 to 5
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('5')
+          await cmdBar.progressCmdBar()
+          // Review changes to precision
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+            },
+          })
+        })
+
+        await test.step('Configure frame position', async () => {
+          await cmdBar.clickOptionalArgument('framePosition')
+
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'framePosition',
+            currentArgValue: '[0, 0]',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '',
+            },
+            highlightedHeaderArg: 'framePosition',
+          })
+          // Update frame position from [0, 0] to [10, 10]
+          await page.getByTestId('vector2d-x-input').fill('10')
+          await page.getByTestId('vector2d-y-input').fill('10')
+          await cmdBar.progressCmdBar()
+          // Review changes to frame position
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+            },
+          })
+        })
+
+        await test.step('Configure frame plane', async () => {
+          await cmdBar.clickOptionalArgument('framePlane')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'framePlane',
+            currentArgValue: '',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: '',
+            },
+            highlightedHeaderArg: 'framePlane',
+          })
+          // Select XY plane and auto-progress
+          await cmdBar.selectOption({ name: 'XY' }).click()
+          // Review changes to frame plane
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+            },
+          })
+        })
+
+        await test.step('Configure font point size', async () => {
+          await cmdBar.clickOptionalArgument('fontPointSize')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'fontPointSize',
+            currentArgValue: '36',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '',
+            },
+            highlightedHeaderArg: 'fontPointSize',
+          })
+          // Update font point size from 36 to 48
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('48')
+          await cmdBar.progressCmdBar()
+          // Review changes to font point size
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+            },
+          })
+        })
+
+        await test.step('Configure font scale', async () => {
+          await cmdBar.clickOptionalArgument('fontScale')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'fontScale',
+            currentArgValue: '1.0',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '',
+            },
+            highlightedHeaderArg: 'fontScale',
+          })
+          // Update font scale from 1 to 1.5
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('1.5')
+          await cmdBar.progressCmdBar()
+          // Review changes to font scale
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Faces: '1 cap',
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+          })
+        })
+      })
+
+      await test.step('Submit and verify all parameters', async () => {
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain('experimentalFeatures = allow')
+        await editor.expectEditor.toContain('gdt::flatness(')
+        await editor.expectEditor.toContain('faces = [capEnd001]')
+        await editor.expectEditor.toContain('tolerance = 0.1mm')
+        await editor.expectEditor.toContain('precision = 5')
+        await editor.expectEditor.toContain('framePosition = [10, 10]')
+        await editor.expectEditor.toContain('framePlane = XY')
+        await editor.expectEditor.toContain('fontPointSize = 48')
+        await editor.expectEditor.toContain('fontScale = 1.5')
+      })
+    })
+
+    await test.step('Edit GDT Flatness', async () => {
+      await test.step('Open edit mode from feature tree', async () => {
+        await toolbar.openPane('feature-tree')
+        const gdtOperation = await toolbar.getFeatureTreeOperation(
+          'Flatness',
+          0
+        )
+        await gdtOperation.dblclick()
+        // Should open the command bar in edit mode
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'GDT Flatness',
+          currentArgKey: 'tolerance',
+          currentArgValue: '0.1mm',
+          headerArguments: {
+            Tolerance: '0.1mm',
+            Precision: '5',
+            FramePosition: '[10, 10]',
+            FramePlane: 'XY',
+            FontPointSize: '48',
+            FontScale: '1.5',
+          },
+          highlightedHeaderArg: 'tolerance',
+        })
+      })
+
+      await test.step('Edit parameters', async () => {
+        await test.step('Edit tolerance', async () => {
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'tolerance',
+            currentArgValue: '0.1mm',
+            headerArguments: {
+              Tolerance: '0.1mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+            highlightedHeaderArg: 'tolerance',
+          })
+          // Update tolerance from 0.1mm to 0.2mm
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('0.2mm')
+          await cmdBar.progressCmdBar()
+          // Review changes to tolerance
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+          })
+        })
+
+        await test.step('Edit precision', async () => {
+          await page.getByRole('button', { name: 'Precision' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'precision',
+            currentArgValue: '5',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '5',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+            highlightedHeaderArg: 'precision',
+          })
+          // Update precision from 5 to 3
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('3')
+          await cmdBar.progressCmdBar()
+          // Review changes to precision
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+          })
+        })
+
+        await test.step('Edit frame position', async () => {
+          await page.getByRole('button', { name: 'FramePosition' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'framePosition',
+            currentArgValue: '[10, 10]',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[10, 10]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+            highlightedHeaderArg: 'framePosition',
+          })
+          // Update frame position from [10, 10] to [20, 30]
+          await page.getByTestId('vector2d-x-input').fill('20')
+          await page.getByTestId('vector2d-y-input').fill('30')
+          await cmdBar.progressCmdBar()
+          // Review changes to frame position
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[20, 30]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+          })
+        })
+
+        await test.step('Edit frame plane', async () => {
+          await page.getByRole('button', { name: 'FramePlane' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'framePlane',
+            currentArgValue: '',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[20, 30]',
+              FramePlane: 'XY',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+            highlightedHeaderArg: 'framePlane',
+          })
+          // Update frame plane from XY to XZ
+          await cmdBar.selectOption({ name: 'XZ' }).click()
+          // Review changes to frame plane
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[20, 30]',
+              FramePlane: 'XZ',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+          })
+        })
+
+        await test.step('Edit font point size', async () => {
+          await page.getByRole('button', { name: 'FontPointSize' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'fontPointSize',
+            currentArgValue: '48',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[20, 30]',
+              FramePlane: 'XZ',
+              FontPointSize: '48',
+              FontScale: '1.5',
+            },
+            highlightedHeaderArg: 'fontPointSize',
+          })
+          // Update font point size from 48 to 24
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('24')
+          await cmdBar.progressCmdBar()
+          // Review changes to font point size
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[20, 30]',
+              FramePlane: 'XZ',
+              FontPointSize: '24',
+              FontScale: '1.5',
+            },
+          })
+        })
+
+        await test.step('Edit font scale', async () => {
+          await page.getByRole('button', { name: 'FontScale' }).click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            commandName: 'GDT Flatness',
+            currentArgKey: 'fontScale',
+            currentArgValue: '1.5',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[20, 30]',
+              FramePlane: 'XZ',
+              FontPointSize: '24',
+              FontScale: '1.5',
+            },
+            highlightedHeaderArg: 'fontScale',
+          })
+          // Update font scale from 1.5 to 2.0
+          await cmdBar.currentArgumentInput.locator('.cm-content').fill('2.0')
+          await cmdBar.progressCmdBar()
+          // Review changes to font scale
+          await cmdBar.expectState({
+            stage: 'review',
+            commandName: 'GDT Flatness',
+            headerArguments: {
+              Tolerance: '0.2mm',
+              Precision: '3',
+              FramePosition: '[20, 30]',
+              FramePlane: 'XZ',
+              FontPointSize: '24',
+              FontScale: '2',
+            },
+          })
+        })
+      })
+
+      await test.step('Submit and verify all parameters', async () => {
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain('gdt::flatness(')
+        await editor.expectEditor.toContain('faces = [capEnd001]')
+        await editor.expectEditor.toContain('tolerance = 0.2mm')
+        await editor.expectEditor.toContain('precision = 3')
+        await editor.expectEditor.toContain('framePosition = [20, 30]')
+        await editor.expectEditor.toContain('framePlane = XZ')
+        await editor.expectEditor.toContain('fontPointSize = 24')
+        await editor.expectEditor.toContain('fontScale = 2')
+      })
+    })
+
+    await test.step('Delete GDT Flatness', async () => {
+      await toolbar.openPane('feature-tree')
+      const gdtOperation = await toolbar.getFeatureTreeOperation('Flatness', 0)
+      // Delete the GDT operation
+      await gdtOperation.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain('gdt::flatness(')
+    })
+  })
+
+  test('Hole point-and-click', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-5, -5])
+  |> angledLine(angle = 0deg, length = 10, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 10)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10)`
+    await test.step('Settle the scene', async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      // Close panes to ensure toolbar buttons are visible
+      await toolbar.closePane('feature-tree')
+      await toolbar.closePane('code')
+    })
+
+    await test.step('Add the hole through the command flow', async () => {
+      await toolbar.holeButton.click()
+      const testPoint = { x: 600, y: 250 }
+      const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'face',
+        currentArgValue: '',
+        commandName: 'Hole',
+        headerArguments: {
+          Face: '',
+          CutAt: '',
+          HoleBody: '',
+          HoleType: '',
+          HoleBottom: '',
+        },
+        highlightedHeaderArg: 'face',
+      })
+      await clickOnCap()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'cutAt',
+        currentArgValue: '[0, 0]',
+        commandName: 'Hole',
+        headerArguments: {
+          Face: '1 cap',
+          CutAt: '',
+          HoleBody: '',
+          HoleType: '',
+          HoleBottom: '',
+        },
+        highlightedHeaderArg: 'cutAt',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'holeBody',
+        currentArgValue: '',
+        commandName: 'Hole',
+        headerArguments: {
+          Face: '1 cap',
+          CutAt: '[0, 0]',
+          HoleBody: '',
+          HoleType: '',
+          HoleBottom: '',
+        },
+        highlightedHeaderArg: 'holeBody',
+      })
+      await cmdBar.selectOption({ name: 'Blind' }).click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'blindDepth',
+        currentArgValue: '5',
+        commandName: 'Hole',
+        headerArguments: {
+          Face: '1 cap',
+          CutAt: '[0, 0]',
+          HoleBody: 'blind',
+          BlindDepth: '',
+          BlindDiameter: '',
+          HoleType: '',
+          HoleBottom: '',
+        },
+        highlightedHeaderArg: 'blindDepth',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'blindDiameter',
+        currentArgValue: '1',
+        commandName: 'Hole',
+        headerArguments: {
+          Face: '1 cap',
+          CutAt: '[0, 0]',
+          HoleBody: 'blind',
+          BlindDepth: '5',
+          BlindDiameter: '',
+          HoleType: '',
+          HoleBottom: '',
+        },
+        highlightedHeaderArg: 'blindDiameter',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'holeType',
+        currentArgValue: '',
+        commandName: 'Hole',
+        headerArguments: {
+          Face: '1 cap',
+          CutAt: '[0, 0]',
+          HoleBody: 'blind',
+          BlindDepth: '5',
+          BlindDiameter: '1',
+          HoleType: '',
+          HoleBottom: '',
+        },
+        highlightedHeaderArg: 'holeType',
+      })
+      await cmdBar.selectOption({ name: 'Simple' }).click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'holeBottom',
+        currentArgValue: '',
+        commandName: 'Hole',
+        headerArguments: {
+          Face: '1 cap',
+          CutAt: '[0, 0]',
+          HoleBody: 'blind',
+          BlindDepth: '5',
+          BlindDiameter: '1',
+          HoleType: 'simple',
+          HoleBottom: '',
+        },
+        highlightedHeaderArg: 'holeBottom',
+      })
+      await cmdBar.selectOption({ name: 'Flat' }).click()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Hole',
+        headerArguments: {
+          Face: '1 cap',
+          CutAt: '[0, 0]',
+          HoleBody: 'blind',
+          BlindDepth: '5',
+          BlindDiameter: '1',
+          HoleType: 'simple',
+          HoleBottom: 'flat',
+        },
+      })
+      await cmdBar.submit()
+    })
+
+    await test.step('Expect hole call added to the editor', async () => {
+      await scene.settled(cmdBar)
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(
+        `@settings(experimentalFeatures = allow)`
+      )
+      await editor.expectEditor.toContain(
+        `hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [0, 0],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeType =   hole::simple(),
+)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    // TODO: edit flow
   })
 })

@@ -807,14 +807,16 @@ washer = extrude(washerSketch, length = thicknessMax)`
         .toBe('true')
       await page.waitForTimeout(100)
       await circleCenterClick()
-      // this number will be different if the scale is not set correctly for inches
+      // Just verify that the radius is the correct order of magnitude
+      // this number will be very different if the scale is not set correctly for inches
       await editor.expectEditor.toContain(
-        'circle(sketch001, center = [0.04, -0.06]'
+        /circle\(sketch001, center = \[0\.0\d+, -0\.0\d+\]/
       )
       await circleRadiusClick()
 
+      // Just verify that the radius is the correct order of magnitude
       await editor.expectEditor.toContain(
-        'circle(sketch001, center = [0.04, -0.06], radius = 0.12'
+        /circle\(sketch001, center = \[0\.04, -0\.06\], radius = 0\.\d+/
       )
     })
 

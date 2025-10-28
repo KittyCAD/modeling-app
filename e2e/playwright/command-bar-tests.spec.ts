@@ -48,11 +48,11 @@ test.describe('Command bar tests', () => {
       currentArgValue: '',
       headerArguments: {
         Profiles: '',
-        Length: '',
       },
       highlightedHeaderArg: 'Profiles',
     })
     await cmdBar.progressCmdBar()
+    await cmdBar.clickOptionalArgument('length')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -247,13 +247,13 @@ test.describe('Command bar tests', () => {
       currentArgValue: '',
       headerArguments: {
         Profiles: '',
-        Length: '',
       },
       highlightedHeaderArg: 'Profiles',
     })
     // Select a face
     await editor.selectText('startProfile(at = [-6.95, 10.98])')
     await cmdBar.progressCmdBar()
+    await cmdBar.clickOptionalArgument('length')
 
     // Assert that we're on the distance step
     await cmdBar.expectState({
@@ -556,6 +556,7 @@ test.describe('Command bar tests', () => {
 b = a * a
 c = 3 + a
 theta = 45deg
+export exported = 1
 `
     await context.folderSetupFn(async (dir) => {
       const testProject = join(dir, projectName)
@@ -682,13 +683,52 @@ theta = 45deg
         stage: 'commandBarClosed',
       })
     })
+    await test.step(`Edit an exported parameter via command bar`, async () => {
+      await cmdBar.cmdBarOpenBtn.click()
+      await cmdBar.chooseCommand('edit parameter')
+      await cmdBar
+        .selectOption({
+          name: 'exported',
+        })
+        .click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Edit parameter',
+        currentArgKey: 'value',
+        currentArgValue: '1',
+        headerArguments: {
+          Name: 'exported',
+          Value: '',
+        },
+        highlightedHeaderArg: 'value',
+      })
+      await cmdBar.argumentInput.locator('[contenteditable]').fill('2')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Edit parameter',
+        headerArguments: {
+          Name: 'exported',
+          Value: '2',
+        },
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'commandBarClosed',
+      })
+    })
 
     await editor.expectEditor.toContain(
-      `a = 5b = a * amyParameter001 = ${newValue}c = 3 + atheta = 45deg + 1deg`
+      `a = 5b = a * a
+myParameter001 = ${newValue}
+c = 3 + a
+theta = 45deg + 1deg
+export exported = 2`,
+      { shouldNormalise: true }
     )
   })
 
-  test('Command palette can be opened via query parameter', async ({
+  test('Command palette can be opened via query parameter - desktop', async ({
     page,
     homePage,
     cmdBar,
@@ -710,6 +750,26 @@ theta = 45deg
       highlightedHeaderArg: 'value',
     })
   })
+
+  test(
+    'Command palette can be opened via query parameter - web',
+    { tag: '@web' },
+    async ({ page, cmdBar }) => {
+      await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
+      await cmdBar.expectCommandName('Settings · app · theme')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Settings · app · theme',
+        currentArgKey: 'value',
+        currentArgValue: '',
+        headerArguments: {
+          Level: 'user',
+          Value: '',
+        },
+        highlightedHeaderArg: 'value',
+      })
+    }
+  )
 
   test('Text-to-CAD command can be closed with escape while in prompt', async ({
     page,

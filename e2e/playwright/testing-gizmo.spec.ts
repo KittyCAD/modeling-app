@@ -38,7 +38,7 @@ test.describe('Testing Gizmo', () => {
     },
     {
       testDescription: 'front view',
-      clickPosition: { x: 935, y: 413 },
+      clickPosition: { x: 931, y: 411 },
       expectedCameraPosition: { x: 800, y: -5012.02, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
@@ -305,8 +305,8 @@ test.describe(`Testing gizmo, fixture-based`, () => {
     await test.step(`Verify the camera moved`, async () => {
       await scene.expectState({
         camera: {
-          position: [24556.17, -24556.17, 24556.17],
-          target: [0, 0, 0],
+          position: [20785.58, -39851.59, 22171.59],
+          target: [20785.58, -1270, 4269.74],
         },
       })
     })

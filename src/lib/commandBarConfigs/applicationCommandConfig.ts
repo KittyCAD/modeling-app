@@ -31,8 +31,12 @@ import {
   SystemIOMachineEvents,
   determineProjectFilePathFromPrompt,
 } from '@src/machines/systemIO/utils'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
+import { appActor, setLayout } from '@src/lib/singletons'
+import { AppMachineEventType } from '@src/lib/types'
+import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -146,6 +150,7 @@ export function createApplicationCommands({
     groupId: 'application',
     needsReview: false,
     status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
+    mlBranding: true,
     icon: 'sparkles',
     onSubmit: (record) => {
       if (record) {
@@ -581,13 +586,71 @@ export function createApplicationCommands({
     },
   }
 
+  const resetLayoutCommand: Command = {
+    name: 'reset-layout',
+    displayName: 'Reset layout',
+    description: 'Reset layout to the default configuration',
+    needsReview: false,
+    icon: 'layout',
+    groupId: 'application',
+    onSubmit: () => {
+      appActor.send({ type: AppMachineEventType.ResetLayout })
+    },
+  }
+
+  const setLayoutCommand: Command = {
+    name: 'set-layout',
+    hideFromSearch: true,
+    displayName: 'Set layout',
+    description: 'Set layout to be a certain predefined configuration',
+    needsReview: false,
+    icon: 'layout',
+    groupId: 'application',
+    onSubmit: (data) => {
+      if (isUserLoadableLayoutKey(data?.layoutId)) {
+        setLayout(userLoadableLayouts[data.layoutId])
+        // This command is silent, we don't toast success, because
+        // it is often used in conjunction with other commands and actions
+        // that occur on app load, and we don't want to spam the user.
+      } else {
+        toast.error(`No layout found with ID "${data?.layoutId}"`)
+      }
+    },
+    args: {
+      layoutId: {
+        inputType: 'options',
+        defaultValue: 'default',
+        skip: true,
+        required: true,
+        /** These options must correspond to configs within `@src/lib/layout/configs/` */
+        options: [
+          {
+            name: 'Default',
+            value: 'default',
+          },
+          {
+            name: 'Text-to-CAD focus',
+            value: 'ttc',
+          },
+        ] satisfies { name: string; value: keyof typeof userLoadableLayouts }[],
+      },
+    },
+  }
+
   return isDesktop()
     ? [
-        textToCADCommand,
+        ...(IS_STAGING_OR_DEBUG ? [] : [textToCADCommand]),
         addKCLFileToProject,
+        resetLayoutCommand,
+        setLayoutCommand,
         createASampleDesktopOnly,
         switchEnvironmentsCommand,
         choosePoolCommand,
       ]
-    : [textToCADCommand, addKCLFileToProject]
+    : [
+        ...(IS_STAGING_OR_DEBUG ? [] : [textToCADCommand]),
+        addKCLFileToProject,
+        resetLayoutCommand,
+        setLayoutCommand,
+      ]
 }

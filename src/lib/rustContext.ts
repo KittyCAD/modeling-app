@@ -36,7 +36,7 @@ export default class RustContext {
   private projectId = 0
 
   /** Initialize the WASM module */
-  async ensureWasmInit() {
+  private async ensureWasmInit() {
     try {
       await initPromise
       if (this.wasmInitFailed) {
@@ -48,18 +48,22 @@ export default class RustContext {
     }
   }
 
-  constructor(engineCommandManager: ConnectionManager) {
+  constructor(engineCommandManager: ConnectionManager, instance?: ModuleType) {
     this.engineCommandManager = engineCommandManager
 
-    this.ensureWasmInit()
-      .then(() => {
-        this.ctxInstance = this.create()
-      })
-      .catch(reportRejection)
+    if (instance) {
+      this.createFromInstance(instance)
+    } else {
+      this.ensureWasmInit()
+        .then(() => {
+          this.ctxInstance = this.create()
+        })
+        .catch(reportRejection)
+    }
   }
 
   /** Create a new context instance */
-  create(): Context {
+  private create(): Context {
     this.rustInstance = getModule()
 
     const ctxInstance = new this.rustInstance.Context(
@@ -68,6 +72,21 @@ export default class RustContext {
     )
 
     return ctxInstance
+  }
+
+  getRustInstance() {
+    return this.rustInstance || undefined
+  }
+
+  private createFromInstance(instance: ModuleType) {
+    this.rustInstance = instance
+
+    const ctxInstance = new this.rustInstance.Context(
+      this.engineCommandManager,
+      projectFsManager
+    )
+
+    this.ctxInstance = ctxInstance
   }
 
   async sendOpenProject(

@@ -8,12 +8,6 @@ const config = defineConfig({
   test: {
     globals: true,
     pool: 'forks',
-    poolOptions: {
-      forks: {
-        maxForks: 2,
-        minForks: 1,
-      },
-    },
     environment: 'node',
     reporters: process.env.GITHUB_ACTIONS
       ? ['dot', 'github-actions']

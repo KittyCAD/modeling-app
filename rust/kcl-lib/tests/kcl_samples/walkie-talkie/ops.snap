@@ -422,7 +422,6 @@ description: Operations executed walkie-talkie.kcl
       "sourceRange": []
     }
   ],
-  "public/kcl-samples/walkie-talkie/button.kcl": [],
   "public/kcl-samples/walkie-talkie/case.kcl": [
     {
       "type": "StdLibCall",
@@ -4774,10 +4773,6 @@ description: Operations executed walkie-talkie.kcl
       "sourceRange": []
     }
   ],
-  "public/kcl-samples/walkie-talkie/zoo-logo.kcl": [],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -4883,14 +4878,5 @@ description: Operations executed walkie-talkie.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

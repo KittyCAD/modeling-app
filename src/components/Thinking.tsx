@@ -7,6 +7,7 @@ import type { MlCopilotServerMessage } from '@kittycad/lib'
 import type { PlanStep } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { type ReactNode, useEffect, useRef, useState } from 'react'
+import { PlaceholderLine } from '@src/components/PlaceholderLine'
 
 export const Generic = (props: {
   content: string
@@ -340,20 +341,18 @@ const fromDataToComponent = (
     switch (type) {
       case 'text': {
         return (
-          <>
-            <Text key={options.key} content={thought.reasoning.content} />
+          <div key={options.key}>
+            <Text content={thought.reasoning.content} />
             <Spacer />
-          </>
+          </div>
         )
       }
       case 'markdown': {
         return (
-          <>
-            <NothingInParticular
-              key={options.key}
-              content={(thought.reasoning as { content: string }).content}
-            />
-          </>
+          <NothingInParticular
+            key={options.key}
+            content={(thought.reasoning as { content: string }).content}
+          />
         )
       }
       case 'kcl_code_examples': {
@@ -481,7 +480,7 @@ export const Thinking = (props: {
   })
 
   if (props.isDone) {
-    componentThoughts.push(<End />)
+    componentThoughts.push(<End key={reasoningThoughts.length} />)
   }
 
   const lastTextualThought = reasoningThoughts.findLast(
@@ -505,11 +504,7 @@ export const Thinking = (props: {
       style={{ maxHeight: '20lh' }}
       className="overflow-auto text-2 text-xs bg-1 b-4 rounded-md pl-2 pr-2 pt-4 pb-6 border shadow-md"
     >
-      {componentThoughts.length > 0 ? (
-        componentThoughts
-      ) : (
-        <div className="animate-pulse animate-shimmer h-4 w-full p-1 bg-chalkboard-80 rounded"></div>
-      )}
+      {componentThoughts.length > 0 ? componentThoughts : <PlaceholderLine />}
     </div>
   )
 

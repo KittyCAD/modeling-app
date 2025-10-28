@@ -8,16 +8,18 @@ import * as fs from 'fs/promises'
 
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getInVariableCase } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 /// Get the current project file from the path.
 /// This is used for double-clicking on a file in the file explorer,
 /// or the command line args, or deep linking.
 export default async function getCurrentProjectFile(
-  pathString: string
+  pathString: string,
+  wasmInstance?: ModuleType
 ): Promise<string | Error> {
   // Extract the values into an array
-  const allFileImportFormats: string[] = importFileExtensions()
-  const relevantExtensions: string[] = relevantFileExtensions()
+  const allFileImportFormats: string[] = importFileExtensions(wasmInstance)
+  const relevantExtensions: string[] = relevantFileExtensions(wasmInstance)
   const shouldWrapExtension = (extension: string) =>
     allFileImportFormats.includes(extension)
 

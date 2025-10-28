@@ -213,6 +213,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-appearance-9",
     "std-solid-chamfer-0",
     "std-solid-chamfer-1",
+    "std-solid-chamfer-2",
     "std-solid-fillet-0",
     "std-solid-fillet-1",
     "std-solid-hollow-0",
@@ -275,4 +276,10 @@ pub const TEST_NAMES: &[&str] = &[
     "std-vector-dot-0",
     "std-vector-magnitude-0",
     "std-vector-normalize-0",
+    "std-hole-countersink-0",
+    "std-hole-counterbore-0",
+    "std-hole-hole-0",
+    "std-hole-hole-1",
+    "std-hole-drill-0",
+    "std-hole-flat-0",
 ];

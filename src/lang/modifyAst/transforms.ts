@@ -42,8 +42,9 @@ export function addTranslate({
   nodeToEdit?: PathToNode
   callName?: string
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
@@ -51,7 +52,7 @@ export function addTranslate({
   const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
-    nodeToEdit,
+    mNodeToEdit,
     lastChildLookup,
     artifactGraph
   )
@@ -75,13 +76,13 @@ export function addTranslate({
 
   // Insert variables for labeled arguments if provided
   if (x && 'variableName' in x && x.variableName) {
-    insertVariableAndOffsetPathToNode(x, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(x, modifiedAst, mNodeToEdit)
   }
   if (y && 'variableName' in y && y.variableName) {
-    insertVariableAndOffsetPathToNode(y, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(y, modifiedAst, mNodeToEdit)
   }
   if (z && 'variableName' in z && z.variableName) {
-    insertVariableAndOffsetPathToNode(z, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(z, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -89,7 +90,7 @@ export function addTranslate({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: undefined, // No variable declaration for translate
   })
@@ -122,8 +123,9 @@ export function addRotate({
   global?: boolean
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
@@ -131,7 +133,7 @@ export function addRotate({
   const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
-    nodeToEdit,
+    mNodeToEdit,
     lastChildLookup,
     artifactGraph
   )
@@ -158,13 +160,13 @@ export function addRotate({
 
   // Insert variables for labeled arguments if provided
   if (roll && 'variableName' in roll && roll.variableName) {
-    insertVariableAndOffsetPathToNode(roll, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(roll, modifiedAst, mNodeToEdit)
   }
   if (pitch && 'variableName' in pitch && pitch.variableName) {
-    insertVariableAndOffsetPathToNode(pitch, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(pitch, modifiedAst, mNodeToEdit)
   }
   if (yaw && 'variableName' in yaw && yaw.variableName) {
-    insertVariableAndOffsetPathToNode(yaw, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(yaw, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -172,7 +174,7 @@ export function addRotate({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: undefined, // No variable declaration for transforms
   })
@@ -231,8 +233,9 @@ export function addClone({
   variableName: string
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
@@ -240,7 +243,7 @@ export function addClone({
   const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
-    nodeToEdit,
+    mNodeToEdit,
     lastChildLookup,
     artifactGraph
   )
@@ -284,8 +287,9 @@ export function addAppearance({
   roughness?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
@@ -293,7 +297,7 @@ export function addAppearance({
   const vars = getVariableExprsFromSelection(
     objects,
     modifiedAst,
-    nodeToEdit,
+    mNodeToEdit,
     lastChildLookup,
     artifactGraph
   )
@@ -316,11 +320,11 @@ export function addAppearance({
   ])
 
   if (metalness && 'variableName' in metalness && metalness.variableName) {
-    insertVariableAndOffsetPathToNode(metalness, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(metalness, modifiedAst, mNodeToEdit)
   }
 
   if (roughness && 'variableName' in roughness && roughness.variableName) {
-    insertVariableAndOffsetPathToNode(roughness, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(roughness, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -328,7 +332,7 @@ export function addAppearance({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: undefined, // No variable declaration for transforms
   })
