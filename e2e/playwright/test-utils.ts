@@ -932,6 +932,7 @@ export async function setup(
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
       window.addEventListener('beforeunload', () => {
         localStorage.removeItem(IS_PLAYWRIGHT_KEY)
+        localStorage.removeItem(`${LAYOUT_PERSIST_PREFIX}default`)
       })
     },
     {
