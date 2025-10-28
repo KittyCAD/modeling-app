@@ -164,4 +164,8 @@ export const machine = setup({
       description: 'Any teardown logic should go here.',
     },
   },
+  entry: async () => {
+    // TODO: using newSketch or editSketch should make this hack redundant
+    await rustContext.hackSetProgram(kclManager.ast, await jsAppSettings())
+  },
 })

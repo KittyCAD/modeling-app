@@ -15,6 +15,7 @@ import type {
   SketchExecOutcome,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import { codeManager } from '@src/lib/singletons'
 
 const equipTools = Object.freeze({
   centerRectTool,
@@ -85,6 +86,7 @@ export const sketchSolveMachine = setup({
     }),
     'update sketch outcome': assign(({ event }) => {
       assertEvent(event, 'update sketch outcome')
+      codeManager.updateCodeEditor(event.data.kclSource.text)
       return { sketchExecOutcome: event.data }
     }),
     'spawn tool': assign(({ event, spawn, context }) => {
