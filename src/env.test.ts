@@ -15,8 +15,9 @@ describe('@src/env', () => {
         NODE_ENV: 'place-holder-since-it-will-be-set',
         VITE_KITTYCAD_BASE_DOMAIN: 'dev.zoo.dev',
         VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
-        VITE_KITTYCAD_API_WEBSOCKET_URL:
+        VITE_KITTYCAD_WEBSOCKET_URL:
           'wss://api.dev.zoo.dev/ws/modeling/commands',
+        VITE_MLEPHANT_WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/ml/copilot',
         VITE_ZOO_API_TOKEN: 'redacted',
         VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
         VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
@@ -54,8 +55,10 @@ describe('@src/env', () => {
             env: {
               NODE_ENV: 'test',
               VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
-              VITE_KITTYCAD_API_WEBSOCKET_URL:
+              VITE_KITTYCAD_WEBSOCKET_URL:
                 'wss://api.dev.zoo.dev/ws/modeling/commands',
+              VITE_MLEPHANT_WEBSOCKET_URL:
+                'wss://api.dev.zoo.dev/ws/ml/copilot',
               VITE_ZOO_API_TOKEN: 'redacted',
               VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
               VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
@@ -65,8 +68,9 @@ describe('@src/env', () => {
         const expected = {
           NODE_ENV: 'test',
           VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
-          VITE_KITTYCAD_API_WEBSOCKET_URL:
+          VITE_KITTYCAD_WEBSOCKET_URL:
             'wss://api.dev.zoo.dev/ws/modeling/commands',
+          VITE_MLEPHANT_WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/ml/copilot',
           VITE_ZOO_API_TOKEN: 'redacted',
           VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
           VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
@@ -99,7 +103,8 @@ describe('@src/env', () => {
       const expected = {
         API_URL: 'https://api.',
         SITE_URL: 'https://',
-        WEBSOCKET_URL: 'wss://api./ws/modeling/commands',
+        KITTYCAD_WEBSOCKET_URL: 'wss://api./ws/modeling/commands',
+        MLEPHANT_WEBSOCKET_URL: 'wss://api./ws/ml/copilot',
         APP_URL: 'https://app.',
       }
       const actual = generateDomainsFromBaseDomain('')
@@ -109,7 +114,8 @@ describe('@src/env', () => {
       const expected = {
         API_URL: 'https://api.zoo.dev',
         SITE_URL: 'https://zoo.dev',
-        WEBSOCKET_URL: 'wss://api.zoo.dev/ws/modeling/commands',
+        KITTYCAD_WEBSOCKET_URL: 'wss://api.zoo.dev/ws/modeling/commands',
+        MLEPHANT_WEBSOCKET_URL: 'wss://api.zoo.dev/ws/ml/copilot',
         APP_URL: 'https://app.zoo.dev',
       }
       const actual = generateDomainsFromBaseDomain('zoo.dev')
@@ -119,7 +125,8 @@ describe('@src/env', () => {
       const expected = {
         API_URL: 'https://api.dev.zoo.dev',
         SITE_URL: 'https://dev.zoo.dev',
-        WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/modeling/commands',
+        KITTYCAD_WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/modeling/commands',
+        MLEPHANT_WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/ml/copilot',
         APP_URL: 'https://app.dev.zoo.dev',
       }
       const actual = generateDomainsFromBaseDomain('dev.zoo.dev')

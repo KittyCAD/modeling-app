@@ -3,11 +3,18 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 export function Socket<T extends WebSocket>(
   WsClass: new (url: string) => T,
-  path: string,
+  urlOrPath: string,
   token: string
 ): Promise<T> {
-  const ws = new WsClass(withAPIBaseURL(path))
   const { promise, resolve } = promiseFactory<T>()
+
+  let ws
+
+  if (urlOrPath.includes('ws:') || urlOrPath.includes('wss:')) {
+    ws = new WsClass(urlOrPath)
+  } else {
+    ws = new WsClass(withAPIBaseURL(urlOrPath))
+  }
 
   ws.addEventListener('open', () => {
     ws.send(
@@ -22,7 +29,7 @@ export function Socket<T extends WebSocket>(
   })
 
   ws.addEventListener('close', () => {
-    console.log('CLOSED')
+    console.log(urlOrPath, 'closed')
   })
 
   return promise

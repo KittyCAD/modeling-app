@@ -1,3 +1,4 @@
+import env from '@src/env'
 import { BSON } from 'bson'
 import type {
   MlCopilotClientMessage,
@@ -27,6 +28,7 @@ import toast from 'react-hot-toast'
 
 export enum MlEphantSetupErrors {
   ConversationNotFound = 'conversation not found',
+  InvalidConversationId = 'Invalid conversation_id',
   NoRefParentSend = 'no ref parent send',
 }
 
@@ -235,7 +237,7 @@ export const mlEphantManagerMachine2 = setup({
 
       const ws = await Socket(
         WebSocket,
-        '/ws/ml/copilot' +
+        (env().VITE_MLEPHANT_WEBSOCKET_URL ?? '/ws/ml/copilot') +
           (maybeConversationId
             ? `?conversation_id=${maybeConversationId}&replay=true`
             : ''),
@@ -299,9 +301,12 @@ export const mlEphantManagerMachine2 = setup({
 
             if (
               'error' in response &&
-              response.error.detail.includes(
+              (response.error.detail.includes(
                 MlEphantSetupErrors.ConversationNotFound
-              )
+              ) ||
+                response.error.detail.includes(
+                  MlEphantSetupErrors.InvalidConversationId
+                ))
             ) {
               ws.close()
               // Pass that the conversation is not found to the onError handler which will set the conversationId
