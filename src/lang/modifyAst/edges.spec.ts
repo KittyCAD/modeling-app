@@ -9,12 +9,22 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import {
+  addFillet,
   deleteEdgeTreatment,
   EdgeTreatmentType,
 } from '@src/lang/modifyAst/edges'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type RustContext from '@src/lib/rustContext'
+import type { KclCommandValue } from '@src/lib/commandTypes'
+import {
+  enginelessExecutor,
+  createSelectionFromArtifacts,
+  getAstAndArtifactGraph,
+} from '@src/lib/testHelpers'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
+let rustContextInThisFile: RustContext = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 
 /**
@@ -28,10 +38,11 @@ beforeEach(async () => {
     return
   }
 
-  const { instance, kclManager, engineCommandManager } =
+  const { instance, kclManager, engineCommandManager, rustContext } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
+  rustContextInThisFile = rustContext
   engineCommandManagerInThisFile = engineCommandManager
 })
 afterAll(() => {
@@ -39,6 +50,59 @@ afterAll(() => {
 })
 
 describe('edges.spec.ts', () => {
+  const extrudedTriangle = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 5)
+  |> line(endAbsolute = [0, 5])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5)`
+
+  describe('Testing addFillet', () => {
+    it('should add a basic fillet call on sweepEdge', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        extrudedTriangle,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const selection = createSelectionFromArtifacts(
+        [[...artifactGraph.values()].find((a) => a.type === 'sweepEdge')!],
+        artifactGraph
+      )
+      const radius = (await stringToKclExpression(
+        '1',
+        undefined,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 5, tag = $seg01)
+  |> line(endAbsolute = [0, 5])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
+fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, capEnd001]), radius = 1)`)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+    })
+
+    // TODO: add addFillet edit test
+  })
+
+  // TODO: add addChamfer create test
+  // TODO: add addChamfer edit test
+
   const runDeleteEdgeTreatmentTest = async (
     code: string,
     edgeTreatmentSnippet: string,

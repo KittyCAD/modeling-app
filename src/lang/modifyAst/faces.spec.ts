@@ -1,11 +1,10 @@
+import { recast, type PlaneArtifact } from '@src/lang/wasm'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
-  type Artifact,
-  assertParse,
-  recast,
-  type PlaneArtifact,
-} from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import { enginelessExecutor } from '@src/lib/testHelpers'
+  enginelessExecutor,
+  createSelectionFromArtifacts,
+  getAstAndArtifactGraph,
+} from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { ArtifactGraph } from '@src/lang/wasm'
@@ -23,7 +22,6 @@ import {
 } from '@src/lang/modifyAst/faces'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { StdLibCallOp } from '@src/lang/queryAst'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import { getEdgeCutMeta } from '@src/lang/queryAst'
 import { expect } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -60,43 +58,6 @@ afterAll(() => {
 })
 
 describe('faces.test.ts', () => {
-  async function getAstAndArtifactGraph(
-    code: string,
-    instance: ModuleType,
-    kclManager: KclManager
-  ) {
-    const ast = assertParse(code, instance)
-    await kclManager.executeAst({ ast })
-    const {
-      artifactGraph,
-      execState: { operations },
-      variables,
-    } = kclManager
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    return { ast, artifactGraph, operations, variables }
-  }
-
-  function createSelectionFromArtifacts(
-    artifacts: Artifact[],
-    artifactGraph: ArtifactGraph
-  ): Selections {
-    const graphSelections = artifacts.flatMap((artifact) => {
-      const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
-      if (!codeRefs || codeRefs.length === 0) {
-        return []
-      }
-
-      return {
-        codeRef: codeRefs[0],
-        artifact,
-      } as Selection
-    })
-    return {
-      graphSelections,
-      otherSelections: [],
-    }
-  }
-
   // More complex shell case
   const multiSolids = `size = 100
 case = startSketchOn(XY)
