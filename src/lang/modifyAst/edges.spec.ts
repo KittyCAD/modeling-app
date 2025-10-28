@@ -21,6 +21,7 @@ import {
   createSelectionFromArtifacts,
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
+import { createPathToNodeForLastVariable } from '../modifyAst'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -57,6 +58,14 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = 5)`
+  const extrudedTriangleWithFillet = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 5, tag = $seg01)
+  |> line(endAbsolute = [0, 5])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
+fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, capEnd001]), radius = 1)`
 
   describe('Testing addFillet', () => {
     it('should add a basic fillet call on sweepEdge', async () => {
@@ -86,18 +95,90 @@ extrude001 = extrude(profile001, length = 5)`
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(`sketch001 = startSketchOn(XY)
+      expect(newCode).toContain(extrudedTriangleWithFillet)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+    })
+
+    it('should add a basic fillet call with tag on sweepEdge', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        extrudedTriangle,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const selection = createSelectionFromArtifacts(
+        [[...artifactGraph.values()].find((a) => a.type === 'sweepEdge')!],
+        artifactGraph
+      )
+      const radius = (await stringToKclExpression(
+        '1',
+        undefined,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        tag: 'myTag',
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 5, tag = $seg01)
   |> line(endAbsolute = [0, 5])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
-fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, capEnd001]), radius = 1)`)
+fillet001 = fillet(
+  extrude001,
+  tags =   getCommonEdge(faces = [seg01, capEnd001]),
+  radius = 1,
+  tag = $myTag,
+)`
+      )
       await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
     })
 
-    // TODO: add addFillet edit test
+    it('should edit a basic fillet call on sweepEdge', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        extrudedTriangleWithFillet,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const selection = createSelectionFromArtifacts(
+        [[...artifactGraph.values()].find((a) => a.type === 'sweepEdge')!],
+        artifactGraph
+      )
+      const nodeToEdit = createPathToNodeForLastVariable(ast, false)
+      const radius = (await stringToKclExpression(
+        '1.1',
+        undefined,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        nodeToEdit,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        extrudedTriangleWithFillet.replace('radius = 1', 'radius = 1.1')
+      )
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+    })
   })
 
   // TODO: add addChamfer create test
