@@ -68,6 +68,7 @@ import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
+import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -1218,7 +1219,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Fillet edge',
     icon: 'fillet3d',
     needsReview: true,
-    // TODO: add reviewMessage with mock exec once refactored
+    reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addFillet({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Fillet']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1247,7 +1264,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Chamfer edge',
     icon: 'chamfer3d',
     needsReview: true,
-    // TODO: add reviewMessage with mock exec once refactored
+    reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addChamfer({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Chamfer']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
