@@ -24,7 +24,6 @@ import {
 import { AmbientLight, DirectionalLight, MeshStandardMaterial } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { CustomIcon } from '@src/components/CustomIcon'
 import {
   ViewControlContextMenu,
@@ -206,7 +205,7 @@ export default function Gizmo() {
       const pickedName = obj?.name || raycasterIntersect.current.object.name
       const targetQuat = orientationQuaternionForName(pickedName)
       if (targetQuat) {
-        animateCameraToQuaternion(sceneInfra, targetQuat).catch(reportRejection)
+        animateCameraToQuaternion(targetQuat).catch(reportRejection)
       }
     }
 
@@ -298,7 +297,7 @@ const createCamera = (
     ? new PerspectiveCamera(35, 1, 0.1, 10)
     : new OrthographicCamera()
   if (camera instanceof OrthographicCamera) {
-    camera.zoom = 1.3
+    camera.zoom = 1.4
     camera.updateProjectionMatrix()
   }
 
@@ -436,19 +435,17 @@ function applyMaxAnisotropyToObject(obj: Object3D, maxAnisotropy: number) {
   })
 }
 
-async function animateCameraToQuaternion(
-  sceneInfra: SceneInfra,
-  targetQuat: Quaternion
-) {
+async function animateCameraToQuaternion(targetQuat: Quaternion) {
   const camControls = sceneInfra.camControls
   camControls.syncDirection = 'clientToEngine'
+  //camControls.enableRotate = false
   try {
     sceneInfra.animate()
     await camControls.tweenCameraToQuaternion(
       targetQuat,
       camControls.target.clone(),
       500,
-      false
+      false // !isPerspective: this doesn't work
     )
   } finally {
     sceneInfra.stop()

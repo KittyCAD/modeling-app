@@ -1301,14 +1301,16 @@ export class CameraControls {
           targetPosition,
           animationProgress
         )
-        if (this.camera instanceof PerspectiveCamera)
-          // changing the camera position back when it's orthographic doesn't do anything
-          // and it messes up animating back to perspective later
-          this.camera.position
-            .set(0, 0, 1)
-            .applyQuaternion(currentQ)
-            .multiplyScalar(initialDistance)
-            .add(currentTarget)
+        // This if would break ortho camera animation from Gizmo
+        // if (this.camera instanceof PerspectiveCamera)
+        // changing the camera position back when it's orthographic doesn't do anything
+        // and it messes up animating back to perspective later
+
+        this.camera.position
+          .set(0, 0, 1)
+          .applyQuaternion(currentQ)
+          .multiplyScalar(initialDistance)
+          .add(currentTarget)
 
         this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
         this.camera.quaternion.copy(currentQ)
