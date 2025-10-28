@@ -59,7 +59,7 @@ export const ExchangeCardStatus = (props: {
       {!isEndOfStream && thinker}
     </div>
   ) : (
-    <div>
+    <div className="relative">
       {thinker}
       {props.updatedAt && (
         <div className="text-chalkboard-70 p-2 pb-0">
