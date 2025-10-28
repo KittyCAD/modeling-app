@@ -71,7 +71,7 @@ dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 process.env.NODE_ENV ??= viteEnv.MODE
 process.env.VITE_KITTYCAD_WEBSOCKET_URL ??= viteEnv.VITE_KITTYCAD_WEBSOCKET_URL
 process.env.VITE_MLEPHANT_WEBSOCKET_URL ??= viteEnv.VITE_MLEPHANT_WEBSOCKET_URL
-process.env.VITE_KITTYCAD_BASE_DOMAIN ??= viteEnv.VITE_KITTYCAD_BASE_DOMAIN
+process.env.VITE_ZOO_BASE_DOMAIN ??= viteEnv.VITE_ZOO_BASE_DOMAIN
 
 // Likely convenient to keep for debugging
 console.log('Environment vars', process.env)
