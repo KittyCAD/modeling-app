@@ -34,6 +34,7 @@ import { sceneInfra } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
+import {btnName} from "@src/lib/cameraControls"
 
 export default function Gizmo() {
   const { state: modelingState } = useModelingContext()
@@ -57,6 +58,9 @@ export default function Gizmo() {
   const cameraRef = useRef<Camera>(createCamera(isPerspective))
   const sceneRef = useRef(new Scene())
   const lastMouse = useRef<Vector2 | null>(null)
+  const isDraggingRef = useRef(false)
+  const dragLastRef = useRef<Vector2 | null>(null)
+  const didDragRef = useRef(false)
 
   useEffect(() => {
     const previousCamera = cameraRef.current
@@ -72,6 +76,9 @@ export default function Gizmo() {
     sceneRef.current.add(camera)
 
     if (rendererRef.current) {
+      camera.updateMatrix()
+      camera.updateProjectionMatrix()
+      camera.updateWorldMatrix(true, true)
       rendererRef.current.render(sceneRef.current, camera)
     }
 
@@ -176,17 +183,63 @@ export default function Gizmo() {
       }
     }
 
-    const onMouseMove = (event: MouseEvent) => {
+    const onCanvasMouseMove = (event: MouseEvent) => {
       const { left, top, width, height } = canvas.getBoundingClientRect()
       const mousePos = new Vector2(
         ((event.clientX - left) / width) * 2 - 1,
         ((event.clientY - top) / height) * -2 + 1
       )
       lastMouse.current = mousePos
-      doRayCast(mousePos)
+      if (!isDraggingRef.current) {
+        doRayCast(mousePos)
+      }
+    }
+
+    const onWindowMouseMove = (event: MouseEvent) => {
+      // Drag to rotate main camera
+      if (isDraggingRef.current) {
+        const last = dragLastRef.current
+        const now = new Vector2(event.clientX, event.clientY)
+        dragLastRef.current = now
+        if (last) {
+          const dx = now.x - last.x
+          const dy = now.y - last.y
+          didDragRef.current = didDragRef.current || Math.hypot(dx, dy) > 1
+          sceneInfra.camControls.rotateCamera(dx, dy)
+          sceneInfra.camControls.safeLookAtTarget()
+
+          sceneInfra.camControls.onCameraChange(true)
+        }
+      }
+    }
+
+    const onMouseDown = (event: MouseEvent) => {
+      const isRightButton = btnName(event).right
+      if (isRightButton|| btnName(event).left) {
+
+        isDraggingRef.current = true
+        didDragRef.current = false
+        dragLastRef.current = new Vector2(event.clientX, event.clientY)
+        window.addEventListener('mousemove', onWindowMouseMove)
+        window.addEventListener('mouseup', onMouseUp)
+      }
+    }
+
+    const onMouseUp = (e: MouseEvent) => {
+      isDraggingRef.current = false
+      dragLastRef.current = null
+
+      window.removeEventListener('mousemove', onWindowMouseMove)
+      window.removeEventListener('mouseup', onMouseUp)
+      document.removeEventListener('mouseleave', onMouseUp)
     }
 
     const onClick = () => {
+      if (didDragRef.current) {
+        // suppress click if a drag occurred
+        didDragRef.current = false
+        return
+      }
       // If orbits are disabled, skip click logic
       if (!raycasterIntersect.current) {
         // If we have no current intersection (e.g., orbit disabled), do a forced raycast at the last mouse position
@@ -209,16 +262,22 @@ export default function Gizmo() {
       }
     }
 
-    // Add the event listener to the div wrapper around the canvas
+    const onContextMenu = (event: MouseEvent)=> {
+      event.preventDefault()
+      event.stopImmediatePropagation()
+    }
+
     const canvasParent = wrapperRef.current
-    canvasParent.addEventListener('mousemove', onMouseMove)
+    canvasParent.addEventListener('mousemove', onCanvasMouseMove)
+    canvas.addEventListener('mousedown', onMouseDown)
+    canvas.addEventListener("contextmenu", onContextMenu)
     canvasParent.addEventListener('click', onClick)
 
     const clock = new Clock()
     const clientCamera = sceneInfra.camControls.camera
     const currentQuaternion = new Quaternion().copy(clientCamera.quaternion)
 
-    const animate = () => {
+    const onCameraChange = () => {
       const delta = clock.getDelta()
       updateCameraOrientation(
         cameraRef.current,
@@ -228,18 +287,24 @@ export default function Gizmo() {
         cameraPassiveUpdateTimer
       )
       renderer.render(sceneRef.current, cameraRef.current)
-      if (lastMouse.current) {
+      if (!isDraggingRef.current && lastMouse.current) {
         doRayCast(lastMouse.current)
       }
     }
-    sceneInfra.camControls.cameraChange.add(animate)
+    sceneInfra.camControls.cameraChange.add(onCameraChange)
 
     return () => {
       renderer.dispose()
 
-      canvasParent.removeEventListener('mousemove', onMouseMove)
+      canvasParent.removeEventListener('mousemove', onCanvasMouseMove)
+      canvas.removeEventListener('mousedown', onMouseDown)
+      canvas.removeEventListener("contextmenu", onContextMenu)
       canvasParent.removeEventListener('click', onClick)
-      sceneInfra.camControls.cameraChange.remove(animate)
+
+      window.removeEventListener('mousemove', onWindowMouseMove)
+      window.removeEventListener('mouseup', onMouseUp)
+
+      sceneInfra.camControls.cameraChange.remove(onCameraChange)
     }
   }, [])
 
