@@ -10,6 +10,7 @@ import Tooltip from '@src/components/Tooltip'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
+import Loading from '@src/components/Loading'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
@@ -143,9 +144,16 @@ export const CommandBar = () => {
             ) : commandBarState.matches('Gathering arguments') ? (
               <CommandBarArgument stepBack={stepBack} />
             ) : (
-              commandBarState.matches('Review') && (
-                <CommandBarReview stepBack={stepBack} />
-              )
+              <>
+                {commandBarState.matches('Review') && (
+                  <CommandBarReview stepBack={stepBack} />
+                )}
+                {commandBarState.matches('Checking Arguments') && (
+                  <div className="py-4">
+                    <Loading isDummy={true}>Checking arguments...</Loading>
+                  </div>
+                )}
+              </>
             )}
             <div className="flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent">
               <button

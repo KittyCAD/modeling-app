@@ -479,6 +479,8 @@ export const commandBarMachine = setup({
           input.selectedCommand?.needsReview &&
           input.selectedCommand.reviewValidation
         ) {
+          // TODO: remove, this is just to test the new loader
+          await new Promise((r) => setTimeout(r, 500))
           const result = await input.selectedCommand.reviewValidation(input)
           if (err(result)) {
             reviewValidationError = result.message
