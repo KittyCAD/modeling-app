@@ -4,7 +4,6 @@ import { useEffect, useRef } from 'react'
 import { OrthographicCamera } from 'three'
 import type {
   Mesh,
-  Material,
   BufferGeometry,
   Camera,
   Intersection,
@@ -33,7 +32,6 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { sceneInfra } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { isArray } from '@src/lib/utils'
 import { btnName } from '@src/lib/cameraControls'
 
 export default function Gizmo() {
@@ -46,7 +44,7 @@ export default function Gizmo() {
   const raycasterIntersect = useRef<Intersection | null>(null)
   const cameraPassiveUpdateTimer = useRef(0)
   const disableOrbitRef = useRef(false)
-  const raycasterObjectsRef = useRef<StandardMesh[]>([])
+  const clickableObjects = useRef<StandardMesh[]>([])
   const hoveredObjectRef = useRef<StandardMesh | null>(null)
   const originalMaterialsRef = useRef<Map<string, MeshStandardMaterial>>(
     new Map()
@@ -143,24 +141,34 @@ export default function Gizmo() {
           if (!isStandardMesh(obj)) return
           if (isOrientationTargetName(obj.name)) clickable.push(obj)
         })
-        raycasterObjectsRef.current = clickable
+        clickableObjects.current = clickable
 
-        const maxAnisotropy = renderer.capabilities.getMaxAnisotropy()
-        applyMaxAnisotropyToObject(root, maxAnisotropy)
+        applyMaxAnisotropyToObject(root, renderer)
       },
       undefined,
       (e) => {
         console.log('err', e)
         // failed to load; leave without clickable faces
-        raycasterObjectsRef.current = []
+        clickableObjects.current = []
       }
     )
+
+    const clearHighlight = () => {
+      if (hoveredObjectRef.current) {
+        restoreHighlight(
+          hoveredObjectRef.current,
+          originalMaterialsRef.current
+        )
+        hoveredObjectRef.current = null
+      }
+      raycasterIntersect.current = null // Clear intersection
+    }
 
     const raycaster = new Raycaster()
     const doRayCast = (mouse: Vector2, force = false) => {
       if (force || !disableOrbitRef.current) {
         updateRayCaster(
-          raycasterObjectsRef.current,
+          clickableObjects.current,
           raycaster,
           mouse,
           cameraRef.current,
@@ -171,15 +179,7 @@ export default function Gizmo() {
         )
         renderer.render(sceneRef.current, cameraRef.current)
       } else {
-        // Reset hovered highlight
-        if (hoveredObjectRef.current) {
-          restoreHighlight(
-            hoveredObjectRef.current,
-            originalMaterialsRef.current
-          )
-          hoveredObjectRef.current = null
-        }
-        raycasterIntersect.current = null // Clear intersection
+        clearHighlight()
       }
     }
 
@@ -220,6 +220,7 @@ export default function Gizmo() {
         isDraggingRef.current = true
         didDragRef.current = false
         dragLastRef.current = new Vector2(event.clientX, event.clientY)
+        clearHighlight()
         window.addEventListener('mousemove', onWindowMouseMove)
         window.addEventListener('mouseup', onMouseUp)
       }
@@ -462,22 +463,20 @@ function applyHighlight(
 }
 
 function restoreHighlight(
-  target: Object3D,
-  originalMaterials: Map<string, Material | Material[]>
+  target: StandardMesh,
+  originalMaterials: Map<string, MeshStandardMaterial>
 ) {
-  const mesh = target as Mesh
-
-  const record = originalMaterials.get(mesh.uuid)
-  if (!record) return
-  mesh.material = record
-  if (isArray(mesh.material))
-    mesh.material.forEach((m) => (m.needsUpdate = true))
-  else mesh.material.needsUpdate = true
-  originalMaterials.delete(mesh.uuid)
+  const record = originalMaterials.get(target.uuid)
+  if (!record) {
+    return
+  }
+  target.material = record
+  originalMaterials.delete(target.uuid)
 }
 
 // Without this text on the cube sides becomes blurry on side view angles.
-function applyMaxAnisotropyToObject(obj: Object3D, maxAnisotropy: number) {
+function applyMaxAnisotropyToObject(obj: Object3D, renderer: WebGLRenderer) {
+  const maxAnisotropy = renderer.capabilities.getMaxAnisotropy()
   obj.traverse((node: Object3D) => {
     if (isStandardMesh(node)) {
       const mat = node.material
@@ -504,13 +503,13 @@ function applyMaxAnisotropyToObject(obj: Object3D, maxAnisotropy: number) {
 async function animateCameraToQuaternion(targetQuat: Quaternion) {
   const camControls = sceneInfra.camControls
   camControls.syncDirection = 'clientToEngine'
-  //camControls.enableRotate = false
+  camControls.enableRotate = false
   try {
     sceneInfra.animate()
     await camControls.tweenCameraToQuaternion(
       targetQuat,
       camControls.target.clone(),
-      500,
+      5000,
       false // !isPerspective: this doesn't work
     )
   } finally {
