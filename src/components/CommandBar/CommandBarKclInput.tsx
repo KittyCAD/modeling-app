@@ -16,7 +16,7 @@ import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { CustomIcon } from '@src/components/CustomIcon'
-import { useCodeMirror } from '@src/components/ModelingSidebar/ModelingPanes/CodeEditor'
+import { useCodeMirror } from '@src/components/layout/areas/CodeEditor'
 import { Spinner } from '@src/components/Spinner'
 import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
