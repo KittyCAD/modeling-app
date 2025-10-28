@@ -125,8 +125,10 @@ export const commandBarMachine = setup({
           resolvedArgs[argName] =
             typeof argValue === 'function' ? argValue(context) : argValue
         }
+        console.log('about to onSubmit')
         selectedCommand?.onSubmit(resolvedArgs)
       } else {
+        console.log('about to onSubmit')
         selectedCommand?.onSubmit({ context, event })
       }
     },
