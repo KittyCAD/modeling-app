@@ -17,9 +17,11 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import { useSelector } from '@xstate/react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { NIL as uuidNIL } from 'uuid'
 import type { BillingActor } from '@src/machines/billingMachine'
+import { useSearchParams } from 'react-router-dom'
+import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
 
 const hasPromptsPending = (promptsPool: Prompt[]) => {
   return (
@@ -41,6 +43,8 @@ export const MlEphantConversationPane = (props: {
   settings: typeof settings
   user?: User
 }) => {
+  const [defaultPrompt, setDefaultPrompt] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
   const mlEphantManagerActorSnapshot = props.mlEphantManagerActor.getSnapshot()
   const promptsBelongingToConversation = useSelector(
     props.mlEphantManagerActor,
@@ -236,6 +240,20 @@ export const MlEphantConversationPane = (props: {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [props.settings.meta.id.current])
 
+  // We watch the URL for a query parameter to set the defaultPrompt
+  // for the conversation.
+  useEffect(() => {
+    const ttcPromptParam = searchParams.get(SEARCH_PARAM_ML_PROMPT_KEY)
+    if (ttcPromptParam) {
+      setDefaultPrompt(ttcPromptParam)
+
+      // Now clear that param
+      const newSearchParams = new URLSearchParams(searchParams)
+      newSearchParams.delete(SEARCH_PARAM_ML_PROMPT_KEY)
+      setSearchParams(newSearchParams, { replace: true })
+    }
+  }, [searchParams, setSearchParams])
+
   return (
     <MlEphantConversation
       isLoading={promptsBelongingToConversation === undefined || isProcessing}
@@ -258,6 +276,7 @@ export const MlEphantConversationPane = (props: {
       }
       onSeeMoreHistory={onSeeMoreHistory}
       userAvatarSrc={props.user?.image}
+      defaultPrompt={defaultPrompt}
     />
   )
 }
