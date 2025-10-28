@@ -29,11 +29,15 @@ export class CmdBarFixture {
   public page: Page
   public cmdBarOpenBtn!: Locator
   public cmdBarElement!: Locator
+  public cmdBarLoadingCheckingArguments!: Locator
 
   constructor(page: Page) {
     this.page = page
     this.cmdBarOpenBtn = this.page.getByTestId('command-bar-open-button')
     this.cmdBarElement = this.page.getByTestId('command-bar')
+    this.cmdBarLoadingCheckingArguments = this.page.getByTestId(
+      'command-bar-loading-checking-arguments'
+    )
   }
 
   get currentArgumentInput() {
@@ -197,6 +201,10 @@ export class CmdBarFixture {
     }
   }
   expectState = async (expected: CmdBarSerialised) => {
+    if (expected.stage === 'review') {
+      await this.cmdBarLoadingCheckingArguments.waitFor({ state: 'hidden' })
+    }
+
     return expect.poll(() => this._serialiseCmdBar()).toEqual(expected)
   }
   /**

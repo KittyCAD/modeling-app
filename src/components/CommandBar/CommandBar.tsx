@@ -149,7 +149,10 @@ export const CommandBar = () => {
                   <CommandBarReview stepBack={stepBack} />
                 )}
                 {commandBarState.matches('Checking Arguments') && (
-                  <div className="py-4">
+                  <div
+                    className="py-4"
+                    data-testid="command-bar-loading-checking-arguments"
+                  >
                     <Loading isDummy={true}>Checking arguments...</Loading>
                   </div>
                 )}
