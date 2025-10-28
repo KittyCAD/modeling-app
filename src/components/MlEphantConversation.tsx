@@ -28,12 +28,14 @@ export interface MlEphantConversationProps {
   nextPage?: string
   hasPromptCompleted: boolean
   userAvatarSrc?: string
+  defaultPrompt?: string
 }
 
 interface MlEphantConversationInputProps {
   billingContext: BillingContext
   onProcess: MlEphantConversationProps['onProcess']
   disabled?: boolean
+  defaultPrompt?: string
 }
 
 function BillingStatusBarItem(props: { billingContext: BillingContext }) {
@@ -78,17 +80,24 @@ const ANIMATION_TIME = 2000
 export const MlEphantConversationInput = (
   props: MlEphantConversationInputProps
 ) => {
-  const refDiv = useRef<HTMLDivElement>(null)
+  const [value, setValue] = useState('')
+  const refDiv = useRef<HTMLTextAreaElement>(null)
   const [heightConvo, setHeightConvo] = useState(0)
   const [lettersForAnimation, setLettersForAnimation] = useState<ReactNode[]>(
     []
   )
   const [isAnimating, setAnimating] = useState(false)
 
+  // Without this the cursor ends up at the start of the text
+  useEffect(() => {
+    console.log('FRANK got a defaultPrompt', props.defaultPrompt)
+    setValue(props.defaultPrompt || '')
+  }, [props.defaultPrompt])
+
   const onClick = () => {
     if (props.disabled) return
 
-    const value = refDiv.current?.innerText
+    const value = refDiv.current?.value
     if (!value) return
     setHeightConvo(refDiv.current.getBoundingClientRect().height)
 
@@ -107,7 +116,7 @@ export const MlEphantConversationInput = (
       ))
     )
     setAnimating(true)
-    refDiv.current.innerText = ''
+    setValue('')
 
     setTimeout(() => {
       setAnimating(false)
@@ -128,12 +137,13 @@ export const MlEphantConversationInput = (
       </div>
       <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-        <div
-          contentEditable={true}
+        <textarea
           autoCapitalize="off"
           autoCorrect="off"
           spellCheck="false"
           data-testid="ml-ephant-conversation-input"
+          onChange={(e) => setValue(e.target.value)}
+          value={value}
           ref={refDiv}
           onKeyDown={(e) => {
             const isOnlyEnter =
@@ -145,7 +155,7 @@ export const MlEphantConversationInput = (
           }}
           className={`outline-none w-full overflow-auto ${isAnimating ? 'hidden' : ''}`}
           style={{ height: '2lh' }}
-        ></div>
+        />
         <div
           className={`${isAnimating ? '' : 'hidden'} overflow-hidden w-full p-2`}
           style={{ height: heightConvo }}
@@ -292,6 +302,7 @@ export const MlEphantConversation = (props: MlEphantConversationProps) => {
               billingContext={props.billingContext}
               disabled={props.disabled || props.isLoading}
               onProcess={onProcess}
+              defaultPrompt={props.defaultPrompt}
             />
           </div>
         </div>
