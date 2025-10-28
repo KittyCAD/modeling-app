@@ -89,10 +89,7 @@ export const MlEphantConversationInput = (
   const [isAnimating, setAnimating] = useState(false)
 
   // Without this the cursor ends up at the start of the text
-  useEffect(() => {
-    console.log('FRANK got a defaultPrompt', props.defaultPrompt)
-    setValue(props.defaultPrompt || '')
-  }, [props.defaultPrompt])
+  useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
 
   const onClick = () => {
     if (props.disabled) return
