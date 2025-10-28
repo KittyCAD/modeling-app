@@ -108,6 +108,62 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [seg01, capEnd001]
       await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
     })
 
+    it('should add a basic fillet call on a sweepEdge and a segment', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        extrudedTriangle,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )!
+      const segment = [...artifactGraph.values()].find(
+        (a) => a.type === 'segment'
+      )!
+      const selection = createSelectionFromArtifacts(
+        [sweepEdge, segment],
+        artifactGraph
+      )
+      const radius = (await stringToKclExpression(
+        '1',
+        undefined,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 5, tag = $seg01)
+  |> line(endAbsolute = [0, 5])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(
+  profile001,
+  length = 5,
+  tagEnd = $capEnd001,
+  tagStart = $capStart001,
+)
+fillet001 = fillet(
+  extrude001,
+  tags = [
+    getCommonEdge(faces = [seg01, capEnd001]),
+    getCommonEdge(faces = [seg01, capStart001])
+  ],
+  radius = 1,
+)`)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+    })
+
     it('should add a basic fillet call with tag on sweepEdge', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
@@ -219,6 +275,62 @@ fillet001 = fillet(
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(extrudedTriangleWithChamfer)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+    })
+
+    it('should add a basic chamfer call on a sweepEdge and a segment', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        extrudedTriangle,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )!
+      const segment = [...artifactGraph.values()].find(
+        (a) => a.type === 'segment'
+      )!
+      const selection = createSelectionFromArtifacts(
+        [sweepEdge, segment],
+        artifactGraph
+      )
+      const length = (await stringToKclExpression(
+        '1',
+        undefined,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addChamfer({
+        ast,
+        artifactGraph,
+        selection,
+        length,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 5, tag = $seg01)
+  |> line(endAbsolute = [0, 5])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(
+  profile001,
+  length = 5,
+  tagEnd = $capEnd001,
+  tagStart = $capStart001,
+)
+chamfer001 = chamfer(
+  extrude001,
+  tags = [
+    getCommonEdge(faces = [seg01, capEnd001]),
+    getCommonEdge(faces = [seg01, capStart001])
+  ],
+  length = 1,
+)`)
       await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
     })
 
