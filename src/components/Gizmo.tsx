@@ -34,7 +34,7 @@ import { sceneInfra } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
-import {btnName} from "@src/lib/cameraControls"
+import { btnName } from '@src/lib/cameraControls'
 
 export default function Gizmo() {
   const { state: modelingState } = useModelingContext()
@@ -198,6 +198,7 @@ export default function Gizmo() {
     const onWindowMouseMove = (event: MouseEvent) => {
       // Drag to rotate main camera
       if (isDraggingRef.current) {
+        sceneInfra.camControls.wasDragging = true
         const last = dragLastRef.current
         const now = new Vector2(event.clientX, event.clientY)
         dragLastRef.current = now
@@ -215,8 +216,7 @@ export default function Gizmo() {
 
     const onMouseDown = (event: MouseEvent) => {
       const isRightButton = btnName(event).right
-      if (isRightButton|| btnName(event).left) {
-
+      if (isRightButton || btnName(event).left) {
         isDraggingRef.current = true
         didDragRef.current = false
         dragLastRef.current = new Vector2(event.clientX, event.clientY)
@@ -228,6 +228,7 @@ export default function Gizmo() {
     const onMouseUp = (e: MouseEvent) => {
       isDraggingRef.current = false
       dragLastRef.current = null
+      sceneInfra.camControls.wasDragging = false
 
       window.removeEventListener('mousemove', onWindowMouseMove)
       window.removeEventListener('mouseup', onMouseUp)
@@ -262,7 +263,7 @@ export default function Gizmo() {
       }
     }
 
-    const onContextMenu = (event: MouseEvent)=> {
+    const onContextMenu = (event: MouseEvent) => {
       event.preventDefault()
       event.stopImmediatePropagation()
     }
@@ -270,7 +271,7 @@ export default function Gizmo() {
     const canvasParent = wrapperRef.current
     canvasParent.addEventListener('mousemove', onCanvasMouseMove)
     canvas.addEventListener('mousedown', onMouseDown)
-    canvas.addEventListener("contextmenu", onContextMenu)
+    canvas.addEventListener('contextmenu', onContextMenu)
     canvasParent.addEventListener('click', onClick)
 
     const clock = new Clock()
@@ -298,7 +299,7 @@ export default function Gizmo() {
 
       canvasParent.removeEventListener('mousemove', onCanvasMouseMove)
       canvas.removeEventListener('mousedown', onMouseDown)
-      canvas.removeEventListener("contextmenu", onContextMenu)
+      canvas.removeEventListener('contextmenu', onContextMenu)
       canvasParent.removeEventListener('click', onClick)
 
       window.removeEventListener('mousemove', onWindowMouseMove)
