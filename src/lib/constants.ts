@@ -294,6 +294,11 @@ export const MAX_PROJECT_NAME_LENGTH = 240
 export const REGEXP_UUIDV4 = /^[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i
 
 export const LOCAL_STORAGE_ML_CONVERSATIONS = 'mlConversations'
+/** URL query param key we watch for prompt input
+ *  we should never set this search param from the app,
+ *  only read and delete.
+ */
+export const SEARCH_PARAM_ML_PROMPT_KEY = 'ttc-prompt'
 
 /**
  * Used by the modeling sidebar to validate persisted pane IDs.
