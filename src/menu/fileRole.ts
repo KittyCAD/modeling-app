@@ -30,7 +30,7 @@ export const projectFileRole = (
           })
         },
       },
-      // TODO https://www.electronjs.org/docs/latest/tutorial/recent-documents
+      // TODO electronjs dot org/docs/latest/tutorial/recent-documents
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
@@ -162,7 +162,7 @@ export const modelingFileRole = (
           })
         },
       },
-      // TODO https://www.electronjs.org/docs/latest/tutorial/recent-documents
+      // TODO electronjs dot org/docs/latest/tutorial/recent-documents
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
