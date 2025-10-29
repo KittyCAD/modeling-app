@@ -150,6 +150,23 @@ impl TypedPath {
             self.0.file_name().and_then(|s| s.to_str()).map(|s| s.to_string())
         }
     }
+
+    /// Extracts the stem (non-extension) portion of [`self.file_name`].
+    #[must_use]
+    pub fn file_stem(&self) -> Option<String> {
+        #[cfg(target_arch = "wasm32")]
+        {
+            self.0
+                .file_stem()
+                .map(|s| std::str::from_utf8(s).unwrap_or(""))
+                .filter(|s| !s.is_empty())
+                .map(|s| s.to_string())
+        }
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            self.0.file_stem().and_then(|s| s.to_str()).map(|s| s.to_string())
+        }
+    }
 }
 
 impl serde::Serialize for TypedPath {
