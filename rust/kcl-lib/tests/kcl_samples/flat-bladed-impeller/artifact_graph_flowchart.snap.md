@@ -21,16 +21,16 @@ flowchart LR
     26[Solid2d]
   end
   subgraph path33 [Path]
-    33["Path<br>[1700, 1767, 0]"]
+    33["Path<br>[1700, 1765, 0]"]
       %% [ProgramBodyItem { index: 20 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    34["Segment<br>[1700, 1767, 0]"]
+    34["Segment<br>[1700, 1765, 0]"]
       %% [ProgramBodyItem { index: 20 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     35[Solid2d]
   end
   subgraph path41 [Path]
-    41["Path<br>[1894, 1956, 0]"]
+    41["Path<br>[1892, 1952, 0]"]
       %% [ProgramBodyItem { index: 23 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    42["Segment<br>[1894, 1956, 0]"]
+    42["Segment<br>[1892, 1952, 0]"]
       %% [ProgramBodyItem { index: 23 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     43[Solid2d]
   end
@@ -70,7 +70,7 @@ flowchart LR
     %% face_code_ref=[ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   31["SweepEdge Opposite"]
   32["SweepEdge Adjacent"]
-  36["Sweep Extrusion<br>[1774, 1812, 0]"]
+  36["Sweep Extrusion<br>[1772, 1810, 0]"]
     %% [ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   37[Wall]
     %% face_code_ref=Missing NodePath
@@ -78,7 +78,7 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   39["SweepEdge Opposite"]
   40["SweepEdge Adjacent"]
-  44["Sweep Extrusion<br>[1967, 2025, 0]"]
+  44["Sweep Extrusion<br>[1963, 2021, 0]"]
     %% [ProgramBodyItem { index: 24 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   45[Wall]
     %% face_code_ref=Missing NodePath
@@ -90,7 +90,7 @@ flowchart LR
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   50["StartSketchOnFace<br>[1651, 1687, 0]"]
     %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  51["StartSketchOnFace<br>[1842, 1880, 0]"]
+  51["StartSketchOnFace<br>[1840, 1878, 0]"]
     %% [ProgramBodyItem { index: 22 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 <--x 48

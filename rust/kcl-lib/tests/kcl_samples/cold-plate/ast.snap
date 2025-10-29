@@ -3031,49 +3031,27 @@ description: Result of parsing cold-plate.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "radius",
+                      "name": "diameter",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "commentStart": 0,
                       "end": 0,
-                      "left": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "tubeDiameter",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
                       "moduleId": 0,
-                      "operator": "/",
-                      "right": {
+                      "name": {
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "2",
+                        "name": "tubeDiameter",
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
+                        "type": "Identifier"
                       },
+                      "path": [],
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],

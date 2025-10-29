@@ -15,10 +15,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1519,
-            "end": 1530,
+            "commentStart": 1515,
+            "end": 1526,
             "moduleId": 0,
-            "start": 1519,
+            "start": 1515,
             "type": "TagDeclarator",
             "value": "filletEdge"
           },
@@ -45,10 +45,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             ],
             "radius": 0.095,
             "tag": {
-              "commentStart": 1519,
-              "end": 1530,
+              "commentStart": 1515,
+              "end": 1526,
               "moduleId": 0,
-              "start": 1519,
+              "start": 1515,
               "type": "TagDeclarator",
               "value": "filletEdge"
             },
@@ -87,10 +87,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 744,
-                  "end": 752,
+                  "commentStart": 742,
+                  "end": 750,
                   "moduleId": 0,
-                  "start": 744,
+                  "start": 742,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -117,10 +117,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   ],
                   "radius": 0.1565,
                   "tag": {
-                    "commentStart": 744,
-                    "end": 752,
+                    "commentStart": 742,
+                    "end": 750,
                     "moduleId": 0,
-                    "start": 744,
+                    "start": 742,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },
@@ -294,10 +294,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 744,
-            "end": 752,
+            "commentStart": 742,
+            "end": 750,
             "moduleId": 0,
-            "start": 744,
+            "start": 742,
             "type": "TagDeclarator",
             "value": "topEdge"
           },
@@ -324,10 +324,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
             ],
             "radius": 0.1565,
             "tag": {
-              "commentStart": 744,
-              "end": 752,
+              "commentStart": 742,
+              "end": 750,
               "moduleId": 0,
-              "start": 744,
+              "start": 742,
               "type": "TagDeclarator",
               "value": "topEdge"
             },
@@ -665,10 +665,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 744,
-                  "end": 752,
+                  "commentStart": 742,
+                  "end": 750,
                   "moduleId": 0,
-                  "start": 744,
+                  "start": 742,
                   "type": "TagDeclarator",
                   "value": "topEdge"
                 },
@@ -695,10 +695,10 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
                   ],
                   "radius": 0.1565,
                   "tag": {
-                    "commentStart": 744,
-                    "end": 752,
+                    "commentStart": 742,
+                    "end": 750,
                     "moduleId": 0,
-                    "start": 744,
+                    "start": 742,
                     "type": "TagDeclarator",
                     "value": "topEdge"
                   },

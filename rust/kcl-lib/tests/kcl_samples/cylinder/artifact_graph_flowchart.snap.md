@@ -5,15 +5,15 @@ flowchart LR
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   end
   subgraph path3 [Path]
-    3["Path<br>[351, 405, 0]"]
+    3["Path<br>[351, 392, 0]"]
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    4["Segment<br>[351, 405, 0]"]
+    4["Segment<br>[351, 392, 0]"]
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     5[Solid2d]
   end
   1["Plane<br>[238, 255, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  6["Sweep Extrusion<br>[459, 492, 0]"]
+  6["Sweep Extrusion<br>[446, 479, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   7[Wall]
     %% face_code_ref=Missing NodePath
