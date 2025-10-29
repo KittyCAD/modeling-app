@@ -12,7 +12,7 @@ import { executeAstMock } from '@src/lang/langHelpers'
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
-import type { PathToNode, Program } from '@src/lang/wasm'
+import { recast, type PathToNode, type Program } from '@src/lang/wasm'
 import type { ExecutionType } from '@src/lib/constants'
 import {
   EXECUTION_TYPE_MOCK,
@@ -21,14 +21,19 @@ import {
 } from '@src/lib/constants'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err, reject } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export async function mockExecAstAndReportErrors(
   ast: Node<Program>,
-  rustContext: RustContext
+  rustContext: RustContext,
+  instance?: ModuleType
 ): Promise<void | Error> {
   const { errors } = await executeAstMock({ ast, rustContext })
   if (errors.length > 0) {
-    return new Error(errors.map((e) => e.message).join('\n'))
+    const cause = recast(ast, instance)
+    return new Error(errors.map((e) => e.message).join('\n'), {
+      cause: !err(cause) ? cause : undefined,
+    })
   }
 }
 
