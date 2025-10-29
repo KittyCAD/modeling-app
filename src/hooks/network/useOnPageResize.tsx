@@ -18,6 +18,7 @@ export const useOnPageResize = ({
   videoRef: React.RefObject<HTMLVideoElement>
   canvasRef: React.RefObject<HTMLCanvasElement>
 }) => {
+  const setSizeOnMoreTime = useRef<NodeJS.Timeout | null>(null)
   const last = useRef<number>(Date.now())
   // When streamIdleMode is changed, setup or teardown the timeouts
   const timeoutStart = useRef<number | null>(null)
@@ -39,26 +40,61 @@ export const useOnPageResize = ({
     const wrapper = videoWrapperRef.current
 
     const observer = new ResizeObserver(() => {
+      window.getSize = () => {
+        const { width, height } = getDimensions(
+          wrapper.clientWidth,
+          wrapper.clientHeight
+        )
+        console.log(width, height)
+      }
+
+      window.resize = () => {
+        const { width, height } = getDimensions(
+          wrapper.clientWidth,
+          wrapper.clientHeight
+        )
+        engineCommandManager.handleResize({ width, height }).then(() => {
+          console.log('forced', width, height)
+        }).catch((e) => {
+          console.warn('handleResize', e)
+        })
+      }
+
       // Prevents:
       // `Uncaught ResizeObserver loop completed with undelivered notifications`
       window.requestAnimationFrame(() => {
-        if (Date.now() - last.current < REASONABLE_TIME_TO_REFRESH_STREAM_SIZE)
+        if (Date.now() - last.current < REASONABLE_TIME_TO_REFRESH_STREAM_SIZE) {
+          console.log('rejecting time:', video.videoWidth, wrapper.clientWidth, ' - ', video.videoHeight, wrapper.clientHeight)
+          if (setSizeOnMoreTime.current) {
+            clearTimeout(setSizeOnMoreTime.current)
+            setSizeOnMoreTime.current = null
+          }
+          const resizeTimeoutId = setTimeout(() => {
+            const { width, height } = getDimensions(
+              wrapper.clientWidth,
+              wrapper.clientHeight
+            )
+            engineCommandManager.handleResize({ width, height }).then(() => {
+              console.log('clean up ', width, height)
+            }).catch((e) => {
+              console.warn('handleResize', e)
+            })
+          }, 250)
+          setSizeOnMoreTime.current = resizeTimeoutId
           return
-        last.current = Date.now()
-
-        if (
-          Math.abs(video.width - wrapper.clientWidth) > 4 ||
-          Math.abs(video.height - wrapper.clientHeight) > 4
-        ) {
-          timeoutStart.current = Date.now()
-          const { width, height } = getDimensions(
-            wrapper.clientWidth,
-            wrapper.clientHeight
-          )
-          engineCommandManager.handleResize({ width, height }).catch((e) => {
-            console.warn('handleResize', e)
-          })
         }
+        last.current = Date.now()
+        timeoutStart.current = Date.now()
+        const { width, height } = getDimensions(
+          wrapper.clientWidth,
+          wrapper.clientHeight
+        )
+        engineCommandManager.handleResize({ width, height }).then(() => {
+          console.log('I am most likely ', width, height)
+          clearTimeout(answer)
+        }).catch((e) => {
+          console.warn('handleResize', e)
+        })
       })
     })
 
