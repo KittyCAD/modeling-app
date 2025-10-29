@@ -1,8 +1,10 @@
+import os from 'node:os'
 import type { BrowserWindow } from 'electron'
 
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
-import { isMac, isStagingOrDebug } from '@src/menu/utils'
+
+const isMac = os.platform() === 'darwin'
 
 export const projectFileRole = (
   mainWindow: BrowserWindow
@@ -45,7 +47,6 @@ export const projectFileRole = (
       {
         label: 'Create with Zoo Text-To-CAD',
         id: 'Design.Create with Zoo Text-To-CAD',
-        enabled: !isStagingOrDebug,
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Design.Create with Zoo Text-To-CAD',

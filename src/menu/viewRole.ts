@@ -1,8 +1,10 @@
+import os from 'node:os'
 import type { BrowserWindow } from 'electron'
 
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
-import { isMac } from '@src/menu/utils'
+
+const isMac = os.platform() === 'darwin'
 
 export const projectViewRole = (
   mainWindow: BrowserWindow

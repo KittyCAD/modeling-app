@@ -499,6 +499,16 @@ test.describe(
         await cmdBar.expectCommandName('Shell')
       })
 
+      await test.step('Modeling.Design.Create with Zoo Text-To-CAD', async () => {
+        await page.waitForTimeout(250)
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Create with Zoo Text-To-CAD'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Create Project using Text-to-CAD')
+      })
+
       await test.step('Modeling.Help.KCL code samples', async () => {
         await page.waitForTimeout(250)
         await findElectronNativeMenuById(tronApp, 'Help.KCL code samples')
