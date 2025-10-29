@@ -92,7 +92,7 @@ if (process.defaultApp) {
 // Global app listeners
 // Must be done before ready event.
 // Checking against this lock is needed for Windows and Linux, see
-// https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
+// electronjs dot org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
 if (!singleInstanceLock && process.env.NODE_ENV !== 'test') {
   app.quit()
 } else {
@@ -663,7 +663,7 @@ const getProjectPathAtStartup = async (
 }
 
 function registerStartupListeners() {
-  // Linux and Windows from https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
+  // Linux and Windows from electronjs dot org/docs/latest/tutorial/launch-app-from-url-in-another-app
   app.on('second-instance', (event, commandLine, workingDirectory) => {
     // Deep Link: second instance for Windows and Linux
     // Likely convenient to keep for debugging
