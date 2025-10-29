@@ -1,15 +1,16 @@
+import { assertParse, recast, type Program, type Name } from '@src/lang/wasm'
 import {
-  type Artifact,
-  assertParse,
-  type CodeRef,
-  recast,
-  type Program,
-  type Name,
-} from '@src/lang/wasm'
-import { enginelessExecutor } from '@src/lib/testHelpers'
+  createSelectionFromArtifacts,
+  createSelectionFromPathArtifact,
+  enginelessExecutor,
+  getAstAndArtifactGraph,
+  getAstAndSketchSelections,
+  getCapFromCylinder,
+  getFacesFromBox,
+} from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   buildTheWorldAndConnectToEngine,
   buildTheWorldAndNoEngineConnection,
@@ -85,56 +86,6 @@ async function getKclCommandValue(
     throw new Error('Failed to create KCL expression')
   }
   return result
-}
-
-function createSelectionFromPathArtifact(
-  artifacts: (Artifact & { codeRef: CodeRef })[]
-): Selections {
-  const graphSelections = artifacts.map(
-    (artifact) =>
-      ({
-        codeRef: artifact.codeRef,
-        artifact,
-      }) as Selection
-  )
-  return {
-    graphSelections,
-    otherSelections: [],
-  }
-}
-
-async function getAstAndArtifactGraph(
-  code: string,
-  instance: ModuleType,
-  kclManager: KclManager
-) {
-  const ast = assertParse(code, instance)
-  await kclManager.executeAst({ ast })
-  const {
-    artifactGraph,
-    execState: { operations },
-    variables,
-  } = kclManager
-  await new Promise((resolve) => setTimeout(resolve, 100))
-  return { ast, artifactGraph, operations, variables }
-}
-
-async function getAstAndSketchSelections(
-  code: string,
-  instance: ModuleType,
-  kclManager: KclManager
-) {
-  const { ast, artifactGraph } = await getAstAndArtifactGraph(
-    code,
-    instance,
-    kclManager
-  )
-  const artifacts = [...artifactGraph.values()].filter((a) => a.type === 'path')
-  if (artifacts.length === 0) {
-    throw new Error('Artifact not found in the graph')
-  }
-  const sketches = createSelectionFromPathArtifact(artifacts)
-  return { artifactGraph, ast, sketches }
 }
 
 // TODO: two different methods for the same thing. Why?
@@ -352,6 +303,160 @@ extrude001 = extrude(profile001, length = 2)`)
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
+
+    it('should add an extrude call to a wall', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> angledLine(angle = 0deg, length = 0.07, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 0.07)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1)
+plane001 = offsetPlane(XZ, offset = 1)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile,
+        1
+      )
+      const to = getFacesFromBox(artifactGraph, 1)
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        to,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `extrude002 = extrude(profile002, to = planeOf(extrude001, face = rectangleSegmentA001))`
+      )
+    })
+
+    it('should add an extrude call to an untagged wall', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 1)
+  |> line(endAbsolute = [0, 1])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1)
+plane001 = offsetPlane(XZ, offset = 1)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile,
+        1
+      )
+      const to = getFacesFromBox(artifactGraph, 1)
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        to,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 1, tag = $seg01)
+  |> line(endAbsolute = [0, 1])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1)
+plane001 = offsetPlane(XZ, offset = 1)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
+extrude002 = extrude(profile002, to = planeOf(extrude001, face = seg01))`)
+    })
+
+    it('should add an extrude call to an end cap', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+plane001 = offsetPlane(XY, offset = 2)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile,
+        1
+      )
+      const to = getCapFromCylinder(artifactGraph)
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        to,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${code}
+extrude002 = extrude(profile002, to = planeOf(extrude001, face = END))`)
+    })
+
+    // TODO: this isn't producing the right results yet
+    // https://github.com/KittyCAD/engine/issues/3855
+    it('should add an extrude call to a chamfer face', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 1, tag = $seg01)
+  |> line(endAbsolute = [0, 1])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 0.5,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+     )
+plane001 = offsetPlane(XY, offset = 2)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
+      const { ast, artifactGraph, sketches } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile,
+        1
+      )
+      const to = createSelectionFromArtifacts(
+        [...artifactGraph.values()].filter((a) => a.type === 'edgeCut'),
+        artifactGraph
+      )
+      const result = addExtrude({
+        ast,
+        artifactGraph,
+        sketches,
+        to,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 1, tag = $seg01)
+  |> line(endAbsolute = [0, 1])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
+  |> chamfer(
+       length = 0.5,
+       tags = [
+         getCommonEdge(faces = [seg01, capEnd001])
+       ],
+       tag = $seg02,
+     )
+plane001 = offsetPlane(XY, offset = 2)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
+extrude002 = extrude(profile002, to = planeOf(extrude001, face = seg02))`)
+    })
   })
 
   describe('Testing addSweep', () => {
@@ -369,8 +474,8 @@ profile002 = startProfile(sketch002, at = [0, 0])
     ) {
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
-        instanceInThisFile,
-        kclManagerInThisFile
+        instance,
+        kclManager
       )
       const artifact1 = [...artifactGraph.values()].find(
         (a) => a.type === 'path'
