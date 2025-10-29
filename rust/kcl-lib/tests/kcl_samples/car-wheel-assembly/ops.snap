@@ -2828,38 +2828,6 @@ description: Operations executed car-wheel-assembly.kcl
                       }
                     }
                   }
-                },
-                "zAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": "in",
-                        "angle": "degrees"
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": "in",
-                        "angle": "degrees"
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": "in",
-                        "angle": "degrees"
-                      }
-                    }
-                  }
                 }
               }
             },
