@@ -1,7 +1,7 @@
 import { Popover } from '@headlessui/react'
 import type { MutableRefObject } from 'react'
 import { useEffect, useRef } from 'react'
-import { OrthographicCamera } from 'three'
+import { Color, OrthographicCamera } from 'three'
 import type {
   Mesh,
   BufferGeometry,
@@ -11,6 +11,10 @@ import type {
 } from 'three'
 import {
   Clock,
+  BoxGeometry,
+  EdgesGeometry,
+  LineBasicMaterial,
+  LineSegments,
   Matrix4,
   PerspectiveCamera,
   Quaternion,
@@ -66,7 +70,7 @@ export default function Gizmo() {
     cameraRef.current = camera
 
     // Light that follows the camera
-    const light = new DirectionalLight(0xffffff, 1.6)
+    const light = new DirectionalLight(0xffffff, 1.9)
     light.position.set(2.5, 0.25, 1)
     camera.add(light)
 
@@ -115,15 +119,16 @@ export default function Gizmo() {
     renderer.setPixelRatio(window.devicePixelRatio)
     rendererRef.current = renderer
 
-    const ambient = new AmbientLight(0xffffff, 1.3)
+    const ambient = new AmbientLight(0xffffff, 1.5)
     sceneRef.current.add(ambient)
 
     hoverMaterialRef.current = new MeshStandardMaterial({
-      color: 0xffffff,
-      emissive: 0xffffff,
-      emissiveIntensity: 0.2,
+      color: 0x3c73ff,
+      emissive: 0x000000,
+      //emissiveIntensity: 0.4,
       roughness: 0.6,
       metalness: 0.0,
+      transparent: true,
     })
 
     const loader = new GLTFLoader()
@@ -143,6 +148,28 @@ export default function Gizmo() {
         })
         clickableObjects.current = clickable
 
+        // Add a face-outline overlay using EdgesGeometry (filters coplanar diagonals)
+        // Assume cube width = 1 at the root's local space
+        const outlineGeom = new EdgesGeometry(new BoxGeometry(1, 1, 1), 1)
+        const outlineMat = new LineBasicMaterial({ color: 0x3c73ff })
+        const outline = new LineSegments(outlineGeom, outlineMat)
+        root.add(outline)
+
+        root.traverse((node) => {
+          if (isStandardMesh(node)) {
+            node.material.transparent = true
+            // Reduce z-fighting
+            node.material.polygonOffset = true
+            node.material.polygonOffsetFactor = 1
+            node.material.polygonOffsetUnits = 1
+
+            if (node.material.map && !hoverMaterialRef.current?.map) {
+              hoverMaterialRef.current = node.material.clone()
+              hoverMaterialRef.current.emissive = new Color(0x3c73ff)
+            }
+          }
+        })
+
         applyMaxAnisotropyToObject(root, renderer)
       },
       undefined,
@@ -155,10 +182,7 @@ export default function Gizmo() {
 
     const clearHighlight = () => {
       if (hoveredObjectRef.current) {
-        restoreHighlight(
-          hoveredObjectRef.current,
-          originalMaterialsRef.current
-        )
+        restoreHighlight(hoveredObjectRef.current, originalMaterialsRef.current)
         hoveredObjectRef.current = null
       }
       raycasterIntersect.current = null // Clear intersection
@@ -509,7 +533,7 @@ async function animateCameraToQuaternion(targetQuat: Quaternion) {
     await camControls.tweenCameraToQuaternion(
       targetQuat,
       camControls.target.clone(),
-      5000,
+      500,
       false // !isPerspective: this doesn't work
     )
   } finally {

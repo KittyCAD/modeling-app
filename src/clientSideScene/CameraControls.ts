@@ -275,14 +275,18 @@ export class CameraControls {
   doZoom = (zoom: number) => {
     this.handleStart()
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd: {
-        type: 'default_camera_zoom',
-        magnitude: (-1 * zoom) / window.devicePixelRatio,
-      },
-      cmd_id: uuidv4(),
-    })
+    this.engineCommandManager
+      .sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd: {
+          type: 'default_camera_zoom',
+          magnitude: (-1 * zoom) / window.devicePixelRatio,
+        },
+        cmd_id: uuidv4(),
+      })
+      .then((r) => {
+        console.log('default_camera_zoom response', r)
+      })
     this.handleEnd()
   }
 
@@ -328,6 +332,7 @@ export class CameraControls {
     >[0]
 
     const cb = ({ data, type }: CallBackParam) => {
+      console.log('cb', type)
       const camSettings = data.settings
       this.camera.position.set(
         camSettings.pos.x,
@@ -890,6 +895,8 @@ export class CameraControls {
   }
 
   rotateCamera = (deltaX: number, deltaY: number) => {
+    console.log('rotateCamera', deltaX, deltaY)
+
     const quat = new Quaternion().setFromUnitVectors(
       new Vector3(0, 0, 1),
       new Vector3(0, 1, 0)
@@ -1257,14 +1264,14 @@ export class CameraControls {
       )
     const isVertical = isQuaternionVertical(targetQuaternion)
     let remainingDuration = duration
-    if (isVertical) {
-      remainingDuration = duration * 0.5
-      const orbitRotationDuration = duration * 0.65
-      let targetAngle = -Math.PI / 2
-      const v = new Vector3(0, 0, 1).applyQuaternion(targetQuaternion)
-      if (v.z < 0) targetAngle = Math.PI / 2
-      await this.tweenCamToNegYAxis(targetAngle, orbitRotationDuration)
-    }
+    // if (isVertical) {
+    //   remainingDuration = duration * 0.5
+    //   const orbitRotationDuration = duration * 0.65
+    //   let targetAngle = -Math.PI / 2
+    //   const v = new Vector3(0, 0, 1).applyQuaternion(targetQuaternion)
+    //   if (v.z < 0) targetAngle = Math.PI / 2
+    //   await this.tweenCamToNegYAxis(targetAngle, orbitRotationDuration)
+    // }
     await this._tweenCameraToQuaternion(
       targetQuaternion,
       targetPosition,
@@ -1284,7 +1291,7 @@ export class CameraControls {
       const initialQuaternion = camera.quaternion.clone()
       const initialTarget = this.target.clone()
       const isVertical = isQuaternionVertical(targetQuaternion)
-      let tweenEnd = isVertical ? 0.99 : 1
+      let tweenEnd = 1 // isVertical ? 0.99 : 1
       const tempVec = new Vector3()
       const initialDistance = initialTarget.distanceTo(camera.position.clone())
 
