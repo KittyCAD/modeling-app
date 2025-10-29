@@ -70,7 +70,7 @@ pub(crate) async fn inner_plane_of(
                 z_axis: crate::execution::Point3d {
                     x: 0.0,
                     y: 0.0,
-                    z: 0.0,
+                    z: 1.0,
                     units: None,
                 },
             },
