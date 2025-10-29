@@ -48,6 +48,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   LOFT: 'loft',
   SWEEP: 'sweep',
   SHELL: 'shell',
+  HOLE: 'hole',
   SEGMENT: 'seg',
   REVOLVE: 'revolve',
   PLANE: 'plane',
@@ -291,6 +292,11 @@ export const MAX_PROJECT_NAME_LENGTH = 240
 export const REGEXP_UUIDV4 = /^[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i
 
 export const LOCAL_STORAGE_ML_CONVERSATIONS = 'mlConversations'
+/** URL query param key we watch for prompt input
+ *  we should never set this search param from the app,
+ *  only read and delete.
+ */
+export const SEARCH_PARAM_ML_PROMPT_KEY = 'ttc-prompt'
 
 /**
  * Used by the modeling sidebar to validate persisted pane IDs.
@@ -317,3 +323,8 @@ export const NUMBER_OF_ENGINE_RETRIES = 5
  *Global timeout on pending commands, it will be bad if we hit this case.
  */
 export const PENDING_COMMAND_TIMEOUT = 60_000
+
+/** Timeout in MS to save layout */
+export const LAYOUT_SAVE_THROTTLE = 500
+/** prefix for localStorage persisted layout data */
+export const LAYOUT_PERSIST_PREFIX = 'layout-'

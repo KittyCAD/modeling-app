@@ -9,7 +9,7 @@
 
 .header.desktopApp {
   /* Make the header act as a handle to drag the electron app window,
-   * per the electron docs: https://www.electronjs.org/docs/latest/tutorial/window-customization#set-custom-draggable-region
+   * per the electron docs: electronjs dot org/docs/latest/tutorial/window-customization#set-custom-draggable-region
    * all interactive elements opt-out of this behavior by default in src/index.css
   */
   -webkit-app-region: drag;

@@ -261,6 +261,26 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
         ],
       },
+      {
+        id: 'hole',
+        onClick: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Hole', groupId: 'modeling' },
+          })
+        },
+        icon: 'hole',
+        status: 'experimental',
+        title: 'Hole',
+        description:
+          'Standard holes that could be drilled or cut into a 3D solid.',
+        links: [
+          {
+            label: 'KCL docs',
+            url: withSiteBaseURL('/docs/kcl-std/modules/std-hole'),
+          },
+        ],
+      },
       'break',
       {
         id: 'booleans',
