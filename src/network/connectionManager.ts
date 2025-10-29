@@ -652,7 +652,7 @@ export class ConnectionManager extends EventTarget {
             details += ` - ${message.command.cmd.type}`
           }
           showErrorToastPlusReportLink(
-            `Unfortuntely, a command timed out and was rejected (${details}).`,
+            `Unfortunately, a command timed out and was rejected (${details}).`,
             message.command,
             'Command Timeout Error'
           )

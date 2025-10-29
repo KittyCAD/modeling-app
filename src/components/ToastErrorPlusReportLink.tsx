@@ -20,7 +20,7 @@ export function ToastErrorPlusReportLink({
             onClick={openExternalBrowserIfDesktop(url)}
             className="underline"
           >
-            Click here to report!
+            Send report
           </a>
           .
         </p>
