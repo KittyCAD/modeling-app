@@ -1,14 +1,14 @@
+import { recast, type PlaneArtifact } from '@src/lang/wasm'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
-  type Artifact,
-  assertParse,
-  recast,
-  type PlaneArtifact,
-} from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import { enginelessExecutor } from '@src/lib/testHelpers'
+  createSelectionFromArtifacts,
+  enginelessExecutor,
+  getAstAndArtifactGraph,
+  getCapFromCylinder,
+  getFacesFromBox,
+} from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
-import type { ArtifactGraph } from '@src/lang/wasm'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
@@ -23,7 +23,6 @@ import {
 } from '@src/lang/modifyAst/faces'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { StdLibCallOp } from '@src/lang/queryAst'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import { getEdgeCutMeta } from '@src/lang/queryAst'
 import { expect } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -60,43 +59,6 @@ afterAll(() => {
 })
 
 describe('faces.test.ts', () => {
-  async function getAstAndArtifactGraph(
-    code: string,
-    instance: ModuleType,
-    kclManager: KclManager
-  ) {
-    const ast = assertParse(code, instance)
-    await kclManager.executeAst({ ast })
-    const {
-      artifactGraph,
-      execState: { operations },
-      variables,
-    } = kclManager
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    return { ast, artifactGraph, operations, variables }
-  }
-
-  function createSelectionFromArtifacts(
-    artifacts: Artifact[],
-    artifactGraph: ArtifactGraph
-  ): Selections {
-    const graphSelections = artifacts.flatMap((artifact) => {
-      const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
-      if (!codeRefs || codeRefs.length === 0) {
-        return []
-      }
-
-      return {
-        codeRef: codeRefs[0],
-        artifact,
-      } as Selection
-    })
-    return {
-      graphSelections,
-      otherSelections: [],
-    }
-  }
-
   // More complex shell case
   const multiSolids = `size = 100
 case = startSketchOn(XY)
@@ -195,20 +157,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
          getCommonEdge(faces = [seg01, seg02])
        ],
      )`
-
-  function getCapFromCylinder(artifactGraph: ArtifactGraph) {
-    const endFace = [...artifactGraph.values()].find(
-      (a) => a.type === 'cap' && a.subType === 'end'
-    )
-    return createSelectionFromArtifacts([endFace!], artifactGraph)
-  }
-
-  function getFacesFromBox(artifactGraph: ArtifactGraph, count: number) {
-    const twoWalls = [...artifactGraph.values()]
-      .filter((a) => a.type === 'wall')
-      .slice(0, count)
-    return createSelectionFromArtifacts(twoWalls, artifactGraph)
-  }
 
   describe('Testing addShell', () => {
     it('should add a basic shell call on cylinder end cap', async () => {
