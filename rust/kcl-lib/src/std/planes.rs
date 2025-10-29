@@ -49,10 +49,30 @@ pub(crate) async fn inner_plane_of(
             // Engine doesn't know about the ID we created, so set this to Uninit.
             value: PlaneType::Uninit,
             info: crate::execution::PlaneInfo {
-                origin: Default::default(),
-                x_axis: Default::default(),
-                y_axis: Default::default(),
-                z_axis: Default::default(),
+                origin: crate::execution::Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 0.0,
+                    units: Some(UnitLength::Millimeters),
+                },
+                x_axis: crate::execution::Point3d {
+                    x: 1.0,
+                    y: 0.0,
+                    z: 0.0,
+                    units: None,
+                },
+                y_axis: crate::execution::Point3d {
+                    x: 0.0,
+                    y: 1.0,
+                    z: 0.0,
+                    units: None,
+                },
+                z_axis: crate::execution::Point3d {
+                    x: 0.0,
+                    y: 0.0,
+                    z: 1.0,
+                    units: None,
+                },
             },
             meta: vec![Metadata {
                 source_range: args.source_range,
