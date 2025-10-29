@@ -29,6 +29,7 @@ import {
 } from '@src/lang/modifyAst/sweeps'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -334,6 +335,11 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
       expect(newCode).toContain(
         `extrude002 = extrude(profile002, to = planeOf(extrude001, face = rectangleSegmentA001))`
       )
+      const error = await mockExecAstAndReportErrors(
+        result.modifiedAst,
+        rustContextInThisFile
+      )
+      expect(error).not.toBeInstanceOf(Error)
     })
 
     it('should add an extrude call to an untagged wall', async () => {
@@ -373,6 +379,11 @@ plane001 = offsetPlane(XZ, offset = 1)
 sketch002 = startSketchOn(plane001)
 profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
 extrude002 = extrude(profile002, to = planeOf(extrude001, face = seg01))`)
+      const error = await mockExecAstAndReportErrors(
+        result.modifiedAst,
+        rustContextInThisFile
+      )
+      expect(error).not.toBeInstanceOf(Error)
     })
 
     it('should add an extrude call to an end cap', async () => {
@@ -399,6 +410,11 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${code}
 extrude002 = extrude(profile002, to = planeOf(extrude001, face = END))`)
+      const error = await mockExecAstAndReportErrors(
+        result.modifiedAst,
+        rustContextInThisFile
+      )
+      expect(error).not.toBeInstanceOf(Error)
     })
 
     // TODO: this isn't producing the right results yet
@@ -456,6 +472,11 @@ plane001 = offsetPlane(XY, offset = 2)
 sketch002 = startSketchOn(plane001)
 profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
 extrude002 = extrude(profile002, to = planeOf(extrude001, face = seg02))`)
+      const error = await mockExecAstAndReportErrors(
+        result.modifiedAst,
+        rustContextInThisFile
+      )
+      expect(error).not.toBeInstanceOf(Error)
     })
   })
 
