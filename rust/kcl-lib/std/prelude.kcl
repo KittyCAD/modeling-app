@@ -166,7 +166,8 @@ export fn helix(
   /// Radius of the helix.
   @(includeInSnippet = true)
   radius?: number(Length),
-  /// Axis to use for the helix. The center of the helix's base is derived from this.
+  /// Axis to use for the helix.
+  /// The center of the helix's base will be at this axis's origin point.
   @(includeInSnippet = true)
   axis?: Axis3d | Edge,
   /// Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used.
