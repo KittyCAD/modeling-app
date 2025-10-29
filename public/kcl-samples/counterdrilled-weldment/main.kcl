@@ -27,7 +27,7 @@ plateSketch = startSketchOn(XY)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
   |> close()
-  |> subtract2d(tool = circle(center = [0, 0], radius = tubeInnerDiameter / 2))
+  |> subtract2d(tool = circle(center = [0, 0], diameter = tubeInnerDiameter))
 plateBody = extrude(plateSketch, length = stockThickness)
   |> chamfer(
        length = boltDiameter * 2,
@@ -50,10 +50,10 @@ holePositions = [
 // Function to create a counterdrilled hole
 fn counterdrill(@holePosition) {
   cbdrill = startSketchOn(plateBody, face = END)
-    |> circle(center = holePosition, radius = counterdrillDiameter / 2)
+    |> circle(center = holePosition, diameter = counterdrillDiameter)
     |> extrude(length = -counterdrillDepth)
   cbBolt = startSketchOn(cbdrill, face = START)
-    |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
+    |> circle(center = holePosition, diameter = boltDiameter, tag = $hole01)
     |> extrude(length = -stockThickness + counterdrillDepth)
     // Use a chamfer to create a 90-degree counterdrill edge
     |> chamfer(length = (counterdrillDiameter - boltDiameter) / 2 * sqrt(2), tags = [hole01])
@@ -71,7 +71,7 @@ pinhole = startSketchOn(YZ)
 // Model the central tube and subtract the pin hole
 centralTube = startSketchOn(offsetPlane(XY, offset = stockThickness))
   |> circle(center = [0, 0], radius = tubeInnerDiameter / 2 + tubeThickness)
-  |> subtract2d(tool = circle(center = [0, 0], radius = tubeInnerDiameter / 2))
+  |> subtract2d(tool = circle(center = [0, 0], diameter = tubeInnerDiameter))
   |> extrude(length = tubeHeight)
   |> subtract(tools = [pinhole])
 

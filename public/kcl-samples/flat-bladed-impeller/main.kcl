@@ -48,10 +48,10 @@ backPlate = extrude(disk, length = baseThickness)
 
 // hub cylinder
 hubSketch = startSketchOn(backPlate, face = END)
-hubCircle = circle(hubSketch, center = [0, 0], radius = hubOutsideDiameter / 2)
+hubCircle = circle(hubSketch, center = [0, 0], diameter = hubOutsideDiameter)
 hub = extrude(hubCircle, length = hubHeight)
 
 // bore cutout
 boreSketch = startSketchOn(backPlate, face = START)
-boreCircle = circle(boreSketch, center = [0, 0], radius = boreDiameter / 2)
+boreCircle = circle(boreSketch, center = [0, 0], diameter = boreDiameter)
 boreCut = extrude(boreCircle, length = -(baseThickness + hubHeight))

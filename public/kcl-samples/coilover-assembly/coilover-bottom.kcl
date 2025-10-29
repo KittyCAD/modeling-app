@@ -25,7 +25,7 @@ retainerPlateExtrude = extrude(retainerPlateProfile, length = retainerPlateLengt
 
 // Base seating just below the retainer plate
 baseSeatingSketch = startSketchOn(retainerPlateExtrude, face = START)
-baseSeatingProfile = circle(baseSeatingSketch, center = [0.0, 0.0], radius = baseSeatingDia / 2)
+baseSeatingProfile = circle(baseSeatingSketch, center = [0.0, 0.0], diameter = baseSeatingDia)
 baseSeatingExtrude = extrude(baseSeatingProfile, length = baseSeatingLength)
 
 // Lower Mount
@@ -106,10 +106,10 @@ lowerMountSolid = subtract([lowerMount], tools = [eyeEndHoleExtrude])
 
 // Damper body above the retainer plate
 damperBodySketch = startSketchOn(XY)
-damperBodyProfile = circle(damperBodySketch, center = [0, 0], radius = damperBodyDia / 2)
+damperBodyProfile = circle(damperBodySketch, center = [0, 0], diameter = damperBodyDia)
 damperBodyExtrude = extrude(damperBodyProfile, length = damperBodyLength)
 
 // Hole for the piston shaft in the damper body
 pistonShaftSketch = startSketchOn(damperBodyExtrude, face = END)
-pistonShaftProfile = circle(pistonShaftSketch, center = [0, 0], radius = pistonShaftHoleDia / 2)
+pistonShaftProfile = circle(pistonShaftSketch, center = [0, 0], diameter = pistonShaftHoleDia)
 pistonShaftHole = extrude(pistonShaftProfile, length = -damperBodyLength)

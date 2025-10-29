@@ -45,7 +45,7 @@ antennaCrossSectionRevolve = revolve(antennaCrossSectionProfile, angle = 360, ax
 // Function to create a countersunk hole
 fn countersink(@holePosition) {
   startSketchOn(antennaCrossSectionRevolve, face = seg03)
-    |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
+    |> circle(center = holePosition, diameter = boltDiameter, tag = $hole01)
     |> extrude(length = -plateThickness)
     |> chamfer(length = 0.04, tags = [hole01])
   return {  }

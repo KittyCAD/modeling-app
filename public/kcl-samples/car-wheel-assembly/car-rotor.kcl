@@ -8,12 +8,12 @@
 import rotorDiameter, rotorInnerDiameter, rotorSinglePlateThickness, rotorInnerDiameterThickness, lugHolePatternDia, lugSpacing, rotorTotalThickness, spacerPatternDiameter, spacerDiameter, spacerLength, spacerCount, wheelDiameter, lugCount, yAxisOffset, drillAndSlotCount from "parameters.kcl"
 
 rotorSketch = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = rotorDiameter / 2)
+  |> circle(center = [0, 0], diameter = rotorDiameter)
 rotor = extrude(rotorSketch, length = rotorSinglePlateThickness)
   |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)
 
 rotorBumpSketch = startSketchOn(rotor, face = END)
-  |> circle(center = [0, 0], radius = rotorInnerDiameter / 2)
+  |> circle(center = [0, 0], diameter = rotorInnerDiameter)
 rotorBump = extrude(rotorBumpSketch, length = rotorInnerDiameterThickness)
 
 lugHoles = startSketchOn(rotorBump, face = END)
@@ -33,7 +33,7 @@ centerSpacer = startSketchOn(rotor, face = START)
   |> extrude(length = spacerLength)
 
 secondaryRotorSketch = startSketchOn(centerSpacer, face = END)
-  |> circle(center = [0, 0], radius = rotorDiameter / 2)
+  |> circle(center = [0, 0], diameter = rotorDiameter)
 secondRotor = extrude(secondaryRotorSketch, length = rotorSinglePlateThickness)
 
 lugHoles2 = startSketchOn(secondRotor, face = END)

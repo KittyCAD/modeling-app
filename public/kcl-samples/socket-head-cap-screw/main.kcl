@@ -14,7 +14,7 @@ boltHexFlatLength = boltHexDrive / (2 * cos(30deg))
 
 // Create the head of the cap screw
 boltHead = startSketchOn(XZ)
-  |> circle(center = [0, 0], radius = boltHeadDiameter / 2, tag = $topEdge)
+  |> circle(center = [0, 0], diameter = boltHeadDiameter, tag = $topEdge)
   |> extrude(length = -boltHeadLength)
   |> fillet(radius = 0.020, tags = [topEdge, getOppositeEdge(topEdge)])
 
@@ -32,7 +32,7 @@ hexPatternSketch = startSketchOn(boltHead, face = START)
   |> close()
   |> extrude(length = -boltHeadLength * 0.75)
 boltBody = startSketchOn(boltHead, face = END)
-  |> circle(center = [0, 0], radius = boltDiameter / 2, tag = $filletEdge)
+  |> circle(center = [0, 0], diameter = boltDiameter, tag = $filletEdge)
   |> extrude(length = boltLength)
   |> fillet(radius = .020, tags = [getOppositeEdge(filletEdge)])
   |> appearance(color = "#4dd043", metalness = 90, roughness = 90)

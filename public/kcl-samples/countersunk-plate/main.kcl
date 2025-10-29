@@ -38,7 +38,7 @@ plateBody = startSketchOn(XY)
 // Function to create a countersunk hole
 fn countersink(@holePosition) {
   startSketchOn(plateBody, face = END)
-    |> circle(center = [holePosition, 0], radius = boltDiameter / 2, tag = $hole01)
+    |> circle(center = [holePosition, 0], diameter = boltDiameter, tag = $hole01)
     |> extrude(length = -plateThickness)
     // Use a chamfer to create a 90-degree countersink
     |> chamfer(length = boltDiameter, tags = [hole01])
