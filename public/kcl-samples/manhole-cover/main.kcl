@@ -20,7 +20,7 @@ manholeSketch = startSketchOn(XY)
 
 // create the circular profile for the manhole cover
 manholeProfile = startProfile(manholeSketch, at = origin2D)
-  |> circle(center = origin2D, radius = diameter / 2)
+  |> circle(center = origin2D, diameter)
 
 // define a function for making slots, these are at a constant 125 degrees
 fn slot(start, length, width) {

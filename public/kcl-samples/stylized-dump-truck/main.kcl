@@ -194,7 +194,7 @@ roof = extrude([roofProfile], length = -chassisWidth)
 // Created as separate parts and positioned under the fender cutouts.
 fn wheelFn(diameter, width) {
   wheelSketch = startSketchOn(XZ)
-  wheelProfile = circle(wheelSketch, center = [0, diameter / 2], radius = diameter / 2)
+  wheelProfile = circle(wheelSketch, center = [0, diameter / 2], diameter)
     |> subtract2d(%, tool = circle(wheelSketch, center = [0, diameter / 2], radius = diameter / 4))
   wheelTireBody = extrude(wheelProfile, length = -wheelWidth)
     |> appearance(%, color = "#141414")

@@ -24,7 +24,7 @@ bottleBody = startSketchOn(XY)
 
 // Create a neck centered at the top of the bottle
 bottleNeck = startSketchOn(bottleBody, face = END)
-  |> circle(center = [0, 0], radius = neckDiameter / 2)
+  |> circle(center = [0, 0], diameter = neckDiameter)
   |> extrude(length = neckDepth)
 
 // Define a shell operation so that the entire body and neck are hollow, with only the top face opened

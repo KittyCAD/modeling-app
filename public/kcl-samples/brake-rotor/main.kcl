@@ -53,7 +53,7 @@ fn drillHole(activeSketch, t) {
   yCenter = rCurrent * sin(aCurrent)
 
   // Draw.
-  drillCircle = circle(activeSketch, center = [xCenter, yCenter], radius = dDrillDia / 2)
+  drillCircle = circle(activeSketch, center = [xCenter, yCenter], diameter = dDrillDia)
   return drillCircle
 }
 

@@ -58,7 +58,7 @@ fn boltFn(diameter, length) {
   boltHeadShape = hexagonFn(plane = boltHeadPlane, radius = diameter)
   boltHeadBody = extrude(boltHeadShape, length = diameter * 0.7)
   boltPlane = startSketchOn(boltHeadBody, face = START)
-  boltShape = circle(boltPlane, center = [0, 0], radius = diameter / 2)
+  boltShape = circle(boltPlane, center = [0, 0], diameter)
   boltBody = extrude(boltShape, length = length)
   return boltBody
 }
