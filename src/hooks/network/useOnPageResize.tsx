@@ -18,7 +18,7 @@ export const useOnPageResize = ({
   videoRef: React.RefObject<HTMLVideoElement>
   canvasRef: React.RefObject<HTMLCanvasElement>
 }) => {
-  const setSizeOnMoreTime = useRef<NodeJS.Timeout | null>(null)
+  const setSizeOneMoreTime = useRef<NodeJS.Timeout | null>(null)
   const last = useRef<number>(Date.now())
   // When streamIdleMode is changed, setup or teardown the timeouts
   const timeoutStart = useRef<number | null>(null)
@@ -36,33 +36,8 @@ export const useOnPageResize = ({
       return
     }
 
-    const video = videoRef.current
     const wrapper = videoWrapperRef.current
-
     const observer = new ResizeObserver(() => {
-      window.getSize = () => {
-        const { width, height } = getDimensions(
-          wrapper.clientWidth,
-          wrapper.clientHeight
-        )
-        console.log(width, height)
-      }
-
-      window.resize = () => {
-        const { width, height } = getDimensions(
-          wrapper.clientWidth,
-          wrapper.clientHeight
-        )
-        engineCommandManager
-          .handleResize({ width, height })
-          .then(() => {
-            console.log('forced', width, height)
-          })
-          .catch((e) => {
-            console.warn('handleResize', e)
-          })
-      }
-
       // Prevents:
       // `Uncaught ResizeObserver loop completed with undelivered notifications`
       window.requestAnimationFrame(() => {
@@ -70,33 +45,24 @@ export const useOnPageResize = ({
           Date.now() - last.current <
           REASONABLE_TIME_TO_REFRESH_STREAM_SIZE
         ) {
-          console.log(
-            'rejecting time:',
-            video.videoWidth,
-            wrapper.clientWidth,
-            ' - ',
-            video.videoHeight,
-            wrapper.clientHeight
-          )
-          if (setSizeOnMoreTime.current) {
-            clearTimeout(setSizeOnMoreTime.current)
-            setSizeOnMoreTime.current = null
+          // If the user spams multiple debounces then clear the previous timeouts
+          // We only want one to run once the debouncing stops
+          if (setSizeOneMoreTime.current) {
+            clearTimeout(setSizeOneMoreTime.current)
+            setSizeOneMoreTime.current = null
           }
+
+          // Create new timeout to run after the debouncing stops
           const resizeTimeoutId = setTimeout(() => {
             const { width, height } = getDimensions(
               wrapper.clientWidth,
               wrapper.clientHeight
             )
-            engineCommandManager
-              .handleResize({ width, height })
-              .then(() => {
-                console.log('clean up ', width, height)
-              })
-              .catch((e) => {
-                console.warn('handleResize', e)
-              })
+            engineCommandManager.handleResize({ width, height }).catch((e) => {
+              console.warn('handleResize', e)
+            })
           }, 250)
-          setSizeOnMoreTime.current = resizeTimeoutId
+          setSizeOneMoreTime.current = resizeTimeoutId
           return
         }
         last.current = Date.now()
@@ -105,14 +71,9 @@ export const useOnPageResize = ({
           wrapper.clientWidth,
           wrapper.clientHeight
         )
-        engineCommandManager
-          .handleResize({ width, height })
-          .then(() => {
-            console.log('I am most likely ', width, height)
-          })
-          .catch((e) => {
-            console.warn('handleResize', e)
-          })
+        engineCommandManager.handleResize({ width, height }).catch((e) => {
+          console.warn('handleResize', e)
+        })
       })
     })
 
