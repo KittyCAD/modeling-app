@@ -70,7 +70,6 @@ fn spoke(spokeGap, spokeAngle, spokeThickness) {
     origin = [0.0, 0.0, spokeGap / 2],
     xAxis = [1.0, 0.0, spokeAngle],
     yAxis = [0.0, 1.0, 0.0],
-    zAxis = [0.0, 0.0, 1.0]
   }
 
   // Spoke cross sections
