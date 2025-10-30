@@ -28,14 +28,11 @@ import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
-  DOWNLOAD_APP_TOAST_ID,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
-import { isPlaywright } from '@src/lib/isPlaywright'
-import openWindow from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import {
@@ -46,7 +43,6 @@ import {
   kclManager,
   useLayout,
   setLayout,
-  settingsActor,
   getLayout,
 } from '@src/lib/singletons'
 import { useSettings, useToken } from '@src/lib/singletons'
@@ -60,10 +56,10 @@ import {
   TutorialRequestToast,
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
-import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
 import { defaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { defaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
+import { getResolvedTheme } from '@src/lib/theme'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -164,16 +160,24 @@ export function App() {
             navigate,
             codeManager,
             kclManager,
+            theme: getResolvedTheme(settings.app.theme.current),
+            accountUrl: withSiteBaseURL('/account'),
           }),
         {
           id: ONBOARDING_TOAST_ID,
           duration: Number.POSITIVE_INFINITY,
           icon: null,
+          style: { maxInlineSize: 'min(900px, 100%)' },
         }
       )
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [settings.app.onboardingStatus])
+  }, [
+    settings.app.onboardingStatus,
+    settings.app.theme,
+    location,
+    navigate,
+    searchParams.size,
+  ])
 
   useEffect(() => {
     const needsWasmInitFailedToast = !isDesktop() && kclManager.wasmInitFailed

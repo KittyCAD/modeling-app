@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useState } from 'react'
+import { type PropsWithChildren, useCallback, useEffect, useState } from 'react'
 import {
+  Link,
   type NavigateFunction,
   type useLocation,
   useNavigate,
@@ -45,6 +46,8 @@ import {
   setOpenPanes,
   type DefaultLayoutPaneID,
 } from '@src/lib/layout'
+import { Themes } from '@src/lib/theme'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
@@ -365,7 +368,25 @@ export function onDismissOnboardingInvite() {
   )
 }
 
-export function TutorialRequestToast(props: OnboardingUtilDeps) {
+interface TutorialToastCardProps extends PropsWithChildren {
+  src: string
+  alt: string
+}
+
+function TutorialToastCard(props: TutorialToastCardProps) {
+  return (
+    <figure className="border b-3 flex-flex-col">
+      <img src={props.src} alt={props.alt} />
+      <figcaption className="p-2 text-sm border-t b-3">
+        {props.children}
+      </figcaption>
+    </figure>
+  )
+}
+
+export function TutorialRequestToast(
+  props: OnboardingUtilDeps & { theme: Themes; accountUrl: string }
+) {
   function onAccept() {
     acceptOnboarding(props)
       .then(() => {
@@ -374,42 +395,91 @@ export function TutorialRequestToast(props: OnboardingUtilDeps) {
       .catch((reason) => catchOnboardingWarnError(reason, props))
   }
 
+  const quickTipSrc = (index: number) =>
+    `/quick-tip${props.theme === Themes.Light ? '-light' : ''}-${index}.jpg`
+
   return (
     <div
       data-testid="onboarding-toast"
-      className="flex items-center gap-6 min-w-md"
+      className="flex flex-col justify-between gap-6 text-default"
     >
-      <Logo className="w-auto h-8 flex-none" />
-      <div className="flex flex-col justify-between gap-6">
-        <section>
-          <h2>Welcome to Zoo Design Studio</h2>
-          <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-            Would you like a tutorial to show you around the app?
-          </p>
-        </section>
-        <div className="flex justify-between gap-8">
-          <ActionButton
-            Element="button"
-            iconStart={{
-              icon: 'close',
-            }}
-            data-negative-button="dismiss"
-            name="dismiss"
-            onClick={onDismissOnboardingInvite}
-          >
-            Not right now
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            iconStart={{
-              icon: 'checkmark',
-            }}
-            name="accept"
-            onClick={onAccept}
-          >
-            Get started
-          </ActionButton>
+      <section className="flex items-center gap-4">
+        <img
+          src="/kitt-wink.png"
+          alt="Our mascot Kitt says hello!"
+          className="w-20"
+        />
+        <div>
+          <h2 className="font-bold text-2xl">Welcome to Zoo Design Studio</h2>
+          <p className="text-lg text-2">Quick tips</p>
         </div>
+      </section>
+      <div className="grid grid-cols-3 gap-4">
+        <TutorialToastCard
+          src={quickTipSrc(1)}
+          alt="a screenshot of the Design Studio interface highlighting the Text-to-CAD button in the right sidebar"
+        >
+          <strong>Text-to-CAD</strong> is in the upper right panel, where you
+          can create or modify parts with prompts.{' '}
+          <strong>1 credit = 1 second of compute time.</strong>
+        </TutorialToastCard>
+        <TutorialToastCard
+          src={quickTipSrc(2)}
+          alt="a screenshot of the Design Studio interface highlighting the toolbar in the top center of the modeling area"
+        >
+          The top command bar also includes your{' '}
+          <strong>sketching & modeling tools</strong>... extrude, fillet, helix,
+          the works.
+        </TutorialToastCard>
+        <TutorialToastCard
+          src={quickTipSrc(3)}
+          alt="a screenshot of the Design Studio interface highlighting the left sidebar panes"
+        >
+          Navigate the left pane to view your{' '}
+          <strong>
+            Feature Tree, KCL code pane, manage and export files, or add files
+            to you project.
+          </strong>
+        </TutorialToastCard>
+      </div>
+      <div className="flex justify-between gap-8">
+        <ActionButton
+          Element="button"
+          iconStart={{
+            icon: 'close',
+            iconClassName: 'bg-destroy-80',
+          }}
+          data-negative-button="dismiss"
+          name="dismiss"
+          onClick={onDismissOnboardingInvite}
+        >
+          Not right now
+        </ActionButton>
+        <p className="text-center text-2 text-xs">
+          <em>
+            To view your account, manage payment methods, or change tiers,
+            simply{' '}
+            <a
+              href={props.accountUrl}
+              onClick={openExternalBrowserIfDesktop(props.accountUrl)}
+              target="_blank"
+              rel="noreferrer"
+              className="text-default underline underline-offset-2"
+            >
+              click here.
+            </a>
+          </em>
+        </p>
+        <ActionButton
+          Element="button"
+          iconStart={{
+            icon: 'checkmark',
+          }}
+          name="accept"
+          onClick={onAccept}
+        >
+          Get started
+        </ActionButton>
       </div>
     </div>
   )
