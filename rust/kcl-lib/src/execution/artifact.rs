@@ -163,6 +163,7 @@ pub struct Sweep {
     pub surface_ids: Vec<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
+    pub method: kittycad_modeling_cmds::shared::ExtrudeMethod,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
@@ -997,6 +998,20 @@ fn artifacts_to_update(
         | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
         | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. })
         | ModelingCmd::Sweep(kcmc::Sweep { target, .. }) => {
+            // Determine the resulting method from the specific command, if provided
+            let method = match cmd {
+                ModelingCmd::Extrude(kcmc::Extrude { extrude_method, .. }) => *extrude_method,
+                ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { extrude_method, .. }) => *extrude_method,
+                // TwistExtrude and Sweep don't carry method in the command; treat as Merge
+                ModelingCmd::TwistExtrude(_) | ModelingCmd::Sweep(_) => {
+                    kittycad_modeling_cmds::shared::ExtrudeMethod::Merge
+                }
+                // Revolve variants behave like New bodies in std layer
+                ModelingCmd::Revolve(_) | ModelingCmd::RevolveAboutEdge(_) => {
+                    kittycad_modeling_cmds::shared::ExtrudeMethod::New
+                }
+                _ => kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
+            };
             let sub_type = match cmd {
                 ModelingCmd::Extrude(_) => SweepSubType::Extrusion,
                 ModelingCmd::ExtrudeToReference(_) => SweepSubType::Extrusion,
@@ -1015,6 +1030,7 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                method,
             }));
             let path = artifacts.get(&target);
             if let Some(Artifact::Path(path)) = path {
@@ -1050,6 +1066,7 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
             }));
             for section_id in &loft_cmd.section_ids {
                 let path = artifacts.get(&ArtifactId::new(*section_id));
