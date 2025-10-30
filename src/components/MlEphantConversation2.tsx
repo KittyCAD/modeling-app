@@ -29,7 +29,12 @@ export interface MlEphantConversationProps {
   conversation?: Conversation
   contexts: MlEphantManagerPromptContext[]
   billingContext: BillingContext
-  onProcess: (request: string, forcedTools: Set<MlCopilotTool>) => void
+  onProcess: (
+    request: string,
+    model: MlCopilotSupportedModels,
+    reasoningEffort: MlReasoningEffort,
+    forcedTools: Set<MlCopilotTool>
+  ) => void
   disabled?: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
@@ -455,7 +460,7 @@ export const MlEphantConversationInput = (
 
     setHeightConvo(refDiv.current.getBoundingClientRect().height)
 
-    props.onProcess(value, forcedTools)
+    props.onProcess(value, model, reasoningEffort, forcedTools)
 
     setLettersForAnimation(
       value.split('').map((c, index) => (
@@ -553,9 +558,14 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState<boolean>(true)
 
-  const onProcess = (request: string, forcedTools: Set<MlCopilotTool>) => {
+  const onProcess = (
+    request: string,
+    model: MlCopilotSupportedModels,
+    reasoningEffort: MlReasoningEffort,
+    forcedTools: Set<MlCopilotTool>
+  ) => {
     setAutoScroll(true)
-    props.onProcess(request, forcedTools)
+    props.onProcess(request, model, reasoningEffort, forcedTools)
   }
 
   useEffect(() => {
