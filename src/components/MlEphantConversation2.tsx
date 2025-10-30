@@ -9,7 +9,11 @@ import {
   BillingRemainingMode,
 } from '@kittycad/react-shared'
 import { type BillingContext } from '@src/machines/billingMachine'
-import { type MlCopilotTool } from '@kittycad/lib'
+import {
+  MlCopilotSupportedModels,
+  MlReasoningEffort,
+  type MlCopilotTool,
+} from '@kittycad/lib'
 import { Popover, Transition } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
@@ -32,6 +36,13 @@ export interface MlEphantConversationProps {
   defaultPrompt?: string
 }
 
+const ML_REASONING_EFFORT: Readonly<MlReasoningEffort[]> = Object.freeze([
+  'low',
+  'medium',
+  'high',
+])
+const ML_COPILOT_SUPPORTED_MODELS: Readonly<MlCopilotSupportedModels[]> =
+  Object.freeze(['gpt5_nano', 'gpt5_mini', 'gpt5_codex', 'gpt5', 'o3'])
 const ML_COPILOT_TOOLS: Readonly<MlCopilotTool[]> = Object.freeze([
   'edit_kcl_code',
   'text_to_cad',
@@ -136,6 +147,8 @@ export interface MlEphantExtraInputsProps {
   // TODO: Expand to a list with no type restriction
   context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
   inputToMatch: string
+  reasoningEffort: MlReasoningEffort
+  model: MlCopilotSupportedModels
   forcedTools: Set<MlCopilotTool>
   excludedTools: Set<MlCopilotTool>
   onRemove: (tool: MlCopilotTool) => void
