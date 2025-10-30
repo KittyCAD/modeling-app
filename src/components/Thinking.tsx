@@ -9,6 +9,11 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
 
+interface IRowCollapse {
+  fn: () => void
+  keyIndex: number
+}
+
 export const Generic = (props: {
   content: string
 }) => {
@@ -17,7 +22,8 @@ export const Generic = (props: {
 
 export const KclCodeExamples = (props: {
   content: string
-  setAnyRowCollapse: React.Dispatch<React.SetStateAction<(() => void)[]>>
+  setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
+  keyIndex: number
 }) => {
   return (
     <ThoughtContainer
@@ -27,7 +33,10 @@ export const KclCodeExamples = (props: {
         </ThoughtHeader>
       }
     >
-      <ThoughtContent setAnyRowCollapse={props.setAnyRowCollapse}>
+      <ThoughtContent
+        keyIndex={props.keyIndex}
+        setAnyRowCollapse={props.setAnyRowCollapse}
+      >
         <pre className="overflow-x-auto">{props.content}</pre>
       </ThoughtContent>
     </ThoughtContainer>
@@ -44,7 +53,8 @@ export const GeneratedKclCode = (props: {
   operation: EGeneratedKclCode
   code: string | undefined
   filename: string | undefined
-  setAnyRowCollapse: React.Dispatch<React.SetStateAction<(() => void)[]>>
+  setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
+  keyIndex: number
 }) => {
   return (
     <ThoughtContainer
@@ -55,7 +65,10 @@ export const GeneratedKclCode = (props: {
       }
     >
       {props.code && (
-        <ThoughtContent setAnyRowCollapse={props.setAnyRowCollapse}>
+        <ThoughtContent
+          keyIndex={props.keyIndex}
+          setAnyRowCollapse={props.setAnyRowCollapse}
+        >
           <pre className="overflow-x-auto">{props.code}</pre>
         </ThoughtContent>
       )}
@@ -65,7 +78,8 @@ export const GeneratedKclCode = (props: {
 
 export const ErroneousThing = (props: {
   content: string
-  setAnyRowCollapse: React.Dispatch<React.SetStateAction<(() => void)[]>>
+  setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
+  keyIndex: number
 }) => {
   return (
     <ThoughtContainer
@@ -77,7 +91,10 @@ export const ErroneousThing = (props: {
         </ThoughtHeader>
       }
     >
-      <ThoughtContent setAnyRowCollapse={props.setAnyRowCollapse}>
+      <ThoughtContent
+        keyIndex={props.keyIndex}
+        setAnyRowCollapse={props.setAnyRowCollapse}
+      >
         <pre className="overflow-x-auto">{props.content}</pre>
       </ThoughtContent>
     </ThoughtContainer>
@@ -86,7 +103,8 @@ export const ErroneousThing = (props: {
 
 export const KclDocs = (props: {
   content: string
-  setAnyRowCollapse: React.Dispatch<React.SetStateAction<(() => void)[]>>
+  setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
+  keyIndex: number
 }) => {
   const options = {
     gfm: true,
@@ -105,7 +123,10 @@ export const KclDocs = (props: {
         </ThoughtHeader>
       }
     >
-      <ThoughtContent setAnyRowCollapse={props.setAnyRowCollapse}>
+      <ThoughtContent
+        keyIndex={props.keyIndex}
+        setAnyRowCollapse={props.setAnyRowCollapse}
+      >
         <div
           dangerouslySetInnerHTML={{
             __html: Marked.parse(props.content, {
@@ -121,7 +142,8 @@ export const KclDocs = (props: {
 
 export const FeatureTreeOutline = (props: {
   content: string
-  setAnyRowCollapse: React.Dispatch<React.SetStateAction<(() => void)[]>>
+  setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
+  keyIndex: number
 }) => {
   const options = {
     gfm: true,
@@ -140,7 +162,10 @@ export const FeatureTreeOutline = (props: {
         </ThoughtHeader>
       }
     >
-      <ThoughtContent setAnyRowCollapse={props.setAnyRowCollapse}>
+      <ThoughtContent
+        keyIndex={props.keyIndex}
+        setAnyRowCollapse={props.setAnyRowCollapse}
+      >
         <div
           dangerouslySetInnerHTML={{
             __html: Marked.parse(props.content, {
@@ -156,7 +181,8 @@ export const FeatureTreeOutline = (props: {
 
 export const DesignPlan = (props: {
   steps: PlanStep[]
-  setAnyRowCollapse: React.Dispatch<React.SetStateAction<(() => void)[]>>
+  setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
+  keyIndex: number
 }) => {
   return (
     <ThoughtContainer
@@ -168,7 +194,10 @@ export const DesignPlan = (props: {
         </ThoughtHeader>
       }
     >
-      <ThoughtContent setAnyRowCollapse={props.setAnyRowCollapse}>
+      <ThoughtContent
+        keyIndex={props.keyIndex}
+        setAnyRowCollapse={props.setAnyRowCollapse}
+      >
         <ul>
           {props.steps.map((step: PlanStep) => (
             <li>
@@ -203,7 +232,8 @@ const HEIGHT_LINE_MAX_CONTENT = 4
 
 export const ThoughtContent = (props: {
   children?: ReactNode
-  setAnyRowCollapse: React.Dispatch<React.SetStateAction<(() => void)[]>>
+  setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
+  keyIndex: number
 }) => {
   const [needsExpansion, setNeedsExpansion] = useState<boolean>(false)
   const [isExpanded, setIsExpanded] = useState<boolean>(false)
@@ -236,11 +266,20 @@ export const ThoughtContent = (props: {
             onClick={() => {
               setIsExpanded(!isExpanded)
               props.setAnyRowCollapse((state) => {
-                const result = state
-                result.push(() => {
-                  setIsExpanded(false)
-                })
-                return result
+                let copied = [...state]
+                if (isExpanded) {
+                  copied = copied.filter(
+                    (row) => row.keyIndex !== props.keyIndex
+                  )
+                } else {
+                  copied.push({
+                    fn: () => {
+                      setIsExpanded(false)
+                    },
+                    keyIndex: props.keyIndex,
+                  })
+                }
+                return copied
               })
             }}
             isExpanded={isExpanded}
@@ -282,10 +321,14 @@ export const ThoughtExpand = (props: {
 }
 
 export const Spacer = (props: {
-  setAnyRowCollapse: React.Dispatch<React.SetStateAction<(() => void)[]>>
+  setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
+  keyIndex: number
 }) => {
   return (
-    <ThoughtContent setAnyRowCollapse={props.setAnyRowCollapse}>
+    <ThoughtContent
+      keyIndex={props.keyIndex}
+      setAnyRowCollapse={props.setAnyRowCollapse}
+    >
       <div></div>
     </ThoughtContent>
   )
@@ -307,7 +350,8 @@ export const Text = (props: { content: string }) => {
 
 export const NothingInParticular = (props: {
   content: string
-  setAnyRowCollapse: React.Dispatch<React.SetStateAction<(() => void)[]>>
+  setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
+  keyIndex: number
 }) => {
   const options = {
     gfm: true,
@@ -324,7 +368,10 @@ export const NothingInParticular = (props: {
         </ThoughtHeader>
       }
     >
-      <ThoughtContent setAnyRowCollapse={props.setAnyRowCollapse}>
+      <ThoughtContent
+        keyIndex={props.keyIndex}
+        setAnyRowCollapse={props.setAnyRowCollapse}
+      >
         <div
           dangerouslySetInnerHTML={{
             __html: Marked.parse(props.content, {
@@ -369,7 +416,8 @@ const fromDataToComponent = (
   thought: MlCopilotServerMessage,
   options: {
     key?: string | number
-    setAnyRowCollapse: React.Dispatch<React.SetStateAction<(() => void)[]>>
+    setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
+    keyIndex: number
   }
 ) => {
   if ('reasoning' in thought) {
@@ -379,7 +427,10 @@ const fromDataToComponent = (
         return (
           <div key={options.key}>
             <Text content={thought.reasoning.content} />
-            <Spacer setAnyRowCollapse={options.setAnyRowCollapse} />
+            <Spacer
+              setAnyRowCollapse={options.setAnyRowCollapse}
+              keyIndex={options.keyIndex}
+            />
           </div>
         )
       }
@@ -387,6 +438,7 @@ const fromDataToComponent = (
         return (
           <NothingInParticular
             setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
             key={options.key}
             content={(thought.reasoning as { content: string }).content}
           />
@@ -396,6 +448,7 @@ const fromDataToComponent = (
         return (
           <KclCodeExamples
             setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
             key={options.key}
             content={thought.reasoning.content}
           />
@@ -405,6 +458,7 @@ const fromDataToComponent = (
         return (
           <FeatureTreeOutline
             setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
             key={options.key}
             content={thought.reasoning.content}
           />
@@ -414,6 +468,7 @@ const fromDataToComponent = (
         return (
           <DesignPlan
             setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
             key={options.key}
             steps={thought.reasoning.steps}
           />
@@ -423,6 +478,7 @@ const fromDataToComponent = (
         return (
           <KclDocs
             setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
             key={options.key}
             content={thought.reasoning.content}
           />
@@ -432,6 +488,7 @@ const fromDataToComponent = (
         return (
           <ErroneousThing
             setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
             key={options.key}
             content={thought.reasoning.error}
           />
@@ -446,6 +503,7 @@ const fromDataToComponent = (
             filename={undefined}
             code={thought.reasoning.code}
             setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
           />
         )
       }
@@ -457,6 +515,7 @@ const fromDataToComponent = (
             filename={thought.reasoning.file_name}
             code={thought.reasoning.content}
             setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
           />
         )
       }
@@ -469,6 +528,7 @@ const fromDataToComponent = (
             filename={thought.reasoning.file_name}
             code={thought.reasoning.content}
             setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
           />
         )
       }
@@ -481,6 +541,7 @@ const fromDataToComponent = (
             filename={thought.reasoning.file_name}
             code={undefined}
             setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
           />
         )
       }
@@ -499,16 +560,13 @@ export const Thinking = (props: {
   onlyShowImmediateThought: boolean
 }) => {
   const refViewFull = useRef<HTMLDivElement>(null)
-  const [anyRowCollapse, setAnyRowCollapse] = useState<(() => void)[]>([])
+  const [anyRowCollapse, setAnyRowCollapse] = useState<IRowCollapse[]>([])
   const collapseAndClearAllRows = useCallback(() => {
-    console.log('closing all')
-    anyRowCollapse.forEach((fn) => {
-      fn()
+    anyRowCollapse.forEach((row) => {
+      row.fn()
     })
     setAnyRowCollapse([])
   }, [anyRowCollapse])
-
-  console.log('any row collapsed?', anyRowCollapse)
 
   const reasoningThoughts =
     props.thoughts?.filter((x: MlCopilotServerMessage) => {
@@ -545,7 +603,11 @@ export const Thinking = (props: {
   }
 
   const componentThoughts = reasoningThoughts.map((thought, index: number) => {
-    return fromDataToComponent(thought, { key: index, setAnyRowCollapse })
+    return fromDataToComponent(thought, {
+      key: index,
+      setAnyRowCollapse,
+      keyIndex: index,
+    })
   })
 
   if (props.isDone) {
@@ -576,7 +638,7 @@ export const Thinking = (props: {
       {componentThoughts.length > 0 ? componentThoughts : <PlaceholderLine />}
       {anyRowCollapse.length > 0 && (
         <button
-          className="absolute flex justify-center items-center flex-none bottom-8 right-1 bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 "
+          className="absolute flex justify-center items-center flex-none bottom-8 right-3 bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 "
           onClick={collapseAndClearAllRows}
         >
           Collapse all
