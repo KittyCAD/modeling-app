@@ -10,7 +10,6 @@ import {
 } from 'react-router-dom'
 import { AppHeader } from '@src/components/AppHeader'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
-import { DownloadAppToast } from '@src/components/DownloadAppToast'
 import { useLspContext } from '@src/components/LspProvider'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
@@ -175,42 +174,6 @@ export function App() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [settings.app.onboardingStatus])
-
-  useEffect(() => {
-    const needsDownloadAppToast =
-      !isDesktop() &&
-      !isPlaywright() &&
-      searchParams.size === 0 &&
-      !settings.app.dismissWebBanner.current
-    if (needsDownloadAppToast) {
-      toast.success(
-        () =>
-          DownloadAppToast({
-            onAccept: () => {
-              const url = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
-              openWindow(url)
-                .then(() => {
-                  toast.dismiss(DOWNLOAD_APP_TOAST_ID)
-                })
-                .catch(reportRejection)
-            },
-            onDismiss: () => {
-              toast.dismiss(DOWNLOAD_APP_TOAST_ID)
-              settingsActor.send({
-                type: 'set.app.dismissWebBanner',
-                data: { level: 'user', value: true },
-              })
-            },
-          }),
-        {
-          id: DOWNLOAD_APP_TOAST_ID,
-          duration: Number.POSITIVE_INFINITY,
-          icon: null,
-        }
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [])
 
   useEffect(() => {
     const needsWasmInitFailedToast = !isDesktop() && kclManager.wasmInitFailed

@@ -29,12 +29,9 @@ base_unit = "in"
 
 ### settings
 
-
-
 #### meta
 
 Information about the project itself. Choices about how settings are merged have prevent me (lee) from easily moving this out of the settings structure.
-
 
 **Default:** None
 
@@ -42,16 +39,11 @@ This setting has the following nested options:
 
 ##### id
 
-
-
-
 **Default:** None
-
 
 #### app
 
 The settings for the Design Studio.
-
 
 **Default:** None
 
@@ -61,21 +53,13 @@ This setting has the following nested options:
 
 The settings for the appearance of the app.
 
-
 **Default:** None
 
 This setting has further nested options. See the schema for full details.
+
 ##### onboarding_status
 
 The onboarding status of the app.
-
-
-**Default:** None
-
-##### dismiss_web_banner
-
-Permanently dismiss the banner warning to download the desktop app. This setting only applies to the web app. And is temporary until we have Linux support.
-
 
 **Default:** None
 
@@ -83,13 +67,11 @@ Permanently dismiss the banner warning to download the desktop app. This setting
 
 When the user is idle, and this is true, the stream will be torn down.
 
-
 **Default:** None
 
 ##### allow_orbit_in_sketch_mode
 
 When the user is idle, and this is true, the stream will be torn down.
-
 
 **Default:** None
 
@@ -97,21 +79,17 @@ When the user is idle, and this is true, the stream will be torn down.
 
 Whether to show the debug panel, which lets you see various states of the app to aid in development.
 
-
 **Default:** None
 
 ##### named_views
 
 Settings that affect the behavior of the command bar.
 
-
 **Default:** None
-
 
 #### modeling
 
 Settings that affect the behavior while modeling.
-
 
 **Default:** None
 
@@ -121,13 +99,11 @@ This setting has the following nested options:
 
 The default unit to use in modeling dimensions.
 
-
 **Default:** None
 
 ##### highlight_edges
 
 Highlight edges of 3D objects?
-
 
 **Default:** None
 
@@ -135,13 +111,11 @@ Highlight edges of 3D objects?
 
 Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
 
-
 **Default:** None
 
 ##### fixed_size_grid
 
 When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level. If true, the grid cells will be fixed-size, where the width is your default length unit. If false, the grid will get larger as you zoom out, and smaller as you zoom in.
-
 
 **Default:** None
 
@@ -149,13 +123,11 @@ When enabled, the grid will use a fixed size based on your selected units rather
 
 When enabled, tools like line, rectangle, etc. will snap to the grid.
 
-
 **Default:** None
 
 ##### major_grid_spacing
 
 The space between major grid lines, specified in the current unit.
-
 
 **Default:** None
 
@@ -163,21 +135,17 @@ The space between major grid lines, specified in the current unit.
 
 The number of minor grid lines per major grid line.
 
-
 **Default:** None
 
 ##### snaps_per_minor
 
 The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
 
-
 **Default:** None
-
 
 #### text_editor
 
 Settings that affect the behavior of the KCL text editor.
-
 
 **Default:** None
 
@@ -187,21 +155,17 @@ This setting has the following nested options:
 
 Whether to wrap text in the editor or overflow with scroll.
 
-
 **Default:** None
 
 ##### blinking_cursor
 
 Whether to make the cursor blink in the editor.
 
-
 **Default:** None
-
 
 #### command_bar
 
 Settings that affect the behavior of the command bar.
-
 
 **Default:** None
 
@@ -211,11 +175,7 @@ This setting has the following nested options:
 
 Whether to include settings in the command bar.
 
-
 **Default:** None
-
-
-
 
 ## Complete Example
 
