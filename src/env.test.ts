@@ -13,14 +13,14 @@ describe('@src/env', () => {
       // vite > node.js
       const expected = {
         NODE_ENV: 'place-holder-since-it-will-be-set',
-        VITE_KITTYCAD_BASE_DOMAIN: 'dev.zoo.dev',
-        VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
+        VITE_ZOO_BASE_DOMAIN: 'dev.zoo.dev',
+        VITE_ZOO_API_BASE_URL: 'https://api.dev.zoo.dev',
         VITE_KITTYCAD_WEBSOCKET_URL:
           'wss://api.dev.zoo.dev/ws/modeling/commands',
         VITE_MLEPHANT_WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/ml/copilot',
         VITE_ZOO_API_TOKEN: 'redacted',
-        VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
-        VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
+        VITE_ZOO_SITE_BASE_URL: 'https://dev.zoo.dev',
+        VITE_ZOO_SITE_APP_URL: 'https://app.dev.zoo.dev',
         POOL: '',
       }
       const actual = env()
@@ -39,7 +39,7 @@ describe('@src/env', () => {
       // We only need to match against EnvironmentVariables
       const actual = viteEnv()
       expect(typeof actual.NODE_ENV).toBe('string')
-      expect(typeof actual.VITE_KITTYCAD_BASE_DOMAIN).toBe('string')
+      expect(typeof actual.VITE_ZOO_BASE_DOMAIN).toBe('string')
     })
   })
   describe('windowElectronProcessEnv', () => {
@@ -54,26 +54,26 @@ describe('@src/env', () => {
           process: {
             env: {
               NODE_ENV: 'test',
-              VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
+              VITE_ZOO_API_BASE_URL: 'https://api.dev.zoo.dev',
               VITE_KITTYCAD_WEBSOCKET_URL:
                 'wss://api.dev.zoo.dev/ws/modeling/commands',
               VITE_MLEPHANT_WEBSOCKET_URL:
                 'wss://api.dev.zoo.dev/ws/ml/copilot',
               VITE_ZOO_API_TOKEN: 'redacted',
-              VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
-              VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
+              VITE_ZOO_SITE_BASE_URL: 'https://dev.zoo.dev',
+              VITE_ZOO_SITE_APP_URL: 'https://app.dev.zoo.dev',
             },
           },
         })
         const expected = {
           NODE_ENV: 'test',
-          VITE_KITTYCAD_API_BASE_URL: 'https://api.dev.zoo.dev',
+          VITE_ZOO_API_BASE_URL: 'https://api.dev.zoo.dev',
           VITE_KITTYCAD_WEBSOCKET_URL:
             'wss://api.dev.zoo.dev/ws/modeling/commands',
           VITE_MLEPHANT_WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/ml/copilot',
           VITE_ZOO_API_TOKEN: 'redacted',
-          VITE_KITTYCAD_SITE_BASE_URL: 'https://dev.zoo.dev',
-          VITE_KITTYCAD_SITE_APP_URL: 'https://app.dev.zoo.dev',
+          VITE_ZOO_SITE_BASE_URL: 'https://dev.zoo.dev',
+          VITE_ZOO_SITE_APP_URL: 'https://app.dev.zoo.dev',
         }
         const actual = windowElectronProcessEnv()
         expect(actual).toStrictEqual(expected)
@@ -95,7 +95,7 @@ describe('@src/env', () => {
       const actual = processEnv()
       expect(!!actual).toBe(true)
       expect(typeof actual?.NODE_ENV).toBe('string')
-      expect(typeof actual?.VITE_KITTYCAD_BASE_DOMAIN).toBe('string')
+      expect(typeof actual?.VITE_ZOO_BASE_DOMAIN).toBe('string')
     })
   })
   describe('generateDomainsFromBaseDomain', () => {

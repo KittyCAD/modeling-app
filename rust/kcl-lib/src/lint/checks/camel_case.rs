@@ -45,7 +45,7 @@ fn lint_lower_camel_case_var(decl: &VariableDeclarator, prog: &AstNode<Program>)
         findings.push(Z0001.at(
             format!("found '{name}'"),
             SourceRange::new(ident.start, ident.end, ident.module_id),
-            Some(suggestion.clone()),
+            Some(suggestion),
         ));
         return Ok(findings);
     }
@@ -166,7 +166,7 @@ Part001 = startSketchOn(XY)
         Z0001,
         FULL_BAD,
         "found 'Part001'",
-        Some(FULL_BAD.replace("Part001", "part001").to_string())
+        Some(FULL_BAD.replace("Part001", "part001"))
     );
 
     test_no_finding!(

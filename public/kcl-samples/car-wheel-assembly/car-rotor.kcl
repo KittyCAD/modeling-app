@@ -46,15 +46,17 @@ lugHoles2 = startSketchOn(secondRotor, face = END)
      )
   |> extrude(length = -rotorSinglePlateThickness)
 
-spacerSketch = startSketchOn(rotor, face = START)
+spacers = startSketchOn(rotor, face = START)
   |> circle(center = [spacerPatternDiameter / 2, 0], radius = spacerDiameter)
-  |> patternCircular2d(
+  |> extrude(length = spacerLength)
+  |> patternCircular3d(
        arcDegrees = 360,
-       center = [0, 0],
+       axis = Y,
+       center = [0, 0, 0],
        instances = spacerCount,
        rotateDuplicates = true,
+       useOriginal = true,
      )
-spacers = extrude(spacerSketch, length = spacerLength)
 
 rotorSlottedSketch = startSketchOn(rotor, face = START)
   |> startProfile(at = [2.17, 2.56])

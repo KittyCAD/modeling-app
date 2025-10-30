@@ -642,7 +642,7 @@ impl ExecutorContext {
                 .exec_module_from_ast(program, module_id, &path, exec_state, source_range, false)
                 .await
                 .map(|(val, er, items, module_artifacts)| {
-                    *cache = Some((val, er, items.clone(), module_artifacts.clone()));
+                    *cache = Some((val, er, items.clone(), module_artifacts));
                     (er, items)
                 }),
             ModuleRepr::Foreign(geom, _) => Err(KclError::new_semantic(KclErrorDetails::new(
@@ -2536,7 +2536,7 @@ impl Node<TagDeclarator> {
 
         exec_state
             .mut_stack()
-            .add(self.name.clone(), memory_item.clone(), self.into())?;
+            .add(self.name.clone(), memory_item, self.into())?;
 
         Ok(self.into())
     }

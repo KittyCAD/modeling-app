@@ -564,7 +564,7 @@ export function createApplicationCommands({
         return
       }
       if (data) {
-        const environmentName = env().VITE_KITTYCAD_BASE_DOMAIN
+        const environmentName = env().VITE_ZOO_BASE_DOMAIN
         if (environmentName)
           writeEnvironmentConfigurationPool(
             window.electron,

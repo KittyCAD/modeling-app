@@ -282,7 +282,7 @@ impl ExecState {
 
     pub(crate) fn push_op(&mut self, op: Operation) {
         #[cfg(feature = "artifact-graph")]
-        self.mod_local.artifacts.operations.push(op.clone());
+        self.mod_local.artifacts.operations.push(op);
         #[cfg(not(feature = "artifact-graph"))]
         drop(op);
     }
@@ -304,7 +304,7 @@ impl ExecState {
 
     pub(super) fn add_path_to_source_id(&mut self, path: ModulePath, id: ModuleId) {
         debug_assert!(!self.global.path_to_source_id.contains_key(&path));
-        self.global.path_to_source_id.insert(path.clone(), id);
+        self.global.path_to_source_id.insert(path, id);
     }
 
     pub(crate) fn add_root_module_contents(&mut self, program: &crate::Program) {
@@ -328,7 +328,7 @@ impl ExecState {
     }
 
     pub(super) fn add_id_to_source(&mut self, id: ModuleId, source: ModuleSource) {
-        self.global.id_to_source.insert(id, source.clone());
+        self.global.id_to_source.insert(id, source);
     }
 
     pub(super) fn add_module(&mut self, id: ModuleId, path: ModulePath, repr: ModuleRepr) {
@@ -502,7 +502,7 @@ impl GlobalState {
         );
         global.path_to_source_id.insert(
             ModulePath::Local {
-                value: root_path.clone(),
+                value: root_path,
                 original_import_path: None,
             },
             root_id,

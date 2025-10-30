@@ -404,7 +404,7 @@ impl ExecutorSettings {
                 self.project_directory = Some(TypedPath::from(""));
             }
         } else {
-            self.project_directory = Some(current_file.clone());
+            self.project_directory = Some(current_file);
         }
     }
 }
