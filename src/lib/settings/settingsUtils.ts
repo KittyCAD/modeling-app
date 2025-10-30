@@ -251,6 +251,7 @@ export function settingsPayloadToProjectConfiguration(
     settings: {
       meta: {
         id: configuration?.meta?.id,
+        enable_copilot: configuration?.meta?.enableCopilot,
       },
       app: {
         appearance: {
