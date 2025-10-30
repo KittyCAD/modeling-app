@@ -74,9 +74,9 @@ pub struct PerProjectSettings {
 pub struct ProjectMetaSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub id: uuid::Uuid,
-    /// Enable the new Copilot in Text-to-CAD for this project. Only available in Zoo Design Studio (Staging).
+    /// Disable the new Copilot in Text-to-CAD for this project, only available in Zoo Design Studio (Staging).
     #[serde(default, skip_serializing_if = "is_default")]
-    pub enable_copilot: bool,
+    pub disable_copilot: bool,
 }
 
 /// Project specific application settings.
@@ -309,7 +309,7 @@ color = 1567.4"#;
             settings: PerProjectSettings {
                 meta: ProjectMetaSettings {
                     id: uuid::Uuid::nil(),
-                    enable_copilot: Default::default(),
+                    disable_copilot: Default::default(),
                 },
                 app: ProjectAppSettings {
                     appearance: ProjectAppearanceSettings { color: 138.0.into() },

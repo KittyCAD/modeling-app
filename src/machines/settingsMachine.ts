@@ -514,7 +514,7 @@ export const settingsMachine = setup({
           actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
         },
 
-        'set.meta.enableCopilot': {
+        'set.meta.disableCopilot': {
           target: 'persisting settings',
 
           actions: ['setSettingAtLevel', 'toastSuccess'],

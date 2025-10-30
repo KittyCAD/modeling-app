@@ -47,9 +47,9 @@ This setting has the following nested options:
 
 **Default:** None
 
-##### enable_copilot
+##### disable_copilot
 
-Enable the new Copilot in Text-to-CAD for this project. Only available in Zoo Design Studio (Staging).
+Disable the new Copilot in Text-to-CAD for this project, only available in Zoo Design Studio (Staging).
 
 
 **Default:** None

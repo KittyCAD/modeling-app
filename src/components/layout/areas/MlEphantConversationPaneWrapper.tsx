@@ -32,7 +32,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
       id={`${props.layout.id}-pane`}
       className="border-none"
     >
-      {IS_STAGING_OR_DEBUG && settings.meta.enableCopilot.current === true ? (
+      {IS_STAGING_OR_DEBUG && settings.meta.disableCopilot.current === false ? (
         <>
           <LayoutPanelHeader
             id={props.layout.id}
