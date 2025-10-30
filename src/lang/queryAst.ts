@@ -1066,7 +1066,8 @@ export function getVariableExprsFromSelection(
   ast: Node<Program>,
   nodeToEdit?: PathToNode,
   lastChildLookup = false,
-  artifactGraph?: ArtifactGraph
+  artifactGraph?: ArtifactGraph,
+  artifactTypeFilter?: Array<Artifact['type']>
 ): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
   let pathIfPipe: PathToNode | undefined
   const exprs: Expr[] = []
@@ -1084,7 +1085,11 @@ export function getVariableExprsFromSelection(
         s.artifact,
         artifactGraph
       )
-      const lastChildVariable = getLastVariable(children, ast)
+      const lastChildVariable = getLastVariable(
+        children,
+        ast,
+        artifactTypeFilter
+      )
       if (!lastChildVariable) {
         continue
       }
@@ -1520,24 +1525,42 @@ export function findAllChildrenAndOrderByPlaceInCode(
 
   const resultSet = new Set(result)
   const codeRefArtifacts = getArtifacts(Array.from(resultSet))
-  const orderedByCodeRefDest = codeRefArtifacts.sort((a, b) => {
+  let orderedByCodeRefDest = codeRefArtifacts.sort((a, b) => {
     const aCodeRef = getFaceCodeRef(a)
     const bCodeRef = getFaceCodeRef(b)
     if (!aCodeRef || !bCodeRef) {
       return 0
     }
-    return bCodeRef.range[0] - aCodeRef.range[0]
+    return aCodeRef.range[0] - bCodeRef.range[0]
   })
 
-  return orderedByCodeRefDest
+  // Cut off traversal results at the first NEW sweep (so long as it's not the first sweep)
+  let firstSweep = true
+  const cutoffIndex = orderedByCodeRefDest.findIndex((artifact) => {
+    if (artifact.type === 'sweep' && firstSweep) {
+      firstSweep = false
+      return false
+    }
+    const isNew = artifact.type === 'sweep' && artifact.method === 'new'
+    return isNew && !firstSweep
+  })
+  if (cutoffIndex !== -1) {
+    orderedByCodeRefDest = orderedByCodeRefDest.slice(0, cutoffIndex)
+  }
+
+  return orderedByCodeRefDest.reverse()
 }
 
 /** Returns the last declared in code, relevant child */
 export function getLastVariable(
   orderedDescArtifacts: Artifact[],
-  ast: Node<Program>
+  ast: Node<Program>,
+  typeFilter?: Array<Artifact['type']>
 ) {
   for (const artifact of orderedDescArtifacts) {
+    if (typeFilter && !typeFilter.includes(artifact.type)) {
+      continue
+    }
     const codeRef = getFaceCodeRef(artifact)
     if (codeRef) {
       const pathToNode = getNodePathFromSourceRange(ast, codeRef.range)

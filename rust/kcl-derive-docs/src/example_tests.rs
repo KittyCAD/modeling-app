@@ -2,7 +2,7 @@ use proc_macro2::Span;
 use quote::{quote, ToTokens};
 
 pub fn do_for_each_example_test(item: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
-    let item: syn::ItemFn = syn::parse2(item.clone()).unwrap();
+    let item: syn::ItemFn = syn::parse2(item).unwrap();
     let mut result = proc_macro2::TokenStream::new();
     for name in TEST_NAMES {
         let mut item = item.clone();
