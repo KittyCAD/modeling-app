@@ -76,10 +76,6 @@ export const machine = setup({
         const [x, y] = pointData
 
         try {
-          await rustContext.hackSetProgram(
-            kclManager.ast,
-            await jsAppSettings()
-          )
           // TODO not sure if we should be sending through units with this
           const segmentCtor: SegmentCtor = {
             type: 'Point',
