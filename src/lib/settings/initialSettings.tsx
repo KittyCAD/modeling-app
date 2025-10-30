@@ -742,7 +742,7 @@ export function createSettings() {
       enableCopilot: new Setting<boolean>({
         hideOnLevel: 'user',
         hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
-        defaultValue: false,
+        defaultValue: IS_STAGING_OR_DEBUG ? true : false,
         description: 'Toggle copilot mode in Text-to-CAD',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
