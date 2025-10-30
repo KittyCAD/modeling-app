@@ -28,7 +28,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
   const send = authActor.send
-  const fullEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN
+  const fullEnvironmentName = env().VITE_ZOO_BASE_DOMAIN
   const [hasMultipleEnvironments, setHasMultipleEnvironments] = useState(false)
 
   useEffect(() => {
@@ -167,7 +167,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Element: 'button',
           children: <span>Change environment</span>,
           onClick: () => {
-            const environment = env().VITE_KITTYCAD_BASE_DOMAIN
+            const environment = env().VITE_ZOO_BASE_DOMAIN
             if (environment) {
               commandBarActor.send({
                 type: 'Find and select command',

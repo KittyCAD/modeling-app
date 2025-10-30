@@ -12,13 +12,13 @@ export function generateDomainsFromBaseDomain(baseDomain: string) {
 
 export type EnvironmentVariables = {
   readonly NODE_ENV: string | undefined
-  readonly VITE_KITTYCAD_BASE_DOMAIN: string | undefined
-  readonly VITE_KITTYCAD_API_BASE_URL: string | undefined
+  readonly VITE_ZOO_BASE_DOMAIN: string | undefined
+  readonly VITE_ZOO_API_BASE_URL: string | undefined
   readonly VITE_KITTYCAD_WEBSOCKET_URL: string | undefined
   readonly VITE_MLEPHANT_WEBSOCKET_URL: string | undefined
   readonly VITE_ZOO_API_TOKEN: string | undefined
-  readonly VITE_KITTYCAD_SITE_BASE_URL: string | undefined
-  readonly VITE_KITTYCAD_SITE_APP_URL: string | undefined
+  readonly VITE_ZOO_SITE_BASE_URL: string | undefined
+  readonly VITE_ZOO_SITE_APP_URL: string | undefined
   readonly POOL: string | undefined
 }
 
@@ -110,7 +110,7 @@ export default (): EnvironmentVariables => {
   const processEnvOnly = processEnv()
   const env = processEnvOnly || windowElectronProcessEnvOnly || viteOnly
 
-  let BASE_DOMAIN = env.VITE_KITTYCAD_BASE_DOMAIN
+  let BASE_DOMAIN = env.VITE_ZOO_BASE_DOMAIN
   let {
     API_URL,
     SITE_URL,
@@ -160,16 +160,16 @@ export default (): EnvironmentVariables => {
 
   const environmentVariables: EnvironmentVariables = {
     NODE_ENV: (env.NODE_ENV as string) || viteOnly.MODE || undefined,
-    VITE_KITTYCAD_BASE_DOMAIN: BASE_DOMAIN || undefined,
-    VITE_KITTYCAD_API_BASE_URL: API_URL || undefined,
+    VITE_ZOO_BASE_DOMAIN: BASE_DOMAIN || undefined,
+    VITE_ZOO_API_BASE_URL: API_URL || undefined,
     VITE_KITTYCAD_WEBSOCKET_URL: KITTYCAD_WEBSOCKET_URL || undefined,
     VITE_MLEPHANT_WEBSOCKET_URL: MLEPHANT_WEBSOCKET_URL || undefined,
     VITE_ZOO_API_TOKEN:
       (env.VITE_ZOO_API_TOKEN as string) ||
       (env.VITE_KITTYCAD_API_TOKEN as string) ||
       undefined,
-    VITE_KITTYCAD_SITE_BASE_URL: SITE_URL || undefined,
-    VITE_KITTYCAD_SITE_APP_URL: APP_URL || undefined,
+    VITE_ZOO_SITE_BASE_URL: SITE_URL || undefined,
+    VITE_ZOO_SITE_APP_URL: APP_URL || undefined,
     POOL: pool, // TODO: Rename to ENGINE_POOL to be more descriptive
   }
 

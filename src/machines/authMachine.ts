@@ -174,7 +174,7 @@ async function getUser(input: { token?: string }) {
   if (window.electron) {
     const environment =
       (await readEnvironmentFile(window.electron)) ||
-      env().VITE_KITTYCAD_BASE_DOMAIN ||
+      env().VITE_ZOO_BASE_DOMAIN ||
       ''
     updateEnvironment(environment)
 
@@ -227,7 +227,7 @@ export function getCookie(): string | null {
     return null
   }
 
-  const baseDomain = env().VITE_KITTYCAD_BASE_DOMAIN
+  const baseDomain = env().VITE_ZOO_BASE_DOMAIN
   if (baseDomain === 'zoo.dev' || baseDomain === 'zoogov.dev') {
     return getCookieByName(LEGACY_COOKIE_NAME)
   } else {
@@ -262,7 +262,7 @@ async function getAndSyncStoredToken(input: {
     return localToken
   }
 
-  const environmentName = env().VITE_KITTYCAD_BASE_DOMAIN
+  const environmentName = env().VITE_ZOO_BASE_DOMAIN
 
   // Find possible tokens
   const inputToken = input.token && input.token !== '' ? input.token : ''
@@ -323,7 +323,7 @@ async function logoutEnvironment(requestedDomain?: string) {
   localStorage.removeItem(TOKEN_PERSIST_KEY)
   if (window.electron) {
     try {
-      const domain = requestedDomain || env().VITE_KITTYCAD_BASE_DOMAIN
+      const domain = requestedDomain || env().VITE_ZOO_BASE_DOMAIN
       let token = ''
       if (domain) {
         token = await readEnvironmentConfigurationToken(window.electron, domain)
