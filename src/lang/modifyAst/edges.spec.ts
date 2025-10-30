@@ -105,7 +105,12 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [seg01, capEnd001]
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(extrudedTriangleWithFillet)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add a basic fillet call on a sweepEdge and a segment', async () => {
@@ -161,7 +166,12 @@ fillet001 = fillet(
   ],
   radius = 1,
 )`)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add a basic fillet call with tag on sweepEdge', async () => {
@@ -207,7 +217,12 @@ fillet001 = fillet(
   tag = $myTag,
 )`
       )
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should edit a basic fillet call on sweepEdge', async () => {
@@ -242,7 +257,12 @@ fillet001 = fillet(
       expect(newCode).toContain(
         extrudedTriangleWithFillet.replace('radius = 1', 'radius = 1.1')
       )
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
   })
 
@@ -275,7 +295,12 @@ fillet001 = fillet(
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(extrudedTriangleWithChamfer)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add a basic chamfer call on a sweepEdge and a segment', async () => {
@@ -331,7 +356,12 @@ chamfer001 = chamfer(
   ],
   length = 1,
 )`)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add a chamfer call on sweepEdge with two lengths', async () => {
@@ -381,7 +411,12 @@ chamfer001 = chamfer(
   length = 1,
   secondLength = 1.1,
 )`)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add a chamfer call on sweepEdge with one length and one angle, and a tag', async () => {
@@ -433,7 +468,12 @@ chamfer001 = chamfer(
   angle = 46deg,
   tag = $myChamferTag,
 )`)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should edit a basic chamfer call on sweepEdge', async () => {
@@ -468,7 +508,12 @@ chamfer001 = chamfer(
       expect(newCode).toContain(
         extrudedTriangleWithChamfer.replace('length = 1', 'length = 1.1')
       )
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
   })
 
