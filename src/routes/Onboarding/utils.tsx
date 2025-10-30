@@ -374,7 +374,7 @@ interface TutorialToastCardProps extends PropsWithChildren {
 
 function TutorialToastCard(props: TutorialToastCardProps) {
   return (
-    <figure className="border b-3 flex-flex-col">
+    <figure className="border b-3 flex flex-col">
       <img src={props.src} alt={props.alt} />
       <figcaption className="p-2 text-sm border-t b-3">
         {props.children}
@@ -437,7 +437,7 @@ export function TutorialRequestToast(
           Navigate the left pane to view your{' '}
           <strong>
             Feature Tree, KCL code pane, manage and export files, or add files
-            to you project.
+            to your project.
           </strong>
         </TutorialToastCard>
       </div>
@@ -472,12 +472,12 @@ export function TutorialRequestToast(
         <ActionButton
           Element="button"
           iconStart={{
-            icon: 'checkmark',
+            icon: 'arrowRight',
           }}
           name="accept"
           onClick={onAccept}
         >
-          Get started
+          Start tutorial
         </ActionButton>
       </div>
     </div>
