@@ -47,7 +47,6 @@ This setting has the following nested options:
 
 **Default:** None
 
-
 ##### enable_copilot
 
 Enable the new Copilot in Text-to-CAD for this project. Only available in Zoo Design Studio (Staging).
