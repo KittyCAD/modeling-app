@@ -1264,6 +1264,20 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           state.matches('sketchSolveMode') &&
           state.context.sketchSolveToolName === 'pointTool',
       },
+      {
+        id: 'coincident',
+        onClick: ({ modelingSend, isActive }) =>
+          modelingSend({
+            type: 'coincident',
+          }),
+        icon: 'arrowUp',
+        status: 'available',
+        title: 'coincident',
+        hotkey: 'L',
+        description: 'make things coincident',
+        links: [],
+        isActive: (state) => false,
+      },
     ],
   },
 }
