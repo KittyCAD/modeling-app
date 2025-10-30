@@ -1,5 +1,5 @@
 import { type Locator, type Page, test } from '@playwright/test'
-import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
+import type { SidebarId } from '@src/components/layout/areas'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 
@@ -25,12 +25,14 @@ export class ToolbarFixture {
   filletButton!: Locator
   chamferButton!: Locator
   shellButton!: Locator
+  holeButton!: Locator
   revolveButton!: Locator
   offsetPlaneButton!: Locator
   helixButton!: Locator
   translateButton!: Locator
   patternCircularButton!: Locator
   patternLinearButton!: Locator
+  gdtFlatnessButton!: Locator
   startSketchBtn!: Locator
   insertButton!: Locator
   lineBtn!: Locator
@@ -71,12 +73,14 @@ export class ToolbarFixture {
     this.filletButton = page.getByTestId('fillet3d')
     this.chamferButton = page.getByTestId('chamfer3d')
     this.shellButton = page.getByTestId('shell')
+    this.holeButton = page.getByTestId('hole')
     this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.helixButton = page.getByTestId('helix')
     this.translateButton = page.getByTestId('translate')
     this.patternCircularButton = page.getByTestId('pattern-circular-3d')
     this.patternLinearButton = page.getByTestId('pattern-linear-3d')
+    this.gdtFlatnessButton = page.getByTestId('gdt-flatness')
     this.startSketchBtn = page.getByTestId('sketch')
     this.insertButton = page.getByTestId('insert')
     this.lineBtn = page.getByTestId('line')

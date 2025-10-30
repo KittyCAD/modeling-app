@@ -7,6 +7,7 @@ import {
 } from '@src/machines/mlEphantManagerMachine2'
 import ms from 'ms'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { PlaceholderLine } from '@src/components/PlaceholderLine'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -73,7 +74,7 @@ export const ExchangeCardStatus = (props: {
 
 export const AvatarUser = (props: { src?: string }) => {
   return (
-    <div className="rounded-sm overflow-hidden">
+    <div className="rounded-sm overflow-hidden h-7 w-7">
       {props.src ? (
         <img
           src={props.src || ''}
@@ -124,10 +125,7 @@ export const ChatBubble = (props: {
           {hasVisibleChildren(props.children) ? (
             props.children
           ) : (
-            <div
-              className="animate-pulse animate-shimmer h-4 w-full p-1 bg-chalkboard-80 rounded"
-              data-testid={props.placeholderTestId}
-            ></div>
+            <PlaceholderLine data-testid={props.placeholderTestId} />
           )}
         </div>
       </div>
@@ -205,7 +203,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
     <ChatBubble
       side={'left'}
       wfull={true}
-      userAvatar={<AvatarUser src="/mleyphun.jpg" />}
+      userAvatar={<div className="h-7 w-7 rounded-sm bg-img-mel" />}
       dataTestId="ml-response-chat-bubble"
       placeholderTestId="ml-response-chat-bubble-thinking"
     >

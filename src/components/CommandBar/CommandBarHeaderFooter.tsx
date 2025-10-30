@@ -20,9 +20,11 @@ function CommandBarHeaderFooter({
   children,
   stepBack,
   clear,
+  submitDisabled,
 }: React.PropsWithChildren<object> & {
   stepBack: () => void
   clear?: () => void
+  submitDisabled?: boolean
 }) {
   const commandBarState = useCommandBarState()
   const {
@@ -186,6 +188,8 @@ function CommandBarHeaderFooter({
                           )
                         ) : arg.inputType === 'vector3d' ? (
                           (argValue as KclCommandValue).valueCalculated
+                        ) : arg.inputType === 'vector2d' ? (
+                          (argValue as KclCommandValue).valueCalculated
                         ) : arg.inputType === 'text' &&
                           !arg.valueSummary &&
                           typeof argValue === 'string' ? (
@@ -254,6 +258,7 @@ function CommandBarHeaderFooter({
                   ? '!text-ml-black'
                   : '!text-chalkboard-10'
               }
+              disabled={submitDisabled}
             />
           ) : (
             <GatheringArgsButton
@@ -273,30 +278,41 @@ function CommandBarHeaderFooter({
   )
 }
 
-type ButtonProps = { bgClassName?: string; iconClassName?: string }
-function ReviewingButton({ bgClassName, iconClassName }: ButtonProps) {
+type ButtonProps = {
+  bgClassName?: string
+  iconClassName?: string
+  disabled?: boolean
+}
+function ReviewingButton({
+  bgClassName,
+  iconClassName,
+  disabled,
+}: ButtonProps) {
   const buttonRef = useRef<HTMLButtonElement>(null)
   useEffect(() => {
     if (buttonRef.current) {
       buttonRef.current.focus()
     }
   }, [])
+  const resolvedIconClassName = disabled ? '!text-3' : iconClassName
+  const resolvedBgClassName = disabled ? '!bg-3' : bgClassName
   return (
     <ActionButton
       Element="button"
       ref={buttonRef}
       type="submit"
       form="review-form"
-      className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current ${bgClassName}`}
+      className={`w-fit !p-0 rounded-sm hover:brightness-110 hover:shadow focus:outline-current ${resolvedBgClassName}`}
       tabIndex={0}
       data-testid="command-bar-submit"
+      disabled={disabled}
       iconEnd={{
         icon: 'checkmark',
-        bgClassName: `p-1 rounded-sm ${bgClassName}`,
-        iconClassName: `${iconClassName}`,
+        bgClassName: `p-1 rounded-sm ${resolvedBgClassName}`,
+        iconClassName: `${resolvedIconClassName}`,
       }}
     >
-      <span className={`pl-2 ${iconClassName}`}>Submit</span>
+      <span className={`pl-2 ${resolvedIconClassName}`}>Submit</span>
     </ActionButton>
   )
 }

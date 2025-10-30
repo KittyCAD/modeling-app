@@ -8,7 +8,7 @@ type LeftOrRight = 'left' | 'right'
 type Corner = `${TopOrBottom}-${LeftOrRight}`
 type TooltipPosition = TopOrBottom | LeftOrRight | Corner
 
-export interface TooltipProps extends React.PropsWithChildren {
+export interface TooltipProps extends React.HTMLProps<HTMLDivElement> {
   position?: TooltipPosition
   wrapperClassName?: string
   contentClassName?: string
@@ -27,6 +27,7 @@ export default function Tooltip({
   delay = 0,
   hoverOnly = false,
   inert = true,
+  ...rest
 }: TooltipProps) {
   return (
     <div
@@ -42,6 +43,7 @@ export default function Tooltip({
         { '--_delay': delay + 'ms' } as React.CSSProperties,
         wrapperStyle
       )}
+      {...rest}
     >
       <div className={`rounded ${styles.tooltip} ${contentClassName || ''}`}>
         {children}

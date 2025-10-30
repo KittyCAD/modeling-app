@@ -17,7 +17,11 @@ let engineCommandManagerInThisFile: ConnectionManager = null!
  *
  * Reuse the world for this file. This is not the same as global singleton imports!
  */
-beforeAll(async () => {
+beforeEach(async () => {
+  if (instanceInThisFile) {
+    return
+  }
+
   const { instance, kclManager, engineCommandManager } =
     await buildTheWorldAndConnectToEngine()
   instanceInThisFile = instance
@@ -90,9 +94,20 @@ const createSelectionWithFirstMatchingArtifact = async (
 }
 
 describe('tagManagement.test.ts', () => {
-  // Tests for modifyAstWithTagsForSelection
-  describe('modifyAstWithTagsForSelection', () => {
-    const basicExampleCode = `
+  // Tag Management System Tests
+  //
+  // The tag management system automatically adds tags to KCL expressions
+  // when users select geometry for operations.
+  //
+  // Test Structure:
+  // - Integration tests: modifyAstWithTagsForSelection (high-level workflows)
+  // - Unit tests: mutateAstWithTagForSketchSegment (specific edge cut functionality)
+  //
+  // Key functionality tested:
+  // - Face tagging: wall faces, cap faces, edgeCut faces (chamfers/fillets)
+  // - Edge tagging: segments, sweep edges
+  // - Complex scenarios: multi-tag breakup, tag deduplication
+  const basicExampleCode = `
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
@@ -100,9 +115,37 @@ sketch001 = startSketchOn(XY)
   |> line(end = [-20, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(sketch001, length = 15)
-`
+extrude001 = extrude(sketch001, length = 15)`
+  const boxWithOneTagAndChamfer = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10, tag = $seg01)
+  |> yLine(length = 10)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
+  |> chamfer(
+        length = 1,
+        tags = [
+          getCommonEdge(faces = [seg01, capEnd001])
+        ],
+      )`
+  const boxWithOneTagAndFillet = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10, tag = $seg01)
+  |> yLine(length = 10)
+  |> xLine(length = -10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
+  |> fillet(
+        radius = 1,
+        tags = [
+          getCommonEdge(faces = [seg01, capEnd001])
+        ],
+      )`
 
+  describe('modifyAstWithTagsForSelection', () => {
     // ----------------------------------------
     // 2D Entities
     // ----------------------------------------
@@ -311,6 +354,176 @@ extrude001 = extrude(sketch001, length = 15)
       expect(tags).toBeTruthy() // Tags should be non-empty strings
     }, 5_000)
 
-    // TODO: Add handling for FACE selections
+    // Handle FACE selections
+    it('should tag a wall face by tagging the underlying segment', async () => {
+      const { ast, artifactGraph } = await executeCode(
+        basicExampleCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      // Find a wall face artifact
+      const wallArtifact = [...artifactGraph.values()].find(
+        (a) => a.type === 'wall'
+      )
+      expect(wallArtifact).toBeDefined()
+
+      const selectionResult = await createSelectionWithFirstMatchingArtifact(
+        artifactGraph,
+        'wall'
+      )
+      if (err(selectionResult)) return selectionResult
+      const wallFaceSelection = selectionResult.selection
+
+      // Apply tagging
+      const result = modifyAstWithTagsForSelection(
+        ast,
+        wallFaceSelection,
+        artifactGraph
+      )
+      if (err(result)) throw result
+      const { modifiedAst, tags } = result
+      const newCode = recast(modifiedAst)
+      if (err(newCode)) throw newCode
+
+      // Verify results - should tag the underlying segment
+      expect(tags.length).toBe(1)
+      expect(newCode).toContain('tag = $seg01')
+      expect(tags[0]).toBeTruthy()
+    }, 5_000)
+
+    it('should tag a cap face by tagging the extrusion', async () => {
+      const { ast, artifactGraph } = await executeCode(
+        basicExampleCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      // Find a cap face artifact
+      const selectionResult = await createSelectionWithFirstMatchingArtifact(
+        artifactGraph,
+        'cap'
+      )
+      if (err(selectionResult)) return selectionResult
+      const capFaceSelection = selectionResult.selection
+
+      // Apply tagging
+      const result = modifyAstWithTagsForSelection(
+        ast,
+        capFaceSelection,
+        artifactGraph
+      )
+      if (err(result)) throw result
+      const { modifiedAst, tags } = result
+      const newCode = recast(modifiedAst)
+      if (err(newCode)) throw newCode
+
+      // Verify results - should tag the extrusion
+      expect(tags.length).toBe(1)
+      // Should tag either start or end cap depending on which one was found
+      const hasTagStart = newCode.includes('tagStart = $capStart001')
+      const hasTagEnd = newCode.includes('tagEnd = $capEnd001')
+      expect(hasTagStart || hasTagEnd).toBe(true)
+      expect(tags[0]).toBeTruthy()
+    }, 5_000)
+
+    it('should tag an edgeCut face by tagging the edgeCut expression', async () => {
+      const { ast, artifactGraph } = await executeCode(
+        boxWithOneTagAndChamfer,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      // Find an edgeCut face artifact (created by chamfer)
+      const selectionResult = await createSelectionWithFirstMatchingArtifact(
+        artifactGraph,
+        'edgeCut'
+      )
+      if (err(selectionResult)) return selectionResult
+      const edgeCutFaceSelection = selectionResult.selection
+
+      // Apply tagging
+      const result = modifyAstWithTagsForSelection(
+        ast,
+        edgeCutFaceSelection,
+        artifactGraph
+      )
+      if (err(result)) throw result
+      const { modifiedAst, tags } = result
+      const newCode = recast(modifiedAst)
+      if (err(newCode)) throw newCode
+
+      // Verify results - should tag the chamfer operation (edgeCut expression)
+      expect(tags.length).toBe(1)
+      expect(newCode).toContain('tag = $seg02') // The NEW chamfer tag that was added
+      expect(tags[0]).toBe('seg02') // The returned tag should be seg02
+    }, 5_000)
+  })
+
+  describe('mutateAstWithTagForSketchSegment', () => {
+    it('should successfully tag a chamfer edgeCut', async () => {
+      const { ast, artifactGraph } = await executeCode(
+        boxWithOneTagAndChamfer,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      // Find the chamfer edgeCut artifact
+      const selectionResult = await createSelectionWithFirstMatchingArtifact(
+        artifactGraph,
+        'edgeCut',
+        'chamfer'
+      )
+      if (err(selectionResult)) return selectionResult
+      const chamferFaceSelection = selectionResult.selection
+
+      const result = modifyAstWithTagsForSelection(
+        ast,
+        chamferFaceSelection,
+        artifactGraph
+      )
+      if (err(result)) throw result
+      const { modifiedAst, tags } = result
+      const tag = tags[0]
+      const newCode = recast(modifiedAst)
+      if (err(newCode)) throw newCode
+
+      // Verify chamfer tagging worked
+      expect(tag).toBeTruthy()
+      expect(newCode).toContain('tag = $seg02')
+    }, 5_000)
+
+    it('should successfully tag a fillet edgeCut', async () => {
+      const { ast, artifactGraph } = await executeCode(
+        boxWithOneTagAndFillet,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      // Find the fillet edgeCut artifact
+      const selectionResult = await createSelectionWithFirstMatchingArtifact(
+        artifactGraph,
+        'edgeCut',
+        'fillet'
+      )
+      if (err(selectionResult)) return selectionResult
+      const filletFaceSelection = selectionResult.selection
+
+      const result = modifyAstWithTagsForSelection(
+        ast,
+        filletFaceSelection,
+        artifactGraph
+      )
+
+      // This should now succeed with our fix
+      expect(err(result)).toBeFalsy()
+      if (!err(result)) {
+        const { modifiedAst, tags } = result
+        const tag = tags[0]
+        const newCode = recast(modifiedAst)
+        if (!err(newCode)) {
+          // Verify fillet tagging worked
+          expect(tag).toBeTruthy()
+          expect(newCode).toContain('tag = $seg02')
+        }
+      }
+    }, 5_000)
   })
 })

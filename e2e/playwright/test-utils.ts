@@ -5,7 +5,11 @@ import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
-import { IS_PLAYWRIGHT_KEY, COOKIE_NAME_PREFIX } from '@src/lib/constants'
+import {
+  IS_PLAYWRIGHT_KEY,
+  COOKIE_NAME_PREFIX,
+  LAYOUT_PERSIST_PREFIX,
+} from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
@@ -30,6 +34,8 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
+import { type LayoutWithMetadata, setOpenPanes } from '@src/lib/layout'
+import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -354,18 +360,6 @@ async function waitForAuthAndLsp(page: Page) {
   return waitForLspPromise
 }
 
-export function normaliseKclNumbers(code: string, ignoreZero = true): string {
-  const numberRegexp = /(?<!\w)-?\b\d+(\.\d+)?\b(?!\w)/g
-  const replaceNumber = (number: string) => {
-    if (ignoreZero && (number === '0' || number === '-0')) return number
-    const sign = number.startsWith('-') ? '-' : ''
-    return `${sign}12.34`
-  }
-  const replaceNumbers = (text: string) =>
-    text.replace(numberRegexp, replaceNumber)
-  return replaceNumbers(code)
-}
-
 /**
  * We've written a lot of tests using hard-coded pixel coordinates.
  * This function translates those to stream-relative ones,
@@ -474,11 +468,6 @@ export async function getUtils(page: Page, test_?: typeof test) {
       const code = await page.locator('.cm-content').innerText()
       return code.replaceAll(' ', '').replaceAll('\n', '')
     },
-    normalisedEditorCode: async () => {
-      const code = await page.locator('.cm-content').innerText()
-      return normaliseKclNumbers(code)
-    },
-    normalisedCode: (code: string) => normaliseKclNumbers(code),
     canvasLocator: page.getByTestId('client-side-scene'),
     doAndWaitForCmd: async (
       fn: () => Promise<void>,
@@ -676,16 +665,22 @@ export async function getUtils(page: Page, test_?: typeof test) {
      * but having a separate initScript does not seem to work reliably.
      * @link https://github.com/KittyCAD/modeling-app/actions/runs/10731890169/job/29762700806?pr=3807#step:20:19553
      */
-    panesOpen: async (paneIds: PaneId[]) => {
+    panesOpen: async (paneIds: string[]) => {
       return test?.step(`Setting ${paneIds} panes to be open`, async () => {
         await page.addInitScript(
-          ({ PERSIST_MODELING_CONTEXT, paneIds }: any) => {
-            localStorage.setItem(
-              PERSIST_MODELING_CONTEXT,
-              JSON.stringify({ openPanes: paneIds })
-            )
+          ({ layoutName, layoutPayload }) => {
+            localStorage.setItem(layoutName, layoutPayload)
           },
-          { PERSIST_MODELING_CONTEXT, paneIds }
+          {
+            layoutName: `${LAYOUT_PERSIST_PREFIX}default`,
+            layoutPayload: JSON.stringify({
+              version: 'v1',
+              layout: setOpenPanes(
+                structuredClone(playwrightLayoutConfig),
+                paneIds
+              ),
+            } satisfies LayoutWithMetadata),
+          }
         )
         await page.reload()
       })
@@ -920,19 +915,24 @@ export async function setup(
       settingsKey,
       settings,
       IS_PLAYWRIGHT_KEY,
-      PERSIST_MODELING_CONTEXT,
+      layoutName,
+      layoutPayload,
     }) => {
       localStorage.clear()
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
       localStorage.setItem(
-        PERSIST_MODELING_CONTEXT,
-        JSON.stringify({ openPanes: ['code'] })
+        layoutName,
+        JSON.stringify({
+          version: 'v1',
+          layout: layoutPayload,
+        } satisfies LayoutWithMetadata)
       )
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
       window.addEventListener('beforeunload', () => {
         localStorage.removeItem(IS_PLAYWRIGHT_KEY)
+        localStorage.removeItem(layoutName)
       })
     },
     {
@@ -956,7 +956,8 @@ export async function setup(
         },
       }),
       IS_PLAYWRIGHT_KEY,
-      PERSIST_MODELING_CONTEXT,
+      layoutName: `${LAYOUT_PERSIST_PREFIX}default`,
+      layoutPayload: playwrightLayoutConfig,
     }
   )
 

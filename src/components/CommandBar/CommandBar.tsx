@@ -7,20 +7,16 @@ import CommandBarReview from '@src/components/CommandBar/CommandBarReview'
 import CommandComboBox from '@src/components/CommandComboBox'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { engineCommandManager } from '@src/lib/singletons'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
-import toast from 'react-hot-toast'
-import { EngineConnectionStateType } from '@src/network/utils'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
+import Loading from '@src/components/Loading'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
   const commandBarState = useCommandBarState()
-  const { immediateState } = useNetworkContext()
   const {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
@@ -39,26 +35,6 @@ export const CommandBar = () => {
     commandBarActor.send({ type: 'Close' })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [pathname])
-
-  /**
-   * if the engine connection is about to end, we don't want users
-   * to be able to perform commands that might require that connection,
-   * so we just close the command palette.
-   * TODO: instead, let each command control whether it is disabled, and
-   * don't just bail out
-   */
-  useEffect(() => {
-    if (
-      !commandBarActor.getSnapshot().matches('Closed') &&
-      engineCommandManager.connection &&
-      (immediateState.type === EngineConnectionStateType.Disconnecting ||
-        immediateState.type === EngineConnectionStateType.Disconnected)
-    ) {
-      commandBarActor.send({ type: 'Close' })
-      toast.error('Exiting command flow because engine disconnected')
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [immediateState, commandBarActor])
 
   // Hook up keyboard shortcuts
   useHotkeyWrapper([COMMAND_PALETTE_HOTKEY], () => {
@@ -168,9 +144,19 @@ export const CommandBar = () => {
             ) : commandBarState.matches('Gathering arguments') ? (
               <CommandBarArgument stepBack={stepBack} />
             ) : (
-              commandBarState.matches('Review') && (
-                <CommandBarReview stepBack={stepBack} />
-              )
+              <>
+                {commandBarState.matches('Review') && (
+                  <CommandBarReview stepBack={stepBack} />
+                )}
+                {commandBarState.matches('Checking Arguments') && (
+                  <div
+                    className="py-4"
+                    data-testid="command-bar-loading-checking-arguments"
+                  >
+                    <Loading isDummy={true}>Checking arguments...</Loading>
+                  </div>
+                )}
+              </>
             )}
             <div className="flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent">
               <button

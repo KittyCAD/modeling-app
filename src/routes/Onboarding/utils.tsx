@@ -10,10 +10,8 @@ import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
-import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
 import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
@@ -32,11 +30,21 @@ import {
   onboardingStartPath,
 } from '@src/lib/onboardingPaths'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
-import { commandBarActor, systemIOActor } from '@src/lib/singletons'
+import {
+  commandBarActor,
+  getLayout,
+  setLayout,
+  systemIOActor,
+} from '@src/lib/singletons'
 import { settingsActor } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
+import {
+  defaultLayout,
+  setOpenPanes,
+  type DefaultLayoutPaneID,
+} from '@src/lib/layout'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
@@ -502,27 +510,20 @@ export function useOnboardingHighlight(elementId: string) {
  * Utility hook to set the pane state on mount and unmount.
  */
 export function useOnboardingPanes(
-  onMount: SidebarId[] | undefined = [],
-  onUnmount: SidebarId[] | undefined = []
+  onMount: DefaultLayoutPaneID[] | undefined = [],
+  onUnmount: DefaultLayoutPaneID[] | undefined = []
 ) {
-  const { send } = useModelingContext()
   useEffect(() => {
-    send({
-      type: 'Set context',
-      data: {
-        openPanes: onMount,
-      },
-    })
+    setLayout(
+      setOpenPanes(structuredClone(getLayout() || defaultLayout), onMount)
+    )
 
     return () =>
-      send({
-        type: 'Set context',
-        data: {
-          openPanes: onUnmount,
-        },
-      })
+      setLayout(
+        setOpenPanes(structuredClone(getLayout() || defaultLayout), onUnmount)
+      )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [send])
+  }, [onMount, onUnmount])
 }
 
 export function isModelingCmdGroupReady(

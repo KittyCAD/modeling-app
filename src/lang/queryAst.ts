@@ -1251,6 +1251,33 @@ export function getSelectedPlaneId(selectionRanges: Selections): string | null {
   return null
 }
 
+// Returns the plane/wall/cap/edgeCut within the current selection that can be used to start a sketch on.
+export function getSelectedSketchTarget(
+  selectionRanges: Selections
+): string | null {
+  const defaultPlane = selectionRanges.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
+  if (defaultPlane) {
+    return defaultPlane.id
+  }
+
+  // Try to find an offset plane or wall or cap or chamfer edgeCut
+  const planeSelection = selectionRanges.graphSelections.find((selection) => {
+    const artifactType = selection.artifact?.type || ''
+    return (
+      ['plane', 'wall', 'cap'].includes(artifactType) ||
+      (selection.artifact?.type === 'edgeCut' &&
+        selection.artifact?.subType === 'chamfer')
+    )
+  })
+  if (planeSelection) {
+    return planeSelection.artifact?.id || null
+  }
+
+  return null
+}
+
 export function getSelectedPlaneAsNode(
   selection: Selections,
   variables: VariableMap
@@ -1536,11 +1563,14 @@ export function getEdgeCutMeta(
   ast: Node<Program>,
   artifactGraph: ArtifactGraph
 ): null | EdgeCutInfo {
-  let chamferInfo: {
+  let edgeCutInfo: {
     segment: SegmentArtifact
     type: EdgeCutInfo['subType']
   } | null = null
-  if (artifact?.type === 'edgeCut' && artifact.subType === 'chamfer') {
+  if (
+    artifact?.type === 'edgeCut' &&
+    (artifact.subType === 'chamfer' || artifact.subType === 'fillet')
+  ) {
     const consumedArtifact = getArtifactOfTypes(
       {
         key: artifact.consumedEdgeId,
@@ -1551,7 +1581,7 @@ export function getEdgeCutMeta(
     console.log('consumedArtifact', consumedArtifact)
     if (err(consumedArtifact)) return null
     if (consumedArtifact.type === 'segment') {
-      chamferInfo = {
+      edgeCutInfo = {
         type: 'base',
         segment: consumedArtifact,
       }
@@ -1561,16 +1591,16 @@ export function getEdgeCutMeta(
         artifactGraph
       )
       if (err(segment)) return null
-      chamferInfo = {
+      edgeCutInfo = {
         type: consumedArtifact.subType,
         segment,
       }
     }
   }
-  if (!chamferInfo) return null
+  if (!edgeCutInfo) return null
   const segmentCallExpr = getNodeFromPath<CallExpressionKw>(
     ast,
-    chamferInfo?.segment.codeRef.pathToNode || [],
+    edgeCutInfo?.segment.codeRef.pathToNode || [],
     ['CallExpressionKw']
   )
   if (err(segmentCallExpr)) return null
@@ -1583,7 +1613,7 @@ export function getEdgeCutMeta(
 
   return {
     type: 'edgeCut',
-    subType: chamferInfo.type,
+    subType: edgeCutInfo.type,
     tagName: tagDeclarator.value,
   }
 }

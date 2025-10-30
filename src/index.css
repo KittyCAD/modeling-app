@@ -11,7 +11,7 @@ textarea,
 a {
   /* Make all interactive elements not act as handles
    * to drag the electron app window by default,
-   * per the electron docs: https://www.electronjs.org/docs/latest/tutorial/window-customization#set-custom-draggable-region
+   * per the electron docs: electronjs dot org/docs/latest/tutorial/window-customization#set-custom-draggable-region
   */
   -webkit-app-region: no-drag;
 }
@@ -504,4 +504,9 @@ code,
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
   animation-name: delta-in;
+}
+
+.bg-img-mel {
+  background-image: url("/mleyphun.jpg");
+  background-size: cover;
 }
