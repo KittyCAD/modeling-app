@@ -27,6 +27,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
+  Expr,
   LabeledArg,
   PathToNode,
   Program,
@@ -36,7 +37,10 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { buildSolidsAndFacesExprs } from '@src/lang/modifyAst/faces'
+import {
+  buildSolidsAndFacesExprs,
+  isFaceArtifact,
+} from '@src/lang/modifyAst/faces'
 
 export function addExtrude({
   ast,
@@ -79,10 +83,31 @@ export function addExtrude({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
-  if (err(vars)) {
-    return vars
+  // Filter to only include face selections
+  let vars:
+    | undefined
+    | {
+        exprs: Expr[]
+        pathIfPipe?: PathToNode
+      }
+  const faceSelections = sketches.graphSelections.filter((selection) =>
+    isFaceArtifact(selection.artifact)
+  )
+
+  if (faceSelections.length > 0) {
+    console.log('found faces')
+    return new Error('Not handled yet')
+  } else {
+    // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
+    const res = getVariableExprsFromSelection(
+      sketches,
+      modifiedAst,
+      mNodeToEdit
+    )
+    if (err(res)) {
+      return res
+    }
+    vars = res
   }
 
   // Extra labeled args expressions
