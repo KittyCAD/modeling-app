@@ -7,6 +7,7 @@ import type {
   SketchExecOutcome,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import { roundOff } from '@src/lib/utils'
 
 const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
 const CONFIRMING_DIMENSIONS_DONE = `xstate.done.actor.0.Point tool.${CONFIRMING_DIMENSIONS}`
@@ -80,8 +81,8 @@ export const machine = setup({
           const segmentCtor: SegmentCtor = {
             type: 'Point',
             position: {
-              x: { type: 'Number', value: x, units: 'Mm' },
-              y: { type: 'Number', value: y, units: 'Mm' },
+              x: { type: 'Number', value: roundOff(x), units: 'Mm' },
+              y: { type: 'Number', value: roundOff(y), units: 'Mm' },
             },
           }
 
