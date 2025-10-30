@@ -1,13 +1,14 @@
 import { recast, type PlaneArtifact } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
-  enginelessExecutor,
   createSelectionFromArtifacts,
+  enginelessExecutor,
   getAstAndArtifactGraph,
+  getCapFromCylinder,
+  getFacesFromBox,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
-import type { ArtifactGraph } from '@src/lang/wasm'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
@@ -156,20 +157,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
          getCommonEdge(faces = [seg01, seg02])
        ],
      )`
-
-  function getCapFromCylinder(artifactGraph: ArtifactGraph) {
-    const endFace = [...artifactGraph.values()].find(
-      (a) => a.type === 'cap' && a.subType === 'end'
-    )
-    return createSelectionFromArtifacts([endFace!], artifactGraph)
-  }
-
-  function getFacesFromBox(artifactGraph: ArtifactGraph, count: number) {
-    const twoWalls = [...artifactGraph.values()]
-      .filter((a) => a.type === 'wall')
-      .slice(0, count)
-    return createSelectionFromArtifacts(twoWalls, artifactGraph)
-  }
 
   describe('Testing addShell', () => {
     it('should add a basic shell call on cylinder end cap', async () => {

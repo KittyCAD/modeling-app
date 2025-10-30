@@ -8,7 +8,7 @@ export function createKCClient(
   token?: string,
   baseUrlOverride?: string
 ): Client {
-  const baseUrl = baseUrlOverride || env().VITE_KITTYCAD_API_BASE_URL
+  const baseUrl = baseUrlOverride || env().VITE_ZOO_API_BASE_URL
   const injectedFetch = ((input: any, init?: any) => {
     const impl =
       typeof fetch !== 'undefined'
