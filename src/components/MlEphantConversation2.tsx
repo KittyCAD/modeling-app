@@ -49,6 +49,26 @@ const ML_COPILOT_TOOLS: Readonly<MlCopilotTool[]> = Object.freeze([
   'mechanical_knowledge_base',
   'web_search',
 ])
+const ML_REASONING_EFFORT_META = Object.freeze({
+  low: {
+    pretty: 'Low',
+    icon: (props: { className: string }) => (
+      <CustomIcon name="sparkles" className={props.className} />
+    ),
+  },
+  medium: {
+    pretty: 'Medium',
+    icon: (props: { className: string }) => (
+      <CustomIcon name="brain" className={props.className} />
+    ),
+  },
+  high: {
+    pretty: 'High',
+    icon: (props: { className: string }) => (
+      <CustomIcon name="brain" className={props.className} />
+    ),
+  },
+} as const)
 const ML_COPILOT_TOOLS_META = Object.freeze({
   edit_kcl_code: {
     regexp: /edit|make|change/,
@@ -79,6 +99,43 @@ const ML_COPILOT_TOOLS_META = Object.freeze({
     ),
   },
 } as const)
+
+export interface MlCopilotReasoningEffortsProps {
+  onClick: (reasoningEffort: MlReasoningEffort) => void
+  children: ReactNode
+}
+const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
+  const efforts = []
+  for (const effort of ML_REASONING_EFFORT) {
+    efforts.push(
+      <div
+        tabIndex={0}
+        role="button"
+        key={effort}
+        onClick={() => props.onClick(effort)}
+        className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md"
+      >
+        {ML_REASONING_EFFORT_META[effort].icon({ className: 'w-5 h-5' })}
+        {ML_REASONING_EFFORT_META[effort].pretty}
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex-none">
+      <Popover className="relative">
+        <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 p-0 pr-2">
+          <CustomIcon name="settings" className="w-6 h-6" />
+          {props.children}
+          <CustomIcon name="plus" className="w-5 h-5" />
+        </Popover.Button>
+        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
+          {efforts}
+        </Popover.Panel>
+      </Popover>
+    </div>
+  )
+}
 
 const MlCopilotTool = <T extends MlCopilotTool>(props: {
   tool: T
@@ -151,6 +208,8 @@ export interface MlEphantExtraInputsProps {
   model: MlCopilotSupportedModels
   forcedTools: Set<MlCopilotTool>
   excludedTools: Set<MlCopilotTool>
+  onSetReasoningEffort: (effort: MlReasoningEffort) => void
+  onSetModel: (model: MlCopilotSupportedModels) => void
   onRemove: (tool: MlCopilotTool) => void
   onAdd: (tool: MlCopilotTool) => void
 }
@@ -222,6 +281,9 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
+        <MlCopilotReasoningEfforts onClick={props.onSetReasoningEffort}>
+          Reasoning: {ML_REASONING_EFFORT_META[props.reasoningEffort].pretty}
+        </MlCopilotReasoningEfforts>
         <MlCopilotTools onAdd={props.onAdd}>
           <div>
             {tools.length} Tool{tools.length !== 1 ? 's' : ''}
@@ -314,6 +376,9 @@ export const MlEphantConversationInput = (
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const [value, setValue] = useState<string>('')
   const [heightConvo, setHeightConvo] = useState(0)
+  const [reasoningEffort, setReasoningEffort] =
+    useState<MlReasoningEffort>('low')
+  const [model, setModel] = useState<MlCopilotSupportedModels>('gpt5_nano')
   const [forcedTools, setForcedTools] = useState<Set<MlCopilotTool>>(new Set())
   const [excludedTools, setExcludedTools] = useState<Set<MlCopilotTool>>(
     new Set()
@@ -434,8 +499,12 @@ export const MlEphantConversationInput = (
           <MlEphantExtraInputs
             context={selectionsContext}
             inputToMatch={value}
+            model={model}
+            reasoningEffort={reasoningEffort}
             forcedTools={forcedTools}
             excludedTools={excludedTools}
+            onSetModel={setModel}
+            onSetReasoningEffort={setReasoningEffort}
             onRemove={onRemoveTool}
             onAdd={onAddTool}
           />
