@@ -254,7 +254,7 @@ export function addFlatnessGdt({
  * Deduplicates face expressions based on their string representation.
  * This prevents creating multiple annotations for the same face.
  */
-function deduplicateFaceExprs(facesExprs: Expr[]): Expr[] {
+export function deduplicateFaceExprs(facesExprs: Expr[]): Expr[] {
   const seen = new Set<string>()
   const unique: Expr[] = []
 
