@@ -17,6 +17,7 @@ import { MLEphantConversationPaneMenu2 } from '@src/components/MlEphantConversat
 import { useLoaderData } from 'react-router-dom'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachine2'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   const settings = useSettings()
@@ -31,7 +32,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
       id={`${props.layout.id}-pane`}
       className="border-none"
     >
-      {settings.meta.enableCopilot.current === true ? (
+      {IS_STAGING_OR_DEBUG && settings.meta.enableCopilot.current === true ? (
         <>
           <LayoutPanelHeader
             id={props.layout.id}
