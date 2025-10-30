@@ -605,11 +605,7 @@ impl KclValue {
                     meta: meta.clone(),
                     ty,
                 },
-                Self::Number {
-                    value: y,
-                    meta: meta.clone(),
-                    ty,
-                },
+                Self::Number { value: y, meta, ty },
             ],
             ty: ty.into(),
         }
