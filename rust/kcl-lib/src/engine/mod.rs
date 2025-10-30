@@ -597,7 +597,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             requests.extend(self.take_batch_end().await.values().cloned());
             requests
         } else {
-            self.take_batch().await.clone()
+            self.take_batch().await
         };
 
         self.run_batch(all_requests, source_range).await
