@@ -1784,7 +1784,6 @@ extrude001 = extrude(profile001, length = 5)
     })
   })
 
-  // father forgive me
   test(`Chamfer point-and-click`, async ({
     context,
     page,
@@ -2043,7 +2042,6 @@ extrude001 = extrude(sketch001, length = -12)
     })
   })
 
-  // father forgive me
   test(`Chamfer point-and-click delete`, async ({
     context,
     page,
