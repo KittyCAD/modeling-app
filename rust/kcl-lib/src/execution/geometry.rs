@@ -4,7 +4,7 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::{each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength};
+use kittycad_modeling_cmds::{length_unit::LengthUnit, units::UnitLength};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
 
