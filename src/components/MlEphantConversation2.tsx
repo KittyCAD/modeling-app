@@ -9,10 +9,10 @@ import {
   BillingRemainingMode,
 } from '@kittycad/react-shared'
 import { type BillingContext } from '@src/machines/billingMachine'
-import {
+import type {
   MlCopilotSupportedModels,
   MlReasoningEffort,
-  type MlCopilotTool,
+  MlCopilotTool,
 } from '@kittycad/lib'
 import { Popover, Transition } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -52,21 +52,12 @@ const ML_COPILOT_TOOLS: Readonly<MlCopilotTool[]> = Object.freeze([
 const ML_REASONING_EFFORT_META = Object.freeze({
   low: {
     pretty: 'Low',
-    icon: (props: { className: string }) => (
-      <CustomIcon name="sparkles" className={props.className} />
-    ),
   },
   medium: {
     pretty: 'Medium',
-    icon: (props: { className: string }) => (
-      <CustomIcon name="brain" className={props.className} />
-    ),
   },
   high: {
     pretty: 'High',
-    icon: (props: { className: string }) => (
-      <CustomIcon name="brain" className={props.className} />
-    ),
   },
 } as const)
 const ML_COPILOT_TOOLS_META = Object.freeze({
@@ -115,7 +106,6 @@ const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
         onClick={() => props.onClick(effort)}
         className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md"
       >
-        {ML_REASONING_EFFORT_META[effort].icon({ className: 'w-5 h-5' })}
         {ML_REASONING_EFFORT_META[effort].pretty}
       </div>
     )
@@ -124,13 +114,47 @@ const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
   return (
     <div className="flex-none">
       <Popover className="relative">
-        <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 p-0 pr-2">
-          <CustomIcon name="settings" className="w-6 h-6" />
+        <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 px-1">
+          {/* <CustomIcon name="brain" className="w-6 h-6" /> */}
           {props.children}
-          <CustomIcon name="plus" className="w-5 h-5" />
         </Popover.Button>
         <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
           {efforts}
+        </Popover.Panel>
+      </Popover>
+    </div>
+  )
+}
+
+export interface MlCopilotSupportedModelsProps {
+  onClick: (model: MlCopilotSupportedModels) => void
+  children: ReactNode
+}
+const MlCopilotSupportedModels = (props: MlCopilotSupportedModelsProps) => {
+  const models = []
+  for (const model of ML_COPILOT_SUPPORTED_MODELS) {
+    models.push(
+      <div
+        tabIndex={0}
+        role="button"
+        key={model}
+        onClick={() => props.onClick(model)}
+        className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md"
+      >
+        {model}
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex-none">
+      <Popover className="relative">
+        <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 px-1">
+          {/* <CustomIcon name="gear" className="w-6 h-6" /> */}
+          {props.children}
+        </Popover.Button>
+        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
+          {models}
         </Popover.Panel>
       </Popover>
     </div>
@@ -281,6 +305,9 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
+        <MlCopilotSupportedModels onClick={props.onSetModel}>
+          Model: {props.model}
+        </MlCopilotSupportedModels>
         <MlCopilotReasoningEfforts onClick={props.onSetReasoningEffort}>
           Reasoning: {ML_REASONING_EFFORT_META[props.reasoningEffort].pretty}
         </MlCopilotReasoningEfforts>
