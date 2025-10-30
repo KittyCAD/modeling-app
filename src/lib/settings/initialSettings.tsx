@@ -463,19 +463,6 @@ export function createSettings() {
           inputType: 'boolean',
         },
       }),
-      /**
-       * Use the new sketch mode implementation - solver (Dev only)
-       */
-      enableCopilot: new Setting<boolean>({
-        hideOnLevel: 'project',
-        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
-        defaultValue: false,
-        description: 'Toggle copilot',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
-      }),
       useNewSketchMode: new Setting<boolean>({
         hideOnLevel: 'project',
         // Don't show in prod, consider switching to use AdamS's endpoint https://github.com/KittyCAD/common/pull/1704
@@ -747,6 +734,16 @@ export function createSettings() {
               />
             </div>
           )
+        },
+      }),
+      enableCopilot: new Setting<boolean>({
+        hideOnLevel: 'user',
+        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
+        defaultValue: false,
+        description: 'Toggle copilot',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
         },
       }),
     },

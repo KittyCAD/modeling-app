@@ -74,6 +74,9 @@ pub struct PerProjectSettings {
 pub struct ProjectMetaSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub id: uuid::Uuid,
+    /// Toggle copilot features
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub enable_copilot: bool,
 }
 
 /// Project specific application settings.
@@ -304,7 +307,10 @@ color = 1567.4"#;
     fn test_project_settings_named_views() {
         let conf = ProjectConfiguration {
             settings: PerProjectSettings {
-                meta: ProjectMetaSettings { id: uuid::Uuid::nil() },
+                meta: ProjectMetaSettings {
+                    id: uuid::Uuid::nil(),
+                    enable_copilot: Default::default(),
+                },
                 app: ProjectAppSettings {
                     appearance: ProjectAppearanceSettings { color: 138.0.into() },
                     onboarding_status: Default::default(),

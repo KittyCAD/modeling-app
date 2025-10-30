@@ -48,6 +48,14 @@ This setting has the following nested options:
 **Default:** None
 
 
+##### enable_copilot
+
+Toggle copilot features
+
+
+**Default:** None
+
+
 #### app
 
 The settings for the Design Studio.
