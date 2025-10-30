@@ -554,9 +554,9 @@ export const MLEphantConversationPaneMenu2 = () => (
           </p>
         </div>
         <p className="text-sm">
-          Text-to-CAD treats every prompt as separate. Full copilot mode with
-          conversational memory is coming soon. Conversations are not currently
-          shared between computers.
+          Text-to-CAD is now conversational, so you can refer to previous
+          prompts and iterate. Conversations are not currently shared between
+          computers.
         </p>
       </Popover.Panel>
     </Transition>

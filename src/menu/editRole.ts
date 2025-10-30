@@ -1,10 +1,8 @@
-import os from 'node:os'
 import type { BrowserWindow } from 'electron'
 
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
-
-const isMac = os.platform() === 'darwin'
+import { isMac } from '@src/menu/utils'
 
 export const projectEditRole = (
   mainWindow: BrowserWindow

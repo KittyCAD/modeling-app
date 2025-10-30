@@ -463,6 +463,9 @@ export function createSettings() {
           inputType: 'boolean',
         },
       }),
+      /**
+       * Use the new sketch mode implementation - solver (Dev only)
+       */
       useNewSketchMode: new Setting<boolean>({
         hideOnLevel: 'project',
         // Don't show in prod, consider switching to use AdamS's endpoint https://github.com/KittyCAD/common/pull/1704
