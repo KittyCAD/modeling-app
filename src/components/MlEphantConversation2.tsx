@@ -56,13 +56,39 @@ const ML_COPILOT_TOOLS: Readonly<MlCopilotTool[]> = Object.freeze([
 ])
 const ML_REASONING_EFFORT_META = Object.freeze({
   low: {
-    pretty: 'Low',
+    pretty: 'Fast',
+    icon: (props: { className: string }) => (
+      <CustomIcon name="stopwatch" className={props.className} />
+    ),
   },
   medium: {
-    pretty: 'Medium',
+    pretty: 'Thoughtful (Balanced)',
+    icon: (props: { className: string }) => (
+      <CustomIcon name="brain" className={props.className} />
+    ),
   },
   high: {
-    pretty: 'High',
+    pretty: 'Thoughtful (Slow)',
+    icon: (props: { className: string }) => (
+      <CustomIcon name="brain" className={props.className} />
+    ),
+  },
+} as const)
+const ML_COPILOT_SUPPORTED_MODELS_META = Object.freeze({
+  gpt5_nano: {
+    pretty: 'GPT-5 Nano',
+  },
+  gpt5_mini: {
+    pretty: 'GPT-5 Mini',
+  },
+  gpt5_codex: {
+    pretty: 'GPT-5 Codex',
+  },
+  gpt5: {
+    pretty: 'GPT-5',
+  },
+  o3: {
+    pretty: 'O3',
   },
 } as const)
 const ML_COPILOT_TOOLS_META = Object.freeze({
@@ -111,6 +137,7 @@ const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
         onClick={() => props.onClick(effort)}
         className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md"
       >
+        {ML_REASONING_EFFORT_META[effort].icon({ className: 'w-5 h-5' })}
         {ML_REASONING_EFFORT_META[effort].pretty}
       </div>
     )
@@ -119,8 +146,7 @@ const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
   return (
     <div className="flex-none">
       <Popover className="relative">
-        <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 px-1">
-          {/* <CustomIcon name="brain" className="w-6 h-6" /> */}
+        <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 pl-1 pr-2">
           {props.children}
         </Popover.Button>
         <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
@@ -131,11 +157,11 @@ const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
   )
 }
 
-export interface MlCopilotSupportedModelsProps {
+export interface MlCopilotModelsProps {
   onClick: (model: MlCopilotSupportedModels) => void
   children: ReactNode
 }
-const MlCopilotSupportedModels = (props: MlCopilotSupportedModelsProps) => {
+const MlCopilotModels = (props: MlCopilotModelsProps) => {
   const models = []
   for (const model of ML_COPILOT_SUPPORTED_MODELS) {
     models.push(
@@ -146,7 +172,8 @@ const MlCopilotSupportedModels = (props: MlCopilotSupportedModelsProps) => {
         onClick={() => props.onClick(model)}
         className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md"
       >
-        {model}
+        <CustomIcon name="sparkles" className="w-5 h-5" />
+        {ML_COPILOT_SUPPORTED_MODELS_META[model].pretty}
       </div>
     )
   }
@@ -154,8 +181,7 @@ const MlCopilotSupportedModels = (props: MlCopilotSupportedModelsProps) => {
   return (
     <div className="flex-none">
       <Popover className="relative">
-        <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 px-1">
-          {/* <CustomIcon name="gear" className="w-6 h-6" /> */}
+        <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 pl-1 pr-2">
           {props.children}
         </Popover.Button>
         <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
@@ -310,11 +336,15 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
-        <MlCopilotSupportedModels onClick={props.onSetModel}>
-          Model: {props.model}
-        </MlCopilotSupportedModels>
+        <MlCopilotModels onClick={props.onSetModel}>
+          <CustomIcon name="sparkles" className="w-5 h-5" />
+          {ML_COPILOT_SUPPORTED_MODELS_META[props.model].pretty}
+        </MlCopilotModels>
         <MlCopilotReasoningEfforts onClick={props.onSetReasoningEffort}>
-          Reasoning: {ML_REASONING_EFFORT_META[props.reasoningEffort].pretty}
+          {ML_REASONING_EFFORT_META[props.reasoningEffort].icon({
+            className: 'w-5 h-5',
+          })}
+          {ML_REASONING_EFFORT_META[props.reasoningEffort].pretty}
         </MlCopilotReasoningEfforts>
         <MlCopilotTools onAdd={props.onAdd}>
           <div>
