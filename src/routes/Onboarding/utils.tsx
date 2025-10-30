@@ -446,7 +446,7 @@ export function TutorialRequestToast(
           Element="button"
           iconStart={{
             icon: 'close',
-            iconClassName: 'bg-destroy-80',
+            iconClassName: 'bg-destroy-80 text-6',
           }}
           data-negative-button="dismiss"
           name="dismiss"

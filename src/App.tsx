@@ -148,9 +148,10 @@ export function App() {
       settings.app.onboardingStatus.current ||
       settings.app.onboardingStatus.default
     const needsOnboarded =
-      !isDesktop() &&
-      searchParams.size === 0 &&
-      needsToOnboard(location, onboardingStatus)
+      !isDesktop() && // Only show if we're in the browser,
+      authToken && // we're logged in,
+      searchParams.size === 0 && // we haven't come via a website "try in browser" link,
+      needsToOnboard(location, onboardingStatus) // and we have an uninitialized onboarding status.
 
     if (needsOnboarded) {
       toast.success(
@@ -177,6 +178,7 @@ export function App() {
     location,
     navigate,
     searchParams.size,
+    authToken,
   ])
 
   useEffect(() => {

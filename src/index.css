@@ -389,6 +389,9 @@ code,
   .text-5 {
     @apply text-chalkboard-20 dark:text-chalkboard-90;
   }
+  .text-6 {
+    @apply text-chalkboard-10 dark:text-chalkboard-100;
+  }
 
   .b-default {
     @apply border-chalkboard-100 dark:border-chalkboard-10;
