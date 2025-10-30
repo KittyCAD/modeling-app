@@ -54,15 +54,24 @@ describe('boolean', () => {
         instance,
         kclManager
       )
-      const sweeps = [...artifactGraph.values()].filter(
-        (n) => n.type === 'sweep'
-      )
+      // path selection is what p&c is doing with the filter (v. sweep)
+      const paths = [...artifactGraph.values()].filter((n) => n.type === 'path')
       const solids: Selections = {
-        graphSelections: solidIds.map((i) => sweeps[i]),
+        graphSelections: solidIds.map((i) => {
+          return {
+            artifact: paths[i],
+            codeRef: paths[i].codeRef,
+          }
+        }),
         otherSelections: [],
       }
       const tools: Selections = {
-        graphSelections: toolIds.map((i) => sweeps[i]),
+        graphSelections: toolIds.map((i) => {
+          return {
+            artifact: paths[i],
+            codeRef: paths[i].codeRef,
+          }
+        }),
         otherSelections: [],
       }
       const result = addSubtract({
@@ -145,7 +154,6 @@ extrude003 = extrude(profile003, length = -1)`
     })
     it('should support multi-solid selection for subtract', async () => {
       const code = `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
 profile002 = circle(sketch001, center = [0, 0], radius = 4.98)
 extrude001 = extrude(profile002, length = 5)
 plane001 = offsetPlane(XY, offset = 10)
@@ -169,11 +177,11 @@ extrude003 = extrude(profile004, length = 20)`
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
     it('should support find the first sweep in case of a method=NEW extrude on face', async () => {
-      const carRotorWithExtraBody = `export rotorDiameter = 12
-export rotorInnerDiameter = 6
-export rotorSinglePlateThickness = 0.25
-export rotorTotalThickness = 1
-export spacerLength = rotorTotalThickness - (2 * rotorSinglePlateThickness)
+      const carRotorWithExtraBody = `rotorDiameter = 12
+rotorInnerDiameter = 6
+rotorSinglePlateThickness = 0.25
+rotorTotalThickness = 1
+spacerLength = rotorTotalThickness - (2 * rotorSinglePlateThickness)
 
 rotorSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = rotorDiameter / 2)
@@ -190,10 +198,8 @@ secondRotor = extrude(secondaryRotorSketch, length = rotorSinglePlateThickness)
 sketch001 = startSketchOn(rotor, face = END)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = -5, method = NEW)`
-      // TODO: I don't understand, this should FAIL and find extrude001, this is what happens in P&C
-      // before https://github.com/KittyCAD/modeling-app/pull/8742
       const expectedNewLine = `solid001 = subtract(secondRotor, tools = extrude001)`
-      const solidIds = [2]
+      const solidIds = [0]
       const toolIds = [3]
       const newCode = await runAddSubtractTest(
         carRotorWithExtraBody,
@@ -203,9 +209,13 @@ extrude001 = extrude(profile001, length = -5, method = NEW)`
         kclManagerInThisFile,
         rustContextInThisFile
       )
+      // Note that this would fail without artifactTypeFilter: ['compositeSolid', 'sweep'] in addSubtract
+      // that's what https://github.com/KittyCAD/modeling-app/pull/8742 caught
       expect(newCode).toContain(carRotorWithExtraBody + '\n' + expectedNewLine)
     })
   })
 
-  // TODO: also where are the other ones here? addIntersect and addUnion?
+  // From https://github.com/KittyCAD/modeling-app/blob/d83324ac30430af675806c143ee6fb30df8bdaa8/src/lang/modifyAst/boolean.test.ts#L7
+  // addIntersect and addUnion are not tested here, as they would be 1:1 with existing e2e tests
+  // so just adding extra addSubtract cases here
 })
