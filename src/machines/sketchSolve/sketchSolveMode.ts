@@ -12,10 +12,17 @@ import { machine as centerRectTool } from '@src/machines/sketchSolve/tools/cente
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import type {
+  SceneGraphDelta,
   SketchExecOutcome,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { codeManager } from '@src/lib/singletons'
+import { codeManager, rustContext, sceneInfra } from '@src/lib/singletons'
+import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
+import { Group, OrthographicCamera } from 'three'
+import { orthoScale } from '@src/clientSideScene/helpers'
+import { getParentGroup } from '@src/clientSideScene/sceneConstants'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { roundOff } from '@src/lib/utils'
 
 const equipTools = Object.freeze({
   centerRectTool,
@@ -41,18 +48,22 @@ export type SketchSolveMachineEvent =
   | { type: 'update selection'; data?: SetSelections }
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
+  | { type: 'coincident' }
+  | { type: 'update selected ids'; data: { selectedIds: Array<number> } }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
   | {
       type: 'update sketch outcome'
       data: {
         kclSource: SourceDelta
         sketchExecOutcome: SketchExecOutcome
+        sceneGraphDelta: SceneGraphDelta
       }
     }
 
 type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
   pendingToolName?: EquipTool
+  selectedIds: Array<number>
   sketchExecOutcome?: {
     kclSource: SourceDelta
     sketchExecOutcome: SketchExecOutcome
@@ -65,6 +76,71 @@ export const sketchSolveMachine = setup({
     events: {} as SketchSolveMachineEvent,
   },
   actions: {
+    setUpOnDragAndSelectionClickCallbacks: ({ self }) => {
+      // Closure-scoped mutex to prevent concurrent async editSegment operations.
+      // Not in XState context since it's purely an implementation detail for race condition prevention.
+      let isSolveInProgress = false
+      sceneInfra.setCallbacks({
+        onDrag: async ({ selected, intersectionPoint }) => {
+          if (isSolveInProgress) {
+            return
+          }
+          const group = getParentGroup(selected, ['point'])
+          isSolveInProgress = true
+          const twoD = intersectionPoint.twoD
+          const result = await rustContext
+            .editSegment(
+              0,
+              0,
+              Number(group?.name) || 0,
+              {
+                type: 'Point',
+                position: {
+                  x: {
+                    type: 'Number',
+                    value: roundOff(twoD.x),
+                    units: 'Mm',
+                  },
+                  y: {
+                    type: 'Number',
+                    value: roundOff(twoD.y),
+                    units: 'Mm',
+                  },
+                },
+              },
+              await jsAppSettings()
+            )
+            .catch((err) => {
+              console.error('failed to edit segment', err)
+            })
+          isSolveInProgress = false
+          // send event
+          if (result) {
+            self.send({
+              type: 'update sketch outcome',
+              data: result,
+            })
+          }
+        },
+        onClick: async ({ selected }) => {
+          const group = getParentGroup(selected, ['point'])
+          const currentSelectedIds =
+            self.getSnapshot()?.context.selectedIds ?? []
+          let newSelectedIds: Array<number>
+          if (group) {
+            newSelectedIds = Array.from(
+              new Set([...currentSelectedIds, Number(group?.name)])
+            )
+          } else {
+            newSelectedIds = []
+          }
+          self.send({
+            type: 'update selected ids',
+            data: { selectedIds: newSelectedIds },
+          })
+        },
+      })
+    },
     'send unequip to tool': sendTo(CHILD_TOOL_ID, { type: 'unequip' }),
     'send update selection to equipped tool': sendTo(CHILD_TOOL_ID, {
       type: 'update selection',
@@ -84,9 +160,75 @@ export const sketchSolveMachine = setup({
       type: 'sketch solve tool changed',
       data: { tool: null },
     }),
+    'update selected ids': assign(({ event }) => {
+      assertEvent(event, 'update selected ids')
+      return { selectedIds: event.data.selectedIds }
+    }),
     'update sketch outcome': assign(({ event }) => {
       assertEvent(event, 'update sketch outcome')
       codeManager.updateCodeEditor(event.data.kclSource.text)
+      const sceneGraphDelta = event.data.sceneGraphDelta
+      const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+      const factor =
+        sceneInfra.camControls.camera instanceof OrthographicCamera
+          ? orthoFactor
+          : orthoFactor
+      sceneInfra.baseUnitMultiplier
+      sceneGraphDelta.new_objects.forEach((objId) => {
+        const obj = sceneGraphDelta.new_graph.objects[objId] as any
+        if (obj?.kind.type === 'Point') {
+          segmentUtilsMap.PointSegment.init({
+            input: {
+              type: 'point',
+              position: [obj.kind.position.x.value, obj.kind.position.y.value],
+              freedom: obj.kind.freedom,
+            },
+            theme: sceneInfra.theme,
+            scale: factor,
+            id: objId,
+          })
+            .then((group) => {
+              sceneInfra.scene.add(group)
+            })
+            .catch(() => {
+              console.error('Failed to init PointSegment for object', objId)
+            })
+        }
+      })
+      sceneGraphDelta.new_graph.objects.forEach((obj) => {
+        const objj = obj as any
+        if (sceneGraphDelta.new_objects.includes(objj.id)) {
+          return
+        }
+        if (objj.kind.type === 'Point') {
+          const group = sceneInfra.scene.getObjectByName(String(objj.id))
+          if (!(group instanceof Group)) {
+            console.error(
+              'No group found in scene for PointSegment with id',
+              objj.id
+            )
+            return
+          }
+          segmentUtilsMap.PointSegment.update({
+            input: {
+              type: 'point',
+              position: [
+                objj.kind.position.x.value,
+                objj.kind.position.y.value,
+              ],
+              freedom: objj.kind.freedom,
+            },
+            theme: sceneInfra.theme,
+            scale: factor,
+            id: objj.id,
+            group,
+          })
+            ?.then(() => {})
+            .catch(() => {
+              console.error('Failed to update PointSegment for object', objj.id)
+            })
+        }
+      })
       return { sketchExecOutcome: event.data }
     }),
     'spawn tool': assign(({ event, spawn, context }) => {
@@ -122,9 +264,10 @@ export const sketchSolveMachine = setup({
     ...equipTools,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6cKiYvFh0cbxCUOxCAFswNIks4VyM-OkBg2VjU40a6-ljF0VGxFbpY2Uug0ubTp07rx8Vv5JkEZmFRGAAI6hZh8PAYQgkPYZA45cTHRDaRQqGoDWROeocWRqBqWZ5GaTKDS9eQ2eTyaSDUraf6jQETQLTELKLaEIKRUQQJbxRIYOgQMRgZTMUSkQjobm8sAAFQRxCR-EEhzRoBOnwpGipPw42jkZlJBTUykGBjUxMG3Q0xpZYyBHOCtAVfIFQoSSQYACd-YR-co+MRogAzYNbT3K1XqzKa1F5GSfc72KrU2R47QDJ4IU7aVQ2+nlS4uDinZ1sgJTd2SnlewVxX2iyHQ2HwxHcfZJlIpgt2ZSE+7GeQaapFLHyfMGdyqQbGOqVNqKG3Vvzsuug5ShISiKBw1VzcFQmFH7vpDXZfvogvG+SUsp49RdA3E-NaItY4y-3Mm20nRGF0txBLk92lQ8u2IBgz07eMe2RPsjh1RAigpT46m0XQTFkG01HzbQFHeLFZA0BQ6kUeppA3VZgU5D1YAAd1YXBIIvGDGFgDBoklcVwWUSIkmDZQExRW9UIQIpzjuCp9ExJdygI81iUfBk8InKi1AUOdaNdbdwNPDs+HY6C6C4niYmUfjJSE+EQzE5DtUkRAXEfFw83NBRimMXQyO0eoDEJNQDC8EZRBCeAMhA2swNoXsbxQlyEBC4dCkUMcJzuGxBnzZpTkpX9s0KXRn06PTQIYhtFTwflm2FJIEq1AdyOKNM8IZNQHE8po7HOHSlzaR1FEJCrYqq3d9yg1UmuTO8TBUapyXUaodEec1HXczpNC0NbFDG+j62UZjWJwUyZqQxLnPyT5v2MfDLgNExpBnFTOmUbCaXqQLgtC4Ca0OncmGEA9Zok5LpF0S0iO0gK-1tIp81-YtKmNHLfMceQDrdHdQiMmETIPDiwaS3VyOUV5ekqDKurKfMsSLUobAZRRCiqRQaLCoA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6cKiYvFh0cbxCUOxCAFswNIks4VyM-OkBg2VjU40a6-ljF0VGxFbpY2Uug0ubTp07rx8Vv5JkEZmFRGAAI6hZh8PAYQgkPYZA45cTHRDaRQqGoDWROeocWRqBqWZ5GaTKDS9eQ2eTyaSDUraf6jQETQLTELKLaEIKRUQQJbxRIYOgQMRgZTMUSkQjobm8sAAFQRxCR-EEhzRoBOnwpGipPw42jkZlJBTUykGBjUxMG3Q0xpZYyBHOCtAVfIFQoSSQYACd-YR-co+MRogAzYNbT3K1XqzKa1F5GSfc72KrU2R47QDJ4IU7aVQ2+nlS4uDinZ1sgJTd2SnlewVxX2iyHQ2HwxHcfZJlIpgt2ZSE+7GeQaapFLHyfMGdyqQbGOqVNqKG3Vvzsuug5ShISiKBw1VzcFQmFH7vpDXZfvogvG+SUsp49RdA3E-NaItY4y-3Mm20nRGF0txBLk92lQ8u2IBgz07eMe2RPsjh1RAigpT46m0XQTFkG01HzbQFHeLFZA0BQ6kUeppA3VZgU5D1YAAd1YXBIIvGDGFgDBoklcVwWUSIkmDZQExRW9UIQIpzjuCp9ExJdygI81iUfBk8InKi1AUOdaNdbdwNPDs+HY6C6C4niYmUfjJSE+EQzE5DtUkGRjWKNpjGua5pHzV4KW0-QJzURwqiKLwRlEEJ4AyEDazA2hexvFCXIQYLh0KRQxwnO4bEGfNmkyylf2zPFjDabzsL00CGIbRU8H5ZthSSRKtQHcj3LKvCGTUBw83NOxzh0pdyo4RRCSquKat3fcoNVFrkzvEwVGqcl1GqHRHnNR1HzXIkDSxTFFAm+j62UZjWJwUy5qQpLnPyT5vzK21LgNExpBnFTOmUbCaXqeoDEJYLjrdHcmGEA95oklLpF0S0iO07QTGMJxylkfNf2LSo3J-f95GBgyPVCIyYRMg8OMh5LdXI5RXl6SpMp6sp8wO945EUBlFEKKp2fCjwgA */
   context: (): SketchSolveContext => ({
     sketchSolveToolName: null,
+    selectedIds: [],
   }),
   id: 'Sketch Solve Mode',
   initial: 'move and select',
@@ -151,10 +294,33 @@ export const sketchSolveMachine = setup({
     'unequip tool': {
       actions: 'send unequip to tool',
     },
+    coincident: {
+      actions: async ({ self, context }) => {
+        // TODO this is not how coincident should operate long term, as it should be an equipable tool
+        const result = await rustContext.addConstraint(
+          0,
+          0,
+          {
+            type: 'Coincident',
+            points: context.selectedIds,
+          },
+          await jsAppSettings()
+        )
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
+    'update selected ids': {
+      actions: 'update selected ids',
+    },
   },
   states: {
     'move and select': {
-      entry: [() => console.log('entered sketch mode')],
+      entry: ['setUpOnDragAndSelectionClickCallbacks'],
       on: {
         'equip tool': {
           target: 'using tool',
@@ -228,4 +394,6 @@ export const sketchSolveMachine = setup({
       description: `Intermediate state, same as the "switching tool" state, but for unequip`,
     },
   },
+
+  entry: 'setUpOnDragAndSelectionClickCallbacks',
 })
