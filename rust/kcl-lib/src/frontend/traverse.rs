@@ -298,6 +298,19 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
                 }
                 visitor.finish(NodeMut::from(&mut *else_if.then_val));
             }
+            visitor.visit(NodeMut::from(&mut *node.final_else));
+            for body_item in &mut node.final_else.body {
+                ret = dfs_mut_body_item(body_item, visitor);
+                // Allow the function to mutate the body item to a different
+                // variant of the enum.
+                if let Some(new_body_item) = ret.mutate_body_item.take() {
+                    *body_item = new_body_item;
+                }
+                if ret.is_break() {
+                    return ret;
+                }
+            }
+            visitor.finish(NodeMut::from(&mut *node.final_else));
         }
         ast::Expr::LabelledExpression(node) => {
             ret = visitor.visit(NodeMut::from(&mut **node));
@@ -501,6 +514,19 @@ fn dfs_mut_binary_part<V: Visitor>(
                 }
                 visitor.finish(NodeMut::from(&mut *else_if.then_val));
             }
+            visitor.visit(NodeMut::from(&mut *node.final_else));
+            for body_item in &mut node.final_else.body {
+                ret = dfs_mut_body_item(body_item, visitor);
+                // Allow the function to mutate the body item to a different
+                // variant of the enum.
+                if let Some(new_body_item) = ret.mutate_body_item.take() {
+                    *body_item = new_body_item;
+                }
+                if ret.is_break() {
+                    return ret;
+                }
+            }
+            visitor.finish(NodeMut::from(&mut *node.final_else));
         }
         ast::BinaryPart::AscribedExpression(node) => {
             ret = visitor.visit(NodeMut::from(&mut **node));
