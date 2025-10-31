@@ -344,7 +344,7 @@ export const ConnectionStream = (props: {
     <div
       role="presentation"
       ref={videoWrapperRef}
-      className="absolute inset-[-4px] z-0"
+      className="absolute z-0"
       style={{ backgroundColor }}
       id="stream"
       data-testid="stream"
