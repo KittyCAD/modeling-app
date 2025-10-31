@@ -23,6 +23,10 @@ import type {
 } from '@src/machines/mlEphantManagerMachine2'
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
+import {
+  DEFAULT_ML_COPILOT_MODEL,
+  DEFAULT_ML_COPILOT_REASONING_EFFORT,
+} from '@src/lib/constants'
 
 export interface MlEphantConversationProps {
   isLoading: boolean
@@ -137,6 +141,7 @@ const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
         key={effort}
         onClick={() => props.onClick(effort)}
         className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === effort ? 'border-primary' : ''}`}
+        data-testid={`ml-copilot-effort-button-${effort}`}
       >
         {ML_REASONING_EFFORT_META[effort].icon({ className: 'w-5 h-5' })}
         {ML_REASONING_EFFORT_META[effort].pretty}
@@ -147,7 +152,10 @@ const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
   return (
     <div className="flex-none">
       <Popover className="relative">
-        <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 pl-1 pr-2">
+        <Popover.Button
+          data-testid="ml-copilot-efforts-button"
+          className="h-7 bg-default flex flex-row items-center gap-1 pl-1 pr-2"
+        >
           {props.children}
           <CustomIcon name="caretUp" className="w-5 h-5 ui-open:rotate-180" />
         </Popover.Button>
@@ -172,6 +180,7 @@ const MlCopilotModels = (props: MlCopilotModelsProps) => {
         tabIndex={0}
         role="button"
         key={model}
+        data-testid={`ml-copilot-model-button-${model}`}
         onClick={() => props.onClick(model)}
         className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === model ? 'border-primary' : ''}`}
       >
@@ -183,7 +192,10 @@ const MlCopilotModels = (props: MlCopilotModelsProps) => {
   return (
     <div className="flex-none">
       <Popover className="relative">
-        <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 px-1">
+        <Popover.Button
+          data-testid="ml-copilot-models-button"
+          className="h-7 bg-default flex flex-row items-center gap-1 px-1"
+        >
           {props.children}
         </Popover.Button>
         <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
@@ -442,9 +454,12 @@ export const MlEphantConversationInput = (
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const [value, setValue] = useState<string>('')
   const [heightConvo, setHeightConvo] = useState(0)
-  const [reasoningEffort, setReasoningEffort] =
-    useState<MlReasoningEffort>('low')
-  const [model, setModel] = useState<MlCopilotSupportedModels>('gpt5_nano')
+  const [reasoningEffort, setReasoningEffort] = useState<MlReasoningEffort>(
+    DEFAULT_ML_COPILOT_REASONING_EFFORT
+  )
+  const [model, setModel] = useState<MlCopilotSupportedModels>(
+    DEFAULT_ML_COPILOT_MODEL
+  )
   const [forcedTools, setForcedTools] = useState<Set<MlCopilotTool>>(new Set())
   const [excludedTools, setExcludedTools] = useState<Set<MlCopilotTool>>(
     new Set()

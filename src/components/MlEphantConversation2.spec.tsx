@@ -4,9 +4,20 @@ import { vi } from 'vitest'
 import { MlEphantConversation2 } from '@src/components/MlEphantConversation2'
 import type { BillingContext } from '@src/machines/billingMachine'
 import type { Conversation } from '@src/machines/mlEphantManagerMachine2'
+import type {
+  MlCopilotSupportedModels,
+  MlReasoningEffort,
+} from '@kittycad/lib/dist/types/src'
+import {
+  DEFAULT_ML_COPILOT_MODEL,
+  DEFAULT_ML_COPILOT_REASONING_EFFORT,
+} from '@src/lib/constants'
 
 describe('MlEphantConversation2', () => {
-  test('renders request bubble, shows thinking state, then displays response text after completion', () => {
+  function rendersRequestBubbleShowsThinkingStateThenDisplaysResponseTextAfterCompletion(
+    model: MlCopilotSupportedModels = DEFAULT_ML_COPILOT_MODEL,
+    reasoningEffort: MlReasoningEffort = DEFAULT_ML_COPILOT_REASONING_EFFORT
+  ) {
     vi.useFakeTimers()
 
     const billingContext: BillingContext = {
@@ -55,6 +66,18 @@ describe('MlEphantConversation2', () => {
     try {
       const promptText = 'Generate a cube with rounded edges'
 
+      if (model !== DEFAULT_ML_COPILOT_MODEL) {
+        fireEvent.click(screen.getByTestId('ml-copilot-models-button'))
+        fireEvent.click(screen.getByTestId(`ml-copilot-model-button-${model}`))
+      }
+
+      if (reasoningEffort !== DEFAULT_ML_COPILOT_REASONING_EFFORT) {
+        fireEvent.click(screen.getByTestId('ml-copilot-efforts-button'))
+        fireEvent.click(
+          screen.getByTestId(`ml-copilot-effort-button-${reasoningEffort}`)
+        )
+      }
+
       const promptInput = screen.getByTestId('ml-ephant-conversation-input')
 
       fireEvent.input(promptInput, { target: { textContent: promptText } })
@@ -62,12 +85,10 @@ describe('MlEphantConversation2', () => {
 
       expect(handleProcess).toHaveBeenCalledWith(
         promptText,
-        'gpt5_nano',
-        'low',
+        model,
+        reasoningEffort,
         expect.any(Set)
       )
-
-      // TODO: add tests with other models and reasoning efforts
 
       act(() => {
         rerender(renderConversation(latestConversation))
@@ -119,6 +140,23 @@ describe('MlEphantConversation2', () => {
       vi.clearAllTimers()
       vi.useRealTimers()
     }
+  }
+
+  test('renders request bubble, shows thinking state, then displays response text after completion', () => {
+    rendersRequestBubbleShowsThinkingStateThenDisplaysResponseTextAfterCompletion()
+  })
+
+  test('renders request bubble, shows thinking state, then displays response text after completion (non-default reasoning effort)', () => {
+    rendersRequestBubbleShowsThinkingStateThenDisplaysResponseTextAfterCompletion(
+      'o3'
+    )
+  })
+
+  test('renders request bubble, shows thinking state, then displays response text after completion (non-default reasoning effort)', () => {
+    rendersRequestBubbleShowsThinkingStateThenDisplaysResponseTextAfterCompletion(
+      DEFAULT_ML_COPILOT_MODEL,
+      'high'
+    )
   })
 
   test('does not render unknown response types', () => {
