@@ -96,16 +96,8 @@ export const sketchSolveMachine = setup({
               {
                 type: 'Point',
                 position: {
-                  x: {
-                    type: 'Number',
-                    value: roundOff(twoD.x),
-                    units: 'Mm',
-                  },
-                  y: {
-                    type: 'Number',
-                    value: roundOff(twoD.y),
-                    units: 'Mm',
-                  },
+                  x: { type: 'Var', value: roundOff(twoD.x), units: 'Mm' },
+                  y: { type: 'Var', value: roundOff(twoD.y), units: 'Mm' },
                 },
               },
               await jsAppSettings()
