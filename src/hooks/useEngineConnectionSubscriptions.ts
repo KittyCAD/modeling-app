@@ -81,6 +81,24 @@ export function useEngineConnectionSubscriptions() {
     return unSub
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager, state])
+
+  // When the engine clears the scene, default planes are recreated hidden.
+  // Keep the modeling machine context in sync by setting all plane visibilities to false.
+  useEffect(() => {
+    if (!engineCommandManager) return
+
+    const unSubSceneClear = engineCommandManager.subscribeTo({
+      event: 'scene_clear_all',
+      callback: () => {
+        send({ type: 'Clear default plane visibility map' })
+      },
+    })
+
+    return () => {
+      unSubSceneClear()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [engineCommandManager])
 }
 
 export async function selectSketchPlane(

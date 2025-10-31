@@ -348,6 +348,9 @@ export type ModelingMachineEvent =
       planeKey: keyof PlaneVisibilityMap
     }
   | {
+      type: 'Clear default plane visibility map'
+    }
+  | {
       type: 'Save default plane visibility'
       planeId: string
       planeKey: keyof PlaneVisibilityMap
@@ -1606,6 +1609,12 @@ export const modelingMachine = setup({
     'debug-action': (data) => {
       console.log('re-eval debug-action', data)
     },
+    'Clear default plane visibility map': assign(({ context, event }) => {
+      if (event.type !== 'Clear default plane visibility map') return {}
+      return {
+        defaultPlaneVisibility: { xy: false, xz: false, yz: false },
+      }
+    }),
     'Toggle default plane visibility': assign(({ context, event }) => {
       if (event.type !== 'Toggle default plane visibility') return {}
 
@@ -6370,6 +6379,10 @@ export const modelingMachine = setup({
     'Toggle default plane visibility': {
       reenter: false,
       actions: 'Toggle default plane visibility',
+    },
+    'Clear default plane visibility map': {
+      reenter: false,
+      actions: 'Clear default plane visibility map',
     },
 
     'sketch solve tool changed': {
