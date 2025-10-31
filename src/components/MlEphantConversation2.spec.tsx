@@ -60,7 +60,14 @@ describe('MlEphantConversation2', () => {
       fireEvent.input(promptInput, { target: { textContent: promptText } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
 
-      expect(handleProcess).toHaveBeenCalledWith(promptText, expect.any(Set))
+      expect(handleProcess).toHaveBeenCalledWith(
+        promptText,
+        'gpt5_nano',
+        'low',
+        expect.any(Set)
+      )
+
+      // TODO: add tests with other models and reasoning efforts
 
       act(() => {
         rerender(renderConversation(latestConversation))

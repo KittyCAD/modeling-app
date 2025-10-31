@@ -247,8 +247,8 @@ const CustomIconMap = Object.freeze({
       aria-label="arrow up"
     >
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M10.0001 8.70709L6.35352 12.3536L5.64642 11.6465L9.64655 7.64642L10.3537 7.64643L14.3535 11.6465L13.6464 12.3536L10.0001 8.70709Z"
         fill="currentColor"
       />
