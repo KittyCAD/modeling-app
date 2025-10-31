@@ -1,6 +1,6 @@
 import { join } from 'path'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
-import type { BaseUnit, SettingsLevel } from '@src/lib/settings/settingsTypes'
+import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import type { DeepPartial } from '@src/lib/types'
 import * as fsp from 'fs/promises'
 
@@ -20,7 +20,6 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
-import { Themes } from '@src/lib/theme'
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
@@ -706,8 +705,8 @@ test.describe(
       const u = await getUtils(page)
 
       // Selectors and constants
-      const darkBackgroundCss = 'oklch(0.3012 0 264.5)'
-      const lightBackgroundCss = 'oklch(0.9911 0 264.5)'
+      const darkBackgroundCss = 'oklch(0.3012 0 264.48)'
+      const lightBackgroundCss = 'oklch(0.9911 0 264.48)'
       const darkBackgroundColor: [number, number, number] = [87, 67, 107] // planes are on
       const lightBackgroundColor: [number, number, number] = [166, 149, 184] // planes are on
       const streamBackgroundPixelIsColor = async (
