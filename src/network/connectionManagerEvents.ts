@@ -130,6 +130,14 @@ export const createOnEngineConnectionOpened = ({
       message: 'restoreRemoteCameraStateAndTriggerSync',
     })
 
+    await sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
       message: 'Dispatching SceneReady',
