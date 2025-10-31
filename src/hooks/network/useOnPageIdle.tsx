@@ -41,6 +41,12 @@ export const useOnPageIdle = ({
         KclManagerEvents.LongExecution,
         onLongExecution
       )
+
+      // Clear it on page unmounting, not within the loop of dependenices...
+      if (intervalId.current) {
+        clearInterval(intervalId.current)
+        intervalId.current = null
+      }
     }
   }, [])
 
@@ -51,6 +57,7 @@ export const useOnPageIdle = ({
   useEffect(() => {
     if (intervalId.current) {
       // we have a loop running don't clear it!
+      // we know this gets initialized once!
       return
     }
 
@@ -78,7 +85,7 @@ export const useOnPageIdle = ({
             try {
               await sceneInfra.camControls.saveRemoteCameraState()
             } catch (e) {
-              console.warn('unable to save old camera state on idle')
+              console.warn('unable to save old camera state on idle', e)
               sceneInfra.camControls.clearOldCameraState()
             }
             console.log(sceneInfra.camControls.oldCameraState)
