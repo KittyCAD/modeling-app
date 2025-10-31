@@ -9,11 +9,7 @@ import {
   BillingRemainingMode,
 } from '@kittycad/react-shared'
 import { type BillingContext } from '@src/machines/billingMachine'
-import type {
-  MlCopilotSupportedModels,
-  MlReasoningEffort,
-  MlCopilotTool,
-} from '@kittycad/lib'
+import type { MlReasoningEffort, MlCopilotTool } from '@kittycad/lib'
 import { Popover, Transition } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
@@ -23,10 +19,7 @@ import type {
 } from '@src/machines/mlEphantManagerMachine2'
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
-import {
-  DEFAULT_ML_COPILOT_MODEL,
-  DEFAULT_ML_COPILOT_REASONING_EFFORT,
-} from '@src/lib/constants'
+import { DEFAULT_ML_COPILOT_REASONING_EFFORT } from '@src/lib/constants'
 
 export interface MlEphantConversationProps {
   isLoading: boolean
@@ -35,7 +28,6 @@ export interface MlEphantConversationProps {
   billingContext: BillingContext
   onProcess: (
     request: string,
-    model: MlCopilotSupportedModels,
     reasoningEffort: MlReasoningEffort,
     forcedTools: Set<MlCopilotTool>
   ) => void
@@ -47,11 +39,10 @@ export interface MlEphantConversationProps {
 
 const ML_REASONING_EFFORT: Readonly<MlReasoningEffort[]> = Object.freeze([
   'low',
+  // Disabling medium for now, keeping only low and high
   // 'medium',
   'high',
 ])
-const ML_COPILOT_SUPPORTED_MODELS: Readonly<MlCopilotSupportedModels[]> =
-  Object.freeze(['gpt5_nano', 'gpt5_mini', 'gpt5_codex', 'gpt5', 'o3'])
 const ML_COPILOT_TOOLS: Readonly<MlCopilotTool[]> = Object.freeze([
   'edit_kcl_code',
   'text_to_cad',
@@ -68,31 +59,14 @@ const ML_REASONING_EFFORT_META = Object.freeze({
   medium: {
     pretty: 'Thoughtful',
     icon: (props: { className: string }) => (
-      <CustomIcon name="questionMark" className={props.className} />
+      <CustomIcon name="brain" className={props.className} />
     ),
   },
   high: {
     pretty: 'Thoughtful',
     icon: (props: { className: string }) => (
-      <CustomIcon name="questionMark" className={props.className} />
+      <CustomIcon name="brain" className={props.className} />
     ),
-  },
-} as const)
-const ML_COPILOT_SUPPORTED_MODELS_META = Object.freeze({
-  gpt5_nano: {
-    pretty: 'GPT-5 Nano',
-  },
-  gpt5_mini: {
-    pretty: 'GPT-5 Mini',
-  },
-  gpt5_codex: {
-    pretty: 'GPT-5 Codex',
-  },
-  gpt5: {
-    pretty: 'GPT-5',
-  },
-  o3: {
-    pretty: 'O3',
   },
 } as const)
 const ML_COPILOT_TOOLS_META = Object.freeze({
@@ -167,45 +141,6 @@ const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
   )
 }
 
-export interface MlCopilotModelsProps {
-  onClick: (model: MlCopilotSupportedModels) => void
-  children: ReactNode
-  current: MlCopilotSupportedModels
-}
-const MlCopilotModels = (props: MlCopilotModelsProps) => {
-  const models = []
-  for (const model of ML_COPILOT_SUPPORTED_MODELS) {
-    models.push(
-      <div
-        tabIndex={0}
-        role="button"
-        key={model}
-        data-testid={`ml-copilot-model-button-${model}`}
-        onClick={() => props.onClick(model)}
-        className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === model ? 'border-primary' : ''}`}
-      >
-        {ML_COPILOT_SUPPORTED_MODELS_META[model].pretty}
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex-none">
-      <Popover className="relative">
-        <Popover.Button
-          data-testid="ml-copilot-models-button"
-          className="h-7 bg-default flex flex-row items-center gap-1 px-1"
-        >
-          {props.children}
-        </Popover.Button>
-        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
-          {models}
-        </Popover.Panel>
-      </Popover>
-    </div>
-  )
-}
-
 const MlCopilotTool = <T extends MlCopilotTool>(props: {
   tool: T
   onRemove: (tool: T) => void
@@ -274,11 +209,9 @@ export interface MlEphantExtraInputsProps {
   context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
   inputToMatch: string
   reasoningEffort: MlReasoningEffort
-  model: MlCopilotSupportedModels
   forcedTools: Set<MlCopilotTool>
   excludedTools: Set<MlCopilotTool>
   onSetReasoningEffort: (effort: MlReasoningEffort) => void
-  onSetModel: (model: MlCopilotSupportedModels) => void
   onRemove: (tool: MlCopilotTool) => void
   onAdd: (tool: MlCopilotTool) => void
 }
@@ -350,9 +283,6 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
-        <MlCopilotModels onClick={props.onSetModel} current={props.model}>
-          <CustomIcon name="sparkles" className="w-5 h-5" />
-        </MlCopilotModels>
         <MlCopilotReasoningEfforts
           onClick={props.onSetReasoningEffort}
           current={props.reasoningEffort}
@@ -457,9 +387,6 @@ export const MlEphantConversationInput = (
   const [reasoningEffort, setReasoningEffort] = useState<MlReasoningEffort>(
     DEFAULT_ML_COPILOT_REASONING_EFFORT
   )
-  const [model, setModel] = useState<MlCopilotSupportedModels>(
-    DEFAULT_ML_COPILOT_MODEL
-  )
   const [forcedTools, setForcedTools] = useState<Set<MlCopilotTool>>(new Set())
   const [excludedTools, setExcludedTools] = useState<Set<MlCopilotTool>>(
     new Set()
@@ -509,7 +436,7 @@ export const MlEphantConversationInput = (
 
     setHeightConvo(refDiv.current.getBoundingClientRect().height)
 
-    props.onProcess(value, model, reasoningEffort, forcedTools)
+    props.onProcess(value, reasoningEffort, forcedTools)
 
     setLettersForAnimation(
       value.split('').map((c, index) => (
@@ -580,11 +507,9 @@ export const MlEphantConversationInput = (
           <MlEphantExtraInputs
             context={selectionsContext}
             inputToMatch={value}
-            model={model}
             reasoningEffort={reasoningEffort}
             forcedTools={forcedTools}
             excludedTools={excludedTools}
-            onSetModel={setModel}
             onSetReasoningEffort={setReasoningEffort}
             onRemove={onRemoveTool}
             onAdd={onAddTool}
@@ -609,12 +534,11 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
 
   const onProcess = (
     request: string,
-    model: MlCopilotSupportedModels,
     reasoningEffort: MlReasoningEffort,
     forcedTools: Set<MlCopilotTool>
   ) => {
     setAutoScroll(true)
-    props.onProcess(request, model, reasoningEffort, forcedTools)
+    props.onProcess(request, reasoningEffort, forcedTools)
   }
 
   useEffect(() => {

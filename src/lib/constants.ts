@@ -1,8 +1,4 @@
-import type {
-  MlCopilotSupportedModels,
-  MlReasoningEffort,
-  WebSocketResponse,
-} from '@kittycad/lib'
+import type { MlReasoningEffort, WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
@@ -334,5 +330,4 @@ export const LAYOUT_SAVE_THROTTLE = 500
 export const LAYOUT_PERSIST_PREFIX = 'layout-'
 
 // Copilot input
-export const DEFAULT_ML_COPILOT_MODEL: MlCopilotSupportedModels = 'gpt5_nano'
 export const DEFAULT_ML_COPILOT_REASONING_EFFORT: MlReasoningEffort = 'low'

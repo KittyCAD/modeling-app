@@ -3,7 +3,6 @@ import { BSON } from 'bson'
 import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
-  MlCopilotSupportedModels,
   MlCopilotTool,
   MlReasoningEffort,
 } from '@kittycad/lib'
@@ -90,7 +89,6 @@ export type MlEphantManagerEvents2 =
       projectFiles: FileMeta[]
       selections: Selections
       artifactGraph: ArtifactGraph
-      model: MlCopilotSupportedModels
       reasoningEffort: MlReasoningEffort
       forcedTools: Set<MlCopilotTool>
     }
@@ -439,7 +437,6 @@ export const mlEphantManagerMachine2 = setup({
         project_name: requestData.body.project_name,
         source_ranges: requestData.body.source_ranges,
         current_files: filesAsByteArrays,
-        model: event.model,
         reasoning_effort: event.reasoningEffort,
         forced_tools: Array.from(event.forcedTools),
       }

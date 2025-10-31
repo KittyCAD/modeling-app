@@ -4,18 +4,11 @@ import { vi } from 'vitest'
 import { MlEphantConversation2 } from '@src/components/MlEphantConversation2'
 import type { BillingContext } from '@src/machines/billingMachine'
 import type { Conversation } from '@src/machines/mlEphantManagerMachine2'
-import type {
-  MlCopilotSupportedModels,
-  MlReasoningEffort,
-} from '@kittycad/lib/dist/types/src'
-import {
-  DEFAULT_ML_COPILOT_MODEL,
-  DEFAULT_ML_COPILOT_REASONING_EFFORT,
-} from '@src/lib/constants'
+import type { MlReasoningEffort } from '@kittycad/lib/dist/types/src'
+import { DEFAULT_ML_COPILOT_REASONING_EFFORT } from '@src/lib/constants'
 
 describe('MlEphantConversation2', () => {
   function rendersRequestBubbleThenDisplayResponse(
-    model: MlCopilotSupportedModels = DEFAULT_ML_COPILOT_MODEL,
     reasoningEffort: MlReasoningEffort = DEFAULT_ML_COPILOT_REASONING_EFFORT
   ) {
     vi.useFakeTimers()
@@ -66,11 +59,6 @@ describe('MlEphantConversation2', () => {
     try {
       const promptText = 'Generate a cube with rounded edges'
 
-      if (model !== DEFAULT_ML_COPILOT_MODEL) {
-        fireEvent.click(screen.getByTestId('ml-copilot-models-button'))
-        fireEvent.click(screen.getByTestId(`ml-copilot-model-button-${model}`))
-      }
-
       if (reasoningEffort !== DEFAULT_ML_COPILOT_REASONING_EFFORT) {
         fireEvent.click(screen.getByTestId('ml-copilot-efforts-button'))
         fireEvent.click(
@@ -85,7 +73,6 @@ describe('MlEphantConversation2', () => {
 
       expect(handleProcess).toHaveBeenCalledWith(
         promptText,
-        model,
         reasoningEffort,
         expect.any(Set)
       )
@@ -147,11 +134,7 @@ describe('MlEphantConversation2', () => {
   })
 
   test('renders request bubble, shows thinking state, then displays response text after completion (non-default reasoning effort)', () => {
-    rendersRequestBubbleThenDisplayResponse('o3')
-  })
-
-  test('renders request bubble, shows thinking state, then displays response text after completion (non-default reasoning effort)', () => {
-    rendersRequestBubbleThenDisplayResponse(DEFAULT_ML_COPILOT_MODEL, 'high')
+    rendersRequestBubbleThenDisplayResponse('high')
   })
 
   test('does not render unknown response types', () => {

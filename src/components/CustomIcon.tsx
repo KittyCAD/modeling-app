@@ -1762,7 +1762,7 @@ const CustomIconMap = Object.freeze({
   ),
   brain: (
     <svg
-      viewBox="-3 0 28 28"
+      viewBox="-3 -2 28 28"
       xmlns="http://www.w3.org/2000/svg"
       fill="currentColor"
     >
