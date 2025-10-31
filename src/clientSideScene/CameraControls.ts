@@ -1870,8 +1870,8 @@ function createOrthographicProjectionMatrix(
 
   switch (coordSystem) {
     case WebGLCoordinateSystem:
-      // NOTE: This assumes a right-handed y-up view space i.e. [-near, -far] in view space maps to
-      // [-1, 1] in NDC space
+      // NOTE: This assumes a right-handed y-up view space and that [-near, -far] in view space maps
+      // to [-1, 1] in NDC space
       return new Matrix4(
         2.0 * invW, 0.0, 0.0, -(right + left) * invW,
         0.0, 2.0 * invH, 0.0, -(top + bottom) * invH,
@@ -1879,8 +1879,8 @@ function createOrthographicProjectionMatrix(
         0.0, 0.0, 0.0, 1.0
       )
     case WebGPUCoordinateSystem:
-      // NOTE: This assumes a right-handed y-up view space i.e. [-near, -far] in view space maps to
-      // [0, 1] in NDC space
+      // NOTE: This assumes a right-handed y-up view space and that [-near, -far] in view space maps
+      // to [0, 1] in NDC space
       return new Matrix4(
         2.0 * invW, 0.0, 0.0, -(right + left) * invW,
         0.0, 2.0 * invH, 0.0, -(top + bottom) * invH,
@@ -1902,8 +1902,8 @@ function createPerspectiveProjectionMatrix(
 
   switch (coordSystem) {
     case WebGLCoordinateSystem:
-      // NOTE: This assumes a right-handed y-up view space i.e. [-near, -far] in view space maps to
-      // [-1, 1] in NDC space
+      // NOTE: This assumes a right-handed y-up view space and that [-near, -far] in view space maps
+      // to [-1, 1] in NDC space
       return new Matrix4(
         1.0 / x, 0.0, 0.0, 0.0,
         0.0, 1.0 / y, 0.0, 0.0,
@@ -1911,8 +1911,8 @@ function createPerspectiveProjectionMatrix(
         0.0, 0.0, -1.0, 0.0
       )
     case WebGPUCoordinateSystem:
-      // NOTE: This assumes a right-handed y-up view space i.e. [-near, -far] in view space maps to
-      // [0, 1] in NDC space
+      // NOTE: This assumes a right-handed y-up view space and that [-near, -far] in view space maps
+      // to [0, 1] in NDC space
       return new Matrix4(
         1.0 / x, 0.0, 0.0, 0.0,
         0.0, 1.0 / y, 0.0, 0.0,
