@@ -81,8 +81,8 @@ export const machine = setup({
           const segmentCtor: SegmentCtor = {
             type: 'Point',
             position: {
-              x: { type: 'Number', value: roundOff(x), units: 'Mm' },
-              y: { type: 'Number', value: roundOff(y), units: 'Mm' },
+              x: { type: 'Var', value: roundOff(x), units: 'Mm' },
+              y: { type: 'Var', value: roundOff(y), units: 'Mm' },
             },
           }
 
