@@ -1,6 +1,6 @@
 import { join } from 'path'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
-import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
+import type { BaseUnit, SettingsLevel } from '@src/lib/settings/settingsTypes'
 import type { DeepPartial } from '@src/lib/types'
 import * as fsp from 'fs/promises'
 
@@ -238,10 +238,8 @@ test.describe(
           fail()
         }
         await tronApp.cleanProjectDir({
-          app: {
-            appearance: {
-              color: 259,
-            },
+          modeling: {
+            base_unit: 'in',
           },
         })
 
@@ -262,14 +260,17 @@ test.describe(
     test(
       'project settings reload on external change',
       { tag: '@desktop' },
-      async ({ context, page }, testInfo) => {
+      async ({ context, page }) => {
         const { dir: projectDirName } = await context.folderSetupFn(
           async () => {}
         )
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
-        const logoLink = page.getByTestId('app-logo')
+        const unitsMenuButton = page.getByRole('button', {
+          name: 'Current Units',
+          exact: false,
+        })
         const projectDirLink = page.getByText('Loaded from')
 
         await test.step('Wait for project view', async () => {
@@ -278,7 +279,7 @@ test.describe(
 
         await createProject({ name: 'project-000', page })
 
-        const changeColorFs = async (color: string) => {
+        const changeUnitsFs = async (units: BaseUnit) => {
           const tempSettingsFilePath = join(
             projectDirName,
             'project-000',
@@ -288,10 +289,8 @@ test.describe(
             tempSettingsFilePath,
             settingsToToml({
               settings: {
-                app: {
-                  appearance: {
-                    color: parseFloat(color),
-                  },
+                modeling: {
+                  base_unit: units,
                 },
                 // TODO: make sure this isn't just working around a bug
                 // where the existing data wouldn't be preserved?
@@ -303,13 +302,14 @@ test.describe(
           )
         }
 
-        await test.step('Check the color is first starting as we expect', async () => {
-          await expect(logoLink).toHaveCSS('--primary-hue', '264.5')
+        await test.step('Check the units indicator is first starting as we expect', async () => {
+          await expect(unitsMenuButton).toBeVisible()
+          await expect(unitsMenuButton).toContainText('in')
         })
 
         await test.step('Check color of logo changed', async () => {
-          await changeColorFs('99')
-          await expect(logoLink).toHaveCSS('--primary-hue', '99')
+          await changeUnitsFs('mm')
+          await expect(unitsMenuButton).toContainText('mm')
         })
       }
     )

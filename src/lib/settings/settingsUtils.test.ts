@@ -47,8 +47,8 @@ describe(`testing settings initialization`, () => {
     const projectConfiguration: DeepPartial<ProjectConfiguration> = {
       settings: {
         app: {
+          // @ts-expect-error: our types are smart enough to know this isn't valid, but we're testing it.
           appearance: {
-            // @ts-expect-error - our types are smart enough to know this isn't valid, but we're testing it.
             theme: 'light',
           },
         },

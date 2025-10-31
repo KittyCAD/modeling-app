@@ -217,25 +217,6 @@ mod tests {
     }
 
     #[test]
-    fn test_project_settings_color_validation_error() {
-        let settings_file = r#"[settings.app.appearance]
-color = 1567.4"#;
-
-        let result = ProjectConfiguration::parse_and_validate(settings_file);
-        if let Ok(r) = result {
-            panic!("Expected an error, but got success: {r:?}");
-        }
-        assert!(result.is_err());
-
-        assert!(
-            result
-                .unwrap_err()
-                .to_string()
-                .contains("color: Validation error: color")
-        );
-    }
-
-    #[test]
     fn named_view_serde_json() {
         let json = r#"
         [
@@ -354,9 +335,6 @@ color = 1567.4"#;
 
 [settings.app]
 show_debug_panel = true
-
-[settings.app.appearance]
-color = 138.0
 
 [settings.app.named_views.323611ea-66e3-43c9-9d0d-1091ba92948c]
 name = "Hello"
