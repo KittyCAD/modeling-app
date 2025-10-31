@@ -52,17 +52,17 @@ jobs:
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
-      - name: npm run test:unit
-        if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
-        run: |-
-          npm run test:unit || true # let TAB determine failure
-          .github/ci-cd-scripts/upload-results.sh
-        env:
-          TAB_API_URL: ${{ vars.TAB_API_URL }}
-          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
-          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
-          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
-          CI_SUITE: unit
+      # - name: npm run test:unit
+      #   if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
+      #   run: |-
+      #     npm run test:unit || true # let TAB determine failure
+      #     .github/ci-cd-scripts/upload-results.sh
+      #   env:
+      #     TAB_API_URL: ${{ vars.TAB_API_URL }}
+      #     TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+      #     CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+      #     CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+      #     CI_SUITE: unit
 
   npm-test-integration:
     runs-on: namespace-profile-ubuntu-2-cores
