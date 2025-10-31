@@ -239,7 +239,7 @@ async fn make_transform<T: GeometryTrait>(
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Transform function must return a transform object".to_string(),
-                source_ranges.clone(),
+                source_ranges,
             )));
         }
     };
@@ -262,7 +262,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         Some(_) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "The 'replicate' key must be a bool".to_string(),
-                source_ranges.clone(),
+                source_ranges,
             )));
         }
         None => true,
@@ -294,7 +294,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         let KclValue::Object { value: rot, .. } = rot else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "The 'rotation' key must be an object (with optional fields 'angle', 'axis' and 'origin')".to_owned(),
-                source_ranges.clone(),
+                source_ranges,
             )));
         };
         if let Some(axis) = rot.get("axis") {
@@ -308,7 +308,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
                 _ => {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
                         "The 'rotation.angle' key must be a number (of degrees)".to_owned(),
-                        source_ranges.clone(),
+                        source_ranges,
                     )));
                 }
             }
@@ -318,7 +318,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
                 KclValue::String { value: s, meta: _ } if s == "local" => OriginType::Local,
                 KclValue::String { value: s, meta: _ } if s == "global" => OriginType::Global,
                 other => {
-                    let origin = point_3d_to_mm(T::array_to_point3d(other, source_ranges.clone(), exec_state)?).into();
+                    let origin = point_3d_to_mm(T::array_to_point3d(other, source_ranges, exec_state)?).into();
                     OriginType::Custom { origin }
                 }
             };
@@ -345,7 +345,7 @@ fn array_to_point3d(
                     "Expected an array of 3 numbers (i.e., a 3D point), found {}",
                     e.found
                         .map(|t| t.human_friendly_type())
-                        .unwrap_or_else(|| val.human_friendly_type().to_owned())
+                        .unwrap_or_else(|| val.human_friendly_type())
                 ),
                 source_ranges,
             ))
@@ -365,7 +365,7 @@ fn array_to_point2d(
                     "Expected an array of 2 numbers (i.e., a 2D point), found {}",
                     e.found
                         .map(|t| t.human_friendly_type())
-                        .unwrap_or_else(|| val.human_friendly_type().to_owned())
+                        .unwrap_or_else(|| val.human_friendly_type())
                 ),
                 source_ranges,
             ))

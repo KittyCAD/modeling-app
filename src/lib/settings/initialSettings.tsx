@@ -739,6 +739,17 @@ export function createSettings() {
           )
         },
       }),
+      disableCopilot: new Setting<boolean>({
+        hideOnLevel: 'user',
+        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
+        defaultValue: IS_STAGING_OR_DEBUG ? false : true,
+        description:
+          'Disable the new Copilot in Text-to-CAD for this project, only available in Zoo Design Studio (Staging).',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+      }),
     },
   }
 }

@@ -25,7 +25,7 @@ fn tokio() -> &'static tokio::runtime::Runtime {
 }
 
 fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
-    let report = error.clone().into_miette_report_with_outputs(code).unwrap();
+    let report = error.into_miette_report_with_outputs(code).unwrap();
     let report = miette::Report::new(report);
     pyo3::exceptions::PyException::new_err(format!("{report:?}"))
 }
@@ -33,7 +33,7 @@ fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
 fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) -> PyErr {
     let report = kcl_lib::Report {
         kcl_source: input.to_string(),
-        error: error.clone(),
+        error,
         filename: filename.to_string(),
     };
     let report = miette::Report::new(report);

@@ -3,7 +3,6 @@ name = "kcl-wasm-lib"
 version = "0.1.105"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
-rust-version = "1.83"
 publish = false
 
 [lib]
