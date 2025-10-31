@@ -1864,33 +1864,29 @@ function createOrthographicProjectionMatrix(
   far: number,
   coordSystem: CoordinateSystem
 ): Matrix4 {
-  const invW = 1.0 / (right - left);
-  const invH = 1.0 / (top - bottom);
-  const invD = 1.0 / (near - far);
+  const invW = 1.0 / (right - left)
+  const invH = 1.0 / (top - bottom)
+  const invD = 1.0 / (near - far)
 
   switch (coordSystem) {
     case WebGLCoordinateSystem:
       // NOTE: This assumes a right-handed y-up view space i.e. [-near, -far] in view space maps to
       // [-1, 1] in NDC space
-
-      // prettier-ignore
       return new Matrix4(
         2.0 * invW, 0.0, 0.0, -(right + left) * invW,
         0.0, 2.0 * invH, 0.0, -(top + bottom) * invH,
         0.0, 0.0, 2.0 * invD, (far + near) *invD,
         0.0, 0.0, 0.0, 1.0
-      );
+      )
     case WebGPUCoordinateSystem:
       // NOTE: This assumes a right-handed y-up view space i.e. [-near, -far] in view space maps to
       // [0, 1] in NDC space
-
-      // prettier-ignore
       return new Matrix4(
         2.0 * invW, 0.0, 0.0, -(right + left) * invW,
         0.0, 2.0 * invH, 0.0, -(top + bottom) * invH,
         0.0, 0.0, invD, near *invD,
         0.0, 0.0, 0.0, 1.0
-      );
+      )
   }
 }
 
@@ -1901,59 +1897,55 @@ function createPerspectiveProjectionMatrix(
   far: number,
   coordSystem: CoordinateSystem
 ): Matrix4 {
-  const y = Math.tan(0.5 * degToRad(fovY));
-  const x = y * aspect;
+  const y = Math.tan(0.5 * degToRad(fovY))
+  const x = y * aspect
 
   switch (coordSystem) {
     case WebGLCoordinateSystem:
       // NOTE: This assumes a right-handed y-up view space i.e. [-near, -far] in view space maps to
       // [-1, 1] in NDC space
-
-      // prettier-ignore
       return new Matrix4(
         1.0 / x, 0.0, 0.0, 0.0,
         0.0, 1.0 / y, 0.0, 0.0,
         0.0, 0.0, -(far + near) / (far - near), -2.0 * far * near / (far - near),
         0.0, 0.0, -1.0, 0.0
-      );
+      )
     case WebGPUCoordinateSystem:
       // NOTE: This assumes a right-handed y-up view space i.e. [-near, -far] in view space maps to
       // [0, 1] in NDC space
-
-      // prettier-ignore
       return new Matrix4(
         1.0 / x, 0.0, 0.0, 0.0,
         0.0, 1.0 / y, 0.0, 0.0,
         0.0, 0.0, far / (near - far), -far * near / (far - near),
         0.0, 0.0, -1.0, 0.0
-      );
+      )
   }
 }
 
 function toVector3(obj: { x: number; y: number; z: number }) {
-  return new Vector3(obj.x, obj.y, obj.z);
+  return new Vector3(obj.x, obj.y, obj.z)
 }
 
 function toQuaternion(obj: { w: number; x: number; y: number; z: number }) {
-  return new Quaternion(obj.x, obj.y, obj.z, obj.w);
+  return new Quaternion(obj.x, obj.y, obj.z, obj.w)
 }
 
 /**
  * Creates a projection matrix from the given CameraViewState in a way that is consistent with engine
  */
 export function createProjectionMatrix(cam: CameraViewState): Matrix4 {
-  const invRot = new Matrix4();
+  const invRot = new Matrix4()
   invRot.makeRotationFromQuaternion(
     toQuaternion(cam.pivot_rotation).conjugate()
-  );
+  )
 
-  const invTrans = new Matrix4();
-  invTrans.makeTranslation(toVector3(cam.pivot_position).negate());
+  const invTrans = new Matrix4()
+  invTrans.makeTranslation(toVector3(cam.pivot_position).negate())
 
-  const result = new Matrix4();
-  result.multiplyMatrices(invRot, invTrans);
+  const result = new Matrix4()
+  result.multiplyMatrices(invRot, invTrans)
 
-  return result;
+  return result
 }
 
 /**
@@ -1967,8 +1959,8 @@ export function createViewMatrix(
   coordSystem: CoordinateSystem = WebGLCoordinateSystem
 ): Matrix4 {
   if (camera.is_ortho) {
-    const height = Math.tan(0.5 * degToRad(camera.fov_y)) * camera.eye_offset;
-    const width = height * aspectRatio;
+    const height = Math.tan(0.5 * degToRad(camera.fov_y)) * camera.eye_offset
+    const width = height * aspectRatio
     return createOrthographicProjectionMatrix(
       -width,
       width,
@@ -1977,7 +1969,7 @@ export function createViewMatrix(
       nearClip,
       farClip,
       coordSystem
-    );
+    )
   } else {
     return createPerspectiveProjectionMatrix(
       camera.fov_y,
@@ -1985,6 +1977,6 @@ export function createViewMatrix(
       nearClip,
       farClip,
       coordSystem
-    );
+    )
   }
 }
