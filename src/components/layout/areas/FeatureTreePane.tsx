@@ -65,6 +65,7 @@ import {
 } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
+import Tooltip from '@src/components/Tooltip'
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -322,12 +323,12 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
   return (
     <button
       onClick={handleToggleVisible}
-      className="p-0 m-0"
+      className="p-0 m-0 border-transparent dark:border-transparent"
       data-testid="feature-tree-visibility-toggle"
     >
       <CustomIcon
         name={visible ? 'eyeOpen' : 'eyeCrossedOut'}
-        className="w-5 h-5"
+        className="w-6 h-6"
       />
     </button>
   )
@@ -368,28 +369,28 @@ const OperationItemWrapper = ({
   return (
     <div
       ref={menuRef}
-      className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/10 hover:bg-primary/5' : ''} ${greyedOut ? 'opacity-50 cursor-not-allowed' : ''}`}
+      className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/25 hover:bg-2 hover:focus-within:bg-primary/25' : ''} ${greyedOut ? 'opacity-50 cursor-not-allowed' : ''}`}
       data-testid="feature-tree-operation-item"
     >
       <button
         {...props}
-        className={`reset !py-0.5 !px-1 flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : '!border-transparent cursor-default'} ${className}`}
+        className={`reset !p-0 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${className}`}
       >
-        <CustomIcon name={icon} className="w-5 h-5 block" />
-        <div className="flex flex-1 items-baseline align-baseline">
-          <div className="flex-1 inline-flex items-baseline flex-wrap gap-x-2">
+        <span>
+          <CustomIcon name={icon} className="w-6 h-6 block" aria-hidden />
+          <Tooltip position="bottom-left" contentClassName="text-xs">
             {name}
-            {variableName && (
-              <span className="text-chalkboard-70 dark:text-chalkboard-40 text-xs">
-                {variableName}
-              </span>
-            )}
+          </Tooltip>
+        </span>
+        <div className="flex-1 flex flex-wrap items-baseline align-baseline">
+          <div className="flex-1 inline-flex items-baseline flex-wrap gap-x-2">
+            <span className="text-xs">{variableName || name}</span>
             {customSuffix && customSuffix}
           </div>
           {valueDetail && (
             <code
               data-testid="value-detail"
-              className="px-1 text-right text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+              className="text-right text-chalkboard-70 dark:text-chalkboard-40 text-xs"
             >
               {valueDetail.display}
             </code>
