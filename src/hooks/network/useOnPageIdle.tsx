@@ -42,7 +42,7 @@ export const useOnPageIdle = ({
         onLongExecution
       )
 
-      // Clear it on page unmounting, not within the loop of dependenices...
+      // Clear it on page unmounting, not within the loop of dependencies...
       if (intervalId.current) {
         clearInterval(intervalId.current)
         intervalId.current = null
