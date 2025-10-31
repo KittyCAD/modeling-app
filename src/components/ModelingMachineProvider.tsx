@@ -123,6 +123,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import type { SketchArgs } from '@rust/kcl-lib/bindings/FrontendApi'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { toPlaneName } from '@src/lib/planes'
 
 const OVERLAY_TIMEOUT_MS = 1_000
 
@@ -576,12 +577,11 @@ export const ModelingMachineProvider = ({
 
                 // Determine the plane type from the result
                 if (result.type === 'defaultPlane') {
-                  // TODO shouldn't it work with -XY?
                   sketchArgs = {
-                    on: { default: result.plane as 'XY' | 'XZ' | 'YZ' },
+                    on: { default: toPlaneName(result.plane) },
                   }
                 } else {
-                  sketchArgs = { on: { XY: 'XY' } as any }
+                  sketchArgs = { on: { default: 'xy' } }
                 }
 
                 await rustContext.hackSetProgram(

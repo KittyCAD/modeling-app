@@ -948,6 +948,8 @@ impl Node<SketchBlock> {
             // Create the sketch block scene object. This needs to happen before
             // scene objects created inside the sketch block so that its ID is
             // stable across sketch block edits.
+
+            use crate::engine::PlaneName;
             let sketch_id = exec_state.next_object_id();
             let arg_on: Option<crate::execution::Plane> =
                 args.get_kw_arg_opt("on", &RuntimeType::plane(), exec_state)?;
@@ -958,7 +960,7 @@ impl Node<SketchBlock> {
                     args: crate::front::SketchArgs {
                         on: on_object
                             .map(crate::front::Plane::Object)
-                            .unwrap_or(crate::front::Plane::Default(crate::front::StandardPlane::XY)),
+                            .unwrap_or(crate::front::Plane::Default(PlaneName::Xy)),
                     },
                     segments: Default::default(),
                     constraints: Default::default(),

@@ -1334,7 +1334,8 @@ fn ast_sketch2_name(name: &str) -> ast::Name {
 mod tests {
     use super::*;
     use crate::{
-        front::{Plane, Sketch, StandardPlane},
+        engine::PlaneName,
+        front::{Plane, Sketch},
         pretty::NumericSuffix,
     };
 
@@ -1350,7 +1351,7 @@ mod tests {
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
 
         let sketch_args = SketchArgs {
-            on: api::Plane::Default(api::StandardPlane::XY),
+            on: api::Plane::Default(PlaneName::Xy),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), Version(0), sketch_args)
@@ -1364,7 +1365,7 @@ mod tests {
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
                 args: SketchArgs {
-                    on: Plane::Default(StandardPlane::XY)
+                    on: Plane::Default(PlaneName::Xy)
                 },
                 segments: vec![],
                 constraints: vec![],
@@ -1443,7 +1444,7 @@ sketch(on = XY) {
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
 
         let sketch_args = SketchArgs {
-            on: api::Plane::Default(api::StandardPlane::XY),
+            on: api::Plane::Default(PlaneName::Xy),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
             .new_sketch(&ctx, ProjectId(0), FileId(0), Version(0), sketch_args)
@@ -1457,7 +1458,7 @@ sketch(on = XY) {
             sketch_object.kind,
             ObjectKind::Sketch(Sketch {
                 args: SketchArgs {
-                    on: Plane::Default(StandardPlane::XY)
+                    on: Plane::Default(PlaneName::Xy)
                 },
                 segments: vec![],
                 constraints: vec![],

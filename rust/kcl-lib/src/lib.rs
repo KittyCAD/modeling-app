@@ -155,7 +155,7 @@ pub mod front {
         FrontendState,
         api::{
             Error, Expr, File, FileId, LifecycleApi, Number, Object, ObjectId, ObjectKind, Plane, ProjectId, Result,
-            SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, StandardPlane, Version,
+            SceneGraph, SceneGraphDelta, Settings, SourceDelta, SourceRef, Version,
         },
         sketch::{
             Arc, ArcCtor, Circle, CircleCtor, Constraint, Freedom, Line, LineCtor, MidPointLineCtor, Point, Point2d,
