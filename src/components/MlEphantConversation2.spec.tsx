@@ -14,7 +14,7 @@ import {
 } from '@src/lib/constants'
 
 describe('MlEphantConversation2', () => {
-  function rendersRequestBubbleShowsThinkingStateThenDisplaysResponseTextAfterCompletion(
+  function rendersRequestBubbleThenDisplayResponse(
     model: MlCopilotSupportedModels = DEFAULT_ML_COPILOT_MODEL,
     reasoningEffort: MlReasoningEffort = DEFAULT_ML_COPILOT_REASONING_EFFORT
   ) {
@@ -143,20 +143,15 @@ describe('MlEphantConversation2', () => {
   }
 
   test('renders request bubble, shows thinking state, then displays response text after completion', () => {
-    rendersRequestBubbleShowsThinkingStateThenDisplaysResponseTextAfterCompletion()
+    rendersRequestBubbleThenDisplayResponse()
   })
 
   test('renders request bubble, shows thinking state, then displays response text after completion (non-default reasoning effort)', () => {
-    rendersRequestBubbleShowsThinkingStateThenDisplaysResponseTextAfterCompletion(
-      'o3'
-    )
+    rendersRequestBubbleThenDisplayResponse('o3')
   })
 
   test('renders request bubble, shows thinking state, then displays response text after completion (non-default reasoning effort)', () => {
-    rendersRequestBubbleShowsThinkingStateThenDisplaysResponseTextAfterCompletion(
-      DEFAULT_ML_COPILOT_MODEL,
-      'high'
-    )
+    rendersRequestBubbleThenDisplayResponse(DEFAULT_ML_COPILOT_MODEL, 'high')
   })
 
   test('does not render unknown response types', () => {
