@@ -43,7 +43,7 @@ export interface MlEphantConversationProps {
 
 const ML_REASONING_EFFORT: Readonly<MlReasoningEffort[]> = Object.freeze([
   'low',
-  'medium',
+  // 'medium',
   'high',
 ])
 const ML_COPILOT_SUPPORTED_MODELS: Readonly<MlCopilotSupportedModels[]> =
@@ -62,15 +62,15 @@ const ML_REASONING_EFFORT_META = Object.freeze({
     ),
   },
   medium: {
-    pretty: 'Thoughtful (Balanced)',
+    pretty: 'Thoughtful',
     icon: (props: { className: string }) => (
-      <CustomIcon name="brain" className={props.className} />
+      <CustomIcon name="questionMark" className={props.className} />
     ),
   },
   high: {
-    pretty: 'Thoughtful (Slow)',
+    pretty: 'Thoughtful',
     icon: (props: { className: string }) => (
-      <CustomIcon name="brain" className={props.className} />
+      <CustomIcon name="questionMark" className={props.className} />
     ),
   },
 } as const)
@@ -136,6 +136,7 @@ const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
         key={effort}
         onClick={() => props.onClick(effort)}
         className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md"
+        // TODO: add selected state
       >
         {ML_REASONING_EFFORT_META[effort].icon({ className: 'w-5 h-5' })}
         {ML_REASONING_EFFORT_META[effort].pretty}
@@ -148,6 +149,8 @@ const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
       <Popover className="relative">
         <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 pl-1 pr-2">
           {props.children}
+          <CustomIcon name="carretUp" className="w-5 h-5" />
+          {/* TODO: change to carretDown when open */}
         </Popover.Button>
         <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
           {efforts}
@@ -170,9 +173,9 @@ const MlCopilotModels = (props: MlCopilotModelsProps) => {
         role="button"
         key={model}
         onClick={() => props.onClick(model)}
-        className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md"
+        className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 rounded-md"
+        // TODO: add selected state
       >
-        <CustomIcon name="sparkles" className="w-5 h-5" />
         {ML_COPILOT_SUPPORTED_MODELS_META[model].pretty}
       </div>
     )
@@ -181,7 +184,7 @@ const MlCopilotModels = (props: MlCopilotModelsProps) => {
   return (
     <div className="flex-none">
       <Popover className="relative">
-        <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 pl-1 pr-2">
+        <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 px-1">
           {props.children}
         </Popover.Button>
         <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
@@ -331,14 +334,13 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
 
   return (
     <div ref={refWrap} className="flex-1 flex min-w-0 items-end">
-      <div ref={refTools} className="flex flex-row w-fit-content items-end">
+      <div ref={refTools} className="flex flex-row flex-wrap items-end">
         {/* TODO: Generalize to a MlCopilotContexts component */}
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
         <MlCopilotModels onClick={props.onSetModel}>
           <CustomIcon name="sparkles" className="w-5 h-5" />
-          {ML_COPILOT_SUPPORTED_MODELS_META[props.model].pretty}
         </MlCopilotModels>
         <MlCopilotReasoningEfforts onClick={props.onSetReasoningEffort}>
           {ML_REASONING_EFFORT_META[props.reasoningEffort].icon({
@@ -378,7 +380,7 @@ const MlCopilotSelectionsContext = (props: {
 }) => {
   const selectionText = getSelectionTypeDisplayText(props.selections.data)
   return selectionText ? (
-    <button className="group/tool flex-none flex flex-row gap-1 items-center p-0 pr-2">
+    <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 pl-1 pr-2">
       <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />
       {selectionText}
     </button>
@@ -576,7 +578,7 @@ export const MlEphantConversationInput = (
             onClick={onClick}
             className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
           >
-            <CustomIcon name="arrowUp" className="w-5 h-5 animate-bounce" />
+            <CustomIcon name="carretUp" className="w-5 h-5 animate-bounce" />
           </button>
         </div>
       </div>
