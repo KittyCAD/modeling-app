@@ -184,8 +184,8 @@ mod tests {
     use serde_json::Value;
 
     use super::{
-        NamedView, PerProjectSettings, ProjectAppSettings, ProjectCommandBarSettings,
-        ProjectConfiguration, ProjectMetaSettings, ProjectModelingSettings, ProjectTextEditorSettings,
+        NamedView, PerProjectSettings, ProjectAppSettings, ProjectCommandBarSettings, ProjectConfiguration,
+        ProjectMetaSettings, ProjectModelingSettings, ProjectTextEditorSettings,
     };
     use crate::settings::types::UnitLength;
 

@@ -7,7 +7,7 @@ use kittycad_modeling_cmds::units::UnitLength;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Deserializer, Serialize};
-use validator::{Validate};
+use validator::Validate;
 
 const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "untitled";
 
@@ -581,9 +581,7 @@ text_wrapping = true"#;
             settings: Settings {
                 app: AppSettings {
                     onboarding_status: OnboardingStatus::Dismissed,
-                    appearance: AppearanceSettings {
-                        theme: AppTheme::Dark,
-                    },
+                    appearance: AppearanceSettings { theme: AppTheme::Dark },
                     ..Default::default()
                 },
                 modeling: ModelingSettings {
