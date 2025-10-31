@@ -125,6 +125,7 @@ const ML_COPILOT_TOOLS_META = Object.freeze({
 export interface MlCopilotReasoningEffortsProps {
   onClick: (reasoningEffort: MlReasoningEffort) => void
   children: ReactNode
+  current: MlReasoningEffort
 }
 const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
   const efforts = []
@@ -135,8 +136,7 @@ const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
         role="button"
         key={effort}
         onClick={() => props.onClick(effort)}
-        className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md"
-        // TODO: add selected state
+        className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === effort ? 'border-primary' : ''}`}
       >
         {ML_REASONING_EFFORT_META[effort].icon({ className: 'w-5 h-5' })}
         {ML_REASONING_EFFORT_META[effort].pretty}
@@ -149,8 +149,7 @@ const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
       <Popover className="relative">
         <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 pl-1 pr-2">
           {props.children}
-          <CustomIcon name="carretUp" className="w-5 h-5" />
-          {/* TODO: change to carretDown when open */}
+          <CustomIcon name="carretUp" className="w-5 h-5 ui-open:rotate-180" />
         </Popover.Button>
         <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
           {efforts}
@@ -163,6 +162,7 @@ const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
 export interface MlCopilotModelsProps {
   onClick: (model: MlCopilotSupportedModels) => void
   children: ReactNode
+  current: MlCopilotSupportedModels
 }
 const MlCopilotModels = (props: MlCopilotModelsProps) => {
   const models = []
@@ -173,8 +173,7 @@ const MlCopilotModels = (props: MlCopilotModelsProps) => {
         role="button"
         key={model}
         onClick={() => props.onClick(model)}
-        className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 rounded-md"
-        // TODO: add selected state
+        className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === model ? 'border-primary' : ''}`}
       >
         {ML_COPILOT_SUPPORTED_MODELS_META[model].pretty}
       </div>
@@ -339,10 +338,13 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
-        <MlCopilotModels onClick={props.onSetModel}>
+        <MlCopilotModels onClick={props.onSetModel} current={props.model}>
           <CustomIcon name="sparkles" className="w-5 h-5" />
         </MlCopilotModels>
-        <MlCopilotReasoningEfforts onClick={props.onSetReasoningEffort}>
+        <MlCopilotReasoningEfforts
+          onClick={props.onSetReasoningEffort}
+          current={props.reasoningEffort}
+        >
           {ML_REASONING_EFFORT_META[props.reasoningEffort].icon({
             className: 'w-5 h-5',
           })}
