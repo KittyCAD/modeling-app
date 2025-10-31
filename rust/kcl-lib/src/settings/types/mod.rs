@@ -76,10 +76,6 @@ pub struct AppSettings {
     /// The onboarding status of the app.
     #[serde(default, skip_serializing_if = "is_default")]
     pub onboarding_status: OnboardingStatus,
-    /// Permanently dismiss the banner warning to download the desktop app.
-    /// This setting only applies to the web app. And is temporary until we have Linux support.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub dismiss_web_banner: bool,
     /// When the user is idle, teardown the stream after some time.
     #[serde(
         default,

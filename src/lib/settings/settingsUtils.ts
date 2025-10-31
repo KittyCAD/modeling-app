@@ -58,7 +58,6 @@ export function configurationToSettingsPayload(
         ? configuration?.settings?.app?.appearance?.color.toString()
         : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
-      dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
       streamIdleMode: toUndefinedIfNull(
         configuration?.settings?.app?.stream_idle_mode
       ),
@@ -114,7 +113,6 @@ export function settingsPayloadToConfiguration(
             : undefined,
         },
         onboarding_status: configuration?.app?.onboardingStatus,
-        dismiss_web_banner: configuration?.app?.dismissWebBanner,
         stream_idle_mode: configuration?.app?.streamIdleMode,
         allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
         show_debug_panel: configuration?.app?.showDebugPanel,
@@ -196,12 +194,12 @@ export function projectConfigurationToSettingsPayload(
   return {
     meta: {
       id: configuration?.settings?.meta?.id,
+      disableCopilot: configuration?.settings?.meta?.disable_copilot,
     },
     app: {
       // do not read in `theme`, because it is blocked on the project level
       themeColor: color !== undefined ? color.toString() : undefined,
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
-      dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
       allowOrbitInSketchMode:
         configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       namedViews: deepPartialNamedViewsToNamedViews(
@@ -250,6 +248,7 @@ export function settingsPayloadToProjectConfiguration(
     settings: {
       meta: {
         id: configuration?.meta?.id,
+        disable_copilot: configuration?.meta?.disableCopilot,
       },
       app: {
         appearance: {
@@ -258,7 +257,6 @@ export function settingsPayloadToProjectConfiguration(
             : undefined,
         },
         onboarding_status: configuration?.app?.onboardingStatus,
-        dismiss_web_banner: configuration?.app?.dismissWebBanner,
         allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
         show_debug_panel: configuration?.app?.showDebugPanel,
         named_views: deepPartialNamedViewsToNamedViews(
