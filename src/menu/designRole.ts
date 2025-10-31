@@ -1,7 +1,6 @@
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
 import type { BrowserWindow } from 'electron'
-import { isStagingOrDebug } from '@src/menu/utils'
 
 export const modelingDesignRole = (
   mainWindow: BrowserWindow
@@ -136,7 +135,6 @@ export const modelingDesignRole = (
       {
         label: 'Create with Zoo Text-To-CAD',
         id: 'Design.Create with Zoo Text-To-CAD',
-        enabled: !isStagingOrDebug,
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Design.Create with Zoo Text-To-CAD',

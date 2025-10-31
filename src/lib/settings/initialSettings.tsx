@@ -226,14 +226,6 @@ export function createSettings() {
         validate: (v) => typeof v === 'string',
         hideOnPlatform: 'both',
       }),
-      /** Permanently dismiss the banner warning to download the desktop app. */
-      dismissWebBanner: new Setting<boolean>({
-        defaultValue: false,
-        description:
-          'Permanently dismiss the banner warning to download the desktop app.',
-        validate: (v) => typeof v === 'boolean',
-        hideOnPlatform: 'desktop',
-      }),
       projectDirectory: new Setting<string>({
         defaultValue: '', // gets set async in settingsUtils.ts
         description: 'The directory to save and load projects from',
@@ -674,6 +666,17 @@ export function createSettings() {
               />
             </div>
           )
+        },
+      }),
+      disableCopilot: new Setting<boolean>({
+        hideOnLevel: 'user',
+        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
+        defaultValue: IS_STAGING_OR_DEBUG ? false : true,
+        description:
+          'Disable the new Copilot in Text-to-CAD for this project, only available in Zoo Design Studio (Staging).',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
         },
       }),
     },

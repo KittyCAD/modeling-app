@@ -309,4 +309,44 @@ startSketchOn(XY)
 >
 </model-viewer>
 
+```kcl
+n = 5
+width = 10
+gap = 1.5 * width
+
+// Transform function
+fn chessboard(@i) {
+  row = rem(i, divisor = n)
+  column = floor(i / n)
+  isEven = rem(i, divisor = 2) == 0
+  return [
+    {
+  translate = [row * gap, column * gap, 0],
+  replicate = isEven
+}
+  ]
+}
+
+startSketchOn(XY)
+  |> polygon(numSides = 4, radius = width, center = [0, 0])
+  |> extrude(length = 2)
+  |> rotate(yaw = 45)
+  |> patternTransform(instances = n * n, transform = chessboard)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the patternTransform function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform6_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-patternTransform6.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
 
