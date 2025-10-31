@@ -20,6 +20,7 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
+import { Themes } from '@src/lib/theme'
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
@@ -233,7 +234,7 @@ test.describe(
       {
         tag: '@desktop',
       },
-      async ({ context, page, tronApp }, testInfo) => {
+      async ({ page, tronApp }) => {
         if (!tronApp) {
           fail()
         }
@@ -260,17 +261,13 @@ test.describe(
     test(
       'project settings reload on external change',
       { tag: '@desktop' },
-      async ({ context, page }) => {
+      async ({ context, page, toolbar }) => {
         const { dir: projectDirName } = await context.folderSetupFn(
           async () => {}
         )
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
-        const unitsMenuButton = page.getByRole('button', {
-          name: 'Current Units',
-          exact: false,
-        })
         const projectDirLink = page.getByText('Loaded from')
 
         await test.step('Wait for project view', async () => {
@@ -279,7 +276,7 @@ test.describe(
 
         await createProject({ name: 'project-000', page })
 
-        const changeUnitsFs = async (units: BaseUnit) => {
+        const changeShowDebugPanelFs = async (show_debug_panel: boolean) => {
           const tempSettingsFilePath = join(
             projectDirName,
             'project-000',
@@ -289,8 +286,8 @@ test.describe(
             tempSettingsFilePath,
             settingsToToml({
               settings: {
-                modeling: {
-                  base_unit: units,
+                app: {
+                  show_debug_panel,
                 },
                 // TODO: make sure this isn't just working around a bug
                 // where the existing data wouldn't be preserved?
@@ -302,14 +299,13 @@ test.describe(
           )
         }
 
-        await test.step('Check the units indicator is first starting as we expect', async () => {
-          await expect(unitsMenuButton).toBeVisible()
-          await expect(unitsMenuButton).toContainText('in')
+        await test.step('Check the body theme is first starting as we expect', async () => {
+          await expect(toolbar.debugPaneBtn).not.toBeAttached()
         })
 
-        await test.step('Check color of logo changed', async () => {
-          await changeUnitsFs('mm')
-          await expect(unitsMenuButton).toContainText('mm')
+        await test.step('Check the theme changed', async () => {
+          await changeShowDebugPanelFs(true)
+          await expect(toolbar.debugPaneBtn).toBeAttached()
         })
       }
     )
