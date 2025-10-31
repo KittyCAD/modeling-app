@@ -225,6 +225,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-patternTransform-3",
     "std-solid-patternTransform-4",
     "std-solid-patternTransform-5",
+    "std-solid-patternTransform-6",
     "std-solid-shell-0",
     "std-solid-shell-1",
     "std-solid-shell-2",
