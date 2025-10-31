@@ -38,32 +38,34 @@ export const ResponseCardToolBar = (props: {
   }
   return (
     <div className={'pl-9'}>
-      { isEndOfStream && <button
-        type="button"
-        onClick={() => {
-          if (!contentForClipboard) {
-            return
-          }
-          navigator.clipboard.writeText(contentForClipboard).then(
-            () => {
-              toast.success('Copied response to clipboard')
-            },
-            () => {
-              toast.error('Failed to copy response to clipboard')
+      {isEndOfStream && (
+        <button
+          type="button"
+          onClick={() => {
+            if (!contentForClipboard) {
+              return
             }
-          )
-        }}
-        className={`p-0 m-0 border-transparent dark:border-transparent focus-visible:b-default disabled:bg-transparent dark:disabled:bg-transparent disabled:border-transparent dark:disabled:border-transparent disabled:text-4`}
-      >
-        <CustomIcon name="clipboard" className="w-4 h-4" />
-        <Tooltip
-          position="right"
-          hoverOnly={true}
-          contentClassName="text-sm max-w-none flex items-center gap-5"
+            navigator.clipboard.writeText(contentForClipboard).then(
+              () => {
+                toast.success('Copied response to clipboard')
+              },
+              () => {
+                toast.error('Failed to copy response to clipboard')
+              }
+            )
+          }}
+          className={`p-0 m-0 border-transparent dark:border-transparent focus-visible:b-default disabled:bg-transparent dark:disabled:bg-transparent disabled:border-transparent dark:disabled:border-transparent disabled:text-4`}
         >
-          <span>Copy to clipboard</span>
-        </Tooltip>
-      </button>}
+          <CustomIcon name="clipboard" className="w-4 h-4" />
+          <Tooltip
+            position="right"
+            hoverOnly={true}
+            contentClassName="text-sm max-w-none flex items-center gap-5"
+          >
+            <span>Copy to clipboard</span>
+          </Tooltip>
+        </button>
+      )}
     </div>
   )
 }
@@ -108,7 +110,7 @@ export const ExchangeCardStatus = (props: {
       {!isEndOfStream && thinker}
     </div>
   ) : (
-    <div>
+    <div className="relative">
       {thinker}
       {props.updatedAt && (
         <div className="text-chalkboard-70 p-2 pb-0">
