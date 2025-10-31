@@ -655,7 +655,7 @@ export class ConnectionManager extends EventTarget {
             `sendCommand rejected, you hit the timeout. ${JSON.stringify(message.command)}`
           )
         }
-      }, 10_000)
+      }, PENDING_COMMAND_TIMEOUT)
     }
 
     this.connection.send(message.command)
