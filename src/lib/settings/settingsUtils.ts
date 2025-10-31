@@ -196,6 +196,7 @@ export function projectConfigurationToSettingsPayload(
   return {
     meta: {
       id: configuration?.settings?.meta?.id,
+      disableCopilot: configuration?.settings?.meta?.disable_copilot,
     },
     app: {
       // do not read in `theme`, because it is blocked on the project level
@@ -250,6 +251,7 @@ export function settingsPayloadToProjectConfiguration(
     settings: {
       meta: {
         id: configuration?.meta?.id,
+        disable_copilot: configuration?.meta?.disableCopilot,
       },
       app: {
         appearance: {
