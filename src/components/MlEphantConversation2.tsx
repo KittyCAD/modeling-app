@@ -147,7 +147,7 @@ const MlCopilotTool = <T extends MlCopilotTool>(props: {
 }) => {
   return (
     <button
-      className="group/tool flex-none flex flex-row gap-1 items-center p-0 pr-2"
+      className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 pl-1 pr-2"
       onClick={() => props.onRemove(props.tool)}
     >
       <CustomIcon
@@ -196,7 +196,7 @@ const MlCopilotTools = (props: MlCopilotToolsProps) => {
           {props.children}
           <CustomIcon name="plus" className="w-5 h-5" />
         </Popover.Button>
-        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
+        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-1 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
           {tools}
         </Popover.Panel>
       </Popover>
@@ -297,7 +297,7 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
             {tools.length} Tool{tools.length !== 1 ? 's' : ''}
           </div>
         </MlCopilotTools>
-        <div className="flex gap-1">{overflow ? popover : tools}</div>
+        <div className="flex">{overflow ? popover : tools}</div>
       </div>
     </div>
   )
