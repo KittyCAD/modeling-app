@@ -149,12 +149,9 @@ pub enum Segment {
 pub enum SegmentCtor {
     Point(PointCtor),
     Line(LineCtor),
-    MidPointLine(MidPointLineCtor),
     Arc(ArcCtor),
-    ThreePointArc(ThreePointArcCtor),
     TangentArc(TangentArcCtor),
     Circle(CircleCtor),
-    ThreePointCircle(ThreePointCircleCtor),
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -193,13 +190,6 @@ pub struct LineCtor {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-pub struct MidPointLineCtor {
-    pub midpoint: Point2d<Expr>,
-    pub start_or_end: StartOrEnd<Point2d<Expr>>,
-}
-
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiStartOrEnd")]
 #[serde(tag = "type")]
 pub enum StartOrEnd<T> {
@@ -213,7 +203,7 @@ pub struct Arc {
     pub start: ObjectId,
     pub end: ObjectId,
     pub center: ObjectId,
-    // Invariant: Arc or ThreePointArc or TangentArc
+    // Invariant: Arc or TangentArc
     pub ctor: SegmentCtor,
     pub ctor_applicable: bool,
 }
@@ -224,14 +214,6 @@ pub struct ArcCtor {
     pub start: Point2d<Expr>,
     pub end: Point2d<Expr>,
     pub center: Point2d<Expr>,
-}
-
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-pub struct ThreePointArcCtor {
-    pub start: Point2d<Expr>,
-    pub end: Point2d<Expr>,
-    pub interior: Point2d<Expr>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -257,14 +239,6 @@ pub struct Circle {
 pub struct CircleCtor {
     pub center: Point2d<Expr>,
     pub radius: Expr,
-}
-
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-pub struct ThreePointCircleCtor {
-    pub p1: Point2d<Expr>,
-    pub p2: Point2d<Expr>,
-    pub p3: Point2d<Expr>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
