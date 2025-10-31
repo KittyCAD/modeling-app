@@ -8,6 +8,7 @@ import {
   engineCommandManager,
   kclManager,
   rustContext,
+  sceneInfra,
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { getDimensions } from '@src/network/utils'
@@ -111,7 +112,16 @@ const attemptToConnectToEngine = async ({
         // TODO: resolve the ~12 remaining dependent playwright tests on this functions isPlaywright() check
         // Once zoom to fit and view isometric work on empty scenes (only grid planes) we can improve the functions
         // business logic
-        await resetCameraPosition()
+
+        // This means you idled, otherwise you use the reset camera position
+        if (sceneInfra.camControls.oldCameraState) {
+          await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
+        } else {
+          await resetCameraPosition()
+        }
+
+        // Since you reconnected you are not idle, clear the old camera state
+        sceneInfra.camControls.clearOldCameraState()
         return resolve(true)
       } catch (err) {
         return reject(err)

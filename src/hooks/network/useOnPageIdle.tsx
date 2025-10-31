@@ -7,7 +7,6 @@ import {
 } from '@src/lib/singletons'
 import { useEffect, useRef, useState } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { trap } from '@src/lib/trap'
 
 export const useOnPageIdle = ({
   startCallback,
@@ -17,11 +16,12 @@ export const useOnPageIdle = ({
   idleCallback: () => void
 }) => {
   const settings = useSettings()
+  const intervalId = useRef<NodeJS.Timeout | null>(null)
   const [streamIdleMode, setStreamIdleMode] = useState(
     settings.app.streamIdleMode.current
   )
   const { state: modelingMachineState } = useModelingContext()
-  const IDLE_TIME_MS = Number(streamIdleMode)
+  const IDLE_TIME_MS = Number(5000)
   // When streamIdleMode is changed, setup or teardown the timeouts
   const timeoutStart = useRef<number | null>(null)
 
@@ -49,34 +49,48 @@ export const useOnPageIdle = ({
   }, [streamIdleMode])
 
   useEffect(() => {
+    if (intervalId.current) {
+      // we have a loop running don't clear it!
+      return
+    }
+
     // Check every 1 second to see if you are idle.
     const interval = setInterval(() => {
-      // Do not pause if the user is in the middle of an operation
-      if (!modelingMachineState.matches('idle')) {
-        // In fact, stop the timeout, because we don't want to trigger the
-        // pause when we exit the operation.
-        timeoutStart.current = null
-      } else if (timeoutStart.current) {
-        const elapsed = Date.now() - timeoutStart.current
-        // Don't pause if we're already disconnected.
-        if (
-          // It's unnecessary to once again setup an event listener for
-          // offline/online to capture this state, when this state already
-          // exists on the window.navigator object. In hindsight it makes
-          // me (lee) regret we set React state variables such as
-          // isInternetConnected in other files when we could check this
-          // object instead.
-          elapsed >= IDLE_TIME_MS
-        ) {
+      void (async () => {
+        // Do not pause if the user is in the middle of an operation
+        if (!modelingMachineState.matches('idle')) {
+          // In fact, stop the timeout, because we don't want to trigger the
+          // pause when we exit the operation.
           timeoutStart.current = null
-          console.warn('detected idle, tearing down connection.')
-          // We do a full tear down at the moment.
-          engineCommandManager.tearDown()
-          idleCallback()
+        } else if (timeoutStart.current) {
+          const elapsed = Date.now() - timeoutStart.current
+          // Don't pause if we're already disconnected.
+          if (
+            // It's unnecessary to once again setup an event listener for
+            // offline/online to capture this state, when this state already
+            // exists on the window.navigator object. In hindsight it makes
+            // me (lee) regret we set React state variables such as
+            // isInternetConnected in other files when we could check this
+            // object instead.
+            elapsed >= IDLE_TIME_MS
+          ) {
+            timeoutStart.current = null
+            try {
+              await sceneInfra.camControls.saveRemoteCameraState()
+            } catch (e) {
+              console.warn('unable to save old camera state on idle')
+              sceneInfra.camControls.clearOldCameraState()
+            }
+            console.log(sceneInfra.camControls.oldCameraState)
+            console.warn('detected idle, tearing down connection.')
+            // We do a full tear down at the moment.
+            engineCommandManager.tearDown()
+            idleCallback()
+          }
         }
-      }
+      })()
     }, 1_000)
-    return () => clearInterval(interval)
+    intervalId.current = interval
   }, [IDLE_TIME_MS, idleCallback, modelingMachineState])
 
   useEffect(() => {
@@ -120,32 +134,4 @@ export const useOnPageIdle = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [streamIdleMode])
-
-  // On various inputs save the camera state, in case we get disconnected.
-  useEffect(() => {
-    const onInput = () => {
-      // Save the remote camera state to restore on stream restore.
-      // Fire-and-forget because we don't know when a camera movement is
-      // completed on the engine side (there are no responses to data channel
-      // mouse movements.)
-      engineCommandManager.connection?.deferredConnection?.promise
-        .then(() => {
-          sceneInfra.camControls.saveRemoteCameraState().catch(trap)
-        })
-        .catch(trap)
-    }
-
-    // These usually signal a user is done some sort of operation.
-    window.document.addEventListener('keyup', onInput)
-    window.document.addEventListener('mouseup', onInput)
-    window.document.addEventListener('scroll', onInput)
-    window.document.addEventListener('touchend', onInput)
-
-    return () => {
-      window.document.removeEventListener('keyup', onInput)
-      window.document.removeEventListener('mouseup', onInput)
-      window.document.removeEventListener('scroll', onInput)
-      window.document.removeEventListener('touchend', onInput)
-    }
-  }, [])
 }

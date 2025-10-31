@@ -647,6 +647,7 @@ export class ConnectionManager extends EventTarget {
     if (timeoutPendingCommand) {
       setTimeout(() => {
         if (!isSettled) {
+          console.warn(message.command)
           toast.error(
             `command took more than ${PENDING_COMMAND_TIMEOUT} milliseconds to finish, rejecting the command.`
           )
@@ -654,7 +655,7 @@ export class ConnectionManager extends EventTarget {
             `sendCommand rejected, you hit the timeout. ${JSON.stringify(message.command)}`
           )
         }
-      }, PENDING_COMMAND_TIMEOUT)
+      }, 10_000)
     }
 
     this.connection.send(message.command)

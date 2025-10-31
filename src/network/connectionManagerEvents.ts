@@ -129,7 +129,6 @@ export const createOnEngineConnectionOpened = ({
       label: 'onEngineConnectionOpened',
       message: 'restoreRemoteCameraStateAndTriggerSync',
     })
-    await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
 
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
