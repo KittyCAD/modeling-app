@@ -589,6 +589,25 @@ export fn hollow(
 ///   |> extrude(length = 4)
 ///   |> patternTransform(instances = 3, transform = transform)
 /// ```
+/// ```kcl
+/// n = 5
+/// width = 10
+/// gap = 1.5 * width
+/// 
+/// // Transform function
+/// fn chessboard(@i) {
+///   row = rem(i, divisor = n)
+///   column = floor(i / n)
+///   isEven = rem(i, divisor = 2) == 0
+///   return [{ translate = [row * gap, column * gap, 0], replicate = isEven }]
+/// }
+/// 
+/// startSketchOn(XY)
+///   |> polygon(numSides = 4, radius = width, center = [0, 0])
+///   |> extrude(length = 2)
+///   |> rotate(yaw = 45)
+///   |> patternTransform(instances = n * n, transform = chessboard)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn patternTransform(
   /// The solid(s) to duplicate.

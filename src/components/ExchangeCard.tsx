@@ -7,6 +7,8 @@ import {
 } from '@src/machines/mlEphantManagerMachine2'
 import ms from 'ms'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
+import Tooltip from '@src/components/Tooltip'
+import toast from 'react-hot-toast'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
 
 export type ExchangeCardProps = Exchange & {
@@ -18,6 +20,55 @@ type MlCopilotServerMessageError<T = MlCopilotServerMessage> = T extends {
 }
   ? T
   : never
+
+export const ResponseCardToolBar = (props: {
+  responses?: MlCopilotServerMessage[]
+}) => {
+  const isEndOfStream =
+    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
+    props.responses?.some((x) => 'error' in x || 'info' in x)
+
+  let contentForClipboard: string | undefined = ''
+
+  if (isEndOfStream) {
+    const lastResponse = props.responses?.slice(-1)[0]
+    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
+      contentForClipboard = lastResponse.end_of_stream.whole_response
+    }
+  }
+  return (
+    <div className={'pl-9'}>
+      {isEndOfStream && (
+        <button
+          type="button"
+          onClick={() => {
+            if (!contentForClipboard) {
+              return
+            }
+            navigator.clipboard.writeText(contentForClipboard).then(
+              () => {
+                toast.success('Copied response to clipboard')
+              },
+              () => {
+                toast.error('Failed to copy response to clipboard')
+              }
+            )
+          }}
+          className={`p-0 m-0 border-transparent dark:border-transparent focus-visible:b-default disabled:bg-transparent dark:disabled:bg-transparent disabled:border-transparent dark:disabled:border-transparent disabled:text-4`}
+        >
+          <CustomIcon name="clipboard" className="w-4 h-4" />
+          <Tooltip
+            position="right"
+            hoverOnly={true}
+            contentClassName="text-sm max-w-none flex items-center gap-5"
+          >
+            <span>Copy to clipboard</span>
+          </Tooltip>
+        </button>
+      )}
+    </div>
+  )
+}
 
 export const ExchangeCardStatus = (props: {
   responses?: MlCopilotServerMessage[]
@@ -59,7 +110,7 @@ export const ExchangeCardStatus = (props: {
       {!isEndOfStream && thinker}
     </div>
   ) : (
-    <div>
+    <div className="relative">
       {thinker}
       {props.updatedAt && (
         <div className="text-chalkboard-70 p-2 pb-0">
@@ -312,6 +363,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
         </div>
       )}
       <ResponsesCard items={props.responses} />
+      <ResponseCardToolBar responses={props.responses} />
     </div>
   )
 }

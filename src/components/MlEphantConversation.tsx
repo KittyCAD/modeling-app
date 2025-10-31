@@ -150,7 +150,7 @@ export const MlEphantConversationInput = (
               onClick()
             }
           }}
-          className={`outline-none w-full overflow-auto ${isAnimating ? 'hidden' : ''}`}
+          className={`bg-transparent outline-none w-full text-sm overflow-auto ${isAnimating ? 'hidden' : ''}`}
           style={{ height: '2lh' }}
         />
         <div
