@@ -15,7 +15,6 @@ import {
   createProject,
   executorInputPath,
   getUtils,
-  inputRangeSlideFromCurrentTo,
   settingsToToml,
   tomlToSettings,
 } from '@e2e/playwright/test-utils'
@@ -119,7 +118,7 @@ test.describe(
       homePage,
     }) => {
       const u = await getUtils(page)
-      await test.step(`Setup`, async () => {
+      await test.step('Setup', async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         await u.waitForPageLoad()
@@ -131,14 +130,13 @@ test.describe(
         page.getByRole('button', {
           name: `Reset ${level}-level settings`,
         })
-      const themeColorSetting = page.locator('#themeColor').getByRole('slider')
+      const settingInput = page.locator('#defaultUnit').getByRole('combobox')
 
       const settingValues = {
-        default: '259',
-        // Because it's a slider, sometimes the values cannot physically be
-        // dragged to. You need to adjust this until it works.
-        user: '48',
-        project: '77',
+        default: 'mm',
+        // Our playwright config sets the user value to `in`
+        user: 'in',
+        project: 'cm',
       }
       const resetToast = (level: SettingsLevel) =>
         page.getByText(`${level}-level settings were reset`)
@@ -150,27 +148,23 @@ test.describe(
         ).toBeVisible()
       })
 
-      await test.step('Set up theme color', async () => {
+      await test.step('Set setting in UI', async () => {
         // Verify we're looking at the project-level settings
         await settingsSwitchTab(page)('proj')
-        await themeColorSetting.fill(settingValues.default)
+        // Because a user-level value is set in the Playwright test config,
+        // we expect the inherited user-level value here.
+        await expect(settingInput).toHaveValue(settingValues.user)
 
         // Set project-level value
-        await inputRangeSlideFromCurrentTo(
-          themeColorSetting,
-          settingValues.project
-        )
-        await expect(themeColorSetting).toHaveValue(settingValues.project)
+        await settingInput.selectOption(settingValues.project)
+        await expect(settingInput).toHaveValue(settingValues.project)
 
         // Set user-level value
         // It's the same component so this could fill too soon.
         // We need to confirm to wait the user settings tab is loaded.
         await settingsSwitchTab(page)('user')
-        await inputRangeSlideFromCurrentTo(
-          themeColorSetting,
-          settingValues.user
-        )
-        await expect(themeColorSetting).toHaveValue(settingValues.user)
+        await settingInput.selectOption(settingValues.user)
+        await expect(settingInput).toHaveValue(settingValues.user)
       })
 
       await test.step('Reset project settings', async () => {
@@ -183,19 +177,16 @@ test.describe(
         await expect(resetToast('project')).not.toBeVisible()
 
         // Verify it is now set to the inherited user value
-        await expect(themeColorSetting).toHaveValue(settingValues.user)
+        await expect(settingInput).toHaveValue(settingValues.user)
 
-        await test.step(`Check that the user settings did not change`, async () => {
+        await test.step('Check that the user settings did not change', async () => {
           await settingsSwitchTab(page)('user')
-          await expect(themeColorSetting).toHaveValue(settingValues.user)
+          await expect(settingInput).toHaveValue(settingValues.user)
         })
 
-        await test.step(`Set project-level again to test the user-level reset`, async () => {
+        await test.step('Set project-level again to test the user-level reset', async () => {
           await settingsSwitchTab(page)('proj')
-          await inputRangeSlideFromCurrentTo(
-            themeColorSetting,
-            settingValues.project
-          )
+          await settingInput.selectOption(settingValues.project)
           await settingsSwitchTab(page)('user')
         })
       })
@@ -208,11 +199,11 @@ test.describe(
         await expect(resetToast('user')).not.toBeVisible()
 
         // Verify it is now set to the default value
-        await expect(themeColorSetting).toHaveValue(settingValues.default)
+        await expect(settingInput).toHaveValue(settingValues.default)
 
         await test.step(`Check that the project settings did not change`, async () => {
           await settingsSwitchTab(page)('proj')
-          await expect(themeColorSetting).toHaveValue(settingValues.project)
+          await expect(settingInput).toHaveValue(settingValues.project)
         })
       })
     })

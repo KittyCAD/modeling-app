@@ -20,7 +20,6 @@ type FileRoleLabel =
   | 'Keybindings'
   | 'Sign Out'
   | 'Theme'
-  | 'Theme Color'
   | 'Export Current Part'
   | 'Create New File'
   | 'Create New Folder'

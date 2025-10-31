@@ -92,15 +92,6 @@ export const projectFileRole = (
               })
             },
           },
-          {
-            label: 'Theme Color',
-            id: 'File.Preferences.Theme color',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'File.Preferences.Theme color',
-              })
-            },
-          },
         ],
       },
       { type: 'separator' },
@@ -229,15 +220,6 @@ export const modelingFileRole = (
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Theme',
-              })
-            },
-          },
-          {
-            label: 'Theme Color',
-            id: 'File.Preferences.Theme color',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'File.Preferences.Theme color',
               })
             },
           },

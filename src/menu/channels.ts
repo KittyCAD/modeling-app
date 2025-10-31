@@ -22,7 +22,6 @@ export type MenuLabels =
   | 'File.Preferences.Keybindings'
   | 'File.Preferences.User default units'
   | 'File.Preferences.Theme'
-  | 'File.Preferences.Theme color'
   | 'File.Sign out'
   | 'File.Create new file'
   | 'File.Create new folder'

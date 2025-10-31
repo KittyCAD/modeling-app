@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::settings::types::{
-    AppColor, DefaultTrue, OnboardingStatus, ProjectCommandBarSettings, ProjectTextEditorSettings, is_default,
+    DefaultTrue, OnboardingStatus, ProjectCommandBarSettings, ProjectTextEditorSettings, is_default,
 };
 
 /// Project specific settings for the app.
@@ -83,10 +83,6 @@ pub struct ProjectMetaSettings {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct ProjectAppSettings {
-    /// The settings for the appearance of the app.
-    #[serde(default, skip_serializing_if = "is_default")]
-    #[validate(nested)]
-    pub appearance: ProjectAppearanceSettings,
     /// The onboarding status of the app.
     #[serde(default, skip_serializing_if = "is_default")]
     pub onboarding_status: OnboardingStatus,
@@ -107,17 +103,6 @@ pub struct ProjectAppSettings {
     /// Settings that affect the behavior of the command bar.
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub named_views: IndexMap<uuid::Uuid, NamedView>,
-}
-
-/// Project specific appearance settings.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-pub struct ProjectAppearanceSettings {
-    /// The hue of the primary theme color for the app.
-    #[serde(default, skip_serializing_if = "is_default")]
-    #[validate(nested)]
-    pub color: AppColor,
 }
 
 /// Project specific settings that affect the behavior while modeling.
@@ -200,7 +185,7 @@ mod tests {
     use serde_json::Value;
 
     use super::{
-        NamedView, PerProjectSettings, ProjectAppSettings, ProjectAppearanceSettings, ProjectCommandBarSettings,
+        NamedView, PerProjectSettings, ProjectAppSettings, ProjectCommandBarSettings,
         ProjectConfiguration, ProjectMetaSettings, ProjectModelingSettings, ProjectTextEditorSettings,
     };
     use crate::settings::types::UnitLength;
@@ -306,7 +291,6 @@ color = 1567.4"#;
             settings: PerProjectSettings {
                 meta: ProjectMetaSettings { id: uuid::Uuid::nil() },
                 app: ProjectAppSettings {
-                    appearance: ProjectAppearanceSettings { color: 138.0.into() },
                     onboarding_status: Default::default(),
                     dismiss_web_banner: false,
                     stream_idle_mode: false,
