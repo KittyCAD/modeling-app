@@ -149,7 +149,7 @@ const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
       <Popover className="relative">
         <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 pl-1 pr-2">
           {props.children}
-          <CustomIcon name="carretUp" className="w-5 h-5 ui-open:rotate-180" />
+          <CustomIcon name="caretUp" className="w-5 h-5 ui-open:rotate-180" />
         </Popover.Button>
         <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
           {efforts}
@@ -580,7 +580,7 @@ export const MlEphantConversationInput = (
             onClick={onClick}
             className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
           >
-            <CustomIcon name="carretUp" className="w-5 h-5 animate-bounce" />
+            <CustomIcon name="caretUp" className="w-5 h-5 animate-bounce" />
           </button>
         </div>
       </div>

@@ -209,36 +209,6 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
-  carretUp: (
-    <svg
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="arrow up"
-    >
-      <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
-        d="M10.0001 8.70709L6.35352 12.3536L5.64642 11.6465L9.64655 7.64642L10.3537 7.64643L14.3535 11.6465L13.6464 12.3536L10.0001 8.70709Z"
-        fill="currentColor"
-      />
-    </svg>
-  ),
-  carretDown: (
-    <svg
-      viewBox="0 0 20 20"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="arrow up"
-    >
-      <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
-        d="M10.0001 11.2929L6.35352 7.64642L5.64642 8.35354L9.64655 12.3536L10.3537 12.3536L14.3535 8.35353L13.6464 7.64643L10.0001 11.2929Z"
-        fill="currentColor"
-      />
-    </svg>
-  ),
   chat: (
     <svg
       viewBox="0 0 20 20"
@@ -265,6 +235,21 @@ const CustomIconMap = Object.freeze({
         fillRule="evenodd"
         clipRule="evenodd"
         d="M8.29956 13.5388L13.9537 6L14.7537 6.6L8.75367 14.6L8.00012 14.6536L5 11.6536L5.70709 10.9465L8.29956 13.5388Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  caretUp: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow up"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M10.0001 8.70709L6.35352 12.3536L5.64642 11.6465L9.64655 7.64642L10.3537 7.64643L14.3535 11.6465L13.6464 12.3536L10.0001 8.70709Z"
         fill="currentColor"
       />
     </svg>
