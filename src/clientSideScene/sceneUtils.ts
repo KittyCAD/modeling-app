@@ -15,6 +15,7 @@ export const DEBUG_SHOW_INTERSECTION_PLANE = false
 export const DEBUG_SHOW_BOTH_SCENES = false
 
 export const RAYCASTABLE_PLANE = 'raycastable-plane'
+export const SKETCH_SOLVE_GROUP = 'sketchSolveGroup'
 
 export const X_AXIS = 'xAxis'
 export const Y_AXIS = 'yAxis'

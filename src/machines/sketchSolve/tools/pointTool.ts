@@ -1,6 +1,6 @@
 import { assertEvent, fromPromise, setup } from 'xstate'
 
-import { sceneInfra, rustContext, kclManager } from '@src/lib/singletons'
+import { sceneInfra, rustContext } from '@src/lib/singletons'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type {
   SegmentCtor,
@@ -90,7 +90,7 @@ export const machine = setup({
 
           // Call the addSegment method using the singleton rustContext
           const result = await rustContext.addSegment(
-            1, // version - TODO: Get this from actual context
+            0, // version - TODO: Get this from actual context
             0, // sketchId - TODO: Get this from actual context
             segmentCtor,
             'point-tool-point', // label
@@ -160,9 +160,5 @@ export const machine = setup({
       entry: 'remove point listener',
       description: 'Any teardown logic should go here.',
     },
-  },
-  entry: async () => {
-    // TODO: using newSketch or editSketch should make this hack redundant
-    await rustContext.hackSetProgram(kclManager.ast, await jsAppSettings())
   },
 })

@@ -16,13 +16,24 @@ import type {
   SketchExecOutcome,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { codeManager, rustContext, sceneInfra } from '@src/lib/singletons'
+import {
+  codeManager,
+  rustContext,
+  sceneInfra,
+  sceneEntitiesManager,
+} from '@src/lib/singletons'
 import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import { Group, OrthographicCamera } from 'three'
 import { orthoScale } from '@src/clientSideScene/helpers'
 import { getParentGroup } from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
+import type {
+  DefaultPlane,
+  ExtrudeFacePlane,
+  OffsetPlane,
+} from '@src/machines/modelingSharedTypes'
+import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 
 const equipTools = Object.freeze({
   centerRectTool,
@@ -68,14 +79,30 @@ type SketchSolveContext = {
     kclSource: SourceDelta
     sketchExecOutcome: SketchExecOutcome
   }
+  // Plane/face data from the 'animate-to-sketch-solve' actor
+  initialPlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane
 }
 
 export const sketchSolveMachine = setup({
   types: {
     context: {} as SketchSolveContext,
     events: {} as SketchSolveMachineEvent,
+    input: {} as {
+      initialSketchSolvePlane?:
+        | DefaultPlane
+        | OffsetPlane
+        | ExtrudeFacePlane
+        | null
+    },
   },
   actions: {
+    'initialize intersection plane': ({ context }) => {
+      if (context.initialPlane) {
+        sceneEntitiesManager.initSketchSolveEntityOrientation(
+          context.initialPlane
+        )
+      }
+    },
     setUpOnDragAndSelectionClickCallbacks: ({ self }) => {
       // Closure-scoped mutex to prevent concurrent async editSegment operations.
       // Not in XState context since it's purely an implementation detail for race condition prevention.
@@ -180,7 +207,11 @@ export const sketchSolveMachine = setup({
             id: objId,
           })
             .then((group) => {
-              sceneInfra.scene.add(group)
+              const sketchSceneGroup =
+                sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+              if (sketchSceneGroup) {
+                sketchSceneGroup.add(group)
+              }
             })
             .catch(() => {
               console.error('Failed to init PointSegment for object', objId)
@@ -257,9 +288,10 @@ export const sketchSolveMachine = setup({
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6cKiYvFh0cbxCUOxCAFswNIks4VyM-OkBg2VjU40a6-ljF0VGxFbpY2Uug0ubTp07rx8Vv5JkEZmFRGAAI6hZh8PAYQgkPYZA45cTHRDaRQqGoDWROeocWRqBqWZ5GaTKDS9eQ2eTyaSDUraf6jQETQLTELKLaEIKRUQQJbxRIYOgQMRgZTMUSkQjobm8sAAFQRxCR-EEhzRoBOnwpGipPw42jkZlJBTUykGBjUxMG3Q0xpZYyBHOCtAVfIFQoSSQYACd-YR-co+MRogAzYNbT3K1XqzKa1F5GSfc72KrU2R47QDJ4IU7aVQ2+nlS4uDinZ1sgJTd2SnlewVxX2iyHQ2HwxHcfZJlIpgt2ZSE+7GeQaapFLHyfMGdyqQbGOqVNqKG3Vvzsuug5ShISiKBw1VzcFQmFH7vpDXZfvogvG+SUsp49RdA3E-NaItY4y-3Mm20nRGF0txBLk92lQ8u2IBgz07eMe2RPsjh1RAigpT46m0XQTFkG01HzbQFHeLFZA0BQ6kUeppA3VZgU5D1YAAd1YXBIIvGDGFgDBoklcVwWUSIkmDZQExRW9UIQIpzjuCp9ExJdygI81iUfBk8InKi1AUOdaNdbdwNPDs+HY6C6C4niYmUfjJSE+EQzE5DtUkGRjWKNpjGua5pHzV4KW0-QJzURwqiKLwRlEEJ4AyEDazA2hexvFCXIQYLh0KRQxwnO4bEGfNmkyylf2zPFjDabzsL00CGIbRU8H5ZthSSRKtQHcj3LKvCGTUBw83NOxzh0pdyo4RRCSquKat3fcoNVFrkzvEwVGqcl1GqHRHnNR1HzXIkDSxTFFAm+j62UZjWJwUy5qQpLnPyT5vzK21LgNExpBnFTOmUbCaXqeoDEJYLjrdHcmGEA95oklLpF0S0iO07QTGMJxylkfNf2LSo3J-f95GBgyPVCIyYRMg8OMh5LdXI5RXl6SpMp6sp8wO945EUBlFEKKp2fCjwgA */
-  context: (): SketchSolveContext => ({
+  context: ({ input }): SketchSolveContext => ({
     sketchSolveToolName: null,
     selectedIds: [],
+    initialPlane: input?.initialSketchSolvePlane ?? undefined,
   }),
   id: 'Sketch Solve Mode',
   initial: 'move and select',
@@ -387,5 +419,8 @@ export const sketchSolveMachine = setup({
     },
   },
 
-  entry: 'setUpOnDragAndSelectionClickCallbacks',
+  entry: [
+    'initialize intersection plane',
+    'setUpOnDragAndSelectionClickCallbacks',
+  ],
 })

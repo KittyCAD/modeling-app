@@ -207,6 +207,8 @@ export interface ModelingMachineContext {
   selection: string[]
   selectionRanges: Selections
   sketchDetails: SketchDetails | null
+  // Data returned by 'animate-to-sketch-solve' to initialize sketch solve
+  sketchSolveInit?: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null
   sketchPlaneId: string
   sketchEnginePathId: string
   moveDescs: MoveDesc[]
