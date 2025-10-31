@@ -74,6 +74,9 @@ pub struct PerProjectSettings {
 pub struct ProjectMetaSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub id: uuid::Uuid,
+    /// Disable the new Copilot in Text-to-CAD for this project, only available in Zoo Design Studio (Staging).
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub disable_copilot: bool,
 }
 
 /// Project specific application settings.
@@ -90,10 +93,6 @@ pub struct ProjectAppSettings {
     /// The onboarding status of the app.
     #[serde(default, skip_serializing_if = "is_default")]
     pub onboarding_status: OnboardingStatus,
-    /// Permanently dismiss the banner warning to download the desktop app.
-    /// This setting only applies to the web app. And is temporary until we have Linux support.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub dismiss_web_banner: bool,
     /// When the user is idle, and this is true, the stream will be torn down.
     #[serde(default, skip_serializing_if = "is_default")]
     pub stream_idle_mode: bool,
@@ -304,11 +303,13 @@ color = 1567.4"#;
     fn test_project_settings_named_views() {
         let conf = ProjectConfiguration {
             settings: PerProjectSettings {
-                meta: ProjectMetaSettings { id: uuid::Uuid::nil() },
+                meta: ProjectMetaSettings {
+                    id: uuid::Uuid::nil(),
+                    disable_copilot: Default::default(),
+                },
                 app: ProjectAppSettings {
                     appearance: ProjectAppearanceSettings { color: 138.0.into() },
                     onboarding_status: Default::default(),
-                    dismiss_web_banner: false,
                     stream_idle_mode: false,
                     allow_orbit_in_sketch_mode: false,
                     show_debug_panel: Some(true),
