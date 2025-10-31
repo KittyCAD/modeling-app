@@ -3,8 +3,8 @@ use std::sync::Arc;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
     front::{
-        Error, File, FileId, LifecycleApi, ObjectId, ProjectId, SceneGraphDelta, SegmentCtor, SketchApi, SketchApiStub,
-        SketchExecOutcome, SourceDelta, Version,
+        Error, ExistingSegmentCtor, File, FileId, LifecycleApi, ObjectId, ProjectId, SceneGraphDelta, SegmentCtor,
+        SketchApi, SketchApiStub, SketchExecOutcome, SourceDelta, Version,
     },
     Program,
 };
@@ -227,12 +227,11 @@ impl Context {
 
     /// Edit segment in sketch.
     #[wasm_bindgen]
-    pub async fn edit_segment(
+    pub async fn edit_segments(
         &self,
         version_json: &str,
         sketch_json: &str,
-        segment_id_json: &str,
-        segment_json: &str,
+        segments_json: &str,
         settings: &str,
     ) -> Result<JsValue, JsValue> {
         console_error_panic_hook::set_once();
@@ -241,10 +240,8 @@ impl Context {
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
         let sketch: kcl_lib::front::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
-        let segment_id: kcl_lib::front::ObjectId = serde_json::from_str(segment_id_json)
-            .map_err(|e| format!("Could not deserialize segment ObjectId: {e}"))?;
-        let segment: kcl_lib::front::SegmentCtor =
-            serde_json::from_str(segment_json).map_err(|e| format!("Could not deserialize SegmentCtor: {e}"))?;
+        let segments: Vec<ExistingSegmentCtor> =
+            serde_json::from_str(segments_json).map_err(|e| format!("Could not deserialize Segments: {e}"))?;
 
         let ctx = self
             .create_executor_ctx(settings, None, false)
@@ -253,12 +250,12 @@ impl Context {
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
         let result = guard
-            .edit_segment(&ctx, version, sketch, segment_id, segment)
+            .edit_segments(&ctx, version, sketch, segments)
             .await
-            .map_err(|e| format!("Failed to edit segment in sketch: {:?}", e))?;
+            .map_err(|e| format!("Failed to edit segments in sketch: {:?}", e))?;
 
         Ok(JsValue::from_serde(&result)
-            .map_err(|e| format!("Could not serialize edit segment result. {TRUE_BUG} Details: {e}"))?)
+            .map_err(|e| format!("Could not serialize edit segments result. {TRUE_BUG} Details: {e}"))?)
     }
 
     /// Add a constraint to sketch.

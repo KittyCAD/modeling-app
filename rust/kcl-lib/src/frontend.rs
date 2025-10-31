@@ -14,7 +14,8 @@ use crate::{
         },
         modify::{find_defined_names, next_free_name},
         sketch::{
-            Coincident, Constraint, LineCtor, Point2d, Segment, SegmentCtor, SketchApi, SketchArgs, SketchExecOutcome,
+            Coincident, Constraint, ExistingSegmentCtor, LineCtor, Point2d, Segment, SegmentCtor, SketchApi,
+            SketchArgs, SketchExecOutcome,
         },
         traverse::{TraversalReturn, Visitor, dfs_mut},
     },
@@ -234,22 +235,27 @@ impl SketchApi for FrontendState {
         }
     }
 
-    async fn edit_segment(
+    async fn edit_segments(
         &mut self,
         ctx: &ExecutorContext,
         _version: Version,
         sketch: ObjectId,
-        segment_id: ObjectId,
-        segment: SegmentCtor,
+        segments: Vec<ExistingSegmentCtor>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
         // TODO: Check version.
-        match segment {
-            SegmentCtor::Point(ctor) => self.edit_point(ctx, sketch, segment_id, ctor).await,
-            SegmentCtor::Line(ctor) => self.edit_line(ctx, sketch, segment_id, ctor).await,
-            _ => Err(Error {
-                msg: format!("segment ctor not implemented yet: {segment:?}"),
-            }),
+        let mut new_ast = self.program.ast.clone();
+        for segment in segments {
+            match segment.ctor {
+                SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment.id, ctor)?,
+                SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment.id, ctor)?,
+                _ => {
+                    return Err(Error {
+                        msg: format!("segment ctor not implemented yet: {segment:?}"),
+                    });
+                }
+            }
         }
+        self.execute_after_edit(ctx, sketch, &mut new_ast).await
     }
 
     async fn delete_segment(
@@ -555,13 +561,13 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
     }
 
-    async fn edit_point(
+    fn edit_point(
         &mut self,
-        ctx: &ExecutorContext,
+        new_ast: &mut ast::Node<ast::Program>,
         sketch: ObjectId,
         point: ObjectId,
         ctor: PointCtor,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
+    ) -> api::Result<()> {
         // Create updated KCL source from args.
         let new_at_ast = to_ast_point2d(&ctor.position).map_err(|err| Error { msg: err.to_string() })?;
 
@@ -590,55 +596,18 @@ impl FrontendState {
         };
 
         // Modify the point AST.
-        let mut new_ast = self.program.ast.clone();
-        self.mutate_ast(&mut new_ast, point_id, AstMutateCommand::EditPoint { at: new_at_ast })
+        self.mutate_ast(new_ast, point_id, AstMutateCommand::EditPoint { at: new_at_ast })
             .map_err(|err| Error { msg: err.to_string() })?;
-        // Convert to string source to create real source ranges.
-        let new_source = source_from_ast(&new_ast);
-        // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
-        if !errors.is_empty() {
-            return Err(Error {
-                msg: format!("Error parsing KCL source after modifying point: {errors:?}"),
-            });
-        }
-        let Some(new_program) = new_program else {
-            return Err(Error {
-                msg: "No AST produced after modifying point".to_string(),
-            });
-        };
-
-        // TODO: sketch-api: make sure to only set this if there are no errors.
-        self.program = new_program.clone();
-
-        // Execute.
-        let outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
-            // TODO: sketch-api: Yeah, this needs to change. We need to
-            // return the full error.
-            Error {
-                msg: err.error.message().to_owned(),
-            }
-        })?;
-
-        let src_delta = SourceDelta { text: new_source };
-        let outcome = self.update_state_after_exec(outcome);
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph.clone(),
-            invalidates_ids: false,
-            new_objects: Vec::new(),
-            exec_outcome: outcome,
-        };
-        let sketch_exec_outcome = self.sketch_exec_outcome(sketch_id)?;
-        Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
+        Ok(())
     }
 
-    async fn edit_line(
+    fn edit_line(
         &mut self,
-        ctx: &ExecutorContext,
+        new_ast: &mut ast::Node<ast::Program>,
         sketch: ObjectId,
         line: ObjectId,
         ctor: LineCtor,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
+    ) -> api::Result<()> {
         // Create updated KCL source from args.
         let new_start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let new_end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
@@ -668,9 +637,8 @@ impl FrontendState {
         };
 
         // Modify the line AST.
-        let mut new_ast = self.program.ast.clone();
         self.mutate_ast(
-            &mut new_ast,
+            new_ast,
             line_id,
             AstMutateCommand::EditLine {
                 start: new_start_ast,
@@ -678,18 +646,27 @@ impl FrontendState {
             },
         )
         .map_err(|err| Error { msg: err.to_string() })?;
+        Ok(())
+    }
+
+    async fn execute_after_edit(
+        &mut self,
+        ctx: &ExecutorContext,
+        sketch_id: ObjectId,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
         // Convert to string source to create real source ranges.
-        let new_source = source_from_ast(&new_ast);
+        let new_source = source_from_ast(new_ast);
         // Parse the new KCL source.
         let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
         if !errors.is_empty() {
             return Err(Error {
-                msg: format!("Error parsing KCL source after modifying line: {errors:?}"),
+                msg: format!("Error parsing KCL source after editing: {errors:?}"),
             });
         }
         let Some(new_program) = new_program else {
             return Err(Error {
-                msg: "No AST produced after modifying line".to_string(),
+                msg: "No AST produced after editing".to_string(),
             });
         };
 
@@ -1349,12 +1326,13 @@ mod tests {
         frontend.program = program;
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let version = Version(0);
 
         let sketch_args = SketchArgs {
             on: api::Plane::Default(PlaneName::Xy),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
-            .new_sketch(&ctx, ProjectId(0), FileId(0), Version(0), sketch_args)
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
         assert_eq!(sketch_id, ObjectId(0));
@@ -1385,8 +1363,11 @@ mod tests {
                 }),
             },
         };
-        let (src_delta, scene_delta, sketch_exec_outcome) =
-            frontend.add_point(&ctx, sketch_id, point_ctor).await.unwrap();
+        let segment = SegmentCtor::Point(point_ctor);
+        let (src_delta, scene_delta, sketch_exec_outcome) = frontend
+            .add_segment(&ctx, version, sketch_id, segment, None)
+            .await
+            .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
@@ -1414,8 +1395,12 @@ sketch(on = XY) {
                 }),
             },
         };
+        let segments = vec![ExistingSegmentCtor {
+            id: point_id,
+            ctor: SegmentCtor::Point(point_ctor),
+        }];
         let (src_delta, scene_delta, sketch_exec_outcome) = frontend
-            .edit_point(&ctx, sketch_id, point_id, point_ctor)
+            .edit_segments(&ctx, version, sketch_id, segments)
             .await
             .unwrap();
         assert_eq!(
@@ -1442,12 +1427,13 @@ sketch(on = XY) {
         frontend.program = program;
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let version = Version(0);
 
         let sketch_args = SketchArgs {
             on: api::Plane::Default(PlaneName::Xy),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
-            .new_sketch(&ctx, ProjectId(0), FileId(0), Version(0), sketch_args)
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
         assert_eq!(sketch_id, ObjectId(0));
@@ -1488,8 +1474,11 @@ sketch(on = XY) {
                 }),
             },
         };
-        let (src_delta, scene_delta, sketch_exec_outcome) =
-            frontend.add_line(&ctx, sketch_id, line_ctor).await.unwrap();
+        let segment = SegmentCtor::Line(line_ctor);
+        let (src_delta, scene_delta, sketch_exec_outcome) = frontend
+            .add_segment(&ctx, version, sketch_id, segment, None)
+            .await
+            .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
@@ -1527,8 +1516,14 @@ sketch(on = XY) {
                 }),
             },
         };
-        let (src_delta, scene_delta, sketch_exec_outcome) =
-            frontend.edit_line(&ctx, sketch_id, line, line_ctor).await.unwrap();
+        let segments = vec![ExistingSegmentCtor {
+            id: line,
+            ctor: SegmentCtor::Line(line_ctor),
+        }];
+        let (src_delta, scene_delta, sketch_exec_outcome) = frontend
+            .edit_segments(&ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
@@ -1556,6 +1551,7 @@ s = sketch(on = XY) {}
         let mut frontend = FrontendState::new();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
         let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
@@ -1582,8 +1578,11 @@ s = sketch(on = XY) {}
                 }),
             },
         };
-        let (src_delta, scene_delta, sketch_exec_outcome) =
-            frontend.add_line(&ctx, sketch_id, line_ctor).await.unwrap();
+        let segment = SegmentCtor::Line(line_ctor);
+        let (src_delta, scene_delta, sketch_exec_outcome) = frontend
+            .add_segment(&ctx, version, sketch_id, segment, None)
+            .await
+            .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)

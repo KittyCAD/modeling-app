@@ -13,6 +13,7 @@ import type {
   ApiObjectId,
   ApiProjectId,
   ApiVersion,
+  ExistingSegmentCtor,
   SceneGraphDelta,
   SegmentCtor,
   SketchArgs,
@@ -418,11 +419,10 @@ export default class RustContext {
   }
 
   /** Edit a segment in a sketch. */
-  async editSegment(
+  async editSegments(
     version: ApiVersion,
     sketch: ApiObjectId,
-    segmentId: ApiObjectId,
-    segment: SegmentCtor,
+    segments: ExistingSegmentCtor[],
     settings: DeepPartial<Configuration>
   ): Promise<{
     kclSource: SourceDelta
@@ -433,11 +433,10 @@ export default class RustContext {
 
     try {
       const result: [SourceDelta, SceneGraphDelta, SketchExecOutcome] =
-        await instance.edit_segment(
+        await instance.edit_segments(
           JSON.stringify(version),
           JSON.stringify(sketch),
-          JSON.stringify(segmentId),
-          JSON.stringify(segment),
+          JSON.stringify(segments),
           JSON.stringify(settings)
         )
       return {
