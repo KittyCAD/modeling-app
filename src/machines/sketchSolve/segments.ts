@@ -125,17 +125,21 @@ class PointSegment implements SegmentUtils {
 
       try {
         const settings = await jsAppSettings()
-        const result = await rustContext.editSegment(
+        const result = await rustContext.editSegments(
           0,
           0,
-          args.id,
-          {
-            type: 'Point',
-            position: {
-              x: { type: 'Var', value: roundOff(twoD.x), units: 'Mm' },
-              y: { type: 'Var', value: roundOff(twoD.y), units: 'Mm' },
+          [
+            {
+              id: args.id,
+              ctor: {
+                type: 'Point',
+                position: {
+                  x: { type: 'Var', value: roundOff(twoD.x), units: 'Mm' },
+                  y: { type: 'Var', value: roundOff(twoD.y), units: 'Mm' },
+                },
+              },
             },
-          },
+          ],
           settings
         )
 

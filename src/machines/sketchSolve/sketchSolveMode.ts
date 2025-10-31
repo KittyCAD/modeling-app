@@ -116,17 +116,21 @@ export const sketchSolveMachine = setup({
           isSolveInProgress = true
           const twoD = intersectionPoint.twoD
           const result = await rustContext
-            .editSegment(
+            .editSegments(
               0,
               0,
-              Number(group?.name) || 0,
-              {
-                type: 'Point',
-                position: {
-                  x: { type: 'Var', value: roundOff(twoD.x), units: 'Mm' },
-                  y: { type: 'Var', value: roundOff(twoD.y), units: 'Mm' },
+              [
+                {
+                  id: Number(group?.name) || 0,
+                  ctor: {
+                    type: 'Point',
+                    position: {
+                      x: { type: 'Var', value: roundOff(twoD.x), units: 'Mm' },
+                      y: { type: 'Var', value: roundOff(twoD.y), units: 'Mm' },
+                    },
+                  },
                 },
-              },
+              ],
               await jsAppSettings()
             )
             .catch((err) => {

@@ -40,13 +40,12 @@ pub trait SketchApi {
         label: Option<String>,
     ) -> Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)>;
 
-    async fn edit_segment(
+    async fn edit_segments(
         &mut self,
         ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
-        segment_id: ObjectId,
-        segment: SegmentCtor,
+        segments: Vec<ExistingSegmentCtor>,
     ) -> Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)>;
 
     async fn delete_segment(
@@ -141,6 +140,13 @@ pub enum Segment {
     Line(Line),
     Arc(Arc),
     Circle(Circle),
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct ExistingSegmentCtor {
+    pub id: ObjectId,
+    pub ctor: SegmentCtor,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -417,15 +423,14 @@ impl SketchApi for SketchApiStub {
         ))
     }
 
-    async fn edit_segment(
+    async fn edit_segments(
         &mut self,
         _ctx: &ExecutorContext,
         _version: Version,
         _sketch: ObjectId,
-        _segment_id: ObjectId,
-        _segment: SegmentCtor,
+        _segments: Vec<ExistingSegmentCtor>,
     ) -> Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
-        todo!("edit_segment not implemented")
+        todo!("edit_segments not implemented")
     }
 
     async fn delete_segment(
