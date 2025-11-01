@@ -1,25 +1,28 @@
+import { recast, type PlaneArtifact } from '@src/lang/wasm'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
-  type Artifact,
-  assertParse,
-  recast,
-  type PlaneArtifact,
-} from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import { enginelessExecutor } from '@src/lib/testHelpers'
+  createSelectionFromArtifacts,
+  enginelessExecutor,
+  getAstAndArtifactGraph,
+  getCapFromCylinder,
+  getFacesFromBox,
+} from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
-import type { ArtifactGraph } from '@src/lang/wasm'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
+  addHole,
   addOffsetPlane,
   addShell,
   retrieveFaceSelectionsFromOpArgs,
+  retrieveHoleBodyArgs,
+  retrieveHoleBottomArgs,
+  retrieveHoleTypeArgs,
   retrieveNonDefaultPlaneSelectionFromOpArg,
 } from '@src/lang/modifyAst/faces'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { StdLibCallOp } from '@src/lang/queryAst'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import { getEdgeCutMeta } from '@src/lang/queryAst'
 import { expect } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -56,43 +59,6 @@ afterAll(() => {
 })
 
 describe('faces.test.ts', () => {
-  async function getAstAndArtifactGraph(
-    code: string,
-    instance: ModuleType,
-    kclManager: KclManager
-  ) {
-    const ast = assertParse(code, instance)
-    await kclManager.executeAst({ ast })
-    const {
-      artifactGraph,
-      execState: { operations },
-      variables,
-    } = kclManager
-    await new Promise((resolve) => setTimeout(resolve, 100))
-    return { ast, artifactGraph, operations, variables }
-  }
-
-  function createSelectionFromArtifacts(
-    artifacts: Artifact[],
-    artifactGraph: ArtifactGraph
-  ): Selections {
-    const graphSelections = artifacts.flatMap((artifact) => {
-      const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
-      if (!codeRefs || codeRefs.length === 0) {
-        return []
-      }
-
-      return {
-        codeRef: codeRefs[0],
-        artifact,
-      } as Selection
-    })
-    return {
-      graphSelections,
-      otherSelections: [],
-    }
-  }
-
   // More complex shell case
   const multiSolids = `size = 100
 case = startSketchOn(XY)
@@ -191,20 +157,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
          getCommonEdge(faces = [seg01, seg02])
        ],
      )`
-
-  function getCapFromCylinder(artifactGraph: ArtifactGraph) {
-    const endFace = [...artifactGraph.values()].find(
-      (a) => a.type === 'cap' && a.subType === 'end'
-    )
-    return createSelectionFromArtifacts([endFace!], artifactGraph)
-  }
-
-  function getFacesFromBox(artifactGraph: ArtifactGraph, count: number) {
-    const twoWalls = [...artifactGraph.values()]
-      .filter((a) => a.type === 'wall')
-      .slice(0, count)
-    return createSelectionFromArtifacts(twoWalls, artifactGraph)
-  }
 
   describe('Testing addShell', () => {
     it('should add a basic shell call on cylinder end cap', async () => {
@@ -385,6 +337,447 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(multiSolidsShell)
       await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addHole', () => {
+    const simpleHole = `hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [0, 0],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeType =   hole::simple(),
+)`
+
+    it('should add a simple hole call on cylinder end cap', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = getCapFromCylinder(artifactGraph)
+      const cutAt = (await stringToKclExpression(
+        '[0, 0]',
+        true,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const depth = (await stringToKclExpression(
+        '5',
+        false,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const diameter = (await stringToKclExpression(
+        '1',
+        false,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addHole({
+        ast,
+        artifactGraph,
+        face,
+        cutAt,
+        holeBody: 'blind',
+        blindDepth: depth,
+        blindDiameter: diameter,
+        holeType: 'simple',
+        holeBottom: 'flat',
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(cylinder)
+      expect(newCode).toContain(simpleHole)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+    })
+
+    // TODO: enable this test once https://github.com/KittyCAD/modeling-app/issues/8616 is closed
+    // Currently it resolves to hole(extrude001... instead of hole(hole001
+    it.skip('should add a simple hole call on cylinder end cap that has a hole already', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        `${cylinder}
+${simpleHole}`,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = getCapFromCylinder(artifactGraph)
+      const cutAt = (await stringToKclExpression(
+        '[3, 3]',
+        true,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const depth = (await stringToKclExpression(
+        '3',
+        false,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const diameter = (await stringToKclExpression(
+        '2',
+        false,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addHole({
+        ast,
+        artifactGraph,
+        face,
+        cutAt,
+        holeBody: 'blind',
+        blindDepth: depth,
+        blindDiameter: diameter,
+        holeType: 'simple',
+        holeBottom: 'flat',
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `${cylinder}
+${simpleHole}
+hole002 = hole::hole(
+  hole001,
+  face = END,
+  cutAt = [3, 3],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 3, diameter = 2),
+  holeType =   hole::simple(),
+)`
+      )
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+    })
+
+    it('should add a counterbore hole call on cylinder end cap', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const face = getCapFromCylinder(artifactGraph)
+      const cutAt = (await stringToKclExpression(
+        '[0, 0]',
+        true,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const depth = (await stringToKclExpression(
+        '5',
+        false,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const diameter = (await stringToKclExpression(
+        '1',
+        false,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const cDepth = (await stringToKclExpression(
+        '1',
+        false,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const cDiameter = (await stringToKclExpression(
+        '2',
+        false,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addHole({
+        ast,
+        artifactGraph,
+        face,
+        cutAt,
+        holeBody: 'blind',
+        blindDepth: depth,
+        blindDiameter: diameter,
+        holeType: 'counterbore',
+        counterboreDepth: cDepth,
+        counterboreDiameter: cDiameter,
+        holeBottom: 'flat',
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(cylinder)
+      expect(newCode).toContain(
+        `hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [0, 0],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeType =   hole::counterbore(depth = 1, diameter = 2),
+)`
+      )
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+    })
+
+    it('should edit a simple hole call into a countersink hole call on cylinder end cap with drill end', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        `${cylinder}
+${simpleHole}`,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const nodeToEdit = createPathToNodeForLastVariable(ast)
+      const face = getCapFromCylinder(artifactGraph)
+      const cutAt = (await stringToKclExpression(
+        '[1, 1]',
+        true,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const depth = (await stringToKclExpression(
+        '6',
+        false,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const diameter = (await stringToKclExpression(
+        '1.1',
+        false,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const dAngle = (await stringToKclExpression(
+        '110',
+        false,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const cAngle = (await stringToKclExpression(
+        '120',
+        false,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const cDiameter = (await stringToKclExpression(
+        '2',
+        false,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addHole({
+        ast,
+        artifactGraph,
+        nodeToEdit,
+        face,
+        cutAt,
+        holeBody: 'blind',
+        blindDepth: depth,
+        blindDiameter: diameter,
+        holeType: 'countersink',
+        countersinkAngle: cAngle,
+        countersinkDiameter: cDiameter,
+        holeBottom: 'drill',
+        drillPointAngle: dAngle,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(cylinder)
+      expect(newCode).toContain(
+        `${cylinder}
+hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [1, 1],
+  holeBottom =   hole::drill(pointAngle = 110),
+  holeBody =   hole::blind(depth = 6, diameter = 1.1),
+  holeType =   hole::countersink(angle = 120, diameter = 2),
+)`
+      )
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+    })
+  })
+
+  // Hole utils test
+  const cylinderForHole = `@settings(experimentalFeatures = allow)
+sketch001 = startSketchOn(XZ)
+profile001 = circle(sketch001, center = [0, 0], diameter = 10)
+extrude001 = extrude(profile001, length = 10)`
+  const flatSimpleHole = `${cylinderForHole}
+hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [0, 0],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeType =   hole::simple(),
+)`
+
+  async function getHoleOp(code: string) {
+    const { operations } = await getAstAndArtifactGraph(
+      code,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    const op = operations.find(
+      (o) => o.type === 'StdLibCall' && o.name === 'hole::hole'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.labeledArgs) {
+      throw new Error('Hole operation not found')
+    }
+
+    return op
+  }
+
+  describe('Testing retrieveHoleBodyArgs', () => {
+    it('should return an error on undefined', async () => {
+      expect(
+        await retrieveHoleBodyArgs(
+          undefined,
+          instanceInThisFile,
+          rustContextInThisFile
+        )
+      ).toBeInstanceOf(Error)
+    })
+
+    it('should retrieve the string type, the blind depth and diameter', async () => {
+      const op = await getHoleOp(flatSimpleHole)
+      const result = await retrieveHoleBodyArgs(
+        op.labeledArgs.holeBody,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      if (err(result)) throw result
+      expect(result.holeBody).toEqual('blind')
+      expect(result.blindDiameter.valueCalculated).toEqual('1')
+      expect(result.blindDepth.valueCalculated).toEqual('5')
+    })
+  })
+
+  describe('Testing retrieveHoleBottomArgs', () => {
+    it('should return an error on undefined', async () => {
+      expect(
+        await retrieveHoleBottomArgs(
+          undefined,
+          instanceInThisFile,
+          rustContextInThisFile
+        )
+      ).toBeInstanceOf(Error)
+    })
+
+    it('should retrieve the string type on flat', async () => {
+      const op = await getHoleOp(flatSimpleHole)
+      const result = await retrieveHoleBottomArgs(
+        op.labeledArgs?.holeBottom,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      if (err(result)) throw result
+      expect(result.holeBottom).toEqual('flat')
+      expect(result.drillPointAngle).toBeUndefined()
+    })
+
+    it('should retrieve the string type on drilled and angle', async () => {
+      const drillHole = `${cylinderForHole}
+hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [0, 0],
+  holeBottom =   hole::drill(pointAngle = 110deg),
+  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeType =   hole::simple(),
+)`
+      const op = await getHoleOp(drillHole)
+      const result = await retrieveHoleBottomArgs(
+        op.labeledArgs?.holeBottom,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      if (err(result)) throw result
+      expect(result.holeBottom).toEqual('drill')
+      expect(result.drillPointAngle?.valueText).toEqual('110deg')
+    })
+  })
+
+  describe('Testing retrieveHoleTypeArgs', () => {
+    it('should return an error on undefined', async () => {
+      expect(
+        await retrieveHoleTypeArgs(
+          undefined,
+          instanceInThisFile,
+          rustContextInThisFile
+        )
+      ).toBeInstanceOf(Error)
+    })
+
+    it('should retrieve the string type on simple', async () => {
+      const op = await getHoleOp(flatSimpleHole)
+      const result = await retrieveHoleTypeArgs(
+        op.labeledArgs?.holeType,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      if (err(result)) throw result
+      expect(result.holeType).toEqual('simple')
+      expect(result.countersinkAngle).toBeUndefined()
+      expect(result.countersinkDiameter).toBeUndefined()
+      expect(result.counterboreDepth).toBeUndefined()
+      expect(result.counterboreDiameter).toBeUndefined()
+    })
+
+    it('should retrieve the string type on countersink, plus angle and diameter', async () => {
+      const countersinkHole = `${cylinderForHole}
+hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [0, 0],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeType =   hole::countersink(angle = 90deg, diameter = 2),
+)`
+      const op = await getHoleOp(countersinkHole)
+      const result = await retrieveHoleTypeArgs(
+        op.labeledArgs?.holeType,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      if (err(result)) throw result
+      expect(result.holeType).toEqual('countersink')
+      expect(result.countersinkAngle?.valueText).toEqual('90deg')
+      expect(result.countersinkDiameter?.valueText).toEqual('2')
+      expect(result.counterboreDepth).toBeUndefined()
+      expect(result.counterboreDiameter).toBeUndefined()
+    })
+
+    it('should retrieve the string type on counterbore, plus depth and diameter', async () => {
+      const countersinkHole = `${cylinderForHole}
+hole001 = hole::hole(
+  extrude001,
+  face = END,
+  cutAt = [0, 0],
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 5, diameter = 1),
+  holeType =   hole::counterbore(depth = 1, diameter = 2),
+)`
+      const op = await getHoleOp(countersinkHole)
+      const result = await retrieveHoleTypeArgs(
+        op.labeledArgs?.holeType,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      if (err(result)) throw result
+      expect(result.holeType).toEqual('counterbore')
+      expect(result.countersinkAngle).toBeUndefined()
+      expect(result.countersinkDiameter).toBeUndefined()
+      expect(result.counterboreDepth?.valueText).toEqual('1')
+      expect(result.counterboreDiameter?.valueText).toEqual('2')
     })
   })
 

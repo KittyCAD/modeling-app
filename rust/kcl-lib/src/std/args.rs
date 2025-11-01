@@ -139,7 +139,7 @@ impl Args {
             let actual_type_name = actual_type
                 .as_ref()
                 .map(|t| t.to_string())
-                .unwrap_or_else(|| arg.value.human_friendly_type().to_owned());
+                .unwrap_or_else(|| arg.value.human_friendly_type());
             let msg_base = format!(
                 "This function expected its `{label}` argument to be {} but it's actually of type {actual_type_name}",
                 ty.human_friendly_type(),
@@ -239,7 +239,7 @@ impl Args {
             let actual_type_name = actual_type
                 .as_ref()
                 .map(|t| t.to_string())
-                .unwrap_or_else(|| arg.value.human_friendly_type().to_owned());
+                .unwrap_or_else(|| arg.value.human_friendly_type());
             let msg_base = format!(
                 "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
                 ty.human_friendly_type(),

@@ -25,6 +25,7 @@ export class ToolbarFixture {
   filletButton!: Locator
   chamferButton!: Locator
   shellButton!: Locator
+  holeButton!: Locator
   revolveButton!: Locator
   offsetPlaneButton!: Locator
   helixButton!: Locator
@@ -40,6 +41,7 @@ export class ToolbarFixture {
   rectangleBtn!: Locator
   lengthConstraintBtn!: Locator
   exitSketchBtn!: Locator
+  debugPaneBtn!: Locator
   fileTreeBtn!: Locator
   createFileBtn!: Locator
   fileCreateToast!: Locator
@@ -72,6 +74,7 @@ export class ToolbarFixture {
     this.filletButton = page.getByTestId('fillet3d')
     this.chamferButton = page.getByTestId('chamfer3d')
     this.shellButton = page.getByTestId('shell')
+    this.holeButton = page.getByTestId('hole')
     this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.helixButton = page.getByTestId('helix')
@@ -87,6 +90,7 @@ export class ToolbarFixture {
     this.rectangleBtn = page.getByTestId('corner-rectangle')
     this.lengthConstraintBtn = page.getByTestId('constraint-length')
     this.exitSketchBtn = page.getByTestId('sketch-exit')
+    this.debugPaneBtn = page.locator('[id="debug-button-holder"]')
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')
     this.createFileBtn = page.getByTestId('create-file-button')
     this.treeInputField = page.getByTestId('file-rename-field')

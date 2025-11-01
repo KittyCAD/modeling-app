@@ -224,7 +224,7 @@ export const KclEditorPaneContents = () => {
       <div
         id="code-mirror-override"
         className={
-          'absolute inset-0 ' + (cursorBlinking.current ? 'blink' : '')
+          'absolute inset-0 pr-1 ' + (cursorBlinking.current ? 'blink' : '')
         }
       >
         <CodeEditor

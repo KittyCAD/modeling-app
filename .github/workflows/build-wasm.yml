@@ -30,7 +30,7 @@ jobs:
         with:
           cache: false # configured below
 
-      - uses: taiki-e/install-action@5ab30948b991e8d6aa5a6c1e33c6aea130c6de65
+      - uses: taiki-e/install-action@c5b1b6f479c32f356cc6f4ba672a47f63853b13b
         with:
           tool: wasm-pack
 
