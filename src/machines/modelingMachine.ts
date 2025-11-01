@@ -409,13 +409,10 @@ export const modelingMachine = setup({
     },
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
+    // TODO: figure out if we really need this one, was separate from 'no kcl errors'
     'is-error-free': ({ context }): boolean => {
       const theKclManager = context.kclManager ? context.kclManager : kclManager
       return theKclManager.errors.length === 0 && !theKclManager.hasErrors()
-    },
-    'no kcl errors': ({ context }) => {
-      const theKclManager = context.kclManager ? context.kclManager : kclManager
-      return !theKclManager.hasErrors()
     },
     'is editing existing sketch': ({
       context: { sketchDetails, kclManager: providedKclManager },
@@ -4220,7 +4217,6 @@ export const modelingMachine = setup({
                 sceneInfra.animate()
               },
             ],
-            guard: 'no kcl errors',
           },
         ],
 
@@ -4344,7 +4340,6 @@ export const modelingMachine = setup({
           on: {
             'Artifact graph populated': {
               target: 'showPlanes',
-              guard: 'no kcl errors',
             },
           },
 
