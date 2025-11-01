@@ -53,7 +53,7 @@ describe('@src/env', () => {
         vi.stubGlobal('electron', {
           process: {
             env: {
-              NODE_ENV: 'test',
+              NODE_ENV: 'test2',
               VITE_ZOO_API_BASE_URL: 'https://api.dev.zoo.dev',
               VITE_KITTYCAD_WEBSOCKET_URL:
                 'wss://api.dev.zoo.dev/ws/modeling/commands',
