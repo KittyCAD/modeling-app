@@ -47,6 +47,13 @@ This setting has the following nested options:
 
 **Default:** None
 
+##### disable_copilot
+
+Disable the new Copilot in Text-to-CAD for this project, only available in Zoo Design Studio (Staging).
+
+
+**Default:** None
+
 
 #### app
 
@@ -57,24 +64,9 @@ The settings for the Design Studio.
 
 This setting has the following nested options:
 
-##### appearance
-
-The settings for the appearance of the app.
-
-
-**Default:** None
-
-This setting has further nested options. See the schema for full details.
 ##### onboarding_status
 
 The onboarding status of the app.
-
-
-**Default:** None
-
-##### dismiss_web_banner
-
-Permanently dismiss the banner warning to download the desktop app. This setting only applies to the web app. And is temporary until we have Linux support.
 
 
 **Default:** None

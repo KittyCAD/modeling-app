@@ -602,11 +602,7 @@ impl KclValue {
                     meta: meta.clone(),
                     ty,
                 },
-                Self::Number {
-                    value: z,
-                    meta: meta.clone(),
-                    ty,
-                },
+                Self::Number { value: z, meta, ty },
             ],
             ty: ty.into(),
         }
@@ -918,7 +914,7 @@ mod tests {
             meta: vec![],
         };
         let array4 = KclValue::HomArray {
-            value: vec![mm.clone(), mm.clone(), inches.clone(), mm.clone()],
+            value: vec![mm.clone(), mm.clone(), inches, mm],
             ty: RuntimeType::any(),
         };
         assert_eq!(
@@ -933,7 +929,7 @@ mod tests {
         assert_eq!(empty_array.human_friendly_type(), "an empty array".to_string());
 
         let array_nested = KclValue::HomArray {
-            value: vec![array2_mm.clone()],
+            value: vec![array2_mm],
             ty: RuntimeType::any(),
         };
         assert_eq!(
