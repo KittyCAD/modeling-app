@@ -303,7 +303,7 @@ export const ConnectionStream = (props: {
     <div
       role="presentation"
       ref={videoWrapperRef}
-      className="absolute z-0"
+      className="absolute inset-0 z-0"
       id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}
