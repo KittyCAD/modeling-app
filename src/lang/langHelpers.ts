@@ -137,7 +137,10 @@ function handleExecuteError(e: any): ExecutionResult {
       isInterrupted = true
     }
     const execState = emptyExecState()
+    // We're passing back those so the user can still fix issues in p&c
     execState.variables = e.variables
+    execState.operations = e.operations
+    execState.artifactGraph = e.artifactGraph
     return {
       errors: [e],
       logs: [],
