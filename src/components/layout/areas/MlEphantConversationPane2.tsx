@@ -18,7 +18,12 @@ import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { BillingActor } from '@src/machines/billingMachine'
 import { useSelector } from '@xstate/react'
-import type { User, MlCopilotServerMessage, MlCopilotTool } from '@kittycad/lib'
+import type {
+  User,
+  MlCopilotServerMessage,
+  MlCopilotTool,
+  MlReasoningEffort,
+} from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
 
@@ -46,6 +51,7 @@ export const MlEphantConversationPane2 = (props: {
 
   const onProcess = async (
     request: string,
+    reasoningEffort: MlReasoningEffort,
     forcedTools: Set<MlCopilotTool>
   ) => {
     if (props.theProject === undefined) {
@@ -78,6 +84,7 @@ export const MlEphantConversationPane2 = (props: {
       projectFiles,
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
+      reasoningEffort,
       forcedTools,
     })
   }
@@ -204,8 +211,12 @@ export const MlEphantConversationPane2 = (props: {
       ]}
       conversation={conversation}
       billingContext={billingContext}
-      onProcess={(request: string, forcedTools: Set<MlCopilotTool>) => {
-        onProcess(request, forcedTools).catch(reportRejection)
+      onProcess={(
+        request: string,
+        reasoningEffort: MlReasoningEffort,
+        forcedTools: Set<MlCopilotTool>
+      ) => {
+        onProcess(request, reasoningEffort, forcedTools).catch(reportRejection)
       }}
       disabled={isProcessing}
       hasPromptCompleted={isProcessing}

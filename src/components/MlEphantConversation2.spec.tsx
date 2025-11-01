@@ -4,9 +4,13 @@ import { vi } from 'vitest'
 import { MlEphantConversation2 } from '@src/components/MlEphantConversation2'
 import type { BillingContext } from '@src/machines/billingMachine'
 import type { Conversation } from '@src/machines/mlEphantManagerMachine2'
+import type { MlReasoningEffort } from '@kittycad/lib/dist/types/src'
+import { DEFAULT_ML_COPILOT_REASONING_EFFORT } from '@src/lib/constants'
 
 describe('MlEphantConversation2', () => {
-  test('renders request bubble, shows thinking state, then displays response text after completion', () => {
+  function rendersRequestBubbleThenDisplayResponse(
+    reasoningEffort: MlReasoningEffort = DEFAULT_ML_COPILOT_REASONING_EFFORT
+  ) {
     vi.useFakeTimers()
 
     const billingContext: BillingContext = {
@@ -55,12 +59,23 @@ describe('MlEphantConversation2', () => {
     try {
       const promptText = 'Generate a cube with rounded edges'
 
+      if (reasoningEffort !== DEFAULT_ML_COPILOT_REASONING_EFFORT) {
+        fireEvent.click(screen.getByTestId('ml-copilot-efforts-button'))
+        fireEvent.click(
+          screen.getByTestId(`ml-copilot-effort-button-${reasoningEffort}`)
+        )
+      }
+
       const promptInput = screen.getByTestId('ml-ephant-conversation-input')
 
       fireEvent.input(promptInput, { target: { textContent: promptText } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
 
-      expect(handleProcess).toHaveBeenCalledWith(promptText, expect.any(Set))
+      expect(handleProcess).toHaveBeenCalledWith(
+        promptText,
+        reasoningEffort,
+        expect.any(Set)
+      )
 
       act(() => {
         rerender(renderConversation(latestConversation))
@@ -112,6 +127,14 @@ describe('MlEphantConversation2', () => {
       vi.clearAllTimers()
       vi.useRealTimers()
     }
+  }
+
+  test('renders request bubble, shows thinking state, then displays response text after completion', () => {
+    rendersRequestBubbleThenDisplayResponse()
+  })
+
+  test('renders request bubble, shows thinking state, then displays response text after completion (non-default reasoning effort)', () => {
+    rendersRequestBubbleThenDisplayResponse('high')
   })
 
   test('does not render unknown response types', () => {

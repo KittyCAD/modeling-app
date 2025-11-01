@@ -9,7 +9,7 @@ import {
   BillingRemainingMode,
 } from '@kittycad/react-shared'
 import { type BillingContext } from '@src/machines/billingMachine'
-import { type MlCopilotTool } from '@kittycad/lib'
+import type { MlReasoningEffort, MlCopilotTool } from '@kittycad/lib'
 import { Popover, Transition } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
@@ -19,25 +19,56 @@ import type {
 } from '@src/machines/mlEphantManagerMachine2'
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
+import { DEFAULT_ML_COPILOT_REASONING_EFFORT } from '@src/lib/constants'
 
 export interface MlEphantConversationProps {
   isLoading: boolean
   conversation?: Conversation
   contexts: MlEphantManagerPromptContext[]
   billingContext: BillingContext
-  onProcess: (request: string, forcedTools: Set<MlCopilotTool>) => void
+  onProcess: (
+    request: string,
+    reasoningEffort: MlReasoningEffort,
+    forcedTools: Set<MlCopilotTool>
+  ) => void
   disabled?: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
   defaultPrompt?: string
 }
 
+const ML_REASONING_EFFORT: Readonly<MlReasoningEffort[]> = Object.freeze([
+  'low',
+  // Disabling medium for now, keeping only low and high
+  // 'medium',
+  'high',
+])
 const ML_COPILOT_TOOLS: Readonly<MlCopilotTool[]> = Object.freeze([
   'edit_kcl_code',
   'text_to_cad',
   'mechanical_knowledge_base',
   'web_search',
 ])
+const ML_REASONING_EFFORT_META = Object.freeze({
+  low: {
+    pretty: 'Fast',
+    icon: (props: { className: string }) => (
+      <CustomIcon name="stopwatch" className={props.className} />
+    ),
+  },
+  medium: {
+    pretty: 'Thoughtful',
+    icon: (props: { className: string }) => (
+      <CustomIcon name="brain" className={props.className} />
+    ),
+  },
+  high: {
+    pretty: 'Thoughtful',
+    icon: (props: { className: string }) => (
+      <CustomIcon name="brain" className={props.className} />
+    ),
+  },
+} as const)
 const ML_COPILOT_TOOLS_META = Object.freeze({
   edit_kcl_code: {
     regexp: /edit|make|change/,
@@ -69,13 +100,54 @@ const ML_COPILOT_TOOLS_META = Object.freeze({
   },
 } as const)
 
+export interface MlCopilotReasoningEffortsProps {
+  onClick: (reasoningEffort: MlReasoningEffort) => void
+  children: ReactNode
+  current: MlReasoningEffort
+}
+const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
+  const efforts = []
+  for (const effort of ML_REASONING_EFFORT) {
+    efforts.push(
+      <div
+        tabIndex={0}
+        role="button"
+        key={effort}
+        onClick={() => props.onClick(effort)}
+        className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === effort ? 'border-primary' : ''}`}
+        data-testid={`ml-copilot-effort-button-${effort}`}
+      >
+        {ML_REASONING_EFFORT_META[effort].icon({ className: 'w-5 h-5' })}
+        {ML_REASONING_EFFORT_META[effort].pretty}
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex-none">
+      <Popover className="relative">
+        <Popover.Button
+          data-testid="ml-copilot-efforts-button"
+          className="h-7 bg-default flex flex-row items-center gap-1 pl-1 pr-2"
+        >
+          {props.children}
+          <CustomIcon name="caretUp" className="w-5 h-5 ui-open:rotate-180" />
+        </Popover.Button>
+        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
+          {efforts}
+        </Popover.Panel>
+      </Popover>
+    </div>
+  )
+}
+
 const MlCopilotTool = <T extends MlCopilotTool>(props: {
   tool: T
   onRemove: (tool: T) => void
 }) => {
   return (
     <button
-      className="group/tool flex-none flex flex-row gap-1 items-center p-0 pr-2"
+      className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 pl-1 pr-2"
       onClick={() => props.onRemove(props.tool)}
     >
       <CustomIcon
@@ -124,7 +196,7 @@ const MlCopilotTools = (props: MlCopilotToolsProps) => {
           {props.children}
           <CustomIcon name="plus" className="w-5 h-5" />
         </Popover.Button>
-        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
+        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-1 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
           {tools}
         </Popover.Panel>
       </Popover>
@@ -136,8 +208,10 @@ export interface MlEphantExtraInputsProps {
   // TODO: Expand to a list with no type restriction
   context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
   inputToMatch: string
+  reasoningEffort: MlReasoningEffort
   forcedTools: Set<MlCopilotTool>
   excludedTools: Set<MlCopilotTool>
+  onSetReasoningEffort: (effort: MlReasoningEffort) => void
   onRemove: (tool: MlCopilotTool) => void
   onAdd: (tool: MlCopilotTool) => void
 }
@@ -204,17 +278,26 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
 
   return (
     <div ref={refWrap} className="flex-1 flex min-w-0 items-end">
-      <div ref={refTools} className="flex flex-row w-fit-content items-end">
+      <div ref={refTools} className="flex flex-row flex-wrap items-end">
         {/* TODO: Generalize to a MlCopilotContexts component */}
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
+        <MlCopilotReasoningEfforts
+          onClick={props.onSetReasoningEffort}
+          current={props.reasoningEffort}
+        >
+          {ML_REASONING_EFFORT_META[props.reasoningEffort].icon({
+            className: 'w-5 h-5',
+          })}
+          {ML_REASONING_EFFORT_META[props.reasoningEffort].pretty}
+        </MlCopilotReasoningEfforts>
         <MlCopilotTools onAdd={props.onAdd}>
           <div>
             {tools.length} Tool{tools.length !== 1 ? 's' : ''}
           </div>
         </MlCopilotTools>
-        <div className="flex gap-1">{overflow ? popover : tools}</div>
+        <div className="flex">{overflow ? popover : tools}</div>
       </div>
     </div>
   )
@@ -241,7 +324,7 @@ const MlCopilotSelectionsContext = (props: {
 }) => {
   const selectionText = getSelectionTypeDisplayText(props.selections.data)
   return selectionText ? (
-    <button className="group/tool flex-none flex flex-row gap-1 items-center p-0 pr-2">
+    <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 pl-1 pr-2">
       <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />
       {selectionText}
     </button>
@@ -301,6 +384,9 @@ export const MlEphantConversationInput = (
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const [value, setValue] = useState<string>('')
   const [heightConvo, setHeightConvo] = useState(0)
+  const [reasoningEffort, setReasoningEffort] = useState<MlReasoningEffort>(
+    DEFAULT_ML_COPILOT_REASONING_EFFORT
+  )
   const [forcedTools, setForcedTools] = useState<Set<MlCopilotTool>>(new Set())
   const [excludedTools, setExcludedTools] = useState<Set<MlCopilotTool>>(
     new Set()
@@ -350,7 +436,7 @@ export const MlEphantConversationInput = (
 
     setHeightConvo(refDiv.current.getBoundingClientRect().height)
 
-    props.onProcess(value, forcedTools)
+    props.onProcess(value, reasoningEffort, forcedTools)
 
     setLettersForAnimation(
       value.split('').map((c, index) => (
@@ -421,8 +507,10 @@ export const MlEphantConversationInput = (
           <MlEphantExtraInputs
             context={selectionsContext}
             inputToMatch={value}
+            reasoningEffort={reasoningEffort}
             forcedTools={forcedTools}
             excludedTools={excludedTools}
+            onSetReasoningEffort={setReasoningEffort}
             onRemove={onRemoveTool}
             onAdd={onAddTool}
           />
@@ -432,7 +520,7 @@ export const MlEphantConversationInput = (
             onClick={onClick}
             className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
           >
-            <CustomIcon name="arrowUp" className="w-5 h-5 animate-bounce" />
+            <CustomIcon name="caretUp" className="w-5 h-5 animate-bounce" />
           </button>
         </div>
       </div>
@@ -444,9 +532,13 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState<boolean>(true)
 
-  const onProcess = (request: string, forcedTools: Set<MlCopilotTool>) => {
+  const onProcess = (
+    request: string,
+    reasoningEffort: MlReasoningEffort,
+    forcedTools: Set<MlCopilotTool>
+  ) => {
     setAutoScroll(true)
-    props.onProcess(request, forcedTools)
+    props.onProcess(request, reasoningEffort, forcedTools)
   }
 
   useEffect(() => {

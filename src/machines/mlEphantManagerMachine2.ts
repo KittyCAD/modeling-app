@@ -4,6 +4,7 @@ import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
   MlCopilotTool,
+  MlReasoningEffort,
 } from '@kittycad/lib'
 import { assertEvent, assign, setup, fromPromise } from 'xstate'
 import { createActorContext } from '@xstate/react'
@@ -88,6 +89,7 @@ export type MlEphantManagerEvents2 =
       projectFiles: FileMeta[]
       selections: Selections
       artifactGraph: ArtifactGraph
+      reasoningEffort: MlReasoningEffort
       forcedTools: Set<MlCopilotTool>
     }
   | {
@@ -435,6 +437,7 @@ export const mlEphantManagerMachine2 = setup({
         project_name: requestData.body.project_name,
         source_ranges: requestData.body.source_ranges,
         current_files: filesAsByteArrays,
+        reasoning_effort: event.reasoningEffort,
         forced_tools: Array.from(event.forcedTools),
       }
 

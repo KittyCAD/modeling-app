@@ -239,6 +239,21 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  caretUp: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow up"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.0001 8.70709L6.35352 12.3536L5.64642 11.6465L9.64655 7.64642L10.3537 7.64643L14.3535 11.6465L13.6464 12.3536L10.0001 8.70709Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   caretDown: (
     <svg
       viewBox="0 0 20 20"
@@ -1747,7 +1762,7 @@ const CustomIconMap = Object.freeze({
   ),
   brain: (
     <svg
-      viewBox="-3 0 28 28"
+      viewBox="-3 -2 28 28"
       xmlns="http://www.w3.org/2000/svg"
       fill="currentColor"
     >
