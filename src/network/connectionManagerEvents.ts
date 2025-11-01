@@ -129,7 +129,14 @@ export const createOnEngineConnectionOpened = ({
       label: 'onEngineConnectionOpened',
       message: 'restoreRemoteCameraStateAndTriggerSync',
     })
-    await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
+
+    await sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
 
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',

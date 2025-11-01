@@ -138,7 +138,8 @@ export function addSubtract({
     modifiedAst,
     mNodeToEdit,
     lastChildLookup,
-    artifactGraph
+    artifactGraph,
+    ['compositeSolid', 'sweep']
   )
   if (err(vars)) {
     return vars
@@ -149,7 +150,8 @@ export function addSubtract({
     modifiedAst,
     mNodeToEdit,
     lastChildLookup,
-    artifactGraph
+    artifactGraph,
+    ['compositeSolid', 'sweep']
   )
   if (err(toolVars)) {
     return toolVars

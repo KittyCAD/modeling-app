@@ -99,6 +99,13 @@ export const defaultLayoutConfig: Layout = {
           areaType: AreaType.Logs,
           icon: 'logs',
         },
+        {
+          id: DefaultLayoutPaneID.Debug,
+          label: 'Debug',
+          icon: 'bug',
+          type: LayoutType.Simple,
+          areaType: AreaType.Debug,
+        },
       ],
       actions: [
         {

@@ -175,6 +175,7 @@ export type ModelingMachineEvent =
       type: 'Enter sketch'
       data?: {
         forceNewSketch?: boolean
+        keepDefaultPlaneVisibility?: boolean
       }
     }
   | { type: 'Sketch On Face' }
@@ -1139,6 +1140,15 @@ export const modelingMachine = setup({
         }
         return { ...context.defaultPlaneVisibility }
       },
+    }),
+    'show planes sketch no face': assign(({ event, context }) => {
+      if (event.type !== 'Enter sketch') return {}
+      if (event.data?.keepDefaultPlaneVisibility) {
+        // When entering via right-click "Start sketch on selection", show planes only if not requested to keep current visibility
+        return {}
+      }
+      void kclManager.showPlanes()
+      return { defaultPlaneVisibility: { xy: true, xz: true, yz: true } }
     }),
     'setup noPoints onClick listener': ({
       context: {
@@ -5712,7 +5722,7 @@ export const modelingMachine = setup({
     'Sketch no face': {
       entry: [
         'disable copilot',
-        'show default planes',
+        'show planes sketch no face',
         'set selection filter to faces only',
         'enter sketching mode',
       ],

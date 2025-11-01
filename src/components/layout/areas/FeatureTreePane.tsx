@@ -247,7 +247,7 @@ export const FeatureTreePaneContents = () => {
     <div className="relative">
       <section
         data-testid="debug-panel"
-        className="absolute inset-0 p-1 box-border overflow-auto"
+        className="absolute inset-0 p-1 box-border overflow-auto mr-1"
       >
         {kclManager.isExecuting ? (
           <Loading className="h-full" isDummy={true}>

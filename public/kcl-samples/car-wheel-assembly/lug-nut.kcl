@@ -10,8 +10,7 @@ import lugDiameter, lugHeadLength, lugThreadDiameter, lugLength, lugThreadDepth,
 customPlane = {
   origin = { x = lugSpacing / 2, y = -30mm, z = 0 },
   xAxis = { x = 1, y = 0, z = 0 },
-  yAxis = { x = 0, y = -1, z = 0 },
-  zAxis = { x = 0, y = 0, z = 1 }
+  yAxis = { x = 0, y = -1, z = 0 }
 }
 
 fn lug(plane, length, diameter) {
@@ -20,7 +19,7 @@ fn lug(plane, length, diameter) {
     |> angledLine(angle = 70, lengthY = lugHeadLength)
     |> xLine(endAbsolute = lugDiameter / 2)
     |> yLine(endAbsolute = lugLength)
-    |> tangentialArc(angle = 90, radius = 3mm)
+    |> tangentialArc(angle = 90deg, radius = 3mm)
     |> xLine(endAbsolute = 0 + .001, tag = $c1)
     |> yLine(endAbsolute = lugThreadDepth)
     |> xLine(endAbsolute = lugThreadDiameter)

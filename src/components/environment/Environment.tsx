@@ -5,7 +5,7 @@ import { commandBarActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 
 export function EnvironmentChip() {
-  const shorthand = env().VITE_KITTYCAD_BASE_DOMAIN
+  const shorthand = env().VITE_ZOO_BASE_DOMAIN
   const pool = env().POOL
   return (
     <div className="flex items-center px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50">
@@ -17,7 +17,7 @@ export function EnvironmentChip() {
 }
 
 export function EnvironmentDescription() {
-  const fullEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN
+  const fullEnvironmentName = env().VITE_ZOO_BASE_DOMAIN
   return (
     <div className="absolute left-2 bottom-full mb-1 flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
       <div
@@ -32,7 +32,7 @@ export function EnvironmentDescription() {
             <ActionButton
               Element="button"
               onClick={() => {
-                const environment = env().VITE_KITTYCAD_BASE_DOMAIN
+                const environment = env().VITE_ZOO_BASE_DOMAIN
                 if (environment) {
                   commandBarActor.send({
                     type: 'Find and select command',
@@ -58,21 +58,24 @@ export function EnvironmentDescription() {
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
           <p className="text-chalkboard-100 dark:text-chalkboard-10">API</p>{' '}
           <p className="text-chalkboard-60 dark:text-chalkboard-40">
-            {env().VITE_KITTYCAD_API_BASE_URL}
+            {env().VITE_ZOO_API_BASE_URL}
           </p>
         </li>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
           <p className="text-chalkboard-100 dark:text-chalkboard-10">Site</p>{' '}
           <p className="text-chalkboard-60 dark:text-chalkboard-40">
-            {env().VITE_KITTYCAD_SITE_BASE_URL}
+            {env().VITE_ZOO_SITE_BASE_URL}
           </p>
         </li>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
           <p className="text-chalkboard-100 dark:text-chalkboard-10">
-            WebSocket (real-time-data)
+            WebSockets
           </p>{' '}
           <p className="text-chalkboard-60 dark:text-chalkboard-40">
-            {env().VITE_KITTYCAD_API_WEBSOCKET_URL}
+            {env().VITE_KITTYCAD_WEBSOCKET_URL}
+          </p>
+          <p className="text-chalkboard-60 dark:text-chalkboard-40">
+            {env().VITE_MLEPHANT_WEBSOCKET_URL}
           </p>
         </li>
         <li className="flex flex-col px-2 py-2 gap-1 last:mb-0 ">
@@ -102,7 +105,7 @@ export function EnvironmentDescription() {
               {env().POOL !== '' && (
                 <ActionButton
                   onClick={() => {
-                    const environment = env().VITE_KITTYCAD_BASE_DOMAIN
+                    const environment = env().VITE_ZOO_BASE_DOMAIN
                     if (environment) {
                       if (!window.electron) {
                         console.error("Can't access electron")

@@ -64,6 +64,7 @@ assertions_on_result_states = "warn"
 dbg_macro = "warn"
 iter_over_hash_type = "warn"
 lossy_float_literal = "warn"
+redundant_clone = "warn"
 result_large_err = "allow"
 
 [profile.release]
