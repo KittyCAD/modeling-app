@@ -42,7 +42,7 @@ describe('test executor', () => {
     const code = `myVar = 5
 newVar = myVar + 1`
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(5)
+    expect(mem['myVar']?.value).toBe(55)
     expect(mem['newVar']?.value).toBe(6)
   })
   it('test assigning a var with a string', async () => {

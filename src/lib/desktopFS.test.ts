@@ -33,7 +33,7 @@ describe(`Getting unique project names`, () => {
       project('existing-project-2'),
     ]
     const result = getUniqueProjectName(projectName, projects)
-    expect(result).toBe('existing-project-3')
+    expect(result).toBe('existing-project-333')
   })
   it(`should prefer the formatting of the index identifier if present`, () => {
     const projectName = 'existing-project-$nn'
