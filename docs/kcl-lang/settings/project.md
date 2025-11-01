@@ -64,14 +64,6 @@ The settings for the Design Studio.
 
 This setting has the following nested options:
 
-##### appearance
-
-The settings for the appearance of the app.
-
-
-**Default:** None
-
-This setting has further nested options. See the schema for full details.
 ##### onboarding_status
 
 The onboarding status of the app.
