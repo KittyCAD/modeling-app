@@ -4,14 +4,10 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::{
-    ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq,
-};
+use kittycad_modeling_cmds::{length_unit::LengthUnit, units::UnitLength};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
 
-use crate::std::Args;
-use crate::std::sketch::FaceTag;
 use crate::{
     engine::{DEFAULT_PLANE_INFO, PlaneName},
     errors::{KclError, KclErrorDetails},
@@ -20,7 +16,11 @@ use crate::{
         types::{NumericType, adjust_length},
     },
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
-    std::{args::TyF64, sketch::PlaneData},
+    std::{
+        Args,
+        args::TyF64,
+        sketch::{FaceTag, PlaneData},
+    },
 };
 
 type Point3D = kcmc::shared::Point3d<f64>;
@@ -868,40 +868,6 @@ impl Sketch {
             return GetTangentialInfoFromPathsResult::PreviousPoint(self.start.to);
         };
         path.get_tangential_info()
-    }
-
-    // Tell the engine to enter sketch mode on the sketch.
-    // Run a specific command, then exit sketch mode.
-    pub(crate) fn build_sketch_mode_cmds(
-        &self,
-        exec_state: &mut ExecState,
-        inner_cmd: ModelingCmdReq,
-    ) -> Vec<ModelingCmdReq> {
-        vec![
-            // Before we extrude, we need to enable the sketch mode.
-            // We do this here in case extrude is called out of order.
-            ModelingCmdReq {
-                cmd: ModelingCmd::from(mcmd::EnableSketchMode {
-                    animated: false,
-                    ortho: false,
-                    entity_id: self.on.id(),
-                    adjust_camera: false,
-                    planar_normal: if let SketchSurface::Plane(plane) = &self.on {
-                        // We pass in the normal for the plane here.
-                        let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
-                        Some(normal.into())
-                    } else {
-                        None
-                    },
-                }),
-                cmd_id: exec_state.next_uuid().into(),
-            },
-            inner_cmd,
-            ModelingCmdReq {
-                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
-                cmd_id: exec_state.next_uuid().into(),
-            },
-        ]
     }
 }
 

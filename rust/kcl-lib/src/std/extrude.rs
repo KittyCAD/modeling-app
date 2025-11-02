@@ -21,6 +21,7 @@ use uuid::Uuid;
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
 use crate::{
     errors::{KclError, KclErrorDetails},
+    exec::Sketch,
     execution::{
         ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, SketchFaceOrTaggedFace,
         SketchSurface, Solid,
@@ -346,7 +347,7 @@ pub(crate) struct NamedCapTags<'a> {
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn do_post_extrude<'a>(
-    sketch: &crate::exec::Sketch,
+    sketch: &Sketch,
     solid_id: ArtifactId,
     sectional: bool,
     named_cap_tags: &'a NamedCapTags<'a>,
