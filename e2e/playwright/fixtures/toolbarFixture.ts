@@ -125,6 +125,27 @@ export class ToolbarFixture {
   startSketchPlaneSelection = async () =>
     doAndWaitForImageDiff(this.page, () => this.startSketchBtn.click(), 500)
 
+  selectDefaultPlane = async (
+    plane: 'Front plane' | 'Top plane' | 'Right plane'
+  ) => {
+    const isFtOpen = await this.checkIfFeatureTreePaneIsOpen()
+    if (!isFtOpen) {
+      await this.openFeatureTreePane()
+    }
+    await this.page.getByRole('button', { name: plane }).click()
+    if (!isFtOpen) {
+      await this.closeFeatureTreePane()
+    }
+    await this.page.waitForTimeout(1000)
+  }
+
+  startSketchOnDefaultPlane = async (
+    plane: 'Front plane' | 'Top plane' | 'Right plane'
+  ) => {
+    await this.startSketchPlaneSelection()
+    await this.selectDefaultPlane(plane)
+  }
+
   waitUntilSketchingReady = async () => {
     await expect(this.gizmoDisabled).toBeVisible()
   }
