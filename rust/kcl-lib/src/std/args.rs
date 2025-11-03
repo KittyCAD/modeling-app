@@ -493,7 +493,7 @@ impl<'a> FromKclValue<'a> for Vec<Extrudable> {
             .clone()
             .into_array()
             .iter()
-            .map(|v|Extrudable::from_kcl_val(v))
+            .map(|v| Extrudable::from_kcl_val(v))
             .collect::<Option<Vec<_>>>()?;
         Some(items)
     }
