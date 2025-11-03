@@ -8,8 +8,6 @@ use kittycad_modeling_cmds::{length_unit::LengthUnit, units::UnitLength};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
 
-use crate::std::Args;
-use crate::std::sketch::FaceTag;
 use crate::{
     engine::{DEFAULT_PLANE_INFO, PlaneName},
     errors::{KclError, KclErrorDetails},
@@ -18,7 +16,11 @@ use crate::{
         types::{NumericType, adjust_length},
     },
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
-    std::{args::TyF64, sketch::PlaneData},
+    std::{
+        Args,
+        args::TyF64,
+        sketch::{FaceTag, PlaneData},
+    },
 };
 
 type Point3D = kcmc::shared::Point3d<f64>;

@@ -19,9 +19,9 @@ use kittycad_modeling_cmds::{
 use uuid::Uuid;
 
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
-use crate::exec::Sketch;
 use crate::{
     errors::{KclError, KclErrorDetails},
+    exec::Sketch,
     execution::{
         ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Extrudable,
         SketchSurface, Solid,
