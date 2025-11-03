@@ -1931,9 +1931,9 @@ function toQuaternion(obj: { w: number; x: number; y: number; z: number }) {
 }
 
 /**
- * Creates a projection matrix from the given CameraViewState in a way that is consistent with engine
+ * Creates a view matrix from the given CameraViewState in a way that is consistent with engine
  */
-export function createProjectionMatrix(cam: CameraViewState): Matrix4 {
+export function createViewMatrix(cam: CameraViewState): Matrix4 {
   const invRot = new Matrix4()
   invRot.makeRotationFromQuaternion(
     toQuaternion(cam.pivot_rotation).conjugate()
@@ -1949,9 +1949,9 @@ export function createProjectionMatrix(cam: CameraViewState): Matrix4 {
 }
 
 /**
- * Creates a view matrix from the given CameraViewState in a way that is consistent with engine
+ * Creates a projection matrix from the given CameraViewState in a way that is consistent with engine
  */
-export function createViewMatrix(
+export function createProjectionMatrix(
   camera: CameraViewState,
   aspectRatio: number,
   nearClip: number,
