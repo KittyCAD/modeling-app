@@ -1,4 +1,4 @@
-import { expect } from 'vitest'
+import { expect, assert } from 'vitest'
 
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
@@ -6,10 +6,11 @@ import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import { assertParse } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getSelectionByArtifactId,
   getSelectionTypeDisplayText,
 } from '@src/lib/selections'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
@@ -1412,25 +1413,46 @@ describe('findLastRangeStartingBefore', () => {
 
 describe('getSelectionTypeDisplayText', () => {
   describe('when called', () => {
-    it('should return null if no selections are passed', () => {
+    test('should return null if no selections are passed', () => {
       const expected = null
       const actual = getSelectionTypeDisplayText()
       expect(actual).toBe(expected)
     })
-    it('should return 1 cap', () => {
+    test('should return 1 cap', () => {
       const expected = '1 cap'
       const actual = getSelectionTypeDisplayText(OneCap)
       expect(actual).toBe(expected)
     })
-    it('should return 1 face', () => {
+    test('should return 1 face', () => {
       const expected = '1 face'
       const actual = getSelectionTypeDisplayText(OneFace)
       expect(actual).toBe(expected)
     })
-    it('should return 2 faces, 1 cap', () => {
+    test('should return 2 faces, 1 cap', () => {
       const expected = '2 faces, 1 cap'
       const actual = getSelectionTypeDisplayText(TwoFacesOneCap)
       expect(actual).toBe(expected)
+    })
+  })
+})
+
+describe('getSelectionByArtifactId', () => {
+  describe('when called', () => {
+    test('should return an empty map', () => {
+      const selections : Selections = {
+        graphSelections: [],
+        otherSelections: []
+      }
+      const expected = 0
+      const actual = getSelectionByArtifactId(selections)
+      expect(actual.size).toBe(0)
+    })
+    test('should return 1 cap', () => {
+      const expected = 1
+      const actual = getSelectionByArtifactId(OneCap)
+      expect(actual.size).toBe(expected)
+      assert(OneCap.graphSelections[0].artifact !== undefined)
+      expect(actual.has(OneCap.graphSelections[0].artifact.id))
     })
   })
 })

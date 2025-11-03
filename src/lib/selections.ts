@@ -68,7 +68,9 @@ import {
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
   DefaultPlane,
+  DefaultPlaneSelection,
   ExtrudeFacePlane,
+  NonCodeSelection,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
@@ -451,6 +453,61 @@ export function isSketchPipe(selectionRanges: Selections) {
 export type ResolvedSelectionType = Artifact['type'] | 'other'
 export type SelectionCountsByType = Map<ResolvedSelectionType, number>
 
+export type ArtifactIdToType = Map<string, ResolvedSelectionType>
+
+
+export function selectionIsString(selection: NonCodeSelection) {
+  return typeof selection === 'string'
+}
+
+export function nameIsInSelection(selection: DefaultPlaneSelection) {
+  return 'name' in selection
+}
+
+export function getSelectionByArtifactId(selections: Selections) {
+  const artifactIdToType: ArtifactIdToType = new Map()
+
+  selections.otherSelections.forEach((selection) => {
+    let selectionType : ResolvedSelectionType | null = null
+    if (selectionIsString(selection)) {
+      selectionType = 'other'
+      artifactIdToType.set(selection, selectionType)
+    } else if (nameIsInSelection(selection)) {
+      selectionType = 'plane'
+      artifactIdToType.set(selection.id, selectionType)
+    }
+  })
+
+  selections.graphSelections.forEach((graphSelection) => {
+    let selectionType: ResolvedSelectionType | null = null
+    if (!graphSelection.artifact) {
+      const makeShiftKey = JSON.stringify(graphSelection)
+      /**
+       * TODO: remove this heuristic-based selection type detection.
+       * Currently, if you've created a sketch and have not left sketch mode,
+       * the selection will be a segment selection with no artifact.
+       * This is because the mock execution does not update the artifact graph.
+       * Once we move the artifactGraph creation to WASM, we can remove this,
+       * as the artifactGraph will always be up-to-date.
+       */
+      if (isSingleCursorInPipe(selections, kclManager.ast)) {
+        selectionType = 'segment'
+        artifactIdToType.set(makeShiftKey, selectionType)
+      } else {
+        selectionType = 'other'
+        artifactIdToType.set(makeShiftKey, selectionType)
+      }
+
+    } else {
+      selectionType = graphSelection.artifact.type
+      artifactIdToType.set(graphSelection.artifact?.id, selectionType)
+    }
+
+  })
+  console.log(artifactIdToType)
+  return artifactIdToType
+}
+
 /**
  * In the future, I'd like this function to properly return the type of each selected entity based on
  * its code source range, so that we can show something like "0 objects" or "1 face" or "1 line, 2 edges",
@@ -461,6 +518,9 @@ export type SelectionCountsByType = Map<ResolvedSelectionType, number>
 export function getSelectionCountByType(
   selection?: Selections
 ): SelectionCountsByType | 'none' {
+  if (selection) {
+    getSelectionByArtifactId(selection)
+  }
   const selectionsByType: SelectionCountsByType = new Map()
   if (
     !selection ||
@@ -474,9 +534,9 @@ export function getSelectionCountByType(
   }
 
   selection.otherSelections.forEach((selection) => {
-    if (typeof selection === 'string') {
+    if (selectionIsString(selection)) {
       incrementOrInitializeSelectionType('other')
-    } else if ('name' in selection) {
+    } else if (nameIsInSelection(selection)) {
       incrementOrInitializeSelectionType('plane')
     }
   })
