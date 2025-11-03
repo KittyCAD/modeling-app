@@ -33,15 +33,20 @@ use crate::{
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = vec![args.get_unlabeled_kw_arg(
+
+    let sketches: Vec<Extrudable> = args.get_unlabeled_kw_arg(
         "sketches",
-        &RuntimeType::Union(vec![
-            RuntimeType::sketch(),
-            RuntimeType::face(),
-            RuntimeType::tagged_face(),
-        ]),
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Union(vec![
+                RuntimeType::sketch(),
+                RuntimeType::face(),
+                RuntimeType::tagged_face(),
+            ])),
+            ArrayLen::Minimum(1)
+        ),
         exec_state,
-    )?];
+    )?;
+
     let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
     let to = args.get_kw_arg_opt(
         "to",
