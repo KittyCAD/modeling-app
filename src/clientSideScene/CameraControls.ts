@@ -231,7 +231,10 @@ export class CameraControls {
       cmd_id: uuidv4(),
       cmd: {
         type: 'default_camera_look_at',
-        ...convertThreeCamValuesToEngineCam(threeValues),
+        ...convertThreeCamValuesToEngineCam(
+          threeValues,
+          this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
+        ),
       },
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -371,11 +374,9 @@ export class CameraControls {
       }
       if (this.camera instanceof PerspectiveCamera && camSettings.fov_y) {
         this.camera.fov = camSettings.fov_y
-      } else if (
-        this.camera instanceof OrthographicCamera &&
-        camSettings.ortho_scale
-      ) {
-        const distanceToTarget = new Vector3(
+      } else if (this.camera instanceof OrthographicCamera) {
+        const fovY = camSettings.fov_y ?? this.perspectiveFovBeforeOrtho ?? 45
+        const eyeOffset = new Vector3(
           camSettings.pos.x,
           camSettings.pos.y,
           camSettings.pos.z
@@ -386,7 +387,10 @@ export class CameraControls {
             camSettings.center.z
           )
         )
-        this.camera.zoom = (camSettings.ortho_scale * 40) / distanceToTarget
+        const height = Math.tan(0.5 * degToRad(fovY)) * eyeOffset
+        const newZoom = ORTHOGRAPHIC_CAMERA_SIZE / height
+        this.camera.zoom = newZoom
+        this.camera.updateProjectionMatrix()
       }
       this.onCameraChange()
     }
@@ -768,13 +772,16 @@ export class CameraControls {
         cmd_id: uuidv4(),
         cmd: {
           type: 'default_camera_look_at',
-          ...convertThreeCamValuesToEngineCam({
-            isPerspective: true,
-            position: newPosition,
-            quaternion: this.camera.quaternion,
-            zoom: this.camera.zoom,
-            target: this.target,
-          }),
+          ...convertThreeCamValuesToEngineCam(
+            {
+              isPerspective: true,
+              position: newPosition,
+              quaternion: this.camera.quaternion,
+              zoom: this.camera.zoom,
+              target: this.target,
+            },
+            this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
+          ),
         },
       })
       await this.engineCommandManager.sendSceneCommand({
@@ -793,13 +800,16 @@ export class CameraControls {
         cmd_id: uuidv4(),
         cmd: {
           type: 'default_camera_perspective_settings',
-          ...convertThreeCamValuesToEngineCam({
-            isPerspective: true,
-            position: newPosition,
-            quaternion: this.camera.quaternion,
-            zoom: this.camera.zoom,
-            target: this.target,
-          }),
+          ...convertThreeCamValuesToEngineCam(
+            {
+              isPerspective: true,
+              position: newPosition,
+              quaternion: this.camera.quaternion,
+              zoom: this.camera.zoom,
+              target: this.target,
+            },
+            this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
+          ),
           fov_y: newFov,
         },
       })
@@ -1717,13 +1727,10 @@ function calculateNearFarFromFOV(fov: number) {
   return { z_near: 0.01, z_far: 1000 }
 }
 
-function convertThreeCamValuesToEngineCam({
-  target,
-  position,
-  quaternion,
-  zoom,
-  isPerspective,
-}: ThreeCamValues): {
+function convertThreeCamValuesToEngineCam(
+  { target, position, quaternion, zoom, isPerspective }: ThreeCamValues,
+  perspectiveFovY = 45
+): {
   center: Vector3
   up: Vector3
   vantage: Vector3
@@ -1739,49 +1746,18 @@ function convertThreeCamValuesToEngineCam({
     }
   }
 
-  // re-implementing stuff here, though this is a bunch of Mike's code
-  // if we need to pull him in again, at least it will be familiar to him
-  // and it's all simple functions.
-  interface Coord3d {
-    x: number
-    y: number
-    z: number
-  }
+  // Orthographic: derive engine eye_offset consistent with createProjectionMatrix
+  const effectiveHalfHeight = ORTHOGRAPHIC_CAMERA_SIZE / zoom
+  const eyeOffset =
+    effectiveHalfHeight / Math.tan(0.5 * degToRad(perspectiveFovY))
 
-  function buildLookAt(distance: number, center: Coord3d, eye: Coord3d) {
-    const eyeVector = normalized(sub(eye, center))
-    return { center: center, eye: add(center, mult(eyeVector, distance)) }
-  }
+  const viewDir = position.clone().sub(target).normalize()
+  const vantage = target.clone().add(viewDir.multiplyScalar(eyeOffset))
 
-  function mult(vecA: Coord3d, sc: number): Coord3d {
-    return { x: vecA.x * sc, y: vecA.y * sc, z: vecA.z * sc }
-  }
-
-  function add(vecA: Coord3d, vecB: Coord3d): Coord3d {
-    return { x: vecA.x + vecB.x, y: vecA.y + vecB.y, z: vecA.z + vecB.z }
-  }
-
-  function sub(vecA: Coord3d, vecB: Coord3d): Coord3d {
-    return { x: vecA.x - vecB.x, y: vecA.y - vecB.y, z: vecA.z - vecB.z }
-  }
-
-  function dot(vecA: Coord3d, vecB: Coord3d) {
-    return vecA.x * vecB.x + vecA.y * vecB.y + vecA.z * vecB.z
-  }
-
-  function length(vecA: Coord3d) {
-    return Math.sqrt(dot(vecA, vecA))
-  }
-
-  function normalized(vecA: Coord3d) {
-    return mult(vecA, 1.0 / length(vecA))
-  }
-
-  const lookAt = buildLookAt(64 / zoom, target, position)
   return {
-    center: new Vector3(lookAt.center.x, lookAt.center.y, lookAt.center.z),
-    up: new Vector3(upVector.x, upVector.y, upVector.z),
-    vantage: new Vector3(lookAt.eye.x, lookAt.eye.y, lookAt.eye.z),
+    center: target,
+    up: upVector,
+    vantage,
   }
 }
 
