@@ -31,7 +31,6 @@ import {
   SystemIOMachineEvents,
   determineProjectFilePathFromPrompt,
 } from '@src/machines/systemIO/utils'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
 import { appActor, setLayout } from '@src/lib/singletons'
@@ -639,7 +638,7 @@ export function createApplicationCommands({
 
   return isDesktop()
     ? [
-        ...(IS_STAGING_OR_DEBUG ? [] : [textToCADCommand]),
+        textToCADCommand,
         addKCLFileToProject,
         resetLayoutCommand,
         setLayoutCommand,
@@ -648,7 +647,7 @@ export function createApplicationCommands({
         choosePoolCommand,
       ]
     : [
-        ...(IS_STAGING_OR_DEBUG ? [] : [textToCADCommand]),
+        textToCADCommand,
         addKCLFileToProject,
         resetLayoutCommand,
         setLayoutCommand,

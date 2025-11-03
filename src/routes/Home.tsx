@@ -68,7 +68,6 @@ import {
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
 import { useSelector } from '@xstate/react'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -173,14 +172,24 @@ const Home = () => {
           name: 'app.theme',
         },
       })
-    } else if (data.menuLabel === 'File.Preferences.Theme color') {
-      navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#themeColor`)
     } else if (data.menuLabel === 'File.Add file to project') {
       commandBarActor.send({
         type: 'Find and select command',
         data: {
           name: 'add-kcl-file-to-project',
           groupId: 'application',
+        },
+      })
+    } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          name: 'Text-to-CAD',
+          groupId: 'application',
+          argDefaultValues: {
+            method: 'newProject',
+            newProjectName: settings.projects.defaultProjectName.current,
+          },
         },
       })
     }
@@ -282,47 +291,42 @@ const Home = () => {
                 Create project
               </ActionButton>
             </li>
-            {/* TODO: figure out how we get this to work with copilot */}
-            {!IS_STAGING_OR_DEBUG && (
-              <li className="contents">
-                <ActionButton
-                  Element="button"
-                  onClick={() =>
-                    commandBarActor.send({
-                      type: 'Find and select command',
-                      data: {
-                        groupId: 'application',
-                        name: 'Text-to-CAD',
-                        argDefaultValues: {
-                          method: 'newProject',
-                          newProjectName:
-                            settings.projects.defaultProjectName.current,
-                        },
+            <li className="contents">
+              <ActionButton
+                Element="button"
+                onClick={() =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: {
+                      groupId: 'application',
+                      name: 'Text-to-CAD',
+                      argDefaultValues: {
+                        method: 'newProject',
+                        newProjectName:
+                          settings.projects.defaultProjectName.current,
                       },
-                    })
-                  }
-                  className={sidebarButtonClasses}
-                  iconStart={{
-                    icon: 'sparkles',
-                    bgClassName: '!bg-transparent rounded-sm',
-                  }}
-                  data-testid="home-text-to-cad"
-                >
-                  Generate with Text-to-CAD
-                  <Tooltip position="bottom-left">
-                    <div className="text-sm flex flex-col max-w-xs">
-                      <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
-                        <CustomIcon name="beaker" className="w-4 h-4" />
-                        <span>Experimental</span>
-                      </div>
-                      <p className="pt-2 text-left">
-                        {ML_EXPERIMENTAL_MESSAGE}
-                      </p>
+                    },
+                  })
+                }
+                className={sidebarButtonClasses}
+                iconStart={{
+                  icon: 'sparkles',
+                  bgClassName: '!bg-transparent rounded-sm',
+                }}
+                data-testid="home-text-to-cad"
+              >
+                Generate with Text-to-CAD
+                <Tooltip position="bottom-left">
+                  <div className="text-sm flex flex-col max-w-xs">
+                    <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
+                      <CustomIcon name="beaker" className="w-4 h-4" />
+                      <span>Experimental</span>
                     </div>
-                  </Tooltip>
-                </ActionButton>
-              </li>
-            )}
+                    <p className="pt-2 text-left">{ML_EXPERIMENTAL_MESSAGE}</p>
+                  </div>
+                </Tooltip>
+              </ActionButton>
+            </li>
             <li className="contents">
               <ActionButton
                 Element="button"
