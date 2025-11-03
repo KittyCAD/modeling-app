@@ -1214,6 +1214,14 @@ export class CameraControls {
     })
   }
 
+  /**
+   * After we successfully save the old camera state and then enable
+   * it in the try connect loop, clear it. It shouldn't be set unless it idles
+   */
+  clearOldCameraState() {
+    this.oldCameraState = undefined
+  }
+
   saveRemoteCameraState(): Promise<void> {
     return new Promise((resolve, reject) => {
       // It's possible we've hit a disconnection, but the browser or nothing
