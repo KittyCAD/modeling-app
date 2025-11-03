@@ -83,6 +83,7 @@ class PointSegment implements SegmentUtils {
     handleDiv.style.height = '12px'
     handleDiv.style.backgroundColor = '#ffffff'
     handleDiv.style.border = '1px solid #cccccc'
+    handleDiv.style.borderRadius = '50%'
     handleDiv.style.position = 'absolute'
     handleDiv.style.pointerEvents = 'auto'
     handleDiv.style.cursor = 'move'
@@ -240,8 +241,9 @@ class PointSegment implements SegmentUtils {
       // Update selected styling based on whether this segment id is selected
       const el = handle.element
       const isSelected = args.selectedIds.includes(args.id)
-      el.style.backgroundColor = isSelected ? '#ffdd44' : '#ffffff'
-      el.style.border = '1px solid #cccccc'
+      // TODO don't have these hardcoded here
+      el.style.backgroundColor = isSelected ? '#FFB727' : '#3C73FF'
+      el.style.border = '1px solid #CCCCCC'
     }
   }
 }
