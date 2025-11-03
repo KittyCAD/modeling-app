@@ -151,9 +151,6 @@ export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
 /** Toast id for the onboarding */
 export const ONBOARDING_TOAST_ID = 'onboarding-toast'
 
-/** Toast id for the download app toast on web */
-export const DOWNLOAD_APP_TOAST_ID = 'download-app-toast'
-
 /** Toast id for the wasm init err toast on web */
 export const WASM_INIT_FAILED_TOAST_ID = 'wasm-init-failed-toast'
 
