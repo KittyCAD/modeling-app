@@ -151,7 +151,7 @@ async fn inner_extrude(
 
     for sketch in &sketches {
         let id = exec_state.next_uuid();
-        let sketch_or_face_id = sketch.id(exec_state, &args, false).await?;
+        let sketch_or_face_id = sketch.id_to_extrude(exec_state, &args, false).await?;
         let cmd = match (&twist_angle, &twist_angle_step, &twist_center, length.clone(), &to) {
             (Some(angle), angle_step, center, Some(length), None) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();

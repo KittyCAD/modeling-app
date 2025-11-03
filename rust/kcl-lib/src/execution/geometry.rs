@@ -714,7 +714,7 @@ pub enum Extrudable {
 
 impl Extrudable {
     /// Get the relevant id.
-    pub async fn id(
+    pub async fn id_to_extrude(
         &self,
         exec_state: &mut ExecState,
         args: &Args,
