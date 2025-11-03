@@ -336,6 +336,26 @@ function artifactGraphFromRust(
     const pathToNode = pathToNodeFromRustNodePath(artifact.codeRef.nodePath)
     artifact.codeRef.pathToNode = pathToNode
   }
+
+  // Delete all the nodePath values.
+  // by definition no codeRef can have a nodePath
+  for (const [_id, artifact] of Object.entries(rustArtifactGraph.map)) {
+    if (!artifact) continue
+    if (!('codeRef' in artifact)) continue
+    /**
+     * Look up excess propetry errors in typescript
+     * during runtime the codeRef here can be a superset of interface CodeRef
+     * if it is the typescript compiler will not yell at us, only when you make an
+     * object literal.
+     * Then it has the audacity to not let me delete a key off a codeRef which again is an interface of a
+     * runtime object. If the interface is still satisfies because I am deleting a key on the interface that
+     * isn't defined on the interface why would it throw a TS error?
+     */
+    // I must ts-ignore this delete because the value during runtime of the interface will have more keys than it should
+    // @ts-ignore excess property errors
+    delete artifact.codeRef.nodePath
+  }
+
   return artifactGraph
 }
 

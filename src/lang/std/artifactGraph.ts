@@ -31,8 +31,6 @@ import type {
 } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
-import type { NodePath } from '@rust/kcl-lib/bindings/NodePath'
-
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
 
 export function defaultArtifactGraph(): ArtifactGraph {
@@ -46,7 +44,6 @@ interface BaseArtifact {
 export interface CodeRef {
   range: SourceRange
   pathToNode: PathToNode
-  nodePath?: NodePath
 }
 
 export interface PlaneArtifactRich extends BaseArtifact {
