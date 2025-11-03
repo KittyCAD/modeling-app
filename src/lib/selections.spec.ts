@@ -10,6 +10,7 @@ import type { Selection } from '@src/machines/modelingSharedTypes'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getSelectionTypeDisplayText
 } from '@src/lib/selections'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
@@ -1405,5 +1406,16 @@ describe('findLastRangeStartingBefore', () => {
 
     const result = findLastRangeStartingBefore(mockIndex, 50)
     expect(result).toBe(1)
+  })
+})
+
+
+describe('getSelectionTypeDisplayText', () => {
+  describe('when called', () => {
+    it('should return null if no selections are passed', ()=>{
+      const expected = null
+      const actual = getSelectionTypeDisplayText()
+      expect(actual).toBe(expected)
+    })
   })
 })
