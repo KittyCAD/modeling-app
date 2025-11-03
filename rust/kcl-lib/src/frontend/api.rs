@@ -116,11 +116,14 @@ pub struct Object {
 pub enum ObjectKind {
     Plane(Plane),
     Sketch(crate::frontend::sketch::Sketch),
-    Segment(crate::frontend::sketch::Segment),
-    Constraint(crate::frontend::sketch::Constraint),
-    // TODO
-    Region,
-    Sweep,
+    // These need to be named since the nested types are also enums. ts-rs needs
+    // a place to put the type tag.
+    Segment {
+        segment: crate::frontend::sketch::Segment,
+    },
+    Constraint {
+        constraint: crate::frontend::sketch::Constraint,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

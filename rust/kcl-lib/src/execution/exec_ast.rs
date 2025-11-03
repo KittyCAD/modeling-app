@@ -1349,18 +1349,20 @@ fn create_segment_scene_objects(
                 })?;
                 let point_object = Object {
                     id: exec_state.next_object_id(),
-                    kind: ObjectKind::Segment(crate::front::Segment::Point(crate::front::Point {
-                        position: point2d.clone(),
-                        ctor: Some(crate::front::PointCtor {
-                            position: crate::front::Point2d {
-                                x: crate::front::Expr::Number(point2d.x),
-                                y: crate::front::Expr::Number(point2d.y),
-                            },
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::Point(crate::front::Point {
+                            position: point2d.clone(),
+                            ctor: Some(crate::front::PointCtor {
+                                position: crate::front::Point2d {
+                                    x: crate::front::Expr::Number(point2d.x),
+                                    y: crate::front::Expr::Number(point2d.y),
+                                },
+                            }),
+                            owner: None,
+                            freedom: *freedom,
+                            constraints: Vec::new(),
                         }),
-                        owner: None,
-                        freedom: *freedom,
-                        constraints: Vec::new(),
-                    })),
+                    },
                     label: Default::default(),
                     comments: Default::default(),
                     // TODO: sketch-api: implement
@@ -1386,13 +1388,15 @@ fn create_segment_scene_objects(
                 })?;
                 let start_point_object = Object {
                     id: exec_state.next_object_id(),
-                    kind: ObjectKind::Segment(crate::front::Segment::Point(crate::front::Point {
-                        position: start_point2d.clone(),
-                        ctor: None,
-                        owner: Some(segment_object_id),
-                        freedom: *start_freedom,
-                        constraints: Vec::new(),
-                    })),
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::Point(crate::front::Point {
+                            position: start_point2d.clone(),
+                            ctor: None,
+                            owner: Some(segment_object_id),
+                            freedom: *start_freedom,
+                            constraints: Vec::new(),
+                        }),
+                    },
                     label: Default::default(),
                     comments: Default::default(),
                     // TODO: sketch-api: implement
@@ -1410,13 +1414,15 @@ fn create_segment_scene_objects(
                 })?;
                 let end_point_object = Object {
                     id: exec_state.next_object_id(),
-                    kind: ObjectKind::Segment(crate::front::Segment::Point(crate::front::Point {
-                        position: end_point2d.clone(),
-                        ctor: None,
-                        owner: Some(segment_object_id),
-                        freedom: *end_freedom,
-                        constraints: Vec::new(),
-                    })),
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::Point(crate::front::Point {
+                            position: end_point2d.clone(),
+                            ctor: None,
+                            owner: Some(segment_object_id),
+                            freedom: *end_freedom,
+                            constraints: Vec::new(),
+                        }),
+                    },
                     label: Default::default(),
                     comments: Default::default(),
                     // TODO: sketch-api: implement
@@ -1428,25 +1434,27 @@ fn create_segment_scene_objects(
 
                 let segment_object = Object {
                     id: exec_state.assert_next_object_id(segment_object_id),
-                    kind: ObjectKind::Segment(crate::front::Segment::Line(crate::front::Line {
-                        start: start_point_object_id,
-                        end: end_point_object_id,
-                        ctor: crate::front::SegmentCtor::Line(crate::front::LineCtor {
-                            start: crate::front::Point2d {
-                                // TODO: sketch-api: use original input expressions
-                                // instead of numbers.
-                                x: crate::front::Expr::Number(start_point2d.x),
-                                y: crate::front::Expr::Number(start_point2d.y),
-                            },
-                            end: crate::front::Point2d {
-                                // TODO: sketch-api: use original input expressions
-                                // instead of numbers.
-                                x: crate::front::Expr::Number(end_point2d.x),
-                                y: crate::front::Expr::Number(end_point2d.y),
-                            },
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::Line(crate::front::Line {
+                            start: start_point_object_id,
+                            end: end_point_object_id,
+                            ctor: crate::front::SegmentCtor::Line(crate::front::LineCtor {
+                                start: crate::front::Point2d {
+                                    // TODO: sketch-api: use original input expressions
+                                    // instead of numbers.
+                                    x: crate::front::Expr::Number(start_point2d.x),
+                                    y: crate::front::Expr::Number(start_point2d.y),
+                                },
+                                end: crate::front::Point2d {
+                                    // TODO: sketch-api: use original input expressions
+                                    // instead of numbers.
+                                    x: crate::front::Expr::Number(end_point2d.x),
+                                    y: crate::front::Expr::Number(end_point2d.y),
+                                },
+                            }),
+                            ctor_applicable: true,
                         }),
-                        ctor_applicable: true,
-                    })),
+                    },
                     label: Default::default(),
                     comments: Default::default(),
                     // TODO: sketch-api: implement

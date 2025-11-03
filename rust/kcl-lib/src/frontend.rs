@@ -421,7 +421,7 @@ impl FrontendState {
             let segment_object = outcome.scene_objects.get(segment_id.0).ok_or_else(|| Error {
                 msg: format!("Segment not found: {segment_id:?}"),
             })?;
-            let ObjectKind::Segment(segment) = &segment_object.kind else {
+            let ObjectKind::Segment { segment } = &segment_object.kind else {
                 return Err(Error {
                     msg: format!("Object is not a segment: {segment_object:?}"),
                 });
@@ -537,7 +537,7 @@ impl FrontendState {
             let segment_object = outcome.scene_objects.get(segment_id.0).ok_or_else(|| Error {
                 msg: format!("Segment not found: {segment_id:?}"),
             })?;
-            let ObjectKind::Segment(segment) = &segment_object.kind else {
+            let ObjectKind::Segment { segment } = &segment_object.kind else {
                 return Err(Error {
                     msg: format!("Object is not a segment: {segment_object:?}"),
                 });
@@ -589,7 +589,7 @@ impl FrontendState {
         let point_object = self.scene_graph.objects.get(point_id.0).ok_or_else(|| Error {
             msg: format!("Line not found in scene graph: point={point:?}"),
         })?;
-        let ObjectKind::Segment(_) = &point_object.kind else {
+        let ObjectKind::Segment { .. } = &point_object.kind else {
             return Err(Error {
                 msg: format!("Object is not a segment: {point_object:?}"),
             });
@@ -630,7 +630,7 @@ impl FrontendState {
         let line_object = self.scene_graph.objects.get(line_id.0).ok_or_else(|| Error {
             msg: format!("Line not found in scene graph: line={line:?}"),
         })?;
-        let ObjectKind::Segment(_) = &line_object.kind else {
+        let ObjectKind::Segment { .. } = &line_object.kind else {
             return Err(Error {
                 msg: format!("Object is not a segment: {line_object:?}"),
             });
@@ -719,7 +719,7 @@ impl FrontendState {
         let pt0_object = self.scene_graph.objects.get(pt0_id.0).ok_or_else(|| Error {
             msg: format!("Point not found: {pt0_id:?}"),
         })?;
-        let ObjectKind::Segment(pt0_segment) = &pt0_object.kind else {
+        let ObjectKind::Segment { segment: pt0_segment } = &pt0_object.kind else {
             return Err(Error {
                 msg: format!("Object is not a segment: {pt0_object:?}"),
             });
@@ -735,7 +735,7 @@ impl FrontendState {
         let pt1_object = self.scene_graph.objects.get(pt1_id.0).ok_or_else(|| Error {
             msg: format!("Point not found: {pt1_id:?}"),
         })?;
-        let ObjectKind::Segment(pt1_segment) = &pt1_object.kind else {
+        let ObjectKind::Segment { segment: pt1_segment } = &pt1_object.kind else {
             return Err(Error {
                 msg: format!("Object is not a segment: {pt1_object:?}"),
             });
@@ -865,7 +865,7 @@ impl FrontendState {
                         msg: format!("Segment object in sketch segments not found; id={segment_id:?}"),
                     }));
                 };
-                let ObjectKind::Segment(segment) = &segment_object.kind else {
+                let ObjectKind::Segment { segment } = &segment_object.kind else {
                     return Some(Err(Error {
                         msg: format!(
                             "Segment object in sketch segments expected to be a segment but found {segment_object:?}",
