@@ -60,7 +60,7 @@ export type SketchSolveMachineEvent =
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
   | { type: 'coincident' }
-  | { type: 'update selected ids'; data: { selectedIds: Array<number> } }
+  | { type: 'update selected ids'; data: { selectedIds?: Array<number> } }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
   | {
       type: 'update sketch outcome'
@@ -141,22 +141,47 @@ export const sketchSolveMachine = setup({
             })
           }
         },
-        onClick: async ({ selected }) => {
+        onClick: async ({ selected, mouseEvent }) => {
           const group = getParentGroup(selected, ['point'])
-          const currentSelectedIds =
-            self.getSnapshot()?.context.selectedIds ?? []
-          let newSelectedIds: Array<number>
+
           if (group) {
-            newSelectedIds = Array.from(
-              new Set([...currentSelectedIds, Number(group?.name)])
-            )
-          } else {
-            newSelectedIds = []
+            const newSelectedIds = [Number(group?.name)]
+            self.send({
+              type: 'update selected ids',
+              data: { selectedIds: newSelectedIds },
+            })
+            return
           }
-          self.send({
-            type: 'update selected ids',
-            data: { selectedIds: newSelectedIds },
-          })
+
+          // No three.js selection under cursor. Check CSS2DObject under mouse.
+          const el = document.elementFromPoint(
+            mouseEvent.clientX,
+            mouseEvent.clientY
+          ) as HTMLElement | null
+          let cur: HTMLElement | null = el
+          let pointId: number | null = null
+          while (cur) {
+            const idAttr = cur.dataset?.segment_id
+            if (idAttr && !Number.isNaN(Number(idAttr))) {
+              pointId = Number(idAttr)
+              break
+            }
+            cur = cur.parentElement
+          }
+
+          if (pointId != null) {
+            const newSelectedIds = [pointId]
+            self.send({
+              type: 'update selected ids',
+              data: { selectedIds: newSelectedIds },
+            })
+          } else {
+            // Truly dead space: clear selection
+            self.send({
+              type: 'update selected ids',
+              data: {},
+            })
+          }
         },
       })
     },
@@ -179,11 +204,56 @@ export const sketchSolveMachine = setup({
       type: 'sketch solve tool changed',
       data: { tool: null },
     }),
-    'update selected ids': assign(({ event }) => {
+    'update selected ids': assign(({ event, context }) => {
       assertEvent(event, 'update selected ids')
-      return { selectedIds: event.data.selectedIds }
+      const first = event.data?.selectedIds?.[0]
+      if (
+        event.data?.selectedIds?.length === 1 &&
+        first &&
+        context.selectedIds.includes(first)
+      ) {
+        // If only one ID is selected and it's already in the selection, remove only it from the selection
+        return {
+          selectedIds: context.selectedIds.filter((id) => id !== first),
+        }
+      }
+      return {
+        selectedIds: event.data.selectedIds
+          ? Array.from(
+              new Set([...context.selectedIds, ...event.data.selectedIds])
+            )
+          : [],
+      }
     }),
-    'update sketch outcome': assign(({ event }) => {
+    'refresh selection styling': ({ context }) => {
+      // Update selection styling for all existing sketch-solve point segments
+      const sketchSceneGroup =
+        sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+      if (!sketchSceneGroup) return
+      sketchSceneGroup.children.forEach((child) => {
+        const group = child as Group
+        if (!(group instanceof Group)) return
+        const idNum = Number(group.name)
+        if (Number.isNaN(idNum)) return
+        const handle = group.getObjectByName('handle')
+        if (!handle) return
+        const x = handle.position.x * group.scale.x
+        const y = handle.position.y * group.scale.y
+        void segmentUtilsMap.PointSegment.update({
+          input: {
+            type: 'point',
+            position: [x, y],
+            freedom: 0 as any,
+          },
+          theme: sceneInfra.theme,
+          scale: group.scale.x,
+          id: idNum,
+          group,
+          selectedIds: context.selectedIds,
+        })
+      })
+    },
+    'update sketch outcome': assign(({ event, self, context }) => {
       assertEvent(event, 'update sketch outcome')
       codeManager.updateCodeEditor(event.data.kclSource.text)
       const sceneGraphDelta = event.data.sceneGraphDelta
@@ -205,6 +275,11 @@ export const sketchSolveMachine = setup({
             theme: sceneInfra.theme,
             scale: factor,
             id: objId,
+            onUpdateSketchOutcome: (data) =>
+              self.send({
+                type: 'update sketch outcome',
+                data,
+              }),
           })
             .then((group) => {
               const sketchSceneGroup =
@@ -245,6 +320,7 @@ export const sketchSolveMachine = setup({
             scale: factor,
             id: objj.id,
             group,
+            selectedIds: context.selectedIds,
           })
             ?.then(() => {})
             .catch(() => {
@@ -339,7 +415,7 @@ export const sketchSolveMachine = setup({
       },
     },
     'update selected ids': {
-      actions: 'update selected ids',
+      actions: ['update selected ids', 'refresh selection styling'],
     },
   },
   states: {

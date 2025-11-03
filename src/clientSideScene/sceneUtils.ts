@@ -33,6 +33,7 @@ export const SEGMENT_LENGTH_LABEL_TEXT = 'segment-length-label-text'
 export const SEGMENT_LENGTH_LABEL_OFFSET_PX = 30
 export const CIRCLE_3_POINT_DRAFT_POINT = 'circle-3-point-draft-point'
 export const CIRCLE_3_POINT_DRAFT_CIRCLE = 'circle-3-point-draft-circle'
+export const SKETCH_POINT_HANDLE = 'sketch-point-handle'
 
 export function getSceneScale(
   camera: PerspectiveCamera | OrthographicCamera,
