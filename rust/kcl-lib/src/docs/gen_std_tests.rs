@@ -8,6 +8,8 @@ use tokio::task::JoinSet;
 use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, ModData, TyData};
 use crate::ExecutorContext;
 
+mod type_formatter;
+
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     let mut hbs = handlebars::Handlebars::new();
 
@@ -517,6 +519,10 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData) -> St
         !(input.starts_with('[') && input.ends_with(']') && input.contains('|')),
         "Arrays of unions are not supported"
     );
+
+    if let Err(e) = type_formatter::parse(input) {
+        eprintln!("Could not parse: {input} because {e}");
+    }
 
     let tys: Vec<_> = input
         .split('|')
