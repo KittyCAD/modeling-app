@@ -404,11 +404,21 @@ impl Node<Program> {
         Ok(new_program)
     }
 
+    /// Return a new program with the experimental features warning level
+    /// changed.
     pub fn change_experimental_features(&self, warning_level: Option<WarningLevel>) -> Result<Self, KclError> {
         let mut new_program = self.clone();
+        new_program.set_experimental_features(warning_level);
+
+        Ok(new_program)
+    }
+
+    /// Set the experimental features warning level in place.
+    pub(crate) fn set_experimental_features(&mut self, warning_level: Option<WarningLevel>) {
         let mut found = false;
-        for node in &mut new_program.inner_attrs {
+        for node in &mut self.inner_attrs {
             if node.name() == Some(annotations::SETTINGS) {
+                // TODO: Should we remove it if warning_level is None?
                 if let Some(level) = warning_level {
                     node.inner.add_or_update(
                         annotations::SETTINGS_EXPERIMENTAL_FEATURES,
@@ -432,10 +442,8 @@ impl Node<Program> {
                 );
             }
 
-            new_program.inner_attrs.push(settings);
+            self.inner_attrs.push(settings);
         }
-
-        Ok(new_program)
     }
 
     /// Returns true if the given KCL is empty or only contains settings that

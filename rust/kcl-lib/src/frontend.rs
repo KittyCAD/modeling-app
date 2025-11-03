@@ -5,6 +5,7 @@ use kcl_error::SourceRange;
 
 use crate::{
     ExecOutcome, ExecutorContext, Program,
+    exec::WarningLevel,
     fmt::format_number_literal,
     front::PointCtor,
     frontend::{
@@ -90,6 +91,10 @@ impl SketchApi for FrontendState {
             digest: None,
         };
         let mut new_ast = self.program.ast.clone();
+        // Ensure that we allow experimental features since the sketch block
+        // won't work without it.
+        new_ast.set_experimental_features(Some(WarningLevel::Allow));
+        // Add a sketch block.
         new_ast.body.push(ast::BodyItem::ExpressionStatement(ast::Node {
             inner: ast::ExpressionStatement {
                 expression: ast::Expr::SketchBlock(Box::new(ast::Node {
@@ -1355,9 +1360,7 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_new_sketch_add_point_edit_point() {
-        let initial_source = "@settings(experimentalFeatures = allow)\n";
-
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let program = Program::empty();
 
         let mut frontend = FrontendState::new();
         frontend.program = program;
@@ -1460,9 +1463,7 @@ sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_new_sketch_add_line_edit_line() {
-        let initial_source = "@settings(experimentalFeatures = allow)\n";
-
-        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let program = Program::empty();
 
         let mut frontend = FrontendState::new();
         frontend.program = program;
