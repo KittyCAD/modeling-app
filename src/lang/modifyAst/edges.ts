@@ -301,7 +301,7 @@ export function retrieveEdgeSelectionsFromOpArgs(
   } else {
     tagValues.push(tagsArg.value)
   }
-  console.log('faceValues', tagValues)
+
   const graphSelections: Selection[] = []
   for (const v of tagValues) {
     if (!(v.type == 'Uuid' && v.value)) {
