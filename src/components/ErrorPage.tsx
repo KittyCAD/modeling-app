@@ -38,7 +38,7 @@ export function generateToUrl(
 ) {
   const newLine = '%0A'
   const body = `${errorMessage(error)} ${newLine} >${stackTraceMessage(error)} ${newLine}`
-  const result = `https://github.com/KittyCAD/modeling-app/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`
+  const result = `https://github.com/KittyCAD/modeling-app/issues/new?title=${title}&body=${body}`
   return result
 }
 
