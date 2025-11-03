@@ -241,10 +241,15 @@ const MlCopilotSelectionsContext = (props: {
 }) => {
   const selectionText = getSelectionTypeDisplayText(props.selections.data)
   return selectionText ? (
-    <button className="group/tool flex-none flex flex-row gap-1 items-center p-0 pr-2">
+    <Popover className="relative">
+      <Popover.Button className="h-7 flex items-center justify-content">
       <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />
       {selectionText}
-    </button>
+      </Popover.Button>
+      <Popover.Panel className="absolute bottom-full left-0 whitespace-nowrap flex flex-col gap-2 hover:bg-2 bg-default mb-1 p-2 border b-3 text-sm rounded-md">
+        dog
+      </Popover.Panel>
+    </Popover>
   ) : null
 }
 

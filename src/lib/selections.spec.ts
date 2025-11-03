@@ -1439,9 +1439,9 @@ describe('getSelectionTypeDisplayText', () => {
 describe('getSelectionByArtifactId', () => {
   describe('when called', () => {
     test('should return an empty map', () => {
-      const selections : Selections = {
+      const selections: Selections = {
         graphSelections: [],
-        otherSelections: []
+        otherSelections: [],
       }
       const expected = 0
       const actual = getSelectionByArtifactId(selections)

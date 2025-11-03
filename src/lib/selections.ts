@@ -455,7 +455,6 @@ export type SelectionCountsByType = Map<ResolvedSelectionType, number>
 
 export type ArtifactIdToType = Map<string, ResolvedSelectionType>
 
-
 export function selectionIsString(selection: NonCodeSelection) {
   return typeof selection === 'string'
 }
@@ -468,7 +467,7 @@ export function getSelectionByArtifactId(selections: Selections) {
   const artifactIdToType: ArtifactIdToType = new Map()
 
   selections.otherSelections.forEach((selection) => {
-    let selectionType : ResolvedSelectionType | null = null
+    let selectionType: ResolvedSelectionType | null = null
     if (selectionIsString(selection)) {
       selectionType = 'other'
       artifactIdToType.set(selection, selectionType)
@@ -497,14 +496,11 @@ export function getSelectionByArtifactId(selections: Selections) {
         selectionType = 'other'
         artifactIdToType.set(makeShiftKey, selectionType)
       }
-
     } else {
       selectionType = graphSelection.artifact.type
       artifactIdToType.set(graphSelection.artifact?.id, selectionType)
     }
-
   })
-  console.log(artifactIdToType)
   return artifactIdToType
 }
 
