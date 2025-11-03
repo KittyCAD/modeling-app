@@ -724,9 +724,7 @@ impl Extrudable {
     ) -> Result<uuid::Uuid, KclError> {
         match self {
             Extrudable::Sketch(sketch) => Ok(sketch.id),
-            Extrudable::Face(face_tag) => {
-                face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await
-            }
+            Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
             Extrudable::TaggedFace(tag_id) => {
                 if let Some(cur_info) = tag_id.get_cur_info() {
                     Ok(cur_info.id)

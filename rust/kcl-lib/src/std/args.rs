@@ -10,8 +10,8 @@ use crate::{
     CompilationError, ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch,
-        Extrudable, SketchSurface, Solid, TagIdentifier, annotations,
+        ExecState, Extrudable, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch,
+        SketchSurface, Solid, TagIdentifier, annotations,
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType, UnitType},
     },

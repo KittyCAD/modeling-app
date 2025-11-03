@@ -23,8 +23,8 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     exec::Sketch,
     execution::{
-        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, Extrudable,
-        SketchSurface, Solid,
+        ArtifactId, ExecState, Extrudable, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, SketchSurface,
+        Solid,
         types::{PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
@@ -38,8 +38,8 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         &RuntimeType::Union(vec![
             RuntimeType::sketch(),
             RuntimeType::face(),
-            RuntimeType::tagged_face(),]
-        ),
+            RuntimeType::tagged_face(),
+        ]),
         exec_state,
     )?];
     let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
