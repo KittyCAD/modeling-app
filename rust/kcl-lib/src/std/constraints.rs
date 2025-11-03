@@ -560,6 +560,61 @@ fn coincident_constraints_fixed(
     Ok((constraint_x, constraint_y))
 }
 
+pub async fn vertical(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let line: KclValue = args.get_unlabeled_kw_arg("line", &RuntimeType::segment(), exec_state)?;
+    let KclValue::Segment { value: segment } = line else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line argument must be a Segment".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let SegmentRepr::Unsolved { segment: unsolved } = &segment.repr else {
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            "line must be an unsolved Segment".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let UnsolvedSegmentKind::Line { start, end, .. } = &unsolved.kind else {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "line argument must be a line, no other type of Segment".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    let p0_x = &start[0];
+    let p0_y = &start[1];
+    let p1_x = &end[0];
+    let p1_y = &end[1];
+    match (p0_x, p0_y, p1_x, p1_y) {
+        (
+            UnsolvedExpr::Unknown(p0_x),
+            UnsolvedExpr::Unknown(p0_y),
+            UnsolvedExpr::Unknown(p1_x),
+            UnsolvedExpr::Unknown(p1_y),
+        ) => {
+            let range = args.source_range;
+            let solver_p0 =
+                kcl_ezpz::datatypes::DatumPoint::new_xy(p0_x.to_constraint_id(range)?, p0_y.to_constraint_id(range)?);
+            let solver_p1 =
+                kcl_ezpz::datatypes::DatumPoint::new_xy(p1_x.to_constraint_id(range)?, p1_y.to_constraint_id(range)?);
+            let solver_line = kcl_ezpz::datatypes::LineSegment::new(solver_p0, solver_p1);
+            let constraint = kcl_ezpz::Constraint::Vertical(solver_line);
+            // Save the constraint to be used for solving.
+            let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "vertical() can only be used inside a sketch block".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            sketch_state.constraints.push(constraint);
+            Ok(KclValue::none())
+        }
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            "line's x and y coordinates of both start and end must be vars".to_owned(),
+            vec![args.source_range],
+        ))),
+    }
+}
+
 pub async fn parallel(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     Err(KclError::Internal {
         details: KclErrorDetails::new("Not yet implemented".to_owned(), vec![args.source_range]),
