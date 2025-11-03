@@ -1231,7 +1231,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               })
             : modelingSend({
                 type: 'equip tool',
-                data: { tool: 'dimensionTool' },
+                data: { tool: 'lineTool' },
               }),
         icon: 'line',
         status: 'available',
@@ -1241,7 +1241,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [],
         isActive: (state) =>
           state.matches('sketchSolveMode') &&
-          state.context.sketchSolveToolName === 'dimensionTool',
+          state.context.sketchSolveToolName === 'lineTool',
       },
       {
         id: 'point',

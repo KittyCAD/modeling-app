@@ -11,6 +11,7 @@ import type { SetSelections } from '@src/machines/modelingSharedTypes'
 import { machine as centerRectTool } from '@src/machines/sketchSolve/tools/centerRectTool'
 import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimensionTool'
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
+import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineTool'
 import type {
   SceneGraphDelta,
   SketchExecOutcome,
@@ -39,6 +40,7 @@ const equipTools = Object.freeze({
   centerRectTool,
   dimensionTool,
   pointTool,
+  lineTool,
 })
 
 const CHILD_TOOL_ID = 'child tool'
@@ -268,13 +270,19 @@ export const sketchSolveMachine = setup({
           : orthoFactor
       sceneInfra.baseUnitMultiplier
       sceneGraphDelta.new_objects.forEach((objId) => {
-        const obj = sceneGraphDelta.new_graph.objects[objId] as any
-        if (obj?.kind.type === 'Point') {
+        const obj = sceneGraphDelta.new_graph.objects[objId]
+        if (
+          obj?.kind.type === 'Segment' &&
+          obj?.kind?.segment?.type === 'Point'
+        ) {
           segmentUtilsMap.PointSegment.init({
             input: {
               type: 'point',
-              position: [obj.kind.position.x.value, obj.kind.position.y.value],
-              freedom: obj.kind.freedom,
+              position: [
+                obj.kind.segment.position.x.value,
+                obj.kind.segment.position.y.value,
+              ],
+              freedom: obj.kind.segment.freedom,
             },
             theme: sceneInfra.theme,
             scale: factor,
@@ -298,16 +306,15 @@ export const sketchSolveMachine = setup({
         }
       })
       sceneGraphDelta.new_graph.objects.forEach((obj) => {
-        const objj = obj as any
-        if (sceneGraphDelta.new_objects.includes(objj.id)) {
+        if (sceneGraphDelta.new_objects.includes(obj.id)) {
           return
         }
-        if (objj.kind.type === 'Point') {
-          const group = sceneInfra.scene.getObjectByName(String(objj.id))
+        if (obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point') {
+          const group = sceneInfra.scene.getObjectByName(String(obj.id))
           if (!(group instanceof Group)) {
             console.error(
               'No group found in scene for PointSegment with id',
-              objj.id
+              obj.id
             )
             return
           }
@@ -315,20 +322,20 @@ export const sketchSolveMachine = setup({
             input: {
               type: 'point',
               position: [
-                objj.kind.position.x.value,
-                objj.kind.position.y.value,
+                obj.kind.segment.position.x.value,
+                obj.kind.segment.position.y.value,
               ],
-              freedom: objj.kind.freedom,
+              freedom: obj.kind.segment.freedom,
             },
             theme: sceneInfra.theme,
             scale: factor,
-            id: objj.id,
+            id: obj.id,
             group,
             selectedIds: context.selectedIds,
           })
             ?.then(() => {})
             .catch(() => {
-              console.error('Failed to update PointSegment for object', objj.id)
+              console.error('Failed to update PointSegment for object', obj.id)
             })
         }
       })

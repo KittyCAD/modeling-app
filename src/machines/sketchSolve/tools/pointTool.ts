@@ -9,15 +9,16 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
 
+const TOOL_ID = 'Point tool'
 const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
-const CONFIRMING_DIMENSIONS_DONE = `xstate.done.actor.0.Point tool.${CONFIRMING_DIMENSIONS}`
+const CONFIRMING_DIMENSIONS_DONE = `xstate.done.actor.0.${TOOL_ID}.${CONFIRMING_DIMENSIONS}`
 
-type PointEvent =
+type ToolEvents =
   | { type: 'unequip' }
   | { type: 'add point'; data: [x: number, y: number] }
   | { type: 'update selection' }
   | {
-      type: `xstate.done.actor.0.Point tool.${typeof CONFIRMING_DIMENSIONS}`
+      type: `xstate.done.actor.0.${typeof TOOL_ID}.${typeof CONFIRMING_DIMENSIONS}`
       output: {
         kclSource: SourceDelta
         sketchExecOutcome: SketchExecOutcome
@@ -27,12 +28,10 @@ type PointEvent =
 export const machine = setup({
   types: {
     context: {} as Record<string, unknown>,
-    events: {} as PointEvent,
+    events: {} as ToolEvents,
   },
   actions: {
     'add point listener': ({ self }) => {
-      console.log('Point tool ready for user click')
-
       sceneInfra.setCallbacks({
         onClick: (args) => {
           if (!args) return
@@ -110,13 +109,14 @@ export const machine = setup({
     ),
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QAUD2BLAdgFwATdVQBsBiAV0zAEcz0AHAbQAYBdRUO1WdbdVTdiAAeiAIwAmcaIB0AZgCcANlniAHAHZZAVkXilAGhABPRABZp61VvWnFW8Uy0KdogL6vDaLHgLFydCABDbDBcWDAiMABjXn5mNiQQTm5YgUSRBAVxaUVRJlU1JwL5UWtDEwQAWkLpJiZxbVN1ayY7VUV3TwwcfEIiaQBhfgAzdAAnAFssKFwIdAmwTG5+WBIIfjBpLAA3VABrTa8e336hzFHJ6dn5xeWlhB3UKOC+THj4wWSeV8EMnXlamolPI6g5lKZyogQdI1M1tIpTKokQpZJ0QEcfH1BiNxlNMDM5gslq9VmAxmNUGNpHQiMFhpSJtIMb1iNjzriroTbiSHphds9Uu9WJ8uN9+L8xI5VNJ2op1HLwTokZCEKJ2jDTPItaomEpVKJ5Fo0cyTtIxmBAhAjLh6WNcGRwnaokR0FE9iRLRBcJxvB9El9UhKELppYa1KVSvlVAoVWrzM06rII5otR00ZhUBA4IITX0RSkfulEEn1BYwYjHFJROpxOoVZUJKWpKZxLktPJZDX1ExTMbupjWebLdbbfbHbhna69vmxWlQBlZHYy60K-ZRNXa7HcjCtKCWoiky2+94WaccZd8dciXd4P7RYGiwgCjJxKZZKZq+3HLrRFuX7v6nUDtVC1bVj2OLEKGoWg6DoaYZwfecxFrAEGkkBEezyeR5VjUxzHEACmEbYpTHsdx3CAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QAUD2BLAdgFwATdVQBsBiAV0zAEcz0AHAbQAYBdRUO1WdbdVTdiAAeiAIwAmcaIB0AZgCcANlniAHAHZZAVkXilAGhABPRABZp61VvWnFW8Uy0KdogL6vDaLHgLFydCABDbDBcWDAiMABjXn5mNiQQTm5YgUSRBAVxaUVRJlU1JwL5UWtDEwQAWkLpJiZxbVN1ayY7VUV3TwwcfEIiaQAnMECII1wAM1QB3DJw6aiidCiAaxIRiFxOb3jBZJ4+NNAM3VVpeXtVUtL81QVysVVzZrrZK815JU6QLx7ffoBhfjjdADAC2WCguAg6FBYEw3H4sBIEH4YGkWAAbqhlmifj4+tJAZhgWCIVCYXCEfCEJjUFFggd4jtEntUoJjhJpKIrKJTKYmOpRIpFOpxPcEE1pPzZE1rKomKIFKYvnjesRCUCQeDMJDobD4QckWABgMptI6ERgpMwdJVX8NcStWS9ZTDTTMFj6akmaxdlx9vx2WJHKd2iLwzKdKpVOLuYppOJTB95PKlJdzu4PCBMKgIHBBHa+n6Ugcg5lROoLA5FKZ5fZRBXxOpxZUJJWpKZI0wVKJ5LW3FnC+qhiMxtaZnNcAslstiwHDsJELI7FXWrXHFJG83jGJcgmtHVxC1a69TOIVd18eqiSTtbqKQbEXO2elEAUZImZRWtPJHEwSrGe5Hoe6jyLIqjJimF7eGq-QUNQtB0HQELPqWr4IG28gJio4g1kwph5PI6iKLGfL7nUCpNsUpj2JmrhAA */
   context: {},
-  id: 'Point tool',
+  id: TOOL_ID,
   initial: 'ready for user click',
   on: {
     unequip: {
-      target: '#Point tool.unequipping',
+      // target: `#${TOOL_ID}.unequipping`, // using TOOL_ID breaks the xstate visualizer
+      target: `#Point tool.unequipping`,
       description:
         "can be requested from the outside, but we want this tool to have the final say on when it's done.",
     },
