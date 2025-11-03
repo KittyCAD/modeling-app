@@ -140,7 +140,7 @@ impl SketchApi for FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
+        let outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -399,7 +399,7 @@ impl FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
+        let outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -515,7 +515,7 @@ impl FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
+        let outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -674,7 +674,7 @@ impl FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
+        let outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -793,7 +793,7 @@ impl FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = ctx.run_with_caching(new_program).await.map_err(|err| {
+        let outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -1325,14 +1325,14 @@ mod tests {
         let mut frontend = FrontendState::new();
         frontend.program = program;
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
         let sketch_args = SketchArgs {
             on: api::Plane::Default(PlaneName::Xy),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
-            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .new_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
         assert_eq!(sketch_id, ObjectId(0));
@@ -1365,7 +1365,7 @@ mod tests {
         };
         let segment = SegmentCtor::Point(point_ctor);
         let (src_delta, scene_delta, sketch_exec_outcome) = frontend
-            .add_segment(&ctx, version, sketch_id, segment, None)
+            .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
         assert_eq!(
@@ -1380,6 +1380,10 @@ sketch(on = XY) {
         assert_eq!(scene_delta.new_objects, vec![ObjectId(1)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 2);
         assert_eq!(sketch_exec_outcome.segments.len(), 1);
+        for (i, scene_object) in scene_delta.new_graph.objects.iter().enumerate() {
+            assert_eq!(scene_object.id.0, i);
+        }
+        assert_eq!(scene_delta.new_graph.objects.len(), 2);
 
         let point_id = *scene_delta.new_objects.last().unwrap();
 
@@ -1400,7 +1404,7 @@ sketch(on = XY) {
             ctor: SegmentCtor::Point(point_ctor),
         }];
         let (src_delta, scene_delta, sketch_exec_outcome) = frontend
-            .edit_segments(&ctx, version, sketch_id, segments)
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
         assert_eq!(
@@ -1426,14 +1430,14 @@ sketch(on = XY) {
         let mut frontend = FrontendState::new();
         frontend.program = program;
 
-        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
         let sketch_args = SketchArgs {
             on: api::Plane::Default(PlaneName::Xy),
         };
         let (_src_delta, scene_delta, sketch_id) = frontend
-            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .new_sketch(&mock_ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
         assert_eq!(sketch_id, ObjectId(0));
@@ -1476,7 +1480,7 @@ sketch(on = XY) {
         };
         let segment = SegmentCtor::Line(line_ctor);
         let (src_delta, scene_delta, sketch_exec_outcome) = frontend
-            .add_segment(&ctx, version, sketch_id, segment, None)
+            .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
         assert_eq!(
@@ -1490,6 +1494,10 @@ sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_objects, vec![ObjectId(1), ObjectId(2), ObjectId(3)]);
         assert_eq!(sketch_exec_outcome.segments.len(), 0);
+        for (i, scene_object) in scene_delta.new_graph.objects.iter().enumerate() {
+            assert_eq!(scene_object.id.0, i);
+        }
+        assert_eq!(scene_delta.new_graph.objects.len(), 4);
 
         // The new objects are the end points and then the line.
         let line = *scene_delta.new_objects.last().unwrap();
@@ -1521,7 +1529,7 @@ sketch(on = XY) {
             ctor: SegmentCtor::Line(line_ctor),
         }];
         let (src_delta, scene_delta, sketch_exec_outcome) = frontend
-            .edit_segments(&ctx, version, sketch_id, segments)
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
         assert_eq!(
@@ -1551,6 +1559,7 @@ s = sketch(on = XY) {}
         let mut frontend = FrontendState::new();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
@@ -1580,7 +1589,7 @@ s = sketch(on = XY) {}
         };
         let segment = SegmentCtor::Line(line_ctor);
         let (src_delta, scene_delta, sketch_exec_outcome) = frontend
-            .add_segment(&ctx, version, sketch_id, segment, None)
+            .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
         assert_eq!(
@@ -1612,6 +1621,7 @@ sketch(on = XY) {
         let mut frontend = FrontendState::new();
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
         let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
@@ -1621,7 +1631,7 @@ sketch(on = XY) {
         let coincident = Coincident {
             points: vec![point0_id, point1_id],
         };
-        let (src_delta, _, _) = frontend.add_coincident(&ctx, sketch_id, coincident).await.unwrap();
+        let (src_delta, _, _) = frontend.add_coincident(&mock_ctx, sketch_id, coincident).await.unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
