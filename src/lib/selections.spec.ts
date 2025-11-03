@@ -13,6 +13,7 @@ import {
   getSelectionTypeDisplayText,
 } from '@src/lib/selections'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { OneCap } from '@root/unit/fixtures/selections'
 
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
@@ -1414,6 +1415,11 @@ describe('getSelectionTypeDisplayText', () => {
     it('should return null if no selections are passed', () => {
       const expected = null
       const actual = getSelectionTypeDisplayText()
+      expect(actual).toBe(expected)
+    })
+    it('should return 1 cap', ()=> {
+      const expected = '1 cap'
+      const actual = getSelectionTypeDisplayText(OneCap)
       expect(actual).toBe(expected)
     })
   })

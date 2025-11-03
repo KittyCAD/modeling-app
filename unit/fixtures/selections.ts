@@ -1,6 +1,5 @@
-import { Selections } from "@src/machines/modelingSharedTypes";
-
-export const oneCap : Selections = {
+import type { Selections } from '@src/machines/modelingSharedTypes'
+export const OneCap: Selections = {
     "graphSelections": [
         {
             "artifact": {
@@ -29,24 +28,6 @@ export const oneCap : Selections = {
                     211,
                     0
                 ],
-                "nodePath": {
-                    "steps": [
-                        {
-                            "type": "ProgramBodyItem",
-                            "index": 3
-                        },
-                        {
-                            "type": "VariableDeclarationDeclaration"
-                        },
-                        {
-                            "type": "VariableDeclarationInit"
-                        },
-                        {
-                            "type": "PipeBodyItem",
-                            "index": 0
-                        }
-                    ]
-                },
                 "pathToNode": [
                     [
                         "body",

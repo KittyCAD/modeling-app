@@ -38,7 +38,7 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "e2e", "packages", "*.ts", "rust", "types"],
+  "include": ["src", "e2e", "packages", "*.ts", "rust", "types", "unit"],
   "exclude": [
     "node_modules",
     "./*.grammar",
