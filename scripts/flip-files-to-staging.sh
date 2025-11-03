@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 COMMIT=$(git rev-parse --short HEAD)
 TITLE=$(git show -s --format=%s $COMMIT)
