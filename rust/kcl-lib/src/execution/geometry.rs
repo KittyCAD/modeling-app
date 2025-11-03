@@ -738,7 +738,7 @@ impl Extrudable {
         }
     }
 
-    pub fn sketch(&self) -> Option<Sketch> {
+    pub fn as_sketch(&self) -> Option<Sketch> {
         match self {
             Extrudable::Sketch(sketch) => Some((**sketch).clone()),
             Extrudable::Face(face_tag) => match face_tag.geometry() {
