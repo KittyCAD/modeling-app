@@ -1254,7 +1254,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'equip tool',
                 data: { tool: 'pointTool' },
               }),
-        icon: 'arrowDown',
+        icon: 'oneDot',
         status: 'available',
         title: 'Point',
         hotkey: 'L',
@@ -1270,7 +1270,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           modelingSend({
             type: 'coincident',
           }),
-        icon: 'arrowUp',
+        icon: 'coincident',
         status: 'available',
         title: 'coincident',
         hotkey: 'L',
