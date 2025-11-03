@@ -582,18 +582,55 @@ impl FrontendState {
             });
         };
         sketch.segments.iter().find(|o| **o == point).ok_or_else(|| Error {
-            msg: format!("Line not found in sketch: point={point:?}, sketch={sketch:?}"),
+            msg: format!("Point not found in sketch: point={point:?}, sketch={sketch:?}"),
         })?;
-        // Look up existing line.
+        // Look up existing point.
         let point_id = point;
         let point_object = self.scene_graph.objects.get(point_id.0).ok_or_else(|| Error {
-            msg: format!("Line not found in scene graph: point={point:?}"),
+            msg: format!("Point not found in scene graph: point={point:?}"),
         })?;
-        let ObjectKind::Segment { .. } = &point_object.kind else {
+        let ObjectKind::Segment {
+            segment: Segment::Point(point),
+        } = &point_object.kind
+        else {
             return Err(Error {
-                msg: format!("Object is not a segment: {point_object:?}"),
+                msg: format!("Object is not a point segment: {point_object:?}"),
             });
         };
+
+        // If the point is part of a line, edit the line instead.
+        if let Some(line_id) = point.owner {
+            let line_object = self.scene_graph.objects.get(line_id.0).ok_or_else(|| Error {
+                msg: format!("Internal: Line owner of point not found in scene graph: line={line_id:?}",),
+            })?;
+            let ObjectKind::Segment {
+                segment: Segment::Line(line),
+            } = &line_object.kind
+            else {
+                return Err(Error {
+                    msg: format!("Internal: Owner of point is not actually a line segment: {line_object:?}"),
+                });
+            };
+            let SegmentCtor::Line(line_ctor) = &line.ctor else {
+                return Err(Error {
+                    msg: format!("Internal: Owner of point does not have line ctor: {line_object:?}"),
+                });
+            };
+            let mut line_ctor = line_ctor.clone();
+            // Which end of the line is this point?
+            if line.start == point_id {
+                line_ctor.start = ctor.position;
+            } else if line.end == point_id {
+                line_ctor.end = ctor.position;
+            } else {
+                return Err(Error {
+                    msg: format!(
+                        "Internal: Point is not part of owner's line segment: point={point_id:?}, line={line_id:?}"
+                    ),
+                });
+            }
+            return self.edit_line(new_ast, sketch_id, line_id, line_ctor);
+        }
 
         // Modify the point AST.
         self.mutate_ast(new_ast, point_id, AstMutateCommand::EditPoint { at: new_at_ast })
@@ -1493,7 +1530,7 @@ sketch(on = XY) {
 "
         );
         assert_eq!(scene_delta.new_objects, vec![ObjectId(1), ObjectId(2), ObjectId(3)]);
-        assert_eq!(sketch_exec_outcome.segments.len(), 0);
+        assert_eq!(sketch_exec_outcome.segments.len(), 2);
         for (i, scene_object) in scene_delta.new_graph.objects.iter().enumerate() {
             assert_eq!(scene_object.id.0, i);
         }
@@ -1544,7 +1581,7 @@ sketch(on = XY) {
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
         // TODO: SketchExecOutcome hasn't implemented lines yet.
-        assert_eq!(sketch_exec_outcome.segments.len(), 0);
+        assert_eq!(sketch_exec_outcome.segments.len(), 2);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1604,7 +1641,125 @@ s = sketch(on = XY) {
         assert_eq!(scene_delta.new_objects, vec![ObjectId(1), ObjectId(2), ObjectId(3)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
         // TODO: SketchExecOutcome hasn't implemented lines yet.
-        assert_eq!(sketch_exec_outcome.segments.len(), 0);
+        assert_eq!(sketch_exec_outcome.segments.len(), 2);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_line_when_editing_its_start_point() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+
+        let point_id = frontend.scene_graph.objects.get(1).unwrap().id;
+
+        let point_ctor = PointCtor {
+            position: Point2d {
+                x: Expr::Var(Number {
+                    value: 5.0,
+                    units: NumericSuffix::Inch,
+                }),
+                y: Expr::Var(Number {
+                    value: 6.0,
+                    units: NumericSuffix::Inch,
+                }),
+            },
+        };
+        let segments = vec![ExistingSegmentCtor {
+            id: point_id,
+            ctor: SegmentCtor::Point(point_ctor),
+        }];
+        let (src_delta, scene_delta, sketch_exec_outcome) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::line(start = [var 5in, var 6in], end = [var 3, var 4])
+}
+"
+        );
+        assert_eq!(scene_delta.new_objects, vec![]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 4);
+        // TODO: SketchExecOutcome hasn't implemented lines yet.
+        assert_eq!(sketch_exec_outcome.segments.len(), 2);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_line_when_editing_its_end_point() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+
+        let point_id = frontend.scene_graph.objects.get(2).unwrap().id;
+
+        let point_ctor = PointCtor {
+            position: Point2d {
+                x: Expr::Var(Number {
+                    value: 5.0,
+                    units: NumericSuffix::Inch,
+                }),
+                y: Expr::Var(Number {
+                    value: 6.0,
+                    units: NumericSuffix::Inch,
+                }),
+            },
+        };
+        let segments = vec![ExistingSegmentCtor {
+            id: point_id,
+            ctor: SegmentCtor::Point(point_ctor),
+        }];
+        let (src_delta, scene_delta, sketch_exec_outcome) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::line(start = [var 1, var 2], end = [var 5in, var 6in])
+}
+"
+        );
+        assert_eq!(scene_delta.new_objects, vec![]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 4);
+        // TODO: SketchExecOutcome hasn't implemented lines yet.
+        assert_eq!(sketch_exec_outcome.segments.len(), 2);
     }
 
     #[tokio::test(flavor = "multi_thread")]

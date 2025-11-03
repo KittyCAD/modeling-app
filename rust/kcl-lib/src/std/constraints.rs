@@ -7,6 +7,7 @@ use crate::{
         UnsolvedSegmentKind, normalize_to_solver_unit,
         types::{ArrayLen, PrimitiveType, RuntimeType},
     },
+    front::{LineCtor, Point2d, PointCtor},
     std::Args,
 };
 
@@ -18,20 +19,41 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             vec![args.source_range],
         )));
     }
-    let Some(at_x) = at.first().unwrap().clone().as_unsolved_expr() else {
+    let at_x_value = at.first().unwrap().clone();
+    let Some(at_x) = at_x_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "at x must be a number or sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
-    let Some(at_y) = at.get(1).unwrap().clone().as_unsolved_expr() else {
+    let at_y_value = at.get(1).unwrap().clone();
+    let Some(at_y) = at_y_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "at y must be a number or sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
+    let ctor = PointCtor {
+        position: Point2d {
+            x: at_x_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+            y: at_y_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+        },
+    };
     let segment = UnsolvedSegment {
-        kind: UnsolvedSegmentKind::Point { position: [at_x, at_y] },
+        kind: UnsolvedSegmentKind::Point {
+            position: [at_x, at_y],
+            ctor: Box::new(ctor),
+        },
         meta: vec![args.source_range.into()],
     };
 
@@ -71,34 +93,69 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         )));
     }
     // SAFETY: checked length above.
-    let Some(start_x) = start.first().unwrap().clone().as_unsolved_expr() else {
+    let start_x_value = start.first().unwrap().clone();
+    let Some(start_x) = start_x_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "start x must be a number or sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
-    let Some(start_y) = start.get(1).unwrap().clone().as_unsolved_expr() else {
+    let start_y_value = start.get(1).unwrap().clone();
+    let Some(start_y) = start_y_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "start y must be a number or sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
-    let Some(end_x) = end.first().unwrap().clone().as_unsolved_expr() else {
+    let end_x_value = end.first().unwrap().clone();
+    let Some(end_x) = end_x_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "end x must be a number or sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
-    let Some(end_y) = end.get(1).unwrap().clone().as_unsolved_expr() else {
+    let end_y_value = end.get(1).unwrap().clone();
+    let Some(end_y) = end_y_value.as_unsolved_expr() else {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "end y must be a number or sketch var".to_owned(),
             vec![args.source_range],
         )));
     };
+    let ctor = LineCtor {
+        start: Point2d {
+            x: start_x_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+            y: start_y_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+        },
+        end: Point2d {
+            x: end_x_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+            y: end_y_value.to_sketch_expr().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "unable to convert numeric type to suffix".to_owned(),
+                    vec![args.source_range],
+                ))
+            })?,
+        },
+    };
     let segment = UnsolvedSegment {
         kind: UnsolvedSegmentKind::Line {
             start: [start_x, start_y],
             end: [end_x, end_y],
+            ctor: Box::new(ctor),
         },
         meta: vec![args.source_range.into()],
     };
@@ -159,7 +216,10 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                 )));
             };
             match (&unsolved0.kind, &unsolved1.kind) {
-                (UnsolvedSegmentKind::Point { position: pos0 }, UnsolvedSegmentKind::Point { position: pos1 }) => {
+                (
+                    UnsolvedSegmentKind::Point { position: pos0, .. },
+                    UnsolvedSegmentKind::Point { position: pos1, .. },
+                ) => {
                     let p0_x = &pos0[0];
                     let p0_y = &pos0[1];
                     match (p0_x, p0_y) {
@@ -382,7 +442,7 @@ fn add_coincident_segment_point_array(
         )));
     };
     match &unsolved.kind {
-        UnsolvedSegmentKind::Point { position } => {
+        UnsolvedSegmentKind::Point { position, .. } => {
             match (&position[0], &position[1]) {
                 (UnsolvedExpr::Unknown(p0_x), UnsolvedExpr::Unknown(p0_y)) => {
                     // The segment is a point with two sketch vars.

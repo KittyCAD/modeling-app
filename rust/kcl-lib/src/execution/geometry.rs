@@ -18,7 +18,7 @@ use crate::{
         ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier,
         types::{NumericType, adjust_length},
     },
-    front::{Freedom, ObjectId},
+    front::{Freedom, LineCtor, ObjectId, PointCtor},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
     std::{args::TyF64, sketch::PlaneData},
 };
@@ -1718,10 +1718,12 @@ pub struct UnsolvedSegment {
 pub enum UnsolvedSegmentKind {
     Point {
         position: [UnsolvedExpr; 2],
+        ctor: Box<PointCtor>,
     },
     Line {
         start: [UnsolvedExpr; 2],
         end: [UnsolvedExpr; 2],
+        ctor: Box<LineCtor>,
     },
 }
 
@@ -1740,11 +1742,13 @@ pub struct Segment {
 pub enum SegmentKind {
     Point {
         position: [TyF64; 2],
+        ctor: Box<PointCtor>,
         freedom: Freedom,
     },
     Line {
         start: [TyF64; 2],
         end: [TyF64; 2],
+        ctor: Box<LineCtor>,
         start_freedom: Freedom,
         end_freedom: Freedom,
     },

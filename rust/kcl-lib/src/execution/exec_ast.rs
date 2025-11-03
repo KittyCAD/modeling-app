@@ -1249,7 +1249,7 @@ fn substitute_sketch_var_in_segment(
 ) -> Result<Segment, KclError> {
     let srs = segment.meta.iter().map(|m| m.source_range).collect::<Vec<_>>();
     match &segment.kind {
-        UnsolvedSegmentKind::Point { position } => {
+        UnsolvedSegmentKind::Point { position, ctor } => {
             let (position_x, position_x_freedom) =
                 substitute_sketch_var_in_unsolved_expr(&position[0], solve_outcome, solution_ty, &srs)?;
             let (position_y, position_y_freedom) =
@@ -1258,12 +1258,13 @@ fn substitute_sketch_var_in_segment(
             Ok(Segment {
                 kind: SegmentKind::Point {
                     position,
+                    ctor: ctor.clone(),
                     freedom: position_x_freedom.merge(position_y_freedom),
                 },
                 meta: segment.meta,
             })
         }
-        UnsolvedSegmentKind::Line { start, end } => {
+        UnsolvedSegmentKind::Line { start, end, ctor } => {
             let (start_x, start_x_freedom) =
                 substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, &srs)?;
             let (start_y, start_y_freedom) =
@@ -1278,6 +1279,7 @@ fn substitute_sketch_var_in_segment(
                 kind: SegmentKind::Line {
                     start,
                     end,
+                    ctor: ctor.clone(),
                     start_freedom: start_x_freedom.merge(start_y_freedom),
                     end_freedom: end_x_freedom.merge(end_y_freedom),
                 },
@@ -1340,7 +1342,11 @@ fn create_segment_scene_objects(
             .unwrap_or(sketch_block_range);
 
         match &segment.kind {
-            SegmentKind::Point { position, freedom } => {
+            SegmentKind::Point {
+                position,
+                ctor,
+                freedom,
+            } => {
                 let point2d = TyF64::to_point2d(position).map_err(|_| {
                     KclError::new_internal(KclErrorDetails::new(
                         format!("Error converting start point runtime type to API value: {:?}", position),
@@ -1353,10 +1359,7 @@ fn create_segment_scene_objects(
                         segment: crate::front::Segment::Point(crate::front::Point {
                             position: point2d.clone(),
                             ctor: Some(crate::front::PointCtor {
-                                position: crate::front::Point2d {
-                                    x: crate::front::Expr::Number(point2d.x),
-                                    y: crate::front::Expr::Number(point2d.y),
-                                },
+                                position: ctor.position.clone(),
                             }),
                             owner: None,
                             freedom: *freedom,
@@ -1375,6 +1378,7 @@ fn create_segment_scene_objects(
             SegmentKind::Line {
                 start,
                 end,
+                ctor,
                 start_freedom,
                 end_freedom,
             } => {
@@ -1404,6 +1408,7 @@ fn create_segment_scene_objects(
                     source: source.clone(),
                 };
                 let start_point_object_id = start_point_object.id;
+                segment_object_ids.push(start_point_object_id);
                 exec_state.add_scene_object(start_point_object, segment_range);
 
                 let end_point2d = TyF64::to_point2d(end).map_err(|_| {
@@ -1430,6 +1435,7 @@ fn create_segment_scene_objects(
                     source: source.clone(),
                 };
                 let end_point_object_id = end_point_object.id;
+                segment_object_ids.push(end_point_object_id);
                 exec_state.add_scene_object(end_point_object, segment_range);
 
                 let segment_object = Object {
@@ -1438,20 +1444,7 @@ fn create_segment_scene_objects(
                         segment: crate::front::Segment::Line(crate::front::Line {
                             start: start_point_object_id,
                             end: end_point_object_id,
-                            ctor: crate::front::SegmentCtor::Line(crate::front::LineCtor {
-                                start: crate::front::Point2d {
-                                    // TODO: sketch-api: use original input expressions
-                                    // instead of numbers.
-                                    x: crate::front::Expr::Number(start_point2d.x),
-                                    y: crate::front::Expr::Number(start_point2d.y),
-                                },
-                                end: crate::front::Point2d {
-                                    // TODO: sketch-api: use original input expressions
-                                    // instead of numbers.
-                                    x: crate::front::Expr::Number(end_point2d.x),
-                                    y: crate::front::Expr::Number(end_point2d.y),
-                                },
-                            }),
+                            ctor: crate::front::SegmentCtor::Line(ctor.as_ref().clone()),
                             ctor_applicable: true,
                         }),
                     },
@@ -1704,7 +1697,7 @@ impl Node<MemberExpression> {
                 "at" => match &segment.repr {
                     SegmentRepr::Unsolved { segment } => {
                         match &segment.kind {
-                            UnsolvedSegmentKind::Point { position } => {
+                            UnsolvedSegmentKind::Point { position, .. } => {
                                 // TODO: assert that types of all elements are the same.
                                 Ok(KclValue::HomArray {
                                     value: vec![
