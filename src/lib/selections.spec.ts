@@ -13,7 +13,7 @@ import {
   getSelectionTypeDisplayText,
 } from '@src/lib/selections'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { OneCap } from '@root/unit/fixtures/selections'
+import { OneCap, OneFace, TwoFacesOneCap } from '@root/unit/fixtures/selections'
 
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
@@ -1417,9 +1417,19 @@ describe('getSelectionTypeDisplayText', () => {
       const actual = getSelectionTypeDisplayText()
       expect(actual).toBe(expected)
     })
-    it('should return 1 cap', ()=> {
+    it('should return 1 cap', () => {
       const expected = '1 cap'
       const actual = getSelectionTypeDisplayText(OneCap)
+      expect(actual).toBe(expected)
+    })
+    it('should return 1 face', () => {
+      const expected = '1 face'
+      const actual = getSelectionTypeDisplayText(OneFace)
+      expect(actual).toBe(expected)
+    })
+    it('should return 2 faces, 1 cap', () => {
+      const expected = '2 faces, 1 cap'
+      const actual = getSelectionTypeDisplayText(TwoFacesOneCap)
       expect(actual).toBe(expected)
     })
   })
