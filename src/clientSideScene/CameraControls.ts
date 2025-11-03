@@ -4,7 +4,7 @@ import { isArray } from '@src/lib/utils'
 
 import * as TWEEN from '@tweenjs/tween.js'
 import Hammer from 'hammerjs'
-import type { Camera, CoordinateSystem} from 'three'
+import type { Camera, CoordinateSystem } from 'three'
 import {
   Euler,
   MathUtils,
@@ -1875,7 +1875,7 @@ function createOrthographicProjectionMatrix(
       return new Matrix4(
         2.0 * invW, 0.0, 0.0, -(right + left) * invW,
         0.0, 2.0 * invH, 0.0, -(top + bottom) * invH,
-        0.0, 0.0, 2.0 * invD, (far + near) *invD,
+        0.0, 0.0, 2.0 * invD, (far + near) * invD,
         0.0, 0.0, 0.0, 1.0
       )
     case WebGPUCoordinateSystem:
@@ -1884,7 +1884,7 @@ function createOrthographicProjectionMatrix(
       return new Matrix4(
         2.0 * invW, 0.0, 0.0, -(right + left) * invW,
         0.0, 2.0 * invH, 0.0, -(top + bottom) * invH,
-        0.0, 0.0, invD, near *invD,
+        0.0, 0.0, invD, near * invD,
         0.0, 0.0, 0.0, 1.0
       )
   }
@@ -1959,14 +1959,19 @@ export function createViewMatrix(
   coordSystem: CoordinateSystem = WebGLCoordinateSystem
 ): Matrix4 {
   if (camera.is_ortho) {
+    // NOTE: The height of the ortho frustum is derived from FOV and eye distance to ensure
+    // consistent scale when switching between projection modes
     const height = Math.tan(0.5 * degToRad(camera.fov_y)) * camera.eye_offset
     const width = height * aspectRatio
+
+    // NOTE: A mirrored far plane is used as the near plane in ortho mode to avoid clipping scene
+    // geometry when zooming in
     return createOrthographicProjectionMatrix(
       -width,
       width,
       -height,
       height,
-      nearClip,
+      -farClip,
       farClip,
       coordSystem
     )
