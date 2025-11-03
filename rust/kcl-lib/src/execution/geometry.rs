@@ -744,14 +744,14 @@ impl Extrudable {
         match self {
             Extrudable::Sketch(sketch) => Some((**sketch).clone()),
             Extrudable::Face(face_tag) => match face_tag.geometry() {
-                Some(Geometry::Sketch(sketch)) => Some(sketch.clone()),
+                Some(Geometry::Sketch(sketch)) => Some(sketch),
                 Some(Geometry::Solid(solid)) => Some(solid.sketch),
                 _ => None,
             },
             Extrudable::TaggedFace(tag_id) => {
                 if let Some(cur_info) = tag_id.geometry() {
                     match cur_info {
-                        Geometry::Sketch(sketch) => Some(sketch.clone()),
+                        Geometry::Sketch(sketch) => Some(sketch),
                         Geometry::Solid(solid) => Some(solid.sketch),
                     }
                 } else {
