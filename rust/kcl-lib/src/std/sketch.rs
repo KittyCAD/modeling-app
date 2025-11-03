@@ -1182,7 +1182,7 @@ pub(crate) async fn inner_start_profile(
     };
     if let Some(tag) = &tag {
         let path = Path::Base {
-            base: current_path.clone(),
+            base: current_path,
         };
         sketch.add_tag(tag, &path, exec_state, None);
     }
