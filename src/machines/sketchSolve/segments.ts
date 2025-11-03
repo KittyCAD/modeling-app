@@ -241,9 +241,13 @@ class PointSegment implements SegmentUtils {
       // Update selected styling based on whether this segment id is selected
       const el = handle.element
       const isSelected = args.selectedIds.includes(args.id)
-      // TODO don't have these hardcoded here
-      el.style.backgroundColor = isSelected ? '#FFB727' : '#3C73FF'
-      el.style.border = '1px solid #CCCCCC'
+      // TODO don't have these colours hardcoded here
+      const goldRgb = '255, 183, 39'
+      el.style.backgroundColor = isSelected ? `rgb(${goldRgb})` : '#3C73FF'
+      el.style.border = isSelected
+        ? `1px solid rgba(${goldRgb}, 0.5)`
+        : '1px solid #CCCCCC'
+      el.style.backgroundClip = 'padding-box'
     }
   }
 }
