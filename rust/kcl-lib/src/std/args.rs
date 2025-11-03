@@ -493,15 +493,7 @@ impl<'a> FromKclValue<'a> for Vec<Extrudable> {
             .clone()
             .into_array()
             .iter()
-            .map(|v| {
-                if let Some(sketch) = v.as_sketch() {
-                    Some(Extrudable::Sketch(Box::new(sketch.clone())))
-                } else if let Some(face_tag) = FaceTag::from_kcl_val(v) {
-                    Some(Extrudable::Face(face_tag))
-                } else {
-                    TagIdentifier::from_kcl_val(v).map(|tag_id| Extrudable::TaggedFace(Box::new(tag_id)))
-                }
-            })
+            .map(|v|Extrudable::from_kcl_val(v))
             .collect::<Option<Vec<_>>>()?;
         Some(items)
     }
