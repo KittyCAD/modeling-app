@@ -63,9 +63,8 @@ test(
       await expect(engineErrorToastMessage).not.toBeVisible()
 
       const successToastMessage = page.getByText(`Exported successfully`)
-      await page.waitForTimeout(1_000)
-      const count = await successToastMessage.count()
-      await expect(count).toBeGreaterThanOrEqual(1)
+      // We only care if one toast popped up, but don't worry if more do.
+      await expect(successToastMessage.first()).toBeVisible()
 
       // Check for the exported file
       const firstFileFullPath = path.resolve(
