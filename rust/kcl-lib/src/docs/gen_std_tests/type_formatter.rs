@@ -61,6 +61,8 @@ pub fn parse<'i>(s: &'i str) -> anyhow::Result<KclType<'i>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use Cardinality::*;
+    use KclType::*;
 
     #[test]
     fn test_type_formatter() {
@@ -71,40 +73,54 @@ mod tests {
         let tests = [
             Test {
                 input: "[[Solid; 2]]",
-                expected: KclType::Array {
-                    element: Box::new(KclType::Array {
-                        element: Box::new(KclType::Atom("Solid")),
-                        cardinality: Cardinality::Exactly(2),
+                expected: Array {
+                    element: Box::new(Array {
+                        element: Box::new(Atom("Solid")),
+                        cardinality: Exactly(2),
                     }),
-                    cardinality: Cardinality::Any,
+                    cardinality: Any,
                 },
             },
             Test {
                 input: "[Solid; 1+]",
-                expected: KclType::Array {
-                    element: Box::new(KclType::Atom("Solid")),
-                    cardinality: Cardinality::AtLeast(1),
+                expected: Array {
+                    element: Box::new(Atom("Solid")),
+                    cardinality: AtLeast(1),
                 },
             },
             Test {
                 input: "[Solid; 1+] | ImportedGeometry",
-                expected: KclType::Union {
+                expected: Union {
                     variants: vec![
-                        KclType::Array {
-                            element: Box::new(KclType::Atom("Solid")),
-                            cardinality: Cardinality::AtLeast(1),
+                        Array {
+                            element: Box::new(Atom("Solid")),
+                            cardinality: AtLeast(1),
                         },
-                        KclType::Atom("ImportedGeometry"),
+                        Atom("ImportedGeometry"),
                     ],
                 },
             },
             Test {
                 input: "[Solid | Sketch; 1+]",
-                expected: KclType::Array {
-                    element: Box::new(KclType::Union {
-                        variants: vec![KclType::Atom("Solid"), KclType::Atom("Sketch")],
+                expected: Array {
+                    element: Box::new(Union {
+                        variants: vec![Atom("Solid"), Atom("Sketch")],
                     }),
-                    cardinality: Cardinality::AtLeast(1),
+                    cardinality: AtLeast(1),
+                },
+            },
+            Test {
+                input: "[Solid | Sketch; 1+] | ImportedGeometry",
+                expected: Union {
+                    variants: vec![
+                        Array {
+                            element: Box::new(Union {
+                                variants: vec![Atom("Solid"), Atom("Sketch")],
+                            }),
+                            cardinality: AtLeast(1),
+                        },
+                        Atom("ImportedGeometry"),
+                    ],
                 },
             },
         ];
