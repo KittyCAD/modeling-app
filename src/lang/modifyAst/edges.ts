@@ -207,7 +207,8 @@ export function buildSolidsAndTagsExprs(
   faces: Selections,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
-  nodeToEdit?: PathToNode
+  nodeToEdit?: PathToNode,
+  solidsCount = 1
 ) {
   const solids: Selections = {
     graphSelections: faces.graphSelections.flatMap((f) => {
@@ -232,6 +233,12 @@ export function buildSolidsAndTagsExprs(
   )
   if (err(vars)) {
     return vars
+  }
+
+  if (vars.exprs.length > solidsCount) {
+    return new Error(
+      `Selection has more solids (${vars.exprs.length}) than expected (${solidsCount})`
+    )
   }
 
   const pathIfPipe = vars.pathIfPipe
