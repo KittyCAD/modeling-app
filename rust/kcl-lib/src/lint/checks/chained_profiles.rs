@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use anyhow::Result;
 use kcl_error::SourceRange;
 
@@ -5,9 +7,8 @@ use crate::{
     errors::Suggestion,
     lint::rule::{Discovered, Finding, def_finding},
     parsing::ast::types::{
-        ArrayExpression, BodyItem, CallExpressionKw, Expr, Identifier, ImportPath, ImportSelector, ItemVisibility,
-        Name, Node as AstNode, NodeList, PipeExpression, Program, VariableDeclaration, VariableDeclarator,
-        VariableKind,
+        ArrayExpression, BodyItem, CallExpressionKw, Expr, Identifier, ImportSelector, ItemVisibility, Name,
+        Node as AstNode, NodeList, PipeExpression, Program, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     walk::Node,
 };
@@ -186,46 +187,36 @@ fn path_matches(path: &NodeList<Identifier>, expected: &[&str]) -> bool {
     true
 }
 
-fn find_defined_names(block: &AstNode<Program>) -> Vec<String> {
-    let mut defined_names = Vec::new();
+fn find_defined_names(block: &AstNode<Program>) -> HashSet<String> {
+    let mut defined_names = HashSet::new();
     for item in &block.body {
         if let BodyItem::ImportStatement(import) = item {
             match &import.selector {
                 ImportSelector::List { items } => {
                     for import_item in items {
                         if let Some(alias) = &import_item.alias {
-                            defined_names.push(alias.name.clone());
+                            defined_names.insert(alias.name.clone());
                         } else {
-                            defined_names.push(import_item.name.name.clone());
+                            defined_names.insert(import_item.name.name.clone());
                         }
                     }
                 }
                 ImportSelector::Glob(_) => {}
-                ImportSelector::None { alias } => {
-                    if let Some(alias) = alias {
-                        defined_names.push(alias.name.clone());
-                    } else {
-                        match &import.path {
-                            ImportPath::Kcl { filename: path } | ImportPath::Foreign { path } => {
-                                if let Some(file_stem) = path.file_stem() {
-                                    defined_names.push(file_stem);
-                                }
-                            }
-                            ImportPath::Std { .. } => {}
-                        }
-                    }
-                }
+                ImportSelector::None { .. } => {}
+            }
+            if let Some(module_name) = import.module_name() {
+                defined_names.insert(module_name);
             }
         }
         if let BodyItem::VariableDeclaration(var_decl) = item {
             let decl = &var_decl.declaration;
-            defined_names.push(decl.id.name.clone());
+            defined_names.insert(decl.id.name.clone());
         }
     }
     defined_names
 }
 
-fn next_free_name(prefix: &str, taken_names: &[String]) -> anyhow::Result<String> {
+fn next_free_name(prefix: &str, taken_names: &HashSet<String>) -> anyhow::Result<String> {
     let mut index = 1;
     // Give up if we can't find a free name after a lot of tries.
     while index < 10_000 {
