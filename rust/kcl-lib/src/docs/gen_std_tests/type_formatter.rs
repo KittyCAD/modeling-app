@@ -97,6 +97,10 @@ fn split_top_level_union(s: &str) -> anyhow::Result<Option<Vec<&str>>> {
         }
     }
 
+    if depth != 0 {
+        anyhow::bail!("Unclosed [");
+    }
+
     let tail = s[start_of_part..].trim();
     if !tail.is_empty() {
         parts.push(tail);
@@ -107,9 +111,10 @@ fn split_top_level_union(s: &str) -> anyhow::Result<Option<Vec<&str>>> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use Cardinality::*;
     use KclType::*;
+
+    use super::*;
 
     #[test]
     fn test_type_formatter() {
