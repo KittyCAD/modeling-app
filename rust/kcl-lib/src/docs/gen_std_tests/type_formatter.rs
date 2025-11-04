@@ -1,3 +1,5 @@
+use crate::docs::kcl_doc::{DocData, ModData};
+
 #[derive(Debug, Eq, PartialEq)]
 pub enum KclType<'i> {
     Array {
@@ -15,6 +17,45 @@ pub enum Cardinality {
     Exactly(usize),
     AtLeast(usize),
     Any,
+}
+
+impl<'i> KclType<'i> {
+    pub fn format(self, fmt_for_text: bool, kcl_std: &ModData) -> String {
+        match self {
+            KclType::Array { element, cardinality } => {
+                let t = element.format(fmt_for_text, kcl_std);
+                let size = match cardinality {
+                    Cardinality::Exactly(n) => format!("; {n}"),
+                    Cardinality::AtLeast(n) => format!("; {n}+"),
+                    Cardinality::Any => String::new(),
+                };
+                format!("[{t}{size}]")
+            }
+            KclType::Union { variants } => {
+                let parts: Vec<_> = variants.into_iter().map(|v| v.format(fmt_for_text, kcl_std)).collect();
+                parts.join(if fmt_for_text { " or " } else { " | " })
+            }
+            KclType::Atom(ty) => {
+                // TODO markdown links in code blocks are not turned into links by our website stack.
+                // If we can handle signatures more manually we could get highlighting and links and
+                // we might want to restore the links by not checking `fmt_for_text` here.
+                if fmt_for_text {
+                    if ty.starts_with("number") {
+                        format!("[`{ty}`](/docs/kcl-std/types/std-types-number)")
+                    } else if ty.starts_with("fn") {
+                        format!("[`{ty}`](/docs/kcl-std/types/std-types-fn)")
+                    // Special case for `tag` because it exists as a type but is deprecated and mostly used as an arg name
+                    } else if matches!(kcl_std.find_by_name(ty), Some(DocData::Ty(_))) && ty != "tag" {
+                        format!("[`{ty}`](/docs/kcl-std/types/std-types-{ty})")
+                    } else {
+                        ty.to_string()
+                    }
+                } else {
+                    ty.to_string()
+                }
+            }
+        }
+    }
 }
 
 /// Parse a KCL type from its typical string representation in KCL source code.

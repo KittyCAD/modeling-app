@@ -515,62 +515,14 @@ fn cleanup_types(input: &str, kcl_std: &ModData) -> String {
 }
 
 fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData) -> String {
-    assert!(
-        !(input.starts_with('[') && input.ends_with(']') && input.contains('|')),
-        "Arrays of unions are not supported"
-    );
-
-    if let Err(e) = type_formatter::parse(input) {
-        eprintln!("Could not parse: {input} because {e}");
-    }
-
-    let tys: Vec<_> = input
-        .split('|')
-        .map(|ty| {
-            let ty = ty.trim();
-
-            let mut prefix = String::new();
-            let mut suffix = String::new();
-
-            if fmt_for_text {
-                prefix.push('`');
-                suffix.push('`');
-            }
-
-            let ty = if ty.starts_with('[') {
-                if ty.ends_with("; 1+]") {
-                    prefix = format!("{prefix}[");
-                    suffix = format!("; 1+]{suffix}");
-                    &ty[1..ty.len() - 5]
-                } else if ty.ends_with(']') {
-                    prefix = format!("{prefix}[");
-                    suffix = format!("]{suffix}");
-                    &ty[1..ty.len() - 1]
-                } else {
-                    ty
-                }
-            } else {
-                ty
-            };
-
-            // TODO markdown links in code blocks are not turned into links by our website stack.
-            // If we can handle signatures more manually we could get highlighting and links and
-            // we might want to restore the links by not checking `fmt_for_text` here.
-
-            if fmt_for_text && ty.starts_with("number") {
-                format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-number)")
-            } else if fmt_for_text && ty.starts_with("fn") {
-                format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-fn)")
-            // Special case for `tag` because it exists as a type but is deprecated and mostly used as an arg name
-            } else if fmt_for_text && matches!(kcl_std.find_by_name(ty), Some(DocData::Ty(_))) && ty != "tag" {
-                format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-{ty})")
-            } else {
-                format!("{prefix}{ty}{suffix}")
-            }
-        })
-        .collect();
-
-    tys.join(if fmt_for_text { " or " } else { " | " })
+    let type_tree = match type_formatter::parse(input) {
+        Ok(type_tree) => type_tree,
+        Err(e) => {
+            eprintln!("Could not parse: {input} because {e}");
+            return input.to_owned();
+        }
+    };
+    type_tree.format(fmt_for_text, kcl_std)
 }
 
 #[test]
