@@ -45,24 +45,7 @@ export const machine = setup({
         onMove: async (args) => {
           if (!args || !context.draftPointId) return
           const twoD = args.intersectionPoint?.twoD
-          const ctor = context.sceneGraphDelta.new_graph.objects.find(
-            (obj) => obj.id === context.draftPointId
-          )
-          console.log('draft segment ctor', ctor, ctor?.kind)
-          if (
-            twoD &&
-            !isEditInProgress &&
-            ctor?.kind.type === 'Segment' &&
-            ctor.kind.segment.type === 'Line'
-          ) {
-            const innerCtor = ctor.kind.segment.ctor
-            if (innerCtor.type !== 'Line') {
-              return
-            }
-            const startX =
-              innerCtor.start.x.type === 'Number' ? innerCtor.start.x.value : 0
-            const startY =
-              innerCtor.start.y.type === 'Number' ? innerCtor.start.y.value : 0
+          if (twoD && !isEditInProgress) {
             // Send the add point event with the clicked coordinates
             try {
               isEditInProgress = true
@@ -74,20 +57,8 @@ export const machine = setup({
                   {
                     id: context.draftPointId,
                     ctor: {
-                      type: 'Line',
-                      start: {
-                        x: {
-                          type: 'Var',
-                          value: roundOff(startX),
-                          units: 'Mm',
-                        },
-                        y: {
-                          type: 'Var',
-                          value: roundOff(startY),
-                          units: 'Mm',
-                        },
-                      },
-                      end: {
+                      type: 'Point',
+                      position: {
                         x: {
                           type: 'Var',
                           value: roundOff(twoD.x),
@@ -164,14 +135,13 @@ export const machine = setup({
           if (!obj) return false
           if (
             obj.kind.type === 'Segment' &&
-            obj.kind.segment.type === 'Line' &&
+            obj.kind.segment.type === 'Point' &&
             obj.id
           ) {
             return true
           }
           return false
         })
-      console.log('id of point', id)
       if (id) {
         return {
           draftPointId: id,
@@ -179,9 +149,6 @@ export const machine = setup({
         }
       }
       return {}
-      // return  {
-      //   sketchExecOutcome: event.output
-      // }
     }),
   },
   actors: {
