@@ -4,12 +4,12 @@ import { vi } from 'vitest'
 import { MlEphantConversation2 } from '@src/components/MlEphantConversation2'
 import type { BillingContext } from '@src/machines/billingMachine'
 import type { Conversation } from '@src/machines/mlEphantManagerMachine2'
-import type { MlReasoningEffort } from '@kittycad/lib/dist/types/src'
-import { DEFAULT_ML_COPILOT_REASONING_EFFORT } from '@src/lib/constants'
+import type { MlCopilotMode } from '@kittycad/lib'
+import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 
 describe('MlEphantConversation2', () => {
   function rendersRequestBubbleThenDisplayResponse(
-    reasoningEffort: MlReasoningEffort = DEFAULT_ML_COPILOT_REASONING_EFFORT
+    mode: MlCopilotMode = DEFAULT_ML_COPILOT_MODE
   ) {
     vi.useFakeTimers()
 
@@ -59,11 +59,9 @@ describe('MlEphantConversation2', () => {
     try {
       const promptText = 'Generate a cube with rounded edges'
 
-      if (reasoningEffort !== DEFAULT_ML_COPILOT_REASONING_EFFORT) {
+      if (mode !== DEFAULT_ML_COPILOT_MODE) {
         fireEvent.click(screen.getByTestId('ml-copilot-efforts-button'))
-        fireEvent.click(
-          screen.getByTestId(`ml-copilot-effort-button-${reasoningEffort}`)
-        )
+        fireEvent.click(screen.getByTestId(`ml-copilot-effort-button-${mode}`))
       }
 
       const promptInput = screen.getByTestId('ml-ephant-conversation-input')
@@ -73,7 +71,7 @@ describe('MlEphantConversation2', () => {
 
       expect(handleProcess).toHaveBeenCalledWith(
         promptText,
-        reasoningEffort,
+        mode,
         expect.any(Set)
       )
 

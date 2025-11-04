@@ -22,7 +22,7 @@ import type {
   User,
   MlCopilotServerMessage,
   MlCopilotTool,
-  MlReasoningEffort,
+  MlCopilotMode,
 } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
@@ -51,7 +51,7 @@ export const MlEphantConversationPane2 = (props: {
 
   const onProcess = async (
     request: string,
-    reasoningEffort: MlReasoningEffort,
+    mode: MlCopilotMode,
     forcedTools: Set<MlCopilotTool>
   ) => {
     if (props.theProject === undefined) {
@@ -84,7 +84,7 @@ export const MlEphantConversationPane2 = (props: {
       projectFiles,
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
-      reasoningEffort,
+      mode: mode,
       forcedTools,
     })
   }
@@ -213,10 +213,10 @@ export const MlEphantConversationPane2 = (props: {
       billingContext={billingContext}
       onProcess={(
         request: string,
-        reasoningEffort: MlReasoningEffort,
+        mode: MlCopilotMode,
         forcedTools: Set<MlCopilotTool>
       ) => {
-        onProcess(request, reasoningEffort, forcedTools).catch(reportRejection)
+        onProcess(request, mode, forcedTools).catch(reportRejection)
       }}
       disabled={isProcessing}
       hasPromptCompleted={isProcessing}

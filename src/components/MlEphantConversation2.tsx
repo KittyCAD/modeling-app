@@ -9,7 +9,7 @@ import {
   BillingRemainingMode,
 } from '@kittycad/react-shared'
 import { type BillingContext } from '@src/machines/billingMachine'
-import type { MlReasoningEffort, MlCopilotTool } from '@kittycad/lib'
+import type { MlCopilotMode, MlCopilotTool } from '@kittycad/lib'
 import { Popover, Transition } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
@@ -19,7 +19,7 @@ import type {
 } from '@src/machines/mlEphantManagerMachine2'
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { DEFAULT_ML_COPILOT_REASONING_EFFORT } from '@src/lib/constants'
+import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 
 export interface MlEphantConversationProps {
   isLoading: boolean
@@ -28,7 +28,7 @@ export interface MlEphantConversationProps {
   billingContext: BillingContext
   onProcess: (
     request: string,
-    reasoningEffort: MlReasoningEffort,
+    mode: MlCopilotMode,
     forcedTools: Set<MlCopilotTool>
   ) => void
   disabled?: boolean
@@ -37,11 +37,9 @@ export interface MlEphantConversationProps {
   defaultPrompt?: string
 }
 
-const ML_REASONING_EFFORT: Readonly<MlReasoningEffort[]> = Object.freeze([
-  'low',
-  // Disabling medium for now, keeping only low and high
-  // 'medium',
-  'high',
+const ML_COPILOT_MODE: Readonly<MlCopilotMode[]> = Object.freeze([
+  'fast',
+  'slow',
 ])
 const ML_COPILOT_TOOLS: Readonly<MlCopilotTool[]> = Object.freeze([
   'edit_kcl_code',
@@ -49,20 +47,14 @@ const ML_COPILOT_TOOLS: Readonly<MlCopilotTool[]> = Object.freeze([
   'mechanical_knowledge_base',
   'web_search',
 ])
-const ML_REASONING_EFFORT_META = Object.freeze({
-  low: {
+const ML_COPILOT_MODE_META = Object.freeze({
+  fast: {
     pretty: 'Fast',
     icon: (props: { className: string }) => (
       <CustomIcon name="stopwatch" className={props.className} />
     ),
   },
-  medium: {
-    pretty: 'Thoughtful',
-    icon: (props: { className: string }) => (
-      <CustomIcon name="brain" className={props.className} />
-    ),
-  },
-  high: {
+  slow: {
     pretty: 'Thoughtful',
     icon: (props: { className: string }) => (
       <CustomIcon name="brain" className={props.className} />
@@ -100,25 +92,25 @@ const ML_COPILOT_TOOLS_META = Object.freeze({
   },
 } as const)
 
-export interface MlCopilotReasoningEffortsProps {
-  onClick: (reasoningEffort: MlReasoningEffort) => void
+export interface MlCopilotModesProps {
+  onClick: (mode: MlCopilotMode) => void
   children: ReactNode
-  current: MlReasoningEffort
+  current: MlCopilotMode
 }
-const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
-  const efforts = []
-  for (const effort of ML_REASONING_EFFORT) {
-    efforts.push(
+const MlCopilotModes = (props: MlCopilotModesProps) => {
+  const modes = []
+  for (const mode of ML_COPILOT_MODE) {
+    modes.push(
       <div
         tabIndex={0}
         role="button"
-        key={effort}
-        onClick={() => props.onClick(effort)}
-        className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === effort ? 'border-primary' : ''}`}
-        data-testid={`ml-copilot-effort-button-${effort}`}
+        key={mode}
+        onClick={() => props.onClick(mode)}
+        className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode ? 'border-primary' : ''}`}
+        data-testid={`ml-copilot-effort-button-${mode}`}
       >
-        {ML_REASONING_EFFORT_META[effort].icon({ className: 'w-5 h-5' })}
-        {ML_REASONING_EFFORT_META[effort].pretty}
+        {ML_COPILOT_MODE_META[mode].icon({ className: 'w-5 h-5' })}
+        {ML_COPILOT_MODE_META[mode].pretty}
       </div>
     )
   }
@@ -134,7 +126,7 @@ const MlCopilotReasoningEfforts = (props: MlCopilotReasoningEffortsProps) => {
           <CustomIcon name="caretUp" className="w-5 h-5 ui-open:rotate-180" />
         </Popover.Button>
         <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
-          {efforts}
+          {modes}
         </Popover.Panel>
       </Popover>
     </div>
@@ -208,10 +200,10 @@ export interface MlEphantExtraInputsProps {
   // TODO: Expand to a list with no type restriction
   context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
   inputToMatch: string
-  reasoningEffort: MlReasoningEffort
+  mode: MlCopilotMode
   forcedTools: Set<MlCopilotTool>
   excludedTools: Set<MlCopilotTool>
-  onSetReasoningEffort: (effort: MlReasoningEffort) => void
+  onSetMode: (mode: MlCopilotMode) => void
   onRemove: (tool: MlCopilotTool) => void
   onAdd: (tool: MlCopilotTool) => void
 }
@@ -283,15 +275,12 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
-        <MlCopilotReasoningEfforts
-          onClick={props.onSetReasoningEffort}
-          current={props.reasoningEffort}
-        >
-          {ML_REASONING_EFFORT_META[props.reasoningEffort].icon({
+        <MlCopilotModes onClick={props.onSetMode} current={props.mode}>
+          {ML_COPILOT_MODE_META[props.mode].icon({
             className: 'w-5 h-5',
           })}
-          {ML_REASONING_EFFORT_META[props.reasoningEffort].pretty}
-        </MlCopilotReasoningEfforts>
+          {ML_COPILOT_MODE_META[props.mode].pretty}
+        </MlCopilotModes>
         <MlCopilotTools onAdd={props.onAdd}>
           <div>
             {tools.length} Tool{tools.length !== 1 ? 's' : ''}
@@ -384,9 +373,7 @@ export const MlEphantConversationInput = (
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const [value, setValue] = useState<string>('')
   const [heightConvo, setHeightConvo] = useState(0)
-  const [reasoningEffort, setReasoningEffort] = useState<MlReasoningEffort>(
-    DEFAULT_ML_COPILOT_REASONING_EFFORT
-  )
+  const [mode, setMode] = useState<MlCopilotMode>(DEFAULT_ML_COPILOT_MODE)
   const [forcedTools, setForcedTools] = useState<Set<MlCopilotTool>>(new Set())
   const [excludedTools, setExcludedTools] = useState<Set<MlCopilotTool>>(
     new Set()
@@ -436,7 +423,7 @@ export const MlEphantConversationInput = (
 
     setHeightConvo(refDiv.current.getBoundingClientRect().height)
 
-    props.onProcess(value, reasoningEffort, forcedTools)
+    props.onProcess(value, mode, forcedTools)
 
     setLettersForAnimation(
       value.split('').map((c, index) => (
@@ -507,10 +494,10 @@ export const MlEphantConversationInput = (
           <MlEphantExtraInputs
             context={selectionsContext}
             inputToMatch={value}
-            reasoningEffort={reasoningEffort}
+            mode={mode}
             forcedTools={forcedTools}
             excludedTools={excludedTools}
-            onSetReasoningEffort={setReasoningEffort}
+            onSetMode={setMode}
             onRemove={onRemoveTool}
             onAdd={onAddTool}
           />
@@ -534,11 +521,11 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
 
   const onProcess = (
     request: string,
-    reasoningEffort: MlReasoningEffort,
+    mode: MlCopilotMode,
     forcedTools: Set<MlCopilotTool>
   ) => {
     setAutoScroll(true)
-    props.onProcess(request, reasoningEffort, forcedTools)
+    props.onProcess(request, mode, forcedTools)
   }
 
   useEffect(() => {
