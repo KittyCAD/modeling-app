@@ -652,9 +652,9 @@ mod tests {
         ];
         for test in tests {
             let actual_text = cleanup_type_string(test.input, true, &kcl_std);
-            assert_eq!(actual_text, test.expected_text);
+            assert_eq!(actual_text, test.expected_text, "Failed text");
             let actual_no_text = cleanup_type_string(test.input, false, &kcl_std);
-            assert_eq!(actual_no_text, test.expected_no_text);
+            assert_eq!(actual_no_text, test.expected_no_text, "Failed no text");
         }
     }
 }
