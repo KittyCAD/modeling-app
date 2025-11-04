@@ -52,11 +52,13 @@ const ML_COPILOT_MODE: Readonly<MlCopilotMode[]> = Object.freeze([
   'fast',
   'thoughtful',
 ])
+
 export interface MlCopilotModesProps {
   onClick: (mode: MlCopilotMode) => void
   children: ReactNode
   current: MlCopilotMode
 }
+
 const MlCopilotModes = (props: MlCopilotModesProps) => {
   const modes = []
   for (const mode of ML_COPILOT_MODE) {
@@ -92,12 +94,14 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
     </div>
   )
 }
+
 export interface MlEphantExtraInputsProps {
   // TODO: Expand to a list with no type restriction
   context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
   mode: MlCopilotMode
   onSetMode: (mode: MlCopilotMode) => void
 }
+
 export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
   return (
     <div className="flex-1 flex min-w-0 items-end">
