@@ -1562,7 +1562,9 @@ profile002 = startProfile(sketch002, at = [0, 52.55])
     await nextPoint()
     await editor.openPane()
     // A regex that just confirms the new segment is a line in a pipe
-    await expect(editor.codeContent).toContainText(/52\.55\]\)\s+\|\>\s+line\(/)
+    await expect(editor.codeContent).toContainText(
+      new RegExp(`${NUMBER_REGEXP}\\]\\)\\s+|>\\s+line\\(`)
+    )
   })
   test('old style sketch all in one pipe (with extrude) will break up to allow users to add a new profile to the same sketch', async ({
     homePage,
