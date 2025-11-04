@@ -4243,7 +4243,7 @@ export const modelingMachine = setup({
       states: {
         hidePlanes: {
           on: {
-            'Artifact graph populated': {
+            'Artifact graph emptied': {
               target: 'showPlanes',
               guard: 'no kcl errors',
             },
@@ -4254,7 +4254,7 @@ export const modelingMachine = setup({
 
         showPlanes: {
           on: {
-            'Artifact graph emptied': 'hidePlanes',
+            'Artifact graph populated': 'hidePlanes',
           },
 
           entry: ['show default planes'],
