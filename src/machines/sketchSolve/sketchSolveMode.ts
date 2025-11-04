@@ -36,7 +36,10 @@ import type {
   ExtrudeFacePlane,
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
-import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
+import {
+  SKETCH_LAYER,
+  SKETCH_SOLVE_GROUP,
+} from '@src/clientSideScene/sceneUtils'
 
 const equipTools = Object.freeze({
   centerRectTool,
@@ -247,9 +250,13 @@ export const sketchSolveMachine = setup({
         const y = handle.position.y * group.scale.y
         void segmentUtilsMap.PointSegment.update({
           input: {
-            type: 'point',
-            position: [x, y],
-            freedom: 0 as any,
+            type: 'Point',
+            // position: [x, y],
+            position: {
+              x: { type: 'Number', value: x, units: 'Mm' },
+              y: { type: 'Number', value: y, units: 'Mm' },
+            },
+            // freedom: 0 as any,
           },
           theme: sceneInfra.theme,
           scale: group.scale.x,
@@ -279,13 +286,54 @@ export const sketchSolveMachine = setup({
         ) {
           init = segmentUtilsMap.PointSegment.init
           ctor = {
-            type: 'point',
-            position: [
-              obj.kind.segment.position.x.value,
-              obj.kind.segment.position.y.value,
-            ],
-            freedom: obj.kind.segment.freedom,
+            type: 'Point',
+            position: {
+              x: {
+                type: 'Number',
+                value: obj.kind.segment.position.x.value,
+                units: 'Mm',
+              },
+              y: {
+                type: 'Number',
+                value: obj.kind.segment.position.y.value,
+                units: 'Mm',
+              },
+            },
+            // freedom: obj.kind.segment.freedom,
           }
+        } else if (
+          obj?.kind.type === 'Segment' &&
+          obj?.kind?.segment?.type === 'Line'
+        ) {
+          init = segmentUtilsMap.LineSegment.init
+          ctor = obj.kind.segment.ctor
+          // ctor = {
+          //   type: 'Line',
+          //   start: {
+          //     x: {
+          //       type: 'Number',
+          //       value: obj.kind.segment.ctor.type === 'Line' ? obj.kind.segment.ctor.start.x.value : 0,
+          //       units: 'Mm',
+          //     },
+          //     y: {
+          //       type: 'Number',
+          //       value: obj.kind.segment.start.y.value,
+          //       units: 'Mm',
+          //     },
+          //   },
+          //   end: {
+          //     x: {
+          //       type: 'Number',
+          //       value: obj.kind.segment.end.x.value,
+          //       units: 'Mm',
+          //     },
+          //     y: {
+          //       type: 'Number',
+          //       value: obj.kind.segment.end.y.value,
+          //       units: 'Mm',
+          //     },
+          //   }
+          // }
         }
         if (!init || !ctor) {
           return
@@ -302,49 +350,83 @@ export const sketchSolveMachine = setup({
             }),
         })
           .then((group) => {
+            console.log('adding group', group)
             const sketchSceneGroup =
               sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
             if (sketchSceneGroup) {
+              group.traverse((child) => {
+                child.layers.set(SKETCH_LAYER)
+              })
+              group.layers.set(SKETCH_LAYER)
               sketchSceneGroup.add(group)
             }
           })
-          .catch(() => {
-            console.error('Failed to init PointSegment for object', objId)
+          .catch((e) => {
+            console.error('Failed to init PointSegment for object', objId, e)
           })
       })
       sceneGraphDelta.new_graph.objects.forEach((obj) => {
         if (sceneGraphDelta.new_objects.includes(obj.id)) {
           return
         }
-        if (obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point') {
-          const group = sceneInfra.scene.getObjectByName(String(obj.id))
-          if (!(group instanceof Group)) {
-            console.error(
-              'No group found in scene for PointSegment with id',
-              obj.id
-            )
-            return
-          }
-          segmentUtilsMap.PointSegment.update({
-            input: {
-              type: 'point',
-              position: [
-                obj.kind.segment.position.x.value,
-                obj.kind.segment.position.y.value,
-              ],
-              freedom: obj.kind.segment.freedom,
-            },
-            theme: sceneInfra.theme,
-            scale: factor,
-            id: obj.id,
-            group,
-            selectedIds: context.selectedIds,
-          })
-            ?.then(() => {})
-            .catch(() => {
-              console.error('Failed to update PointSegment for object', obj.id)
-            })
+        if (obj.kind.type === 'Sketch') {
+          return
         }
+        let update: SegmentUtils['update'] | null = null
+        let ctor: Parameters<SegmentUtils['update']>[0]['input'] | null = null
+        const group = sceneInfra.scene.getObjectByName(String(obj.id))
+        if (!(group instanceof Group)) {
+          console.error(
+            'No group found in scene for PointSegment with id',
+            obj.id,
+            obj
+          )
+          return
+        }
+        if (obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point') {
+          update = segmentUtilsMap.PointSegment.update
+          ctor = {
+            type: 'Point',
+            position: {
+              x: {
+                type: 'Number',
+                value: obj.kind.segment.position.x.value,
+                units: 'Mm',
+              },
+              y: {
+                type: 'Number',
+                value: obj.kind.segment.position.y.value,
+                units: 'Mm',
+              },
+            },
+            // position: [
+            //   obj.kind.segment.position.x.value,
+            //   obj.kind.segment.position.y.value,
+            // ],
+            // freedom: obj.kind.segment.freedom,
+          }
+        } else if (
+          obj?.kind?.type === 'Segment' &&
+          obj.kind?.segment?.type === 'Line'
+        ) {
+          update = segmentUtilsMap.LineSegment.update
+          ctor = obj.kind.segment.ctor
+        }
+        if (!update || !ctor) {
+          return
+        }
+        update({
+          input: ctor,
+          theme: sceneInfra.theme,
+          scale: factor,
+          id: obj.id,
+          group,
+          selectedIds: context.selectedIds,
+        })
+          ?.then(() => {})
+          .catch(() => {
+            console.error('Failed to update PointSegment for object', obj.id)
+          })
       })
       return { sketchExecOutcome: event.data }
     }),

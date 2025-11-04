@@ -1,28 +1,30 @@
 import type {
-  Freedom,
   SceneGraphDelta,
+  SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import {
-  SKETCH_LAYER,
-  SKETCH_POINT_HANDLE,
-} from '@src/clientSideScene/sceneUtils'
+import { SKETCH_POINT_HANDLE } from '@src/clientSideScene/sceneUtils'
 import { type Themes } from '@src/lib/theme'
-import { Group } from 'three'
+import {
+  ExtrudeGeometry,
+  Group,
+  LineCurve3,
+  Mesh,
+  MeshBasicMaterial,
+  Shape,
+  Vector3,
+} from 'three'
 import type { Vector2 } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { sceneInfra, rustContext } from '@src/lib/singletons'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
-
-type SegmentInputs = {
-  type: 'point'
-  position: [number, number]
-  freedom: Freedom
-}
+import { createLineShape } from '@src/clientSideScene/segments'
+import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
+import { KCL_DEFAULT_COLOR, SKETCH_SELECTION_RGB } from '@src/lib/constants'
 
 interface CreateSegmentArgs {
-  input: SegmentInputs
+  input: SegmentCtor
   theme: Themes
   id: number
   scale: number
@@ -33,7 +35,7 @@ interface CreateSegmentArgs {
 }
 
 interface UpdateSegmentArgs {
-  input: SegmentInputs
+  input: SegmentCtor
   theme: Themes
   id: number
   scale: number
@@ -62,23 +64,17 @@ export interface SegmentUtils {
 
 class PointSegment implements SegmentUtils {
   init = async (args: CreateSegmentArgs) => {
-    if (args.input.type !== 'point') {
+    if (args.input.type !== 'Point') {
       return Promise.reject(new Error('Invalid input type for PointSegment'))
     }
     const segmentGroup = new Group()
-
-    // const box = new BoxGeometry(12, 12, 12)
-    // const body = new MeshBasicMaterial({ color: 0xffffff, depthTest: false })
-    // const mesh = new Mesh(box, body)
-    // mesh.userData.type = 'handle'
-    // mesh.name = 'handle'
 
     // Create a 2D box using CSS2DObject
     const handleDiv = document.createElement('div')
     handleDiv.dataset.segment_id = String(args.id)
     handleDiv.dataset.handle = SKETCH_POINT_HANDLE
-    handleDiv.style.width = '12px'
-    handleDiv.style.height = '12px'
+    handleDiv.style.width = '6px'
+    handleDiv.style.height = '6px'
     handleDiv.style.backgroundColor = '#ffffff'
     handleDiv.style.border = '1px solid #cccccc'
     handleDiv.style.borderRadius = '50%'
@@ -214,10 +210,6 @@ class PointSegment implements SegmentUtils {
       type: 'point',
     }
     segmentGroup.add(cssObject)
-    segmentGroup.traverse((child) => {
-      child.layers.set(SKETCH_LAYER)
-    })
-    cssObject.layers.set(SKETCH_LAYER)
 
     await this.update({
       input: args.input,
@@ -231,29 +223,132 @@ class PointSegment implements SegmentUtils {
   }
 
   update(args: UpdateSegmentArgs) {
-    if (args.input.type !== 'point') {
+    if (args.input.type !== 'Point') {
       return Promise.reject(new Error('Invalid input type for PointSegment'))
     }
-    const [x, y] = args.input.position
+    const { x, y } = args.input.position
+    if (!('value' in x && 'value' in y)) {
+      return Promise.reject(
+        new Error('Invalid position values for PointSegment')
+      )
+    }
     args.group.scale.set(args.scale, args.scale, args.scale)
     const handle = args.group.getObjectByName('handle')
     if (handle && handle instanceof CSS2DObject) {
-      handle.position.set(x / args.scale, y / args.scale, 0)
+      handle.position.set(x.value / args.scale, y.value / args.scale, 0)
 
       // Update selected styling based on whether this segment id is selected
       const el = handle.element
       const isSelected = args.selectedIds.includes(args.id)
       // TODO don't have these colours hardcoded here
-      const goldRgb = '255, 183, 39'
-      el.style.backgroundColor = isSelected ? `rgb(${goldRgb})` : '#3C73FF'
+      el.style.backgroundColor = isSelected
+        ? `rgb(${SKETCH_SELECTION_RGB})`
+        : KCL_DEFAULT_COLOR
+
       el.style.border = isSelected
-        ? `1px solid rgba(${goldRgb}, 0.5)`
+        ? `1px solid rgba(${SKETCH_SELECTION_RGB}, 0.5)`
         : '1px solid #CCCCCC'
       el.style.backgroundClip = 'padding-box'
     }
   }
 }
 
+class LineSegment implements SegmentUtils {
+  init = async (args: CreateSegmentArgs) => {
+    if (args.input.type !== 'Line') {
+      return Promise.reject(new Error('Invalid input type for PointSegment'))
+    }
+    if (
+      !(
+        'value' in args.input.start.x &&
+        'value' in args.input.start.y &&
+        'value' in args.input.end.x &&
+        'value' in args.input.end.y
+      )
+    ) {
+      console.log('args.input', args.input)
+      return Promise.reject(
+        new Error('Invalid position values for LineSegment')
+      )
+    }
+    const startX = args.input.start.x.value
+    const startY = args.input.start.y.value
+    const endX = args.input.end.x.value
+    const endY = args.input.end.y.value
+    const segmentGroup = new Group()
+    const shape = new Shape()
+    const line = new LineCurve3(
+      new Vector3(startX / args.scale, startY / args.scale, 0),
+      new Vector3(endX / args.scale, endY / args.scale, 0)
+    )
+    const geometry = new ExtrudeGeometry(shape, {
+      steps: 2,
+      bevelEnabled: false,
+      extrudePath: line,
+    })
+    const body = new MeshBasicMaterial({ color: KCL_DEFAULT_COLOR })
+    const mesh = new Mesh(geometry, body)
+
+    mesh.userData.type = STRAIGHT_SEGMENT_BODY
+    mesh.name = STRAIGHT_SEGMENT_BODY
+    segmentGroup.name = args.id.toString()
+    segmentGroup.userData = {
+      type: 'STRAIGHT_SEGMENT_BODY',
+    }
+
+    segmentGroup.add(mesh)
+
+    await this.update({
+      input: args.input,
+      theme: args.theme,
+      id: args.id,
+      scale: args.scale,
+      group: segmentGroup,
+      selectedIds: [],
+    })
+
+    return segmentGroup
+  }
+  update(args: UpdateSegmentArgs) {
+    if (args.input.type !== 'Line') {
+      return Promise.reject(new Error('Invalid input type for PointSegment'))
+    }
+    if (
+      !(
+        'value' in args.input.start.x &&
+        'value' in args.input.start.y &&
+        'value' in args.input.end.x &&
+        'value' in args.input.end.y
+      )
+    ) {
+      return Promise.reject(
+        new Error('Invalid position values for LineSegment')
+      )
+    }
+    const shape = createLineShape(args.scale)
+
+    const straightSegmentBody = args.group.children.find(
+      (child) => child.userData.type === STRAIGHT_SEGMENT_BODY
+    )
+    if (!(straightSegmentBody && straightSegmentBody instanceof Mesh)) {
+      console.error('No straight segment body found in group')
+      return
+    }
+
+    const line = new LineCurve3(
+      new Vector3(args.input.start.x.value, args.input.start.y.value, 0),
+      new Vector3(args.input.end.x.value, args.input.end.y.value, 0)
+    )
+    straightSegmentBody.geometry.dispose()
+    straightSegmentBody.geometry = new ExtrudeGeometry(shape, {
+      steps: 2,
+      bevelEnabled: false,
+      extrudePath: line,
+    })
+  }
+}
+
 export const segmentUtilsMap = {
   PointSegment: new PointSegment(),
+  LineSegment: new LineSegment(),
 }

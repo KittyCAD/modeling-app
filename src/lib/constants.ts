@@ -84,6 +84,9 @@ export const KCL_DEFAULT_ORIGIN_2D = `[0, 0]`
 /** The default KCL color expression */
 export const KCL_DEFAULT_COLOR = `#3c73ff`
 
+/** The sketch mode revamp selection rgb values */
+export const SKETCH_SELECTION_RGB = '255, 183, 39'
+
 /** The default KCL font point size expression */
 export const KCL_DEFAULT_FONT_POINT_SIZE = `36`
 
