@@ -49,7 +49,7 @@ export interface SegmentUtils {
    * It's **Not** responsible for doing all calculations to size and position the entities as this would be duplicated in the update function
    * Which should instead be called at the end of the init function
    */
-  init: (args: CreateSegmentArgs) => any
+  init: (args: CreateSegmentArgs) => Promise<Group>
   /**
    * The update function is responsible for updating the group with the correct size and position of the entities
    * It should be called at the end of the init function and return a callback that can be used to update the overlay

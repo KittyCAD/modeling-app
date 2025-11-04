@@ -22,7 +22,10 @@ import {
   sceneInfra,
   sceneEntitiesManager,
 } from '@src/lib/singletons'
-import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
+import {
+  type SegmentUtils,
+  segmentUtilsMap,
+} from '@src/machines/sketchSolve/segments'
 import { Group, OrthographicCamera } from 'three'
 import { orthoScale } from '@src/clientSideScene/helpers'
 import { getParentGroup } from '@src/clientSideScene/sceneConstants'
@@ -268,39 +271,46 @@ export const sketchSolveMachine = setup({
       sceneInfra.baseUnitMultiplier
       sceneGraphDelta.new_objects.forEach((objId) => {
         const obj = sceneGraphDelta.new_graph.objects[objId]
+        let init: SegmentUtils['init'] | null = null
+        let ctor: Parameters<SegmentUtils['init']>[0]['input'] | null = null
         if (
           obj?.kind.type === 'Segment' &&
           obj?.kind?.segment?.type === 'Point'
         ) {
-          segmentUtilsMap.PointSegment.init({
-            input: {
-              type: 'point',
-              position: [
-                obj.kind.segment.position.x.value,
-                obj.kind.segment.position.y.value,
-              ],
-              freedom: obj.kind.segment.freedom,
-            },
-            theme: sceneInfra.theme,
-            scale: factor,
-            id: objId,
-            onUpdateSketchOutcome: (data) =>
-              self.send({
-                type: 'update sketch outcome',
-                data,
-              }),
-          })
-            .then((group) => {
-              const sketchSceneGroup =
-                sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-              if (sketchSceneGroup) {
-                sketchSceneGroup.add(group)
-              }
-            })
-            .catch(() => {
-              console.error('Failed to init PointSegment for object', objId)
-            })
+          init = segmentUtilsMap.PointSegment.init
+          ctor = {
+            type: 'point',
+            position: [
+              obj.kind.segment.position.x.value,
+              obj.kind.segment.position.y.value,
+            ],
+            freedom: obj.kind.segment.freedom,
+          }
         }
+        if (!init || !ctor) {
+          return
+        }
+        init({
+          input: ctor,
+          theme: sceneInfra.theme,
+          scale: factor,
+          id: objId,
+          onUpdateSketchOutcome: (data) =>
+            self.send({
+              type: 'update sketch outcome',
+              data,
+            }),
+        })
+          .then((group) => {
+            const sketchSceneGroup =
+              sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+            if (sketchSceneGroup) {
+              sketchSceneGroup.add(group)
+            }
+          })
+          .catch(() => {
+            console.error('Failed to init PointSegment for object', objId)
+          })
       })
       sceneGraphDelta.new_graph.objects.forEach((obj) => {
         if (sceneGraphDelta.new_objects.includes(obj.id)) {
