@@ -653,8 +653,8 @@ openSketch = startSketchOn(XY)
     // Colors
     // @pierremtb: had to tone these colors down a bit after the engine zoom fix
     // in https://github.com/KittyCAD/engine/pull/3804, unclear why
-    const edgeColorWhite: [number, number, number] = [150, 150, 150]
-    const edgeColorBlue: [number, number, number] = [10, 10, 150]
+    const edgeColorWhite: [number, number, number] = [230, 230, 230]
+    const edgeColorBlue: [number, number, number] = [23, 10, 247]
     const backgroundColor: [number, number, number] = [30, 30, 30]
     const tolerance = 50
     const timeout = 150
