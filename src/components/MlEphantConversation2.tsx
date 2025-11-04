@@ -39,7 +39,7 @@ export interface MlEphantConversationProps {
 
 const ML_COPILOT_MODE: Readonly<MlCopilotMode[]> = Object.freeze([
   'fast',
-  'slow',
+  'thoughtful',
 ])
 const ML_COPILOT_TOOLS: Readonly<MlCopilotTool[]> = Object.freeze([
   'edit_kcl_code',
@@ -54,7 +54,7 @@ const ML_COPILOT_MODE_META = Object.freeze({
       <CustomIcon name="stopwatch" className={props.className} />
     ),
   },
-  slow: {
+  thoughtful: {
     pretty: 'Thoughtful',
     icon: (props: { className: string }) => (
       <CustomIcon name="brain" className={props.className} />

@@ -132,7 +132,7 @@ describe('MlEphantConversation2', () => {
   })
 
   test('renders request bubble, shows thinking state, then displays response text after completion (non-default reasoning effort)', () => {
-    rendersRequestBubbleThenDisplayResponse('high')
+    rendersRequestBubbleThenDisplayResponse('thoughtful')
   })
 
   test('does not render unknown response types', () => {
