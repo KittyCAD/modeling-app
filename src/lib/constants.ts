@@ -320,8 +320,6 @@ export const NUMBER_OF_ENGINE_RETRIES = 5
  *Global timeout on pending commands, it will be bad if we hit this case.
  */
 export const PENDING_COMMAND_TIMEOUT = 60_000
-// TODO: undo this, just for testing
-// export const PENDING_COMMAND_TIMEOUT = 500
 
 /** Timeout in MS to save layout */
 export const LAYOUT_SAVE_THROTTLE = 500
