@@ -283,14 +283,20 @@ impl SketchApi for FrontendState {
         constraint: Constraint,
     ) -> api::Result<(SourceDelta, SceneGraphDelta, sketch::SketchExecOutcome)> {
         // TODO: Check version.
-        match constraint {
-            Constraint::Coincident(coincident) => self.add_coincident(ctx, sketch, coincident).await,
-            Constraint::Horizontal(horizontal) => self.add_horizontal(ctx, sketch, horizontal).await,
-            Constraint::Vertical(vertical) => self.add_vertical(ctx, sketch, vertical).await,
-            _ => Err(Error {
-                msg: format!("constraint not implemented yet: {constraint:?}"),
-            }),
-        }
+
+        let mut new_ast = self.program.ast.clone();
+        let sketch_block_range = match constraint {
+            Constraint::Coincident(coincident) => self.add_coincident(sketch, coincident, &mut new_ast).await?,
+            Constraint::Horizontal(horizontal) => self.add_horizontal(sketch, horizontal, &mut new_ast).await?,
+            Constraint::Vertical(vertical) => self.add_vertical(sketch, vertical, &mut new_ast).await?,
+            _ => {
+                return Err(Error {
+                    msg: format!("constraint not implemented yet: {constraint:?}"),
+                });
+            }
+        };
+        self.execute_after_add_constraint(ctx, sketch, sketch_block_range, &mut new_ast)
+            .await
     }
 
     async fn edit_constraint(
@@ -742,10 +748,10 @@ impl FrontendState {
 
     async fn add_coincident(
         &mut self,
-        ctx: &ExecutorContext,
         sketch: ObjectId,
         coincident: Coincident,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta, sketch::SketchExecOutcome)> {
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
         if coincident.points.len() != 2 {
             return Err(Error {
                 msg: format!(
@@ -756,11 +762,7 @@ impl FrontendState {
         }
         let sketch_id = sketch;
 
-        // Create updated KCL source from args.
-        let mut new_ast = self.program.ast.clone();
-
         // Map the runtime objects back to variable names.
-
         let pt0_id = coincident.points[0];
         let pt0_object = self.scene_graph.objects.get(pt0_id.0).ok_or_else(|| Error {
             msg: format!("Point not found: {pt0_id:?}"),
@@ -775,7 +777,7 @@ impl FrontendState {
                 msg: format!("Only points are currently supported: {pt0_object:?}"),
             });
         };
-        let pt0_ast = self.get_or_insert_ast_reference(&mut new_ast, &pt0_object.source.clone(), "point")?;
+        let pt0_ast = self.get_or_insert_ast_reference(new_ast, &pt0_object.source.clone(), "point")?;
 
         let pt1_id = coincident.points[1];
         let pt1_object = self.scene_graph.objects.get(pt1_id.0).ok_or_else(|| Error {
@@ -791,7 +793,7 @@ impl FrontendState {
                 msg: format!("Only points are currently supported: {pt1_object:?}"),
             });
         };
-        let pt1_ast = self.get_or_insert_ast_reference(&mut new_ast, &pt1_object.source.clone(), "point")?;
+        let pt1_ast = self.get_or_insert_ast_reference(new_ast, &pt1_object.source.clone(), "point")?;
 
         // Create the coincident() call.
         let coincident_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -811,67 +813,23 @@ impl FrontendState {
         // Add the line to the AST of the sketch block.
         let (sketch_block_range, _) = self
             .mutate_ast(
-                &mut new_ast,
+                new_ast,
                 sketch_id,
                 AstMutateCommand::AddSketchBlockExprStmt { expr: coincident_ast },
             )
             .map_err(|err| Error { msg: err.to_string() })?;
-        // Convert to string source to create real source ranges.
-        let new_source = source_from_ast(&new_ast);
-        // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
-        if !errors.is_empty() {
-            return Err(Error {
-                msg: format!("Error parsing KCL source after adding line: {errors:?}"),
-            });
-        }
-        let Some(new_program) = new_program else {
-            return Err(Error {
-                msg: "No AST produced after adding line".to_string(),
-            });
-        };
-        let _coincident_source_range =
-            find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
-                msg: format!("Source range of line not found in sketch block: {sketch_block_range:?}; {err:?}"),
-            })?;
-
-        // Make sure to only set this if there are no errors.
-        self.program = new_program.clone();
-
-        // Execute.
-        let outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
-            // TODO: sketch-api: Yeah, this needs to change. We need to
-            // return the full error.
-            Error {
-                msg: err.error.message().to_owned(),
-            }
-        })?;
-
-        let src_delta = SourceDelta { text: new_source };
-        let outcome = self.update_state_after_exec(outcome);
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph.clone(),
-            invalidates_ids: false,
-            new_objects: Vec::new(),
-            exec_outcome: outcome,
-        };
-        let sketch_exec_outcome = self.sketch_exec_outcome(sketch_id)?;
-        Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
+        Ok(sketch_block_range)
     }
 
     async fn add_horizontal(
         &mut self,
-        ctx: &ExecutorContext,
         sketch: ObjectId,
         horizontal: Horizontal,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta, sketch::SketchExecOutcome)> {
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
         let sketch_id = sketch;
 
-        // Create updated KCL source from args.
-        let mut new_ast = self.program.ast.clone();
-
         // Map the runtime objects back to variable names.
-
         let line_id = horizontal.line;
         let line_object = self.scene_graph.objects.get(line_id.0).ok_or_else(|| Error {
             msg: format!("Line not found: {line_id:?}"),
@@ -886,7 +844,7 @@ impl FrontendState {
                 msg: format!("Only lines can be made horizontal: {line_object:?}"),
             });
         };
-        let line_ast = self.get_or_insert_ast_reference(&mut new_ast, &line_object.source.clone(), "line")?;
+        let line_ast = self.get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line")?;
 
         // Create the horizontal() call.
         let horizontal_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -900,69 +858,23 @@ impl FrontendState {
         // Add the line to the AST of the sketch block.
         let (sketch_block_range, _) = self
             .mutate_ast(
-                &mut new_ast,
+                new_ast,
                 sketch_id,
                 AstMutateCommand::AddSketchBlockExprStmt { expr: horizontal_ast },
             )
             .map_err(|err| Error { msg: err.to_string() })?;
-        // Convert to string source to create real source ranges.
-        let new_source = source_from_ast(&new_ast);
-        // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
-        if !errors.is_empty() {
-            return Err(Error {
-                msg: format!("Error parsing KCL source after adding constraint: {errors:?}"),
-            });
-        }
-        let Some(new_program) = new_program else {
-            return Err(Error {
-                msg: "No AST produced after adding constraint".to_string(),
-            });
-        };
-        let _horizontal_source_range =
-            find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
-                msg: format!(
-                    "Source range of new constraint not found in sketch block: {sketch_block_range:?}; {err:?}"
-                ),
-            })?;
-
-        // Make sure to only set this if there are no errors.
-        self.program = new_program.clone();
-
-        // Execute.
-        let outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
-            // TODO: sketch-api: Yeah, this needs to change. We need to
-            // return the full error.
-            Error {
-                msg: err.error.message().to_owned(),
-            }
-        })?;
-
-        let src_delta = SourceDelta { text: new_source };
-        let outcome = self.update_state_after_exec(outcome);
-        let scene_graph_delta = SceneGraphDelta {
-            new_graph: self.scene_graph.clone(),
-            invalidates_ids: false,
-            new_objects: Vec::new(),
-            exec_outcome: outcome,
-        };
-        let sketch_exec_outcome = self.sketch_exec_outcome(sketch_id)?;
-        Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
+        Ok(sketch_block_range)
     }
 
     async fn add_vertical(
         &mut self,
-        ctx: &ExecutorContext,
         sketch: ObjectId,
         vertical: Vertical,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta, sketch::SketchExecOutcome)> {
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
         let sketch_id = sketch;
 
-        // Create updated KCL source from args.
-        let mut new_ast = self.program.ast.clone();
-
         // Map the runtime objects back to variable names.
-
         let line_id = vertical.line;
         let line_object = self.scene_graph.objects.get(line_id.0).ok_or_else(|| Error {
             msg: format!("Line not found: {line_id:?}"),
@@ -977,7 +889,7 @@ impl FrontendState {
                 msg: format!("Only lines can be made vertical: {line_object:?}"),
             });
         };
-        let line_ast = self.get_or_insert_ast_reference(&mut new_ast, &line_object.source.clone(), "line")?;
+        let line_ast = self.get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line")?;
 
         // Create the vertical() call.
         let vertical_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -991,13 +903,23 @@ impl FrontendState {
         // Add the line to the AST of the sketch block.
         let (sketch_block_range, _) = self
             .mutate_ast(
-                &mut new_ast,
+                new_ast,
                 sketch_id,
                 AstMutateCommand::AddSketchBlockExprStmt { expr: vertical_ast },
             )
             .map_err(|err| Error { msg: err.to_string() })?;
+        Ok(sketch_block_range)
+    }
+
+    async fn execute_after_add_constraint(
+        &mut self,
+        ctx: &ExecutorContext,
+        sketch_id: ObjectId,
+        sketch_block_range: SourceRange,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
         // Convert to string source to create real source ranges.
-        let new_source = source_from_ast(&new_ast);
+        let new_source = source_from_ast(new_ast);
         // Parse the new KCL source.
         let (new_program, errors) = Program::parse(&new_source).map_err(|err| Error { msg: err.to_string() })?;
         if !errors.is_empty() {
@@ -1010,7 +932,7 @@ impl FrontendState {
                 msg: "No AST produced after adding constraint".to_string(),
             });
         };
-        let _vertical_source_range =
+        let _constraint_source_range =
             find_sketch_block_added_item(&new_program.ast, sketch_block_range).map_err(|err| Error {
                 msg: format!(
                     "Source range of new constraint not found in sketch block: {sketch_block_range:?}; {err:?}"
@@ -1965,16 +1887,20 @@ sketch(on = XY) {
 
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
         let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
         let point0_id = frontend.scene_graph.objects.get(1).unwrap().id;
         let point1_id = frontend.scene_graph.objects.get(2).unwrap().id;
 
-        let coincident = Coincident {
+        let constraint = Constraint::Coincident(Coincident {
             points: vec![point0_id, point1_id],
-        };
-        let (src_delta, _, _) = frontend.add_coincident(&mock_ctx, sketch_id, coincident).await.unwrap();
+        });
+        let (src_delta, _, _) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
             "@settings(experimentalFeatures = allow)
