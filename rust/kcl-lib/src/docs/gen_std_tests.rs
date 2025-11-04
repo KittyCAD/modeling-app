@@ -515,9 +515,6 @@ fn cleanup_types(input: &str, kcl_std: &ModData) -> String {
 }
 
 fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData) -> String {
-    if input.contains("a, b, c") {
-        dbg!(input);
-    }
     let type_tree = match type_formatter::parse(input) {
         Ok(type_tree) => type_tree,
         Err(e) => {

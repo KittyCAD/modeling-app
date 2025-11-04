@@ -49,7 +49,7 @@ impl<'i> KclType<'i> {
                     } else if matches!(kcl_std.find_by_name(ty), Some(DocData::Ty(_))) && ty != "tag" {
                         format!("[`{ty}`](/docs/kcl-std/types/std-types-{ty})")
                     } else {
-                        format!("{ty}")
+                        ty.to_owned()
                     }
                 } else {
                     ty.to_string()
