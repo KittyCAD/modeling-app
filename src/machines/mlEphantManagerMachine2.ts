@@ -105,7 +105,12 @@ export interface Exchange {
   // It's possible a request triggers multiple responses, such as reasoning,
   // deltas, tool_outputs.
   // The end of a response is signaled by 'end_of_stream'.
+  // NOTE: THIS WILL *NOT* INCLUDE `delta` RESPONSES! SEE BELOW.
   responses: MlCopilotServerMessage[]
+
+  // BELOW:
+  // An optimization. `delta` messages will be appended here.
+  deltasAggregated: string
 }
 
 export type Conversation = {
@@ -338,6 +343,7 @@ export const mlEphantManagerMachine2 = setup({
                     maybeReplayedExchanges.push({
                       request: responseReplay,
                       responses: [],
+                      deltasAggregated: '',
                     })
                   }
                   continue
@@ -346,6 +352,7 @@ export const mlEphantManagerMachine2 = setup({
                 if ('error' in responseReplay || 'info' in responseReplay) {
                   maybeReplayedExchanges.push({
                     responses: [responseReplay],
+                    deltasAggregated: '',
                   })
                   continue
                 }
@@ -356,12 +363,8 @@ export const mlEphantManagerMachine2 = setup({
 
                 // Instead we transform a end_of_stream into a delta!
                 if ('end_of_stream' in responseReplay) {
-                  const fakeDelta = {
-                    delta: {
-                      delta: responseReplay.end_of_stream.whole_response ?? '',
-                    },
-                  }
-                  lastExchange.responses.push(fakeDelta)
+                  lastExchange.deltasAggregated =
+                    responseReplay.end_of_stream.whole_response ?? ''
                 }
                 lastExchange.responses.push(responseReplay)
               }
@@ -444,6 +447,7 @@ export const mlEphantManagerMachine2 = setup({
       conversation.exchanges.push({
         request,
         responses: [],
+        deltasAggregated: '',
       })
 
       return {
@@ -556,6 +560,7 @@ export const mlEphantManagerMachine2 = setup({
                     if ('error' in event.response || 'info' in event.response) {
                       conversation.exchanges.push({
                         responses: [event.response],
+                        deltasAggregated: '',
                       })
                       return {
                         conversation,
@@ -569,8 +574,15 @@ export const mlEphantManagerMachine2 = setup({
                     if (lastExchange === undefined) {
                       lastExchange = {
                         responses: [event.response],
+                        deltasAggregated: '',
                       }
                       conversation.exchanges.push(lastExchange)
+
+                      // OPTIMIZATION: `delta` responses are aggregated instead
+                      // of being included in the responses list.
+                    } else if ('delta' in event.response) {
+                      lastExchange.deltasAggregated +=
+                        event.response.delta.delta
                     } else {
                       lastExchange.responses.push(event.response)
                     }
