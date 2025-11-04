@@ -514,7 +514,7 @@ fn cleanup_types(input: &str, kcl_std: &ModData) -> String {
 
 fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData) -> String {
     if let Some(s) = input.strip_prefix('[')
-        && let Some(s2) = s.strip_prefix(']')
+        && let Some(s2) = s.strip_suffix(']')
         && s2.contains('|')
     {
         return input.to_owned();
