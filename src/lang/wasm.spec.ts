@@ -18,6 +18,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { relevantFileExtensions } from './wasmUtils'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -117,4 +118,80 @@ y = foo(center = [3, 4])`,
   expect(
     await rustImplPathToNode(ast2, sr(73, 74), instanceInThisFile)
   ).toStrictEqual(getNodePathFromSourceRange(ast2, sr(73, 74)))
+})
+
+describe('relevantFileExtensions', () =>{
+  it('should return all lowercase extensions', () =>{
+    const extensions = relevantFileExtensions(instanceInThisFile)
+    const expected = true
+    const actual = extensions.every((extension)=>{
+      return extension === extension.toLocaleLowerCase()
+    })
+    expect(actual).toBe(expected)
+  })
+  describe('check for each known extension', () => {
+    it('contains stp', ()=>{
+      const expected = true
+      const actual = relevantFileExtensions(instanceInThisFile).some((extension)=>{return extension === 'stp'})
+      expect(actual).toBe(expected)
+    })
+    it('contains fbxb', () => {
+      const expected = true
+      const actual = relevantFileExtensions(instanceInThisFile).some((extension) => { return extension === 'fbxb' })
+      expect(actual).toBe(expected)
+    })
+
+    it('contains gltf', () => {
+      const expected = true
+      const actual = relevantFileExtensions(instanceInThisFile).some((extension) => { return extension === 'gltf' })
+      expect(actual).toBe(expected)
+    })
+
+    it('contains ply', () => {
+      const expected = true
+      const actual = relevantFileExtensions(instanceInThisFile).some((extension) => { return extension === 'ply' })
+      expect(actual).toBe(expected)
+    })
+
+    it('contains step', () => {const expected = true
+      const actual = relevantFileExtensions(instanceInThisFile).some((extension) => { return extension === 'step' })
+      expect(actual).toBe(expected)
+    })
+
+
+    it('contains kcl', () => {
+      const expected = true
+      const actual = relevantFileExtensions(instanceInThisFile).some((extension) => { return extension === 'kcl' })
+      expect(actual).toBe(expected)
+    })
+
+    it('contains glb', ()=>{
+      const expected = true
+      const actual = relevantFileExtensions(instanceInThisFile).some((extension)=>{return extension === 'glb'})
+      expect(actual).toBe(expected)
+    })
+    it('contains fbx', ()=>{
+      const expected = true
+      const actual = relevantFileExtensions(instanceInThisFile).some((extension)=>{return extension === 'fbx'})
+      expect(actual).toBe(expected)
+    })
+
+    it('contains obj', ()=>{
+      const expected = true
+      const actual = relevantFileExtensions(instanceInThisFile).some((extension)=>{return extension === 'obj'})
+      expect(actual).toBe(expected)
+    })
+
+    it('contains sldprt', ()=>{
+      const expected = true
+      const actual = relevantFileExtensions(instanceInThisFile).some((extension)=>{return extension === 'sldprt'})
+      expect(actual).toBe(expected)
+    })
+
+    it('contains stl', ()=>{
+      const expected = true
+      const actual = relevantFileExtensions(instanceInThisFile).some((extension)=>{return extension === 'stl'})
+      expect(actual).toBe(expected)
+    })
+  })
 })
