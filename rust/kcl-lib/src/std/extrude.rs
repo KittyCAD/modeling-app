@@ -19,6 +19,7 @@ use kittycad_modeling_cmds::{
 use uuid::Uuid;
 
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
+use crate::execution::types::ArrayLen;
 use crate::{
     errors::{KclError, KclErrorDetails},
     exec::Sketch,
@@ -33,7 +34,6 @@ use crate::{
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-
     let sketches: Vec<Extrudable> = args.get_unlabeled_kw_arg(
         "sketches",
         &RuntimeType::Array(
@@ -42,7 +42,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 RuntimeType::face(),
                 RuntimeType::tagged_face(),
             ])),
-            ArrayLen::Minimum(1)
+            ArrayLen::Minimum(1),
         ),
         exec_state,
     )?;
