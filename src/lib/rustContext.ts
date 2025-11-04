@@ -17,7 +17,6 @@ import type {
   SceneGraphDelta,
   SegmentCtor,
   SketchArgs,
-  SketchExecOutcome,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
@@ -358,23 +357,20 @@ export default class RustContext {
   ): Promise<{
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
-    sketchExecOutcome: SketchExecOutcome
   }> {
     const instance = this._checkInstance()
 
     try {
-      const result: [SourceDelta, SceneGraphDelta, SketchExecOutcome] =
-        await instance.add_segment(
-          JSON.stringify(version),
-          JSON.stringify(sketch),
-          JSON.stringify(segment),
-          label,
-          JSON.stringify(settings)
-        )
+      const result: [SourceDelta, SceneGraphDelta] = await instance.add_segment(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(segment),
+        label,
+        JSON.stringify(settings)
+      )
       return {
         kclSource: result[0],
         sceneGraphDelta: result[1],
-        sketchExecOutcome: result[2],
       }
     } catch (e: any) {
       // TODO: sketch-api: const err = errFromErrWithOutputs(e)
@@ -393,7 +389,6 @@ export default class RustContext {
   ): Promise<{
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
-    sketchExecOutcome: SketchExecOutcome
   }> {
     const instance = this._checkInstance()
 
@@ -405,12 +400,10 @@ export default class RustContext {
         label,
         JSON.stringify(settings)
       )
-      const tuple: [SourceDelta, SceneGraphDelta, SketchExecOutcome] =
-        JSON.parse(result)
+      const tuple: [SourceDelta, SceneGraphDelta] = JSON.parse(result)
       return {
         kclSource: tuple[0],
         sceneGraphDelta: tuple[1],
-        sketchExecOutcome: tuple[2],
       }
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)
@@ -427,12 +420,11 @@ export default class RustContext {
   ): Promise<{
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
-    sketchExecOutcome: SketchExecOutcome
   }> {
     const instance = this._checkInstance()
 
     try {
-      const result: [SourceDelta, SceneGraphDelta, SketchExecOutcome] =
+      const result: [SourceDelta, SceneGraphDelta] =
         await instance.edit_segments(
           JSON.stringify(version),
           JSON.stringify(sketch),
@@ -442,7 +434,6 @@ export default class RustContext {
       return {
         kclSource: result[0],
         sceneGraphDelta: result[1],
-        sketchExecOutcome: result[2],
       }
     } catch (e: any) {
       // TODO: sketch-api: const err = errFromErrWithOutputs(e)
@@ -460,12 +451,11 @@ export default class RustContext {
   ): Promise<{
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
-    sketchExecOutcome: SketchExecOutcome
   }> {
     const instance = this._checkInstance()
 
     try {
-      const result: [SourceDelta, SceneGraphDelta, SketchExecOutcome] =
+      const result: [SourceDelta, SceneGraphDelta] =
         await instance.add_constraint(
           JSON.stringify(version),
           JSON.stringify(sketch),
@@ -475,7 +465,6 @@ export default class RustContext {
       return {
         kclSource: result[0],
         sceneGraphDelta: result[1],
-        sketchExecOutcome: result[2],
       }
     } catch (e: any) {
       // TODO: sketch-api: const err = errFromErrWithOutputs(e)

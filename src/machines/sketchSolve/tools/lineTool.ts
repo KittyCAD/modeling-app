@@ -5,7 +5,6 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type {
   SceneGraphDelta,
   SegmentCtor,
-  SketchExecOutcome,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
@@ -22,7 +21,6 @@ type ToolEvents =
       type: `xstate.done.actor.0.${typeof TOOL_ID}.Adding point`
       output: {
         kclSource: SourceDelta
-        sketchExecOutcome: SketchExecOutcome
         sceneGraphDelta: SceneGraphDelta
       }
     }

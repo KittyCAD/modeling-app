@@ -3,8 +3,8 @@ use std::sync::Arc;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
     front::{
-        Error, ExistingSegmentCtor, File, FileId, LifecycleApi, ObjectId, ProjectId, SceneGraphDelta, SegmentCtor,
-        SketchApi, SketchApiStub, SketchExecOutcome, SourceDelta, Version,
+        Error, ExistingSegmentCtor, File, FileId, LifecycleApi, ObjectId, ProjectId, SegmentCtor, SketchApi,
+        SketchApiStub, Version,
     },
     Program,
 };
@@ -217,7 +217,7 @@ impl Context {
         let ctx = self
             .create_executor_ctx(settings, None, true)
             .map_err(|e| format!("Could not create KCL executor context for add segment. {TRUE_BUG} Details: {e}"))?;
-        let result: (SourceDelta, SceneGraphDelta, SketchExecOutcome) = sketch_api
+        let result = sketch_api
             .add_segment(&ctx, Version(version), ObjectId(sketch), segment, label)
             .await
             .map_err(|e: Error| JsValue::from_serde(&e).unwrap())?;

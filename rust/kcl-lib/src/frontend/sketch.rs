@@ -38,7 +38,7 @@ pub trait SketchApi {
         sketch: ObjectId,
         segment: SegmentCtor,
         label: Option<String>,
-    ) -> Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)>;
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn edit_segments(
         &mut self,
@@ -46,7 +46,7 @@ pub trait SketchApi {
         version: Version,
         sketch: ObjectId,
         segments: Vec<ExistingSegmentCtor>,
-    ) -> Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)>;
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn delete_segment(
         &mut self,
@@ -62,7 +62,7 @@ pub trait SketchApi {
         version: Version,
         sketch: ObjectId,
         constraint: Constraint,
-    ) -> Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)>;
+    ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn edit_constraint(
         &mut self,
@@ -282,89 +282,6 @@ pub struct Parallel {
     pub distance: Option<Number>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-pub struct SketchExecOutcome {
-    // The solved segments, including their locations so that they can be drawn.
-    pub segments: Vec<SolveSegment>,
-    // The interpreted constraints.
-    pub constraints: Vec<SolveConstraint>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-#[serde(tag = "type")]
-pub enum SolveSegment {
-    Point(SolvePointSegment),
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-pub struct SolvePointSegment {
-    pub object_id: String,
-    pub constrained_status: ConstrainedStatus,
-    pub handles: Vec<PointHandle>,
-    pub position: Point2d<Number>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-pub enum ConstrainedStatus {
-    None,
-    Partial,
-    Full,
-}
-
-impl From<Freedom> for ConstrainedStatus {
-    fn from(value: Freedom) -> Self {
-        match value {
-            Freedom::Free => Self::None,
-            Freedom::Partial => Self::Partial,
-            Freedom::Fixed => Self::Full,
-        }
-    }
-}
-
-// Handles, i.e. UI elements that the user can interact with.
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-pub struct PointHandle {
-    pub position: Point2d<Number>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-#[serde(tag = "type")]
-pub enum SolveConstraint {
-    // e.g. Make these things coincident.
-    Relation {
-        kind: RelationKind,
-        segment_ids: Vec<String>,
-    },
-    // If segment2 is given, it's the perpendicular distance between them.
-    Dimension {
-        segment1_id: String,
-        segment2_id: Option<String>,
-        value: Number,
-    },
-    Angle {
-        segment1_id: String,
-        segment2_id: Option<String>,
-        value: Number,
-    },
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts")]
-pub enum RelationKind {
-    Coincidence,
-    Horizontal,
-    Vertical,
-    Tangent,
-    Equal,
-    Fixed,
-}
-
 // Stub implementation of SketchApi for testing/development
 pub struct SketchApiStub;
 
@@ -407,7 +324,7 @@ impl SketchApi for SketchApiStub {
         _sketch: ObjectId,
         _segment: SegmentCtor,
         _label: Option<String>,
-    ) -> Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
+    ) -> Result<(SourceDelta, SceneGraphDelta)> {
         // Return empty stub data
         Ok((
             SourceDelta { text: String::new() },
@@ -430,10 +347,6 @@ impl SketchApi for SketchApiStub {
                     default_planes: Default::default(),
                 },
             ),
-            SketchExecOutcome {
-                segments: Vec::new(),
-                constraints: Vec::new(),
-            },
         ))
     }
 
@@ -443,7 +356,7 @@ impl SketchApi for SketchApiStub {
         _version: Version,
         _sketch: ObjectId,
         _segments: Vec<ExistingSegmentCtor>,
-    ) -> Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
+    ) -> Result<(SourceDelta, SceneGraphDelta)> {
         todo!("edit_segments not implemented")
     }
 
@@ -463,7 +376,7 @@ impl SketchApi for SketchApiStub {
         _version: Version,
         _sketch: ObjectId,
         _constraint: Constraint,
-    ) -> Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
+    ) -> Result<(SourceDelta, SceneGraphDelta)> {
         todo!("add_constraint not implemented")
     }
 

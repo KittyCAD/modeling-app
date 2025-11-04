@@ -1,7 +1,6 @@
 import type {
   Freedom,
   SceneGraphDelta,
-  SketchExecOutcome,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
@@ -29,7 +28,6 @@ interface CreateSegmentArgs {
   scale: number
   onUpdateSketchOutcome?: (data: {
     kclSource: SourceDelta
-    sketchExecOutcome: SketchExecOutcome
     sceneGraphDelta: SceneGraphDelta
   }) => void
 }

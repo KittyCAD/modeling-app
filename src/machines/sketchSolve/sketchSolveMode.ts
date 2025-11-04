@@ -14,7 +14,6 @@ import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineTool'
 import type {
   SceneGraphDelta,
-  SketchExecOutcome,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
@@ -68,7 +67,6 @@ export type SketchSolveMachineEvent =
       type: 'update sketch outcome'
       data: {
         kclSource: SourceDelta
-        sketchExecOutcome: SketchExecOutcome
         sceneGraphDelta: SceneGraphDelta
       }
     }
@@ -79,7 +77,6 @@ type SketchSolveContext = {
   selectedIds: Array<number>
   sketchExecOutcome?: {
     kclSource: SourceDelta
-    sketchExecOutcome: SketchExecOutcome
   }
   // Plane/face data from the 'animate-to-sketch-solve' actor
   initialPlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane

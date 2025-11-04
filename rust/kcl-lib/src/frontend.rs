@@ -16,7 +16,7 @@ use crate::{
         modify::{find_defined_names, next_free_name},
         sketch::{
             Coincident, Constraint, ExistingSegmentCtor, Horizontal, LineCtor, Point2d, Segment, SegmentCtor,
-            SketchApi, SketchArgs, SketchExecOutcome, Vertical,
+            SketchApi, SketchArgs, Vertical,
         },
         traverse::{TraversalReturn, Visitor, dfs_mut},
     },
@@ -231,7 +231,7 @@ impl SketchApi for FrontendState {
         sketch: ObjectId,
         segment: SegmentCtor,
         _label: Option<String>,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta, sketch::SketchExecOutcome)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
         match segment {
             SegmentCtor::Point(ctor) => self.add_point(ctx, sketch, ctor).await,
@@ -248,7 +248,7 @@ impl SketchApi for FrontendState {
         _version: Version,
         sketch: ObjectId,
         segments: Vec<ExistingSegmentCtor>,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
         let mut new_ast = self.program.ast.clone();
         for segment in segments {
@@ -281,7 +281,7 @@ impl SketchApi for FrontendState {
         _version: Version,
         sketch: ObjectId,
         constraint: Constraint,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta, sketch::SketchExecOutcome)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
 
         let mut new_ast = self.program.ast.clone();
@@ -345,7 +345,7 @@ impl FrontendState {
         ctx: &ExecutorContext,
         sketch: ObjectId,
         ctor: PointCtor,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // Create updated KCL source from args.
         let at_ast = to_ast_point2d(&ctor.position).map_err(|err| Error { msg: err.to_string() })?;
         let point_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -456,8 +456,7 @@ impl FrontendState {
             new_objects: new_object_ids,
             exec_outcome: outcome,
         };
-        let sketch_exec_outcome = self.sketch_exec_outcome(sketch_id)?;
-        Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
+        Ok((src_delta, scene_graph_delta))
     }
 
     async fn add_line(
@@ -465,7 +464,7 @@ impl FrontendState {
         ctx: &ExecutorContext,
         sketch: ObjectId,
         ctor: LineCtor,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // Create updated KCL source from args.
         let start_ast = to_ast_point2d(&ctor.start).map_err(|err| Error { msg: err.to_string() })?;
         let end_ast = to_ast_point2d(&ctor.end).map_err(|err| Error { msg: err.to_string() })?;
@@ -572,8 +571,7 @@ impl FrontendState {
             new_objects: new_object_ids,
             exec_outcome: outcome,
         };
-        let sketch_exec_outcome = self.sketch_exec_outcome(sketch_id)?;
-        Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
+        Ok((src_delta, scene_graph_delta))
     }
 
     fn edit_point(
@@ -704,9 +702,9 @@ impl FrontendState {
     async fn execute_after_edit(
         &mut self,
         ctx: &ExecutorContext,
-        sketch_id: ObjectId,
+        _sketch_id: ObjectId,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(new_ast);
         // Parse the new KCL source.
@@ -742,8 +740,7 @@ impl FrontendState {
             new_objects: Vec::new(),
             exec_outcome: outcome,
         };
-        let sketch_exec_outcome = self.sketch_exec_outcome(sketch_id)?;
-        Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
+        Ok((src_delta, scene_graph_delta))
     }
 
     async fn add_coincident(
@@ -914,10 +911,10 @@ impl FrontendState {
     async fn execute_after_add_constraint(
         &mut self,
         ctx: &ExecutorContext,
-        sketch_id: ObjectId,
+        _sketch_id: ObjectId,
         sketch_block_range: SourceRange,
         new_ast: &mut ast::Node<ast::Program>,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta, SketchExecOutcome)> {
+    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(new_ast);
         // Parse the new KCL source.
@@ -959,8 +956,7 @@ impl FrontendState {
             new_objects: Vec::new(),
             exec_outcome: outcome,
         };
-        let sketch_exec_outcome = self.sketch_exec_outcome(sketch_id)?;
-        Ok((src_delta, scene_graph_delta, sketch_exec_outcome))
+        Ok((src_delta, scene_graph_delta))
     }
 
     /// Return the AST expression referencing the variable at the given source
@@ -991,61 +987,6 @@ impl FrontendState {
             });
         };
         Ok(ast::Expr::Name(Box::new(ast::Name::new(&var_name))))
-    }
-
-    fn sketch_exec_outcome(&self, sketch_id: ObjectId) -> api::Result<SketchExecOutcome> {
-        let Some(sketch_object) = self.scene_graph.objects.get(sketch_id.0) else {
-            return Err(Error {
-                msg: format!("Sketch object not found; id={sketch_id:?}"),
-            });
-        };
-        let ObjectKind::Sketch(sketch) = &sketch_object.kind else {
-            return Err(Error {
-                msg: format!("Object with given id is not a sketch; id={sketch_id:?}, object={sketch_object:?}"),
-            });
-        };
-        let mut found_unsupported = false;
-        let segments = sketch
-            .segments
-            .iter()
-            .copied()
-            .filter_map(|segment_id| {
-                let Some(segment_object) = self.scene_graph.objects.get(segment_id.0) else {
-                    return Some(Err(Error {
-                        msg: format!("Segment object in sketch segments not found; id={segment_id:?}"),
-                    }));
-                };
-                let ObjectKind::Segment { segment } = &segment_object.kind else {
-                    return Some(Err(Error {
-                        msg: format!(
-                            "Segment object in sketch segments expected to be a segment but found {segment_object:?}",
-                        ),
-                    }));
-                };
-                let Segment::Point(point) = segment else {
-                    found_unsupported = true;
-                    return None;
-                };
-                Some(Ok(sketch::SolveSegment::Point(sketch::SolvePointSegment {
-                    object_id: segment_id.0.to_string(),
-                    constrained_status: point.freedom.into(),
-                    handles: vec![sketch::PointHandle {
-                        position: point.position.clone(),
-                    }],
-                    position: point.position.clone(),
-                })))
-            })
-            .collect::<api::Result<Vec<_>>>()?;
-        if found_unsupported {
-            #[cfg(target_arch = "wasm32")]
-            web_sys::console::warn_1(
-                &"WARNING: sketch_exec_outcome: only points are supported, not other segment types".into(),
-            );
-        }
-        Ok(SketchExecOutcome {
-            segments,
-            constraints: Default::default(),
-        })
     }
 
     fn update_state_after_exec(&mut self, outcome: ExecOutcome) -> ExecOutcome {
@@ -1513,7 +1454,7 @@ mod tests {
             },
         };
         let segment = SegmentCtor::Point(point_ctor);
-        let (src_delta, scene_delta, sketch_exec_outcome) = frontend
+        let (src_delta, scene_delta) = frontend
             .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
@@ -1528,7 +1469,6 @@ sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_objects, vec![ObjectId(1)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 2);
-        assert_eq!(sketch_exec_outcome.segments.len(), 1);
         for (i, scene_object) in scene_delta.new_graph.objects.iter().enumerate() {
             assert_eq!(scene_object.id.0, i);
         }
@@ -1552,7 +1492,7 @@ sketch(on = XY) {
             id: point_id,
             ctor: SegmentCtor::Point(point_ctor),
         }];
-        let (src_delta, scene_delta, sketch_exec_outcome) = frontend
+        let (src_delta, scene_delta) = frontend
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
@@ -1567,7 +1507,6 @@ sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 2);
-        assert_eq!(sketch_exec_outcome.segments.len(), 1);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1626,7 +1565,7 @@ sketch(on = XY) {
             },
         };
         let segment = SegmentCtor::Line(line_ctor);
-        let (src_delta, scene_delta, sketch_exec_outcome) = frontend
+        let (src_delta, scene_delta) = frontend
             .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
@@ -1640,7 +1579,6 @@ sketch(on = XY) {
 "
         );
         assert_eq!(scene_delta.new_objects, vec![ObjectId(1), ObjectId(2), ObjectId(3)]);
-        assert_eq!(sketch_exec_outcome.segments.len(), 2);
         for (i, scene_object) in scene_delta.new_graph.objects.iter().enumerate() {
             assert_eq!(scene_object.id.0, i);
         }
@@ -1675,7 +1613,7 @@ sketch(on = XY) {
             id: line,
             ctor: SegmentCtor::Line(line_ctor),
         }];
-        let (src_delta, scene_delta, sketch_exec_outcome) = frontend
+        let (src_delta, scene_delta) = frontend
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
@@ -1690,8 +1628,6 @@ sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
-        // TODO: SketchExecOutcome hasn't implemented lines yet.
-        assert_eq!(sketch_exec_outcome.segments.len(), 2);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1735,7 +1671,7 @@ s = sketch(on = XY) {}
             },
         };
         let segment = SegmentCtor::Line(line_ctor);
-        let (src_delta, scene_delta, sketch_exec_outcome) = frontend
+        let (src_delta, scene_delta) = frontend
             .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
@@ -1750,8 +1686,6 @@ s = sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_objects, vec![ObjectId(1), ObjectId(2), ObjectId(3)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
-        // TODO: SketchExecOutcome hasn't implemented lines yet.
-        assert_eq!(sketch_exec_outcome.segments.len(), 2);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1793,7 +1727,7 @@ sketch(on = XY) {
             id: point_id,
             ctor: SegmentCtor::Point(point_ctor),
         }];
-        let (src_delta, scene_delta, sketch_exec_outcome) = frontend
+        let (src_delta, scene_delta) = frontend
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
@@ -1809,8 +1743,6 @@ sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
-        // TODO: SketchExecOutcome hasn't implemented lines yet.
-        assert_eq!(sketch_exec_outcome.segments.len(), 2);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1852,7 +1784,7 @@ sketch(on = XY) {
             id: point_id,
             ctor: SegmentCtor::Point(point_ctor),
         }];
-        let (src_delta, scene_delta, sketch_exec_outcome) = frontend
+        let (src_delta, scene_delta) = frontend
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
@@ -1868,8 +1800,6 @@ sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
-        // TODO: SketchExecOutcome hasn't implemented lines yet.
-        assert_eq!(sketch_exec_outcome.segments.len(), 2);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1897,7 +1827,7 @@ sketch(on = XY) {
         let constraint = Constraint::Coincident(Coincident {
             points: vec![point0_id, point1_id],
         });
-        let (src_delta, _, _) = frontend
+        let (src_delta, _) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
@@ -1937,7 +1867,7 @@ sketch(on = XY) {
         let line1_id = frontend.scene_graph.objects.get(3).unwrap().id;
 
         let constraint = Constraint::Horizontal(Horizontal { line: line1_id });
-        let (src_delta, _, _) = frontend
+        let (src_delta, _) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
@@ -1977,7 +1907,7 @@ sketch(on = XY) {
         let line1_id = frontend.scene_graph.objects.get(3).unwrap().id;
 
         let constraint = Constraint::Vertical(Vertical { line: line1_id });
-        let (src_delta, _, _) = frontend
+        let (src_delta, _) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
