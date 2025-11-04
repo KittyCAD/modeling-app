@@ -148,13 +148,7 @@ test.describe('Testing constraints', () => {
         |> line(end = [74.36, 130.4], tag = $seg01)
         |> line(end = [78.92, -120.11])
         |> angledLine(angle = segAng(seg01), length = 78.33)
-        |> line(end = [51.19, 48.97])
-      part002 = startSketchOn(XZ)
-        |> startProfile(at = [299.05, 231.45])
-        |> xLine(length = -425.34, tag = $seg_what)
-        |> yLine(length = -264.06)
-        |> xLine(length = segLen(seg_what))
-        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+        |> line(end = [51.19, 48.97])`
           )
         })
         const u = await getUtils(page)
