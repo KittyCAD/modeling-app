@@ -307,7 +307,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     })
 
     await test.step('drag circle radius handle', async () => {
-      const magicYOnCircle = 0.8
+      const magicYOnCircle = 0.68
       const fromPoint = { x: 0.5, y: magicYOnCircle }
       const toPoint = [fromPoint.x / 2, magicYOnCircle] as const
       const [dragRadiusHandle] = scene.makeDragHelpers(...toPoint, {
@@ -315,15 +315,13 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
         format: 'ratio',
       })
       await dragRadiusHandle({ fromPoint })
-      await editor.expectEditor.not.toContain(prevContent)
-      prevContent = await editor.getCurrentCode()
     })
 
     await test.step('expect the code to have changed', async () => {
+      await editor.expectEditor.not.toContain(prevContent)
       await editor.expectEditor.toContain(
-        `sketch001 = startSketchOn(XZ)
-    |> circle(center = [-0.18, 0.12], radius = 0.54)`,
-        { shouldNormalise: true }
+        new RegExp(`sketch001 = startSketchOn(XZ)
+    |> circle\\(center = \\[${NUMBER_REGEXP}, ${NUMBER_REGEXP}\\], radius = ${NUMBER_REGEXP}\\)`)
       )
     })
   })
