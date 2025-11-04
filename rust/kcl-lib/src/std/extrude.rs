@@ -19,14 +19,13 @@ use kittycad_modeling_cmds::{
 use uuid::Uuid;
 
 use super::{DEFAULT_TOLERANCE_MM, args::TyF64, utils::point_to_mm};
-use crate::execution::types::ArrayLen;
 use crate::{
     errors::{KclError, KclErrorDetails},
     exec::Sketch,
     execution::{
         ArtifactId, ExecState, Extrudable, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, SketchSurface,
         Solid,
-        types::{PrimitiveType, RuntimeType},
+        types::{ArrayLen, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
     std::{Args, axis_or_reference::Point3dAxis3dOrGeometryReference},
