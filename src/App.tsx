@@ -10,7 +10,6 @@ import {
 } from 'react-router-dom'
 import { AppHeader } from '@src/components/AppHeader'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
-import { DownloadAppToast } from '@src/components/DownloadAppToast'
 import { useLspContext } from '@src/components/LspProvider'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
@@ -29,14 +28,11 @@ import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
-  DOWNLOAD_APP_TOAST_ID,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
-import { isPlaywright } from '@src/lib/isPlaywright'
-import openWindow from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import {
@@ -47,7 +43,6 @@ import {
   kclManager,
   useLayout,
   setLayout,
-  settingsActor,
   getLayout,
 } from '@src/lib/singletons'
 import { useSettings, useToken } from '@src/lib/singletons'
@@ -61,10 +56,10 @@ import {
   TutorialRequestToast,
   needsToOnboard,
 } from '@src/routes/Onboarding/utils'
-import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
 import { defaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { defaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
+import { getResolvedTheme } from '@src/lib/theme'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -153,9 +148,10 @@ export function App() {
       settings.app.onboardingStatus.current ||
       settings.app.onboardingStatus.default
     const needsOnboarded =
-      !isDesktop() &&
-      searchParams.size === 0 &&
-      needsToOnboard(location, onboardingStatus)
+      !isDesktop() && // Only show if we're in the browser,
+      authToken && // we're logged in,
+      searchParams.size === 0 && // we haven't come via a website "try in browser" link,
+      needsToOnboard(location, onboardingStatus) // and we have an uninitialized onboarding status.
 
     if (needsOnboarded) {
       toast.success(
@@ -165,52 +161,25 @@ export function App() {
             navigate,
             codeManager,
             kclManager,
+            theme: getResolvedTheme(settings.app.theme.current),
+            accountUrl: withSiteBaseURL('/account'),
           }),
         {
           id: ONBOARDING_TOAST_ID,
           duration: Number.POSITIVE_INFINITY,
           icon: null,
+          style: { maxInlineSize: 'min(900px, 100%)' },
         }
       )
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [settings.app.onboardingStatus])
-
-  useEffect(() => {
-    const needsDownloadAppToast =
-      !isDesktop() &&
-      !isPlaywright() &&
-      searchParams.size === 0 &&
-      !settings.app.dismissWebBanner.current
-    if (needsDownloadAppToast) {
-      toast.success(
-        () =>
-          DownloadAppToast({
-            onAccept: () => {
-              const url = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
-              openWindow(url)
-                .then(() => {
-                  toast.dismiss(DOWNLOAD_APP_TOAST_ID)
-                })
-                .catch(reportRejection)
-            },
-            onDismiss: () => {
-              toast.dismiss(DOWNLOAD_APP_TOAST_ID)
-              settingsActor.send({
-                type: 'set.app.dismissWebBanner',
-                data: { level: 'user', value: true },
-              })
-            },
-          }),
-        {
-          id: DOWNLOAD_APP_TOAST_ID,
-          duration: Number.POSITIVE_INFINITY,
-          icon: null,
-        }
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [])
+  }, [
+    settings.app.onboardingStatus,
+    settings.app.theme,
+    location,
+    navigate,
+    searchParams.size,
+    authToken,
+  ])
 
   useEffect(() => {
     const needsWasmInitFailedToast = !isDesktop() && kclManager.wasmInitFailed

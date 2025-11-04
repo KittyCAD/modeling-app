@@ -18,7 +18,6 @@ describe(`testing settings initialization`, () => {
         app: {
           appearance: {
             theme: 'dark',
-            color: 190,
           },
         },
       },
@@ -29,7 +28,6 @@ describe(`testing settings initialization`, () => {
     setSettingsAtLevel(settings, 'user', appSettingsPayload)
 
     expect(settings.app.theme.current).toBe('dark')
-    expect(settings.app.themeColor.current).toBe('190')
   })
 
   it(`doesn't read theme from project settings`, () => {
@@ -39,17 +37,23 @@ describe(`testing settings initialization`, () => {
         app: {
           appearance: {
             theme: 'dark',
-            color: 190,
           },
+        },
+        modeling: {
+          base_unit: 'cm',
         },
       },
     }
     const projectConfiguration: DeepPartial<ProjectConfiguration> = {
       settings: {
         app: {
+          // @ts-expect-error: our types are smart enough to know this isn't valid, but we're testing it.
           appearance: {
-            color: 200,
+            theme: 'light',
           },
+        },
+        modeling: {
+          base_unit: 'ft',
         },
       },
     }
@@ -63,8 +67,8 @@ describe(`testing settings initialization`, () => {
 
     // The 'project'-level for `theme` setting should be ignored completely
     expect(settings.app.theme.current).toBe('dark')
-    // But the 'project'-level for `themeColor` setting should be applied
-    expect(settings.app.themeColor.current).toBe('200')
+    // But the 'project'-level for `defaultUnit` setting should be applied
+    expect(settings.modeling.defaultUnit.current).toBe('ft')
   })
 })
 
@@ -77,18 +81,15 @@ describe(`testing getAllCurrentSettings`, () => {
         app: {
           appearance: {
             theme: 'dark',
-            color: 190,
           },
+        },
+        modeling: {
+          base_unit: 'm',
         },
       },
     }
     const projectConfiguration: DeepPartial<ProjectConfiguration> = {
       settings: {
-        app: {
-          appearance: {
-            color: 200,
-          },
-        },
         modeling: {
           base_unit: 'ft',
         },
@@ -107,7 +108,6 @@ describe(`testing getAllCurrentSettings`, () => {
     // This one gets the 'user'-level theme because it's ignored at the project level
     // (see the test "doesn't read theme from project settings")
     expect(allCurrentSettings.app.theme).toBe('dark')
-    expect(allCurrentSettings.app.themeColor).toBe('200')
     expect(allCurrentSettings.modeling.defaultUnit).toBe('ft')
   })
 })

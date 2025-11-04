@@ -284,6 +284,22 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  clipboard: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M6.5 3L7 3L13 3L13.5 3V3.5V4.00001L15.5 4.00002L16 4.00002V4.50002V16.5V17H15.5H4.5H4V16.5V4.50001V4.00001L4.5 4.00001L6.5 4.00001V3.5V3ZM6.5 5.00001L5 5.00001V16H15V5.00002L13.5 5.00001V6.50001V7.00001H13L7 7.00001L6.5 7.00001V6.50001V5.00001ZM7.5 4V4.50001V6.00001L12.5 6.00001V4.50001V4L7.5 4ZM13 9H7V8H13V9Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   clipboardCheckmark: (
     <svg
       viewBox="0 0 20 20"

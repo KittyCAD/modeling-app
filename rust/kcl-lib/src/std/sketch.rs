@@ -1961,8 +1961,7 @@ async fn inner_elliptic_point(
                     format!(
                         "Invalid input. The x value, {}, cannot be larger than the major radius {}.",
                         x.n, major_radius
-                    )
-                    .to_owned(),
+                    ),
                     vec![args.source_range],
                 ),
             })
@@ -1980,8 +1979,7 @@ async fn inner_elliptic_point(
                     format!(
                         "Invalid input. The y value, {}, cannot be larger than the minor radius {}.",
                         y.n, minor_radius
-                    )
-                    .to_owned(),
+                    ),
                     vec![args.source_range],
                 ),
             })
@@ -2154,8 +2152,7 @@ async fn inner_hyperbolic_point(
                     format!(
                         "Invalid input. The x value, {}, cannot be less than the semi major value, {}.",
                         x.n, semi_major
-                    )
-                    .to_owned(),
+                    ),
                     vec![args.source_range],
                 ),
             })
