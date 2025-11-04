@@ -4,9 +4,7 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::{
-    ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq,
-};
+use kittycad_modeling_cmds::{length_unit::LengthUnit, units::UnitLength};
 use parse_display::{Display, FromStr};
 use serde::{Deserialize, Serialize};
 
@@ -18,7 +16,11 @@ use crate::{
         types::{NumericType, adjust_length},
     },
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
-    std::{args::TyF64, sketch::PlaneData},
+    std::{
+        Args,
+        args::TyF64,
+        sketch::{FaceTag, PlaneData},
+    },
 };
 
 type Point3D = kcmc::shared::Point3d<f64>;
@@ -671,42 +673,6 @@ fn is_true(b: &bool) -> bool {
     *b
 }
 
-impl Sketch {
-    // Tell the engine to enter sketch mode on the sketch.
-    // Run a specific command, then exit sketch mode.
-    pub(crate) fn build_sketch_mode_cmds(
-        &self,
-        exec_state: &mut ExecState,
-        inner_cmd: ModelingCmdReq,
-    ) -> Vec<ModelingCmdReq> {
-        vec![
-            // Before we extrude, we need to enable the sketch mode.
-            // We do this here in case extrude is called out of order.
-            ModelingCmdReq {
-                cmd: ModelingCmd::from(mcmd::EnableSketchMode {
-                    animated: false,
-                    ortho: false,
-                    entity_id: self.on.id(),
-                    adjust_camera: false,
-                    planar_normal: if let SketchSurface::Plane(plane) = &self.on {
-                        // We pass in the normal for the plane here.
-                        let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
-                        Some(normal.into())
-                    } else {
-                        None
-                    },
-                }),
-                cmd_id: exec_state.next_uuid().into(),
-            },
-            inner_cmd,
-            ModelingCmdReq {
-                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
-                cmd_id: exec_state.next_uuid().into(),
-            },
-        ]
-    }
-}
-
 /// A sketch type.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -734,6 +700,69 @@ impl SketchSurface {
             SketchSurface::Plane(plane) => plane.info.y_axis,
             SketchSurface::Face(face) => face.y_axis,
         }
+    }
+}
+
+/// A Sketch, Face, or TaggedFace.
+#[derive(Debug, Clone, PartialEq)]
+pub enum Extrudable {
+    /// Sketch.
+    Sketch(Box<Sketch>),
+    /// Face.
+    Face(FaceTag),
+    /// Tagged face.
+    TaggedFace(Box<TagIdentifier>),
+}
+
+impl Extrudable {
+    /// Get the relevant id.
+    pub async fn id_to_extrude(
+        &self,
+        exec_state: &mut ExecState,
+        args: &Args,
+        must_be_planar: bool,
+    ) -> Result<uuid::Uuid, KclError> {
+        match self {
+            Extrudable::Sketch(sketch) => Ok(sketch.id),
+            Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+            Extrudable::TaggedFace(tag_id) => {
+                if let Some(cur_info) = tag_id.get_cur_info() {
+                    Ok(cur_info.id)
+                } else {
+                    Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Tagged face not found".to_owned(),
+                        vec![args.source_range],
+                    )))
+                }
+            }
+        }
+    }
+
+    pub fn as_sketch(&self) -> Option<Sketch> {
+        match self {
+            Extrudable::Sketch(sketch) => Some((**sketch).clone()),
+            Extrudable::Face(face_tag) => match face_tag.geometry() {
+                Some(Geometry::Sketch(sketch)) => Some(sketch),
+                Some(Geometry::Solid(solid)) => Some(solid.sketch),
+                _ => None,
+            },
+            Extrudable::TaggedFace(tag_id) => {
+                if let Some(cur_info) = tag_id.geometry() {
+                    match cur_info {
+                        Geometry::Sketch(sketch) => Some(sketch),
+                        Geometry::Solid(solid) => Some(solid.sketch),
+                    }
+                } else {
+                    None
+                }
+            }
+        }
+    }
+}
+
+impl From<Sketch> for Extrudable {
+    fn from(value: Sketch) -> Self {
+        Extrudable::Sketch(Box::new(value))
     }
 }
 
@@ -793,7 +822,7 @@ impl Sketch {
             exec_state.stack().current_epoch(),
             TagEngineInfo {
                 id: base.geo_meta.id,
-                sketch: self.id,
+                geometry: Geometry::Sketch(self.clone()),
                 path: Some(current_path.clone()),
                 surface: surface.cloned(),
             },

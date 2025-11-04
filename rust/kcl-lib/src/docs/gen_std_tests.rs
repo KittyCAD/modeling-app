@@ -513,10 +513,12 @@ fn cleanup_types(input: &str, kcl_std: &ModData) -> String {
 }
 
 fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData) -> String {
-    assert!(
-        !(input.starts_with('[') && input.ends_with(']') && input.contains('|')),
-        "Arrays of unions are not supported"
-    );
+    if let Some(s) = input.strip_prefix('[')
+        && let Some(s2) = s.strip_suffix(']')
+        && s2.contains('|')
+    {
+        return input.to_owned();
+    }
 
     let tys: Vec<_> = input
         .split('|')
