@@ -25,7 +25,7 @@ patternCircular3d(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) | The solid(s) to pattern. | Yes |
+| `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] | The solid(s) to pattern. | Yes |
 | `instances` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `axis` | [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | The axis of the pattern. A 3D vector. | Yes |
 | `center` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) | The center about which to make the pattern. This is a 3D vector. | Yes |
@@ -35,7 +35,7 @@ patternCircular3d(
 
 ### Returns
 
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
 
 
 ### Examples

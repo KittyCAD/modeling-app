@@ -17,7 +17,7 @@ min(@input: [number; 1+]): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [`[number; 1+]`](/docs/kcl-std/types/std-types-number) | An array of numbers to compute the minimum of. | Yes |
+| `input` | [[`number`](/docs/kcl-std/types/std-types-number); 1+] | An array of numbers to compute the minimum of. | Yes |
 
 ### Returns
 
