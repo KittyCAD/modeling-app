@@ -33,33 +33,35 @@ export function getAllSubDirectoriesAtProjectRoot(
   return subDirectories
 }
 
-
-export function listAllImportFilesWithinProject(context: SystemIOContext, { projectFolderName }: { projectFolderName: string }) {
+export function listAllImportFilesWithinProject(
+  context: SystemIOContext,
+  { projectFolderName }: { projectFolderName: string }
+) {
   const relativeFilePaths = []
   const { folders } = context
-    const projectFolder = folders.find((folder) => {
-      return folder.name === projectFolderName
-    })
-    if (window.electron && projectFolder?.children) {
-      const projectPath = projectFolder.path
-      let children = projectFolder.children
-      while (children.length > 0) {
-        const v = children.pop()
-        if (!v) {
-          continue
-        }
-
-        if (v.children) {
-          children.push(...v.children)
-          continue
-        }
-
-        const relativeFilePath = v.path.replace(
-          projectPath + window.electron.sep,
-          ''
-        )
-        relativeFilePaths.push(relativeFilePath)
+  const projectFolder = folders.find((folder) => {
+    return folder.name === projectFolderName
+  })
+  if (window.electron && projectFolder?.children) {
+    const projectPath = projectFolder.path
+    let children = projectFolder.children
+    while (children.length > 0) {
+      const v = children.pop()
+      if (!v) {
+        continue
       }
+
+      if (v.children) {
+        children.push(...v.children)
+        continue
+      }
+
+      const relativeFilePath = v.path.replace(
+        projectPath + window.electron.sep,
+        ''
+      )
+      relativeFilePaths.push(relativeFilePath)
     }
+  }
   return relativeFilePaths
 }

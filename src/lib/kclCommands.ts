@@ -176,14 +176,13 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           inputType: 'options',
           required: true,
           options: () => {
-
-          const providedOptions = []
+            const providedOptions = []
             const context = systemIOActor.getSnapshot().context
 
-          // providedOptions.push({
-          //   name: relativeFilePath.replaceAll(window.electron.sep, '/'),
-          //   value: relativeFilePath.replaceAll(window.electron.sep, '/'),
-          // })
+            // providedOptions.push({
+            //   name: relativeFilePath.replaceAll(window.electron.sep, '/'),
+            //   value: relativeFilePath.replaceAll(window.electron.sep, '/'),
+            // })
             return providedOptions
           },
           validation: async ({ data }) => {
