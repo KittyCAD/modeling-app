@@ -15,7 +15,7 @@ const ADDING_POINT = `xstate.done.actor.0.${TOOL_ID}.Adding point`
 
 type ToolEvents =
   | { type: 'unequip' }
-  | { type: 'add point'; data: [x: number, y: number] }
+  | { type: 'add point'; data: [x: number, y: number]; id?: number }
   | { type: 'update selection' }
   | {
       type: `xstate.done.actor.0.${typeof TOOL_ID}.Adding point`
@@ -86,6 +86,17 @@ export const machine = setup({
             }
           }
         },
+        onClick: async (args) => {
+          if (!args || !context.draftPointId) return
+          const twoD = args.intersectionPoint?.twoD
+          if (twoD) {
+            self.send({
+              type: 'add point',
+              data: [twoD.x, twoD.y],
+              id: context.draftPointId,
+            })
+          }
+        },
       })
     },
     'add point listener': ({ self }) => {
@@ -101,10 +112,11 @@ export const machine = setup({
             // Send the add point event with the clicked coordinates
             self.send({
               type: 'add point',
-              data: [twoD.x, twoD.y] as [number, number],
+              data: [twoD.x, twoD.y],
             })
           }
         },
+        onMove: () => {},
       })
     },
     'show draft geometry': () => {
@@ -194,7 +206,46 @@ export const machine = setup({
       }
     ),
     modAndSolve: fromPromise(
-      async ({ input }: { input: { pointData: [number, number] } }) => {}
+      async ({
+        input,
+      }: { input: { pointData: [number, number]; id: number } }) => {
+        const { pointData, id } = input
+        console.log('input', input)
+        const [x, y] = pointData
+
+        try {
+          // TODO not sure if we should be sending through units with this
+          const segmentCtor: SegmentCtor = {
+            type: 'Point',
+            position: {
+              x: { type: 'Var', value: roundOff(x), units: 'Mm' },
+              y: { type: 'Var', value: roundOff(y), units: 'Mm' },
+            },
+          }
+
+          console.log('Adding point segment:', segmentCtor)
+
+          // Call the addSegment method using the singleton rustContext
+          const result = await rustContext.editSegments(
+            0, // version - TODO: Get this from actual context
+            0, // sketchId - TODO: Get this from actual context
+            [
+              {
+                id,
+                ctor: segmentCtor,
+              },
+            ],
+            await jsAppSettings()
+          )
+
+          return result
+        } catch (error) {
+          console.error('Failed to add point segment:', error)
+          return {
+            error: error instanceof Error ? error.message : 'Unknown error',
+          }
+        }
+      }
     ),
   },
 }).createMachine({
@@ -227,7 +278,7 @@ export const machine = setup({
       invoke: {
         input: ({ event }) => {
           assertEvent(event, 'add point')
-          return { pointData: event.data }
+          return { pointData: event.data, id: event.id || 0 }
         },
 
         onDone: {
@@ -275,5 +326,3 @@ export const machine = setup({
     },
   },
 })
-
-// "Failed to edit segment in sketch: Error { msg: "Line not found in sketch: point=ObjectId(2), sketch=Sketch { args: SketchArgs { on: Default(Xy) }, segments: [ObjectId(3)], constraints: [] }" }"
