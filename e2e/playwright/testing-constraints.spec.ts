@@ -265,13 +265,7 @@ test.describe('Testing constraints', () => {
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
-        |> line(end = [51.19, 48.97])
-      part002 = startSketchOn(XZ)
-        |> startProfile(at = [299.05, 231.45])
-        |> xLine(length = -425.34, tag = $seg_what)
-        |> yLine(length = -264.06)
-        |> xLine(length = segLen(seg_what))
-        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+        |> line(end = [51.19, 48.97])`
           )
         })
         const u = await getUtils(page)
