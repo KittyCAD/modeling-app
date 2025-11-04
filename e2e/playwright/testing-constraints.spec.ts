@@ -834,7 +834,7 @@ part002 = startSketchOn(XZ)
         constraintName: 'Vertically Align',
       },
       {
-        codeAfter: `|> line(endAbsolute = [154.9, segEndY(seg01)])`,
+        codeAfter: `|> line(endAbsolute = [174.9, segEndY(seg01)])`,
         constraintName: 'Horizontally Align',
       },
     ] as const
@@ -849,7 +849,7 @@ part002 = startSketchOn(XZ)
         |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
-        |> line(end = [9.16, 77.79])
+        |> line(end = [29.16, 97.79])
       part002 = startSketchOn(XZ)
         |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
