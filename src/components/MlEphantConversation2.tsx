@@ -9,7 +9,6 @@ import {
   BillingRemainingMode,
 } from '@kittycad/react-shared'
 import { type BillingContext } from '@src/machines/billingMachine'
-import { type MlCopilotTool } from '@kittycad/lib'
 import { Popover, Transition } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
@@ -25,196 +24,25 @@ export interface MlEphantConversationProps {
   conversation?: Conversation
   contexts: MlEphantManagerPromptContext[]
   billingContext: BillingContext
-  onProcess: (request: string, forcedTools: Set<MlCopilotTool>) => void
+  onProcess: (request: string) => void
   disabled?: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
   defaultPrompt?: string
 }
 
-const ML_COPILOT_TOOLS: Readonly<MlCopilotTool[]> = Object.freeze([
-  'edit_kcl_code',
-  'text_to_cad',
-  'mechanical_knowledge_base',
-  'web_search',
-])
-const ML_COPILOT_TOOLS_META = Object.freeze({
-  edit_kcl_code: {
-    regexp: /edit|make|change/,
-    pretty: 'Edit',
-    icon: (props: { className: string }) => (
-      <CustomIcon name="beaker" className={props.className} />
-    ),
-  },
-  text_to_cad: {
-    regexp: /create|construct|build|design|model/,
-    pretty: 'Create',
-    icon: (props: { className: string }) => (
-      <CustomIcon name="model" className={props.className} />
-    ),
-  },
-  mechanical_knowledge_base: {
-    regexp: /what|how|where|why|when/,
-    pretty: 'Question',
-    icon: (props: { className: string }) => (
-      <CustomIcon name="brain" className={props.className} />
-    ),
-  },
-  web_search: {
-    regexp: /search|google/,
-    pretty: 'Web search',
-    icon: (props: { className: string }) => (
-      <CustomIcon name="search" className={props.className} />
-    ),
-  },
-} as const)
-
-const MlCopilotTool = <T extends MlCopilotTool>(props: {
-  tool: T
-  onRemove: (tool: T) => void
-}) => {
-  return (
-    <button
-      className="group/tool flex-none flex flex-row gap-1 items-center p-0 pr-2"
-      onClick={() => props.onRemove(props.tool)}
-    >
-      <CustomIcon
-        name="close"
-        className="w-6 h-6 hidden group-hover/tool:block"
-      />
-      {ML_COPILOT_TOOLS_META[props.tool].icon({
-        className: 'w-6 h-6 block group-hover/tool:hidden',
-      })}
-      {ML_COPILOT_TOOLS_META[props.tool].pretty}
-    </button>
-  )
-}
-
-export interface MlCopilotToolsProps {
-  onAdd: (tool: MlCopilotTool) => void
-  children: ReactNode
-}
-const MlCopilotTools = (props: MlCopilotToolsProps) => {
-  const tools = []
-
-  const onClick = (tool: MlCopilotTool) => {
-    props.onAdd(tool)
-  }
-
-  for (let tool of ML_COPILOT_TOOLS) {
-    tools.push(
-      <div
-        tabIndex={0}
-        role="button"
-        key={tool}
-        onClick={() => onClick(tool)}
-        className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md"
-      >
-        {ML_COPILOT_TOOLS_META[tool].icon({ className: 'w-5 h-5' })}
-        {ML_COPILOT_TOOLS_META[tool].pretty}
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex-none">
-      <Popover className="relative">
-        <Popover.Button className="h-7 bg-default flex flex-row items-center gap-1 p-0 pr-2">
-          <CustomIcon name="settings" className="w-6 h-6" />
-          {props.children}
-          <CustomIcon name="plus" className="w-5 h-5" />
-        </Popover.Button>
-        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
-          {tools}
-        </Popover.Panel>
-      </Popover>
-    </div>
-  )
-}
-
 export interface MlEphantExtraInputsProps {
   // TODO: Expand to a list with no type restriction
   context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
-  inputToMatch: string
-  forcedTools: Set<MlCopilotTool>
-  excludedTools: Set<MlCopilotTool>
-  onRemove: (tool: MlCopilotTool) => void
-  onAdd: (tool: MlCopilotTool) => void
 }
 export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
-  const [overflow, setOverflow] = useState<boolean>(false)
-  const widthFromBeforeCollapse = useRef<number>(0)
-  const refWrap = useRef<HTMLDivElement>(null)
-  const refTools = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    for (let tool of ML_COPILOT_TOOLS) {
-      if (props.forcedTools.has(tool)) continue
-      if (props.excludedTools.has(tool)) continue
-
-      if (ML_COPILOT_TOOLS_META[tool].regexp.test(props.inputToMatch)) {
-        props.onAdd(tool)
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [props.forcedTools, props.excludedTools, props.inputToMatch])
-
-  const tools = Array.from(
-    Array.from(props.forcedTools).filter(
-      (tool) => !props.excludedTools.has(tool)
-    )
-  ).map((tool) => (
-    <MlCopilotTool key={tool} tool={tool} onRemove={props.onRemove} />
-  ))
-
-  useEffect(() => {
-    if (!refWrap.current) return
-    const observer = new ResizeObserver((entries) => {
-      if (!refTools.current) return
-      if (entries.length === 1) {
-        const widthTools = refTools.current.getBoundingClientRect().width
-        if (widthTools > entries[0].contentRect.width && overflow === false) {
-          widthFromBeforeCollapse.current = widthTools
-          setOverflow(true)
-        } else if (
-          (widthFromBeforeCollapse.current < entries[0].contentRect.width ||
-            tools.length === 0) &&
-          overflow === true
-        ) {
-          setOverflow(false)
-        }
-      }
-    })
-    observer.observe(refWrap.current)
-    return () => {
-      observer.disconnect()
-    }
-  }, [overflow, tools.length, props.context])
-
-  const popover = (
-    <Popover className="relative">
-      <Popover.Button className="h-7 flex items-center justify-content">
-        ...
-      </Popover.Button>
-      <Popover.Panel className="absolute bottom-full left-0 whitespace-nowrap flex flex-col gap-2 hover:bg-2 bg-default mb-1 p-2 border b-3 text-sm rounded-md">
-        {tools}
-      </Popover.Panel>
-    </Popover>
-  )
-
   return (
-    <div ref={refWrap} className="flex-1 flex min-w-0 items-end">
-      <div ref={refTools} className="flex flex-row w-fit-content items-end">
+    <div className="flex-1 flex min-w-0 items-end">
+      <div className="flex flex-row w-fit-content items-end">
         {/* TODO: Generalize to a MlCopilotContexts component */}
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
-        <MlCopilotTools onAdd={props.onAdd}>
-          <div>
-            {tools.length} Tool{tools.length !== 1 ? 's' : ''}
-          </div>
-        </MlCopilotTools>
-        <div className="flex gap-1">{overflow ? popover : tools}</div>
       </div>
     </div>
   )
@@ -301,46 +129,13 @@ export const MlEphantConversationInput = (
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const [value, setValue] = useState<string>('')
   const [heightConvo, setHeightConvo] = useState(0)
-  const [forcedTools, setForcedTools] = useState<Set<MlCopilotTool>>(new Set())
-  const [excludedTools, setExcludedTools] = useState<Set<MlCopilotTool>>(
-    new Set()
-  )
   const [lettersForAnimation, setLettersForAnimation] = useState<ReactNode[]>(
     []
   )
   const [isAnimating, setAnimating] = useState(false)
 
-  const onRemoveTool = (tool: MlCopilotTool) => {
-    forcedTools.delete(tool)
-    setForcedTools(new Set(forcedTools))
-
-    if (value.length > 0) {
-      excludedTools.add(tool)
-      setExcludedTools(new Set(excludedTools))
-    }
-  }
-
-  const onAddTool = (tool: MlCopilotTool) => {
-    forcedTools.add(tool)
-    excludedTools.delete(tool)
-
-    setForcedTools(new Set(forcedTools))
-    setExcludedTools(new Set(excludedTools))
-  }
-
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
-
-  useEffect(() => {
-    if (
-      value.length === 0 &&
-      (excludedTools.size > 0 || forcedTools.size > 0)
-    ) {
-      setForcedTools(new Set())
-      setExcludedTools(new Set())
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [value.length])
 
   const onClick = () => {
     if (props.disabled) return
@@ -350,7 +145,7 @@ export const MlEphantConversationInput = (
 
     setHeightConvo(refDiv.current.getBoundingClientRect().height)
 
-    props.onProcess(value, forcedTools)
+    props.onProcess(value)
 
     setLettersForAnimation(
       value.split('').map((c, index) => (
@@ -418,14 +213,7 @@ export const MlEphantConversationInput = (
         </div>
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div className="flex items-end">
-          <MlEphantExtraInputs
-            context={selectionsContext}
-            inputToMatch={value}
-            forcedTools={forcedTools}
-            excludedTools={excludedTools}
-            onRemove={onRemoveTool}
-            onAdd={onAddTool}
-          />
+          <MlEphantExtraInputs context={selectionsContext} />
           <button
             data-testid="ml-ephant-conversation-input-button"
             disabled={props.disabled}
@@ -436,6 +224,9 @@ export const MlEphantConversationInput = (
           </button>
         </div>
       </div>
+      <div className="text-3 text-xs">
+        Text-to-CAD can make mistakes. Always verify information.
+      </div>
     </div>
   )
 }
@@ -444,9 +235,9 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState<boolean>(true)
 
-  const onProcess = (request: string, forcedTools: Set<MlCopilotTool>) => {
+  const onProcess = (request: string) => {
     setAutoScroll(true)
-    props.onProcess(request, forcedTools)
+    props.onProcess(request)
   }
 
   useEffect(() => {
