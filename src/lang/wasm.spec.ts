@@ -19,7 +19,10 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { importFileExtensions, relevantFileExtensions } from './wasmUtils'
-import { isExtensionAnImportExtension, isExtensionARelevantExtension } from '@src/lib/paths'
+import {
+  isExtensionAnImportExtension,
+  isExtensionARelevantExtension,
+} from '@src/lib/paths'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -241,7 +244,7 @@ describe('relevantFileExtensions', () => {
   })
 })
 
-describe('importFileExtensions',()=>{
+describe('importFileExtensions', () => {
   it('should return all lowercase extensions', () => {
     const extensions = importFileExtensions(instanceInThisFile)
     const expected = true
@@ -350,7 +353,6 @@ describe('importFileExtensions',()=>{
       expect(actual).toBe(expected)
     })
   })
-
 })
 
 describe('isExtensionAnImportExtension', () => {

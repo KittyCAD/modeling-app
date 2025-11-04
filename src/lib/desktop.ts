@@ -260,12 +260,15 @@ const collectAllFilesRecursiveFrom = async (
   canReadWritePath: boolean,
   fileExtensionsForFilter: string[]
 ) => {
-  const isRelevantFile = (filename:string): boolean => {
+  const isRelevantFile = (filename: string): boolean => {
     const extensionNoPeriod = getEXTNoPeriod(filename)
     if (!extensionNoPeriod) {
       return false
     }
-    return isExtensionARelevantExtension(extensionNoPeriod, fileExtensionsForFilter)
+    return isExtensionARelevantExtension(
+      extensionNoPeriod,
+      fileExtensionsForFilter
+    )
   }
 
   // Make sure the filesystem object exists.

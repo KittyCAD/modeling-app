@@ -7,7 +7,12 @@ import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/uti
 import { ToastInsert } from '@src/components/ToastInsert'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
-import { PATHS, getEXTNoPeriod, isExtensionARelevantExtension, parentPathRelativeToProject } from '@src/lib/paths'
+import {
+  PATHS,
+  getEXTNoPeriod,
+  isExtensionARelevantExtension,
+  parentPathRelativeToProject,
+} from '@src/lib/paths'
 import {
   useSettings,
   systemIOActor,

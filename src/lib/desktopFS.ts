@@ -139,7 +139,7 @@ export async function getNextFileName({
   baseDir: string
 }) {
   // Preserve the extension in case of a relevant but foreign file
-  let extension = fsManager.path.extname(entryName).replace('.','')
+  let extension = fsManager.path.extname(entryName).replace('.', '')
   const extensions = relevantFileExtensions()
   const isRelevantFile = isExtensionARelevantExtension(extension, extensions)
   if (!isRelevantFile) {

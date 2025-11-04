@@ -24,6 +24,7 @@ import {
   editorManager,
   kclManager,
   rustContext,
+  systemIOActor,
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -32,6 +33,7 @@ import { getNodeFromPath } from '@src/lang/queryAst'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
+import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -173,7 +175,17 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         path: {
           inputType: 'options',
           required: true,
-          options: commandProps.specialPropsForInsertCommand.providedOptions,
+          options: () => {
+
+          const providedOptions = []
+            const context = systemIOActor.getSnapshot().context
+
+          // providedOptions.push({
+          //   name: relativeFilePath.replaceAll(window.electron.sep, '/'),
+          //   value: relativeFilePath.replaceAll(window.electron.sep, '/'),
+          // })
+            return providedOptions
+          },
           validation: async ({ data }) => {
             const importExists = kclManager.ast.body.find(
               (n) =>
