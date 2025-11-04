@@ -608,3 +608,53 @@ async fn run_example(text: &str) -> Result<()> {
     ctx.run(&program, &mut exec_state).await?;
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_cleanup_type_string() {
+        let kcl_std = crate::docs::kcl_doc::walk_prelude();
+
+        struct Test {
+            input: &'static str,
+            expected_text: &'static str,
+            expected_no_text: &'static str,
+        }
+
+        let tests = [
+            Test {
+                input: "v",
+                expected_text: "`v`",
+                expected_no_text: "v",
+            },
+            Test {
+                input: "number(mm)",
+                expected_text: "[`number(mm)`](/docs/kcl-std/types/std-types-number)",
+                expected_no_text: "number(mm)",
+            },
+            Test {
+                input: "number(mm) | string",
+                expected_text: "[`number(mm)`](/docs/kcl-std/types/std-types-number) or [`string`](/docs/kcl-std/types/std-types-string)",
+                expected_no_text: "number(mm) | string",
+            },
+            Test {
+                input: "[string; 1+]",
+                expected_text: "[`[string; 1+]`](/docs/kcl-std/types/std-types-string)",
+                expected_no_text: "[string; 1+]",
+            },
+            Test {
+                input: "[string; 1+] | number(mm)",
+                expected_text: "[`[string; 1+]`](/docs/kcl-std/types/std-types-string) or [`number(mm)`](/docs/kcl-std/types/std-types-number)",
+                expected_no_text: "[string; 1+] | number(mm)",
+            },
+        ];
+        for test in tests {
+            let actual_text = cleanup_type_string(test.input, true, &kcl_std);
+            assert_eq!(actual_text, test.expected_text);
+            let actual_no_text = cleanup_type_string(test.input, false, &kcl_std);
+            assert_eq!(actual_no_text, test.expected_no_text);
+        }
+    }
+}
