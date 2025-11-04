@@ -46,16 +46,63 @@ pub fn parse<'i>(s: &'i str) -> anyhow::Result<KclType<'i>> {
     }
 
     // Union case
-    if s.contains(" | ") {
-        let mut parts = Vec::new();
-        for or_clause in s.split(" | ") {
-            parts.push(parse(or_clause)?);
+    if let Some(parts) = split_top_level_union(s)? {
+        let mut variants = Vec::with_capacity(parts.len());
+        for clause in parts {
+            variants.push(parse(clause)?);
         }
-        return Ok(KclType::Union { variants: parts });
+        return Ok(KclType::Union { variants });
     }
 
     // Atom case
     Ok(KclType::Atom(s))
+}
+
+/// If this was a type union, return Ok(Some(parts))
+/// If it's a normal atomic type, return Ok(None)
+fn split_top_level_union(s: &str) -> anyhow::Result<Option<Vec<&str>>> {
+    let mut parts = Vec::new();
+    let mut depth = 0;
+    let mut start_of_part = 0;
+    let bytes = s.as_bytes();
+    let mut i = 0;
+    let divider = b" | ";
+    let divider_len = divider.len();
+
+    while i < bytes.len() {
+        match bytes[i] {
+            b'[' => {
+                depth += 1;
+                i += 1;
+            }
+            b']' => {
+                if depth == 0 {
+                    anyhow::bail!("Unexpected ] without matching [");
+                }
+                depth -= 1;
+                i += 1;
+            }
+            _ => {
+                if depth == 0 && bytes[i..].starts_with(divider) {
+                    let part = s[start_of_part..i].trim();
+                    if !part.is_empty() {
+                        parts.push(part);
+                    }
+                    i += divider_len;
+                    start_of_part = i;
+                } else {
+                    i += 1;
+                }
+            }
+        }
+    }
+
+    let tail = s[start_of_part..].trim();
+    if !tail.is_empty() {
+        parts.push(tail);
+    }
+
+    Ok(if parts.len() > 1 { Some(parts) } else { None })
 }
 
 #[cfg(test)]
