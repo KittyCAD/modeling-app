@@ -376,20 +376,9 @@ export class CameraControls {
         this.camera.fov = camSettings.fov_y
       } else if (this.camera instanceof OrthographicCamera) {
         const fovY = camSettings.fov_y ?? this.perspectiveFovBeforeOrtho ?? 45
-        const eyeOffset = new Vector3(
-          camSettings.pos.x,
-          camSettings.pos.y,
-          camSettings.pos.z
-        ).distanceTo(
-          new Vector3(
-            camSettings.center.x,
-            camSettings.center.y,
-            camSettings.center.z
-          )
-        )
-        const height = Math.tan(0.5 * degToRad(fovY)) * eyeOffset
-        const newZoom = ORTHOGRAPHIC_CAMERA_SIZE / height
-        this.camera.zoom = newZoom
+        const eyeOffset = this.camera.position.distanceTo(this.target)
+        const height = viewHeightFactor(fovY) * eyeOffset
+        this.camera.zoom = ORTHOGRAPHIC_CAMERA_SIZE / height
         this.camera.updateProjectionMatrix()
       }
       this.onCameraChange()
@@ -737,23 +726,6 @@ export class CameraControls {
     // Calculate the scale factor for the new FOV compared to the old one
     // This needs to be calculated before updating the camera's FOV
     const oldFov = this.camera.fov
-
-    const viewHeightFactor = (fov: number) => {
-      /*       *
-              /|
-             / |
-            /  |
-           /   |
-          /    | viewHeight/2
-         /     |
-        /      |
-       /↙️fov/2 |
-      /________|
-      \        |
-       \._._._.|
-      */
-      return Math.tan(deg2Rad(fov / 2))
-    }
     const scaleFactor = viewHeightFactor(oldFov) / viewHeightFactor(newFov)
 
     this.camera.fov = newFov
@@ -1727,6 +1699,23 @@ function calculateNearFarFromFOV(fov: number) {
   return { z_near: 0.01, z_far: 1000 }
 }
 
+const viewHeightFactor = (fov: number) => {
+  /*       *
+          /|
+         / |
+        /  |
+       /   |
+      /    | viewHeight/2
+     /     |
+    /      |
+   /↙️fov/2 |
+  /________|
+  \        |
+   \._._._.|
+  */
+  return Math.tan(deg2Rad(fov / 2))
+}
+
 function convertThreeCamValuesToEngineCam(
   { target, position, quaternion, zoom, isPerspective }: ThreeCamValues,
   perspectiveFovY = 45
@@ -1749,7 +1738,7 @@ function convertThreeCamValuesToEngineCam(
   // Orthographic: derive engine eye_offset consistent with createProjectionMatrix
   const effectiveHalfHeight = ORTHOGRAPHIC_CAMERA_SIZE / zoom
   const eyeOffset =
-    effectiveHalfHeight / Math.tan(0.5 * degToRad(perspectiveFovY))
+    effectiveHalfHeight / viewHeightFactor(perspectiveFovY)
 
   const viewDir = position.clone().sub(target).normalize()
   const vantage = target.clone().add(viewDir.multiplyScalar(eyeOffset))
