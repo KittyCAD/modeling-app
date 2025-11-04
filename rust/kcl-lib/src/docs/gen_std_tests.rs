@@ -515,6 +515,9 @@ fn cleanup_types(input: &str, kcl_std: &ModData) -> String {
 }
 
 fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData) -> String {
+    if input.contains("a, b, c") {
+        dbg!(input);
+    }
     let type_tree = match type_formatter::parse(input) {
         Ok(type_tree) => type_tree,
         Err(e) => {
@@ -522,7 +525,12 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData) -> St
             return input.to_owned();
         }
     };
-    type_tree.format(fmt_for_text, kcl_std)
+    let fmtd = type_tree.format(fmt_for_text, kcl_std);
+    if !fmtd.contains('`') && fmt_for_text {
+        format!("`{fmtd}`")
+    } else {
+        fmtd
+    }
 }
 
 #[test]
@@ -653,6 +661,11 @@ mod tests {
                 input: "[string | number(mm)]",
                 expected_text: "[[`string`](/docs/kcl-std/types/std-types-string) or [`number(mm)`](/docs/kcl-std/types/std-types-number)]",
                 expected_no_text: "[string | number(mm)]",
+            },
+            Test {
+                input: "[a, b, c]",
+                expected_text: "`[a, b, c]`",
+                expected_no_text: "[a, b, c]",
             },
         ];
         for test in tests {

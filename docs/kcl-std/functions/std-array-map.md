@@ -14,8 +14,8 @@ map(
 ): [any]
 ```
 
-Given a list like [`a, b, c`], and a function like `f`, returns
-[`f(a), f(b), f(c)`]
+Given a list like `[a, b, c]`, and a function like `f`, returns
+`[f(a), f(b), f(c)]`
 
 ### Arguments
 
