@@ -823,7 +823,9 @@ washer = extrude(washerSketch, length = thicknessMax)`
 
       // Just verify that the radius is the correct order of magnitude
       await editor.expectEditor.toContain(
-        new RegExp(`circle\\(sketch001, center = \\[${NUMBER_REGEXP}, ${NUMBER_REGEXP}\\], radius = 0\\.\\d+`)
+        new RegExp(
+          `circle\\(sketch001, center = \\[${NUMBER_REGEXP}, ${NUMBER_REGEXP}\\], radius = 0\\.\\d+`
+        )
       )
     })
 
