@@ -224,6 +224,7 @@ export const MlEphantConversationInput = (
           </button>
         </div>
       </div>
+      <div className="text-3 text-xs">Text-to-CAD can make mistakes. Always verify information.</div>
     </div>
   )
 }
