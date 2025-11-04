@@ -649,6 +649,11 @@ mod tests {
                 expected_text: "[[`string`](/docs/kcl-std/types/std-types-string); 1+] or [`number(mm)`](/docs/kcl-std/types/std-types-number)",
                 expected_no_text: "[string; 1+] | number(mm)",
             },
+            Test {
+                input: "[string | number(mm)]",
+                expected_text: "[[`string`](/docs/kcl-std/types/std-types-string) or [`number(mm)`](/docs/kcl-std/types/std-types-number)]",
+                expected_no_text: "[string | number(mm)]",
+            },
         ];
         for test in tests {
             let actual_text = cleanup_type_string(test.input, true, &kcl_std);
