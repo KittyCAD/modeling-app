@@ -3,7 +3,6 @@ import { BSON } from 'bson'
 import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
-  MlCopilotTool,
   MlCopilotMode,
 } from '@kittycad/lib'
 import { assertEvent, assign, setup, fromPromise } from 'xstate'
@@ -90,7 +89,6 @@ export type MlEphantManagerEvents2 =
       selections: Selections
       artifactGraph: ArtifactGraph
       mode: MlCopilotMode
-      forcedTools: Set<MlCopilotTool>
     }
   | {
       type: MlEphantManagerTransitions2.ResponseReceive
@@ -438,7 +436,6 @@ export const mlEphantManagerMachine2 = setup({
         source_ranges: requestData.body.source_ranges,
         current_files: filesAsByteArrays,
         mode: event.mode,
-        forced_tools: Array.from(event.forcedTools),
       }
 
       context.ws.send(JSON.stringify(request))
