@@ -61,7 +61,7 @@ describe('MlEphantConversation2', () => {
       fireEvent.input(promptInput, { target: { textContent: promptText } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
 
-      expect(handleProcess).toHaveBeenCalledWith(promptText, expect.any(Set))
+      expect(handleProcess).toHaveBeenCalledWith(promptText)
 
       act(() => {
         rerender(renderConversation(latestConversation))
