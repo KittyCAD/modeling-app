@@ -270,7 +270,7 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
 
   return (
     <div ref={refWrap} className="flex-1 flex min-w-0 items-end">
-      <div ref={refTools} className="flex flex-row flex-wrap items-end">
+      <div ref={refTools} className="flex flex-row w-fit-content items-end">
         {/* TODO: Generalize to a MlCopilotContexts component */}
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
