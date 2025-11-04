@@ -647,6 +647,7 @@ export class ConnectionManager extends EventTarget {
     if (timeoutPendingCommand) {
       setTimeout(() => {
         if (!isSettled) {
+          console.warn(message.command)
           let details = message.command.type
           if (message.command.type === 'modeling_cmd_req') {
             details += ` - ${message.command.cmd.type}`
