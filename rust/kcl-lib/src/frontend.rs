@@ -7,7 +7,7 @@ use crate::{
     ExecOutcome, ExecutorContext, Program,
     exec::WarningLevel,
     fmt::format_number_literal,
-    front::PointCtor,
+    front::{Line, PointCtor},
     frontend::{
         api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
@@ -37,6 +37,9 @@ const LINE_END_PARAM: &str = "end";
 const COINCIDENT_FN: &str = "coincident";
 const HORIZONTAL_FN: &str = "horizontal";
 const VERTICAL_FN: &str = "vertical";
+
+const LINE_PROPERTY_START: &str = "start";
+const LINE_PROPERTY_END: &str = "end";
 
 #[derive(Debug, Clone)]
 pub struct FrontendState {
@@ -769,12 +772,30 @@ impl FrontendState {
                 msg: format!("Object is not a segment: {pt0_object:?}"),
             });
         };
-        let Segment::Point(_) = pt0_segment else {
+        let Segment::Point(pt0) = pt0_segment else {
             return Err(Error {
                 msg: format!("Only points are currently supported: {pt0_object:?}"),
             });
         };
-        let pt0_ast = self.get_or_insert_ast_reference(new_ast, &pt0_object.source.clone(), "point")?;
+        // If the point is part of a line, refer to the line instead.
+        let pt0_ast = if let Some(line_id) = pt0.owner {
+            let line = self.expect_line(line_id)?;
+            let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
+            let property = if line.start == pt0_id {
+                LINE_PROPERTY_START
+            } else if line.end == pt0_id {
+                LINE_PROPERTY_END
+            } else {
+                return Err(Error {
+                    msg: format!(
+                        "Internal: Point is not part of owner's line segment: point={pt0_id:?}, line={line_id:?}"
+                    ),
+                });
+            };
+            get_or_insert_ast_reference(new_ast, &line_source, "line", Some(property))?
+        } else {
+            get_or_insert_ast_reference(new_ast, &pt0_object.source, "point", None)?
+        };
 
         let pt1_id = coincident.points[1];
         let pt1_object = self.scene_graph.objects.get(pt1_id.0).ok_or_else(|| Error {
@@ -785,12 +806,30 @@ impl FrontendState {
                 msg: format!("Object is not a segment: {pt1_object:?}"),
             });
         };
-        let Segment::Point(_) = pt1_segment else {
+        let Segment::Point(pt1) = pt1_segment else {
             return Err(Error {
                 msg: format!("Only points are currently supported: {pt1_object:?}"),
             });
         };
-        let pt1_ast = self.get_or_insert_ast_reference(new_ast, &pt1_object.source.clone(), "point")?;
+        // If the point is part of a line, refer to the line instead.
+        let pt1_ast = if let Some(line_id) = pt1.owner {
+            let line = self.expect_line(line_id)?;
+            let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
+            let property = if line.start == pt1_id {
+                LINE_PROPERTY_START
+            } else if line.end == pt1_id {
+                LINE_PROPERTY_END
+            } else {
+                return Err(Error {
+                    msg: format!(
+                        "Internal: Point is not part of owner's line segment: point={pt1_id:?}, line={line_id:?}"
+                    ),
+                });
+            };
+            get_or_insert_ast_reference(new_ast, &line_source, "line", Some(property))?
+        } else {
+            get_or_insert_ast_reference(new_ast, &pt1_object.source, "point", None)?
+        };
 
         // Create the coincident() call.
         let coincident_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -841,7 +880,7 @@ impl FrontendState {
                 msg: format!("Only lines can be made horizontal: {line_object:?}"),
             });
         };
-        let line_ast = self.get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line")?;
+        let line_ast = get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?;
 
         // Create the horizontal() call.
         let horizontal_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -886,7 +925,7 @@ impl FrontendState {
                 msg: format!("Only lines can be made vertical: {line_object:?}"),
             });
         };
-        let line_ast = self.get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line")?;
+        let line_ast = get_or_insert_ast_reference(new_ast, &line_object.source.clone(), "line", None)?;
 
         // Create the vertical() call.
         let vertical_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
@@ -959,34 +998,21 @@ impl FrontendState {
         Ok((src_delta, scene_graph_delta))
     }
 
-    /// Return the AST expression referencing the variable at the given source
-    /// ref. If no such variable exists, insert a new variable declaration with
-    /// the given prefix.
-    ///
-    /// In the future, this could return a complex expression referencing
-    /// properties of the variable (e.g., `line1.start`), but we haven't
-    /// implemented that yet.
-    fn get_or_insert_ast_reference(
-        &mut self,
-        ast: &mut ast::Node<ast::Program>,
-        source_ref: &SourceRef,
-        prefix: &str,
-    ) -> api::Result<ast::Expr> {
-        let range = expect_single_source_range(source_ref)?;
-        let (_, ret) = mutate_ast_node_by_source_range(
-            ast,
-            range,
-            AstMutateCommand::AddVariableDeclaration {
-                prefix: prefix.to_owned(),
-            },
-        )
-        .map_err(|err| Error { msg: err.to_string() })?;
-        let AstMutateCommandReturn::Name(var_name) = ret else {
+    fn expect_line(&self, object_id: ObjectId) -> api::Result<&Line> {
+        let object = self.scene_graph.objects.get(object_id.0).ok_or_else(|| Error {
+            msg: format!("Object not found: {object_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment } = &object.kind else {
             return Err(Error {
-                msg: "Expected variable name returned from AddVariableDeclaration".to_string(),
+                msg: format!("Object is not a segment: {object:?}"),
             });
         };
-        Ok(ast::Expr::Name(Box::new(ast::Name::new(&var_name))))
+        let Segment::Line(line) = segment else {
+            return Err(Error {
+                msg: format!("Segment is not a line: {segment:?}"),
+            });
+        };
+        Ok(line)
     }
 
     fn update_state_after_exec(&mut self, outcome: ExecOutcome) -> ExecOutcome {
@@ -1033,6 +1059,45 @@ fn expect_single_source_range(source_ref: &SourceRef) -> api::Result<SourceRange
             Ok(ranges[0])
         }
     }
+}
+
+/// Return the AST expression referencing the variable at the given source ref.
+/// If no such variable exists, insert a new variable declaration with the given
+/// prefix.
+///
+/// This may return a complex expression referencing properties of the variable
+/// (e.g., `line1.start`).
+fn get_or_insert_ast_reference(
+    ast: &mut ast::Node<ast::Program>,
+    source_ref: &SourceRef,
+    prefix: &str,
+    property: Option<&str>,
+) -> api::Result<ast::Expr> {
+    let range = expect_single_source_range(source_ref)?;
+    let command = AstMutateCommand::AddVariableDeclaration {
+        prefix: prefix.to_owned(),
+    };
+    let (_, ret) =
+        mutate_ast_node_by_source_range(ast, range, command).map_err(|err| Error { msg: err.to_string() })?;
+    let AstMutateCommandReturn::Name(var_name) = ret else {
+        return Err(Error {
+            msg: "Expected variable name returned from AddVariableDeclaration".to_owned(),
+        });
+    };
+    let var_expr = ast::Expr::Name(Box::new(ast::Name::new(&var_name)));
+    let Some(property) = property else {
+        // No property; just return the variable name.
+        return Ok(var_expr);
+    };
+
+    Ok(ast::Expr::MemberExpression(Box::new(ast::Node::no_src(
+        ast::MemberExpression {
+            object: var_expr,
+            property: ast::Expr::Name(Box::new(ast::Name::new(property))),
+            computed: false,
+            digest: None,
+        },
+    ))))
 }
 
 fn mutate_ast_node_by_source_range(
@@ -1839,6 +1904,51 @@ sketch(on = XY) {
   point1 = sketch2::point(at = [var 1, var 2])
   point2 = sketch2::point(at = [3, 4])
   sketch2::coincident([point1, point2])
+}
+"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_coincident_of_line_end_points() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+  sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+        let point0_id = frontend.scene_graph.objects.get(2).unwrap().id;
+        let point1_id = frontend.scene_graph.objects.get(4).unwrap().id;
+
+        let constraint = Constraint::Coincident(Coincident {
+            points: vec![point0_id, point1_id],
+        });
+        let (src_delta, _) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
+  sketch2::coincident([line1.end, line2.start])
 }
 "
         );

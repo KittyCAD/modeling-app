@@ -301,7 +301,10 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                     }
                 }
                 _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                    "both inputs must be points".to_owned(),
+                    format!(
+                        "both inputs of coincident must be points; found {:?} and {:?}",
+                        &unsolved0.kind, &unsolved1.kind
+                    ),
                     vec![args.source_range],
                 ))),
             }
