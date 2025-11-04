@@ -8,6 +8,8 @@ use tokio::task::JoinSet;
 use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, ModData, TyData};
 use crate::ExecutorContext;
 
+mod type_formatter;
+
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     let mut hbs = handlebars::Handlebars::new();
 
@@ -513,58 +515,14 @@ fn cleanup_types(input: &str, kcl_std: &ModData) -> String {
 }
 
 fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData) -> String {
-    assert!(
-        !(input.starts_with('[') && input.ends_with(']') && input.contains('|')),
-        "Arrays of unions are not supported"
-    );
-
-    let tys: Vec<_> = input
-        .split('|')
-        .map(|ty| {
-            let ty = ty.trim();
-
-            let mut prefix = String::new();
-            let mut suffix = String::new();
-
-            if fmt_for_text {
-                prefix.push('`');
-                suffix.push('`');
-            }
-
-            let ty = if ty.starts_with('[') {
-                if ty.ends_with("; 1+]") {
-                    prefix = format!("{prefix}[");
-                    suffix = format!("; 1+]{suffix}");
-                    &ty[1..ty.len() - 5]
-                } else if ty.ends_with(']') {
-                    prefix = format!("{prefix}[");
-                    suffix = format!("]{suffix}");
-                    &ty[1..ty.len() - 1]
-                } else {
-                    ty
-                }
-            } else {
-                ty
-            };
-
-            // TODO markdown links in code blocks are not turned into links by our website stack.
-            // If we can handle signatures more manually we could get highlighting and links and
-            // we might want to restore the links by not checking `fmt_for_text` here.
-
-            if fmt_for_text && ty.starts_with("number") {
-                format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-number)")
-            } else if fmt_for_text && ty.starts_with("fn") {
-                format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-fn)")
-            // Special case for `tag` because it exists as a type but is deprecated and mostly used as an arg name
-            } else if fmt_for_text && matches!(kcl_std.find_by_name(ty), Some(DocData::Ty(_))) && ty != "tag" {
-                format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-{ty})")
-            } else {
-                format!("{prefix}{ty}{suffix}")
-            }
-        })
-        .collect();
-
-    tys.join(if fmt_for_text { " or " } else { " | " })
+    let type_tree = match type_formatter::parse(input) {
+        Ok(type_tree) => type_tree,
+        Err(e) => {
+            eprintln!("Could not parse: {input} because {e}");
+            return input.to_owned();
+        }
+    };
+    type_tree.format(fmt_for_text, kcl_std)
 }
 
 #[test]
@@ -683,20 +641,25 @@ mod tests {
             },
             Test {
                 input: "[string; 1+]",
-                expected_text: "[`[string; 1+]`](/docs/kcl-std/types/std-types-string)",
+                expected_text: "[[`string`](/docs/kcl-std/types/std-types-string); 1+]",
                 expected_no_text: "[string; 1+]",
             },
             Test {
                 input: "[string; 1+] | number(mm)",
-                expected_text: "[`[string; 1+]`](/docs/kcl-std/types/std-types-string) or [`number(mm)`](/docs/kcl-std/types/std-types-number)",
+                expected_text: "[[`string`](/docs/kcl-std/types/std-types-string); 1+] or [`number(mm)`](/docs/kcl-std/types/std-types-number)",
                 expected_no_text: "[string; 1+] | number(mm)",
+            },
+            Test {
+                input: "[string | number(mm)]",
+                expected_text: "[[`string`](/docs/kcl-std/types/std-types-string) or [`number(mm)`](/docs/kcl-std/types/std-types-number)]",
+                expected_no_text: "[string | number(mm)]",
             },
         ];
         for test in tests {
             let actual_text = cleanup_type_string(test.input, true, &kcl_std);
-            assert_eq!(actual_text, test.expected_text);
+            assert_eq!(actual_text, test.expected_text, "Failed text");
             let actual_no_text = cleanup_type_string(test.input, false, &kcl_std);
-            assert_eq!(actual_no_text, test.expected_no_text);
+            assert_eq!(actual_no_text, test.expected_no_text, "Failed no text");
         }
     }
 }
