@@ -638,13 +638,13 @@ profile001 = startProfile(sketch001, at = [-70, -10])
         testName: 'Length - Add variable',
         addVariable: true,
         constraint: 'length',
-        value: '83deg, length001',
+        value: '73deg, length001',
       },
       {
         testName: 'Length - No variable',
         addVariable: false,
         constraint: 'length',
-        value: '83deg, 78.33',
+        value: '73deg, 102.05',
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
@@ -672,8 +672,8 @@ part001 = startSketchOn(XZ)
   |> startProfile(at = [-7.54, -26.74])
   |> line(end = [74.36, 130.4])
   |> line(end = [78.92, -120.11])
-  |> line(end = [9.16, 77.79])
-  |> line(end = [51.19, 48.97])
+  |> line(end = [29.16, 97.79])
+  |> line(end = [81.19, 68.97])
 part002 = startSketchOn(XZ)
   |> startProfile(at = [299.05, 231.45])
   |> xLine(length = -425.34, tag = $seg_what)
@@ -708,7 +708,7 @@ part002 = startSketchOn(XZ)
             await cmdBarKclVariableNameInput.press('Backspace')
           })
         }
-        await expect(cmdBarKclInput).toHaveText('78.33')
+        await expect(cmdBarKclInput).toHaveText('102.05')
         await page.waitForTimeout(500)
         const [ang, len] = value.split(', ')
         await cmdBar.continue()
