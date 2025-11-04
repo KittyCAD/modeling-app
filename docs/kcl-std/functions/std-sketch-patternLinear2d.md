@@ -23,7 +23,7 @@ patternLinear2d(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) | The sketch(es) to duplicate. | Yes |
+| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | The sketch(es) to duplicate. | Yes |
 | `instances` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `distance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Distance between each repetition. Also known as 'spacing'. | Yes |
 | `axis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) or [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The axis of the pattern. A 2D vector. | Yes |
@@ -31,7 +31,7 @@ patternLinear2d(
 
 ### Returns
 
-[`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch)
+[[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+]
 
 
 ### Examples

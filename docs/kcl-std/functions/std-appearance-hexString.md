@@ -17,7 +17,7 @@ appearance::hexString(@rgb: [number(_); 3]): string
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `rgb` | [`[number(_); 3]`](/docs/kcl-std/types/std-types-number) | The red, blue and green components of the color. Must be between 0 and 255. | Yes |
+| `rgb` | [[`number(_)`](/docs/kcl-std/types/std-types-number); 3] | The red, blue and green components of the color. Must be between 0 and 255. | Yes |
 
 ### Returns
 
