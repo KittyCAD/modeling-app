@@ -822,15 +822,15 @@ part002 = startSketchOn(XZ)
   test.describe('Two segment - no modal constraints', () => {
     const cases = [
       {
-        codeAfter: `|> angledLine(angle = 83deg, length = segLen(seg01))`,
+        codeAfter: `|> angledLine(angle = 73deg, length = segLen(seg01))`,
         constraintName: 'Equal Length',
       },
       {
-        codeAfter: `|> angledLine(angle = segAng(seg01), length = 78.33)`,
+        codeAfter: `|> angledLine(angle = segAng(seg01), length = 102.05)`,
         constraintName: 'Parallel',
       },
       {
-        codeAfter: `|> line(endAbsolute = [segEndX(seg01), 61.34])`,
+        codeAfter: `|> line(endAbsolute = [segEndX(seg01), 81.34])`,
         constraintName: 'Vertically Align',
       },
       {
