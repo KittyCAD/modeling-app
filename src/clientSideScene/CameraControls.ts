@@ -1737,8 +1737,7 @@ function convertThreeCamValuesToEngineCam(
 
   // Orthographic: derive engine eye_offset consistent with createProjectionMatrix
   const effectiveHalfHeight = ORTHOGRAPHIC_CAMERA_SIZE / zoom
-  const eyeOffset =
-    effectiveHalfHeight / viewHeightFactor(perspectiveFovY)
+  const eyeOffset = effectiveHalfHeight / viewHeightFactor(perspectiveFovY)
 
   const viewDir = position.clone().sub(target).normalize()
   const vantage = target.clone().add(viewDir.multiplyScalar(eyeOffset))
