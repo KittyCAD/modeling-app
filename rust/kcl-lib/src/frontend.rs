@@ -792,7 +792,7 @@ impl FrontendState {
                     ),
                 });
             };
-            get_or_insert_ast_reference(new_ast, &line_source, "line", Some(property))?
+            get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
         } else {
             get_or_insert_ast_reference(new_ast, &pt0_object.source, "point", None)?
         };
@@ -826,7 +826,7 @@ impl FrontendState {
                     ),
                 });
             };
-            get_or_insert_ast_reference(new_ast, &line_source, "line", Some(property))?
+            get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
         } else {
             get_or_insert_ast_reference(new_ast, &pt1_object.source, "point", None)?
         };
