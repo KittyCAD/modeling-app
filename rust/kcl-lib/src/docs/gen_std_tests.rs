@@ -641,12 +641,12 @@ mod tests {
             },
             Test {
                 input: "[string; 1+]",
-                expected_text: "[`[string; 1+]`](/docs/kcl-std/types/std-types-string)",
+                expected_text: "[[`string`](/docs/kcl-std/types/std-types-string); 1+]",
                 expected_no_text: "[string; 1+]",
             },
             Test {
                 input: "[string; 1+] | number(mm)",
-                expected_text: "[`[string; 1+]`](/docs/kcl-std/types/std-types-string) or [`number(mm)`](/docs/kcl-std/types/std-types-number)",
+                expected_text: "[[`string`](/docs/kcl-std/types/std-types-string); 1+] or [`number(mm)`](/docs/kcl-std/types/std-types-number)",
                 expected_no_text: "[string; 1+] | number(mm)",
             },
         ];
