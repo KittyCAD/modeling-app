@@ -172,8 +172,6 @@ const Home = () => {
           name: 'app.theme',
         },
       })
-    } else if (data.menuLabel === 'File.Preferences.Theme color') {
-      navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#themeColor`)
     } else if (data.menuLabel === 'File.Add file to project') {
       commandBarActor.send({
         type: 'Find and select command',

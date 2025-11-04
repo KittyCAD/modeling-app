@@ -384,13 +384,13 @@ export class KclManager extends EventTarget {
       // It was like this in engineConnection.ts already
       deferExecution((a?: null) => {
         this.engineCommandManager.modelingSend({
-          type: 'Artifact graph emptied',
+          type: 'Artifact graph populated',
         })
       }, 200)(null)
     } else {
       deferExecution((a?: null) => {
         this.engineCommandManager.modelingSend({
-          type: 'Artifact graph populated',
+          type: 'Artifact graph emptied',
         })
       }, 200)(null)
     }
