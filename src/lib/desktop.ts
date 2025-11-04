@@ -34,6 +34,7 @@ import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { processEnv } from '@src/env'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { getEXTNoPeriod, isExtensionARelevantExtension } from './paths'
 
 export async function renameProjectDirectory(
   electron: IElectronAPI,
@@ -259,8 +260,13 @@ const collectAllFilesRecursiveFrom = async (
   canReadWritePath: boolean,
   fileExtensionsForFilter: string[]
 ) => {
-  const isRelevantFile = (filename: string): boolean =>
-    fileExtensionsForFilter.some((ext) => filename.endsWith('.' + ext))
+  const isRelevantFile = (filename:string): boolean => {
+    const extensionNoPeriod = getEXTNoPeriod(filename)
+    if (!extensionNoPeriod) {
+      return false
+    }
+    return isExtensionARelevantExtension(extensionNoPeriod, fileExtensionsForFilter)
+  }
 
   // Make sure the filesystem object exists.
   try {

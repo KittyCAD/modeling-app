@@ -3,6 +3,7 @@ import { fsManager } from '@src/lang/std/fileSystemManager'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT, INDEX_IDENTIFIER, MAX_PADDING } from '@src/lib/constants'
 import type { FileEntry } from '@src/lib/project'
+import { isExtensionARelevantExtension } from './paths'
 
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')
@@ -138,8 +139,10 @@ export async function getNextFileName({
   baseDir: string
 }) {
   // Preserve the extension in case of a relevant but foreign file
-  let extension = fsManager.path.extname(entryName)
-  if (!relevantFileExtensions().includes(extension.replace('.', ''))) {
+  let extension = fsManager.path.extname(entryName).replace('.','')
+  const extensions = relevantFileExtensions()
+  const isRelevantFile = isExtensionARelevantExtension(extension, extensions)
+  if (!isRelevantFile) {
     extension = FILE_EXT
   }
 

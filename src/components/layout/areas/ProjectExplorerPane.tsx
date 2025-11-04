@@ -7,7 +7,7 @@ import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/uti
 import { ToastInsert } from '@src/components/ToastInsert'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
-import { PATHS, parentPathRelativeToProject } from '@src/lib/paths'
+import { PATHS, getEXTNoPeriod, isExtensionARelevantExtension, parentPathRelativeToProject } from '@src/lib/paths'
 import {
   useSettings,
   systemIOActor,
@@ -66,8 +66,13 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     )
 
     const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
-    const isRelevantFile = (filename: string): boolean =>
-      RELEVANT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
+    const isRelevantFile = (filename: string): boolean => {
+      const extension = getEXTNoPeriod(filename)
+      if (!extension) {
+        return false
+      }
+      return isExtensionARelevantExtension(extension, RELEVANT_FILE_EXTENSIONS)
+    }
 
     // Only open the file if it is a kcl file.
     if (
