@@ -10,6 +10,11 @@ use crate::{
     front::{LineCtor, Point2d, PointCtor},
     std::Args,
 };
+#[cfg(feature = "artifact-graph")]
+use crate::{
+    front::{Constraint, Object, ObjectId, ObjectKind},
+    frontend::sketch::{Coincident, Horizontal, Vertical},
+};
 
 pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let at: Vec<KclValue> = args.get_kw_arg("at", &RuntimeType::point2d(), exec_state)?;
@@ -50,12 +55,15 @@ pub async fn point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         },
     };
     let segment = UnsolvedSegment {
+        object_id: exec_state.next_object_id(),
         kind: UnsolvedSegmentKind::Point {
             position: [at_x, at_y],
             ctor: Box::new(ctor),
         },
         meta: vec![args.source_range.into()],
     };
+    #[cfg(feature = "artifact-graph")]
+    exec_state.add_placeholder_scene_object(segment.object_id, args.source_range);
 
     // Save the segment to be sent to the engine after solving.
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
@@ -151,14 +159,27 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
             })?,
         },
     };
+    // Order of ID generation is important.
+    let start_object_id = exec_state.next_object_id();
+    let end_object_id = exec_state.next_object_id();
+    let line_object_id = exec_state.next_object_id();
     let segment = UnsolvedSegment {
+        object_id: line_object_id,
         kind: UnsolvedSegmentKind::Line {
             start: [start_x, start_y],
             end: [end_x, end_y],
             ctor: Box::new(ctor),
+            start_object_id,
+            end_object_id,
         },
         meta: vec![args.source_range.into()],
     };
+    #[cfg(feature = "artifact-graph")]
+    {
+        exec_state.add_placeholder_scene_object(start_object_id, args.source_range);
+        exec_state.add_placeholder_scene_object(end_object_id, args.source_range);
+        exec_state.add_placeholder_scene_object(line_object_id, args.source_range);
+    }
 
     // Save the segment to be sent to the engine after solving.
     let Some(sketch_state) = exec_state.sketch_block_mut() else {
@@ -238,6 +259,8 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                             p1_y.to_constraint_id(range)?,
                                         ),
                                     );
+                                    #[cfg(feature = "artifact-graph")]
+                                    let constraint_id = exec_state.next_object_id();
                                     // Save the constraint to be used for solving.
                                     let Some(sketch_state) = exec_state.sketch_block_mut() else {
                                         return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -245,7 +268,15 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                             vec![args.source_range],
                                         )));
                                     };
-                                    sketch_state.constraints.push(constraint);
+                                    sketch_state.solver_constraints.push(constraint);
+                                    #[cfg(feature = "artifact-graph")]
+                                    {
+                                        let constraint = crate::front::Constraint::Coincident(Coincident {
+                                            points: vec![unsolved0.object_id, unsolved1.object_id],
+                                        });
+                                        sketch_state.sketch_constraints.push(constraint_id);
+                                        track_constraint(constraint_id, constraint, exec_state, &args);
+                                    }
                                     Ok(KclValue::none())
                                 }
                                 (UnsolvedExpr::Known(p1_x), UnsolvedExpr::Known(p1_y)) => {
@@ -269,8 +300,8 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                             vec![args.source_range],
                                         )));
                                     };
-                                    sketch_state.constraints.push(constraint_x);
-                                    sketch_state.constraints.push(constraint_y);
+                                    sketch_state.solver_constraints.push(constraint_x);
+                                    sketch_state.solver_constraints.push(constraint_y);
                                     Ok(KclValue::none())
                                 }
                                 (UnsolvedExpr::Known(_), UnsolvedExpr::Unknown(_))
@@ -351,7 +382,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     vec![args.source_range],
                                 )));
                             };
-                            sketch_state.constraints.push(constraint);
+                            sketch_state.solver_constraints.push(constraint);
                             Ok(KclValue::none())
                         }
                         (None, None) => {
@@ -365,8 +396,8 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                                     vec![args.source_range],
                                 )));
                             };
-                            sketch_state.constraints.push(constraint_x);
-                            sketch_state.constraints.push(constraint_y);
+                            sketch_state.solver_constraints.push(constraint_x);
+                            sketch_state.solver_constraints.push(constraint_y);
                             Ok(KclValue::none())
                         }
                         (None, Some(_)) | (Some(_), None) => Err(KclError::new_semantic(KclErrorDetails::new(
@@ -402,8 +433,8 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                             vec![args.source_range],
                         )));
                     };
-                    sketch_state.constraints.push(constraint_x);
-                    sketch_state.constraints.push(constraint_y);
+                    sketch_state.solver_constraints.push(constraint_x);
+                    sketch_state.solver_constraints.push(constraint_y);
                     Ok(KclValue::none())
                 }
                 (None, Some(_)) | (Some(_), None) => Err(KclError::new_semantic(KclErrorDetails::new(
@@ -418,6 +449,22 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
             vec![args.source_range],
         ))),
     }
+}
+
+#[cfg(feature = "artifact-graph")]
+fn track_constraint(constraint_id: ObjectId, constraint: Constraint, exec_state: &mut ExecState, args: &Args) {
+    exec_state.add_scene_object(
+        Object {
+            id: constraint_id,
+            kind: ObjectKind::Constraint { constraint },
+            label: Default::default(),
+            comments: Default::default(),
+            // TODO: sketch-api: implement artifact ID
+            artifact_id: 0,
+            source: args.source_range.into(),
+        },
+        args.source_range,
+    );
 }
 
 fn add_coincident_segment_point_array(
@@ -458,8 +505,8 @@ fn add_coincident_segment_point_array(
                             vec![args.source_range],
                         )));
                     };
-                    sketch_state.constraints.push(constraint_x);
-                    sketch_state.constraints.push(constraint_y);
+                    sketch_state.solver_constraints.push(constraint_x);
+                    sketch_state.solver_constraints.push(constraint_y);
                     Ok(KclValue::none())
                 }
                 (UnsolvedExpr::Known(p0_x), UnsolvedExpr::Known(p0_y)) => {
@@ -502,8 +549,8 @@ fn add_coincident_segment_point_array(
                             vec![args.source_range],
                         )));
                     };
-                    sketch_state.constraints.push(constraint_x);
-                    sketch_state.constraints.push(constraint_y);
+                    sketch_state.solver_constraints.push(constraint_x);
+                    sketch_state.solver_constraints.push(constraint_y);
                     Ok(KclValue::none())
                 }
                 (UnsolvedExpr::Known(_), UnsolvedExpr::Unknown(_))
@@ -601,6 +648,8 @@ pub async fn horizontal(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                 kcl_ezpz::datatypes::DatumPoint::new_xy(p1_x.to_constraint_id(range)?, p1_y.to_constraint_id(range)?);
             let solver_line = kcl_ezpz::datatypes::LineSegment::new(solver_p0, solver_p1);
             let constraint = kcl_ezpz::Constraint::Horizontal(solver_line);
+            #[cfg(feature = "artifact-graph")]
+            let constraint_id = exec_state.next_object_id();
             // Save the constraint to be used for solving.
             let Some(sketch_state) = exec_state.sketch_block_mut() else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -608,7 +657,15 @@ pub async fn horizontal(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                     vec![args.source_range],
                 )));
             };
-            sketch_state.constraints.push(constraint);
+            sketch_state.solver_constraints.push(constraint);
+            #[cfg(feature = "artifact-graph")]
+            {
+                let constraint = crate::front::Constraint::Horizontal(Horizontal {
+                    line: unsolved.object_id,
+                });
+                sketch_state.sketch_constraints.push(constraint_id);
+                track_constraint(constraint_id, constraint, exec_state, &args);
+            }
             Ok(KclValue::none())
         }
         _ => Err(KclError::new_semantic(KclErrorDetails::new(
@@ -656,6 +713,8 @@ pub async fn vertical(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                 kcl_ezpz::datatypes::DatumPoint::new_xy(p1_x.to_constraint_id(range)?, p1_y.to_constraint_id(range)?);
             let solver_line = kcl_ezpz::datatypes::LineSegment::new(solver_p0, solver_p1);
             let constraint = kcl_ezpz::Constraint::Vertical(solver_line);
+            #[cfg(feature = "artifact-graph")]
+            let constraint_id = exec_state.next_object_id();
             // Save the constraint to be used for solving.
             let Some(sketch_state) = exec_state.sketch_block_mut() else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -663,7 +722,15 @@ pub async fn vertical(exec_state: &mut ExecState, args: Args) -> Result<KclValue
                     vec![args.source_range],
                 )));
             };
-            sketch_state.constraints.push(constraint);
+            sketch_state.solver_constraints.push(constraint);
+            #[cfg(feature = "artifact-graph")]
+            {
+                let constraint = crate::front::Constraint::Vertical(Vertical {
+                    line: unsolved.object_id,
+                });
+                sketch_state.sketch_constraints.push(constraint_id);
+                track_constraint(constraint_id, constraint, exec_state, &args);
+            }
             Ok(KclValue::none())
         }
         _ => Err(KclError::new_semantic(KclErrorDetails::new(

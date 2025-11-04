@@ -1707,6 +1707,7 @@ impl UnsolvedExpr {
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct UnsolvedSegment {
+    pub object_id: ObjectId,
     pub kind: UnsolvedSegmentKind,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
@@ -1724,6 +1725,8 @@ pub enum UnsolvedSegmentKind {
         start: [UnsolvedExpr; 2],
         end: [UnsolvedExpr; 2],
         ctor: Box<LineCtor>,
+        start_object_id: ObjectId,
+        end_object_id: ObjectId,
     },
 }
 
@@ -1731,6 +1734,7 @@ pub enum UnsolvedSegmentKind {
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Segment {
+    pub object_id: ObjectId,
     pub kind: SegmentKind,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
@@ -1739,6 +1743,7 @@ pub struct Segment {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
+#[expect(clippy::large_enum_variant)]
 pub enum SegmentKind {
     Point {
         position: [TyF64; 2],
@@ -1749,6 +1754,8 @@ pub enum SegmentKind {
         start: [TyF64; 2],
         end: [TyF64; 2],
         ctor: Box<LineCtor>,
+        start_object_id: ObjectId,
+        end_object_id: ObjectId,
         start_freedom: Freedom,
         end_freedom: Freedom,
     },

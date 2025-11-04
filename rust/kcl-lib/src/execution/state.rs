@@ -19,13 +19,14 @@ use crate::{
         memory::{ProgramMemory, Stack},
         types::NumericType,
     },
+    front::ObjectId,
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::{Annotation, NodeRef},
 };
 #[cfg(feature = "artifact-graph")]
 use crate::{
     execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId},
-    front::{Object, ObjectId},
+    front::Object,
     id::IncIdGenerator,
 };
 
@@ -131,7 +132,9 @@ pub(super) struct ModuleState {
 #[derive(Debug, Clone, Default)]
 pub(crate) struct SketchBlockState {
     pub sketch_vars: Vec<KclValue>,
-    pub constraints: Vec<kcl_ezpz::Constraint>,
+    #[cfg(feature = "artifact-graph")]
+    pub sketch_constraints: Vec<ObjectId>,
+    pub solver_constraints: Vec<kcl_ezpz::Constraint>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
 }
 
@@ -234,23 +237,16 @@ impl ExecState {
         &mut self.mod_local.stack
     }
 
+    #[cfg(not(feature = "artifact-graph"))]
+    pub fn next_object_id(&mut self) -> ObjectId {
+        // The return value should only ever be used when the feature is
+        // enabled,
+        ObjectId(0)
+    }
+
     #[cfg(feature = "artifact-graph")]
     pub fn next_object_id(&mut self) -> ObjectId {
         ObjectId(self.mod_local.artifacts.object_id_generator.next_id())
-    }
-
-    #[cfg(feature = "artifact-graph")]
-    pub fn peek_object_id(&self, amount: usize) -> ObjectId {
-        ObjectId(self.mod_local.artifacts.object_id_generator.peek_id() + amount)
-    }
-
-    /// Consume the next ID, asserting that it's equal to one that was obtained
-    /// with [`Self::peek_object_id`].
-    #[cfg(feature = "artifact-graph")]
-    pub fn assert_next_object_id(&mut self, expected: ObjectId) -> ObjectId {
-        let new = ObjectId(self.mod_local.artifacts.object_id_generator.next_id());
-        debug_assert_eq!(new, expected);
-        new
     }
 
     #[cfg(feature = "artifact-graph")]
@@ -260,6 +256,24 @@ impl ExecState {
         self.mod_local.artifacts.scene_objects.push(obj);
         self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
         id
+    }
+
+    #[cfg(feature = "artifact-graph")]
+    pub fn add_placeholder_scene_object(&mut self, id: ObjectId, source_range: SourceRange) -> ObjectId {
+        debug_assert!(id.0 == self.mod_local.artifacts.scene_objects.len());
+        self.mod_local
+            .artifacts
+            .scene_objects
+            .push(Object::placeholder(id, source_range));
+        self.mod_local.artifacts.source_range_to_object.insert(source_range, id);
+        id
+    }
+
+    /// Update a scene object. This is useful to replace a placeholder.
+    #[cfg(feature = "artifact-graph")]
+    pub fn set_scene_object(&mut self, object: Object) {
+        let id = object.id;
+        self.mod_local.artifacts.scene_objects[id.0] = object;
     }
 
     pub(crate) fn sketch_block_mut(&mut self) -> Option<&mut SketchBlockState> {

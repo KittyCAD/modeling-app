@@ -109,11 +109,26 @@ pub struct Object {
     pub source: SourceRef,
 }
 
+impl Object {
+    pub fn placeholder(id: ObjectId, range: SourceRange) -> Self {
+        Object {
+            id,
+            kind: ObjectKind::Nil,
+            label: Default::default(),
+            comments: Default::default(),
+            artifact_id: Default::default(),
+            source: SourceRef::Simple { range },
+        }
+    }
+}
+
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectKind")]
 #[serde(tag = "type")]
 pub enum ObjectKind {
+    /// A placeholder for an object that will be solved and replaced later.
+    Nil,
     Plane(Plane),
     Sketch(crate::frontend::sketch::Sketch),
     // These need to be named since the nested types are also enums. ts-rs needs

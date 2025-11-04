@@ -6,7 +6,7 @@ use kcl_ezpz::{Constraint, SolveOutcome};
 use kittycad_modeling_cmds::units::UnitLength;
 
 #[cfg(feature = "artifact-graph")]
-use crate::front::{Object, ObjectKind};
+use crate::front::ObjectKind;
 use crate::{
     CompilationError, NodePath, SourceRange,
     errors::{KclError, KclErrorDetails},
@@ -23,7 +23,7 @@ use crate::{
         types::{NumericType, PrimitiveType, RuntimeType},
     },
     fmt,
-    front::{Freedom, ObjectId},
+    front::{Freedom, Object},
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
@@ -1008,7 +1008,7 @@ impl Node<SketchBlock> {
         };
 
         // Translate sketch variables and constraints to solver input.
-        let constraints = &sketch_block_state.constraints;
+        let constraints = &sketch_block_state.solver_constraints;
         let initial_guesses = sketch_block_state
             .sketch_vars
             .iter()
@@ -1073,12 +1073,17 @@ impl Node<SketchBlock> {
         }
 
         // Create scene objects after unknowns are solved.
-        let segment_object_ids = create_segment_scene_objects(&solved_segments, range, exec_state)?;
+        let scene_objects = create_segment_scene_objects(&solved_segments, range)?;
 
         #[cfg(not(feature = "artifact-graph"))]
-        drop(segment_object_ids);
+        drop(scene_objects);
         #[cfg(feature = "artifact-graph")]
         {
+            let mut segment_object_ids = Vec::with_capacity(scene_objects.len());
+            for scene_object in scene_objects {
+                segment_object_ids.push(scene_object.id);
+                exec_state.set_scene_object(scene_object);
+            }
             // Update the sketch scene object with the segments.
             let Some(sketch_object) = exec_state.mod_local.artifacts.scene_objects.get_mut(sketch_id.0) else {
                 let message = format!("Sketch object not found after it was just created; id={:?}", sketch_id);
@@ -1094,7 +1099,11 @@ impl Node<SketchBlock> {
                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
             };
             sketch.segments.extend(segment_object_ids);
-            // TODO: sketch-api: update constraints also.
+            // Update the sketch scene object with constraints.
+            let mut sketch_block_state = sketch_block_state;
+            sketch
+                .constraints
+                .extend(std::mem::take(&mut sketch_block_state.sketch_constraints));
         }
 
         // TODO: sketch-api: send everything to the engine.
@@ -1256,6 +1265,7 @@ fn substitute_sketch_var_in_segment(
                 substitute_sketch_var_in_unsolved_expr(&position[1], solve_outcome, solution_ty, &srs)?;
             let position = [position_x, position_y];
             Ok(Segment {
+                object_id: segment.object_id,
                 kind: SegmentKind::Point {
                     position,
                     ctor: ctor.clone(),
@@ -1264,7 +1274,13 @@ fn substitute_sketch_var_in_segment(
                 meta: segment.meta,
             })
         }
-        UnsolvedSegmentKind::Line { start, end, ctor } => {
+        UnsolvedSegmentKind::Line {
+            start,
+            end,
+            ctor,
+            start_object_id,
+            end_object_id,
+        } => {
             let (start_x, start_x_freedom) =
                 substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, &srs)?;
             let (start_y, start_y_freedom) =
@@ -1276,10 +1292,13 @@ fn substitute_sketch_var_in_segment(
             let start = [start_x, start_y];
             let end = [end_x, end_y];
             Ok(Segment {
+                object_id: segment.object_id,
                 kind: SegmentKind::Line {
                     start,
                     end,
                     ctor: ctor.clone(),
+                    start_object_id: *start_object_id,
+                    end_object_id: *end_object_id,
                     start_freedom: start_x_freedom.merge(start_y_freedom),
                     end_freedom: end_x_freedom.merge(end_y_freedom),
                 },
@@ -1321,8 +1340,7 @@ fn substitute_sketch_var_in_unsolved_expr(
 fn create_segment_scene_objects(
     _segments: &[Segment],
     _sketch_block_range: SourceRange,
-    _exec_state: &mut ExecState,
-) -> Result<Vec<ObjectId>, KclError> {
+) -> Result<Vec<Object>, KclError> {
     Ok(Vec::new())
 }
 
@@ -1330,16 +1348,10 @@ fn create_segment_scene_objects(
 fn create_segment_scene_objects(
     segments: &[Segment],
     sketch_block_range: SourceRange,
-    exec_state: &mut ExecState,
-) -> Result<Vec<ObjectId>, KclError> {
-    let mut segment_object_ids = Vec::with_capacity(segments.len());
+) -> Result<Vec<Object>, KclError> {
+    let mut scene_objects = Vec::with_capacity(segments.len());
     for segment in segments {
         let source = Metadata::to_source_ref(&segment.meta);
-        let segment_range = segment
-            .meta
-            .first()
-            .map(|m| m.source_range)
-            .unwrap_or(sketch_block_range);
 
         match &segment.kind {
             SegmentKind::Point {
@@ -1354,7 +1366,7 @@ fn create_segment_scene_objects(
                     ))
                 })?;
                 let point_object = Object {
-                    id: exec_state.next_object_id(),
+                    id: segment.object_id,
                     kind: ObjectKind::Segment {
                         segment: crate::front::Segment::Point(crate::front::Point {
                             position: point2d.clone(),
@@ -1372,18 +1384,17 @@ fn create_segment_scene_objects(
                     artifact_id: 0,
                     source: source.clone(),
                 };
-                segment_object_ids.push(point_object.id);
-                exec_state.add_scene_object(point_object, segment_range);
+                scene_objects.push(point_object);
             }
             SegmentKind::Line {
                 start,
                 end,
                 ctor,
+                start_object_id,
+                end_object_id,
                 start_freedom,
                 end_freedom,
             } => {
-                let segment_object_id = exec_state.peek_object_id(2);
-
                 let start_point2d = TyF64::to_point2d(start).map_err(|_| {
                     KclError::new_internal(KclErrorDetails::new(
                         format!("Error converting start point runtime type to API value: {:?}", start),
@@ -1391,12 +1402,12 @@ fn create_segment_scene_objects(
                     ))
                 })?;
                 let start_point_object = Object {
-                    id: exec_state.next_object_id(),
+                    id: *start_object_id,
                     kind: ObjectKind::Segment {
                         segment: crate::front::Segment::Point(crate::front::Point {
                             position: start_point2d.clone(),
                             ctor: None,
-                            owner: Some(segment_object_id),
+                            owner: Some(segment.object_id),
                             freedom: *start_freedom,
                             constraints: Vec::new(),
                         }),
@@ -1408,8 +1419,7 @@ fn create_segment_scene_objects(
                     source: source.clone(),
                 };
                 let start_point_object_id = start_point_object.id;
-                segment_object_ids.push(start_point_object_id);
-                exec_state.add_scene_object(start_point_object, segment_range);
+                scene_objects.push(start_point_object);
 
                 let end_point2d = TyF64::to_point2d(end).map_err(|_| {
                     KclError::new_internal(KclErrorDetails::new(
@@ -1418,12 +1428,12 @@ fn create_segment_scene_objects(
                     ))
                 })?;
                 let end_point_object = Object {
-                    id: exec_state.next_object_id(),
+                    id: *end_object_id,
                     kind: ObjectKind::Segment {
                         segment: crate::front::Segment::Point(crate::front::Point {
                             position: end_point2d.clone(),
                             ctor: None,
-                            owner: Some(segment_object_id),
+                            owner: Some(segment.object_id),
                             freedom: *end_freedom,
                             constraints: Vec::new(),
                         }),
@@ -1435,11 +1445,10 @@ fn create_segment_scene_objects(
                     source: source.clone(),
                 };
                 let end_point_object_id = end_point_object.id;
-                segment_object_ids.push(end_point_object_id);
-                exec_state.add_scene_object(end_point_object, segment_range);
+                scene_objects.push(end_point_object);
 
                 let segment_object = Object {
-                    id: exec_state.assert_next_object_id(segment_object_id),
+                    id: segment.object_id,
                     kind: ObjectKind::Segment {
                         segment: crate::front::Segment::Line(crate::front::Line {
                             start: start_point_object_id,
@@ -1454,12 +1463,11 @@ fn create_segment_scene_objects(
                     artifact_id: 0,
                     source,
                 };
-                segment_object_ids.push(segment_object.id);
-                exec_state.add_scene_object(segment_object, segment_range);
+                scene_objects.push(segment_object);
             }
         }
     }
-    Ok(segment_object_ids)
+    Ok(scene_objects)
 }
 
 impl SketchBlock {
@@ -2226,7 +2234,7 @@ impl Node<BinaryExpression> {
                             vec![SourceRange::from(self)],
                         )));
                     };
-                    sketch_block_state.constraints.push(constraint);
+                    sketch_block_state.solver_constraints.push(constraint);
                     return Ok(KclValue::Bool { value: true, meta });
                 }
                 _ => {

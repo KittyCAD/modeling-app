@@ -1892,7 +1892,7 @@ sketch(on = XY) {
         let constraint = Constraint::Coincident(Coincident {
             points: vec![point0_id, point1_id],
         });
-        let (src_delta, _) = frontend
+        let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
@@ -1906,6 +1906,13 @@ sketch(on = XY) {
   sketch2::coincident([point1, point2])
 }
 "
+        );
+        // TODO: This is wrong since it's missing the constraint object.
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            3,
+            "{:#?}",
+            scene_delta.new_graph.objects
         );
     }
 
@@ -1936,7 +1943,7 @@ sketch(on = XY) {
         let constraint = Constraint::Coincident(Coincident {
             points: vec![point0_id, point1_id],
         });
-        let (src_delta, _) = frontend
+        let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
@@ -1951,6 +1958,13 @@ sketch(on = XY) {
   sketch2::coincident([line1.end, line2.start])
 }
 "
+        );
+        // TODO: This is wrong since it's missing the constraint object.
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            7,
+            "{:#?}",
+            scene_delta.new_graph.objects
         );
     }
 
@@ -1977,7 +1991,7 @@ sketch(on = XY) {
         let line1_id = frontend.scene_graph.objects.get(3).unwrap().id;
 
         let constraint = Constraint::Horizontal(Horizontal { line: line1_id });
-        let (src_delta, _) = frontend
+        let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
@@ -1991,6 +2005,12 @@ sketch(on = XY) {
   sketch2::horizontal(line1)
 }
 "
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            5,
+            "{:#?}",
+            scene_delta.new_graph.objects
         );
     }
 
@@ -2017,7 +2037,7 @@ sketch(on = XY) {
         let line1_id = frontend.scene_graph.objects.get(3).unwrap().id;
 
         let constraint = Constraint::Vertical(Vertical { line: line1_id });
-        let (src_delta, _) = frontend
+        let (src_delta, scene_delta) = frontend
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
@@ -2031,6 +2051,12 @@ sketch(on = XY) {
   sketch2::vertical(line1)
 }
 "
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            5,
+            "{:#?}",
+            scene_delta.new_graph.objects
         );
     }
 }
