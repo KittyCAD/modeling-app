@@ -36,6 +36,7 @@ impl<'i> KclType<'i> {
                 parts.join(if fmt_for_text { " or " } else { " | " })
             }
             KclType::Atom(ty) => {
+                let ty = ty.trim();
                 // TODO markdown links in code blocks are not turned into links by our website stack.
                 // If we can handle signatures more manually we could get highlighting and links and
                 // we might want to restore the links by not checking `fmt_for_text` here.
@@ -48,7 +49,7 @@ impl<'i> KclType<'i> {
                     } else if matches!(kcl_std.find_by_name(ty), Some(DocData::Ty(_))) && ty != "tag" {
                         format!("[`{ty}`](/docs/kcl-std/types/std-types-{ty})")
                     } else {
-                        ty.to_string()
+                        format!("`{ty}`")
                     }
                 } else {
                     ty.to_string()
