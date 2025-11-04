@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 if [ -z "$WINDOWS_CERTIFICATE_THUMBPRINT" ]; then

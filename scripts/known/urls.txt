@@ -20,6 +20,5 @@ URL	STATUS
 302	https://stackoverflow.com/a/57390160/22753272
 302	https://stackoverflow.com/a/58436959/22753272
 303	https://text-to-cad.zoo.dev/dashboard
-307	https://zoo.dev/
 308	https://zoo.dev/docs/kcl
 
