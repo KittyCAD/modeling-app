@@ -44,6 +44,10 @@ export fn coincident(@points: [Point2d | Segment; 2]) {}
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn parallel(@input: [Segment; 2+], distance?: number(Length)) {}
 
+/// Constrain a line to be horizontal.
+@(impl = std_rust_constraint, experimental = true, feature_tree = true)
+export fn horizontal(@input: Segment) {}
+
 /// Constrain a line to be vertical.
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
 export fn vertical(@input: Segment) {}
