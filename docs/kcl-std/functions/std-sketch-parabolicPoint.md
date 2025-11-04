@@ -21,7 +21,7 @@ parabolicPoint(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `coefficients` | [`[number; 3]`](/docs/kcl-std/types/std-types-number) | The coefficients [a, b, c] of the parabolic equation y = ax^2 + bx + c. | Yes |
+| `coefficients` | [[`number`](/docs/kcl-std/types/std-types-number); 3] | The coefficients [a, b, c] of the parabolic equation y = ax^2 + bx + c. | Yes |
 | `x` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The x value. Calculates y and returns (x, y). Incompatible with `y`. | No |
 | `y` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The y value. Calculates x and returns (x, y). Incompatible with `x`. | No |
 

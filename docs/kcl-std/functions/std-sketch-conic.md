@@ -34,7 +34,7 @@ conic(
 | `endAbsolute` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Where should this segment end? Requires `interiorAbsolute`. Incompatible with `interior` or `end`. | No |
 | `interior` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Any point between the segment's start and end. This point is relative to the start point. Requires `end`. Incompatible with `interiorAbsolute` or `endAbsolute`. | No |
 | `end` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Where should this segment end? This point is relative to the start point. Requires `interior`. Incompatible with `interiorAbsolute` or `endAbsolute`. | No |
-| `coefficients` | [`[number; 6]`](/docs/kcl-std/types/std-types-number) | The coefficients [a, b, c, d, e, f] of the generic conic equation ax^2 + by^2 + cxy + dx + ey + f = 0. If provided the start and end tangents will be calculated using this equation. Incompatible with `startTangent` and `endTangent`. | No |
+| `coefficients` | [[`number`](/docs/kcl-std/types/std-types-number); 6] | The coefficients [a, b, c, d, e, f] of the generic conic equation ax^2 + by^2 + cxy + dx + ey + f = 0. If provided the start and end tangents will be calculated using this equation. Incompatible with `startTangent` and `endTangent`. | No |
 | `startTangent` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The tangent of the conic section at the start. If not provided the tangent of the previous path segment is used. Incompatible with `coefficients`. | No |
 | `endTangent` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The tangent of the conic section at the end. Incompatible with `coefficients`. | No |
 | `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this segment. | No |
