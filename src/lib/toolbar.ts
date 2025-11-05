@@ -1292,6 +1292,34 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [],
         isActive: (state) => false,
       },
+      {
+        id: 'vertical',
+        onClick: ({ modelingSend, isActive }) =>
+          modelingSend({
+            type: 'Vertical',
+          }),
+        icon: 'vertical',
+        status: 'available',
+        title: 'Vertical',
+        hotkey: 'L',
+        description: 'make things Vertical',
+        links: [],
+        isActive: (state) => false,
+      },
+      {
+        id: 'Horizontal',
+        onClick: ({ modelingSend, isActive }) =>
+          modelingSend({
+            type: 'Horizontal',
+          }),
+        icon: 'horizontal',
+        status: 'available',
+        title: 'Horizontal',
+        hotkey: 'L',
+        description: 'make things Horizontal',
+        links: [],
+        isActive: (state) => false,
+      },
     ],
   },
 }

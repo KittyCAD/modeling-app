@@ -183,8 +183,7 @@ export type SketchSolveMachineEvent =
   | { type: 'update selection'; data?: SetSelections }
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
-  | { type: 'coincident' }
-  | { type: 'LinesEqualLength' }
+  | { type: 'coincident' | 'LinesEqualLength' | 'Vertical' | 'Horizontal' }
   | { type: 'update selected ids'; data: { selectedIds?: Array<number> } }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
   | {
@@ -609,6 +608,52 @@ export const sketchSolveMachine = setup({
           },
           await jsAppSettings()
         )
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
+    Vertical: {
+      actions: async ({ self, context }) => {
+        let result
+        for (const id of context.selectedIds) {
+          // TODO this is not how Vertical should operate long term, as it should be an equipable tool
+          result = await rustContext.addConstraint(
+            0,
+            0,
+            {
+              type: 'Vertical',
+              line: id,
+            },
+            await jsAppSettings()
+          )
+        }
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
+    Horizontal: {
+      actions: async ({ self, context }) => {
+        let result
+        for (const id of context.selectedIds) {
+          // TODO this is not how Horizontal should operate long term, as it should be an equipable tool
+          result = await rustContext.addConstraint(
+            0,
+            0,
+            {
+              type: 'Horizontal',
+              line: id,
+            },
+            await jsAppSettings()
+          )
+        }
         if (result) {
           self.send({
             type: 'update sketch outcome',
