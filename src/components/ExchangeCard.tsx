@@ -218,6 +218,7 @@ export const Delta = (props: { children: ReactNode }) => {
 
 type ResponsesCardProp = {
   items: Exchange['responses']
+  deltasAggregated: Exchange['deltasAggregated']
 }
 
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
@@ -235,9 +236,13 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
 export const ResponsesCard = (props: ResponsesCardProp) => {
   const items = props.items.map(
     (response: MlCopilotServerMessage, index: number) => {
-      if ('delta' in response) {
-        return <Delta key={index}>{response.delta.delta}</Delta>
-      }
+      // This is INTENTIONALLY left here for documentation.
+      // We aggregate `delta` responses into `Exchange.responseAggregated`
+      // as an optimization. Originally we'd have 1000s of React components,
+      // causing problems like slowness and exceeding stack depth.
+      // if ('delta' in response) {
+      //   return response.delta.delta
+      // }
       if ('info' in response) {
         return <Delta key={index}>{response.info.text}</Delta>
       }
@@ -258,7 +263,10 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       dataTestId="ml-response-chat-bubble"
       placeholderTestId="ml-response-chat-bubble-thinking"
     >
-      {itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null}
+      {[
+        itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null,
+        props.deltasAggregated !== '' ? props.deltasAggregated : null,
+      ].filter((x: ReactNode) => x !== null)}
     </ChatBubble>
   )
 }
@@ -362,7 +370,10 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           />
         </div>
       )}
-      <ResponsesCard items={props.responses} />
+      <ResponsesCard
+        items={props.responses}
+        deltasAggregated={props.deltasAggregated}
+      />
       <ResponseCardToolBar responses={props.responses} />
     </div>
   )
