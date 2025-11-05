@@ -911,7 +911,7 @@ part002 = startSketchOn(XZ)
     const cases = [
       {
         codeAfter: /\|> line\(endAbsolute = \[\d+(\.\d+)?, turns::ZERO/,
-        axisClick: { x: 0.75, y: 0.5 },
+        axisClick: { x: 0.25, y: 0.5 },
         constraintName: 'Snap To X',
       },
       {
