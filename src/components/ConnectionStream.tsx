@@ -220,6 +220,9 @@ export const ConnectionStream = (props: {
         setShowManualConnect(true)
       })
     },
+    infiniteDectionLoopCallback: () => {
+      setShowManualConnect(true)
+    }
   })
   useOnVitestEngineOnline({
     callback: () => {
@@ -351,7 +354,7 @@ export const ConnectionStream = (props: {
           Connecting and setting up scene...
         </Loading>
       )}
-      {showManualConnect && (
+      {true && (
         <ManualReconnection
           className="absolute inset-0 h-screen"
           callback={() => {
