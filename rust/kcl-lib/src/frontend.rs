@@ -7,7 +7,7 @@ use crate::{
     ExecOutcome, ExecutorContext, Program,
     exec::WarningLevel,
     fmt::format_number_literal,
-    front::{Line, PointCtor},
+    front::{Line, LinesEqualLength, PointCtor},
     frontend::{
         api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
@@ -35,6 +35,7 @@ const LINE_FN: &str = "line";
 const LINE_START_PARAM: &str = "start";
 const LINE_END_PARAM: &str = "end";
 const COINCIDENT_FN: &str = "coincident";
+const EQUAL_LENGTH_FN: &str = "equalLength";
 const HORIZONTAL_FN: &str = "horizontal";
 const VERTICAL_FN: &str = "vertical";
 
@@ -291,6 +292,10 @@ impl SketchApi for FrontendState {
         let sketch_block_range = match constraint {
             Constraint::Coincident(coincident) => self.add_coincident(sketch, coincident, &mut new_ast).await?,
             Constraint::Horizontal(horizontal) => self.add_horizontal(sketch, horizontal, &mut new_ast).await?,
+            Constraint::LinesEqualLength(lines_equal_length) => {
+                self.add_lines_equal_length(sketch, lines_equal_length, &mut new_ast)
+                    .await?
+            }
             Constraint::Vertical(vertical) => self.add_vertical(sketch, vertical, &mut new_ast).await?,
             _ => {
                 return Err(Error {
@@ -897,6 +902,82 @@ impl FrontendState {
                 new_ast,
                 sketch_id,
                 AstMutateCommand::AddSketchBlockExprStmt { expr: horizontal_ast },
+            )
+            .map_err(|err| Error { msg: err.to_string() })?;
+        Ok(sketch_block_range)
+    }
+
+    async fn add_lines_equal_length(
+        &mut self,
+        sketch: ObjectId,
+        lines_equal_length: LinesEqualLength,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        if lines_equal_length.lines.len() != 2 {
+            return Err(Error {
+                msg: format!(
+                    "Lines equal length constraint must have exactly 2 lines, got {}",
+                    lines_equal_length.lines.len()
+                ),
+            });
+        }
+
+        let sketch_id = sketch;
+
+        // Map the runtime objects back to variable names.
+        let line0_id = lines_equal_length.lines[0];
+        let line0_object = self.scene_graph.objects.get(line0_id.0).ok_or_else(|| Error {
+            msg: format!("Line not found: {line0_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: line0_segment } = &line0_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {line0_object:?}"),
+            });
+        };
+        let Segment::Line(_) = line0_segment else {
+            return Err(Error {
+                msg: format!("Only lines can be made equal length: {line0_object:?}"),
+            });
+        };
+        let line0_ast = get_or_insert_ast_reference(new_ast, &line0_object.source.clone(), "line", None)?;
+
+        let line1_id = lines_equal_length.lines[1];
+        let line1_object = self.scene_graph.objects.get(line1_id.0).ok_or_else(|| Error {
+            msg: format!("Line not found: {line1_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: line1_segment } = &line1_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {line1_object:?}"),
+            });
+        };
+        let Segment::Line(_) = line1_segment else {
+            return Err(Error {
+                msg: format!("Only lines can be made equal length: {line1_object:?}"),
+            });
+        };
+        let line1_ast = get_or_insert_ast_reference(new_ast, &line1_object.source.clone(), "line", None)?;
+
+        // Create the equalLength() call.
+        let equal_length_ast = ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(EQUAL_LENGTH_FN)),
+            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+                ast::ArrayExpression {
+                    elements: vec![line0_ast, line1_ast],
+                    digest: None,
+                    non_code_meta: Default::default(),
+                },
+            )))),
+            arguments: Default::default(),
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+
+        // Add the constraint to the AST of the sketch block.
+        let (sketch_block_range, _) = self
+            .mutate_ast(
+                new_ast,
+                sketch_id,
+                AstMutateCommand::AddSketchBlockExprStmt { expr: equal_length_ast },
             )
             .map_err(|err| Error { msg: err.to_string() })?;
         Ok(sketch_block_range)
@@ -2055,6 +2136,57 @@ sketch(on = XY) {
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_lines_equal_length() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+  sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+        let line1_id = frontend.scene_graph.objects.get(3).unwrap().id;
+        let line2_id = frontend.scene_graph.objects.get(6).unwrap().id;
+
+        let constraint = Constraint::LinesEqualLength(LinesEqualLength {
+            lines: vec![line1_id, line2_id],
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1, var 2], end = [var 3, var 4])
+  line2 = sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
+  sketch2::equalLength([line1, line2])
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            8,
             "{:#?}",
             scene_delta.new_graph.objects
         );

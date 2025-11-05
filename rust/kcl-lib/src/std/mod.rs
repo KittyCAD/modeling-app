@@ -475,6 +475,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::constraints::coincident(e, a)),
             StdFnProps::default("std::sketch2::coincident"),
         ),
+        ("sketch2", "equalLength") => (
+            |e, a| Box::pin(crate::std::constraints::equal_length(e, a)),
+            StdFnProps::default("std::sketch2::equalLength"),
+        ),
         ("sketch2", "horizontal") => (
             |e, a| Box::pin(crate::std::constraints::horizontal(e, a)),
             StdFnProps::default("std::sketch2::horizontal"),
