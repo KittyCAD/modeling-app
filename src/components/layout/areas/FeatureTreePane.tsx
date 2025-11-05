@@ -395,10 +395,10 @@ const OperationItemWrapper = ({
             </code>
           )}
         </div>
+        {errors && errors.length > 0 && (
+          <em className="text-destroy-80 text-xs">has error</em>
+        )}
       </button>
-      {errors && errors.length > 0 && (
-        <em className="text-destroy-80 text-xs">has error</em>
-      )}
       {visibilityToggle && <VisibilityToggle {...visibilityToggle} />}
       {menuItems && (
         <ContextMenu menuTargetElement={menuRef} items={menuItems} />

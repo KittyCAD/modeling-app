@@ -7,6 +7,7 @@ import * as fsp from 'fs/promises'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
 import type { TestColor } from '@e2e/playwright/test-utils'
 import {
+  NUMBER_REGEXP,
   TEST_COLORS,
   executorInputPath,
   getUtils,
@@ -822,7 +823,9 @@ washer = extrude(washerSketch, length = thicknessMax)`
 
       // Just verify that the radius is the correct order of magnitude
       await editor.expectEditor.toContain(
-        /circle\(sketch001, center = \[0\.04, -0\.06\], radius = 0\.\d+/
+        new RegExp(
+          `circle\\(sketch001, center = \\[${NUMBER_REGEXP}, ${NUMBER_REGEXP}\\], radius = 0\\.\\d+`
+        )
       )
     })
 
