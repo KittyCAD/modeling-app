@@ -55,12 +55,12 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: prepared-wasm
+          name: prepared-wasm-${{ matrix.name }}
           path: |
             rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
 
       - uses: actions/upload-artifact@v4
         with:
-          name: prepared-ts-rs-bindings
+          name: prepared-ts-rs-bindings-${{ matrix.name }}
           path: |
             rust/kcl-lib/bindings/*
