@@ -216,7 +216,7 @@ impl KclErrorWithOutputs {
                     .unwrap_or(ModulePath::Main),
             });
         let filename = source.path.to_string();
-        let kcl_source = source.source.to_string();
+        let kcl_source = source.source;
 
         let mut related = Vec::new();
         for source_range in source_ranges {
@@ -336,7 +336,6 @@ impl miette::Diagnostic for ReportWithOutputs {
             .error
             .error
             .source_ranges()
-            .clone()
             .into_iter()
             .map(miette::SourceSpan::from)
             .map(|span| miette::LabeledSpan::new_with_span(Some(self.filename.to_string()), span));
@@ -386,7 +385,6 @@ impl miette::Diagnostic for Report {
         let iter = self
             .error
             .source_ranges()
-            .clone()
             .into_iter()
             .map(miette::SourceSpan::from)
             .map(|span| miette::LabeledSpan::new_with_span(Some(self.filename.to_string()), span));

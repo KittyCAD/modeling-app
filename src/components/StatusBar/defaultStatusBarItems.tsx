@@ -1,5 +1,4 @@
 import { Popover } from '@headlessui/react'
-import { desktopAppPitchMessage } from '@src/components/DownloadAppToast'
 import { HelpMenu } from '@src/components/HelpMenu'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import {
@@ -37,7 +36,8 @@ export const defaultGlobalStatusBarItems = ({
         href: withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`),
         icon: 'download',
         toolTip: {
-          children: desktopAppPitchMessage,
+          children:
+            "The present web app is limited in features. We don't want you to miss out!",
         },
       },
   {

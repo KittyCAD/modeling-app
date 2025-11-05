@@ -20,12 +20,12 @@ Returns a new array with the all the elements of the first array followed by all
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[any]`](/docs/kcl-std/types/std-types-any) | The array of starting elements. | Yes |
-| `items` | [`[any]`](/docs/kcl-std/types/std-types-any) | The array of ending elements. | Yes |
+| `array` | [[`any`](/docs/kcl-std/types/std-types-any)] | The array of starting elements. | Yes |
+| `items` | [[`any`](/docs/kcl-std/types/std-types-any)] | The array of ending elements. | Yes |
 
 ### Returns
 
-[`[any]`](/docs/kcl-std/types/std-types-any)
+[[`any`](/docs/kcl-std/types/std-types-any)]
 
 
 ### Examples

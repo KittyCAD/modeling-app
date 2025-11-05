@@ -1129,7 +1129,7 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
                 let (program, ces) = crate::Program::parse(&contents).map_err(|err| {
                     let report = crate::Report {
                         kcl_source: contents.to_string(),
-                        error: err.clone(),
+                        error: err,
                         filename: file.to_string_lossy().to_string(),
                     };
                     let report = miette::Report::new(report);

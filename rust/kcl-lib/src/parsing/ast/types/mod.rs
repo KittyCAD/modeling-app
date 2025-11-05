@@ -2016,7 +2016,7 @@ impl ImportStatement {
                     return Some(name[start..].to_owned());
                 }
 
-                let name = s.file_name().map(|f| f.to_string())?;
+                let name = s.file_name()?;
                 if name.contains('\\') || name.contains('/') {
                     return None;
                 }
@@ -2296,7 +2296,7 @@ impl VariableDeclaration {
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
-        self.declaration.init.replace_value(source_range, new_value.clone());
+        self.declaration.init.replace_value(source_range, new_value);
     }
 
     /// Returns an Expr that includes the given character position.
@@ -2890,7 +2890,7 @@ impl ArrayRangeExpression {
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.start_element.replace_value(source_range, new_value.clone());
-        self.end_element.replace_value(source_range, new_value.clone());
+        self.end_element.replace_value(source_range, new_value);
     }
 
     /// Rename all identifiers that have the old name to the new given name.
