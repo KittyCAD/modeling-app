@@ -15,7 +15,7 @@ import { getKclVersion } from '@src/lib/kclVersion'
 import { Socket } from '@src/lib/socket'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
-// import { MockSocket } from '@src/mocks/copilot'
+import { MockSocket } from '@src/mocks/copilot'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -55,6 +55,7 @@ export enum MlEphantManagerTransitions2 {
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
   ConversationClose = 'conversation-close',
+  AbruptClose = 'abrupt-close',
   CacheSetupAndConnect = 'cache-setup-and-connect',
 }
 
@@ -97,6 +98,9 @@ export type MlEphantManagerEvents2 =
   | {
       type: MlEphantManagerTransitions2.ConversationClose
     }
+  | {
+      type: MlEphantManagerTransitions2.AbruptClose
+    }
 
 export interface Exchange {
   // Technically the WebSocket could send us a response at any time, without
@@ -117,6 +121,7 @@ export type Conversation = {
 export interface MlEphantManagerContext2 {
   apiToken: string
   ws?: WebSocket
+  abruptlyClosed: boolean
   conversation?: Conversation
   conversationId?: string
   lastMessageId?: number
@@ -135,6 +140,7 @@ export const mlEphantDefaultContext2 = (args: {
 }): MlEphantManagerContext2 => ({
   apiToken: args.input?.apiToken ?? '',
   ws: undefined,
+  abruptlyClosed: false,
   conversation: undefined,
   lastMessageId: undefined,
   fileFocusedOnInEditor: undefined,
@@ -236,7 +242,7 @@ export const mlEphantManagerMachine2 = setup({
       const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
 
       const ws = await Socket(
-        WebSocket,
+        MockSocket,
         (env().VITE_MLEPHANT_WEBSOCKET_URL ?? '/ws/ml/copilot') +
           (maybeConversationId
             ? `?conversation_id=${maybeConversationId}&replay=true`
@@ -267,6 +273,8 @@ export const mlEphantManagerMachine2 = setup({
 
       return await new Promise<Partial<MlEphantManagerContext2>>(
         (onFulfilled, onRejected) => {
+          let devCalledClose = false
+
           ws.addEventListener('message', function (event: MessageEvent<any>) {
             let response: unknown
             if (!isString(event.data)) {
@@ -308,6 +316,7 @@ export const mlEphantManagerMachine2 = setup({
                   MlEphantSetupErrors.InvalidConversationId
                 ))
             ) {
+              devCalledClose = true
               ws.close()
               // Pass that the conversation is not found to the onError handler which will set the conversationId
               // to undefined to get us a new id.
@@ -395,7 +404,11 @@ export const mlEphantManagerMachine2 = setup({
           })
 
           ws.addEventListener('close', function (event: Event) {
-            console.log(event)
+            if (theRefParentSend !== undefined && devCalledClose === false) {
+              theRefParentSend({
+                type: MlEphantManagerTransitions2.AbruptClose,
+              })
+            }
           })
         }
       )
@@ -464,7 +477,7 @@ export const mlEphantManagerMachine2 = setup({
       on: {
         [MlEphantManagerTransitions2.CacheSetupAndConnect]: {
           target: MlEphantManagerStates2.Setup,
-          actions: ['cacheSetup'],
+          actions: [assign({ abruptlyClosed: false }), 'cacheSetup'],
         },
         ...transitions([MlEphantManagerStates2.Setup]),
       },
@@ -519,7 +532,13 @@ export const mlEphantManagerMachine2 = setup({
           reenter: true,
         },
       },
-      on: transitions([MlEphantManagerTransitions2.ConversationClose]),
+      on: {
+        ...transitions([MlEphantManagerTransitions2.ConversationClose]),
+        [MlEphantManagerTransitions2.AbruptClose]: {
+          target: MlEphantManagerTransitions2.AbruptClose,
+          actions: [assign({ abruptlyClosed: true })],
+        },
+      },
     },
     [MlEphantManagerStates2.Ready]: {
       type: 'parallel',
@@ -528,12 +547,21 @@ export const mlEphantManagerMachine2 = setup({
           initial: S.Await,
           states: {
             [S.Await]: {
-              on: transitions([
-                MlEphantManagerTransitions2.ResponseReceive,
-                MlEphantManagerTransitions2.ConversationClose,
-              ]),
+              on: {
+                ...transitions([
+                  MlEphantManagerTransitions2.ResponseReceive,
+                  MlEphantManagerTransitions2.ConversationClose,
+                ]),
+                [MlEphantManagerTransitions2.AbruptClose]: {
+                  target: MlEphantManagerTransitions2.AbruptClose,
+                  actions: [assign({ abruptlyClosed: true })],
+                },
+              },
             },
             [MlEphantManagerTransitions2.ConversationClose]: {
+              type: 'final',
+            },
+            [MlEphantManagerTransitions2.AbruptClose]: {
               type: 'final',
             },
             // Triggered by the WebSocket 'message' event.
@@ -595,9 +623,13 @@ export const mlEphantManagerMachine2 = setup({
               on: transitions([
                 MlEphantManagerTransitions2.MessageSend,
                 MlEphantManagerTransitions2.ConversationClose,
+                MlEphantManagerTransitions2.AbruptClose,
               ]),
             },
             [MlEphantManagerTransitions2.ConversationClose]: {
+              type: 'final',
+            },
+            [MlEphantManagerTransitions2.AbruptClose]: {
               type: 'final',
             },
             [MlEphantManagerTransitions2.MessageSend]: {
@@ -626,12 +658,27 @@ export const mlEphantManagerMachine2 = setup({
         target: MlEphantManagerTransitions2.ConversationClose,
       },
     },
+    [MlEphantManagerTransitions2.AbruptClose]: {
+      always: {
+        target: MlEphantManagerTransitions2.ConversationClose,
+      },
+    },
     [MlEphantManagerTransitions2.ConversationClose]: {
       always: {
         target: S.Await,
         actions: [
-          assign({ conversation: undefined, conversationId: undefined }),
-          (args) => args.context.ws?.close(),
+          (args) => {
+            // We want to keep the context around to recover.
+            if (args.context.abruptlyClosed) {
+              return
+            }
+            assign({ conversation: undefined, conversationId: undefined })
+          },
+          (args) => {
+            if (args.context.ws?.readyState === 3) {
+              args.context.ws?.close()
+            }
+          },
         ],
       },
     },

@@ -281,6 +281,11 @@ export class MockSocket extends WebSocket {
             })
           )
         })
+
+        // Force a close after 3 seconds
+        // setTimeout(() => {
+        //   this.cbs.close.forEach((cb) => cb())
+        // }, 10000)
       }
     } else if (isWebSocketEventType('close', type, listener)) {
       this.cbs.close.push(listener)
