@@ -2163,7 +2163,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-api"
-version = "0.1.105"
+version = "0.1.106"
 dependencies = [
  "indexmap 2.12.0",
  "kcl-error",
@@ -2174,7 +2174,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.105"
+version = "0.1.106"
 dependencies = [
  "anyhow",
  "clap",
@@ -2185,7 +2185,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.105"
+version = "0.1.106"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2194,7 +2194,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.105"
+version = "0.1.106"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2204,7 +2204,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.1.105"
+version = "0.1.106"
 dependencies = [
  "miette",
  "serde",
@@ -2229,7 +2229,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.105"
+version = "0.2.106"
 dependencies = [
  "anyhow",
  "clap",
@@ -2250,7 +2250,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.105"
+version = "0.1.106"
 dependencies = [
  "anyhow",
  "clap",
@@ -2270,7 +2270,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.105"
+version = "0.2.106"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -2351,7 +2351,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.105"
+version = "0.3.106"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -2367,7 +2367,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.105"
+version = "0.1.106"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2380,7 +2380,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.105"
+version = "0.1.106"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2394,7 +2394,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.105"
+version = "0.1.106"
 dependencies = [
  "anyhow",
  "bson",
@@ -2425,9 +2425,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.4.2"
+version = "0.4.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87ad248df3976689e9bd17b93157d7413884c56a59c5c53cdc8aba66d42ea144"
+checksum = "5b9cb704f63de8e6852d9f0984a1ee3cde9823ab934aab968f3abeea79a99bb3"
 dependencies = [
  "anyhow",
  "async-trait",

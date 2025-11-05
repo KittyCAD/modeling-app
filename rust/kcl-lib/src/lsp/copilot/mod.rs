@@ -188,6 +188,7 @@ impl Backend {
             nwo: None,
             // We haven't implemented streaming yet.
             stream: false,
+            model_version: None,
         };
 
         let resp = self
