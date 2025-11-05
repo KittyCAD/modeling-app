@@ -1,9 +1,11 @@
 import type { Diagnostic } from '@codemirror/lint'
-import type { EntityType } from '@kittycad/lib'
+import type { EntityType, WebSocketResponse } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type EditorManager from '@src/editor/manager'
 import type CodeManager from '@src/lang/codeManager'
 import type RustContext from '@src/lib/rustContext'
+
+import { uuidv4 } from '@src/lib/utils'
 
 import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -463,6 +465,24 @@ export class KclManager extends EventTarget {
 
   private _cancelTokens: Map<number, boolean> = new Map()
 
+  // TODO - remove in favor of rust-side kcl sha, this is just a poc hash
+  codeHash(code: string): string {
+    let hash = 0
+    for (const char of code) {
+      hash = (hash << 5) - hash + char.charCodeAt(0)
+    }
+
+    let bigHash = BigInt(hash)
+    let id = bigHash.toString(16)
+    if (id[0] == '-') {
+      id = id.substring(1)
+    }
+
+    //just a POC hack, in reality we'd want to compute a fully-compliant uuidv4
+    //from a KCL hash
+    return `${id.substring(0, 8)}-${id.substring(8, 4)}-4aaa-aaaa-aaaaaaaaaaaa`
+  }
+
   // This NEVER updates the code, if you want to update the code DO NOT add to
   // this function, too many other things that don't want it exist. For that,
   // use updateModelingState().
@@ -485,82 +505,128 @@ export class KclManager extends EventTarget {
     const currentExecutionId = args.executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
+    console.log(
+      'starting: ' + this.codeHash(this.singletons.codeManager.code)
+    )
+
     this.isExecuting = true
     await this.ensureWasmInit()
 
+    //TODO - get this from rust context / kcl-lib
+    const hash = this.codeHash(this.singletons.codeManager.code)
+
+    //insane hack by mike demonstrating loading cached backend state vs re-executing kcl
+    const cacheLoadResult = await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'load_cache',
+        cache_id: hash,
+      } as any,
+    }) as WebSocketResponse
+
+    let wasCached = false
+
+    //eventually we'll make this API not report an error but a true/false result based on cache load
+    console.log('did it work ? ' + JSON.stringify(cacheLoadResult))
+    if(cacheLoadResult && cacheLoadResult && cacheLoadResult.success) {
+      wasCached = true
+      console.log('it worked!')
+    }
+
     const codeThatExecuted = this.singletons.codeManager.code
-    const { logs, errors, execState, isInterrupted } = await executeAst({
-      ast,
-      path: this.singletons.codeManager.currentFilePath || undefined,
-      rustContext: this.singletons.rustContext,
-    })
-
-    const livePathsToWatch = Object.values(execState.filenames)
-      .filter((file) => {
-        return file?.type === 'Local'
+    if(!wasCached) {
+      const { logs, errors, execState, isInterrupted } = await executeAst({
+        ast,
+        path: this.singletons.codeManager.currentFilePath || undefined,
+        rustContext: this.singletons.rustContext,
       })
-      .map((file) => {
-        return file.value
-      })
-    kclEditorActor.send({ type: 'setLivePathsToWatch', data: livePathsToWatch })
 
-    // Program was not interrupted, setup the scene
-    // Do not send send scene commands if the program was interrupted, go to clean up
-    if (!isInterrupted) {
-      this.addDiagnostics(
-        await lintAst({
-          ast,
-          sourceCode: this.singletons.codeManager.code,
-          instance: this.singletons.rustContext.getRustInstance(),
+      const livePathsToWatch = Object.values(execState.filenames)
+        .filter((file) => {
+          return file?.type === 'Local'
         })
-      )
-      await setSelectionFilterToDefault(this.engineCommandManager)
-    }
+        .map((file) => {
+          return file.value
+        })
+      kclEditorActor.send({ type: 'setLivePathsToWatch', data: livePathsToWatch })
 
-    this.isExecuting = false
+      // Program was not interrupted, setup the scene
+      // Do not send send scene commands if the program was interrupted, go to clean up
+      if (!isInterrupted) {
+        this.addDiagnostics(
+          await lintAst({
+            ast,
+            sourceCode: this.singletons.codeManager.code,
+            instance: this.singletons.rustContext.getRustInstance(),
+          })
+        )
+        await setSelectionFilterToDefault(this.engineCommandManager)
+      }
 
-    // Check the cancellation token for this execution before applying side effects
-    if (this._cancelTokens.get(currentExecutionId)) {
-      this._cancelTokens.delete(currentExecutionId)
-      return
-    }
+      this.isExecuting = false
 
-    let fileSettings = getSettingsAnnotation(
-      ast,
-      this.singletons.rustContext.getRustInstance()
-    )
-    if (err(fileSettings)) {
-      fileSettings = {}
-    }
-    this.fileSettings = fileSettings
-
-    this.logs = logs
-    this.errors = errors
-    const code = this.singletons.codeManager.code
-    // Do not add the errors since the program was interrupted and the error is not a real KCL error
-    this.addDiagnostics(
-      isInterrupted ? [] : kclErrorsToDiagnostics(errors, code)
-    )
-    // Add warnings and non-fatal errors
-    this.addDiagnostics(
-      isInterrupted
-        ? []
-        : compilationErrorsToDiagnostics(execState.errors, code)
-    )
-    this.execState = execState
-    if (!errors.length) {
-      this.lastSuccessfulVariables = execState.variables
-      this.lastSuccessfulOperations = execState.operations
-      this.lastSuccessfulCode = codeThatExecuted
-    }
-    this.ast = structuredClone(ast)
-    // updateArtifactGraph relies on updated executeState/variables
-    await this.updateArtifactGraph(execState.artifactGraph)
-    if (!isInterrupted) {
-      this.singletons.sceneInfra.modelingSend({
-        type: 'code edit during sketch',
+      //NOTE from mike - we actually dont need to await on this, since its async even on the engine side
+      this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'cache',
+          cache_id: hash,
+        } as any,
+      } as any).then(() => {
+        //nothing to do here
       })
+
+      // Check the cancellation token for this execution before applying side effects
+      if (this._cancelTokens.get(currentExecutionId)) {
+        this._cancelTokens.delete(currentExecutionId)
+        return
+      }
+
+      let fileSettings = getSettingsAnnotation(
+        ast,
+        this.singletons.rustContext.getRustInstance()
+      )
+      if (err(fileSettings)) {
+        fileSettings = {}
+      }
+      this.fileSettings = fileSettings
+
+      this.logs = logs
+      this.errors = errors
+      const code = this.singletons.codeManager.code
+      // Do not add the errors since the program was interrupted and the error is not a real KCL error
+      this.addDiagnostics(
+        isInterrupted ? [] : kclErrorsToDiagnostics(errors, code)
+      )
+      // Add warnings and non-fatal errors
+      this.addDiagnostics(
+        isInterrupted
+          ? []
+          : compilationErrorsToDiagnostics(execState.errors, code)
+      )
+      this.execState = execState
+      if (!errors.length) {
+        this.lastSuccessfulVariables = execState.variables
+        this.lastSuccessfulOperations = execState.operations
+        this.lastSuccessfulCode = codeThatExecuted
+      }
+      this.ast = structuredClone(ast)
+      // updateArtifactGraph relies on updated executeState/variables
+      await this.updateArtifactGraph(execState.artifactGraph)
+      if (!isInterrupted) {
+        this.singletons.sceneInfra.modelingSend({
+          type: 'code edit during sketch',
+        })
+      }
+    } else {
+      //TODO from mike, i'm sure things up thare are important
+      //but i have no idea how to update them when skipping the executeAst()
+      //on the cached path, once thats done, subsequent code editing should work again
+      this.isExecuting = false
     }
+
     EngineDebugger.addLog({
       label: 'executeAst',
       message: 'execution done',
