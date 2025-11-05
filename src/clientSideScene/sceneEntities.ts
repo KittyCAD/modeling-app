@@ -1086,6 +1086,9 @@ export class SceneEntities {
     position && this.intersectionPlane.position.set(...position)
     this.sceneInfra.scene.add(group)
 
+    // sceneInfra/onMouseMove may call raycastRing() before the next render call,
+    // in which case matrices would not be updated yet.
+    this.sceneInfra.scene.updateMatrixWorld()
     this.sceneInfra.resumeRendering()
 
     this.sceneInfra.camControls.enableRotate = false

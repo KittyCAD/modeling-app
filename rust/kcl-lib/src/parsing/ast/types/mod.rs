@@ -345,6 +345,7 @@ impl Node<Program> {
             crate::lint::checks::lint_object_properties,
             crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
+            crate::lint::checks::lint_profiles_should_not_be_chained,
         ];
 
         let mut findings = vec![];
