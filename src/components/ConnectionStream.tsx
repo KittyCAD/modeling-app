@@ -220,6 +220,9 @@ export const ConnectionStream = (props: {
         setShowManualConnect(true)
       })
     },
+    infiniteDetectionLoopCallback: () => {
+      setShowManualConnect(true)
+    },
   })
   useOnVitestEngineOnline({
     callback: () => {
