@@ -247,7 +247,7 @@ export const FeatureTreePaneContents = () => {
     <div className="relative">
       <section
         data-testid="debug-panel"
-        className="absolute inset-0 p-1 box-border overflow-auto"
+        className="absolute inset-0 p-1 box-border overflow-auto mr-1"
       >
         {kclManager.isExecuting ? (
           <Loading className="h-full" isDummy={true}>
@@ -395,10 +395,10 @@ const OperationItemWrapper = ({
             </code>
           )}
         </div>
+        {errors && errors.length > 0 && (
+          <em className="text-destroy-80 text-xs">has error</em>
+        )}
       </button>
-      {errors && errors.length > 0 && (
-        <em className="text-destroy-80 text-xs">has error</em>
-      )}
       {visibilityToggle && <VisibilityToggle {...visibilityToggle} />}
       {menuItems && (
         <ContextMenu menuTargetElement={menuRef} items={menuItems} />

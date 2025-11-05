@@ -69,9 +69,9 @@ dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
 // default vite values based on mode
 process.env.NODE_ENV ??= viteEnv.MODE
-process.env.VITE_KITTYCAD_API_WEBSOCKET_URL ??=
-  viteEnv.VITE_KITTYCAD_API_WEBSOCKET_URL
-process.env.VITE_KITTYCAD_BASE_DOMAIN ??= viteEnv.VITE_KITTYCAD_BASE_DOMAIN
+process.env.VITE_KITTYCAD_WEBSOCKET_URL ??= viteEnv.VITE_KITTYCAD_WEBSOCKET_URL
+process.env.VITE_MLEPHANT_WEBSOCKET_URL ??= viteEnv.VITE_MLEPHANT_WEBSOCKET_URL
+process.env.VITE_ZOO_BASE_DOMAIN ??= viteEnv.VITE_ZOO_BASE_DOMAIN
 
 // Likely convenient to keep for debugging
 console.log('Environment vars', process.env)
@@ -92,7 +92,7 @@ if (process.defaultApp) {
 // Global app listeners
 // Must be done before ready event.
 // Checking against this lock is needed for Windows and Linux, see
-// https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
+// electronjs dot org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
 if (!singleInstanceLock && process.env.NODE_ENV !== 'test') {
   app.quit()
 } else {
@@ -663,7 +663,7 @@ const getProjectPathAtStartup = async (
 }
 
 function registerStartupListeners() {
-  // Linux and Windows from https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
+  // Linux and Windows from electronjs dot org/docs/latest/tutorial/launch-app-from-url-in-another-app
   app.on('second-instance', (event, commandLine, workingDirectory) => {
     // Deep Link: second instance for Windows and Linux
     // Likely convenient to keep for debugging

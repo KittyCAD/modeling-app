@@ -76,8 +76,9 @@ export interface IElectronAPI {
   process: {
     env: {
       NODE_ENV: string
-      VITE_KITTYCAD_BASE_DOMAIN: string
-      VITE_KITTYCAD_API_WEBSOCKET_URL: string
+      VITE_ZOO_BASE_DOMAIN: string
+      VITE_KITTYCAD_WEBSOCKET_URL: string
+      VITE_MLEPHANT_WEBSOCKET_URL: string
       VITE_KITTYCAD_API_TOKEN: string // legacy token name
       VITE_ZOO_API_TOKEN: string
     }

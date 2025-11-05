@@ -25,7 +25,7 @@ The sketches need to be closed and on different planes that are parallel.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | `[Sketch; 2+]` | Which sketches to loft. Must include at least 2 sketches. | Yes |
+| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 2+] | Which sketches to loft. Must include at least 2 sketches. | Yes |
 | `vDegree` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Degree of the interpolation. Must be greater than zero. For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction. | No |
 | `bezApproximateRational` | [`bool`](/docs/kcl-std/types/std-types-bool) | Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios. Over time, this field won't be necessary. | No |
 | `baseCurveIndex` | [`number(_)`](/docs/kcl-std/types/std-types-number) | This can be set to override the automatically determined topological base curve, which is usually the first section encountered. | No |

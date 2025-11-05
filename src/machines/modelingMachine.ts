@@ -175,6 +175,7 @@ export type ModelingMachineEvent =
       type: 'Enter sketch'
       data?: {
         forceNewSketch?: boolean
+        keepDefaultPlaneVisibility?: boolean
       }
     }
   | { type: 'Sketch On Face' }
@@ -408,13 +409,10 @@ export const modelingMachine = setup({
     },
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
+    // TODO: figure out if we really need this one, was separate from 'no kcl errors'
     'is-error-free': ({ context }): boolean => {
       const theKclManager = context.kclManager ? context.kclManager : kclManager
       return theKclManager.errors.length === 0 && !theKclManager.hasErrors()
-    },
-    'no kcl errors': ({ context }) => {
-      const theKclManager = context.kclManager ? context.kclManager : kclManager
-      return !theKclManager.hasErrors()
     },
     'is editing existing sketch': ({
       context: { sketchDetails, kclManager: providedKclManager },
@@ -1139,6 +1137,15 @@ export const modelingMachine = setup({
         }
         return { ...context.defaultPlaneVisibility }
       },
+    }),
+    'show planes sketch no face': assign(({ event, context }) => {
+      if (event.type !== 'Enter sketch') return {}
+      if (event.data?.keepDefaultPlaneVisibility) {
+        // When entering via right-click "Start sketch on selection", show planes only if not requested to keep current visibility
+        return {}
+      }
+      void kclManager.showPlanes()
+      return { defaultPlaneVisibility: { xy: true, xz: true, yz: true } }
     }),
     'setup noPoints onClick listener': ({
       context: {
@@ -4210,69 +4217,96 @@ export const modelingMachine = setup({
                 sceneInfra.animate()
               },
             ],
-            guard: 'no kcl errors',
           },
         ],
 
+        // Modeling codemods
+
         Extrude: {
           target: 'Applying extrude',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         Sweep: {
           target: 'Applying sweep',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         Loft: {
           target: 'Applying loft',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         Revolve: {
           target: 'Applying revolve',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         'Offset plane': {
           target: 'Applying offset plane',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         Helix: {
           target: 'Applying helix',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         Shell: {
           target: 'Applying shell',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         Hole: {
           target: 'Applying hole',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         Fillet: {
           target: 'Applying fillet',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         Chamfer: {
           target: 'Applying chamfer',
-          reenter: true,
-          guard: 'no kcl errors',
         },
+
+        Appearance: {
+          target: 'Applying appearance',
+        },
+
+        Translate: {
+          target: 'Applying translate',
+        },
+
+        Rotate: {
+          target: 'Applying rotate',
+        },
+
+        Scale: {
+          target: 'Applying scale',
+        },
+
+        Clone: {
+          target: 'Applying clone',
+        },
+
+        'GDT Flatness': {
+          target: 'Applying GDT Flatness',
+        },
+
+        'Boolean Subtract': {
+          target: 'Boolean subtracting',
+        },
+
+        'Boolean Union': {
+          target: 'Boolean uniting',
+        },
+
+        'Boolean Intersect': {
+          target: 'Boolean intersecting',
+        },
+
+        'Pattern Circular 3D': {
+          target: 'Pattern Circular 3D',
+        },
+
+        'Pattern Linear 3D': {
+          target: 'Pattern Linear 3D',
+        },
+
+        // Modeling actions
 
         Export: {
           target: 'Exporting',
@@ -4297,63 +4331,6 @@ export const modelingMachine = setup({
         },
 
         'Prompt-to-edit': 'Applying Prompt-to-edit',
-
-        Appearance: {
-          target: 'Applying appearance',
-          reenter: true,
-          guard: 'no kcl errors',
-        },
-
-        Translate: {
-          target: 'Applying translate',
-          reenter: true,
-          guard: 'no kcl errors',
-        },
-
-        Rotate: {
-          target: 'Applying rotate',
-          reenter: true,
-          guard: 'no kcl errors',
-        },
-
-        Scale: {
-          target: 'Applying scale',
-          reenter: true,
-          guard: 'no kcl errors',
-        },
-
-        Clone: {
-          target: 'Applying clone',
-          reenter: true,
-          guard: 'no kcl errors',
-        },
-
-        'GDT Flatness': {
-          target: 'Applying GDT Flatness',
-          reenter: true,
-          guard: 'no kcl errors',
-        },
-
-        'Boolean Subtract': {
-          target: 'Boolean subtracting',
-          guard: 'no kcl errors',
-        },
-        'Boolean Union': {
-          target: 'Boolean uniting',
-          guard: 'no kcl errors',
-        },
-        'Boolean Intersect': {
-          target: 'Boolean intersecting',
-          guard: 'no kcl errors',
-        },
-        'Pattern Circular 3D': {
-          target: 'Pattern Circular 3D',
-          guard: 'no kcl errors',
-        },
-        'Pattern Linear 3D': {
-          target: 'Pattern Linear 3D',
-          guard: 'no kcl errors',
-        },
       },
 
       entry: 'reset client scene mouse handlers',
@@ -4361,9 +4338,8 @@ export const modelingMachine = setup({
       states: {
         hidePlanes: {
           on: {
-            'Artifact graph populated': {
+            'Artifact graph emptied': {
               target: 'showPlanes',
-              guard: 'no kcl errors',
             },
           },
 
@@ -4372,7 +4348,7 @@ export const modelingMachine = setup({
 
         showPlanes: {
           on: {
-            'Artifact graph emptied': 'hidePlanes',
+            'Artifact graph populated': 'hidePlanes',
           },
 
           entry: ['show default planes'],
@@ -5712,7 +5688,7 @@ export const modelingMachine = setup({
     'Sketch no face': {
       entry: [
         'disable copilot',
-        'show default planes',
+        'show planes sketch no face',
         'set selection filter to faces only',
         'enter sketching mode',
       ],

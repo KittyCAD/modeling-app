@@ -21,7 +21,7 @@ subtract2d(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
-| `tool` | [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) | The shape(s) which should be cut out of the sketch. | Yes |
+| `tool` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | The shape(s) which should be cut out of the sketch. | Yes |
 
 ### Returns
 

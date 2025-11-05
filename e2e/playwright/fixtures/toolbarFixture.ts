@@ -41,6 +41,7 @@ export class ToolbarFixture {
   rectangleBtn!: Locator
   lengthConstraintBtn!: Locator
   exitSketchBtn!: Locator
+  debugPaneBtn!: Locator
   fileTreeBtn!: Locator
   createFileBtn!: Locator
   fileCreateToast!: Locator
@@ -89,6 +90,7 @@ export class ToolbarFixture {
     this.rectangleBtn = page.getByTestId('corner-rectangle')
     this.lengthConstraintBtn = page.getByTestId('constraint-length')
     this.exitSketchBtn = page.getByTestId('sketch-exit')
+    this.debugPaneBtn = page.locator('[id="debug-button-holder"]')
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')
     this.createFileBtn = page.getByTestId('create-file-button')
     this.treeInputField = page.getByTestId('file-rename-field')

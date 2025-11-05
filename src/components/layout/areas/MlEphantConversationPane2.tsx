@@ -1,6 +1,6 @@
 import { reportRejection } from '@src/lib/trap'
 import { NIL as uuidNIL } from 'uuid'
-import { type settings } from '@src/lib/settings/initialSettings'
+import type { settings } from '@src/lib/settings/initialSettings'
 import type CodeManager from '@src/lang/codeManager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type { SystemIOActor } from '@src/lib/singletons'
@@ -18,13 +18,9 @@ import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { BillingActor } from '@src/machines/billingMachine'
 import { useSelector } from '@xstate/react'
-import type { User, MlCopilotServerMessage, MlCopilotTool } from '@kittycad/lib'
+import type { User, MlCopilotServerMessage, MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
-/** URL query param key we watch for prompt input
- *  we should never set this search param from the app,
- *  only read and delete.
- */
-const SEARCH_PARAM_PROMPT_KEY = 'ttc-prompt'
+import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
 
 export const MlEphantConversationPane2 = (props: {
   mlEphantManagerActor: MlEphantManagerActor2
@@ -48,10 +44,7 @@ export const MlEphantConversationPane2 = (props: {
     return actor.context
   })
 
-  const onProcess = async (
-    request: string,
-    forcedTools: Set<MlCopilotTool>
-  ) => {
+  const onProcess = async (request: string, mode: MlCopilotMode) => {
     if (props.theProject === undefined) {
       console.warn('theProject is `undefined` - should not be possible')
       return
@@ -82,7 +75,7 @@ export const MlEphantConversationPane2 = (props: {
       projectFiles,
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
-      forcedTools,
+      mode,
     })
   }
 
@@ -189,13 +182,13 @@ export const MlEphantConversationPane2 = (props: {
   // We watch the URL for a query parameter to set the defaultPrompt
   // for the conversation.
   useEffect(() => {
-    const ttcPromptParam = searchParams.get(SEARCH_PARAM_PROMPT_KEY)
+    const ttcPromptParam = searchParams.get(SEARCH_PARAM_ML_PROMPT_KEY)
     if (ttcPromptParam) {
       setDefaultPrompt(ttcPromptParam)
 
       // Now clear that param
       const newSearchParams = new URLSearchParams(searchParams)
-      newSearchParams.delete(SEARCH_PARAM_PROMPT_KEY)
+      newSearchParams.delete(SEARCH_PARAM_ML_PROMPT_KEY)
       setSearchParams(newSearchParams, { replace: true })
     }
   }, [searchParams, setSearchParams])
@@ -208,8 +201,8 @@ export const MlEphantConversationPane2 = (props: {
       ]}
       conversation={conversation}
       billingContext={billingContext}
-      onProcess={(request: string, forcedTools: Set<MlCopilotTool>) => {
-        onProcess(request, forcedTools).catch(reportRejection)
+      onProcess={(request: string, mode: MlCopilotMode) => {
+        onProcess(request, mode).catch(reportRejection)
       }}
       disabled={isProcessing}
       hasPromptCompleted={isProcessing}

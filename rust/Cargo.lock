@@ -932,18 +932,18 @@ dependencies = [
 
 [[package]]
 name = "enum-iterator"
-version = "2.1.0"
+version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c280b9e6b3ae19e152d8e31cf47f18389781e119d4013a2a2bb0180e5facc635"
+checksum = "a4549325971814bda7a44061bf3fe7e487d447cba01e4220a4b454d630d7a016"
 dependencies = [
  "enum-iterator-derive",
 ]
 
 [[package]]
 name = "enum-iterator-derive"
-version = "1.4.0"
+version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a1ab991c1362ac86c61ab6f556cff143daa22e5a15e4e189df818b2fd19fe65b"
+checksum = "685adfa4d6f3d765a26bc5dbc936577de9abf756c1feeb3089b01dd395034842"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2163,7 +2163,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-api"
-version = "0.1.104"
+version = "0.1.105"
 dependencies = [
  "indexmap 2.12.0",
  "kcl-error",
@@ -2174,7 +2174,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.104"
+version = "0.1.105"
 dependencies = [
  "anyhow",
  "clap",
@@ -2185,7 +2185,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.104"
+version = "0.1.105"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2194,7 +2194,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.104"
+version = "0.1.105"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2204,7 +2204,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.1.104"
+version = "0.1.105"
 dependencies = [
  "miette",
  "serde",
@@ -2229,7 +2229,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.104"
+version = "0.2.105"
 dependencies = [
  "anyhow",
  "clap",
@@ -2250,7 +2250,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.104"
+version = "0.1.105"
 dependencies = [
  "anyhow",
  "clap",
@@ -2270,7 +2270,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.104"
+version = "0.2.105"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -2313,7 +2313,7 @@ dependencies = [
  "miette",
  "mime_guess",
  "nalgebra-glm",
- "parse-display 0.10.0",
+ "parse-display",
  "pretty_assertions",
  "pyo3",
  "pyo3-stub-gen",
@@ -2352,7 +2352,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.104"
+version = "0.3.105"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -2368,7 +2368,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.104"
+version = "0.1.105"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2381,7 +2381,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.104"
+version = "0.1.105"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2395,7 +2395,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.104"
+version = "0.1.105"
 dependencies = [
  "anyhow",
  "bson",
@@ -2446,7 +2446,7 @@ dependencies = [
  "itertools 0.13.0",
  "log",
  "mime_guess",
- "parse-display 0.10.0",
+ "parse-display",
  "phonenumber",
  "rand 0.9.0",
  "reqwest",
@@ -2464,9 +2464,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.145"
+version = "0.2.146"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dfc08235cb273fb7b317f8f072dadfe523d809e4fca4dfcfee80490ef5965d74"
+checksum = "ccc0ba669ca1cfa644b863d84d78b287ce82df8bf7cec749a195c113ffbd303d"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2478,8 +2478,8 @@ dependencies = [
  "kittycad-modeling-cmds-macros",
  "kittycad-unit-conversion-derive",
  "measurements",
- "parse-display 0.9.1",
- "parse-display-derive 0.9.1",
+ "parse-display",
+ "parse-display-derive",
  "pyo3",
  "pyo3-stub-gen",
  "schemars",
@@ -3151,38 +3151,13 @@ dependencies = [
 
 [[package]]
 name = "parse-display"
-version = "0.9.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "914a1c2265c98e2446911282c6ac86d8524f495792c38c5bd884f80499c7538a"
-dependencies = [
- "parse-display-derive 0.9.1",
- "regex",
- "regex-syntax 0.8.5",
-]
-
-[[package]]
-name = "parse-display"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "287d8d3ebdce117b8539f59411e4ed9ec226e0a4153c7f55495c6070d68e6f72"
 dependencies = [
- "parse-display-derive 0.10.0",
+ "parse-display-derive",
  "regex",
  "regex-syntax 0.8.5",
-]
-
-[[package]]
-name = "parse-display-derive"
-version = "0.9.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2ae7800a4c974efd12df917266338e79a7a74415173caf7e70aa0a0707345281"
-dependencies = [
- "proc-macro2",
- "quote",
- "regex",
- "regex-syntax 0.8.5",
- "structmeta",
- "syn 2.0.108",
 ]
 
 [[package]]
@@ -4199,11 +4174,12 @@ dependencies = [
 
 [[package]]
 name = "serde_bytes"
-version = "0.11.17"
+version = "0.11.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8437fd221bde2d4ca316d61b90e337e9e702b3820b87d63caa9ba6c02bd06d96"
+checksum = "a5d440709e79d88e51ac01c4b72fc6cb7314017bb7da9eeff678aa94c10e3ea8"
 dependencies = [
  "serde",
+ "serde_core",
 ]
 
 [[package]]

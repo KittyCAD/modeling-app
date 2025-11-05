@@ -1809,7 +1809,7 @@ test.describe('Project id', () => {
         await fsp.writeFile(
           path.join(projectDir, 'project.toml'),
           `[settings.app]
-themeColor = "255"
+theme = "dark"
 `
         )
       })

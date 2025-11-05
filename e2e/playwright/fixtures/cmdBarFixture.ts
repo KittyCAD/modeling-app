@@ -29,11 +29,15 @@ export class CmdBarFixture {
   public page: Page
   public cmdBarOpenBtn!: Locator
   public cmdBarElement!: Locator
+  public cmdBarLoadingCheckingArguments!: Locator
 
   constructor(page: Page) {
     this.page = page
     this.cmdBarOpenBtn = this.page.getByTestId('command-bar-open-button')
     this.cmdBarElement = this.page.getByTestId('command-bar')
+    this.cmdBarLoadingCheckingArguments = this.page.getByTestId(
+      'command-bar-loading-checking-arguments'
+    )
   }
 
   get currentArgumentInput() {
@@ -198,9 +202,7 @@ export class CmdBarFixture {
   }
   expectState = async (expected: CmdBarSerialised) => {
     if (expected.stage === 'review') {
-      // TODO: this was added to fix flaky tests that #8595 caused,
-      // since increasing the timeout in the .poll call below didn't help.
-      await this.page.waitForTimeout(1000)
+      await this.cmdBarLoadingCheckingArguments.waitFor({ state: 'hidden' })
     }
 
     return expect.poll(() => this._serialiseCmdBar()).toEqual(expected)

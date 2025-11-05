@@ -1,4 +1,4 @@
-import type { WebSocketResponse } from '@kittycad/lib'
+import type { MlCopilotMode, WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
@@ -149,9 +149,6 @@ export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
 /** Toast id for the onboarding */
 export const ONBOARDING_TOAST_ID = 'onboarding-toast'
 
-/** Toast id for the download app toast on web */
-export const DOWNLOAD_APP_TOAST_ID = 'download-app-toast'
-
 /** Toast id for the wasm init err toast on web */
 export const WASM_INIT_FAILED_TOAST_ID = 'wasm-init-failed-toast'
 
@@ -292,6 +289,11 @@ export const MAX_PROJECT_NAME_LENGTH = 240
 export const REGEXP_UUIDV4 = /^[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i
 
 export const LOCAL_STORAGE_ML_CONVERSATIONS = 'mlConversations'
+/** URL query param key we watch for prompt input
+ *  we should never set this search param from the app,
+ *  only read and delete.
+ */
+export const SEARCH_PARAM_ML_PROMPT_KEY = 'ttc-prompt'
 
 /**
  * Used by the modeling sidebar to validate persisted pane IDs.
@@ -323,3 +325,6 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 export const LAYOUT_SAVE_THROTTLE = 500
 /** prefix for localStorage persisted layout data */
 export const LAYOUT_PERSIST_PREFIX = 'layout-'
+
+// Copilot input
+export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
