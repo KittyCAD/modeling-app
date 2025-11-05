@@ -1950,12 +1950,14 @@ sketch(on = XY) {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_two_points_coincident() {
-        let initial_source = "@settings(experimentalFeatures = allow)
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
   point1 = sketch2::point(at = [var 1, var 2])
   sketch2::point(at = [3, 4])
-}";
+}
+";
 
         let program = Program::parse(initial_source).unwrap().0.unwrap();
 
@@ -1979,7 +1981,8 @@ sketch(on = XY) {
             .unwrap();
         assert_eq!(
             src_delta.text.as_str(),
-            "@settings(experimentalFeatures = allow)
+            "\
+@settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
   point1 = sketch2::point(at = [var 1, var 2])
@@ -1988,10 +1991,9 @@ sketch(on = XY) {
 }
 "
         );
-        // TODO: This is wrong since it's missing the constraint object.
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            3,
+            4,
             "{:#?}",
             scene_delta.new_graph.objects
         );

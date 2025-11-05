@@ -13,7 +13,8 @@ s = sketch(on = XY) {
   l3 = sketch2::line(start = [var 20mm, var 21mm], end = [23mm, 24mm])
   l4 = sketch2::line(start = [30mm, 31mm], end = [var 32mm, var 33mm])
   sketch2::coincident([l3.start, l4.end])
-  sketch2::coincident([l3.start, [40mm, 41mm]])
+  l3.start.at[0] == 40mm
+  l3.start.at[1] == 41mm
 }
 
 assert(s.l1.start.at[0], isEqualTo = 1mm)

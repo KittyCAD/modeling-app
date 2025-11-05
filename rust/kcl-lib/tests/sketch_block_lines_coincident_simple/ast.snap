@@ -1318,43 +1318,19 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "expression": {
-                    "arguments": [],
-                    "callee": {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": "coincident",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "sketch2",
-                          "start": 0,
-                          "type": "Identifier"
-                        }
-                      ],
-                      "start": 0,
-                      "type": "Name"
-                    },
                     "commentStart": 0,
                     "end": 0,
-                    "moduleId": 0,
-                    "start": 0,
-                    "type": "CallExpressionKw",
-                    "type": "CallExpressionKw",
-                    "unlabeled": {
+                    "left": {
                       "commentStart": 0,
-                      "elements": [
-                        {
+                      "computed": true,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "commentStart": 0,
+                        "computed": false,
+                        "end": 0,
+                        "moduleId": 0,
+                        "object": {
                           "commentStart": 0,
                           "computed": false,
                           "end": 0,
@@ -1399,49 +1375,187 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
-                        {
+                        "property": {
+                          "abs_path": false,
                           "commentStart": 0,
-                          "elements": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "raw": "40mm",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 40.0,
-                                "suffix": "Mm"
-                              }
-                            },
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "moduleId": 0,
-                              "raw": "41mm",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 41.0,
-                                "suffix": "Mm"
-                              }
-                            }
-                          ],
                           "end": 0,
                           "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "at",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
+                          "type": "Name",
+                          "type": "Name"
+                        },
+                        "start": 0,
+                        "type": "MemberExpression",
+                        "type": "MemberExpression"
+                      },
+                      "property": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "raw": "0",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
                         }
-                      ],
+                      },
+                      "start": 0,
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
+                      "raw": "40mm",
                       "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 40.0,
+                        "suffix": "Mm"
+                      }
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "commentStart": 0,
+                      "computed": true,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "commentStart": 0,
+                        "computed": false,
+                        "end": 0,
+                        "moduleId": 0,
+                        "object": {
+                          "commentStart": 0,
+                          "computed": false,
+                          "end": 0,
+                          "moduleId": 0,
+                          "object": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "l3",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "property": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "start",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          "start": 0,
+                          "type": "MemberExpression",
+                          "type": "MemberExpression"
+                        },
+                        "property": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "at",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
+                        "start": 0,
+                        "type": "MemberExpression",
+                        "type": "MemberExpression"
+                      },
+                      "property": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "raw": "1",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 0,
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "41mm",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 41.0,
+                        "suffix": "Mm"
+                      }
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
                   },
                   "moduleId": 0,
                   "start": 0,

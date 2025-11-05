@@ -6,51 +6,54 @@ description: Variables in memory after executing sketch_block_points_coincident_
   "s": {
     "type": "Object",
     "value": {
-      "a1": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "mm": null,
-              "type": "Known",
-              "type": "Length"
-            }
-          },
-          {
-            "type": "Number",
-            "value": 2.0,
-            "ty": {
-              "mm": null,
-              "type": "Known",
-              "type": "Length"
+      "p1": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "objectId": 1,
+                "kind": {
+                  "point": {
+                    "position": [
+                      {
+                        "n": 1.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 2.0,
+                        "ty": {
+                          "mm": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "position": {
+                        "x": {
+                          "type": "Number",
+                          "value": 1.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 2.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "freedom": "Fixed"
+                  }
+                }
+              }
             }
           }
-        ]
-      },
-      "a4": {
-        "type": "HomArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 5.0,
-            "ty": {
-              "in": null,
-              "type": "Known",
-              "type": "Length"
-            }
-          },
-          {
-            "type": "Number",
-            "value": 6.0,
-            "ty": {
-              "in": null,
-              "type": "Known",
-              "type": "Length"
-            }
-          }
-        ]
+        }
       },
       "p2": {
         "type": "Segment",
@@ -58,7 +61,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
           "repr": {
             "Solved": {
               "segment": {
-                "objectId": 1,
+                "objectId": 2,
                 "kind": {
                   "point": {
                     "position": [
@@ -107,7 +110,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
           "repr": {
             "Solved": {
               "segment": {
-                "objectId": 2,
+                "objectId": 4,
                 "kind": {
                   "point": {
                     "position": [
@@ -139,6 +142,55 @@ description: Variables in memory after executing sketch_block_points_coincident_
                           "type": "Var",
                           "value": 4.0,
                           "units": "Mm"
+                        }
+                      }
+                    },
+                    "freedom": "Fixed"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "p4": {
+        "type": "Segment",
+        "value": {
+          "repr": {
+            "Solved": {
+              "segment": {
+                "objectId": 5,
+                "kind": {
+                  "point": {
+                    "position": [
+                      {
+                        "n": 5.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      },
+                      {
+                        "n": 6.0,
+                        "ty": {
+                          "in": null,
+                          "type": "Known",
+                          "type": "Length"
+                        }
+                      }
+                    ],
+                    "ctor": {
+                      "position": {
+                        "x": {
+                          "type": "Number",
+                          "value": 5.0,
+                          "units": "Inch"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 6.0,
+                          "units": "Inch"
                         }
                       }
                     },

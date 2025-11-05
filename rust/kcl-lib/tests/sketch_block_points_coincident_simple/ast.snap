@@ -63,45 +63,93 @@ description: Result of parsing sketch_block_points_coincident_simple.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "a1",
+                      "name": "p1",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
-                      "commentStart": 0,
-                      "elements": [
+                      "arguments": [
                         {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "raw": "1mm",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "Mm"
-                          }
-                        },
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "raw": "2mm",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "Mm"
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "at",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "raw": "1mm",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 1.0,
+                                  "suffix": "Mm"
+                                }
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "raw": "2mm",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 2.0,
+                                  "suffix": "Mm"
+                                }
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
                           }
                         }
                       ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "point",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [
+                          {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "sketch2",
+                            "start": 0,
+                            "type": "Identifier"
+                          }
+                        ],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
                     },
                     "moduleId": 0,
                     "start": 0,
@@ -283,7 +331,7 @@ description: Result of parsing sketch_block_points_coincident_simple.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "a1",
+                        "name": "p1",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -428,45 +476,93 @@ description: Result of parsing sketch_block_points_coincident_simple.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "a4",
+                      "name": "p4",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
-                      "commentStart": 0,
-                      "elements": [
+                      "arguments": [
                         {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "raw": "5in",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 5.0,
-                            "suffix": "Inch"
-                          }
-                        },
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "raw": "6in",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 6.0,
-                            "suffix": "Inch"
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "at",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "raw": "5in",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 5.0,
+                                  "suffix": "Inch"
+                                }
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "raw": "6in",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 6.0,
+                                  "suffix": "Inch"
+                                }
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
                           }
                         }
                       ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "point",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [
+                          {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "sketch2",
+                            "start": 0,
+                            "type": "Identifier"
+                          }
+                        ],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
                       "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
                     },
                     "moduleId": 0,
                     "start": 0,
@@ -496,7 +592,7 @@ description: Result of parsing sketch_block_points_coincident_simple.kcl
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "a4",
+                            "name": "p4",
                             "start": 0,
                             "type": "Identifier"
                           },
@@ -653,22 +749,49 @@ description: Result of parsing sketch_block_points_coincident_simple.kcl
               "end": 0,
               "moduleId": 0,
               "object": {
-                "abs_path": false,
                 "commentStart": 0,
+                "computed": false,
                 "end": 0,
                 "moduleId": 0,
-                "name": {
+                "object": {
+                  "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "s",
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "s",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
-                "path": [],
+                "property": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "p1",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                },
                 "start": 0,
-                "type": "Name",
-                "type": "Name"
+                "type": "MemberExpression",
+                "type": "MemberExpression"
               },
               "property": {
                 "abs_path": false,
@@ -679,7 +802,7 @@ description: Result of parsing sketch_block_points_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "a1",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -779,22 +902,49 @@ description: Result of parsing sketch_block_points_coincident_simple.kcl
               "end": 0,
               "moduleId": 0,
               "object": {
-                "abs_path": false,
                 "commentStart": 0,
+                "computed": false,
                 "end": 0,
                 "moduleId": 0,
-                "name": {
+                "object": {
+                  "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "s",
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "s",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
-                "path": [],
+                "property": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "p1",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                },
                 "start": 0,
-                "type": "Name",
-                "type": "Name"
+                "type": "MemberExpression",
+                "type": "MemberExpression"
               },
               "property": {
                 "abs_path": false,
@@ -805,7 +955,7 @@ description: Result of parsing sketch_block_points_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "a1",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -1521,22 +1671,49 @@ description: Result of parsing sketch_block_points_coincident_simple.kcl
               "end": 0,
               "moduleId": 0,
               "object": {
-                "abs_path": false,
                 "commentStart": 0,
+                "computed": false,
                 "end": 0,
                 "moduleId": 0,
-                "name": {
+                "object": {
+                  "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "s",
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "s",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
-                "path": [],
+                "property": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "p4",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                },
                 "start": 0,
-                "type": "Name",
-                "type": "Name"
+                "type": "MemberExpression",
+                "type": "MemberExpression"
               },
               "property": {
                 "abs_path": false,
@@ -1547,7 +1724,7 @@ description: Result of parsing sketch_block_points_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "a4",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -1651,22 +1828,49 @@ description: Result of parsing sketch_block_points_coincident_simple.kcl
               "end": 0,
               "moduleId": 0,
               "object": {
-                "abs_path": false,
                 "commentStart": 0,
+                "computed": false,
                 "end": 0,
                 "moduleId": 0,
-                "name": {
+                "object": {
+                  "abs_path": false,
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "s",
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "s",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
-                "path": [],
+                "property": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": "p4",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                },
                 "start": 0,
-                "type": "Name",
-                "type": "Name"
+                "type": "MemberExpression",
+                "type": "MemberExpression"
               },
               "property": {
                 "abs_path": false,
@@ -1677,7 +1881,7 @@ description: Result of parsing sketch_block_points_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "a4",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
