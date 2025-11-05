@@ -1,5 +1,5 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { SidebarId } from '@src/components/layout/areas'
+import type { SidebarId } from '@src/components/layout/areas'
 
 test.describe('Copilot tests', () => {
   test('Happy path: new project, easy prompt, good result', async ({
