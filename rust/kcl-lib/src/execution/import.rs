@@ -378,6 +378,27 @@ fn get_name_of_format(type_: InputFormat3d) -> &'static str {
 mod test {
     use super::*;
 
+    macro_rules! test_import_format_from_extension {
+        ($name:ident, $xtn:expr, $fmt:path) => {
+            #[test]
+            fn $name() {
+                let x = get_import_format_from_extension($xtn).unwrap();
+                assert!(matches!(x, $fmt(_)));
+            }
+        };
+    }
+
+    test_import_format_from_extension!(test_xtn_step, "step", InputFormat3d::Step);
+    test_import_format_from_extension!(test_xtn_stp, "stp", InputFormat3d::Step);
+    test_import_format_from_extension!(test_xtn_step_upper, "STEP", InputFormat3d::Step);
+    test_import_format_from_extension!(test_xtn_step_spongebob, "STeP", InputFormat3d::Step);
+    test_import_format_from_extension!(test_xtn_fbx, "fbx", InputFormat3d::Fbx);
+    test_import_format_from_extension!(test_xtn_gltf, "gltf", InputFormat3d::Gltf);
+    test_import_format_from_extension!(test_xtn_obj, "obj", InputFormat3d::Obj);
+    test_import_format_from_extension!(test_xtn_ply, "ply", InputFormat3d::Ply);
+    test_import_format_from_extension!(test_xtn_sldprt, "sldprt", InputFormat3d::Sldprt);
+    test_import_format_from_extension!(test_xtn_stl, "stl", InputFormat3d::Stl);
+
     #[test]
     fn annotations() {
         // no annotations
