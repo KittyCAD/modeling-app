@@ -25,6 +25,8 @@ import {
   sceneEntitiesManager,
 } from '@src/lib/singletons'
 import {
+  SEGMENT_TYPE_LINE,
+  SEGMENT_TYPE_POINT,
   type SegmentUtils,
   segmentUtilsMap,
 } from '@src/machines/sketchSolve/segments'
@@ -42,6 +44,7 @@ import {
   SKETCH_LAYER,
   SKETCH_SOLVE_GROUP,
 } from '@src/clientSideScene/sceneUtils'
+import type { Themes } from '@src/lib/theme'
 
 const equipTools = Object.freeze({
   centerRectTool,
@@ -52,6 +55,98 @@ const equipTools = Object.freeze({
 
 const CHILD_TOOL_ID = 'child tool'
 const CHILD_TOOL_DONE_EVENT = `xstate.done.actor.${CHILD_TOOL_ID}`
+
+/**
+ * Helper function to build a segment ctor from a scene graph object.
+ * Returns null if the object is not a segment or if required data is missing.
+ */
+function buildSegmentCtorFromObject(
+  obj: ApiObject,
+  objects: Array<ApiObject>
+): Parameters<SegmentUtils['update']>[0]['input'] | null {
+  if (obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point') {
+    return {
+      type: 'Point',
+      position: {
+        x: {
+          type: 'Number',
+          value: obj.kind.segment.position.x.value,
+          units: 'Mm',
+        },
+        y: {
+          type: 'Number',
+          value: obj.kind.segment.position.y.value,
+          units: 'Mm',
+        },
+      },
+    }
+  } else if (
+    obj?.kind?.type === 'Segment' &&
+    obj.kind?.segment?.type === 'Line'
+  ) {
+    const startPoint = getLinkedPoint({
+      objects,
+      pointId: obj.kind.segment.start,
+    })
+    const endPoint = getLinkedPoint({
+      objects,
+      pointId: obj.kind.segment.end,
+    })
+    if (!startPoint || !endPoint) {
+      console.error('Failed to find linked points for Line segment', obj)
+      return null
+    }
+    return {
+      type: 'Line',
+      start: startPoint,
+      end: endPoint,
+    }
+  }
+  return null
+}
+
+/**
+ * Helper function to update a segment group with the given input and selection state.
+ * Determines the correct segment update method based on the input type.
+ */
+function updateSegmentGroup({
+  group,
+  input,
+  selectedIds,
+  scale,
+  theme,
+}: {
+  group: Group
+  input: Parameters<SegmentUtils['update']>[0]['input']
+  selectedIds: Array<number>
+  scale: number
+  theme: Themes
+}): void {
+  const idNum = Number(group.name)
+  if (Number.isNaN(idNum)) {
+    return
+  }
+
+  if (input.type === 'Point') {
+    void segmentUtilsMap.PointSegment.update({
+      input,
+      theme,
+      scale,
+      id: idNum,
+      group,
+      selectedIds,
+    })
+  } else if (input.type === 'Line') {
+    void segmentUtilsMap.LineSegment.update({
+      input,
+      theme,
+      scale,
+      id: idNum,
+      group,
+      selectedIds,
+    })
+  }
+}
 
 function getLinkedPoint({
   pointId,
@@ -89,6 +184,7 @@ export type SketchSolveMachineEvent =
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
   | { type: 'coincident' }
+  | { type: 'LinesEqualLength' }
   | { type: 'update selected ids'; data: { selectedIds?: Array<number> } }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
   | {
@@ -105,6 +201,7 @@ type SketchSolveContext = {
   selectedIds: Array<number>
   sketchExecOutcome?: {
     kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
   }
   // Plane/face data from the 'animate-to-sketch-solve' actor
   initialPlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane
@@ -173,7 +270,10 @@ export const sketchSolveMachine = setup({
           }
         },
         onClick: async ({ selected, mouseEvent }) => {
-          const group = getParentGroup(selected, ['point'])
+          const group = getParentGroup(selected, [
+            SEGMENT_TYPE_POINT,
+            SEGMENT_TYPE_LINE,
+          ])
 
           if (group) {
             const newSelectedIds = [Number(group?.name)]
@@ -248,41 +348,46 @@ export const sketchSolveMachine = setup({
           selectedIds: context.selectedIds.filter((id) => id !== first),
         }
       }
+      const result = event.data.selectedIds
+        ? Array.from(
+            new Set([...context.selectedIds, ...event.data.selectedIds])
+          )
+        : []
       return {
-        selectedIds: event.data.selectedIds
-          ? Array.from(
-              new Set([...context.selectedIds, ...event.data.selectedIds])
-            )
-          : [],
+        selectedIds: result,
       }
     }),
     'refresh selection styling': ({ context }) => {
-      // Update selection styling for all existing sketch-solve point segments
-      const sketchSceneGroup =
-        sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-      if (!sketchSceneGroup) return
-      sketchSceneGroup.children.forEach((child) => {
-        const group = child as Group
-        if (!(group instanceof Group)) return
-        const idNum = Number(group.name)
-        if (Number.isNaN(idNum)) return
-        const handle = group.getObjectByName('handle')
-        if (!handle) return
-        const x = handle.position.x * group.scale.x
-        const y = handle.position.y * group.scale.y
-        void segmentUtilsMap.PointSegment.update({
-          input: {
-            type: 'Point',
-            position: {
-              x: { type: 'Number', value: x, units: 'Mm' },
-              y: { type: 'Number', value: y, units: 'Mm' },
-            },
-          },
-          theme: sceneInfra.theme,
-          scale: group.scale.x,
-          id: idNum,
+      // Update selection styling for all existing sketch-solve segments
+      if (!context.sketchExecOutcome?.sceneGraphDelta) {
+        return
+      }
+      const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
+      const objects = sceneGraphDelta.new_graph.objects
+      const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+      const factor =
+        sceneInfra.camControls.camera instanceof OrthographicCamera
+          ? orthoFactor
+          : orthoFactor
+
+      sceneGraphDelta.new_graph.objects.forEach((obj) => {
+        if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
+          return
+        }
+        const group = sceneInfra.scene.getObjectByName(String(obj.id))
+        if (!(group instanceof Group)) {
+          return
+        }
+        const ctor = buildSegmentCtorFromObject(obj, objects)
+        if (!ctor) {
+          return
+        }
+        updateSegmentGroup({
           group,
+          input: ctor,
           selectedIds: context.selectedIds,
+          scale: factor,
+          theme: sceneInfra.theme,
         })
       })
     },
@@ -359,7 +464,6 @@ export const sketchSolveMachine = setup({
             }),
         })
           .then((group) => {
-            console.log('adding group', group)
             const sketchSceneGroup =
               sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
             if (sketchSceneGroup) {
@@ -378,11 +482,9 @@ export const sketchSolveMachine = setup({
         if (sceneGraphDelta.new_objects.includes(obj.id)) {
           return
         }
-        if (obj.kind.type === 'Sketch') {
+        if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
           return
         }
-        let update: SegmentUtils['update'] | null = null
-        let ctor: Parameters<SegmentUtils['update']>[0]['input'] | null = null
         const group = sceneInfra.scene.getObjectByName(String(obj.id))
         if (!(group instanceof Group)) {
           console.error(
@@ -392,63 +494,24 @@ export const sketchSolveMachine = setup({
           )
           return
         }
-        if (obj.kind.type === 'Segment' && obj.kind.segment.type === 'Point') {
-          update = segmentUtilsMap.PointSegment.update
-          ctor = {
-            type: 'Point',
-            position: {
-              x: {
-                type: 'Number',
-                value: obj.kind.segment.position.x.value,
-                units: 'Mm',
-              },
-              y: {
-                type: 'Number',
-                value: obj.kind.segment.position.y.value,
-                units: 'Mm',
-              },
-            },
-          }
-        } else if (
-          obj?.kind?.type === 'Segment' &&
-          obj.kind?.segment?.type === 'Line'
-        ) {
-          update = segmentUtilsMap.LineSegment.update
-          const startPoint = getLinkedPoint({
-            objects,
-            pointId: obj.kind.segment.start,
-          })
-          const endPoint = getLinkedPoint({
-            objects,
-            pointId: obj.kind.segment.end,
-          })
-          if (!startPoint || !endPoint) {
-            console.error('Failed to find linked points for Line segment', obj)
-            return
-          }
-          ctor = {
-            type: 'Line',
-            start: startPoint,
-            end: endPoint,
-          }
-        }
-        if (!update || !ctor) {
+        const ctor = buildSegmentCtorFromObject(obj, objects)
+        if (!ctor) {
           return
         }
-        update({
-          input: ctor,
-          theme: sceneInfra.theme,
-          scale: factor,
-          id: obj.id,
+        updateSegmentGroup({
           group,
+          input: ctor,
           selectedIds: context.selectedIds,
+          scale: factor,
+          theme: sceneInfra.theme,
         })
-          ?.then(() => {})
-          .catch(() => {
-            console.error('Failed to update PointSegment for object', obj.id)
-          })
       })
-      return { sketchExecOutcome: event.data }
+      return {
+        sketchExecOutcome: {
+          kclSource: event.data.kclSource,
+          sceneGraphDelta: event.data.sceneGraphDelta,
+        },
+      }
     }),
     'spawn tool': assign(({ event, spawn, context }) => {
       // Determine which tool to spawn based on event type
@@ -523,6 +586,26 @@ export const sketchSolveMachine = setup({
           {
             type: 'Coincident',
             points: context.selectedIds,
+          },
+          await jsAppSettings()
+        )
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
+    LinesEqualLength: {
+      actions: async ({ self, context }) => {
+        // TODO this is not how LinesEqualLength should operate long term, as it should be an equipable tool
+        const result = await rustContext.addConstraint(
+          0,
+          0,
+          {
+            type: 'LinesEqualLength',
+            lines: context.selectedIds,
           },
           await jsAppSettings()
         )

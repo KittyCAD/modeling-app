@@ -1278,6 +1278,20 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [],
         isActive: (state) => false,
       },
+      {
+        id: 'equalLength',
+        onClick: ({ modelingSend, isActive }) =>
+          modelingSend({
+            type: 'LinesEqualLength',
+          }),
+        icon: 'equal',
+        status: 'available',
+        title: 'LinesEqualLength',
+        hotkey: 'L',
+        description: 'make things LinesEqualLength',
+        links: [],
+        isActive: (state) => false,
+      },
     ],
   },
 }

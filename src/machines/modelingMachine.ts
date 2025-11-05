@@ -362,6 +362,9 @@ export type ModelingMachineEvent =
   | {
       type: 'coincident'
     }
+  | {
+      type: 'LinesEqualLength'
+    }
   | { type: 'unequip tool' }
   | {
       type: 'sketch solve tool changed'
@@ -5776,6 +5779,9 @@ export const modelingMachine = setup({
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         coincident: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        LinesEqualLength: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
       },

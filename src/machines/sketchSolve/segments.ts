@@ -21,7 +21,14 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
 import { createLineShape } from '@src/clientSideScene/segments'
 import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
-import { KCL_DEFAULT_COLOR, SKETCH_SELECTION_RGB } from '@src/lib/constants'
+import {
+  KCL_DEFAULT_COLOR,
+  SKETCH_SELECTION_COLOR,
+  SKETCH_SELECTION_RGB_STR,
+} from '@src/lib/constants'
+
+export const SEGMENT_TYPE_POINT = 'POINT'
+export const SEGMENT_TYPE_LINE = 'LINE'
 
 interface CreateSegmentArgs {
   input: SegmentCtor
@@ -202,8 +209,6 @@ class PointSegment implements SegmentUtils {
     const cssObject = new CSS2DObject(handleDiv)
     cssObject.userData.type = 'handle'
     cssObject.name = 'handle'
-    // Store reference to the group on the CSS2DObject for potential future use
-    cssObject.userData.group = segmentGroup
 
     segmentGroup.name = args.id.toString()
     segmentGroup.userData = {
@@ -242,11 +247,11 @@ class PointSegment implements SegmentUtils {
       const isSelected = args.selectedIds.includes(args.id)
       // TODO don't have these colours hardcoded here
       el.style.backgroundColor = isSelected
-        ? `rgb(${SKETCH_SELECTION_RGB})`
+        ? `rgb(${SKETCH_SELECTION_RGB_STR})`
         : KCL_DEFAULT_COLOR
 
       el.style.border = isSelected
-        ? `1px solid rgba(${SKETCH_SELECTION_RGB}, 0.5)`
+        ? `1px solid rgba(${SKETCH_SELECTION_RGB_STR}, 0.5)`
         : '1px solid #CCCCCC'
       el.style.backgroundClip = 'padding-box'
     }
@@ -293,7 +298,7 @@ class LineSegment implements SegmentUtils {
     mesh.name = STRAIGHT_SEGMENT_BODY
     segmentGroup.name = args.id.toString()
     segmentGroup.userData = {
-      type: 'STRAIGHT_SEGMENT_BODY',
+      type: SEGMENT_TYPE_LINE,
     }
 
     segmentGroup.add(mesh)
@@ -345,6 +350,12 @@ class LineSegment implements SegmentUtils {
       bevelEnabled: false,
       extrudePath: line,
     })
+
+    // Update mesh color based on selection
+    const isSelected = args.selectedIds.includes(args.id)
+    straightSegmentBody.material.color.set(
+      isSelected ? SKETCH_SELECTION_COLOR : KCL_DEFAULT_COLOR
+    )
   }
 }
 

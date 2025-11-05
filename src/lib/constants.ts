@@ -85,7 +85,14 @@ export const KCL_DEFAULT_ORIGIN_2D = `[0, 0]`
 export const KCL_DEFAULT_COLOR = `#3c73ff`
 
 /** The sketch mode revamp selection rgb values */
-export const SKETCH_SELECTION_RGB = '255, 183, 39'
+export const SKETCH_SELECTION_RGB = [255, 183, 39]
+/** The sketch mode revamp selection rgb values as a string */
+export const SKETCH_SELECTION_RGB_STR = SKETCH_SELECTION_RGB.join(', ')
+/** The sketch mode revamp selection rgb values as HEX */
+export const SKETCH_SELECTION_COLOR =
+  (SKETCH_SELECTION_RGB[0] << 16) |
+  (SKETCH_SELECTION_RGB[1] << 8) |
+  SKETCH_SELECTION_RGB[2]
 
 /** The default KCL font point size expression */
 export const KCL_DEFAULT_FONT_POINT_SIZE = `36`
