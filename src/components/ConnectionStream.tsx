@@ -222,7 +222,7 @@ export const ConnectionStream = (props: {
     },
     infiniteDectionLoopCallback: () => {
       setShowManualConnect(true)
-    }
+    },
   })
   useOnVitestEngineOnline({
     callback: () => {
