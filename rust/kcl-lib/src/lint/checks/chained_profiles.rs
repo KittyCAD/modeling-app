@@ -391,4 +391,30 @@ profile2 = circle(sketch1, center = [0, 0], radius = 5)
 extrude([profile1, profile2], length = 1)
 "
     );
+
+    test_finding!(
+        z0004_bad_circles_extrude_with_comment_in_middle,
+        lint_profiles_should_not_be_chained,
+        Z0004,
+        "\
+sketch1 = startSketchOn(XY)
+// First circle.
+profile1 = circle(sketch1, center = [0, 0], radius = 5)
+// Second circle.
+  |> circle(center = [0, 0], radius = 5)
+extrude(profile1, length = 1)
+",
+        "Profiles should not be chained together in a pipeline.",
+        Some(
+            "\
+sketch1 = startSketchOn(XY)
+// First circle.
+profile1 = circle(sketch1, center = [0, 0], radius = 5)
+  // Second circle.
+profile2 = circle(sketch1, center = [0, 0], radius = 5)
+extrude([profile1, profile2], length = 1)
+"
+            .to_owned()
+        )
+    );
 }
