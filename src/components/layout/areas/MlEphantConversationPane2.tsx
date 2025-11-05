@@ -18,7 +18,7 @@ import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { BillingActor } from '@src/machines/billingMachine'
 import { useSelector } from '@xstate/react'
-import type { User, MlCopilotServerMessage } from '@kittycad/lib'
+import type { User, MlCopilotServerMessage, MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
 
@@ -44,7 +44,7 @@ export const MlEphantConversationPane2 = (props: {
     return actor.context
   })
 
-  const onProcess = async (request: string) => {
+  const onProcess = async (request: string, mode: MlCopilotMode) => {
     if (props.theProject === undefined) {
       console.warn('theProject is `undefined` - should not be possible')
       return
@@ -75,6 +75,7 @@ export const MlEphantConversationPane2 = (props: {
       projectFiles,
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
+      mode,
     })
   }
 
@@ -200,8 +201,8 @@ export const MlEphantConversationPane2 = (props: {
       ]}
       conversation={conversation}
       billingContext={billingContext}
-      onProcess={(request: string) => {
-        onProcess(request).catch(reportRejection)
+      onProcess={(request: string, mode: MlCopilotMode) => {
+        onProcess(request, mode).catch(reportRejection)
       }}
       disabled={isProcessing}
       hasPromptCompleted={isProcessing}

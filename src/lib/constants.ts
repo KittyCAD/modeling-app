@@ -1,4 +1,4 @@
-import type { WebSocketResponse } from '@kittycad/lib'
+import type { MlCopilotMode, WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
@@ -325,3 +325,6 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 export const LAYOUT_SAVE_THROTTLE = 500
 /** prefix for localStorage persisted layout data */
 export const LAYOUT_PERSIST_PREFIX = 'layout-'
+
+// Copilot input
+export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'

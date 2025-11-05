@@ -20,12 +20,12 @@ union(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | `[Solid; 2+]` | The solids to union. | Yes |
+| `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 2+] | The solids to union. | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 
 ### Returns
 
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
 
 
 ### Examples

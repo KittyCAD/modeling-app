@@ -9,6 +9,7 @@ import {
   BillingRemainingMode,
 } from '@kittycad/react-shared'
 import { type BillingContext } from '@src/machines/billingMachine'
+import type { MlCopilotMode } from '@kittycad/lib'
 import { Popover, Transition } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
@@ -18,23 +19,89 @@ import type {
 } from '@src/machines/mlEphantManagerMachine2'
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
+import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 
 export interface MlEphantConversationProps {
   isLoading: boolean
   conversation?: Conversation
   contexts: MlEphantManagerPromptContext[]
   billingContext: BillingContext
-  onProcess: (request: string) => void
+  onProcess: (request: string, mode: MlCopilotMode) => void
   disabled?: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
   defaultPrompt?: string
 }
 
+const ML_COPILOT_MODE_META = Object.freeze({
+  fast: {
+    pretty: 'Fast',
+    icon: (props: { className: string }) => (
+      <CustomIcon name="stopwatch" className={props.className} />
+    ),
+  },
+  thoughtful: {
+    pretty: 'Thoughtful',
+    icon: (props: { className: string }) => (
+      <CustomIcon name="brain" className={props.className} />
+    ),
+  },
+} as const)
+
+const ML_COPILOT_MODE: Readonly<MlCopilotMode[]> = Object.freeze([
+  'fast',
+  'thoughtful',
+])
+
+export interface MlCopilotModesProps {
+  onClick: (mode: MlCopilotMode) => void
+  children: ReactNode
+  current: MlCopilotMode
+}
+
+const MlCopilotModes = (props: MlCopilotModesProps) => {
+  const modes = []
+  for (const mode of ML_COPILOT_MODE) {
+    modes.push(
+      <div
+        tabIndex={0}
+        role="button"
+        key={mode}
+        onClick={() => props.onClick(mode)}
+        className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode ? 'border-primary' : ''}`}
+        data-testid={`ml-copilot-effort-button-${mode}`}
+      >
+        {ML_COPILOT_MODE_META[mode].icon({ className: 'w-5 h-5' })}
+        {ML_COPILOT_MODE_META[mode].pretty}
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex-none">
+      <Popover className="relative">
+        <Popover.Button
+          data-testid="ml-copilot-efforts-button"
+          className="h-7 bg-default flex flex-row items-center gap-1 pl-1 pr-2"
+        >
+          {props.children}
+          <CustomIcon name="caretUp" className="w-5 h-5 ui-open:rotate-180" />
+        </Popover.Button>
+        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
+          {modes}
+        </Popover.Panel>
+      </Popover>
+    </div>
+  )
+}
+
 export interface MlEphantExtraInputsProps {
   // TODO: Expand to a list with no type restriction
   context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
+  mode: MlCopilotMode
+  onSetMode: (mode: MlCopilotMode) => void
 }
+
 export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
   return (
     <div className="flex-1 flex min-w-0 items-end">
@@ -43,6 +110,12 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
+        <MlCopilotModes onClick={props.onSetMode} current={props.mode}>
+          {ML_COPILOT_MODE_META[props.mode].icon({
+            className: 'w-5 h-5',
+          })}
+          {ML_COPILOT_MODE_META[props.mode].pretty}
+        </MlCopilotModes>
       </div>
     </div>
   )
@@ -69,7 +142,7 @@ const MlCopilotSelectionsContext = (props: {
 }) => {
   const selectionText = getSelectionTypeDisplayText(props.selections.data)
   return selectionText ? (
-    <button className="group/tool flex-none flex flex-row gap-1 items-center p-0 pr-2">
+    <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 pl-1 pr-2">
       <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />
       {selectionText}
     </button>
@@ -129,6 +202,7 @@ export const MlEphantConversationInput = (
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const [value, setValue] = useState<string>('')
   const [heightConvo, setHeightConvo] = useState(0)
+  const [mode, setMode] = useState<MlCopilotMode>(DEFAULT_ML_COPILOT_MODE)
   const [lettersForAnimation, setLettersForAnimation] = useState<ReactNode[]>(
     []
   )
@@ -145,7 +219,7 @@ export const MlEphantConversationInput = (
 
     setHeightConvo(refDiv.current.getBoundingClientRect().height)
 
-    props.onProcess(value)
+    props.onProcess(value, mode)
 
     setLettersForAnimation(
       value.split('').map((c, index) => (
@@ -213,14 +287,18 @@ export const MlEphantConversationInput = (
         </div>
         {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <div className="flex items-end">
-          <MlEphantExtraInputs context={selectionsContext} />
+          <MlEphantExtraInputs
+            context={selectionsContext}
+            mode={mode}
+            onSetMode={setMode}
+          />
           <button
             data-testid="ml-ephant-conversation-input-button"
             disabled={props.disabled}
             onClick={onClick}
             className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
           >
-            <CustomIcon name="arrowUp" className="w-5 h-5 animate-bounce" />
+            <CustomIcon name="caretUp" className="w-5 h-5 animate-bounce" />
           </button>
         </div>
       </div>
@@ -235,9 +313,9 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState<boolean>(true)
 
-  const onProcess = (request: string) => {
+  const onProcess = (request: string, mode: MlCopilotMode) => {
     setAutoScroll(true)
-    props.onProcess(request)
+    props.onProcess(request, mode)
   }
 
   useEffect(() => {
