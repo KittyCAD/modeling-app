@@ -452,22 +452,49 @@ description: Result of parsing sketch_block_line_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l1",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -478,7 +505,7 @@ description: Result of parsing sketch_block_line_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l1",
+                    "name": "start",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -500,7 +527,7 @@ description: Result of parsing sketch_block_line_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "start",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -605,22 +632,49 @@ description: Result of parsing sketch_block_line_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l1",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -631,7 +685,7 @@ description: Result of parsing sketch_block_line_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l1",
+                    "name": "start",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -653,7 +707,7 @@ description: Result of parsing sketch_block_line_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "start",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },

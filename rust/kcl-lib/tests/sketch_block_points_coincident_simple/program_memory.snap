@@ -58,6 +58,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
           "repr": {
             "Solved": {
               "segment": {
+                "objectId": 1,
                 "kind": {
                   "point": {
                     "position": [
@@ -78,6 +79,20 @@ description: Variables in memory after executing sketch_block_points_coincident_
                         }
                       }
                     ],
+                    "ctor": {
+                      "position": {
+                        "x": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        }
+                      }
+                    },
                     "freedom": "Fixed"
                   }
                 }
@@ -92,6 +107,7 @@ description: Variables in memory after executing sketch_block_points_coincident_
           "repr": {
             "Solved": {
               "segment": {
+                "objectId": 2,
                 "kind": {
                   "point": {
                     "position": [
@@ -112,6 +128,20 @@ description: Variables in memory after executing sketch_block_points_coincident_
                         }
                       }
                     ],
+                    "ctor": {
+                      "position": {
+                        "x": {
+                          "type": "Var",
+                          "value": 3.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 4.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
                     "freedom": "Fixed"
                   }
                 }

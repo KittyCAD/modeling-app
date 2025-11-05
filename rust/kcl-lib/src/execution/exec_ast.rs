@@ -23,7 +23,7 @@ use crate::{
         types::{NumericType, PrimitiveType, RuntimeType},
     },
     fmt,
-    front::{Freedom, Object},
+    front::{Freedom, Object, PointCtor},
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
@@ -1762,89 +1762,173 @@ impl Node<MemberExpression> {
                     },
                 },
                 "start" => match &segment.repr {
-                    SegmentRepr::Unsolved { segment } => {
-                        match &segment.kind {
-                            UnsolvedSegmentKind::Point { .. } => Err(KclError::new_undefined_value(
-                                KclErrorDetails::new(
-                                    format!("Property '{property}' not found in point segment"),
-                                    vec![self.clone().into()],
-                                ),
-                                None,
-                            )),
-                            UnsolvedSegmentKind::Line { start, .. } => {
-                                // TODO: assert that types of all elements are the same.
-                                Ok(KclValue::HomArray {
-                                    value: vec![
-                                        KclValue::from_unsolved_expr(start[0].clone(), segment.meta.clone()),
-                                        KclValue::from_unsolved_expr(start[1].clone(), segment.meta.clone()),
-                                    ],
-                                    ty: RuntimeType::any(),
-                                })
-                            }
-                        }
-                    }
-                    SegmentRepr::Solved { segment } => {
-                        match &segment.kind {
-                            SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
-                                KclErrorDetails::new(
-                                    format!("Property '{property}' not found in point segment"),
-                                    vec![self.clone().into()],
-                                ),
-                                None,
-                            )),
-                            SegmentKind::Line { start, .. } => {
-                                // TODO: assert that types of all elements are the same.
-                                Ok(KclValue::array_from_point2d(
-                                    [start[0].n, start[1].n],
-                                    start[0].ty,
-                                    segment.meta.clone(),
-                                ))
-                            }
-                        }
-                    }
-                    SegmentRepr::InEngine { segment, .. } => {
-                        match &segment.kind {
-                            SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
-                                KclErrorDetails::new(
-                                    format!("Property '{property}' not found in point segment"),
-                                    vec![self.clone().into()],
-                                ),
-                                None,
-                            )),
-                            SegmentKind::Line { start, .. } => {
-                                // TODO: assert that types of all elements are the same.
-                                Ok(KclValue::array_from_point2d(
-                                    [start[0].n, start[1].n],
-                                    start[0].ty,
-                                    segment.meta.clone(),
-                                ))
-                            }
-                        }
-                    }
+                    SegmentRepr::Unsolved { segment } => match &segment.kind {
+                        UnsolvedSegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in point segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                        UnsolvedSegmentKind::Line {
+                            start,
+                            ctor,
+                            start_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: UnsolvedSegment {
+                                        object_id: *start_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                    },
+                    SegmentRepr::Solved { segment } => match &segment.kind {
+                        SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in point segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                        SegmentKind::Line {
+                            start,
+                            ctor,
+                            start_object_id,
+                            start_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Segment {
+                                        object_id: *start_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                            freedom: *start_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                    },
+                    SegmentRepr::InEngine { id, segment, .. } => match &segment.kind {
+                        SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in point segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                        SegmentKind::Line {
+                            start,
+                            ctor,
+                            start_object_id,
+                            start_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::InEngine {
+                                    // TODO: sketch-api: points don't have an
+                                    // engine ID. Using the lines ID for now.
+                                    id: *id,
+                                    segment: Segment {
+                                        object_id: *start_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: start.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                            freedom: *start_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                    },
                 },
                 "end" => match &segment.repr {
-                    SegmentRepr::Unsolved { segment } => {
-                        match &segment.kind {
-                            UnsolvedSegmentKind::Point { .. } => Err(KclError::new_undefined_value(
-                                KclErrorDetails::new(
-                                    format!("Property '{property}' not found in point segment"),
-                                    vec![self.clone().into()],
-                                ),
-                                None,
-                            )),
-                            UnsolvedSegmentKind::Line { end, .. } => {
-                                // TODO: assert that types of all elements are the same.
-                                Ok(KclValue::HomArray {
-                                    value: vec![
-                                        KclValue::from_unsolved_expr(end[0].clone(), segment.meta.clone()),
-                                        KclValue::from_unsolved_expr(end[1].clone(), segment.meta.clone()),
-                                    ],
-                                    ty: RuntimeType::any(),
-                                })
-                            }
-                        }
-                    }
-                    SegmentRepr::Solved { segment } => {
+                    SegmentRepr::Unsolved { segment } => match &segment.kind {
+                        UnsolvedSegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in point segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                        UnsolvedSegmentKind::Line {
+                            end,
+                            ctor,
+                            end_object_id,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Unsolved {
+                                    segment: UnsolvedSegment {
+                                        object_id: *end_object_id,
+                                        kind: UnsolvedSegmentKind::Point {
+                                            position: end.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.end.clone(),
+                                            }),
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                    },
+                    SegmentRepr::Solved { segment } => match &segment.kind {
+                        SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("Property '{property}' not found in point segment"),
+                                vec![self.clone().into()],
+                            ),
+                            None,
+                        )),
+                        SegmentKind::Line {
+                            end,
+                            ctor,
+                            end_object_id,
+                            end_freedom,
+                            ..
+                        } => Ok(KclValue::Segment {
+                            value: Box::new(AbstractSegment {
+                                repr: SegmentRepr::Solved {
+                                    segment: Segment {
+                                        object_id: *end_object_id,
+                                        kind: SegmentKind::Point {
+                                            position: end.clone(),
+                                            ctor: Box::new(PointCtor {
+                                                position: ctor.start.clone(),
+                                            }),
+                                            freedom: *end_freedom,
+                                        },
+                                        meta: segment.meta.clone(),
+                                    },
+                                },
+                                meta: segment.meta.clone(),
+                            }),
+                        }),
+                    },
+                    SegmentRepr::InEngine { id, segment, .. } => {
                         match &segment.kind {
                             SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
                                 KclErrorDetails::new(
@@ -1853,33 +1937,34 @@ impl Node<MemberExpression> {
                                 ),
                                 None,
                             )),
-                            SegmentKind::Line { end, .. } => {
-                                // TODO: assert that types of all elements are the same.
-                                Ok(KclValue::array_from_point2d(
-                                    [end[0].n, end[1].n],
-                                    end[0].ty,
-                                    segment.meta.clone(),
-                                ))
-                            }
-                        }
-                    }
-                    SegmentRepr::InEngine { segment, .. } => {
-                        match &segment.kind {
-                            SegmentKind::Point { .. } => Err(KclError::new_undefined_value(
-                                KclErrorDetails::new(
-                                    format!("Property '{property}' not found in point segment"),
-                                    vec![self.clone().into()],
-                                ),
-                                None,
-                            )),
-                            SegmentKind::Line { end, .. } => {
-                                // TODO: assert that types of all elements are the same.
-                                Ok(KclValue::array_from_point2d(
-                                    [end[0].n, end[1].n],
-                                    end[0].ty,
-                                    segment.meta.clone(),
-                                ))
-                            }
+                            SegmentKind::Line {
+                                end,
+                                ctor,
+                                end_object_id,
+                                end_freedom,
+                                ..
+                            } => Ok(KclValue::Segment {
+                                value: Box::new(AbstractSegment {
+                                    repr: SegmentRepr::InEngine {
+                                        // TODO: sketch-api: points don't have
+                                        // an engine ID. Using the lines ID for
+                                        // now.
+                                        id: *id,
+                                        segment: Segment {
+                                            object_id: *end_object_id,
+                                            kind: SegmentKind::Point {
+                                                position: end.clone(),
+                                                ctor: Box::new(PointCtor {
+                                                    position: ctor.end.clone(),
+                                                }),
+                                                freedom: *end_freedom,
+                                            },
+                                            meta: segment.meta.clone(),
+                                        },
+                                    },
+                                    meta: segment.meta.clone(),
+                                }),
+                            }),
                         }
                     }
                 },

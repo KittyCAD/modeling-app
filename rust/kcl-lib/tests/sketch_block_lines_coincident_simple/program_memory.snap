@@ -12,6 +12,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
           "repr": {
             "Solved": {
               "segment": {
+                "objectId": 3,
                 "kind": {
                   "line": {
                     "start": [
@@ -50,6 +51,34 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       }
                     ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "value": 1.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 2.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 10.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 11.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 1,
+                    "end_object_id": 2,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed"
                   }
@@ -65,6 +94,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
           "repr": {
             "Solved": {
               "segment": {
+                "objectId": 7,
                 "kind": {
                   "line": {
                     "start": [
@@ -103,6 +133,34 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       }
                     ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 10.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 11.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "value": 12.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 13.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 5,
+                    "end_object_id": 6,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed"
                   }
@@ -118,6 +176,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
           "repr": {
             "Solved": {
               "segment": {
+                "objectId": 11,
                 "kind": {
                   "line": {
                     "start": [
@@ -156,6 +215,34 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       }
                     ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 20.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 21.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "value": 23.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 24.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 9,
+                    "end_object_id": 10,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed"
                   }
@@ -171,6 +258,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
           "repr": {
             "Solved": {
               "segment": {
+                "objectId": 14,
                 "kind": {
                   "line": {
                     "start": [
@@ -209,6 +297,34 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       }
                     ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Number",
+                          "value": 30.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 31.0,
+                          "units": "Mm"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "value": 32.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 33.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 12,
+                    "end_object_id": 13,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed"
                   }
@@ -224,6 +340,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
           "repr": {
             "Solved": {
               "segment": {
+                "objectId": 4,
                 "kind": {
                   "point": {
                     "position": [
@@ -244,6 +361,20 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       }
                     ],
+                    "ctor": {
+                      "position": {
+                        "x": {
+                          "type": "Number",
+                          "value": 3.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 4.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
                     "freedom": "Fixed"
                   }
                 }
@@ -258,6 +389,7 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
           "repr": {
             "Solved": {
               "segment": {
+                "objectId": 8,
                 "kind": {
                   "point": {
                     "position": [
@@ -278,6 +410,20 @@ description: Variables in memory after executing sketch_block_lines_coincident_s
                         }
                       }
                     ],
+                    "ctor": {
+                      "position": {
+                        "x": {
+                          "type": "Number",
+                          "value": 14.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 15.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
                     "freedom": "Fixed"
                   }
                 }

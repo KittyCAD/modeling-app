@@ -12,27 +12,7 @@ description: Operations executed sketch_block_lines_coincident_simple.kcl
           "type": "Array",
           "value": [
             {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "SketchVar",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                },
-                {
-                  "type": "SketchVar",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                }
-              ]
+              "type": "KclNone"
             },
             {
               "type": "KclNone"
@@ -72,27 +52,7 @@ description: Operations executed sketch_block_lines_coincident_simple.kcl
               "type": "KclNone"
             },
             {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "SketchVar",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                },
-                {
-                  "type": "SketchVar",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                }
-              ]
+              "type": "KclNone"
             }
           ]
         },
@@ -126,50 +86,10 @@ description: Operations executed sketch_block_lines_coincident_simple.kcl
           "type": "Array",
           "value": [
             {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "SketchVar",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                },
-                {
-                  "type": "SketchVar",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                }
-              ]
+              "type": "KclNone"
             },
             {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "SketchVar",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                },
-                {
-                  "type": "SketchVar",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                }
-              ]
+              "type": "KclNone"
             }
           ]
         },
@@ -203,27 +123,7 @@ description: Operations executed sketch_block_lines_coincident_simple.kcl
           "type": "Array",
           "value": [
             {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "SketchVar",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                },
-                {
-                  "type": "SketchVar",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Default",
-                    "len": "mm",
-                    "angle": "degrees"
-                  }
-                }
-              ]
+              "type": "KclNone"
             },
             {
               "type": "Array",

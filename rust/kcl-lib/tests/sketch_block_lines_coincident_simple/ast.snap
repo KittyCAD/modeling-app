@@ -763,24 +763,6 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                       "commentStart": 0,
                       "elements": [
                         {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "p2",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        {
                           "commentStart": 0,
                           "computed": false,
                           "end": 0,
@@ -824,6 +806,24 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                           "start": 0,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
+                        },
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "p2",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 0,
@@ -1540,22 +1540,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l1",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -1566,7 +1593,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l1",
+                    "name": "start",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -1588,7 +1615,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "start",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -1693,22 +1720,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l1",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -1719,7 +1773,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l1",
+                    "name": "start",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -1741,7 +1795,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "start",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -1846,22 +1900,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l1",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -1872,7 +1953,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l1",
+                    "name": "end",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -1894,7 +1975,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "end",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -1999,22 +2080,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l1",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -2025,7 +2133,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l1",
+                    "name": "end",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -2047,7 +2155,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "end",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -2458,22 +2566,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l2",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -2484,7 +2619,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l2",
+                    "name": "start",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -2506,7 +2641,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "start",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -2611,22 +2746,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l2",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -2637,7 +2799,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l2",
+                    "name": "start",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -2659,7 +2821,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "start",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -2764,22 +2926,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l2",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -2790,7 +2979,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l2",
+                    "name": "end",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -2812,7 +3001,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "end",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -2917,22 +3106,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l2",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -2943,7 +3159,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l2",
+                    "name": "end",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -2965,7 +3181,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "end",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3376,22 +3592,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l3",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -3402,7 +3645,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l3",
+                    "name": "start",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -3424,7 +3667,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "start",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3529,22 +3772,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l3",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -3555,7 +3825,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l3",
+                    "name": "start",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -3577,7 +3847,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "start",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3682,22 +3952,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l3",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -3708,7 +4005,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l3",
+                    "name": "end",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -3730,7 +4027,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "end",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3835,22 +4132,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l3",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -3861,7 +4185,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l3",
+                    "name": "end",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -3883,7 +4207,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "end",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -3988,22 +4312,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l4",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -4014,7 +4365,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l4",
+                    "name": "start",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -4036,7 +4387,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "start",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -4141,22 +4492,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l4",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -4167,7 +4545,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l4",
+                    "name": "start",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -4189,7 +4567,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "start",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -4294,22 +4672,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l4",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -4320,7 +4725,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l4",
+                    "name": "end",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -4342,7 +4747,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "end",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -4447,22 +4852,49 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                 "end": 0,
                 "moduleId": 0,
                 "object": {
-                  "abs_path": false,
                   "commentStart": 0,
+                  "computed": false,
                   "end": 0,
                   "moduleId": 0,
-                  "name": {
+                  "object": {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "s",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "s",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
-                  "path": [],
+                  "property": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "l4",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
                 },
                 "property": {
                   "abs_path": false,
@@ -4473,7 +4905,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                     "commentStart": 0,
                     "end": 0,
                     "moduleId": 0,
-                    "name": "l4",
+                    "name": "end",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -4495,7 +4927,7 @@ description: Result of parsing sketch_block_lines_coincident_simple.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "end",
+                  "name": "at",
                   "start": 0,
                   "type": "Identifier"
                 },

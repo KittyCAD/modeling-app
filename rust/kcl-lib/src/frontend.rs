@@ -2040,10 +2040,9 @@ sketch(on = XY) {
 }
 "
         );
-        // TODO: This is wrong since it's missing the constraint object.
         assert_eq!(
             scene_delta.new_graph.objects.len(),
-            7,
+            8,
             "{:#?}",
             scene_delta.new_graph.objects
         );

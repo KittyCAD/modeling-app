@@ -12,6 +12,7 @@ description: Variables in memory after executing sketch_block_line_simple.kcl
           "repr": {
             "Solved": {
               "segment": {
+                "objectId": 3,
                 "kind": {
                   "line": {
                     "start": [
@@ -50,6 +51,34 @@ description: Variables in memory after executing sketch_block_line_simple.kcl
                         }
                       }
                     ],
+                    "ctor": {
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "value": 5.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Var",
+                          "value": 0.0,
+                          "units": "None"
+                        }
+                      },
+                      "end": {
+                        "x": {
+                          "type": "Number",
+                          "value": 10.0,
+                          "units": "Mm"
+                        },
+                        "y": {
+                          "type": "Number",
+                          "value": 0.0,
+                          "units": "Mm"
+                        }
+                      }
+                    },
+                    "start_object_id": 1,
+                    "end_object_id": 2,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed"
                   }
