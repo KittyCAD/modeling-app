@@ -169,7 +169,6 @@ async function tryConnecting({
 }) {
   const connection = new Promise<string>((resolve, reject) => {
     void (async () => {
-      console.log('huh?')
       if (isConnecting.current) {
         return resolve('connecting')
       }

@@ -354,7 +354,7 @@ export const ConnectionStream = (props: {
           Connecting and setting up scene...
         </Loading>
       )}
-      {true && (
+      {showManualConnect && (
         <ManualReconnection
           className="absolute inset-0 h-screen"
           callback={() => {
