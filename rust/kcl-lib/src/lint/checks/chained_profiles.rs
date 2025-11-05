@@ -147,7 +147,12 @@ fn check_pipe_item(node: Node) -> (Option<Expr>, Vec<(usize, SourceRange)>) {
             }
         })
         .collect::<Vec<_>>();
+    if profile_calls.is_empty() {
+        return (None, Vec::new());
+    }
 
+    // safety: split_off(1) panics if &self is empty, but
+    // that was already checked.
     let problematic_calls = profile_calls.split_off(1);
     let unlabeled = profile_calls.into_iter().next().and_then(|(_, _, unlabeled)| unlabeled);
     (
