@@ -105,7 +105,7 @@ fn check_body(block: &AstNode<Program>, whole_program: &AstNode<Program>) -> Res
             // Format the code.
             let new_source = new_program.recast_top(&Default::default(), 0);
             let suggestion = Some(Suggestion {
-                title: "Use separate profile variables and extrude them all using an array.".to_owned(),
+                title: "Use separate profile variables and handle them all using an array.".to_owned(),
                 insert: new_source,
                 source_range: new_program.as_source_range(),
             });
@@ -302,7 +302,8 @@ fn add_variable_to_extrude_call(call: &mut CallExpressionKw, new_var_name: &str)
 }
 
 fn is_name_extrude_function(name: &Name) -> bool {
-    name.name.name == "extrude" && (name.path.is_empty() || path_matches(&name.path, &["std", "sketch"]))
+    ["extrude", "revolve"].contains(&name.name.name.as_str())
+        && (name.path.is_empty() || path_matches(&name.path, &["std", "sketch"]))
 }
 
 #[cfg(test)]
@@ -327,6 +328,28 @@ sketch1 = startSketchOn(XY)
 profile1 = circle(sketch1, center = [0, 0], radius = 5)
 profile2 = circle(sketch1, center = [0, 0], radius = 5)
 extrude([profile1, profile2], length = 1)
+"
+            .to_owned()
+        )
+    );
+
+    test_finding!(
+        z0004_bad_circles_revolve_without_var,
+        lint_profiles_should_not_be_chained,
+        Z0004,
+        "\
+sketch1 = startSketchOn(XY)
+profile1 = circle(sketch1, center = [0, 0], radius = 5)
+  |> circle(center = [0, 0], radius = 5)
+revolve(profile1, axis = Z)
+",
+        "Profiles should not be chained together in a pipeline.",
+        Some(
+            "\
+sketch1 = startSketchOn(XY)
+profile1 = circle(sketch1, center = [0, 0], radius = 5)
+profile2 = circle(sketch1, center = [0, 0], radius = 5)
+revolve([profile1, profile2], axis = Z)
 "
             .to_owned()
         )
