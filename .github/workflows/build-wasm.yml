@@ -44,10 +44,10 @@ jobs:
         with:
           tool: wasm-pack
 
-      - name: Use Rust cache
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: './rust'
+      # - name: Use Rust cache
+      #   uses: Swatinem/rust-cache@v2
+      #   with:
+      #     workspaces: './rust'
 
       - name: Build Wasm
         shell: bash
