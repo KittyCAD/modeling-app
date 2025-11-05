@@ -28,9 +28,11 @@ test.describe('Copilot tests', () => {
         timeout: 120_000,
       })
       await toolbar.openPane('code')
-      await editor.expectEditor.toContain('cube')
+      await editor.expectEditor.toContain('startSketchOn')
       await editor.expectEditor.toContain('extrude')
+      await editor.expectEditor.toContain('10')
       await scene.settled(cmdBar)
+      // TODO: maybe check for a sweep artifact in the debug pane?
     })
   })
 })
