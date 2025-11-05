@@ -10,8 +10,8 @@ import { useEffect } from 'react'
  */
 export function useOnWebsocketClose({
   callback,
-  infiniteDectionLoopCallback,
-}: { callback: () => void; infiniteDectionLoopCallback: () => void }) {
+  infiniteDetectionLoopCallback,
+}: { callback: () => void; infiniteDetectionLoopCallback: () => void }) {
   useEffect(() => {
     const onWebsocketClose = (event: CustomEvent) => {
       if (event?.detail?.code === '1006') {
@@ -25,7 +25,7 @@ export function useOnWebsocketClose({
           },
         })
 
-        infiniteDectionLoopCallback()
+        infiniteDetectionLoopCallback()
         return
       }
 
@@ -43,5 +43,5 @@ export function useOnWebsocketClose({
         onWebsocketClose as EventListener
       )
     }
-  }, [callback, infiniteDectionLoopCallback])
+  }, [callback, infiniteDetectionLoopCallback])
 }

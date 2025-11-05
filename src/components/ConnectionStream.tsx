@@ -220,7 +220,7 @@ export const ConnectionStream = (props: {
         setShowManualConnect(true)
       })
     },
-    infiniteDectionLoopCallback: () => {
+    infiniteDetectionLoopCallback: () => {
       setShowManualConnect(true)
     },
   })
