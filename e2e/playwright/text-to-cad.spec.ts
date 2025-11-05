@@ -8,8 +8,8 @@ import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 
-test.describe('Copilot tests', () => {
-  async function runHappyPathTest({
+test.describe('Text-to-CAD tests', () => {
+  async function runCopilotHappyPathTest({
     page,
     editor,
     homePage,
@@ -51,10 +51,10 @@ test.describe('Copilot tests', () => {
   }
 
   test(
-    'Web happy path: new project, easy prompt, good result',
+    'Web copilot happy path: new project, easy prompt, good result',
     { tag: ['@web'] },
     async ({ page, editor, homePage, scene, toolbar, cmdBar, copilot }) => {
-      await runHappyPathTest({
+      await runCopilotHappyPathTest({
         page,
         editor,
         homePage,
@@ -67,10 +67,10 @@ test.describe('Copilot tests', () => {
   )
 
   test(
-    'Desktop happy path: new project, easy prompt, good result',
+    'Desktop copilot happy path: new project, easy prompt, good result',
     { tag: ['@desktop'] },
     async ({ page, editor, homePage, scene, toolbar, cmdBar, copilot }) => {
-      await runHappyPathTest({
+      await runCopilotHappyPathTest({
         page,
         editor,
         homePage,
