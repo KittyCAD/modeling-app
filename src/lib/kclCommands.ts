@@ -34,7 +34,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
-import { Project } from '@src/lib/project'
+import type { Project } from '@src/lib/project'
 import { importFileExtensions } from '@src/lang/wasmUtils'
 
 interface KclCommandConfig {

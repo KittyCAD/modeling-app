@@ -34,7 +34,7 @@ import { getInVariableCase } from '@src/lib/utils'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { processEnv } from '@src/env'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { getEXTNoPeriod, isExtensionARelevantExtension } from './paths'
+import { getEXTNoPeriod, isExtensionARelevantExtension } from '@src/lib/paths'
 
 export async function renameProjectDirectory(
   electron: IElectronAPI,
