@@ -284,7 +284,8 @@ pub async fn send_to_engine(
 
 /// Get the source format from the extension.
 fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
-    let format = match FileImportFormat::from_str(ext) {
+    let ext = ext.to_lowercase();
+    let format = match FileImportFormat::from_str(&ext) {
         Ok(format) => format,
         Err(_) => {
             if ext == "stp" {
