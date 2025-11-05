@@ -247,7 +247,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           path,
           localName,
         })
-        console.log(modifiedAst, pathToNode)
         updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
