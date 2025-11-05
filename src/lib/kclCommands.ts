@@ -34,6 +34,8 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
+import { Project } from '@src/lib/project'
+import { importFileExtensions } from '@src/lang/wasmUtils'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -48,6 +50,7 @@ interface KclCommandConfig {
   }
   isRestrictedToOrg?: boolean
   password?: string
+  project?: Project
 }
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
@@ -176,13 +179,23 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           inputType: 'options',
           required: true,
           options: () => {
-            const providedOptions = []
+            const providedOptions : {name: string, value: string}[]= []
             const context = systemIOActor.getSnapshot().context
-
-            // providedOptions.push({
-            //   name: relativeFilePath.replaceAll(window.electron.sep, '/'),
-            //   value: relativeFilePath.replaceAll(window.electron.sep, '/'),
-            // })
+            const projectName = commandProps.project?.name
+            const sep = window.electron?.sep
+            const importExtensions = importFileExtensions()
+            if (projectName && sep) {
+              const importableFiles = listAllImportFilesWithinProject(context,{
+                projectFolderName: projectName,
+                importExtensions
+              })
+              importableFiles.forEach((file)=>{
+                providedOptions.push({
+                  name: file.replaceAll(sep, '/'),
+                  value: file.replaceAll(sep, '/'),
+                })
+              })
+            }
             return providedOptions
           },
           validation: async ({ data }) => {
@@ -234,6 +247,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           path,
           localName,
         })
+        console.log(modifiedAst, pathToNode)
         updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,

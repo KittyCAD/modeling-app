@@ -1,3 +1,4 @@
+import { getEXTNoPeriod, isExtensionAnImportExtension } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import { isArray } from '@src/lib/utils'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
@@ -35,7 +36,7 @@ export function getAllSubDirectoriesAtProjectRoot(
 
 export function listAllImportFilesWithinProject(
   context: SystemIOContext,
-  { projectFolderName }: { projectFolderName: string }
+  { projectFolderName, importExtensions }: { projectFolderName: string, importExtensions: string[] }
 ) {
   const relativeFilePaths = []
   const { folders } = context
@@ -60,7 +61,10 @@ export function listAllImportFilesWithinProject(
         projectPath + window.electron.sep,
         ''
       )
-      relativeFilePaths.push(relativeFilePath)
+      const extension = getEXTNoPeriod(relativeFilePath)
+      if (extension && isExtensionAnImportExtension(extension, importExtensions)) {
+        relativeFilePaths.push(relativeFilePath)
+      }
     }
   }
   return relativeFilePaths
