@@ -179,17 +179,17 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           inputType: 'options',
           required: true,
           options: () => {
-            const providedOptions : {name: string, value: string}[]= []
+            const providedOptions: { name: string; value: string }[] = []
             const context = systemIOActor.getSnapshot().context
             const projectName = commandProps.project?.name
             const sep = window.electron?.sep
             const importExtensions = importFileExtensions()
             if (projectName && sep) {
-              const importableFiles = listAllImportFilesWithinProject(context,{
+              const importableFiles = listAllImportFilesWithinProject(context, {
                 projectFolderName: projectName,
-                importExtensions
+                importExtensions,
               })
-              importableFiles.forEach((file)=>{
+              importableFiles.forEach((file) => {
                 providedOptions.push({
                   name: file.replaceAll(sep, '/'),
                   value: file.replaceAll(sep, '/'),

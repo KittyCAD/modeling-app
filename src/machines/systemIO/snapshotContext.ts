@@ -36,7 +36,10 @@ export function getAllSubDirectoriesAtProjectRoot(
 
 export function listAllImportFilesWithinProject(
   context: SystemIOContext,
-  { projectFolderName, importExtensions }: { projectFolderName: string, importExtensions: string[] }
+  {
+    projectFolderName,
+    importExtensions,
+  }: { projectFolderName: string; importExtensions: string[] }
 ) {
   const relativeFilePaths = []
   const { folders } = context
@@ -62,7 +65,10 @@ export function listAllImportFilesWithinProject(
         ''
       )
       const extension = getEXTNoPeriod(relativeFilePath)
-      if (extension && isExtensionAnImportExtension(extension, importExtensions)) {
+      if (
+        extension &&
+        isExtensionAnImportExtension(extension, importExtensions)
+      ) {
         relativeFilePaths.push(relativeFilePath)
       }
     }
