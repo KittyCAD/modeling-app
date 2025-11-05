@@ -13,6 +13,8 @@ import { machine as dimensionTool } from '@src/machines/sketchSolve/tools/dimens
 import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineTool'
 import type {
+  ApiObject,
+  Expr,
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
@@ -50,6 +52,26 @@ const equipTools = Object.freeze({
 
 const CHILD_TOOL_ID = 'child tool'
 const CHILD_TOOL_DONE_EVENT = `xstate.done.actor.${CHILD_TOOL_ID}`
+
+function getLinkedPoint({
+  pointId,
+  objects,
+}: {
+  pointId: number
+  objects: Array<ApiObject>
+}): { x: Expr; y: Expr } | null {
+  const point = objects[pointId]
+  if (
+    point?.kind?.type !== 'Segment' ||
+    point?.kind?.segment?.type !== 'Point'
+  ) {
+    return null
+  }
+  return {
+    x: { type: 'Var', value: point.kind.segment.position.x.value, units: 'Mm' },
+    y: { type: 'Var', value: point.kind.segment.position.y.value, units: 'Mm' },
+  }
+}
 
 export type EquipTool = keyof typeof equipTools
 
@@ -251,12 +273,10 @@ export const sketchSolveMachine = setup({
         void segmentUtilsMap.PointSegment.update({
           input: {
             type: 'Point',
-            // position: [x, y],
             position: {
               x: { type: 'Number', value: x, units: 'Mm' },
               y: { type: 'Number', value: y, units: 'Mm' },
             },
-            // freedom: 0 as any,
           },
           theme: sceneInfra.theme,
           scale: group.scale.x,
@@ -270,6 +290,7 @@ export const sketchSolveMachine = setup({
       assertEvent(event, 'update sketch outcome')
       codeManager.updateCodeEditor(event.data.kclSource.text)
       const sceneGraphDelta = event.data.sceneGraphDelta
+      const objects = sceneGraphDelta.new_graph.objects
       const orthoFactor = orthoScale(sceneInfra.camControls.camera)
       const factor =
         sceneInfra.camControls.camera instanceof OrthographicCamera
@@ -277,7 +298,7 @@ export const sketchSolveMachine = setup({
           : orthoFactor
       sceneInfra.baseUnitMultiplier
       sceneGraphDelta.new_objects.forEach((objId) => {
-        const obj = sceneGraphDelta.new_graph.objects[objId]
+        const obj = objects[objId]
         let init: SegmentUtils['init'] | null = null
         let ctor: Parameters<SegmentUtils['init']>[0]['input'] | null = null
         if (
@@ -299,41 +320,29 @@ export const sketchSolveMachine = setup({
                 units: 'Mm',
               },
             },
-            // freedom: obj.kind.segment.freedom,
           }
         } else if (
           obj?.kind.type === 'Segment' &&
           obj?.kind?.segment?.type === 'Line'
         ) {
+          const startPoint = getLinkedPoint({
+            objects,
+            pointId: obj.kind.segment.start,
+          })
+          const endPoint = getLinkedPoint({
+            objects,
+            pointId: obj.kind.segment.end,
+          })
+          if (!startPoint || !endPoint) {
+            console.error('Failed to find linked points for Line segment', obj)
+            return
+          }
           init = segmentUtilsMap.LineSegment.init
-          ctor = obj.kind.segment.ctor
-          // ctor = {
-          //   type: 'Line',
-          //   start: {
-          //     x: {
-          //       type: 'Number',
-          //       value: obj.kind.segment.ctor.type === 'Line' ? obj.kind.segment.ctor.start.x.value : 0,
-          //       units: 'Mm',
-          //     },
-          //     y: {
-          //       type: 'Number',
-          //       value: obj.kind.segment.start.y.value,
-          //       units: 'Mm',
-          //     },
-          //   },
-          //   end: {
-          //     x: {
-          //       type: 'Number',
-          //       value: obj.kind.segment.end.x.value,
-          //       units: 'Mm',
-          //     },
-          //     y: {
-          //       type: 'Number',
-          //       value: obj.kind.segment.end.y.value,
-          //       units: 'Mm',
-          //     },
-          //   }
-          // }
+          ctor = {
+            type: 'Line',
+            start: startPoint,
+            end: endPoint,
+          }
         }
         if (!init || !ctor) {
           return
@@ -399,18 +408,29 @@ export const sketchSolveMachine = setup({
                 units: 'Mm',
               },
             },
-            // position: [
-            //   obj.kind.segment.position.x.value,
-            //   obj.kind.segment.position.y.value,
-            // ],
-            // freedom: obj.kind.segment.freedom,
           }
         } else if (
           obj?.kind?.type === 'Segment' &&
           obj.kind?.segment?.type === 'Line'
         ) {
           update = segmentUtilsMap.LineSegment.update
-          ctor = obj.kind.segment.ctor
+          const startPoint = getLinkedPoint({
+            objects,
+            pointId: obj.kind.segment.start,
+          })
+          const endPoint = getLinkedPoint({
+            objects,
+            pointId: obj.kind.segment.end,
+          })
+          if (!startPoint || !endPoint) {
+            console.error('Failed to find linked points for Line segment', obj)
+            return
+          }
+          ctor = {
+            type: 'Line',
+            start: startPoint,
+            end: endPoint,
+          }
         }
         if (!update || !ctor) {
           return
