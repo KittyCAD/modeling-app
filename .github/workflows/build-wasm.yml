@@ -2,13 +2,23 @@ name: Build WASM
 
 on:
   workflow_call:
+  push:
+    branches:
+      - pierremtb/adhoc/rust-building-on-windows
 
 permissions:
   contents: read
 
 jobs:
   npm-build-wasm:
-    runs-on: namespace-profile-ubuntu-8-cores
+    strategy:
+      matrix:
+        include:
+          - os: namespace-profile-ubuntu-8-cores
+            name: linux
+          - os: namespace-profile-windows-4-cores
+            name: windows
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v5
 
@@ -41,7 +51,7 @@ jobs:
 
       - name: Build Wasm
         shell: bash
-        run: npm run build:wasm
+        run: npm run build:wasm${{ matrix.name == 'windows' && ':windows' || '' }}
 
       - uses: actions/upload-artifact@v4
         with:
