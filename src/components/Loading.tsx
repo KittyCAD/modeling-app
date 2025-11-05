@@ -40,7 +40,7 @@ export const CONNECTION_ERROR_CALL_TO_ACTION_TEXT: Record<
 > = {
   [ConnectionError.Unset]: '',
   [ConnectionError.LongLoadingTime]:
-    'Loading is taking longer than expected, check your network connection.',
+    'Connecting is taking longer than expected, checking your network connection.',
   [ConnectionError.VeryLongLoadingTime]:
     'Check the connection is being blocked by a firewall, or if your internet is disconnected.',
   [ConnectionError.ICENegotiate]:
@@ -183,45 +183,21 @@ const Loading = ({
       </div>
       {CONNECTION_ERROR_TEXT[error.error] && (
         <div>
-          <div className="max-w-3xl text-base flex flex-col gap-2 px-2 pt-2 mt-2 pb-6 mb-6 border-b border-chalkboard-30">
+          <div className="inline-block max-w-3xl text-base gap-2 px-32 pt-2 mt-2 pb-6 mb-6 text-chalkboard-80 dark:text-chalkboard-20">
             {CONNECTION_ERROR_CALL_TO_ACTION_TEXT[error.error]}
-            <div className="text-sm">
-              If the issue persists, please visit the community support thread
+              {' '}If the issue persists, please visit the community support thread
               on{' '}
               <a
+                className="contents text-chalkboard-80 dark:text-chalkboard-10"
                 href={diagnosingNetworkIssuesUrl}
                 onClick={openExternalBrowserIfDesktop(
                   diagnosingNetworkIssuesUrl
                 )}
               >
-                diagnosing network connection issues
+                <span className="underline underline-offset-1">diagnosing network connection issues</span>
               </a>
               .
-            </div>
           </div>
-          <div
-            className={
-              'font-mono text-xs px-2 text-opacity-70 transition-opacity duration-500' +
-              (error.error !== ConnectionError.Unset
-                ? ' opacity-100'
-                : ' opacity-0')
-            }
-            dangerouslySetInnerHTML={{
-              __html: Marked.parse(
-                CONNECTION_ERROR_TEXT[error.error] +
-                  (error.context
-                    ? '\n\nThe error details are: ' +
-                      (error.context instanceof Object
-                        ? JSON.stringify(error.context)
-                        : error.context)
-                    : ''),
-                {
-                  renderer: new SafeRenderer(markedOptions),
-                  ...markedOptions,
-                }
-              ),
-            }}
-          ></div>
         </div>
       )}
     </div>
