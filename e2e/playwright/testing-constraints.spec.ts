@@ -729,15 +729,15 @@ part002 = startSketchOn(XZ)
         constraintName: 'Vertical',
         codeAfter: [
           `|> yLine(length = 130.4)`,
-          `|> yLine(length = 77.79)`,
-          `|> yLine(length = 48.97)`,
+          `|> yLine(length = 97.79)`,
+          `|> yLine(length = 78.97)`,
         ],
       },
       {
         codeAfter: [
           `|> xLine(length = 74.36)`,
-          `|> xLine(length = 9.16)`,
-          `|> xLine(length = 51.19)`,
+          `|> xLine(length = 29.16)`,
+          `|> xLine(length = 81.19)`,
         ],
         constraintName: 'Horizontal',
       },
@@ -753,8 +753,8 @@ part002 = startSketchOn(XZ)
         |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
-        |> line(end = [9.16, 77.79])
-        |> line(end = [51.19, 48.97])
+        |> line(end = [29.16, 97.79])
+        |> line(end = [81.19, 78.97])
       part002 = startSketchOn(XZ)
         |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
