@@ -10,6 +10,8 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
+import { SafeRenderer } from '@src/lib/markdown'
+import { Marked, escape, unescape } from '@ts-stack/markdown'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -221,14 +223,29 @@ type ResponsesCardProp = {
   deltasAggregated: Exchange['deltasAggregated']
 }
 
+const MarkedOptions = {
+  gfm: true,
+  breaks: true,
+  sanitize: true,
+  escape,
+  unescape,
+}
+
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
   props.maybeError ? (
-    <div className="text-rose-400">
+    <div className="text-rose-400 flex flex-row gap-1 items-start">
       <CustomIcon
         name="triangleExclamation"
         className="w-4 h-4 inline valign"
-      />{' '}
-      {props.maybeError?.error.detail}
+      />
+      <span
+        dangerouslySetInnerHTML={{
+          __html: Marked.parse(props.maybeError?.error.detail, {
+            renderer: new SafeRenderer(MarkedOptions),
+            ...MarkedOptions,
+          }),
+        }}
+      ></span>
     </div>
   ) : null
 
