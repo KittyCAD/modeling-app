@@ -148,6 +148,46 @@ function updateSegmentGroup({
   }
 }
 
+/**
+ * Helper function to initialize a segment group with the given input.
+ * Determines the correct segment init method based on the input type.
+ */
+function initSegmentGroup({
+  input,
+  theme,
+  scale,
+  id,
+  onUpdateSketchOutcome,
+}: {
+  input: Parameters<SegmentUtils['init']>[0]['input']
+  theme: Themes
+  scale: number
+  id: number
+  onUpdateSketchOutcome: (data: {
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }) => void
+}): Promise<Group> {
+  if (input.type === 'Point') {
+    return segmentUtilsMap.PointSegment.init({
+      input,
+      theme,
+      scale,
+      id,
+      onUpdateSketchOutcome,
+    })
+  } else if (input.type === 'Line') {
+    return segmentUtilsMap.LineSegment.init({
+      input,
+      theme,
+      scale,
+      id,
+      onUpdateSketchOutcome,
+    })
+  }
+  return Promise.reject(new Error(`Unknown input type: ${(input as any).type}`))
+}
+
 function getLinkedPoint({
   pointId,
   objects,
@@ -401,82 +441,28 @@ export const sketchSolveMachine = setup({
           ? orthoFactor
           : orthoFactor
       sceneInfra.baseUnitMultiplier
-      sceneGraphDelta.new_objects.forEach((objId) => {
-        const obj = objects[objId]
-        let init: SegmentUtils['init'] | null = null
-        let ctor: Parameters<SegmentUtils['init']>[0]['input'] | null = null
-        if (
-          obj?.kind.type === 'Segment' &&
-          obj?.kind?.segment?.type === 'Point'
-        ) {
-          init = segmentUtilsMap.PointSegment.init
-          ctor = {
-            type: 'Point',
-            position: {
-              x: {
-                type: 'Number',
-                value: obj.kind.segment.position.x.value,
-                units: 'Mm',
-              },
-              y: {
-                type: 'Number',
-                value: obj.kind.segment.position.y.value,
-                units: 'Mm',
-              },
-            },
-          }
-        } else if (
-          obj?.kind.type === 'Segment' &&
-          obj?.kind?.segment?.type === 'Line'
-        ) {
-          const startPoint = getLinkedPoint({
-            objects,
-            pointId: obj.kind.segment.start,
-          })
-          const endPoint = getLinkedPoint({
-            objects,
-            pointId: obj.kind.segment.end,
-          })
-          if (!startPoint || !endPoint) {
-            console.error('Failed to find linked points for Line segment', obj)
-            return
-          }
-          init = segmentUtilsMap.LineSegment.init
-          ctor = {
-            type: 'Line',
-            start: startPoint,
-            end: endPoint,
-          }
-        }
-        if (!init || !ctor) {
+      const sketchSegments = sceneInfra.scene.children.find(
+        ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
+      )
+
+      // This invalidation logic is kinda based on some heuristics and is not exchaustive.
+      // so there are bugs, it's here to let some direct editing of the code from
+      // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
+      // The proper way to do this is to get an invalidation signal from the rust side.
+      const invalidateScene = sketchSegments?.children.some((child) => {
+        const childId = Number(child.name)
+        // check if number
+        if (Number.isNaN(childId)) {
           return
         }
-        init({
-          input: ctor,
-          theme: sceneInfra.theme,
-          scale: factor,
-          id: objId,
-          onUpdateSketchOutcome: (data) =>
-            self.send({
-              type: 'update sketch outcome',
-              data,
-            }),
-        })
-          .then((group) => {
-            const sketchSceneGroup =
-              sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
-            if (sketchSceneGroup) {
-              group.traverse((child) => {
-                child.layers.set(SKETCH_LAYER)
-              })
-              group.layers.set(SKETCH_LAYER)
-              sketchSceneGroup.add(group)
-            }
-          })
-          .catch((e) => {
-            console.error('Failed to init PointSegment for object', objId, e)
-          })
+        // check id is not greater than new_graph.objects length
+        return childId >= sceneGraphDelta.new_graph.objects.length
       })
+      if (invalidateScene) {
+        sketchSegments?.children.forEach((child) => {
+          sceneInfra.scene.remove(child)
+        })
+      }
       sceneGraphDelta.new_graph.objects.forEach((obj) => {
         if (sceneGraphDelta.new_objects.includes(obj.id)) {
           return
@@ -485,15 +471,38 @@ export const sketchSolveMachine = setup({
           return
         }
         const group = sceneInfra.scene.getObjectByName(String(obj.id))
+        const ctor = buildSegmentCtorFromObject(obj, objects)
         if (!(group instanceof Group)) {
-          console.error(
-            'No group found in scene for PointSegment with id',
-            obj.id,
-            obj
-          )
+          if (!ctor) {
+            return
+          }
+          initSegmentGroup({
+            input: ctor,
+            theme: sceneInfra.theme,
+            scale: factor,
+            id: obj.id,
+            onUpdateSketchOutcome: (data) =>
+              self.send({
+                type: 'update sketch outcome',
+                data,
+              }),
+          })
+            .then((group) => {
+              const sketchSceneGroup =
+                sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+              if (sketchSceneGroup) {
+                group.traverse((child) => {
+                  child.layers.set(SKETCH_LAYER)
+                })
+                group.layers.set(SKETCH_LAYER)
+                sketchSceneGroup.add(group)
+              }
+            })
+            .catch((e) => {
+              console.error('Failed to init PointSegment for object', obj.id, e)
+            })
           return
         }
-        const ctor = buildSegmentCtorFromObject(obj, objects)
         if (!ctor) {
           return
         }
@@ -505,6 +514,8 @@ export const sketchSolveMachine = setup({
           theme: sceneInfra.theme,
         })
       })
+
+      console.log('Updated sketch segments:', sketchSegments)
       return {
         sketchExecOutcome: {
           kclSource: event.data.kclSource,
