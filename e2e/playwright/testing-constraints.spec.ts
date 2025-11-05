@@ -148,13 +148,7 @@ test.describe('Testing constraints', () => {
         |> line(end = [74.36, 130.4], tag = $seg01)
         |> line(end = [78.92, -120.11])
         |> angledLine(angle = segAng(seg01), length = 78.33)
-        |> line(end = [51.19, 48.97])
-      part002 = startSketchOn(XZ)
-        |> startProfile(at = [299.05, 231.45])
-        |> xLine(length = -425.34, tag = $seg_what)
-        |> yLine(length = -264.06)
-        |> xLine(length = segLen(seg_what))
-        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+        |> line(end = [51.19, 48.97])`
           )
         })
         const u = await getUtils(page)
@@ -265,13 +259,7 @@ test.describe('Testing constraints', () => {
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
-        |> line(end = [51.19, 48.97])
-      part002 = startSketchOn(XZ)
-        |> startProfile(at = [299.05, 231.45])
-        |> xLine(length = -425.34, tag = $seg_what)
-        |> yLine(length = -264.06)
-        |> xLine(length = segLen(seg_what))
-        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
+        |> line(end = [51.19, 48.97])`
           )
         })
         const u = await getUtils(page)
@@ -574,13 +562,13 @@ profile001 = startProfile(sketch001, at = [-70, -10])
         testName: 'Angle - Add variable',
         addVariable: true,
         constraint: 'angle',
-        value: 'angle001, 78.33',
+        value: 'angle001, 102.05',
       },
       {
         testName: 'Angle - No variable',
         addVariable: false,
         constraint: 'angle',
-        value: '83deg, 78.33',
+        value: '73deg, 102.05',
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
@@ -594,8 +582,8 @@ profile001 = startProfile(sketch001, at = [-70, -10])
         |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
-        |> line(end = [9.16, 77.79])
-        |> line(end = [51.19, 48.97])
+        |> line(end = [29.16, 97.79])
+        |> line(end = [81.19, 68.97])
       part002 = startSketchOn(XZ)
         |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
@@ -650,13 +638,13 @@ profile001 = startProfile(sketch001, at = [-70, -10])
         testName: 'Length - Add variable',
         addVariable: true,
         constraint: 'length',
-        value: '83deg, length001',
+        value: '73deg, length001',
       },
       {
         testName: 'Length - No variable',
         addVariable: false,
         constraint: 'length',
-        value: '83deg, 78.33',
+        value: '73deg, 102.05',
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
@@ -684,8 +672,8 @@ part001 = startSketchOn(XZ)
   |> startProfile(at = [-7.54, -26.74])
   |> line(end = [74.36, 130.4])
   |> line(end = [78.92, -120.11])
-  |> line(end = [9.16, 77.79])
-  |> line(end = [51.19, 48.97])
+  |> line(end = [29.16, 97.79])
+  |> line(end = [81.19, 68.97])
 part002 = startSketchOn(XZ)
   |> startProfile(at = [299.05, 231.45])
   |> xLine(length = -425.34, tag = $seg_what)
@@ -720,7 +708,7 @@ part002 = startSketchOn(XZ)
             await cmdBarKclVariableNameInput.press('Backspace')
           })
         }
-        await expect(cmdBarKclInput).toHaveText('78.33')
+        await expect(cmdBarKclInput).toHaveText('102.05')
         await page.waitForTimeout(500)
         const [ang, len] = value.split(', ')
         await cmdBar.continue()
@@ -741,15 +729,15 @@ part002 = startSketchOn(XZ)
         constraintName: 'Vertical',
         codeAfter: [
           `|> yLine(length = 130.4)`,
-          `|> yLine(length = 77.79)`,
-          `|> yLine(length = 48.97)`,
+          `|> yLine(length = 97.79)`,
+          `|> yLine(length = 78.97)`,
         ],
       },
       {
         codeAfter: [
           `|> xLine(length = 74.36)`,
-          `|> xLine(length = 9.16)`,
-          `|> xLine(length = 51.19)`,
+          `|> xLine(length = 29.16)`,
+          `|> xLine(length = 81.19)`,
         ],
         constraintName: 'Horizontal',
       },
@@ -765,8 +753,8 @@ part002 = startSketchOn(XZ)
         |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
-        |> line(end = [9.16, 77.79])
-        |> line(end = [51.19, 48.97])
+        |> line(end = [29.16, 97.79])
+        |> line(end = [81.19, 78.97])
       part002 = startSketchOn(XZ)
         |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
@@ -834,19 +822,19 @@ part002 = startSketchOn(XZ)
   test.describe('Two segment - no modal constraints', () => {
     const cases = [
       {
-        codeAfter: `|> angledLine(angle = 83deg, length = segLen(seg01))`,
+        codeAfter: `|> angledLine(angle = 73deg, length = segLen(seg01))`,
         constraintName: 'Equal Length',
       },
       {
-        codeAfter: `|> angledLine(angle = segAng(seg01), length = 78.33)`,
+        codeAfter: `|> angledLine(angle = segAng(seg01), length = 102.05)`,
         constraintName: 'Parallel',
       },
       {
-        codeAfter: `|> line(endAbsolute = [segEndX(seg01), 61.34])`,
+        codeAfter: `|> line(endAbsolute = [segEndX(seg01), 81.34])`,
         constraintName: 'Vertically Align',
       },
       {
-        codeAfter: `|> line(endAbsolute = [154.9, segEndY(seg01)])`,
+        codeAfter: `|> line(endAbsolute = [174.9, segEndY(seg01)])`,
         constraintName: 'Horizontally Align',
       },
     ] as const
@@ -861,7 +849,7 @@ part002 = startSketchOn(XZ)
         |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
-        |> line(end = [9.16, 77.79])
+        |> line(end = [29.16, 97.79])
       part002 = startSketchOn(XZ)
         |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
@@ -923,7 +911,7 @@ part002 = startSketchOn(XZ)
     const cases = [
       {
         codeAfter: /\|> line\(endAbsolute = \[\d+(\.\d+)?, turns::ZERO/,
-        axisClick: { x: 0.75, y: 0.5 },
+        axisClick: { x: 0.25, y: 0.5 },
         constraintName: 'Snap To X',
       },
       {
