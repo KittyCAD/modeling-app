@@ -4,6 +4,7 @@ import * as fsp from 'fs/promises'
 
 import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Command bar tests', () => {
   test('Extrude from command bar selects extrude line after', async ({
@@ -538,7 +539,7 @@ test.describe('Command bar tests', () => {
 
     await test.step(`Ensure we created the project and are in the modeling scene`, async () => {
       await editor.expectEditor.toContain('extrusionDistance = 12')
-      await toolbar.openPane('files')
+      await toolbar.openPane(DefaultLayoutPaneID.Files)
       await toolbar.expectFileTreeState(['main-1.kcl', 'main.kcl'])
     })
   })

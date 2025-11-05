@@ -11,6 +11,7 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 async function insertPartIntoAssembly(
   path: string,
@@ -98,7 +99,7 @@ test.describe('Point-and-click assemblies tests', () => {
           cmdBar,
           page
         )
-        await toolbar.openPane('code')
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
           `
           import "cylinder.kcl" as cylinder
@@ -163,7 +164,7 @@ test.describe('Point-and-click assemblies tests', () => {
           cmdBar,
           page
         )
-        await toolbar.openPane('code')
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
         await page.waitForTimeout(10000)
         await editor.expectEditor.toContain(
           `
@@ -208,7 +209,7 @@ test.describe('Point-and-click assemblies tests', () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
         await homePage.openProject(projectName)
         await scene.settled(cmdBar)
-        await toolbar.closePane('code')
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
 
       await test.step('Insert kcl as module', async () => {
@@ -219,7 +220,7 @@ test.describe('Point-and-click assemblies tests', () => {
           cmdBar,
           page
         )
-        await toolbar.openPane('code')
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
           `
             import "bracket.kcl" as bracket
@@ -230,7 +231,7 @@ test.describe('Point-and-click assemblies tests', () => {
       })
 
       await test.step('Set translate on module', async () => {
-        await toolbar.openPane('feature-tree')
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
 
         const op = await toolbar.getFeatureTreeOperation('bracket', 0)
         await op.click({ button: 'right' })
@@ -276,15 +277,15 @@ test.describe('Point-and-click assemblies tests', () => {
           commandName: 'Translate',
         })
         await cmdBar.progressCmdBar()
-        await toolbar.closePane('feature-tree')
-        await toolbar.openPane('code')
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(`translate(bracket, x = 100)`, {
           shouldNormalise: true,
         })
       })
 
       await test.step('Set scale on module', async () => {
-        await toolbar.openPane('feature-tree')
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
 
         const op = await toolbar.getFeatureTreeOperation('bracket', 0)
         await op.click({ button: 'right' })
@@ -330,8 +331,8 @@ test.describe('Point-and-click assemblies tests', () => {
           commandName: 'Scale',
         })
         await cmdBar.progressCmdBar()
-        await toolbar.closePane('feature-tree')
-        await toolbar.openPane('code')
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
           `translate(bracket, x = 100)
           scale(bracket, x = 1.1)`,
@@ -340,8 +341,8 @@ test.describe('Point-and-click assemblies tests', () => {
       })
 
       await test.step('Set rotate on module', async () => {
-        await toolbar.closePane('code')
-        await toolbar.openPane('feature-tree')
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
 
         const op = await toolbar.getFeatureTreeOperation('bracket', 0)
         await op.click({ button: 'right' })
@@ -387,8 +388,8 @@ test.describe('Point-and-click assemblies tests', () => {
           commandName: 'Rotate',
         })
         await cmdBar.progressCmdBar()
-        await toolbar.closePane('feature-tree')
-        await toolbar.openPane('code')
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
           `
           translate(bracket, x = 100)
@@ -400,7 +401,7 @@ test.describe('Point-and-click assemblies tests', () => {
       })
 
       await test.step('Delete the part using the feature tree', async () => {
-        await toolbar.openPane('feature-tree')
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const opr = await toolbar.getFeatureTreeOperation('Rotate', 0)
         await opr.click({ button: 'right' })
         await page.getByTestId('context-menu-delete').click()
@@ -418,10 +419,10 @@ test.describe('Point-and-click assemblies tests', () => {
         await page.getByTestId('context-menu-delete').click()
         await scene.settled(cmdBar)
         await scene.settled(cmdBar)
-        await toolbar.closePane('feature-tree')
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
 
         // Expect empty editor and scene
-        await toolbar.openPane('code')
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.not.toContain('translate')
         await editor.expectEditor.not.toContain('scale')
         await editor.expectEditor.not.toContain('rotate')
@@ -472,21 +473,21 @@ test.describe('Point-and-click assemblies tests', () => {
 
       await test.step('Insert step part as module', async () => {
         await insertPartIntoAssembly('cube.step', 'cube', toolbar, cmdBar, page)
-        await toolbar.openPane('code')
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
           `
           import "cube.step" as cube
         `,
           { shouldNormalise: true }
         )
-        await toolbar.closePane('code')
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
         await scene.settled(cmdBar)
 
         await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
       })
 
       await test.step('Insert second foreign part by clicking', async () => {
-        await toolbar.openPane('files')
+        await toolbar.openPane(DefaultLayoutPaneID.Files)
         await toolbar.expectFileTreeState([
           complexPlmFileName,
           'cube.step',
@@ -511,8 +512,8 @@ test.describe('Point-and-click assemblies tests', () => {
           commandName: 'Insert',
         })
         await cmdBar.progressCmdBar()
-        await toolbar.closePane('files')
-        await toolbar.openPane('code')
+        await toolbar.closePane(DefaultLayoutPaneID.Files)
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
           `
           import "cube.step" as cube
@@ -528,40 +529,40 @@ test.describe('Point-and-click assemblies tests', () => {
       // TODO: enable once deleting the first import is fixed
       // await test.step('Delete first part using the feature tree', async () => {
       //   page.on('console', console.log)
-      //   await toolbar.openPane('feature-tree')
+      //   await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       //   const op = await toolbar.getFeatureTreeOperation('cube', 0)
       //   await op.click({ button: 'right' })
       //   await page.getByTestId('context-menu-delete').click()
       //   await scene.settled(cmdBar)
-      //   await toolbar.closePane('feature-tree')
+      //   await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
 
       //   // Expect only the import statement to be there
-      //   await toolbar.openPane('code')
+      //   await toolbar.openPane(DefaultLayoutPaneID.Code)
       //   await editor.expectEditor.not.toContain(`import "cube.step" as cube`)
-      //   await toolbar.closePane('code')
+      //   await toolbar.closePane(DefaultLayoutPaneID.Code)
       //   await editor.expectEditor.toContain(
       //     `
       //     import "${complexPlmFileName}" as cubeSw
       //   `,
       //     { shouldNormalise: true }
       //   )
-      //   await toolbar.closePane('code')
+      //   await toolbar.closePane(DefaultLayoutPaneID.Code)
       // })
 
       await test.step('Delete second part using the feature tree', async () => {
-        await toolbar.openPane('feature-tree')
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const op = await toolbar.getFeatureTreeOperation('cube_Complex', 0)
         await op.click({ button: 'right' })
         await page.getByTestId('context-menu-delete').click()
         await scene.settled(cmdBar)
-        await toolbar.closePane('feature-tree')
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
 
         // Expect empty editor and scene
-        await toolbar.openPane('code')
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.not.toContain(
           `import "${complexPlmFileName}" as cubeSw`
         )
-        await toolbar.closePane('code')
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
         // TODO: enable once deleting the first import is fixed
         // don't re-enable because we don't want pixel-based tests anymore, but the behavior
         // still needs fixed.
@@ -613,7 +614,7 @@ foreign
         await page.setBodyDimensions({ width: 1000, height: 500 })
         await homePage.openProject(projectName)
         await scene.settled(cmdBar)
-        await toolbar.closePane('code')
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
 
       await test.step('Change imported kcl file and expect change', async () => {
@@ -628,7 +629,7 @@ foreign
               )
             })
             await scene.settled(cmdBar)
-            await toolbar.closePane('code')
+            await toolbar.closePane(DefaultLayoutPaneID.Code)
           },
           300
         )
@@ -651,7 +652,7 @@ foreign
             )
           })
           await scene.settled(cmdBar)
-          await toolbar.closePane('code')
+          await toolbar.closePane(DefaultLayoutPaneID.Code)
         })
       })
     }
@@ -695,11 +696,11 @@ foreign
         await page.setBodyDimensions({ width: 1000, height: 500 })
         await homePage.openProject(projectName)
         await scene.settled(cmdBar)
-        await toolbar.closePane('code')
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
 
       await test.step('Clone the part using the feature tree', async () => {
-        await toolbar.openPane('feature-tree')
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const op = await toolbar.getFeatureTreeOperation('washer', 0)
         await op.click({ button: 'right' })
         await page.getByTestId('context-menu-clone').click()
@@ -737,26 +738,26 @@ foreign
         })
         await cmdBar.submit()
         await scene.settled(cmdBar)
-        await toolbar.closePane('feature-tree')
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
 
         // Expect changes
-        await toolbar.openPane('code')
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(cloneLine, {
           shouldNormalise: true,
         })
-        await toolbar.closePane('code')
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
 
       await test.step('Delete clone using the feature tree', async () => {
-        await toolbar.openPane('feature-tree')
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const op = await toolbar.getFeatureTreeOperation('Clone', 0)
         await op.click({ button: 'right' })
         await page.getByTestId('context-menu-delete').click()
         await scene.settled(cmdBar)
-        await toolbar.closePane('feature-tree')
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
 
         // Expect empty editor and scene
-        await toolbar.openPane('code')
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.not.toContain(cloneLine, {
           shouldNormalise: true,
         })

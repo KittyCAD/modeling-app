@@ -1,5 +1,5 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
-import type { SidebarId } from '@src/components/layout/areas'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Copilot tests', () => {
   test('Happy path: new project, easy prompt, good result', async ({
@@ -16,9 +16,8 @@ test.describe('Copilot tests', () => {
     await scene.settled(cmdBar)
 
     await test.step(`Submit basic prompt`, async () => {
-      await toolbar.closePane('code')
-      // TODO: fix the 'as' this it's not making sense
-      await toolbar.openPane('ttc' as SidebarId)
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.openPane(DefaultLayoutPaneID.TTC)
       await copilot.conversationInput.fill(
         'make a 10x10x10cm cube centered on the origin'
       )
@@ -27,7 +26,7 @@ test.describe('Copilot tests', () => {
       await expect(copilot.placeHolderResponse).not.toBeVisible({
         timeout: 120_000,
       })
-      await toolbar.openPane('code')
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain('startSketchOn')
       await editor.expectEditor.toContain('extrude')
       await editor.expectEditor.toContain('10')

@@ -9,6 +9,7 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Sketch tests', () => {
   test('three-point arc closes without disappearing', async ({
@@ -170,7 +171,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     await editor.expectEditor.toContain('startProfile(')
 
     // Open feature tree and select the first sketch
-    await toolbar.openPane('feature-tree')
+    await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
     await page.getByRole('button', { name: 'sketch001' }).dblclick()
     await page.waitForTimeout(600)
 
@@ -1713,7 +1714,7 @@ extrude003 = extrude(profile011, length = 2.5)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
-    await toolbar.closePane('code')
+    await toolbar.closePane(DefaultLayoutPaneID.Code)
     await scene.settled(cmdBar)
 
     const camPositionForSelectingSketchOnWallProfiles = () =>
@@ -2102,7 +2103,7 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
 
     await toolbar.openFeatureTreePane()
 
-    await toolbar.openPane('files')
+    await toolbar.openPane(DefaultLayoutPaneID.Files)
 
     await page.waitForTimeout(1000)
 
