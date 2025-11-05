@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 base_dir="/releases/design-studio"
 if [[ $1 = "--staging" ]]; then
     base_dir="/releases/design-studio/staging"

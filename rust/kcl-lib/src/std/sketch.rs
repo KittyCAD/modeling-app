@@ -1181,9 +1181,7 @@ pub(crate) async fn inner_start_profile(
         is_closed: false,
     };
     if let Some(tag) = &tag {
-        let path = Path::Base {
-            base: current_path.clone(),
-        };
+        let path = Path::Base { base: current_path };
         sketch.add_tag(tag, &path, exec_state, None);
     }
 
@@ -1963,8 +1961,7 @@ async fn inner_elliptic_point(
                     format!(
                         "Invalid input. The x value, {}, cannot be larger than the major radius {}.",
                         x.n, major_radius
-                    )
-                    .to_owned(),
+                    ),
                     vec![args.source_range],
                 ),
             })
@@ -1982,8 +1979,7 @@ async fn inner_elliptic_point(
                     format!(
                         "Invalid input. The y value, {}, cannot be larger than the minor radius {}.",
                         y.n, minor_radius
-                    )
-                    .to_owned(),
+                    ),
                     vec![args.source_range],
                 ),
             })
@@ -2156,8 +2152,7 @@ async fn inner_hyperbolic_point(
                     format!(
                         "Invalid input. The x value, {}, cannot be less than the semi major value, {}.",
                         x.n, semi_major
-                    )
-                    .to_owned(),
+                    ),
                     vec![args.source_range],
                 ),
             })

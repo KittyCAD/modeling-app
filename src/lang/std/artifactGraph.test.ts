@@ -33,6 +33,7 @@ describe('getSweepArtifactFromSelection', () => {
       subType: 'extrusion',
       surfaceIds: [],
       edgeIds: [],
+      method: 'merge',
     }
 
     const segment: Artifact = {
@@ -96,6 +97,7 @@ describe('getSweepArtifactFromSelection', () => {
       subType: 'extrusion',
       surfaceIds: [],
       edgeIds: ['sweep-edge-1'],
+      method: 'merge',
     }
 
     const sweepEdge: Artifact = {
@@ -197,6 +199,7 @@ describe('coerceSelectionsToBody', () => {
       subType: 'extrusion',
       surfaceIds: [],
       edgeIds: [],
+      method: 'merge',
     }
 
     const segment: Artifact = {

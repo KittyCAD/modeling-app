@@ -10,8 +10,8 @@ use crate::{
     CompilationError, ModuleId, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch,
-        SketchFaceOrTaggedFace, SketchSurface, Solid, TagIdentifier, annotations,
+        ExecState, Extrudable, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Plane, PlaneInfo, Sketch,
+        SketchSurface, Solid, TagIdentifier, annotations,
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType, UnitType},
     },
@@ -139,7 +139,7 @@ impl Args {
             let actual_type_name = actual_type
                 .as_ref()
                 .map(|t| t.to_string())
-                .unwrap_or_else(|| arg.value.human_friendly_type().to_owned());
+                .unwrap_or_else(|| arg.value.human_friendly_type());
             let msg_base = format!(
                 "This function expected its `{label}` argument to be {} but it's actually of type {actual_type_name}",
                 ty.human_friendly_type(),
@@ -239,7 +239,7 @@ impl Args {
             let actual_type_name = actual_type
                 .as_ref()
                 .map(|t| t.to_string())
-                .unwrap_or_else(|| arg.value.human_friendly_type().to_owned());
+                .unwrap_or_else(|| arg.value.human_friendly_type());
             let msg_base = format!(
                 "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
                 ty.human_friendly_type(),
@@ -487,21 +487,13 @@ impl<'a> FromKclValue<'a> for Vec<KclValue> {
     }
 }
 
-impl<'a> FromKclValue<'a> for Vec<SketchFaceOrTaggedFace> {
+impl<'a> FromKclValue<'a> for Vec<Extrudable> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let items = arg
             .clone()
             .into_array()
             .iter()
-            .map(|v| {
-                if let Some(sketch) = v.as_sketch() {
-                    Some(SketchFaceOrTaggedFace::Sketch(Box::new(sketch.clone())))
-                } else if let Some(face_tag) = FaceTag::from_kcl_val(v) {
-                    Some(SketchFaceOrTaggedFace::Face(face_tag))
-                } else {
-                    TagIdentifier::from_kcl_val(v).map(|tag_id| SketchFaceOrTaggedFace::TaggedFace(Box::new(tag_id)))
-                }
-            })
+            .map(Extrudable::from_kcl_val)
             .collect::<Option<Vec<_>>>()?;
         Some(items)
     }
@@ -1024,7 +1016,7 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
     }
 }
 
-impl<'a> FromKclValue<'a> for SketchFaceOrTaggedFace {
+impl<'a> FromKclValue<'a> for Extrudable {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let case1 = Box::<Sketch>::from_kcl_val;
         let case2 = Box::<TagIdentifier>::from_kcl_val;

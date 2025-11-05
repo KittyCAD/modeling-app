@@ -72,7 +72,7 @@ pub async fn import_foreign(
         .map_err(|e| KclError::new_semantic(KclErrorDetails::new(e.to_string(), vec![source_range])))?;
 
     // We want the file_path to be without the parent.
-    let file_name = file_path.file_name().map(|p| p.to_string()).ok_or_else(|| {
+    let file_name = file_path.file_name().ok_or_else(|| {
         KclError::new_semantic(KclErrorDetails::new(
             format!("Could not get the file name from the path `{}`", file_path.display()),
             vec![source_range],

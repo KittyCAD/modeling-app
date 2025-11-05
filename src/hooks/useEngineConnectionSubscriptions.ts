@@ -14,6 +14,7 @@ import {
   engineCommandManager,
   kclManager,
   sceneInfra,
+  rustContext,
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 
@@ -81,6 +82,17 @@ export function useEngineConnectionSubscriptions() {
     return unSub
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager, state])
+
+  // Re-apply plane visibility when planes are (re)created on the Rust side
+  useEffect(() => {
+    const unsubscribe = rustContext.planesCreated.add(() => {
+      const vis = stateRef.current.context.defaultPlaneVisibility
+      void kclManager.setPlaneVisibilityByKey('xy', vis.xy)
+      void kclManager.setPlaneVisibilityByKey('xz', vis.xz)
+      void kclManager.setPlaneVisibilityByKey('yz', vis.yz)
+    })
+    return unsubscribe
+  }, [])
 }
 
 export async function selectSketchPlane(

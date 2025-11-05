@@ -1,14 +1,43 @@
-import { assertParse, recast } from '@src/lang/wasm'
+import { recast } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { addSubtract } from '@src/lang/modifyAst/boolean'
-import { enginelessExecutor } from '@src/lib/testHelpers'
-import RustContext from '@src/lib/rustContext'
-import { ConnectionManager } from '@src/network/connectionManager'
-import { join } from 'path'
-import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+import {
+  enginelessExecutor,
+  getAstAndArtifactGraph,
+} from '@src/lib/testHelpers'
+import type RustContext from '@src/lib/rustContext'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import type { KclManager } from '@src/lang/KclSingleton'
+
+let instanceInThisFile: ModuleType = null!
+let kclManagerInThisFile: KclManager = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+let rustContextInThisFile: RustContext = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
+beforeEach(async () => {
+  if (instanceInThisFile) {
+    return
+  }
+
+  const { instance, kclManager, engineCommandManager, rustContext } =
+    await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  kclManagerInThisFile = kclManager
+  engineCommandManagerInThisFile = engineCommandManager
+  rustContextInThisFile = rustContext
+})
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
+})
 
 describe('boolean', () => {
   describe('Testing addSubtract', () => {
@@ -17,26 +46,32 @@ describe('boolean', () => {
       solidIds: number[],
       toolIds: number[],
       instance: ModuleType,
+      kclManager: KclManager,
       rustContext: RustContext
     ) {
-      const ast = assertParse(code, instance)
-      if (err(ast)) throw ast
-
-      const { artifactGraph } = await enginelessExecutor(
-        ast,
-        undefined,
-        undefined,
-        rustContext
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instance,
+        kclManager
       )
-      const sweeps = [...artifactGraph.values()].filter(
-        (n) => n.type === 'sweep'
-      )
+      // path selection is what p&c is doing with the filter (v. sweep)
+      const paths = [...artifactGraph.values()].filter((n) => n.type === 'path')
       const solids: Selections = {
-        graphSelections: solidIds.map((i) => sweeps[i]),
+        graphSelections: solidIds.map((i) => {
+          return {
+            artifact: paths[i],
+            codeRef: paths[i].codeRef,
+          }
+        }),
         otherSelections: [],
       }
       const tools: Selections = {
-        graphSelections: toolIds.map((i) => sweeps[i]),
+        graphSelections: toolIds.map((i) => {
+          return {
+            artifact: paths[i],
+            codeRef: paths[i].codeRef,
+          }
+        }),
         otherSelections: [],
       }
       const result = addSubtract({
@@ -52,9 +87,6 @@ describe('boolean', () => {
     }
 
     it('should add a standalone call on standalone sweeps selection', async () => {
-      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-      const engineCommandManager = new ConnectionManager()
-      const rustContext = new RustContext(engineCommandManager, instance)
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0.2, 0.2], radius = 0.1)
 extrude001 = extrude(profile001, length = 1)
@@ -69,16 +101,14 @@ extrude002 = extrude(profile002, length = -1)`
         code,
         solidIds,
         toolIds,
-        instance,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
 
     it('should push a call in pipe if selection was in variable-less pipe', async () => {
-      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-      const engineCommandManager = new ConnectionManager()
-      const rustContext = new RustContext(engineCommandManager, instance)
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0.2, 0.2], radius = 0.1)
 extrude001 = extrude(profile001, length = 1)
@@ -93,16 +123,14 @@ startSketchOn(XZ)
         code,
         solidIds,
         toolIds,
-        instance,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
 
     it('should support multi-profile extrude as tool', async () => {
-      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-      const engineCommandManager = new ConnectionManager()
-      const rustContext = new RustContext(engineCommandManager, instance)
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0.2, 0.2], radius = 0.05)
 profile002 = circle(sketch001, center = [0.2, 0.4], radius = 0.05)
@@ -118,17 +146,14 @@ extrude003 = extrude(profile003, length = -1)`
         code,
         solidIds,
         toolIds,
-        instance,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
     it('should support multi-solid selection for subtract', async () => {
-      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
-      const engineCommandManager = new ConnectionManager()
-      const rustContext = new RustContext(engineCommandManager, instance)
       const code = `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
 profile002 = circle(sketch001, center = [0, 0], radius = 4.98)
 extrude001 = extrude(profile002, length = 5)
 plane001 = offsetPlane(XY, offset = 10)
@@ -145,10 +170,52 @@ extrude003 = extrude(profile004, length = 20)`
         code,
         solidIds,
         toolIds,
-        instance,
-        rustContext
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
+    it('should support find the first sweep in case of a method=NEW extrude on face', async () => {
+      const carRotorWithExtraBody = `rotorDiameter = 12
+rotorInnerDiameter = 6
+rotorSinglePlateThickness = 0.25
+rotorTotalThickness = 1
+spacerLength = rotorTotalThickness - (2 * rotorSinglePlateThickness)
+
+rotorSketch = startSketchOn(XZ)
+  |> circle(center = [0, 0], radius = rotorDiameter / 2)
+rotor = extrude(rotorSketch, length = rotorSinglePlateThickness)
+
+centerSpacer = startSketchOn(rotor, face = START)
+  |> circle(center = [0, 0], radius = .25)
+  |> extrude(length = spacerLength)
+
+secondaryRotorSketch = startSketchOn(centerSpacer, face = END)
+  |> circle(center = [0, 0], radius = rotorDiameter / 2)
+secondRotor = extrude(secondaryRotorSketch, length = rotorSinglePlateThickness)
+
+sketch001 = startSketchOn(rotor, face = END)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = -5, method = NEW)`
+      const expectedNewLine = `solid001 = subtract(secondRotor, tools = extrude001)`
+      const solidIds = [0]
+      const toolIds = [3]
+      const newCode = await runAddSubtractTest(
+        carRotorWithExtraBody,
+        solidIds,
+        toolIds,
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
+      )
+      // Note that this would fail without artifactTypeFilter: ['compositeSolid', 'sweep'] in addSubtract
+      // that's what https://github.com/KittyCAD/modeling-app/pull/8742 caught
+      expect(newCode).toContain(carRotorWithExtraBody + '\n' + expectedNewLine)
+    })
   })
+
+  // From https://github.com/KittyCAD/modeling-app/blob/d83324ac30430af675806c143ee6fb30df8bdaa8/src/lang/modifyAst/boolean.test.ts#L7
+  // addIntersect and addUnion are not tested here, as they would be 1:1 with existing e2e tests
+  // so just adding extra addSubtract cases here
 })

@@ -23,9 +23,9 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     exec::Sketch,
     execution::{
-        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, SketchFaceOrTaggedFace,
-        SketchSurface, Solid,
-        types::{PrimitiveType, RuntimeType},
+        ArtifactId, ExecState, Extrudable, ExtrudeSurface, GeoMeta, KclValue, ModelingCmdMeta, Path, SketchSurface,
+        Solid,
+        types::{ArrayLen, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
     std::{Args, axis_or_reference::Point3dAxis3dOrGeometryReference},
@@ -33,15 +33,19 @@ use crate::{
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg(
+    let sketches: Vec<Extrudable> = args.get_unlabeled_kw_arg(
         "sketches",
-        &RuntimeType::Union(vec![
-            RuntimeType::sketches(),
-            RuntimeType::faces(),
-            RuntimeType::tagged_faces(),
-        ]),
+        &RuntimeType::Array(
+            Box::new(RuntimeType::Union(vec![
+                RuntimeType::sketch(),
+                RuntimeType::face(),
+                RuntimeType::tagged_face(),
+            ])),
+            ArrayLen::Minimum(1),
+        ),
         exec_state,
     )?;
+
     let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
     let to = args.get_kw_arg_opt(
         "to",
@@ -92,7 +96,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 
 #[allow(clippy::too_many_arguments)]
 async fn inner_extrude(
-    sketches: Vec<SketchFaceOrTaggedFace>,
+    sketches: Vec<Extrudable>,
     length: Option<TyF64>,
     to: Option<Point3dAxis3dOrGeometryReference>,
     symmetric: Option<bool>,
@@ -151,7 +155,7 @@ async fn inner_extrude(
 
     for sketch in &sketches {
         let id = exec_state.next_uuid();
-        let sketch_or_face_id = sketch.id(exec_state, &args, false).await?;
+        let sketch_or_face_id = sketch.id_to_extrude(exec_state, &args, false).await?;
         let cmd = match (&twist_angle, &twist_angle_step, &twist_center, length.clone(), &to) {
             (Some(angle), angle_step, center, Some(length), None) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
@@ -307,7 +311,7 @@ async fn inner_extrude(
             }
         };
 
-        if let Some(post_extr_sketch) = sketch.sketch() {
+        if let Some(post_extr_sketch) = sketch.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(exec_state, ModelingCmdReq { cmd_id: id.into(), cmd });
             exec_state
                 .batch_modeling_cmds(ModelingCmdMeta::from_args_id(&args, id), &cmds)

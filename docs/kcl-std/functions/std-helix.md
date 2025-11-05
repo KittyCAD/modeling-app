@@ -29,7 +29,7 @@ helix(
 | `angleStart` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Start angle. | Yes |
 | `ccw` | [`bool`](/docs/kcl-std/types/std-types-bool) | Is the helix rotation counter clockwise? The default is `false`. | No |
 | `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Radius of the helix. | No |
-| `axis` | [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) | Axis to use for the helix. | No |
+| `axis` | [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) | Axis to use for the helix. The center of the helix's base will be at this axis's origin point. | No |
 | `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used. | No |
 | `cylinder` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | Cylinder to create the helix on. | No |
 

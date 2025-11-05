@@ -705,7 +705,7 @@ impl SketchSurface {
 
 /// A Sketch, Face, or TaggedFace.
 #[derive(Debug, Clone, PartialEq)]
-pub enum SketchFaceOrTaggedFace {
+pub enum Extrudable {
     /// Sketch.
     Sketch(Box<Sketch>),
     /// Face.
@@ -714,20 +714,18 @@ pub enum SketchFaceOrTaggedFace {
     TaggedFace(Box<TagIdentifier>),
 }
 
-impl SketchFaceOrTaggedFace {
+impl Extrudable {
     /// Get the relevant id.
-    pub async fn id(
+    pub async fn id_to_extrude(
         &self,
         exec_state: &mut ExecState,
         args: &Args,
         must_be_planar: bool,
     ) -> Result<uuid::Uuid, KclError> {
         match self {
-            SketchFaceOrTaggedFace::Sketch(sketch) => Ok(sketch.id),
-            SketchFaceOrTaggedFace::Face(face_tag) => {
-                face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await
-            }
-            SketchFaceOrTaggedFace::TaggedFace(tag_id) => {
+            Extrudable::Sketch(sketch) => Ok(sketch.id),
+            Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+            Extrudable::TaggedFace(tag_id) => {
                 if let Some(cur_info) = tag_id.get_cur_info() {
                     Ok(cur_info.id)
                 } else {
@@ -740,19 +738,19 @@ impl SketchFaceOrTaggedFace {
         }
     }
 
-    pub fn sketch(&self) -> Option<Sketch> {
+    pub fn as_sketch(&self) -> Option<Sketch> {
         match self {
-            SketchFaceOrTaggedFace::Sketch(sketch) => Some((**sketch).clone()),
-            SketchFaceOrTaggedFace::Face(face_tag) => match face_tag.geometry() {
-                Some(Geometry::Sketch(sketch)) => Some(sketch.clone()),
-                Some(Geometry::Solid(solid)) => Some(solid.sketch.clone()),
+            Extrudable::Sketch(sketch) => Some((**sketch).clone()),
+            Extrudable::Face(face_tag) => match face_tag.geometry() {
+                Some(Geometry::Sketch(sketch)) => Some(sketch),
+                Some(Geometry::Solid(solid)) => Some(solid.sketch),
                 _ => None,
             },
-            SketchFaceOrTaggedFace::TaggedFace(tag_id) => {
+            Extrudable::TaggedFace(tag_id) => {
                 if let Some(cur_info) = tag_id.geometry() {
                     match cur_info {
-                        Geometry::Sketch(sketch) => Some(sketch.clone()),
-                        Geometry::Solid(solid) => Some(solid.sketch.clone()),
+                        Geometry::Sketch(sketch) => Some(sketch),
+                        Geometry::Solid(solid) => Some(solid.sketch),
                     }
                 } else {
                     None
@@ -762,9 +760,9 @@ impl SketchFaceOrTaggedFace {
     }
 }
 
-impl From<Sketch> for SketchFaceOrTaggedFace {
+impl From<Sketch> for Extrudable {
     fn from(value: Sketch) -> Self {
-        SketchFaceOrTaggedFace::Sketch(Box::new(value))
+        Extrudable::Sketch(Box::new(value))
     }
 }
 
