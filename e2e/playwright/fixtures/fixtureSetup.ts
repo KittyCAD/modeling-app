@@ -21,6 +21,7 @@ import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
+import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 
 import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
 import { getUtils, settingsToToml, setup } from '@e2e/playwright/test-utils'
@@ -68,6 +69,7 @@ export interface Fixtures {
   scene: SceneFixture
   homePage: HomePageFixture
   signInPage: SignInPageFixture
+  copilot: CopilotFixture
 }
 
 export class ElectronZoo {
@@ -409,6 +411,9 @@ const fixturesBasedOnProcessEnvPlatform = {
   },
   signInPage: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new SignInPageFixture(page))
+  },
+  copilot: async ({ page }: { page: Page }, use: FnUse) => {
+    await use(new CopilotFixture(page))
   },
   _globalAfterEach: [
     async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
