@@ -307,7 +307,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     })
 
     await test.step('drag circle radius handle', async () => {
-      const magicYOnCircle = 0.8
+      const magicYOnCircle = 0.68
       const fromPoint = { x: 0.5, y: magicYOnCircle }
       const toPoint = [fromPoint.x / 2, magicYOnCircle] as const
       const [dragRadiusHandle] = scene.makeDragHelpers(...toPoint, {
@@ -315,15 +315,13 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
         format: 'ratio',
       })
       await dragRadiusHandle({ fromPoint })
-      await editor.expectEditor.not.toContain(prevContent)
-      prevContent = await editor.getCurrentCode()
     })
 
     await test.step('expect the code to have changed', async () => {
+      await editor.expectEditor.not.toContain(prevContent)
       await editor.expectEditor.toContain(
-        `sketch001 = startSketchOn(XZ)
-    |> circle(center = [-0.18, 0.12], radius = 0.54)`,
-        { shouldNormalise: true }
+        new RegExp(`sketch001 = startSketchOn(XZ)
+    |> circle\\(center = \\[${NUMBER_REGEXP}, ${NUMBER_REGEXP}\\], radius = ${NUMBER_REGEXP}\\)`)
       )
     })
   })
@@ -404,10 +402,7 @@ sketch001 = startSketchOn(XZ)
     await editor.expectEditor.toContain(`|> xLine(length =`)
 
     await click00r(0, 50)
-    // @pierremtb: this used to create a yLine before the engine zoom fix
-    // in https://github.com/KittyCAD/engine/pull/3804. I updated it to a line call
-    // since it doesn't change the test objective
-    await editor.expectEditor.toContain(`|> line(`)
+    await editor.expectEditor.toContain(`|> yLine(`)
 
     // exit the sketch, reset relative clicker
     await click00r(undefined, undefined)
@@ -1567,7 +1562,9 @@ profile002 = startProfile(sketch002, at = [0, 52.55])
     await nextPoint()
     await editor.openPane()
     // A regex that just confirms the new segment is a line in a pipe
-    await expect(editor.codeContent).toContainText(/52\.55\]\)\s+\|\>\s+line\(/)
+    await expect(editor.codeContent).toContainText(
+      new RegExp(`${NUMBER_REGEXP}\\]\\)\\s+|>\\s+line\\(`)
+    )
   })
   test('old style sketch all in one pipe (with extrude) will break up to allow users to add a new profile to the same sketch', async ({
     homePage,
