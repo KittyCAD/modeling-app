@@ -512,7 +512,6 @@ export const sketchSolveMachine = setup({
         })
       })
 
-      console.log('Updated sketch segments:', sketchSegments)
       return {
         sketchExecOutcome: {
           kclSource: event.data.kclSource,
