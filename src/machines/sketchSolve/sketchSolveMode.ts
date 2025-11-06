@@ -464,9 +464,6 @@ export const sketchSolveMachine = setup({
         })
       }
       sceneGraphDelta.new_graph.objects.forEach((obj) => {
-        if (sceneGraphDelta.new_objects.includes(obj.id)) {
-          return
-        }
         if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
           return
         }
