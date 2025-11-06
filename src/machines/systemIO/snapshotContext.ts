@@ -42,13 +42,14 @@ export function listAllImportFilesWithinProject(
   }: { projectFolderName: string; importExtensions: string[] }
 ) {
   const relativeFilePaths = []
-  const { folders } = context
-  const projectFolder = folders.find((folder) => {
+  // copy the folders
+  let projectFolder = context.folders.find((folder) => {
     return folder.name === projectFolderName
   })
-  if (window.electron && projectFolder?.children) {
-    const projectPath = projectFolder.path
-    let children = projectFolder.children
+  const clonedProjectFolder = structuredClone(projectFolder)
+  if (window.electron && clonedProjectFolder?.children) {
+    const projectPath = clonedProjectFolder.path
+    let children = clonedProjectFolder.children
     while (children.length > 0) {
       const v = children.pop()
       if (!v) {

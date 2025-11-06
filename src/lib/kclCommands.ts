@@ -35,7 +35,7 @@ import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaratio
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
 import type { Project } from '@src/lib/project'
-import { importFileExtensions, relevantFileExtensions } from '@src/lang/wasmUtils'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
