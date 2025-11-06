@@ -7,7 +7,6 @@ import type { Camera } from 'three'
 import {
   Euler,
   MathUtils,
-  Matrix4,
   OrthographicCamera,
   PerspectiveCamera,
   Quaternion,
@@ -44,7 +43,6 @@ import { type ConnectionManager } from '@src/network/connectionManager'
 import type { Subscription, UnreliableSubscription } from '@src/network/utils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
-const ORTHOGRAPHIC_MAGIC_FOV = 4
 const EXPECTED_WORLD_COORD_SYSTEM = 'right_handed_up_z'
 
 // Partial declaration; the front/back/left/right are handled differently.
@@ -1164,13 +1162,13 @@ export class CameraControls {
     }
     this.isFovAnimationInProgress = true
     const targetFov = this.perspectiveFovBeforeOrtho // Target FOV for perspective
-    let currentFov = ORTHOGRAPHIC_MAGIC_FOV
     const initialCameraUp = this.camera.up.clone()
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.usePerspectiveCamera()
     const tempVec = new Vector3()
 
-    currentFov = this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov)
+    const currentFov =
+      this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov)
     const currentUp = tempVec.lerpVectors(initialCameraUp, targetCamUp, 1)
     this.camera.up.copy(currentUp)
     await this.dollyZoom(currentFov, true)
