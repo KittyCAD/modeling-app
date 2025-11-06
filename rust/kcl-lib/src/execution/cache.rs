@@ -253,82 +253,12 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
         };
     }
 
-    // Check if the changes were only to Non-code areas, like comments or whitespace.
-    generate_changed_program(old_ast, new_ast, reapply_settings)
-}
-
-/// Force-generate a new CacheResult, even if one shouldn't be made. The
-/// way in which this gets invoked should always be through
-/// [get_changed_program]. This is purely to contain the logic on
-/// how we construct a new [CacheResult].
-///
-/// Digests *must* be computed before calling this.
-fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>, reapply_settings: bool) -> CacheResult {
-    if !old_ast.body.iter().zip(new_ast.body.iter()).all(|(old, new)| {
-        let old_node: WalkNode = old.into();
-        let new_node: WalkNode = new.into();
-        old_node.digest() == new_node.digest()
-    }) {
-        // If any of the nodes are different in the stretch of body that
-        // overlaps, we have to bust cache and rebuild the scene. This
-        // means a single insertion or deletion will result in a cache
-        // bust.
-
-        return CacheResult::ReExecute {
-            clear_scene: true,
-            reapply_settings,
-            program: new_ast,
-        };
-    }
-
-    // otherwise the overlapping section of the ast bodies matches.
-    // Let's see what the rest of the slice looks like.
-
-    match new_ast.body.len().cmp(&old_ast.body.len()) {
-        std::cmp::Ordering::Less => {
-            // the new AST is shorter than the old AST -- statements
-            // were removed from the "current" code in the "new" code.
-            //
-            // Statements up until now match which means this is a
-            // "pure delete" of the remaining slice, when we get to
-            // supporting that.
-
-            // Cache bust time.
-            CacheResult::ReExecute {
-                clear_scene: true,
-                reapply_settings,
-                program: new_ast,
-            }
-        }
-        std::cmp::Ordering::Greater => {
-            // the new AST is longer than the old AST, which means
-            // statements were added to the new code we haven't previously
-            // seen.
-            //
-            // Statements up until now are the same, which means this
-            // is a "pure addition" of the remaining slice.
-
-            new_ast.body = new_ast.body[old_ast.body.len()..].to_owned();
-
-            CacheResult::ReExecute {
-                clear_scene: false,
-                reapply_settings,
-                program: new_ast,
-            }
-        }
-        std::cmp::Ordering::Equal => {
-            // currently unreachable, but let's pretend like the code
-            // above can do something meaningful here for when we get
-            // to diffing and yanking chunks of the program apart.
-
-            // We don't actually want to do anything here; so we're going
-            // to not clear and do nothing. Is this wrong? I don't think
-            // so but i think many things. This def needs to change
-            // when the code above changes.
-
-            CacheResult::NoAction(reapply_settings)
-        }
-    }
+    // Do not check the length.
+    return CacheResult::ReExecute {
+        clear_scene: true,
+        reapply_settings: reapply_settings,
+        program: new.ast.clone(),
+    };
 }
 
 #[cfg(test)]
