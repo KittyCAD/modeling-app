@@ -184,19 +184,18 @@ const Loading = ({
       {CONNECTION_ERROR_TEXT[error.error] && (
         <div>
           <div className="inline-block max-w-3xl text-base gap-2 px-32 pt-2 mt-2 pb-6 mb-6 text-chalkboard-80 dark:text-chalkboard-20">
-            {CONNECTION_ERROR_CALL_TO_ACTION_TEXT[error.error]}
-              {' '}If the issue persists, please visit the community support thread
-              on{' '}
-              <a
-                className="contents text-chalkboard-80 dark:text-chalkboard-10"
-                href={diagnosingNetworkIssuesUrl}
-                onClick={openExternalBrowserIfDesktop(
-                  diagnosingNetworkIssuesUrl
-                )}
-              >
-                <span className="underline underline-offset-1">diagnosing network connection issues</span>
-              </a>
-              .
+            {CONNECTION_ERROR_CALL_TO_ACTION_TEXT[error.error]} If the issue
+            persists, please visit the community support thread on{' '}
+            <a
+              className="contents text-chalkboard-80 dark:text-chalkboard-10"
+              href={diagnosingNetworkIssuesUrl}
+              onClick={openExternalBrowserIfDesktop(diagnosingNetworkIssuesUrl)}
+            >
+              <span className="underline underline-offset-1">
+                diagnosing network connection issues
+              </span>
+            </a>
+            .
           </div>
         </div>
       )}

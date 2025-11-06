@@ -344,14 +344,14 @@ export const ConnectionStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
-        <Loading
-          isRetrying={false}
-          retryAttemptCountdown={0}
-          dataTestId="loading-engine"
-          className="absolute inset-0 h-screen"
-        >
-          Connecting and setting up scene...
-        </Loading>
+      <Loading
+        isRetrying={false}
+        retryAttemptCountdown={0}
+        dataTestId="loading-engine"
+        className="absolute inset-0 h-screen"
+      >
+        Connecting and setting up scene...
+      </Loading>
       {showManualConnect && (
         <ManualReconnection
           className="absolute inset-0 h-screen"
