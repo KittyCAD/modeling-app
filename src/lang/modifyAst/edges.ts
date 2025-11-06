@@ -261,9 +261,16 @@ function groupSelectionsByBodyAndAddTags(
 
     // Build solids expression
     const solids: Selections = {
-      graphSelections: [bodySelections.graphSelections[0]].map((edge) => {
+      graphSelections: [bodySelections.graphSelections[0]].flatMap((edge) => {
         const sweep = getSweepArtifactFromSelection(edge, artifactGraph)
-        if (err(sweep)) throw sweep
+        if (err(sweep)) {
+          console.error(
+            'Skipping sweep artifact in solids selection',
+            err(sweep)
+          )
+          return []
+        }
+
         return {
           type: 'default',
           codeRef: sweep.codeRef,
