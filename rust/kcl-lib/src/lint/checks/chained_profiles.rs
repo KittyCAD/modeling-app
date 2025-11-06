@@ -192,6 +192,8 @@ fn path_matches(path: &NodeList<Identifier>, expected: &[&str]) -> bool {
     true
 }
 
+/// Find all defined names in the given code block. This ignores names defined
+/// by glob imports.
 fn find_defined_names(block: &AstNode<Program>) -> HashSet<String> {
     let mut defined_names = HashSet::new();
     for item in &block.body {
@@ -199,11 +201,7 @@ fn find_defined_names(block: &AstNode<Program>) -> HashSet<String> {
             match &import.selector {
                 ImportSelector::List { items } => {
                     for import_item in items {
-                        if let Some(alias) = &import_item.alias {
-                            defined_names.insert(alias.name.clone());
-                        } else {
-                            defined_names.insert(import_item.name.name.clone());
-                        }
+                        defined_names.insert(import_item.identifier().to_owned());
                     }
                 }
                 ImportSelector::Glob(_) => {}
