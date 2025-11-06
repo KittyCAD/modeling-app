@@ -129,11 +129,26 @@ fn check_body(block: &AstNode<Program>, whole_program: &AstNode<Program>) -> Res
 fn check_body_item_for_pipe(node: Node) -> (Option<Expr>, Vec<(usize, SourceRange)>) {
     match &node {
         Node::ExpressionStatement(expr_stmt) => check_pipe_item(Node::from(&expr_stmt.expression)),
-        Node::VariableDeclaration(var_decl) => check_pipe_item(Node::from(&var_decl.declaration.init)),
+        Node::VariableDeclaration(var_decl) => {
+            let (unlabeled, problematic) = check_pipe_item(Node::from(&var_decl.declaration.init));
+            // If there is no unlabeled arg, use the variable defined for the
+            // entire pipeline as the unlabeled arg.
+            (
+                unlabeled.or_else(|| {
+                    Some(Expr::Name(Box::new(AstNode::<Name>::from(
+                        var_decl.declaration.id.clone(),
+                    ))))
+                }),
+                problematic,
+            )
+        }
         _ => (None, Vec::new()),
     }
 }
 
+/// Given a pipe expression node, return the unlabeled argument of the first
+/// profile function call and a list of all subsequent problematic profile
+/// function calls' {pipe body indices and source ranges}.
 fn check_pipe_item(node: Node) -> (Option<Expr>, Vec<(usize, SourceRange)>) {
     let Node::PipeExpression(pipe) = node else {
         return (None, Vec::new());
@@ -497,5 +512,27 @@ startSketchOn(XY)
   |> circle(center = [0, 0], radius = 5)
   |> extrude(length = 1)
 "
+    );
+
+    test_finding!(
+        z0004_bad_circle_after_good_piped_circle_with_var,
+        lint_profiles_should_not_be_chained,
+        Z0004,
+        "\
+sketch1 = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 5)
+  |> circle(center = [10, 0], radius = 5)
+extrude(sketch1, length = 1)
+",
+        "Profiles should not be chained together in a pipeline.",
+        Some(
+            "\
+sketch1 = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 5)
+profile1 = circle(sketch1, center = [10, 0], radius = 5)
+extrude([sketch1, profile1], length = 1)
+"
+            .to_owned()
+        )
     );
 }
