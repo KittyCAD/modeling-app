@@ -905,15 +905,6 @@ export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
   return Object.keys(theMap).length > 0
 }
 
-export function getObjExprProperty(
-  node: ObjectExpression,
-  propName: string
-): { expr: ObjectProperty['value']; index: number } | null {
-  const index = node.properties.findIndex(({ key }) => key.name === propName)
-  if (index === -1) return null
-  return { expr: node.properties[index].value, index }
-}
-
 export function isCursorInFunctionDefinition(
   ast: Node<Program>,
   selectionRanges: Selection

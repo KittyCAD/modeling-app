@@ -11,7 +11,7 @@ import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
 import { SafeRenderer } from '@src/lib/markdown'
-import { Marked, escape, unescape } from '@ts-stack/markdown'
+import { Marked, escape } from '@ts-stack/markdown'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
