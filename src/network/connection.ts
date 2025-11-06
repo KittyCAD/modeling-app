@@ -201,10 +201,6 @@ export class Connection extends EventTarget {
     return this._token
   }
 
-  get pingPongSpan() {
-    return this._pingPongSpan
-  }
-
   get pingIntervalId() {
     return this._pingIntervalId
   }

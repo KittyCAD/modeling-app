@@ -32,8 +32,6 @@ export const FILE_EXT = '.kcl'
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
 export const PROJECT_IMAGE_NAME = `thumbnail.png`
-/** The localStorage key for last-opened projects */
-export const FILE_PERSIST_KEY = `${PROJECT_FOLDER}-last-opened` as const
 /** The default name given to new kcl files in a project */
 export const DEFAULT_FILE_NAME = 'Untitled'
 /** The default name for a tutorial project */
@@ -80,9 +78,6 @@ export const KCL_DEFAULT_ORIGIN = `[0, 0, 0]`
 
 /** The default KCL vector2d origin expression */
 export const KCL_DEFAULT_ORIGIN_2D = `[0, 0]`
-
-/** The default KCL color expression */
-export const KCL_DEFAULT_COLOR = `#3c73ff`
 
 /** The default KCL font point size expression */
 export const KCL_DEFAULT_FONT_POINT_SIZE = `36`
@@ -156,9 +151,6 @@ export const WASM_INIT_FAILED_TOAST_ID = 'wasm-init-failed-toast'
 export const KCL_AXIS_X = 'X'
 export const KCL_AXIS_Y = 'Y'
 export const KCL_AXIS_Z = 'Z'
-export const KCL_AXIS_NEG_X = '-X'
-export const KCL_AXIS_NEG_Y = '-Y'
-export const KCL_DEFAULT_AXIS = 'X'
 
 export enum AxisNames {
   X = 'x',
@@ -182,9 +174,6 @@ export const VIEW_NAMES_SEMANTIC = {
 export const KCL_PLANE_XY = 'XY'
 export const KCL_PLANE_XZ = 'XZ'
 export const KCL_PLANE_YZ = 'YZ'
-export const KCL_PLANE_XY_NEG = '-XY'
-export const KCL_PLANE_XZ_NEG = '-XZ'
-export const KCL_PLANE_YZ_NEG = '-YZ'
 
 /** The modeling sidebar buttons' IDs get a suffix to prevent collisions */
 export const SIDEBAR_BUTTON_SUFFIX = '-pane-button'
@@ -197,12 +186,6 @@ export const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
  * to "open in desktop app" when present in the URL
  */
 export const ASK_TO_OPEN_QUERY_PARAM = 'ask-open-desktop'
-
-/**
- * When no annotation is in the KCL file to specify the defaults, we use these
- * default units.
- */
-export const DEFAULT_DEFAULT_ANGLE_UNIT: UnitAngle = 'degrees'
 
 /**
  * When no annotation is in the KCL file to specify the defaults, we use these
