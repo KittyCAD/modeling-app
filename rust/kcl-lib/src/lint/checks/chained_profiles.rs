@@ -7,8 +7,8 @@ use crate::{
     errors::Suggestion,
     lint::rule::{Discovered, Finding, def_finding},
     parsing::ast::types::{
-        ArrayExpression, BodyItem, CallExpressionKw, Expr, Identifier, ImportSelector, ItemVisibility, Name,
-        Node as AstNode, NodeList, PipeExpression, Program, VariableDeclaration, VariableDeclarator, VariableKind,
+        ArrayExpression, BodyItem, CallExpressionKw, Expr, ImportSelector, ItemVisibility, Name, Node as AstNode,
+        PipeExpression, Program, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     walk::Node,
 };
@@ -162,7 +162,7 @@ fn check_pipe_item(node: Node) -> (Option<Expr>, Vec<(usize, SourceRange)>) {
 }
 
 fn is_name_profile_function(name: &Name) -> bool {
-    is_str_profile_function(&name.name.name) && (name.path.is_empty() || path_matches(&name.path, &["std", "sketch"]))
+    is_str_profile_function(&name.name.name) && name.path.is_empty()
 }
 
 fn is_str_profile_function(name: &str) -> bool {
@@ -178,18 +178,6 @@ fn is_str_profile_function(name: &str) -> bool {
             | "hyperbolic"
             | "elliptic"
     )
-}
-
-fn path_matches(path: &NodeList<Identifier>, expected: &[&str]) -> bool {
-    if path.len() != expected.len() {
-        return false;
-    }
-    for (identifier, s) in path.iter().zip(expected.iter()) {
-        if identifier.name.as_str() != *s {
-            return false;
-        }
-    }
-    true
 }
 
 /// Find all defined names in the given code block. This ignores names defined
@@ -305,8 +293,7 @@ fn add_variable_to_extrude_call(call: &mut CallExpressionKw, new_var_name: &str)
 }
 
 fn is_name_extrude_function(name: &Name) -> bool {
-    ["extrude", "revolve"].contains(&name.name.name.as_str())
-        && (name.path.is_empty() || path_matches(&name.path, &["std", "sketch"]))
+    ["extrude", "revolve"].contains(&name.name.name.as_str()) && name.path.is_empty()
 }
 
 #[cfg(test)]
