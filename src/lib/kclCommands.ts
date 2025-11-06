@@ -35,7 +35,7 @@ import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaratio
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
 import type { Project } from '@src/lib/project'
-import { importFileExtensions } from '@src/lang/wasmUtils'
+import { importFileExtensions, relevantFileExtensions } from '@src/lang/wasmUtils'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -183,11 +183,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             const context = systemIOActor.getSnapshot().context
             const projectName = commandProps.project?.name
             const sep = window.electron?.sep
-            const importExtensions = importFileExtensions()
+            const relevantFiles = relevantFileExtensions()
             if (projectName && sep) {
               const importableFiles = listAllImportFilesWithinProject(context, {
                 projectFolderName: projectName,
-                importExtensions,
+                importExtensions: relevantFiles,
               })
               importableFiles.forEach((file) => {
                 providedOptions.push({
