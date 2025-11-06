@@ -498,4 +498,5 @@ const DEFAULT_TOLERANCE_MM: f64 = 0.0000001;
 
 /// The default tolerance for testing the equality of points.
 /// WARNING: This must match the tolerance in engine/cpp/engine/scene/constants.h
-const EQUAL_POINTS_DIST_EPSILON : f64 = 2.3283064365386962890625e-10;
+#[allow(clippy::excessive_precision)]
+const EQUAL_POINTS_DIST_EPSILON: f64 = 2.3283064365386962890625e-10;

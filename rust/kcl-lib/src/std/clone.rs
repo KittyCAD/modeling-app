@@ -111,12 +111,12 @@ async fn fix_tags_and_references(
     match new_geometry {
         GeometryWithImportedGeometry::ImportedGeometry(_) => {}
         GeometryWithImportedGeometry::Sketch(sketch) => {
-              println!("Fixing sketch clone with id: {:?}", sketch.id);
+            println!("Fixing sketch clone with id: {:?}", sketch.id);
             sketch.clone = Some(old_geometry_id);
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
-           println!("Fixing solid clone with id: {:?}", solid.id);
+            println!("Fixing solid clone with id: {:?}", solid.id);
             // Make the sketch id the new geometry id.
             solid.sketch.id = new_geometry_id;
             solid.sketch.original_id = new_geometry_id;
