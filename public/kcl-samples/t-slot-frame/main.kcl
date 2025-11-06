@@ -1,0 +1,75 @@
+// T-Slotted Rectangle Frame
+// A box frame made up of T-slotted rails
+
+// Set units
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+frameHeight = 8ft
+frameWidth = 3ft
+frameDepth = 2ft
+railHeight = 1.5
+
+fn railTslot(railHeight, length) {
+  // Define rail parameters
+  interiorRadius = 0.01
+  scoreDepth = 0.018
+  arcEnd = 0.0275
+  holeDiameter = 0.262
+  // Sketch one inner leg of the extruded rail
+  railProfile = startSketchOn(-XZ)
+    |> startProfile(at = [0.5, (1 - 0.356) / 2])
+    |> xLine(length = -0.08)
+    |> tangentialArc(angle = 45deg, radius = .09)
+    |> angledLine(angle = 45deg, endAbsoluteY = 0.113)
+    |> tangentialArc(angle = 135deg, radius = interiorRadius)
+    |> xLine(endAbsolute = .5 - (.320 / 2) - interiorRadius)
+    |> tangentialArc(angle = -90deg, radius = interiorRadius)
+    |> yLine(endAbsolute = interiorRadius)
+    |> tangentialArc(angle = -90deg, radius = interiorRadius)
+    |> xLine(length = -0.03)
+    |> arc(angleStart = 0, angleEnd = 180deg, radius = scoreDepth)
+    |> xLine(length = -0.1)
+    |> arc(angleStart = 0, angleEnd = 180deg, radius = scoreDepth)
+    |> xLine(length = -0.03)
+    |> tangentialArc(endAbsolute = [arcEnd, arcEnd])
+
+    // Mirror the sketch about the diagonal to complete the leg. Then mirror across the center of the profile in the horizontal and vertical directions. Then close the sketch
+    |> mirror2d(axis = {
+         direction = [1.0, 1.0],
+         origin = [0.0, 0.0]
+       })
+    |> mirror2d(axis = {
+         direction = [1.0, 0.0],
+         origin = [0.0, 0.5]
+       })
+    |> mirror2d(axis = {
+         direction = [0.0, 1.0],
+         origin = [0.5, 0.0]
+       })
+    |> close()
+
+    // Sketch a dimensioned hole in the center of the profile
+    |> subtract2d(tool = circle(center = [railHeight / 2, railHeight / 2], radius = holeDiameter / 2))
+
+    // Scale the entire sketch by a factor of the rail height, then extrude
+    |> scale(x = railHeight, y = railHeight, z = railHeight)
+    |> extrude(length)
+
+  return railProfile
+}
+
+// Generate the vertical rails
+railTslot(railHeight, length = frameHeight)
+  |> rotate(roll = 90)
+  |> patternLinear3d(instances = 2, distance = frameDepth - railHeight, axis = [0, 1, 0])
+  |> patternLinear3d(instances = 2, distance = frameWidth - railHeight, axis = [1, 0, 0])
+
+// Generate the horizontal rails
+railTslot(railHeight, length = frameDepth - (2 * railHeight))
+  |> patternLinear3d(instances = 2, distance = frameWidth - railHeight, axis = [1, 0, 0])
+  |> patternLinear3d(instances = 2, distance = frameHeight - railHeight, axis = [0, 0, 1])
+
+railTslot(railHeight, length = -frameWidth + 2 * railHeight)
+  |> rotate(yaw = 90)
+  |> patternLinear3d(instances = 2, distance = frameDepth - railHeight, axis = [0, 1, 0])
+  |> patternLinear3d(instances = 2, distance = frameHeight - railHeight, axis = [0, 0, 1])

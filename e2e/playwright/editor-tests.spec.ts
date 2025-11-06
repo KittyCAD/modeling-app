@@ -8,6 +8,7 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Editor tests', () => {
   test('can comment out code with ctrl+/', async ({ page, homePage }) => {
@@ -1301,7 +1302,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await toolbar.editSketch(0)
 
     await page.waitForTimeout(1000)
-    await toolbar.closePane('code')
+    await toolbar.closePane(DefaultLayoutPaneID.Code)
 
     // Click on the bottom segment that lies on the x axis
     const clickCoords = await scene.convertPagePositionToStream(

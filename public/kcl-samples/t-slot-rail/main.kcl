@@ -4,15 +4,14 @@
 // Set units
 @settings(defaultLengthUnit = in, kclVersion = 1.0)
 
-// Define parameters
-interiorRadius = 0.01
-scoreDepth = 0.018
-arcEnd = 0.0275
-holeDiameter = 0.262
-
-fn railTslot(railHeight, railLength) {
+fn railTslot(railHeight, length) {
+  // Define parameters
+  interiorRadius = 0.01
+  scoreDepth = 0.018
+  arcEnd = 0.0275
+  holeDiameter = 0.262
   // Sketch one inner leg of the extruded rail
-  railProfile = startSketchOn(XZ)
+  railProfile = startSketchOn(-XZ)
     |> startProfile(at = [0.5, (1 - 0.356) / 2])
     |> xLine(length = -0.08)
     |> tangentialArc(angle = 45deg, radius = .09)
@@ -48,11 +47,11 @@ fn railTslot(railHeight, railLength) {
     |> subtract2d(tool = circle(center = [railHeight / 2, railHeight / 2], radius = holeDiameter / 2))
 
     // Scale the entire sketch by a factor of the rail height, then extrude
-    |> scale(x = railHeight, z = railHeight)
-    |> extrude(length = -railLength)
+    |> scale(x = railHeight, y = railHeight, z = railHeight)
+    |> extrude(length)
 
   return railProfile
 }
 
 // Generate one rail using the rail function
-railTslot(railHeight = 1.5, railLength = 2ft)
+railTslot(railHeight = 1.5, length = 2ft)
