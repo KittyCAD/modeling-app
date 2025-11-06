@@ -33,8 +33,6 @@ import type {
   Identifier,
   Literal,
   Name,
-  ObjectExpression,
-  ObjectProperty,
   PathToNode,
   PipeExpression,
   Program,

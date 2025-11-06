@@ -11,7 +11,6 @@ import {
   Line,
   LineBasicMaterial,
   LineCurve3,
-  LineDashedMaterial,
   Mesh,
   MeshBasicMaterial,
   Shape,

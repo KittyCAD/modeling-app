@@ -48,9 +48,6 @@ import {
 import { Themes } from '@src/lib/theme'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
-export const kbdClasses =
-  'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
-
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
   slug?: OnboardingPath,

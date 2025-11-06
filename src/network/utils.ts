@@ -102,13 +102,6 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
   [ConnectionError.Unknown]: 'Unknown',
 }
 
-export const WEBSOCKET_READYSTATE_TEXT: Record<number, string> = {
-  [WebSocket.CONNECTING]: 'WebSocket.CONNECTING',
-  [WebSocket.OPEN]: 'WebSocket.OPEN',
-  [WebSocket.CLOSING]: 'WebSocket.CLOSING',
-  [WebSocket.CLOSED]: 'WebSocket.CLOSED',
-}
-
 export interface IErrorType {
   // The error we've encountered.
   error: ConnectionError
