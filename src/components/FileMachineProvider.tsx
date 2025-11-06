@@ -524,4 +524,3 @@ export const FileMachineProvider = ({
   )
 }
 
-export default FileMachineProvider

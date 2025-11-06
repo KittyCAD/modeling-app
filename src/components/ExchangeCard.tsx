@@ -228,7 +228,6 @@ const MarkedOptions = {
   breaks: true,
   sanitize: true,
   escape,
-  unescape,
 }
 
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
