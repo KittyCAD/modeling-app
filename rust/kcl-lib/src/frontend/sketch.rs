@@ -286,7 +286,6 @@ pub struct Vertical {
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Parallel {
     pub lines: Vec<ObjectId>,
-    pub distance: Option<Number>,
 }
 
 // Stub implementation of SketchApi for testing/development

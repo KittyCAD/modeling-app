@@ -170,6 +170,17 @@ pub struct Number {
     pub units: NumericSuffix,
 }
 
+impl TryFrom<crate::std::args::TyF64> for Number {
+    type Error = crate::execution::types::NumericSuffixTypeConvertError;
+
+    fn try_from(value: crate::std::args::TyF64) -> std::result::Result<Self, Self::Error> {
+        Ok(Number {
+            value: value.n,
+            units: value.ty.try_into()?,
+        })
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(tag = "type")]
