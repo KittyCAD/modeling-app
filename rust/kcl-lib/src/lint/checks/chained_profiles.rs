@@ -96,16 +96,22 @@ fn check_body(block: &AstNode<Program>, whole_program: &AstNode<Program>) -> Res
                 )))),
             );
             let next_item_index = item_index + 2;
-            if new_program.body.len() > next_item_index {
+            let found_extrusion = if new_program.body.len() > next_item_index {
                 // If the next item is an extrude call, add the new variable to
                 // its unlabeled argument.
                 let next_item = &mut new_program.body[next_item_index];
-                add_variable_to_extrude(next_item, &new_var_name);
-            }
+                add_variable_to_extrude(next_item, &new_var_name)
+            } else {
+                false
+            };
             // Format the code.
             let new_source = new_program.recast_top(&Default::default(), 0);
             let suggestion = Some(Suggestion {
-                title: "Use separate profile variables and handle them all using an array.".to_owned(),
+                title: if found_extrusion {
+                    "Use separate profile variables and refer to them using an array.".to_owned()
+                } else {
+                    "Use separate profile variables.".to_owned()
+                },
                 insert: new_source,
                 source_range: new_program.as_source_range(),
             });
@@ -147,6 +153,35 @@ fn check_pipe_item(node: Node) -> (Option<Expr>, Vec<(usize, SourceRange)>) {
             }
         })
         .collect::<Vec<_>>();
+
+    if profile_calls.is_empty() {
+        return (None, Vec::new());
+    }
+
+    // Filter out `startProfile()` calls with another profile function
+    // immediately after it.
+    let mut i = 0;
+    // Check not empty so that the minus 1 doesn't underflow.
+    while !profile_calls.is_empty() && i < profile_calls.len() - 1 {
+        let Some((current_index, _, _)) = profile_calls.get(i) else {
+            break;
+        };
+        let Some((next_index, _, _)) = profile_calls.get(i + 1) else {
+            break;
+        };
+        if *next_index == *current_index + 1
+            && let Some(Expr::CallExpressionKw(call)) = pipe.body.get(*current_index)
+            && is_start_profile_function(&call.callee)
+        {
+            // Remove the current profile call from the list. It's useless, but
+            // not actually problematic.
+            profile_calls.remove(i);
+            // Do not increment i, since everything has shifted left.
+        } else {
+            i += 1;
+        }
+    }
+
     if profile_calls.is_empty() {
         return (None, Vec::new());
     }
@@ -159,6 +194,10 @@ fn check_pipe_item(node: Node) -> (Option<Expr>, Vec<(usize, SourceRange)>) {
         unlabeled,
         problematic_calls.into_iter().map(|(i, pos, _)| (i, pos)).collect(),
     )
+}
+
+fn is_start_profile_function(name: &Name) -> bool {
+    &name.name.name == "startProfile" && name.path.is_empty()
 }
 
 fn is_name_profile_function(name: &Name) -> bool {
@@ -259,24 +298,27 @@ fn add_unlabeled_arg_to_call(expr: &mut Expr, unlabeled_arg: Option<Expr>) {
     }
 }
 
-fn add_variable_to_extrude(next_item: &mut BodyItem, new_var_name: &str) {
+fn add_variable_to_extrude(next_item: &mut BodyItem, new_var_name: &str) -> bool {
     if let BodyItem::ExpressionStatement(expr_stmt) = next_item {
         let Expr::CallExpressionKw(call) = &mut expr_stmt.expression else {
-            return;
+            return false;
         };
-        add_variable_to_extrude_call(call, new_var_name);
+        return add_variable_to_extrude_call(call, new_var_name);
     }
     if let BodyItem::VariableDeclaration(var_decl) = next_item {
         let Expr::CallExpressionKw(call) = &mut var_decl.declaration.init else {
-            return;
+            return false;
         };
-        add_variable_to_extrude_call(call, new_var_name);
+        return add_variable_to_extrude_call(call, new_var_name);
     }
+    false
 }
 
-fn add_variable_to_extrude_call(call: &mut CallExpressionKw, new_var_name: &str) {
+/// Add the variable to the unlabeled argument of an extrude or revolve call and
+/// return true if successful.
+fn add_variable_to_extrude_call(call: &mut CallExpressionKw, new_var_name: &str) -> bool {
     if !is_name_extrude_function(&call.callee) {
-        return;
+        return false;
     }
     if let Some(unlabeled) = &mut call.unlabeled {
         match unlabeled {
@@ -289,7 +331,9 @@ fn add_variable_to_extrude_call(call: &mut CallExpressionKw, new_var_name: &str)
                 *unlabeled = Expr::ArrayExpression(Box::new(ArrayExpression::new(new_array)));
             }
         }
+        return true;
     }
+    false
 }
 
 fn is_name_extrude_function(name: &Name) -> bool {
@@ -429,5 +473,29 @@ extrude([profile1, profile2], length = 1)
 "
             .to_owned()
         )
+    );
+
+    test_no_finding!(
+        z0004_circle_after_start_profile_with_var,
+        lint_profiles_should_not_be_chained,
+        Z0004,
+        "\
+sketch1 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> circle(center = [0, 0], radius = 5)
+extrude(sketch1, length = 1)
+"
+    );
+
+    test_no_finding!(
+        z0004_circle_after_start_profile_no_var,
+        lint_profiles_should_not_be_chained,
+        Z0004,
+        "\
+startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> circle(center = [0, 0], radius = 5)
+  |> extrude(length = 1)
+"
     );
 }
