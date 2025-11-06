@@ -75,6 +75,21 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> close()
 extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
 chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [seg01, capEnd001]), length = 1)`
+  const twoExtrudedTriangles = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 5)
+  |> yLine(length = 5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5)
+
+sketch002 = startSketchOn(XY)
+profile002 = startProfile(sketch002, at = [10, 0])
+  |> xLine(length = 5)
+  |> yLine(length = 5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(profile002, length = 5)`
 
   describe('Testing addFillet', () => {
     it('should add a basic fillet call on sweepEdge', async () => {
@@ -257,6 +272,67 @@ fillet001 = fillet(
       expect(newCode).toContain(
         extrudedTriangleWithFillet.replace('radius = 1', 'radius = 1.1')
       )
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
+    })
+
+    it('should add fillet calls on two bodies with one edge selected on each', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        twoExtrudedTriangles,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      // Get all sweep artifacts (bodies)
+      const sweeps = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweep'
+      )
+      expect(sweeps.length).toBe(2)
+
+      // Get sweep edges from each body
+      const sweepEdgesBody1 = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[0].id
+      )
+      const sweepEdgesBody2 = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[1].id
+      )
+
+      expect(sweepEdgesBody1.length).toBeGreaterThan(0)
+      expect(sweepEdgesBody2.length).toBeGreaterThan(0)
+
+      const selection = createSelectionFromArtifacts(
+        [sweepEdgesBody1[0], sweepEdgesBody2[0]],
+        artifactGraph
+      )
+
+      const radius = (await stringToKclExpression(
+        '1',
+        undefined,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      // Should have created two separate fillet calls, one for each body
+      expect(newCode).toContain('fillet001 = fillet(extrude001')
+      expect(newCode).toContain('fillet002 = fillet(extrude002')
+
       await enginelessExecutor(
         result.modifiedAst,
         undefined,
@@ -508,6 +584,67 @@ chamfer001 = chamfer(
       expect(newCode).toContain(
         extrudedTriangleWithChamfer.replace('length = 1', 'length = 1.1')
       )
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
+    })
+
+    it('should add chamfer calls on two bodies with one edge selected on each', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        twoExtrudedTriangles,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      // Get all sweep artifacts (bodies)
+      const sweeps = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweep'
+      )
+      expect(sweeps.length).toBe(2)
+
+      // Get sweep edges from each body
+      const sweepEdgesBody1 = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[0].id
+      )
+      const sweepEdgesBody2 = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[1].id
+      )
+
+      expect(sweepEdgesBody1.length).toBeGreaterThan(0)
+      expect(sweepEdgesBody2.length).toBeGreaterThan(0)
+
+      const selection = createSelectionFromArtifacts(
+        [sweepEdgesBody1[0], sweepEdgesBody2[0]],
+        artifactGraph
+      )
+
+      const length = (await stringToKclExpression(
+        '1',
+        undefined,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addChamfer({
+        ast,
+        artifactGraph,
+        selection,
+        length,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      // Should have created two separate chamfer calls, one for each body
+      expect(newCode).toContain('chamfer001 = chamfer(extrude001')
+      expect(newCode).toContain('chamfer002 = chamfer(extrude002')
+
       await enginelessExecutor(
         result.modifiedAst,
         undefined,
