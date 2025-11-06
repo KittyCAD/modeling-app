@@ -3289,7 +3289,7 @@ export const modelingMachine = setup({
             rustContext: theRustContext,
           },
           {
-            focusPath: [pathToNode],
+            focusPath: pathToNode,
           }
         )
       }
@@ -3346,7 +3346,7 @@ export const modelingMachine = setup({
             rustContext: theRustContext,
           },
           {
-            focusPath: [pathToNode],
+            focusPath: pathToNode,
           }
         )
       }

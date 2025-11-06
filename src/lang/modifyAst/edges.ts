@@ -59,55 +59,54 @@ export function addFillet({
 }):
   | {
       modifiedAst: Node<Program>
-      pathToNode: PathToNode
+      pathToNode: PathToNode[] // Array because multi-body selections create multiple fillet calls
     }
   | Error {
   // 1. Clone the ast so we can edit it
   let modifiedAst = structuredClone(ast)
+  const modifiedNodeToEdit = structuredClone(nodeToEdit) // Clone to avoid mutating the input parameter
 
   // 2. Prepare unlabeled and labeled arguments
-  const result = buildSolidsAndTagsExprs(
+  // Group selections by body and add all tags first (before variable insertion)
+  // This must happen before insertVariableAndOffsetPathToNode because that invalidates artifactGraph paths
+  const bodyData = groupSelectionsByBodyAndAddTags(
     selection,
     artifactGraph,
     modifiedAst,
-    nodeToEdit
+    modifiedNodeToEdit
   )
-  if (err(result)) {
-    return result
-  }
-
-  const tagExpr = tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []
-
-  const { solidsExpr, tagsExpr, pathIfPipe } = result
-  modifiedAst = result.modifiedAst
-  const call = createCallExpressionStdLibKw('fillet', solidsExpr, [
-    createLabeledArg('tags', tagsExpr),
-    createLabeledArg('radius', valueOrVariable(radius)),
-    ...tagExpr,
-  ])
+  if (err(bodyData)) return bodyData
+  modifiedAst = bodyData.modifiedAst
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in radius && radius.variableName) {
-    insertVariableAndOffsetPathToNode(radius, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(radius, modifiedAst, modifiedNodeToEdit)
   }
 
-  // 3. If edit, we assign the new function call declaration to the existing node,
-  // otherwise just push to the end
-  const pathToNode = setCallInAst({
-    ast: modifiedAst,
-    call,
-    pathToEdit: nodeToEdit,
-    pathIfNewPipe: pathIfPipe,
-    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.FILLET,
-  })
-  if (err(pathToNode)) {
-    return pathToNode
+  // 3. Create fillet calls for each body
+  const pathToNodes: PathToNode[] = []
+  for (const data of bodyData.bodies.values()) {
+    const tagArgs = tag
+      ? [createLabeledArg('tag', createTagDeclarator(tag))]
+      : []
+    const call = createCallExpressionStdLibKw('fillet', data.solidsExpr, [
+      createLabeledArg('tags', data.tagsExpr),
+      createLabeledArg('radius', valueOrVariable(radius)),
+      ...tagArgs,
+    ])
+
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call,
+      pathToEdit: modifiedNodeToEdit,
+      pathIfNewPipe: data.pathIfPipe,
+      variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.FILLET,
+    })
+    if (err(pathToNode)) return pathToNode
+    pathToNodes.push(pathToNode)
   }
 
-  return {
-    modifiedAst,
-    pathToNode,
-  }
+  return { modifiedAst, pathToNode: pathToNodes }
 }
 
 export function addChamfer({
@@ -131,77 +130,216 @@ export function addChamfer({
 }):
   | {
       modifiedAst: Node<Program>
-      pathToNode: PathToNode
+      pathToNode: PathToNode[] // Array because multi-body selections create multiple chamfer calls
     }
   | Error {
   // 1. Clone the ast so we can edit it
   let modifiedAst = structuredClone(ast)
+  const modifiedNodeToEdit = structuredClone(nodeToEdit) // Clone to avoid mutating the input parameter
 
   // 2. Prepare unlabeled and labeled arguments
-  const result = buildSolidsAndTagsExprs(
+  // Group selections by body and add all tags first (before variable insertion)
+  // This must happen before insertVariableAndOffsetPathToNode because that invalidates artifactGraph paths
+  const bodyData = groupSelectionsByBodyAndAddTags(
     selection,
     artifactGraph,
     modifiedAst,
-    nodeToEdit
+    modifiedNodeToEdit
   )
-  if (err(result)) {
-    return result
-  }
-
-  const secondLengthExpr = secondLength
-    ? [createLabeledArg('secondLength', valueOrVariable(secondLength))]
-    : []
-
-  const angleExpr = angle
-    ? [createLabeledArg('angle', valueOrVariable(angle))]
-    : []
-  const tagExpr = tag ? [createLabeledArg('tag', createTagDeclarator(tag))] : []
-
-  const { solidsExpr, tagsExpr, pathIfPipe } = result
-  modifiedAst = result.modifiedAst
-  const call = createCallExpressionStdLibKw('chamfer', solidsExpr, [
-    createLabeledArg('tags', tagsExpr),
-    createLabeledArg('length', valueOrVariable(length)),
-    ...secondLengthExpr,
-    ...angleExpr,
-    ...tagExpr,
-  ])
+  if (err(bodyData)) return bodyData
+  modifiedAst = bodyData.modifiedAst
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in length && length.variableName) {
-    insertVariableAndOffsetPathToNode(length, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(length, modifiedAst, modifiedNodeToEdit)
   }
   if (
     secondLength &&
     'variableName' in secondLength &&
     secondLength.variableName
   ) {
-    insertVariableAndOffsetPathToNode(secondLength, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(
+      secondLength,
+      modifiedAst,
+      modifiedNodeToEdit
+    )
   }
   if (angle && 'variableName' in angle && angle.variableName) {
-    insertVariableAndOffsetPathToNode(angle, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(angle, modifiedAst, modifiedNodeToEdit)
   }
 
-  // 3. If edit, we assign the new function call declaration to the existing node,
-  // otherwise just push to the end
-  const pathToNode = setCallInAst({
-    ast: modifiedAst,
-    call,
-    pathToEdit: nodeToEdit,
-    pathIfNewPipe: pathIfPipe,
-    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.CHAMFER,
-  })
-  if (err(pathToNode)) {
-    return pathToNode
+  // 3. Create chamfer calls for each body
+  const pathToNodes: PathToNode[] = []
+  for (const data of bodyData.bodies.values()) {
+    const secondLengthArgs = secondLength
+      ? [createLabeledArg('secondLength', valueOrVariable(secondLength))]
+      : []
+    const angleArgs = angle
+      ? [createLabeledArg('angle', valueOrVariable(angle))]
+      : []
+    const tagArgs = tag
+      ? [createLabeledArg('tag', createTagDeclarator(tag))]
+      : []
+
+    const call = createCallExpressionStdLibKw('chamfer', data.solidsExpr, [
+      createLabeledArg('tags', data.tagsExpr),
+      createLabeledArg('length', valueOrVariable(length)),
+      ...secondLengthArgs,
+      ...angleArgs,
+      ...tagArgs,
+    ])
+
+    const pathToNode = setCallInAst({
+      ast: modifiedAst,
+      call,
+      pathToEdit: modifiedNodeToEdit,
+      pathIfNewPipe: data.pathIfPipe,
+      variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.CHAMFER,
+    })
+    if (err(pathToNode)) return pathToNode
+    pathToNodes.push(pathToNode)
   }
 
-  return {
-    modifiedAst,
-    pathToNode,
-  }
+  return { modifiedAst, pathToNode: pathToNodes }
 }
 
 // Utility functions
+
+/**
+ * Groups selections by body and adds tags to the AST.
+ * Must be called BEFORE variable insertion to keep artifactGraph paths valid.
+ *
+ * @param selections - Edge selections to process
+ * @param artifactGraph - Graph mapping artifacts to AST nodes
+ * @param ast - The AST to modify
+ * @param nodeToEdit - Optional path to the node being edited
+ * @returns Object containing modified AST and Map of body data, or Error
+ */
+function groupSelectionsByBodyAndAddTags(
+  selections: Selections,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  nodeToEdit?: PathToNode
+):
+  | {
+      modifiedAst: Node<Program>
+      bodies: Map<
+        string,
+        {
+          solidsExpr: Expr
+          tagsExpr: Expr
+          pathIfPipe?: PathToNode
+        }
+      >
+    }
+  | Error {
+  const selectionsByBody = groupSelectionsByBody(selections, artifactGraph)
+  if (err(selectionsByBody)) return selectionsByBody
+
+  let modifiedAst = ast
+  const bodies = new Map<
+    string,
+    {
+      solidsExpr: Expr
+      tagsExpr: Expr
+      pathIfPipe?: PathToNode
+    }
+  >()
+
+  for (const [bodyKey, bodySelections] of selectionsByBody.entries()) {
+    // Add tags for this body
+    const { tagsExprs, modifiedAst: taggedAst } = getTagsExprsFromSelection(
+      modifiedAst,
+      bodySelections,
+      artifactGraph
+    )
+    modifiedAst = taggedAst
+
+    if (tagsExprs.length === 0) {
+      return new Error('No edges found in the selection')
+    }
+
+    // Build solids expression
+    const solids: Selections = {
+      graphSelections: [bodySelections.graphSelections[0]].map((edge) => {
+        const sweep = getSweepArtifactFromSelection(edge, artifactGraph)
+        if (err(sweep)) throw sweep
+        return {
+          type: 'default',
+          codeRef: sweep.codeRef,
+        }
+      }),
+      otherSelections: [],
+    }
+
+    const vars = getVariableExprsFromSelection(
+      solids,
+      modifiedAst,
+      nodeToEdit,
+      true,
+      artifactGraph
+    )
+    if (err(vars)) return vars
+
+    const solidsExpr = createVariableExpressionsArray(vars.exprs)
+    if (!solidsExpr) {
+      return new Error('No solids found in the selection')
+    }
+
+    const tagsExpr = createVariableExpressionsArray(tagsExprs)
+    if (!tagsExpr) {
+      return new Error('No edges found in the selection')
+    }
+
+    bodies.set(bodyKey, {
+      solidsExpr,
+      tagsExpr,
+      pathIfPipe: vars.pathIfPipe,
+    })
+  }
+
+  return { modifiedAst, bodies }
+}
+
+/**
+ * Groups edge selections by their parent body (sweep artifact).
+ * Uses the sweep artifact's pathToNode as a unique key for each body.
+ *
+ * @param selections - Edge selections to group by body
+ * @param artifactGraph - Graph mapping artifacts to AST nodes
+ * @returns Map from body key to selections for that body, or Error
+ */
+function groupSelectionsByBody(
+  selections: Selections,
+  artifactGraph: ArtifactGraph
+): Map<string, Selections> | Error {
+  const bodyToSelections = new Map<string, Selection[]>()
+
+  for (const selection of selections.graphSelections) {
+    const sweepArtifact = getSweepArtifactFromSelection(
+      selection,
+      artifactGraph
+    )
+    if (err(sweepArtifact)) return sweepArtifact
+
+    const bodyKey = JSON.stringify(sweepArtifact.codeRef.pathToNode)
+    if (bodyToSelections.has(bodyKey)) {
+      bodyToSelections.get(bodyKey)?.push(selection)
+    } else {
+      bodyToSelections.set(bodyKey, [selection])
+    }
+  }
+
+  const result = new Map<string, Selections>()
+  for (const [bodyKey, selections] of bodyToSelections.entries()) {
+    result.set(bodyKey, {
+      graphSelections: selections,
+      otherSelections: [],
+    })
+  }
+
+  return result
+}
 
 export function buildSolidsAndTagsExprs(
   faces: Selections,
