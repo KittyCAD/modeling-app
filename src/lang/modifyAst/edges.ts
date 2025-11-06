@@ -62,9 +62,9 @@ export function addFillet({
       pathToNode: PathToNode[] // Array because multi-body selections create multiple fillet calls
     }
   | Error {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
-  const modifiedNodeToEdit = structuredClone(nodeToEdit) // Clone to avoid mutating the input parameter
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Group selections by body and add all tags first (before variable insertion)
@@ -73,14 +73,14 @@ export function addFillet({
     selection,
     artifactGraph,
     modifiedAst,
-    modifiedNodeToEdit
+    mNodeToEdit
   )
   if (err(bodyData)) return bodyData
   modifiedAst = bodyData.modifiedAst
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in radius && radius.variableName) {
-    insertVariableAndOffsetPathToNode(radius, modifiedAst, modifiedNodeToEdit)
+    insertVariableAndOffsetPathToNode(radius, modifiedAst, mNodeToEdit)
   }
 
   // 3. Create fillet calls for each body
@@ -98,7 +98,7 @@ export function addFillet({
     const pathToNode = setCallInAst({
       ast: modifiedAst,
       call,
-      pathToEdit: modifiedNodeToEdit,
+      pathToEdit: mNodeToEdit,
       pathIfNewPipe: data.pathIfPipe,
       variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.FILLET,
     })
@@ -133,9 +133,9 @@ export function addChamfer({
       pathToNode: PathToNode[] // Array because multi-body selections create multiple chamfer calls
     }
   | Error {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
-  const modifiedNodeToEdit = structuredClone(nodeToEdit) // Clone to avoid mutating the input parameter
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Group selections by body and add all tags first (before variable insertion)
@@ -144,28 +144,24 @@ export function addChamfer({
     selection,
     artifactGraph,
     modifiedAst,
-    modifiedNodeToEdit
+    mNodeToEdit
   )
   if (err(bodyData)) return bodyData
   modifiedAst = bodyData.modifiedAst
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in length && length.variableName) {
-    insertVariableAndOffsetPathToNode(length, modifiedAst, modifiedNodeToEdit)
+    insertVariableAndOffsetPathToNode(length, modifiedAst, mNodeToEdit)
   }
   if (
     secondLength &&
     'variableName' in secondLength &&
     secondLength.variableName
   ) {
-    insertVariableAndOffsetPathToNode(
-      secondLength,
-      modifiedAst,
-      modifiedNodeToEdit
-    )
+    insertVariableAndOffsetPathToNode(secondLength, modifiedAst, mNodeToEdit)
   }
   if (angle && 'variableName' in angle && angle.variableName) {
-    insertVariableAndOffsetPathToNode(angle, modifiedAst, modifiedNodeToEdit)
+    insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
   }
 
   // 3. Create chamfer calls for each body
@@ -192,7 +188,7 @@ export function addChamfer({
     const pathToNode = setCallInAst({
       ast: modifiedAst,
       call,
-      pathToEdit: modifiedNodeToEdit,
+      pathToEdit: mNodeToEdit,
       pathIfNewPipe: data.pathIfPipe,
       variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.CHAMFER,
     })
