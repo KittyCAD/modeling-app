@@ -18,6 +18,7 @@ use super::{
 };
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
+use crate::std::EQUAL_POINTS_DIST_EPSILON;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -1271,12 +1272,17 @@ pub(crate) async fn inner_close(
         )
         .await?;
 
-    let current_path = Path::ToPoint {
+    let mut new_sketch = sketch;
+
+    let distance = ((from.x - to[0]).powi(2) + (from.y - to[1]).powi(2)).sqrt();
+    if distance > EQUAL_POINTS_DIST_EPSILON {
+        // These will NOT be the same point in the engine, and an additional segment will be created.
+        let current_path = Path::ToPoint {
         base: BasePath {
             from: from.ignore_units(),
             to,
             tag: tag.clone(),
-            units: sketch.units,
+            units: new_sketch.units,
             geo_meta: GeoMeta {
                 id,
                 metadata: args.source_range.into(),
@@ -1284,11 +1290,12 @@ pub(crate) async fn inner_close(
         },
     };
 
-    let mut new_sketch = sketch;
     if let Some(tag) = &tag {
         new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
     new_sketch.paths.push(current_path);
+    }
+
     new_sketch.is_closed = true;
 
     Ok(new_sketch)
