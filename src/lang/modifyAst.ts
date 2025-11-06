@@ -6,7 +6,6 @@ import {
   createArrayExpression,
   createCallExpressionStdLibKw,
   createExpressionStatement,
-  createIdentifier,
   createImportAsSelector,
   createImportStatement,
   createLabeledArg,
@@ -19,7 +18,6 @@ import {
 } from '@src/lang/create'
 import {
   findAllPreviousVariables,
-  findAllPreviousVariablesPath,
   getBodyIndex,
   getNodeFromPath,
   isCallExprWithName,
@@ -31,11 +29,9 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { PathToNodeMap } from '@src/lang/util'
 import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import type {
-  ArrayExpression,
   CallExpressionKw,
   Expr,
   ExpressionStatement,
-  Literal,
   PathToNode,
   PipeExpression,
   Program,
