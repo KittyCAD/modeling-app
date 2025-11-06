@@ -1109,10 +1109,40 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "t-slot-frame/main.kcl",
+    "multipleFiles": false,
+    "title": "T-Slotted Rectangle Frame",
+    "description": "A box frame made up of T-slotted rails",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "t-slot-rail/main.kcl",
     "multipleFiles": false,
     "title": "T-Slotted Framing Rail",
     "description": "A T-slotted framing rail, or T-slot extrusion, is a rectangular or square aluminum profile with a \"T\" shaped slot along one or more sides. These slots allow for easy attachment of various hardware components like brackets, connectors, and fasteners, making it a versatile and customizable framing system.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "t-slot-rectangle/main.kcl",
+    "multipleFiles": false,
+    "title": "T-Slotted Rectangle Frame",
+    "description": "A rectangular frame made up of T-slotted rails",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "t-slot-shelf/main.kcl",
+    "multipleFiles": false,
+    "title": "T-Slotted Rectangle Frame with Shelf",
+    "description": "A box frame with interior shelf made up of T-slotted rails",
     "files": [
       "main.kcl"
     ]

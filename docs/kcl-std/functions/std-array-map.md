@@ -21,12 +21,12 @@ Given a list like `[a, b, c]`, and a function like `f`, returns
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[any]`](/docs/kcl-std/types/std-types-any) | Input array. The output array is this input array, but every element has had the function `f` run on it. | Yes |
+| `array` | [[`any`](/docs/kcl-std/types/std-types-any)] | Input array. The output array is this input array, but every element has had the function `f` run on it. | Yes |
 | `f` | [`fn(any): any`](/docs/kcl-std/types/std-types-fn) | A function. The output array is just the input array, but `f` has been run on every item. | Yes |
 
 ### Returns
 
-[`[any]`](/docs/kcl-std/types/std-types-any)
+[[`any`](/docs/kcl-std/types/std-types-any)]
 
 
 ### Examples

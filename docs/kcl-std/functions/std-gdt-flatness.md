@@ -27,7 +27,7 @@ gdt::flatness(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `faces` | [`[TaggedFace; 1+]`](/docs/kcl-std/types/std-types-TaggedFace) | The faces to be annotated. | Yes |
+| `faces` | [[`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 1+] | The faces to be annotated. | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The amount of deviation from a perfect plane that is acceptable. | Yes |
 | `precision` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`. | No |
 | `framePosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`. | No |
@@ -37,7 +37,7 @@ gdt::flatness(
 
 ### Returns
 
-[`[GdtAnnotation; 1+]`](/docs/kcl-std/types/std-types-GdtAnnotation)
+[[`GdtAnnotation`](/docs/kcl-std/types/std-types-GdtAnnotation); 1+]
 
 
 ### Examples

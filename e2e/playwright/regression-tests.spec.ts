@@ -7,11 +7,13 @@ import * as fsp from 'fs/promises'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
 import type { TestColor } from '@e2e/playwright/test-utils'
 import {
+  NUMBER_REGEXP,
   TEST_COLORS,
   executorInputPath,
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Regression tests', () => {
   // bugs we found that don't fit neatly into other categories
@@ -332,7 +334,7 @@ extrude002 = extrude(profile002, length = 150)`
       await page.setBodyDimensions({ width: 500, height: 500 })
 
       await homePage.goToModelingScene()
-      await toolbar.closePane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
 
       await scene.connectionEstablished()
       await scene.settled(cmdBar)
@@ -667,7 +669,7 @@ extrude002 = extrude(profile002, length = 150)`
 
     await test.step(`Test setup`, async () => {
       await homePage.openProject('lego')
-      await toolbar.closePane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
     })
     await test.step(`Waiting for scene to settle`, async () => {
       await scene.connectionEstablished()
@@ -822,7 +824,9 @@ washer = extrude(washerSketch, length = thicknessMax)`
 
       // Just verify that the radius is the correct order of magnitude
       await editor.expectEditor.toContain(
-        /circle\(sketch001, center = \[0\.04, -0\.06\], radius = 0\.\d+/
+        new RegExp(
+          `circle\\(sketch001, center = \\[${NUMBER_REGEXP}, ${NUMBER_REGEXP}\\], radius = 0\\.\\d+`
+        )
       )
     })
 
