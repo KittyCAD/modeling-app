@@ -32,6 +32,7 @@ describe('MlEphantConversation2', () => {
               content: prompt,
             },
             responses: [],
+            deltasAggregated: '',
           },
         ],
       }
@@ -93,16 +94,12 @@ describe('MlEphantConversation2', () => {
             },
             responses: [
               {
-                delta: {
-                  delta: finalResponse,
-                },
-              },
-              {
                 end_of_stream: {
                   whole_response: finalResponse,
                 },
               },
             ],
+            deltasAggregated: finalResponse,
           },
         ],
       }
@@ -156,6 +153,7 @@ describe('MlEphantConversation2', () => {
               },
             } as any, // we must do this because it's a type that doesn't exist.
           ],
+          deltasAggregated: '',
         },
       ],
     }

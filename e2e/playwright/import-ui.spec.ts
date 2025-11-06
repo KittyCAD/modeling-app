@@ -1,6 +1,7 @@
 import path from 'path'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import * as fsp from 'fs/promises'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Import UI tests', () => {
   test(
@@ -85,8 +86,8 @@ sketch002 = startSketchOn(extrude001, face = seg01)`
 
       await test.step('check the user is warned when sketching on a imported face', async () => {
         // Start sketch mode
-        await toolbar.closePane('debug')
-        await toolbar.closePane('code')
+        await toolbar.closePane(DefaultLayoutPaneID.Debug)
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
         await toolbar.startSketchPlaneSelection()
 
         // Click on a face from the imported model

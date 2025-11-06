@@ -10,6 +10,8 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
+import { SafeRenderer } from '@src/lib/markdown'
+import { Marked, escape, unescape } from '@ts-stack/markdown'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -218,16 +220,32 @@ export const Delta = (props: { children: ReactNode }) => {
 
 type ResponsesCardProp = {
   items: Exchange['responses']
+  deltasAggregated: Exchange['deltasAggregated']
+}
+
+const MarkedOptions = {
+  gfm: true,
+  breaks: true,
+  sanitize: true,
+  escape,
+  unescape,
 }
 
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
   props.maybeError ? (
-    <div className="text-rose-400">
+    <div className="text-rose-400 flex flex-row gap-1 items-start">
       <CustomIcon
         name="triangleExclamation"
         className="w-4 h-4 inline valign"
-      />{' '}
-      {props.maybeError?.error.detail}
+      />
+      <span
+        dangerouslySetInnerHTML={{
+          __html: Marked.parse(props.maybeError?.error.detail, {
+            renderer: new SafeRenderer(MarkedOptions),
+            ...MarkedOptions,
+          }),
+        }}
+      ></span>
     </div>
   ) : null
 
@@ -235,9 +253,13 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
 export const ResponsesCard = (props: ResponsesCardProp) => {
   const items = props.items.map(
     (response: MlCopilotServerMessage, index: number) => {
-      if ('delta' in response) {
-        return <Delta key={index}>{response.delta.delta}</Delta>
-      }
+      // This is INTENTIONALLY left here for documentation.
+      // We aggregate `delta` responses into `Exchange.responseAggregated`
+      // as an optimization. Originally we'd have 1000s of React components,
+      // causing problems like slowness and exceeding stack depth.
+      // if ('delta' in response) {
+      //   return response.delta.delta
+      // }
       if ('info' in response) {
         return <Delta key={index}>{response.info.text}</Delta>
       }
@@ -258,7 +280,10 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       dataTestId="ml-response-chat-bubble"
       placeholderTestId="ml-response-chat-bubble-thinking"
     >
-      {itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null}
+      {[
+        itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null,
+        props.deltasAggregated !== '' ? props.deltasAggregated : null,
+      ].filter((x: ReactNode) => x !== null)}
     </ChatBubble>
   )
 }
@@ -362,7 +387,10 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           />
         </div>
       )}
-      <ResponsesCard items={props.responses} />
+      <ResponsesCard
+        items={props.responses}
+        deltasAggregated={props.deltasAggregated}
+      />
       <ResponseCardToolBar responses={props.responses} />
     </div>
   )
