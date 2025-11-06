@@ -18,7 +18,6 @@ use super::{
 };
 #[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
-use crate::std::EQUAL_POINTS_DIST_EPSILON;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -28,6 +27,7 @@ use crate::{
     },
     parsing::ast::types::TagNode,
     std::{
+        EQUAL_POINTS_DIST_EPSILON,
         args::{Args, TyF64},
         axis_or_reference::Axis2dOrEdgeReference,
         planes::inner_plane_of,
