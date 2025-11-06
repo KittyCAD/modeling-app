@@ -309,6 +309,33 @@ class PointSegment implements SegmentUtils {
 }
 
 class LineSegment implements SegmentUtils {
+  /**
+   * Updates the line segment mesh color based on selection and hover state
+   */
+  updateLineColors(mesh: Mesh, isSelected: boolean, isHovered: boolean): void {
+    // Calculate darker version of SKETCH_SELECTION_COLOR (70% brightness)
+    const darkerSelectionRgb = SKETCH_SELECTION_RGB.map((val) =>
+      Math.round(val * 0.7)
+    )
+    const darkerSelectionColor =
+      (darkerSelectionRgb[0] << 16) |
+      (darkerSelectionRgb[1] << 8) |
+      darkerSelectionRgb[2]
+
+    const material = mesh.material
+    if (!(material instanceof MeshBasicMaterial)) {
+      return
+    }
+
+    if (isHovered) {
+      material.color.set(darkerSelectionColor)
+    } else if (isSelected) {
+      material.color.set(SKETCH_SELECTION_COLOR)
+    } else {
+      material.color.set(KCL_DEFAULT_COLOR)
+    }
+  }
+
   init = async (args: CreateSegmentArgs) => {
     if (args.input.type !== 'Line') {
       return Promise.reject(new Error('Invalid input type for PointSegment'))
@@ -403,13 +430,43 @@ class LineSegment implements SegmentUtils {
 
     // Update mesh color based on selection
     const isSelected = args.selectedIds.includes(args.id)
-    straightSegmentBody.material.color.set(
-      isSelected ? SKETCH_SELECTION_COLOR : KCL_DEFAULT_COLOR
-    )
+    // Check if this segment is currently hovered (stored in userData)
+    const isHovered = straightSegmentBody.userData.isHovered === true
+    this.updateLineColors(straightSegmentBody, isSelected, isHovered)
   }
 }
 
 export const segmentUtilsMap = {
   PointSegment: new PointSegment(),
   LineSegment: new LineSegment(),
+}
+
+/**
+ * Updates the hover state of a line segment mesh
+ */
+export function updateLineSegmentHover(
+  mesh: Mesh | null,
+  isHovered: boolean,
+  selectedIds: Array<number>
+): void {
+  if (!mesh || mesh.userData.type !== STRAIGHT_SEGMENT_BODY) {
+    return
+  }
+
+  // Store hover state in userData
+  mesh.userData.isHovered = isHovered
+
+  // Get the parent group to find the segment ID
+  const group = mesh.parent
+  if (!(group instanceof Group)) {
+    return
+  }
+
+  const segmentId = Number(group.name)
+  if (Number.isNaN(segmentId)) {
+    return
+  }
+
+  const isSelected = selectedIds.includes(segmentId)
+  segmentUtilsMap.LineSegment.updateLineColors(mesh, isSelected, isHovered)
 }

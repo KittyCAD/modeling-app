@@ -29,10 +29,14 @@ import {
   SEGMENT_TYPE_POINT,
   type SegmentUtils,
   segmentUtilsMap,
+  updateLineSegmentHover,
 } from '@src/machines/sketchSolve/segments'
-import { Group, OrthographicCamera } from 'three'
+import { Group, Mesh, OrthographicCamera } from 'three'
 import { orthoScale } from '@src/clientSideScene/helpers'
-import { getParentGroup } from '@src/clientSideScene/sceneConstants'
+import {
+  getParentGroup,
+  STRAIGHT_SEGMENT_BODY,
+} from '@src/clientSideScene/sceneConstants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
 import type {
@@ -270,6 +274,7 @@ export const sketchSolveMachine = setup({
       // Closure-scoped mutex to prevent concurrent async editSegment operations.
       // Not in XState context since it's purely an implementation detail for race condition prevention.
       let isSolveInProgress = false
+      let lastHoveredMesh: Mesh | null = null
       sceneInfra.setCallbacks({
         onDrag: async ({ selected, intersectionPoint }) => {
           if (isSolveInProgress) {
@@ -353,7 +358,60 @@ export const sketchSolveMachine = setup({
             })
           }
         },
+        onMouseEnter: ({ selected }) => {
+          if (!selected) return
+          // Check if it's a line segment mesh
+          const mesh = selected as Mesh
+          if (mesh.userData?.type === STRAIGHT_SEGMENT_BODY) {
+            const snapshot = self.getSnapshot()
+            const selectedIds = snapshot.context.selectedIds
+            updateLineSegmentHover(mesh, true, selectedIds)
+            lastHoveredMesh = mesh
+          }
+        },
+        onMouseLeave: ({ selected }) => {
+          // Clear hover state for the previously hovered mesh
+          if (lastHoveredMesh) {
+            const snapshot = self.getSnapshot()
+            const selectedIds = snapshot.context.selectedIds
+            updateLineSegmentHover(lastHoveredMesh, false, selectedIds)
+            lastHoveredMesh = null
+          }
+          // Also handle if selected is provided (for safety)
+          if (selected) {
+            const mesh = selected as Mesh
+            if (mesh.userData?.type === STRAIGHT_SEGMENT_BODY) {
+              const snapshot = self.getSnapshot()
+              const selectedIds = snapshot.context.selectedIds
+              updateLineSegmentHover(mesh, false, selectedIds)
+            }
+          }
+        },
       })
+    },
+    'clear hover callbacks': ({ self }) => {
+      // Clear hover callbacks to prevent interference with tool operations
+      sceneInfra.setCallbacks({
+        onMouseEnter: () => {},
+        onMouseLeave: () => {},
+      })
+
+      // Clear any currently hovered line segment meshes
+      const snapshot = self.getSnapshot()
+      const selectedIds = snapshot.context.selectedIds
+      const sketchSegments =
+        sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+      if (sketchSegments) {
+        sketchSegments.traverse((child) => {
+          if (
+            child instanceof Mesh &&
+            child.userData?.type === STRAIGHT_SEGMENT_BODY &&
+            child.userData.isHovered === true
+          ) {
+            updateLineSegmentHover(child, false, selectedIds)
+          }
+        })
+      }
     },
     'send unequip to tool': sendTo(CHILD_TOOL_ID, { type: 'unequip' }),
     'send update selection to equipped tool': sendTo(CHILD_TOOL_ID, {
@@ -714,7 +772,11 @@ export const sketchSolveMachine = setup({
       description:
         'Tools are workflows that create or modify geometry in the sketch scene after conditions are met. Some, like the Dimension, Center Rectangle, and Tangent tools, are finite, which they signal by reaching a final state. Some, like the Spline tool, appear to be infinite. In these cases, it is up to the tool Actor to receive whatever signal (such as the Esc key for Spline) necessary to reach a final state and unequip itself.\n\nTools can request to be unequipped from the outside by a "unequip tool" event sent to the sketch machine. This will sendTo the toolInvoker actor.',
 
-      entry: ['spawn tool', 'send tool equipped to parent'],
+      entry: [
+        'spawn tool',
+        'send tool equipped to parent',
+        'clear hover callbacks',
+      ],
     },
 
     'switching tool': {
