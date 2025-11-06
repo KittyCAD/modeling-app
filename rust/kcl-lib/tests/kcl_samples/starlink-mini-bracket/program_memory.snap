@@ -1570,23 +1570,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
             ],
             "type": "Arc",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.9749999999999999,
-              -0.625
-            ],
-            "tag": null,
-            "to": [
-              -0.975,
-              -0.625
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -1845,23 +1828,6 @@ description: Variables in memory after executing starlink-mini-bracket.kcl
                     -0.625
                   ],
                   "type": "Arc",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -0.9749999999999999,
-                    -0.625
-                  ],
-                  "tag": null,
-                  "to": [
-                    -0.975,
-                    -0.625
-                  ],
-                  "type": "ToPoint",
                   "units": "in"
                 }
               ],

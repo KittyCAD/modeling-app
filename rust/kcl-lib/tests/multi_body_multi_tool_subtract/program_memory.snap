@@ -142,23 +142,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.25,
-              -1.25
-            ],
-            "tag": null,
-            "to": [
-              -1.25,
-              -1.25
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -434,23 +417,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   ],
                   "type": "ToPoint",
                   "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -1.25,
-                    -1.25
-                  ],
-                  "tag": null,
-                  "to": [
-                    -1.25,
-                    -1.25
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
                 }
               ],
               "on": {
@@ -655,23 +621,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             "from": [
               -1.2499999999999998,
               1.25
-            ],
-            "tag": null,
-            "to": [
-              -1.25,
-              -1.25
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.25,
-              -1.25
             ],
             "tag": null,
             "to": [
@@ -900,23 +849,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "from": [
                           -1.2499999999999998,
                           1.25
-                        ],
-                        "tag": null,
-                        "to": [
-                          -1.25,
-                          -1.25
-                        ],
-                        "type": "ToPoint",
-                        "units": "in"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -1.25,
-                          -1.25
                         ],
                         "tag": null,
                         "to": [
@@ -1170,23 +1102,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.25,
-              -1.25
-            ],
-            "tag": null,
-            "to": [
-              -1.25,
-              -1.25
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -1317,23 +1232,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   "from": [
                     -1.2499999999999998,
                     1.25
-                  ],
-                  "tag": null,
-                  "to": [
-                    -1.25,
-                    -1.25
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -1.25,
-                    -1.25
                   ],
                   "tag": null,
                   "to": [
@@ -1562,23 +1460,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                               "from": [
                                 -1.2499999999999998,
                                 1.25
-                              ],
-                              "tag": null,
-                              "to": [
-                                -1.25,
-                                -1.25
-                              ],
-                              "type": "ToPoint",
-                              "units": "in"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -1.25,
-                                -1.25
                               ],
                               "tag": null,
                               "to": [
@@ -1955,23 +1836,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                   ],
                   "type": "ToPoint",
                   "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -1.25,
-                    -1.25
-                  ],
-                  "tag": null,
-                  "to": [
-                    -1.25,
-                    -1.25
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
                 }
               ],
               "on": {
@@ -2102,23 +1966,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                         "from": [
                           -1.2499999999999998,
                           1.25
-                        ],
-                        "tag": null,
-                        "to": [
-                          -1.25,
-                          -1.25
-                        ],
-                        "type": "ToPoint",
-                        "units": "in"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -1.25,
-                          -1.25
                         ],
                         "tag": null,
                         "to": [
@@ -2347,23 +2194,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                     "from": [
                                       -1.2499999999999998,
                                       1.25
-                                    ],
-                                    "tag": null,
-                                    "to": [
-                                      -1.25,
-                                      -1.25
-                                    ],
-                                    "type": "ToPoint",
-                                    "units": "in"
-                                  },
-                                  {
-                                    "__geoMeta": {
-                                      "id": "[uuid]",
-                                      "sourceRange": []
-                                    },
-                                    "from": [
-                                      -1.25,
-                                      -1.25
                                     ],
                                     "tag": null,
                                     "to": [
@@ -2738,23 +2568,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       ],
                       "type": "ToPoint",
                       "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.25,
-                        -1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.25,
-                        -1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
                     }
                   ],
                   "on": {
@@ -3025,23 +2838,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       ],
                       "type": "ToPoint",
                       "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.25,
-                        -1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.25,
-                        -1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
                     }
                   ],
                   "on": {
@@ -3304,23 +3100,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "from": [
                         -1.2499999999999998,
                         1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.25,
-                        -1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.25,
-                        -1.25
                       ],
                       "tag": null,
                       "to": [
@@ -3599,23 +3378,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       ],
                       "type": "ToPoint",
                       "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.25,
-                        -1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.25,
-                        -1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
                     }
                   ],
                   "on": {
@@ -3808,23 +3570,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "from": [
             -1.2499999999999998,
             1.25
-          ],
-          "tag": null,
-          "to": [
-            -1.25,
-            -1.25
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.25,
-            -1.25
           ],
           "tag": null,
           "to": [
@@ -4050,23 +3795,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "from": [
                   -1.2499999999999998,
                   1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.25,
-                  -1.25
                 ],
                 "tag": null,
                 "to": [
@@ -4352,23 +4080,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 ],
                 "type": "ToPoint",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.25,
-                  -1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
@@ -4527,23 +4238,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           "from": [
             -1.2499999999999998,
             1.25
-          ],
-          "tag": null,
-          "to": [
-            -1.25,
-            -1.25
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.25,
-            -1.25
           ],
           "tag": null,
           "to": [
@@ -4780,23 +4474,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       ],
                       "type": "ToPoint",
                       "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.25,
-                        -1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.25,
-                        -1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
                     }
                   ],
                   "on": {
@@ -4996,23 +4673,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
           ],
           "type": "ToPoint",
           "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.25,
-            -1.25
-          ],
-          "tag": null,
-          "to": [
-            -1.25,
-            -1.25
-          ],
-          "type": "ToPoint",
-          "units": "in"
         }
       ],
       "on": {
@@ -5143,23 +4803,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "from": [
                   -1.2499999999999998,
                   1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.25,
-                  -1.25
                 ],
                 "tag": null,
                 "to": [
@@ -5388,23 +5031,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                             "from": [
                               -1.2499999999999998,
                               1.25
-                            ],
-                            "tag": null,
-                            "to": [
-                              -1.25,
-                              -1.25
-                            ],
-                            "type": "ToPoint",
-                            "units": "in"
-                          },
-                          {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": []
-                            },
-                            "from": [
-                              -1.25,
-                              -1.25
                             ],
                             "tag": null,
                             "to": [
@@ -5731,23 +5357,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 ],
                 "type": "ToPoint",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.25,
-                  -1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
@@ -5878,23 +5487,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "from": [
                         -1.2499999999999998,
                         1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.25,
-                        -1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.25,
-                        -1.25
                       ],
                       "tag": null,
                       "to": [
@@ -6123,23 +5715,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                   "from": [
                                     -1.2499999999999998,
                                     1.25
-                                  ],
-                                  "tag": null,
-                                  "to": [
-                                    -1.25,
-                                    -1.25
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": "in"
-                                },
-                                {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": []
-                                  },
-                                  "from": [
-                                    -1.25,
-                                    -1.25
                                   ],
                                   "tag": null,
                                   "to": [
@@ -6518,23 +6093,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 ],
                 "type": "ToPoint",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.25,
-                  -1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
@@ -6665,23 +6223,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                       "from": [
                         -1.2499999999999998,
                         1.25
-                      ],
-                      "tag": null,
-                      "to": [
-                        -1.25,
-                        -1.25
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -1.25,
-                        -1.25
                       ],
                       "tag": null,
                       "to": [
@@ -6910,23 +6451,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                   "from": [
                                     -1.2499999999999998,
                                     1.25
-                                  ],
-                                  "tag": null,
-                                  "to": [
-                                    -1.25,
-                                    -1.25
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": "in"
-                                },
-                                {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": []
-                                  },
-                                  "from": [
-                                    -1.25,
-                                    -1.25
                                   ],
                                   "tag": null,
                                   "to": [
@@ -7280,23 +6804,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 ],
                 "type": "ToPoint",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.25,
-                  -1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
@@ -7541,23 +7048,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "from": [
                   -1.2499999999999998,
                   1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.25,
-                  -1.25
                 ],
                 "tag": null,
                 "to": [
@@ -7818,23 +7308,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 ],
                 "type": "ToPoint",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.25,
-                  -1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
@@ -8079,23 +7552,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                 "from": [
                   -1.2499999999999998,
                   1.25
-                ],
-                "tag": null,
-                "to": [
-                  -1.25,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -1.25,
-                  -1.25
                 ],
                 "tag": null,
                 "to": [
@@ -8401,23 +7857,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               ],
               "type": "ToPoint",
               "units": "in"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -1.25,
-                -1.25
-              ],
-              "tag": null,
-              "to": [
-                -1.25,
-                -1.25
-              ],
-              "type": "ToPoint",
-              "units": "in"
             }
           ],
           "on": {
@@ -8711,23 +8150,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     ],
                     "type": "ToPoint",
                     "units": "in"
-                  },
-                  {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    },
-                    "from": [
-                      -1.25,
-                      -1.25
-                    ],
-                    "tag": null,
-                    "to": [
-                      -1.25,
-                      -1.25
-                    ],
-                    "type": "ToPoint",
-                    "units": "in"
                   }
                 ],
                 "on": {
@@ -8958,23 +8380,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               ],
               "type": "ToPoint",
               "units": "in"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -1.25,
-                -1.25
-              ],
-              "tag": null,
-              "to": [
-                -1.25,
-                -1.25
-              ],
-              "type": "ToPoint",
-              "units": "in"
             }
           ],
           "on": {
@@ -9195,23 +8600,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                           "from": [
                             -1.2499999999999998,
                             1.25
-                          ],
-                          "tag": null,
-                          "to": [
-                            -1.25,
-                            -1.25
-                          ],
-                          "type": "ToPoint",
-                          "units": "in"
-                        },
-                        {
-                          "__geoMeta": {
-                            "id": "[uuid]",
-                            "sourceRange": []
-                          },
-                          "from": [
-                            -1.25,
-                            -1.25
                           ],
                           "tag": null,
                           "to": [
@@ -9483,23 +8871,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               ],
               "type": "ToPoint",
               "units": "in"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -1.25,
-                -1.25
-              ],
-              "tag": null,
-              "to": [
-                -1.25,
-                -1.25
-              ],
-              "type": "ToPoint",
-              "units": "in"
             }
           ],
           "on": {
@@ -9630,23 +9001,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                     "from": [
                       -1.2499999999999998,
                       1.25
-                    ],
-                    "tag": null,
-                    "to": [
-                      -1.25,
-                      -1.25
-                    ],
-                    "type": "ToPoint",
-                    "units": "in"
-                  },
-                  {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    },
-                    "from": [
-                      -1.25,
-                      -1.25
                     ],
                     "tag": null,
                     "to": [
@@ -9875,23 +9229,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
                                 "from": [
                                   -1.2499999999999998,
                                   1.25
-                                ],
-                                "tag": null,
-                                "to": [
-                                  -1.25,
-                                  -1.25
-                                ],
-                                "type": "ToPoint",
-                                "units": "in"
-                              },
-                              {
-                                "__geoMeta": {
-                                  "id": "[uuid]",
-                                  "sourceRange": []
-                                },
-                                "from": [
-                                  -1.25,
-                                  -1.25
                                 ],
                                 "tag": null,
                                 "to": [
@@ -10188,23 +9525,6 @@ description: Variables in memory after executing multi_body_multi_tool_subtract.
               "from": [
                 -1.2499999999999998,
                 1.25
-              ],
-              "tag": null,
-              "to": [
-                -1.25,
-                -1.25
-              ],
-              "type": "ToPoint",
-              "units": "in"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -1.25,
-                -1.25
               ],
               "tag": null,
               "to": [

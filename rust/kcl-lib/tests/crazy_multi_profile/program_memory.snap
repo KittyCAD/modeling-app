@@ -114,23 +114,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              6.71,
-              -3.66
-            ],
-            "tag": null,
-            "to": [
-              6.71,
-              -3.66
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -282,23 +265,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              9.65,
-              3.82
-            ],
-            "tag": null,
-            "to": [
-              9.65,
-              3.82
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -419,23 +385,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "from": [
                     13.09,
                     -4.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    6.71,
-                    -3.66
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    6.71,
-                    -3.66
                   ],
                   "tag": null,
                   "to": [
@@ -660,23 +609,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              5.07,
-              -6.39
-            ],
-            "tag": null,
-            "to": [
-              5.07,
-              -6.39
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -803,23 +735,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "from": [
             13.09,
             -4.0
-          ],
-          "tag": null,
-          "to": [
-            6.71,
-            -3.66
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            6.71,
-            -3.66
           ],
           "tag": null,
           "to": [
@@ -1058,23 +973,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  6.71,
-                  -3.66
-                ],
-                "tag": null,
-                "to": [
-                  6.71,
-                  -3.66
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -1246,23 +1144,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            3.19,
-            13.3
-          ],
-          "tag": null,
-          "to": [
-            3.19,
-            13.3
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -1383,23 +1264,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "from": [
                   13.09,
                   -4.0
-                ],
-                "tag": null,
-                "to": [
-                  6.71,
-                  -3.66
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  6.71,
-                  -3.66
                 ],
                 "tag": null,
                 "to": [
@@ -1560,23 +1424,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            3.15,
-            9.39
-          ],
-          "tag": null,
-          "to": [
-            3.15,
-            9.39
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -1697,23 +1544,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "from": [
                   13.09,
                   -4.0
-                ],
-                "tag": null,
-                "to": [
-                  6.71,
-                  -3.66
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  6.71,
-                  -3.66
                 ],
                 "tag": null,
                 "to": [
@@ -1968,23 +1798,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  6.71,
-                  -3.66
-                ],
-                "tag": null,
-                "to": [
-                  6.71,
-                  -3.66
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -2131,23 +1944,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            9.65,
-            3.82
-          ],
-          "tag": null,
-          "to": [
-            9.65,
-            3.82
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -2268,23 +2064,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "from": [
                   13.09,
                   -4.0
-                ],
-                "tag": null,
-                "to": [
-                  6.71,
-                  -3.66
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  6.71,
-                  -3.66
                 ],
                 "tag": null,
                 "to": [
@@ -2532,23 +2311,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            5.54,
-            5.49
-          ],
-          "tag": null,
-          "to": [
-            5.54,
-            5.49
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -2650,23 +2412,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "from": [
             19.37,
             1.37
-          ],
-          "tag": null,
-          "to": [
-            5.23,
-            1.95
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            5.23,
-            1.95
           ],
           "tag": null,
           "to": [
@@ -2889,23 +2634,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            5.07,
-            -6.39
-          ],
-          "tag": null,
-          "to": [
-            5.07,
-            -6.39
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -3058,23 +2786,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.15,
-              9.39
-            ],
-            "tag": null,
-            "to": [
-              3.15,
-              9.39
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -3195,23 +2906,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "from": [
                     13.09,
                     -4.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    6.71,
-                    -3.66
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    6.71,
-                    -3.66
                   ],
                   "tag": null,
                   "to": [
@@ -3390,23 +3084,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "from": [
               18.21,
               5.170000000000001
-            ],
-            "tag": null,
-            "to": [
-              5.54,
-              5.49
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              5.54,
-              5.49
             ],
             "tag": null,
             "to": [
@@ -3634,23 +3311,6 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "from": [
                 13.09,
                 -4.0
-              ],
-              "tag": null,
-              "to": [
-                6.71,
-                -3.66
-              ],
-              "type": "ToPoint",
-              "units": "mm"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                6.71,
-                -3.66
               ],
               "tag": null,
               "to": [

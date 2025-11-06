@@ -314,23 +314,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              97.0,
-              5.0
-            ],
-            "tag": null,
-            "to": [
-              97.0,
-              5.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -655,23 +638,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -9.5,
-                  140.5
-                ],
-                "tag": null,
-                "to": [
-                  -9.5,
-                  140.5
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -924,23 +890,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 },
                 "from": [
                   9.5,
-                  140.5
-                ],
-                "tag": null,
-                "to": [
-                  -9.5,
-                  140.5
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -9.5,
                   140.5
                 ],
                 "tag": null,
@@ -1376,23 +1325,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
-                      "to": [
-                        97.0,
-                        5.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        97.0,
-                        5.0
-                      ],
-                      "tag": null,
                       "to": [
                         97.0,
                         5.0
@@ -1913,23 +1845,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        97.0,
-                        5.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        97.0,
-                        5.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -2438,23 +2353,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
-                      "to": [
-                        97.0,
-                        5.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        97.0,
-                        5.0
-                      ],
-                      "tag": null,
                       "to": [
                         97.0,
                         5.0
@@ -2975,23 +2873,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        97.0,
-                        5.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        97.0,
-                        5.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -3475,23 +3356,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               ],
               "type": "ToPoint",
               "units": "mm"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                97.0,
-                5.0
-              ],
-              "tag": null,
-              "to": [
-                97.0,
-                5.0
-              ],
-              "type": "ToPoint",
-              "units": "mm"
             }
           ],
           "on": {
@@ -3933,23 +3797,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
-              "to": [
-                97.0,
-                5.0
-              ],
-              "type": "ToPoint",
-              "units": "mm"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                97.0,
-                5.0
-              ],
-              "tag": null,
               "to": [
                 97.0,
                 5.0
@@ -4755,23 +4602,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              111.58327832184897,
-              12.0
-            ],
-            "tag": null,
-            "to": [
-              111.58327832184897,
-              12.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -5303,23 +5133,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             "from": [
               111.58327832184897,
               9.0
-            ],
-            "tag": null,
-            "to": [
-              111.58327832184897,
-              12.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              111.58327832184897,
-              12.0
             ],
             "tag": null,
             "to": [
@@ -6397,23 +6210,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  97.0,
-                  5.0
-                ],
-                "tag": null,
-                "to": [
-                  97.0,
-                  5.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -6904,23 +6700,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
-                "to": [
-                  97.0,
-                  5.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  97.0,
-                  5.0
-                ],
-                "tag": null,
                 "to": [
                   97.0,
                   5.0
@@ -7423,23 +7202,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  97.0,
-                  5.0
-                ],
-                "tag": null,
-                "to": [
-                  97.0,
-                  5.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -7936,23 +7698,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  97.0,
-                  5.0
-                ],
-                "tag": null,
-                "to": [
-                  97.0,
-                  5.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -8351,23 +8096,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             ],
             "type": "TangentialArcTo",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              50.0,
-              -5.0
-            ],
-            "tag": null,
-            "to": [
-              50.0,
-              -5.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -8624,23 +8352,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   136.6190539060744
                 ],
                 "type": "TangentialArcTo",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  37.2504622962932,
-                  136.6190539060744
-                ],
-                "tag": null,
-                "to": [
-                  37.2504622962932,
-                  136.6190539060744
-                ],
-                "type": "ToPoint",
                 "units": "mm"
               }
             ],
@@ -8916,23 +8627,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
                   136.6190539060744
                 ],
                 "type": "TangentialArcTo",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  37.2504622962932,
-                  136.6190539060744
-                ],
-                "tag": null,
-                "to": [
-                  37.2504622962932,
-                  136.6190539060744
-                ],
-                "type": "ToPoint",
                 "units": "mm"
               }
             ],
@@ -9408,23 +9102,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               -4.0
             ],
             "type": "TangentialArcTo",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              40.0,
-              -4.0
-            ],
-            "tag": null,
-            "to": [
-              40.0,
-              -4.0
-            ],
-            "type": "ToPoint",
             "units": "mm"
           }
         ],
@@ -10014,23 +9691,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           ],
           "type": "TangentialArcTo",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            40.0,
-            -4.0
-          ],
-          "tag": null,
-          "to": [
-            40.0,
-            -4.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -10346,23 +10006,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             -5.0
           ],
           "type": "TangentialArcTo",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            50.0,
-            -5.0
-          ],
-          "tag": null,
-          "to": [
-            50.0,
-            -5.0
-          ],
-          "type": "ToPoint",
           "units": "mm"
         }
       ],
@@ -10680,23 +10323,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           ],
           "type": "TangentialArcTo",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            90.0,
-            -9.0
-          ],
-          "tag": null,
-          "to": [
-            90.0,
-            -9.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -11013,23 +10639,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
           ],
           "type": "TangentialArcTo",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            105.0,
-            -10.5
-          ],
-          "tag": null,
-          "to": [
-            105.0,
-            -10.5
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -11345,23 +10954,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
             -10.0
           ],
           "type": "TangentialArcTo",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            100.0,
-            -10.0
-          ],
-          "tag": null,
-          "to": [
-            100.0,
-            -10.0
-          ],
-          "type": "ToPoint",
           "units": "mm"
         }
       ],
@@ -11683,23 +11275,6 @@ description: Variables in memory after executing end-effector-gripper-fingers.kc
               -10.5
             ],
             "type": "TangentialArcTo",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              105.0,
-              -10.5
-            ],
-            "tag": null,
-            "to": [
-              105.0,
-              -10.5
-            ],
-            "type": "ToPoint",
             "units": "mm"
           }
         ],
