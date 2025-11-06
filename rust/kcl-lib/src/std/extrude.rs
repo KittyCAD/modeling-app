@@ -450,21 +450,19 @@ pub(crate) async fn do_post_extrude<'a>(
             );
 
             if let Some(new_path) = new_path {
-                
-
-            match face_id_map.get(new_path) {
-                Some(Some(actual_face_id)) => {
-                    println!(
-                        "found actual_face_id {:?} for clone path ID {:?}",
-                        actual_face_id, new_path
-                    );
-                    clone_surface_of(path, *new_path, *actual_face_id)
+                match face_id_map.get(new_path) {
+                    Some(Some(actual_face_id)) => {
+                        println!(
+                            "found actual_face_id {:?} for clone path ID {:?}",
+                            actual_face_id, new_path
+                        );
+                        clone_surface_of(path, *new_path, *actual_face_id)
+                    }
+                    _ => None,
                 }
-                _ => None,
+            } else {
+                None
             }
-        } else {
-            None
-        }
         } else {
             crate::log::logln!(
                 "No face ID found for path ID {:?}, and not in no-engine-commands mode, so skipping it",
