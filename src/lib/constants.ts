@@ -132,9 +132,6 @@ export const MAKE_TOAST_MESSAGES = {
   SUCCESS: 'Started print successfully',
 }
 
-/** The URL for the KCL samples manifest files */
-export const KCL_SAMPLES_MANIFEST_URL = '/kcl-samples/manifest.json'
-
 /** Toast id for the app auto-updater toast */
 export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
 

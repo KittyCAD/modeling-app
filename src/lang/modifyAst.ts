@@ -280,61 +280,6 @@ export function removeKwArgs(labels: string[], node: CallExpressionKw) {
   }
 }
 
-export function mutateArrExp(node: Expr, updateWith: ArrayExpression): boolean {
-  if (node.type === 'ArrayExpression') {
-    node.elements.forEach((element, i) => {
-      if (isLiteralArrayOrStatic(element)) {
-        node.elements[i] = updateWith.elements[i]
-      }
-    })
-    return true
-  }
-  return false
-}
-
-export function mutateObjExpProp(
-  node: Expr,
-  updateWith: Node<Literal> | Node<ArrayExpression>,
-  key: string
-): boolean {
-  if (node.type === 'ObjectExpression') {
-    const keyIndex = node.properties.findIndex((a) => a.key.name === key)
-    if (keyIndex !== -1) {
-      if (
-        isLiteralArrayOrStatic(updateWith) &&
-        isLiteralArrayOrStatic(node.properties[keyIndex].value)
-      ) {
-        node.properties[keyIndex].value = updateWith
-        return true
-      } else if (
-        node.properties[keyIndex].value.type === 'ArrayExpression' &&
-        updateWith.type === 'ArrayExpression'
-      ) {
-        const arrExp = node.properties[keyIndex].value as ArrayExpression
-        arrExp.elements.forEach((element, i) => {
-          if (isLiteralArrayOrStatic(element)) {
-            arrExp.elements[i] = updateWith.elements[i]
-          }
-        })
-      }
-      return true
-    } else {
-      node.properties.push({
-        type: 'ObjectProperty',
-        key: createIdentifier(key),
-        value: updateWith,
-        start: 0,
-        end: 0,
-        moduleId: 0,
-        outerAttrs: [],
-        preComments: [],
-        commentStart: 0,
-      })
-    }
-  }
-  return false
-}
-
 export function sketchOnExtrudedFace(
   node: Node<Program>,
   sketchPathToNode: PathToNode,
@@ -535,9 +480,6 @@ export function sketchOnOffsetPlane(
   }
 }
 
-export const getLastIndex = (pathToNode: PathToNode): number =>
-  splitPathAtLastIndex(pathToNode).index
-
 export function splitPathAtLastIndex(pathToNode: PathToNode): {
   path: PathToNode
   index: number
@@ -606,35 +548,6 @@ export function replaceValueAtNodePath({
   }
 
   return replacer(ast, newExpressionString)
-}
-
-export function moveValueIntoNewVariablePath(
-  ast: Node<Program>,
-  memVars: VariableMap,
-  pathToNode: PathToNode,
-  variableName: string
-): {
-  modifiedAst: Node<Program>
-  pathToReplacedNode?: PathToNode
-} {
-  const meta = isNodeSafeToReplacePath(ast, pathToNode)
-  if (trap(meta)) return { modifiedAst: ast }
-  const { isSafe, value, replacer } = meta
-
-  if (!isSafe || value.type === 'Name') return { modifiedAst: ast }
-
-  const { insertIndex } = findAllPreviousVariablesPath(ast, memVars, pathToNode)
-  let _node = structuredClone(ast)
-  const boop = replacer(_node, variableName)
-  if (trap(boop)) return { modifiedAst: ast }
-
-  _node = boop.modifiedAst
-  _node.body.splice(
-    insertIndex,
-    0,
-    createVariableDeclaration(variableName, value)
-  )
-  return { modifiedAst: _node, pathToReplacedNode: boop.pathToReplaced }
 }
 
 export function moveValueIntoNewVariable(
