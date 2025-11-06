@@ -1069,7 +1069,7 @@ description: Artifact commands holes_cube.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 4.0,
+            "x": 2.0,
             "y": 0.0,
             "z": 0.0
           },
