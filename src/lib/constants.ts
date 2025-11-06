@@ -296,22 +296,6 @@ export const LOCAL_STORAGE_ML_CONVERSATIONS = 'mlConversations'
 export const SEARCH_PARAM_ML_PROMPT_KEY = 'ttc-prompt'
 
 /**
- * Used by the modeling sidebar to validate persisted pane IDs.
- */
-export const VALID_PANE_IDS = [
-  'code',
-  'debug',
-  'export',
-  'files',
-  'feature-tree',
-  'logs',
-  'lspMessages',
-  'variables',
-  'text-to-cad',
-  'text-to-cad-2',
-] as const
-
-/**
  * Number of engine connection retries within a cycle before the application stops automatically trying
  */
 export const NUMBER_OF_ENGINE_RETRIES = 5
