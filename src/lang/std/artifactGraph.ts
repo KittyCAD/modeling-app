@@ -250,7 +250,6 @@ export function expandCap(
   }
 }
 
-
 export function getCapCodeRef(
   cap: CapArtifact,
   artifactGraph: ArtifactGraph
