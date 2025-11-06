@@ -74,14 +74,24 @@ fn check_body(block: &AstNode<Program>, whole_program: &AstNode<Program>) -> Res
             // Copy the unlabeled arg from the previous call to the problematic
             // call since it's no longer in the pipeline. Create a new pipeline
             // if there's more than one expression left.
-            let next_expr = if rest.len() == 1 {
+            let (next_expr, result) = if rest.len() == 1 {
                 let mut call = rest.pop().unwrap();
-                add_unlabeled_arg_to_call(&mut call, unlabeled_arg);
-                call
+                let result = add_unlabeled_arg_to_call(&mut call, unlabeled_arg);
+                (call, result)
             } else {
-                add_unlabeled_arg_to_first_call(&mut rest, unlabeled_arg);
-                Expr::PipeExpression(Box::new(PipeExpression::new(rest)))
+                let result = add_unlabeled_arg_to_first_call(&mut rest, unlabeled_arg);
+                (Expr::PipeExpression(Box::new(PipeExpression::new(rest))), result)
             };
+            if result.is_err() {
+                // We needed an unlabeled arg, but we don't have one. We aren't
+                // currently smart enough to suggest a fix.
+                return vec![Ok(Z0004.at(
+                    "Profiles should not be chained together in a pipeline.".to_owned(),
+                    *pos,
+                    None,
+                ))];
+            }
+
             // Insert a new variable declaration for the problematic call.
             let new_var_name = match next_free_name(NEW_VAR_PREFIX, &bound_names) {
                 Ok(name) => name,
@@ -293,23 +303,31 @@ fn split_off_pipe_at_index_expr(expr: &mut Expr, first_call_index: usize) -> Vec
     pipe.body.split_off(first_call_index)
 }
 
-fn add_unlabeled_arg_to_first_call(exprs: &mut [Expr], unlabeled_arg: Option<Expr>) {
-    if exprs.is_empty() {
-        return;
-    }
+fn add_unlabeled_arg_to_first_call(exprs: &mut [Expr], unlabeled_arg: Option<Expr>) -> Result<(), ()> {
     if let Some(expr) = exprs.first_mut() {
-        add_unlabeled_arg_to_call(expr, unlabeled_arg);
+        return add_unlabeled_arg_to_call(expr, unlabeled_arg);
     }
+    Ok(())
 }
 
-fn add_unlabeled_arg_to_call(expr: &mut Expr, unlabeled_arg: Option<Expr>) {
+/// Mutates the `Expr`'s call to have the given unlabeled arg if it needs it.
+/// Returns an `Err` if the call needs an unlabeled arg but none is provided.
+fn add_unlabeled_arg_to_call(expr: &mut Expr, unlabeled_arg: Option<Expr>) -> Result<(), ()> {
     let Expr::CallExpressionKw(call) = expr else {
-        return;
+        return Ok(());
     };
-    if let Some(arg) = unlabeled_arg
-        && call.unlabeled.is_none()
-    {
-        call.unlabeled = Some(arg);
+    if call.unlabeled.is_none() {
+        if let Some(arg) = unlabeled_arg {
+            // Add the unlabeled argument.
+            call.unlabeled = Some(arg);
+            Ok(())
+        } else {
+            // We need an unlabeled arg, but we don't have one.
+            Err(())
+        }
+    } else {
+        // It already has an explicit unlabeled arg.
+        Ok(())
     }
 }
 
@@ -534,5 +552,21 @@ extrude([sketch1, profile1], length = 1)
 "
             .to_owned()
         )
+    );
+
+    // This is problematic, but we currently don't suggest a fix since we'd need
+    // to create two variables.
+    test_finding!(
+        z0004_bad_circle_after_good_piped_circle_no_var,
+        lint_profiles_should_not_be_chained,
+        Z0004,
+        "\
+startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 5)
+  |> circle(center = [10, 0], radius = 5)
+  |> extrude(length = 1)
+",
+        "Profiles should not be chained together in a pipeline.",
+        None
     );
 }
