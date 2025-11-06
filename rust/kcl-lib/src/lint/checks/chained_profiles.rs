@@ -60,63 +60,84 @@ fn check_body(block: &AstNode<Program>, whole_program: &AstNode<Program>) -> Res
     // Collect all the names bound in this scope. There may be more names
     // available from parent scopes, but we don't currently check for collisions
     // with those.
-    let bound_names = find_defined_names(block);
+    let mut bound_names = find_defined_names(block);
 
-    let discovered = problematic_items
-        .into_iter()
-        .flat_map(|(item_index, unlabeled_arg, calls)| {
-            let mut new_program = whole_program.clone();
-            let Some((first_call_index, pos)) = calls.first() else {
-                return Vec::new();
-            };
-            // Break the pipeline at the first problematic call.
-            let mut rest = split_off_pipe_at_index(&mut new_program.body[item_index], *first_call_index);
-            // Copy the unlabeled arg from the previous call to the problematic
-            // call since it's no longer in the pipeline. Create a new pipeline
-            // if there's more than one expression left.
-            let next_expr = if rest.len() == 1 {
-                let mut call = rest.pop().unwrap();
-                add_unlabeled_arg_to_call(&mut call, unlabeled_arg);
-                call
-            } else {
-                add_unlabeled_arg_to_first_call(&mut rest, unlabeled_arg);
-                Expr::PipeExpression(Box::new(PipeExpression::new(rest)))
-            };
-            // Insert a new variable declaration for the problematic call.
-            let new_var_name = match next_free_name(NEW_VAR_PREFIX, &bound_names) {
-                Ok(name) => name,
-                Err(err) => return vec![Err(err)],
-            };
-            new_program.body.insert(
-                item_index + 1,
-                BodyItem::VariableDeclaration(Box::new(AstNode::no_src(VariableDeclaration::new(
-                    VariableDeclarator::new(&new_var_name, next_expr),
-                    ItemVisibility::Default,
-                    VariableKind::Const,
-                )))),
-            );
-            let next_item_index = item_index + 2;
-            if new_program.body.len() > next_item_index {
-                // If the next item is an extrude call, add the new variable to
-                // its unlabeled argument.
-                let next_item = &mut new_program.body[next_item_index];
-                add_variable_to_extrude(next_item, &new_var_name);
+    let mut discovered = Vec::new();
+    for (item_index, mut unlabeled_arg, calls) in problematic_items {
+        let mut new_program = whole_program.clone();
+        let Some((first_call_index, pos)) = calls.first() else {
+            continue;
+        };
+        // Break the pipeline at the first problematic call.
+        let mut rest = split_off_pipe_at_index(&mut new_program.body[item_index], *first_call_index);
+
+        if unlabeled_arg.is_none() {
+            match previous_stage_result_expr(&mut new_program.body[item_index], &mut bound_names) {
+                Ok(expr) => {
+                    unlabeled_arg = Some(expr);
+                }
+                Err(err) => {
+                    discovered.push(Err(err));
+                    continue;
+                }
             }
-            // Format the code.
-            let new_source = new_program.recast_top(&Default::default(), 0);
-            let suggestion = Some(Suggestion {
-                title: "Use separate profile variables and handle them all using an array.".to_owned(),
-                insert: new_source,
-                source_range: new_program.as_source_range(),
-            });
-            let discovered = Z0004.at(
-                "Profiles should not be chained together in a pipeline.".to_owned(),
-                *pos,
-                suggestion,
-            );
-            vec![Ok(discovered)]
-        })
-        .collect::<Result<Vec<_>>>()?;
+        }
+
+        // Insert a new variable declaration for the problematic call.
+        let new_var_name = match next_free_name(NEW_VAR_PREFIX, &bound_names) {
+            Ok(name) => {
+                bound_names.insert(name.clone());
+                name
+            }
+            Err(err) => {
+                discovered.push(Err(err));
+                continue;
+            }
+        };
+
+        // Copy the unlabeled arg from the previous call to the problematic
+        // call since it's no longer in the pipeline. Create a new pipeline
+        // if there's more than one expression left.
+        let next_expr = if rest.len() == 1 {
+            let mut call = rest.pop().unwrap();
+            add_unlabeled_arg_to_call(&mut call, unlabeled_arg);
+            call
+        } else {
+            add_unlabeled_arg_to_first_call(&mut rest, unlabeled_arg);
+            Expr::PipeExpression(Box::new(PipeExpression::new(rest)))
+        };
+
+        new_program.body.insert(
+            item_index + 1,
+            BodyItem::VariableDeclaration(Box::new(AstNode::no_src(VariableDeclaration::new(
+                VariableDeclarator::new(&new_var_name, next_expr),
+                ItemVisibility::Default,
+                VariableKind::Const,
+            )))),
+        );
+        let next_item_index = item_index + 2;
+        if new_program.body.len() > next_item_index {
+            // If the next item is an extrude call, add the new variable to
+            // its unlabeled argument.
+            let next_item = &mut new_program.body[next_item_index];
+            add_variable_to_extrude(next_item, &new_var_name);
+        }
+        // Format the code.
+        let new_source = new_program.recast_top(&Default::default(), 0);
+        let suggestion = Some(Suggestion {
+            title: "Use separate profile variables and handle them all using an array.".to_owned(),
+            insert: new_source,
+            source_range: new_program.as_source_range(),
+        });
+        let finding = Z0004.at(
+            "Profiles should not be chained together in a pipeline.".to_owned(),
+            *pos,
+            suggestion,
+        );
+        discovered.push(Ok(finding));
+    }
+
+    let discovered = discovered.into_iter().collect::<Result<Vec<_>>>()?;
     Ok(discovered)
 }
 
@@ -253,6 +274,30 @@ fn split_off_pipe_at_index_expr(expr: &mut Expr, first_call_index: usize) -> Vec
     pipe.body.split_off(first_call_index)
 }
 
+fn previous_stage_result_expr(
+    item: &mut BodyItem,
+    bound_names: &mut HashSet<String>,
+) -> anyhow::Result<Expr> {
+    if let BodyItem::VariableDeclaration(var_decl) = item {
+        let name = var_decl.declaration.id.name.clone();
+        return Ok(Expr::Name(Box::new(Name::new(&name))));
+    }
+    if let BodyItem::ExpressionStatement(expr_stmt) = item {
+        let new_name = next_free_name(NEW_VAR_PREFIX, bound_names)?;
+        bound_names.insert(new_name.clone());
+        let declaration = VariableDeclaration::new(
+            VariableDeclarator::new(&new_name, expr_stmt.expression.clone()),
+            ItemVisibility::Default,
+            VariableKind::Const,
+        );
+        *item = BodyItem::VariableDeclaration(Box::new(AstNode::no_src(declaration)));
+        return Ok(Expr::Name(Box::new(Name::new(&new_name))));
+    }
+    Err(anyhow::anyhow!(
+        "Profiles should only be linted in expressions or variable declarations"
+    ))
+}
+
 fn add_unlabeled_arg_to_first_call(exprs: &mut [Expr], unlabeled_arg: Option<Expr>) {
     if exprs.is_empty() {
         return;
@@ -266,10 +311,10 @@ fn add_unlabeled_arg_to_call(expr: &mut Expr, unlabeled_arg: Option<Expr>) {
     let Expr::CallExpressionKw(call) = expr else {
         return;
     };
-    if let Some(arg) = unlabeled_arg
-        && call.unlabeled.is_none()
-    {
-        call.unlabeled = Some(arg);
+    if call.unlabeled.is_none() {
+        if let Some(arg) = unlabeled_arg {
+            call.unlabeled = Some(arg);
+        }
     }
 }
 
@@ -441,6 +486,26 @@ profile1 = circle(sketch1, center = [0, 0], radius = 5)
   // Second circle.
 profile2 = circle(sketch1, center = [0, 0], radius = 5)
 extrude([profile1, profile2], length = 1)
+"
+            .to_owned()
+        )
+    );
+
+    test_finding!(
+        z0004_start_profile_then_circle,
+        lint_profiles_should_not_be_chained,
+        Z0004,
+        "\
+sketch1 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> circle(center = [0, 0], radius = 5)
+",
+        "Profiles should not be chained together in a pipeline.",
+        Some(
+            "\
+sketch1 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+profile1 = circle(sketch1, center = [0, 0], radius = 5)
 "
             .to_owned()
         )
