@@ -139,7 +139,7 @@ export async function modifyAstWithEdgeTreatmentAndTag(
     const { parameterName, parameterValue } = parameterResult
 
     // tag calls
-    const tagCalls = tagInfos.map(({ tags, artifact }) => {
+    const tagCalls = tagInfos.map(({ tags }) => {
       return createCallExpressionStdLibKw('getCommonEdge', null, [
         createLabeledArg(
           'faces',

@@ -1493,25 +1493,6 @@ function convertThreeCamValuesToEngineCam(
   }
 }
 
-function _lookAt(position: Vector3, target: Vector3, up: Vector3): Quaternion {
-  // Direction from position to target, normalized.
-  let direction = new Vector3().subVectors(target, position).normalize()
-
-  // Calculate a new "effective" up vector that is orthogonal to the direction.
-  // This step ensures that the up vector does not affect the direction the camera is looking.
-  let right = new Vector3().crossVectors(direction, up).normalize()
-  let orthogonalUp = new Vector3().crossVectors(right, direction).normalize()
-
-  // Create a lookAt matrix using the position, and the recalculated orthogonal up vector.
-  let lookAtMatrix = new Matrix4()
-  lookAtMatrix.lookAt(position, target, orthogonalUp)
-
-  // Create a quaternion from the lookAt matrix.
-  let quaternion = new Quaternion().setFromRotationMatrix(lookAtMatrix)
-
-  return quaternion
-}
-
 function _getInteractionType(
   interactionGuards: MouseGuard,
   event: MouseEvent | WheelEvent,
