@@ -45,6 +45,7 @@ export async function deleteSelectionPromise(
       kclManager,
       editorManager,
       codeManager,
+      rustContext,
     },
     {
       isDeleting: true,

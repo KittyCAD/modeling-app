@@ -60,7 +60,9 @@ const toolOutput = (): Extract<
 const error = (): MlCopilotServerMessage & { error: any } => {
   return {
     error: {
-      detail: stringRand(ALPHA, Math.trunc(Math.random() * 80) + 10),
+      detail:
+        'aosteuhsaotu [Some markdown link](https://discord.com) and a bunch of text' +
+        stringRand(ALPHA, Math.trunc(Math.random() * 80) + 10),
     },
   }
 }
@@ -144,6 +146,9 @@ const endOfStream = (): MlCopilotServerMessage & { end_of_stream: any } => {
 const generators = {
   reasoning: [
     error,
+    error,
+    error,
+    error,
     info,
     toolOutput,
     toolOutput,
@@ -209,17 +214,15 @@ function generateUserResponse(
   loop()
 }
 
-function generateReplayResponse(): Extract<
-  MlCopilotServerMessage,
-  { replay: any }
-> {
-  return {
+function generateReplayResponse(): Uint8Array {
+  const te = new TextEncoder()
+  return BSON.serialize({
     replay: {
-      messages: generateMlServerMessages().map((m: MlCopilotServerMessage) =>
-        Array.from(BSON.serialize(m))
-      ),
+      messages: generateMlServerMessages().map((m: MlCopilotServerMessage) => {
+        return Array.from(te.encode(JSON.stringify(m)))
+      }),
     },
-  }
+  })
 }
 
 type WebSocketEventListenerMap = {
@@ -271,7 +274,15 @@ export class MockSocket extends WebSocket {
         setTimeout(() => {
           this.cbs.message[0].bind(this)(
             new MessageEvent('message', {
-              data: JSON.stringify(generateReplayResponse()),
+              data: JSON.stringify({
+                conversation_id: 'xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+              }),
+            })
+          )
+          const data = generateReplayResponse()
+          this.cbs.message[0].bind(this)(
+            new MessageEvent('message', {
+              data,
             })
           )
         })

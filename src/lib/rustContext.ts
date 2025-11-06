@@ -26,6 +26,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getModule } from '@src/lib/wasm_lib_wrapper'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { Signal } from '@src/lib/signal'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true
@@ -34,9 +35,10 @@ export default class RustContext {
   private _defaultPlanes: DefaultPlanes | null = null
   private engineCommandManager: ConnectionManager
   private projectId = 0
+  public readonly planesCreated = new Signal()
 
   /** Initialize the WASM module */
-  async ensureWasmInit() {
+  private async ensureWasmInit() {
     try {
       await initPromise
       if (this.wasmInitFailed) {
@@ -48,18 +50,22 @@ export default class RustContext {
     }
   }
 
-  constructor(engineCommandManager: ConnectionManager) {
+  constructor(engineCommandManager: ConnectionManager, instance?: ModuleType) {
     this.engineCommandManager = engineCommandManager
 
-    this.ensureWasmInit()
-      .then(() => {
-        this.ctxInstance = this.create()
-      })
-      .catch(reportRejection)
+    if (instance) {
+      this.createFromInstance(instance)
+    } else {
+      this.ensureWasmInit()
+        .then(() => {
+          this.ctxInstance = this.create()
+        })
+        .catch(reportRejection)
+    }
   }
 
   /** Create a new context instance */
-  create(): Context {
+  private create(): Context {
     this.rustInstance = getModule()
 
     const ctxInstance = new this.rustInstance.Context(
@@ -68,6 +74,21 @@ export default class RustContext {
     )
 
     return ctxInstance
+  }
+
+  getRustInstance() {
+    return this.rustInstance || undefined
+  }
+
+  private createFromInstance(instance: ModuleType) {
+    this.rustInstance = instance
+
+    const ctxInstance = new this.rustInstance.Context(
+      this.engineCommandManager,
+      projectFsManager
+    )
+
+    this.ctxInstance = ctxInstance
   }
 
   async sendOpenProject(
@@ -109,13 +130,13 @@ export default class RustContext {
       // Set the default planes, safe to call after execute.
       const outcome = execStateFromRust(result)
 
-      this._defaultPlanes = outcome.defaultPlanes
+      this.setDefaultPlanes(outcome.defaultPlanes)
 
       // Return the result.
       return outcome
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)
-      this._defaultPlanes = err.defaultPlanes
+      this.setDefaultPlanes(err.defaultPlanes)
       return Promise.reject(err)
     }
   }
@@ -174,6 +195,14 @@ export default class RustContext {
     return this._defaultPlanes
   }
 
+  /** Internal setter for default planes that emits a planesCreated signal when planes are available */
+  private setDefaultPlanes(planes: DefaultPlanes | null) {
+    this._defaultPlanes = planes
+    if (planes) {
+      this.planesCreated.dispatch()
+    }
+  }
+
   /**
    * Clear/reset the scene and bust the cache.
    * Do not use this function unless you absolutely need to. In most cases,
@@ -205,13 +234,13 @@ export default class RustContext {
       /* Set the default planes, safe to call after execute. */
       const outcome = execStateFromRust(result)
 
-      this._defaultPlanes = outcome.defaultPlanes
+      this.setDefaultPlanes(outcome.defaultPlanes)
 
       // Return the result.
       return outcome
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)
-      this._defaultPlanes = err.defaultPlanes
+      this.setDefaultPlanes(err.defaultPlanes)
       return Promise.reject(err)
     }
   }

@@ -25,7 +25,7 @@ fn tokio() -> &'static tokio::runtime::Runtime {
 }
 
 fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
-    let report = error.clone().into_miette_report_with_outputs(code).unwrap();
+    let report = error.into_miette_report_with_outputs(code).unwrap();
     let report = miette::Report::new(report);
     pyo3::exceptions::PyException::new_err(format!("{report:?}"))
 }
@@ -33,7 +33,7 @@ fn into_miette(error: kcl_lib::KclErrorWithOutputs, code: &str) -> PyErr {
 fn into_miette_for_parse(filename: &str, input: &str, error: kcl_lib::KclError) -> PyErr {
     let report = kcl_lib::Report {
         kcl_source: input.to_string(),
-        error: error.clone(),
+        error,
         filename: filename.to_string(),
     };
     let report = miette::Report::new(report);
@@ -652,6 +652,45 @@ fn lint(code: String) -> PyResult<Vec<Discovered>> {
     Ok(lints)
 }
 
+/// Result from linting and fixing automatically.
+/// Shows the new code after applying fixes,
+/// and any lints that couldn't be automatically applied.
+#[derive(Serialize, Debug, Clone)]
+#[pyo3_stub_gen::derive::gen_stub_pyclass]
+#[pyclass]
+pub struct FixedLints {
+    /// Code after suggestions have been applied.
+    pub new_code: String,
+    /// Any lints that didn't have suggestions or couldn't be applied.
+    pub unfixed_lints: Vec<Discovered>,
+}
+
+#[pymethods]
+impl FixedLints {
+    #[getter]
+    fn unfixed_lints(&self) -> PyResult<Vec<Discovered>> {
+        Ok(self.unfixed_lints.clone())
+    }
+
+    #[getter]
+    fn new_code(&self) -> PyResult<String> {
+        Ok(self.new_code.clone())
+    }
+}
+
+/// Lint the kcl code. Fix any lints that can be fixed with automatic suggestions.
+/// Returns any unfixed lints.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction]
+fn lint_and_fix(code: String) -> PyResult<FixedLints> {
+    let (new_code, unfixed_lints) =
+        kcl_lib::lint::lint_and_fix(code).map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+    Ok(FixedLints {
+        new_code,
+        unfixed_lints,
+    })
+}
+
 /// The kcl python module.
 #[pymodule]
 fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
@@ -697,6 +736,7 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(format, m)?)?;
     m.add_function(wrap_pyfunction!(format_dir, m)?)?;
     m.add_function(wrap_pyfunction!(lint, m)?)?;
+    m.add_function(wrap_pyfunction!(lint_and_fix, m)?)?;
     m.add_function(wrap_pyfunction!(relevant_file_extensions, m)?)?;
     Ok(())
 }

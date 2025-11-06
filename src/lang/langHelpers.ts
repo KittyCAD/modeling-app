@@ -8,6 +8,7 @@ import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
 import type { EditorView } from 'codemirror'
 
@@ -136,7 +137,10 @@ function handleExecuteError(e: any): ExecutionResult {
       isInterrupted = true
     }
     const execState = emptyExecState()
+    // We're passing back those so the user can still fix issues in p&c
     execState.variables = e.variables
+    execState.operations = e.operations
+    execState.artifactGraph = e.artifactGraph
     return {
       errors: [e],
       logs: [],
@@ -171,12 +175,14 @@ function handleExecuteError(e: any): ExecutionResult {
 export async function lintAst({
   ast,
   sourceCode,
+  instance,
 }: {
   ast: Program
   sourceCode: string
+  instance?: ModuleType
 }): Promise<Array<Diagnostic>> {
   try {
-    const discovered_findings = await kclLint(ast)
+    const discovered_findings = await kclLint(ast, instance)
     return discovered_findings.map((lint) => {
       let actions
       const suggestion = lint.suggestion

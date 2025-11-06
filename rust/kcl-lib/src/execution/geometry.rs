@@ -2,6 +2,7 @@ use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kcl_error::SourceRange;
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::{
     ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, units::UnitLength, websocket::ModelingCmdReq,
@@ -1654,4 +1655,29 @@ impl ExtrudeSurface {
             ExtrudeSurface::Chamfer(c) => c.tag.clone(),
         }
     }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, ts_rs::TS)]
+pub struct SketchVarId(pub usize);
+
+impl SketchVarId {
+    pub fn to_constraint_id(self, range: SourceRange) -> Result<kcl_ezpz::Id, KclError> {
+        self.0.try_into().map_err(|_| {
+            KclError::new_type(KclErrorDetails::new(
+                "Cannot convert to constraint ID since the sketch variable ID is too large".to_owned(),
+                vec![range],
+            ))
+        })
+    }
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct SketchVar {
+    pub id: SketchVarId,
+    pub initial_value: f64,
+    pub ty: NumericType,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
 }

@@ -4,6 +4,7 @@ import fsp from 'fs/promises'
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from '@e2e/playwright/storageStates'
 import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Code pane and errors', () => {
   test('Typing KCL errors induces a badge on the code pane button', async ({
@@ -186,7 +187,7 @@ middle(1)
 middle(0)
 `
     await test.step('Set the code with a KCL error', async () => {
-      await toolbar.openPane('code')
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.replaceCode('', code)
     })
     // This shows all the diagnostics in a way that doesn't require the mouse

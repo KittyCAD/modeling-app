@@ -293,7 +293,7 @@ fn get_named_cap_tags(solid: &Solid) -> (Option<TagNode>, Option<TagNode>) {
         // Check if we had a value for that cap.
         for value in &solid.value {
             if value.get_id() == start_cap_id {
-                start_tag = value.get_tag().clone();
+                start_tag = value.get_tag();
                 break;
             }
         }
@@ -304,7 +304,7 @@ fn get_named_cap_tags(solid: &Solid) -> (Option<TagNode>, Option<TagNode>) {
         // Check if we had a value for that cap.
         for value in &solid.value {
             if value.get_id() == end_cap_id {
-                end_tag = value.get_tag().clone();
+                end_tag = value.get_tag();
                 break;
             }
         }

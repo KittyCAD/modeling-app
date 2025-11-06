@@ -1,5 +1,4 @@
-import { useEffect, useRef } from 'react'
-
+import { useRef } from 'react'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
@@ -158,69 +157,6 @@ export function createSettings() {
             })),
         },
       }),
-      themeColor: new Setting<string>({
-        defaultValue: '264.5',
-        description: 'The hue of the primary theme color for the app',
-        validate: (v) => Number(v) >= 0 && Number(v) < 360,
-
-        // The same component instance is used across settings panes / tabs.
-        Component: ({ value, updateValue }) => {
-          const refInput = useRef<HTMLInputElement>(null)
-
-          const updateColorDot = (value: string) => {
-            document.documentElement.style.setProperty(
-              `--primary-hue`,
-              String(value)
-            )
-          }
-
-          useEffect(() => {
-            if (refInput.current === null) return
-            refInput.current.value = value
-            updateColorDot(value)
-          }, [value])
-
-          const preview = (e: React.SyntheticEvent) =>
-            e.isTrusted &&
-            'value' in e.currentTarget &&
-            updateColorDot(String(e.currentTarget.value))
-
-          const save = (e: React.SyntheticEvent) => {
-            if (
-              e.isTrusted &&
-              'value' in e.currentTarget &&
-              e.currentTarget.value
-            ) {
-              const valueNext = String(e.currentTarget.value)
-              updateValue(valueNext)
-              updateColorDot(valueNext)
-            }
-          }
-
-          return (
-            <div className="flex item-center gap-4 px-2 m-0 py-0">
-              <div
-                className="w-4 h-4 rounded-full bg-primary border border-solid border-chalkboard-100 dark:border-chalkboard-30"
-                style={{
-                  backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) var(--primary-hue))`,
-                }}
-              />
-              <input
-                type="range"
-                ref={refInput}
-                onInput={preview}
-                onMouseUp={save}
-                onKeyUp={save}
-                onPointerUp={save}
-                min={0}
-                max={259}
-                step={1}
-                className="block flex-1"
-              />
-            </div>
-          )
-        },
-      }),
       /**
        * Whether to show the debug panel, which lets you see
        * various states of the app to aid in development
@@ -288,14 +224,6 @@ export function createSettings() {
         // for this yet
         validate: (v) => typeof v === 'string',
         hideOnPlatform: 'both',
-      }),
-      /** Permanently dismiss the banner warning to download the desktop app. */
-      dismissWebBanner: new Setting<boolean>({
-        defaultValue: false,
-        description:
-          'Permanently dismiss the banner warning to download the desktop app.',
-        validate: (v) => typeof v === 'boolean',
-        hideOnPlatform: 'desktop',
       }),
       projectDirectory: new Setting<string>({
         defaultValue: '', // gets set async in settingsUtils.ts
@@ -466,16 +394,6 @@ export function createSettings() {
       /**
        * Use the new sketch mode implementation - solver (Dev only)
        */
-      enableCopilot: new Setting<boolean>({
-        hideOnLevel: 'project',
-        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
-        defaultValue: false,
-        description: 'Toggle copilot',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
-      }),
       useNewSketchMode: new Setting<boolean>({
         hideOnLevel: 'project',
         // Don't show in prod, consider switching to use AdamS's endpoint https://github.com/KittyCAD/common/pull/1704
@@ -747,6 +665,17 @@ export function createSettings() {
               />
             </div>
           )
+        },
+      }),
+      disableCopilot: new Setting<boolean>({
+        hideOnLevel: 'user',
+        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
+        defaultValue: IS_STAGING_OR_DEBUG ? false : true,
+        description:
+          'Disable the new Copilot in Text-to-CAD for this project, only available in Zoo Design Studio (Staging).',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
         },
       }),
     },

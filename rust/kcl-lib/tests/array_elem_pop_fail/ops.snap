@@ -3,10 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed array_elem_pop_fail.kcl
 ---
 {
-  "rust/kcl-lib/tests/array_elem_pop_fail/input.kcl": [],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -112,14 +108,5 @@ description: Operations executed array_elem_pop_fail.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

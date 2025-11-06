@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 
-import { initPromise } from '@src/lang/wasmUtils'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   getEnvironmentConfigurationPath,
@@ -14,10 +13,7 @@ import {
 } from '@src/lib/desktop'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { DeepPartial } from '@src/lib/types'
-
-beforeAll(async () => {
-  await initPromise
-})
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 // Mock the electron window global
 const mockElectron = {
@@ -134,13 +130,15 @@ describe('desktop utilities', () => {
 
   describe('listProjects', () => {
     it('does not list .git directories', async () => {
+      const { instance } = await buildTheWorldAndNoEngineConnection()
       if (!window.electron) throw new Error('Electron not found')
-      const projects = await listProjects(window.electron, mockConfig)
+      const projects = await listProjects(window.electron, mockConfig, instance)
       expect(projects.map((p) => p.name)).not.toContain('.git')
     })
     it('lists projects excluding hidden and without .kcl files', async () => {
+      const { instance } = await buildTheWorldAndNoEngineConnection()
       if (!window.electron) throw new Error('Electron not found')
-      const projects = await listProjects(window.electron, mockConfig)
+      const projects = await listProjects(window.electron, mockConfig, instance)
 
       // Verify only non-dot projects with .kcl files were included
       expect(projects.map((p) => p.name)).toEqual([
@@ -163,8 +161,9 @@ describe('desktop utilities', () => {
     })
 
     it('correctly counts directories and files', async () => {
+      const { instance } = await buildTheWorldAndNoEngineConnection()
       if (!window.electron) throw new Error('Electron not found')
-      const projects = await listProjects(window.electron, mockConfig)
+      const projects = await listProjects(window.electron, mockConfig, instance)
       // Verify that directories and files are counted correctly
       expect(projects[0].directory_count).toEqual(1)
       expect(projects[0].kcl_file_count).toEqual(2)
@@ -173,11 +172,12 @@ describe('desktop utilities', () => {
     })
 
     it('handles empty project directory', async () => {
+      const { instance } = await buildTheWorldAndNoEngineConnection()
       if (!window.electron) throw new Error('Electron not found')
       // Adjust mockFileSystem to simulate empty directory
       mockFileSystem['/test/projects'] = []
 
-      const projects = await listProjects(window.electron, mockConfig)
+      const projects = await listProjects(window.electron, mockConfig, instance)
 
       expect(projects).toEqual([])
     })

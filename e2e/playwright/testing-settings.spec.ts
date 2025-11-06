@@ -15,7 +15,6 @@ import {
   createProject,
   executorInputPath,
   getUtils,
-  inputRangeSlideFromCurrentTo,
   settingsToToml,
   tomlToSettings,
 } from '@e2e/playwright/test-utils'
@@ -119,7 +118,7 @@ test.describe(
       homePage,
     }) => {
       const u = await getUtils(page)
-      await test.step(`Setup`, async () => {
+      await test.step('Setup', async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         await u.waitForPageLoad()
@@ -131,14 +130,13 @@ test.describe(
         page.getByRole('button', {
           name: `Reset ${level}-level settings`,
         })
-      const themeColorSetting = page.locator('#themeColor').getByRole('slider')
+      const settingInput = page.locator('#defaultUnit').getByRole('combobox')
 
       const settingValues = {
-        default: '259',
-        // Because it's a slider, sometimes the values cannot physically be
-        // dragged to. You need to adjust this until it works.
-        user: '48',
-        project: '77',
+        default: 'mm',
+        // Our playwright config sets the user value to `in`
+        user: 'in',
+        project: 'cm',
       }
       const resetToast = (level: SettingsLevel) =>
         page.getByText(`${level}-level settings were reset`)
@@ -150,27 +148,23 @@ test.describe(
         ).toBeVisible()
       })
 
-      await test.step('Set up theme color', async () => {
+      await test.step('Set setting in UI', async () => {
         // Verify we're looking at the project-level settings
         await settingsSwitchTab(page)('proj')
-        await themeColorSetting.fill(settingValues.default)
+        // Because a user-level value is set in the Playwright test config,
+        // we expect the inherited user-level value here.
+        await expect(settingInput).toHaveValue(settingValues.user)
 
         // Set project-level value
-        await inputRangeSlideFromCurrentTo(
-          themeColorSetting,
-          settingValues.project
-        )
-        await expect(themeColorSetting).toHaveValue(settingValues.project)
+        await settingInput.selectOption(settingValues.project)
+        await expect(settingInput).toHaveValue(settingValues.project)
 
         // Set user-level value
         // It's the same component so this could fill too soon.
         // We need to confirm to wait the user settings tab is loaded.
         await settingsSwitchTab(page)('user')
-        await inputRangeSlideFromCurrentTo(
-          themeColorSetting,
-          settingValues.user
-        )
-        await expect(themeColorSetting).toHaveValue(settingValues.user)
+        await settingInput.selectOption(settingValues.user)
+        await expect(settingInput).toHaveValue(settingValues.user)
       })
 
       await test.step('Reset project settings', async () => {
@@ -183,19 +177,16 @@ test.describe(
         await expect(resetToast('project')).not.toBeVisible()
 
         // Verify it is now set to the inherited user value
-        await expect(themeColorSetting).toHaveValue(settingValues.user)
+        await expect(settingInput).toHaveValue(settingValues.user)
 
-        await test.step(`Check that the user settings did not change`, async () => {
+        await test.step('Check that the user settings did not change', async () => {
           await settingsSwitchTab(page)('user')
-          await expect(themeColorSetting).toHaveValue(settingValues.user)
+          await expect(settingInput).toHaveValue(settingValues.user)
         })
 
-        await test.step(`Set project-level again to test the user-level reset`, async () => {
+        await test.step('Set project-level again to test the user-level reset', async () => {
           await settingsSwitchTab(page)('proj')
-          await inputRangeSlideFromCurrentTo(
-            themeColorSetting,
-            settingValues.project
-          )
+          await settingInput.selectOption(settingValues.project)
           await settingsSwitchTab(page)('user')
         })
       })
@@ -208,11 +199,11 @@ test.describe(
         await expect(resetToast('user')).not.toBeVisible()
 
         // Verify it is now set to the default value
-        await expect(themeColorSetting).toHaveValue(settingValues.default)
+        await expect(settingInput).toHaveValue(settingValues.default)
 
         await test.step(`Check that the project settings did not change`, async () => {
           await settingsSwitchTab(page)('proj')
-          await expect(themeColorSetting).toHaveValue(settingValues.project)
+          await expect(settingInput).toHaveValue(settingValues.project)
         })
       })
     })
@@ -242,15 +233,13 @@ test.describe(
       {
         tag: '@desktop',
       },
-      async ({ context, page, tronApp }, testInfo) => {
+      async ({ page, tronApp }) => {
         if (!tronApp) {
           fail()
         }
         await tronApp.cleanProjectDir({
-          app: {
-            appearance: {
-              color: 259,
-            },
+          modeling: {
+            base_unit: 'in',
           },
         })
 
@@ -271,14 +260,13 @@ test.describe(
     test(
       'project settings reload on external change',
       { tag: '@desktop' },
-      async ({ context, page }, testInfo) => {
+      async ({ context, page, toolbar }) => {
         const { dir: projectDirName } = await context.folderSetupFn(
           async () => {}
         )
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
-        const logoLink = page.getByTestId('app-logo')
         const projectDirLink = page.getByText('Loaded from')
 
         await test.step('Wait for project view', async () => {
@@ -287,7 +275,7 @@ test.describe(
 
         await createProject({ name: 'project-000', page })
 
-        const changeColorFs = async (color: string) => {
+        const changeShowDebugPanelFs = async (show_debug_panel: boolean) => {
           const tempSettingsFilePath = join(
             projectDirName,
             'project-000',
@@ -298,9 +286,7 @@ test.describe(
             settingsToToml({
               settings: {
                 app: {
-                  appearance: {
-                    color: parseFloat(color),
-                  },
+                  show_debug_panel,
                 },
                 // TODO: make sure this isn't just working around a bug
                 // where the existing data wouldn't be preserved?
@@ -312,13 +298,13 @@ test.describe(
           )
         }
 
-        await test.step('Check the color is first starting as we expect', async () => {
-          await expect(logoLink).toHaveCSS('--primary-hue', '264.5')
+        await test.step('Check the body theme is first starting as we expect', async () => {
+          await expect(toolbar.debugPaneBtn).not.toBeAttached()
         })
 
-        await test.step('Check color of logo changed', async () => {
-          await changeColorFs('99')
-          await expect(logoLink).toHaveCSS('--primary-hue', '99')
+        await test.step('Check the theme changed', async () => {
+          await changeShowDebugPanelFs(true)
+          await expect(toolbar.debugPaneBtn).toBeAttached()
         })
       }
     )
@@ -719,8 +705,8 @@ test.describe(
       const u = await getUtils(page)
 
       // Selectors and constants
-      const darkBackgroundCss = 'oklch(0.3012 0 264.5)'
-      const lightBackgroundCss = 'oklch(0.9911 0 264.5)'
+      const darkBackgroundCss = 'oklch(0.3012 0 264.48)'
+      const lightBackgroundCss = 'oklch(0.9911 0 264.48)'
       const darkBackgroundColor: [number, number, number] = [87, 67, 107] // planes are on
       const lightBackgroundColor: [number, number, number] = [166, 149, 184] // planes are on
       const streamBackgroundPixelIsColor = async (
@@ -803,6 +789,57 @@ fn cube`
         await expect(
           page.getByText(`Updated per-file units to ${editedInlineUnits.short}`)
         ).toBeVisible()
+      })
+    })
+
+    test(`Enable and disable inline experimental features`, async ({
+      page,
+      homePage,
+      context,
+      editor,
+      scene,
+      cmdBar,
+      toolbar,
+    }) => {
+      const initialCode = `startSketchOn(XY)`
+      await test.step('Settle the scene', async () => {
+        await context.addInitScript((initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        }, initialCode)
+        await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
+        await expect(toolbar.experimentalFeaturesMenu).not.toBeVisible()
+      })
+
+      await test.step('Fire command to allow experimental features', async () => {
+        await cmdBar.openCmdBar()
+        await cmdBar.chooseCommand('Set experimental features flag')
+        await cmdBar.selectOption({ name: 'Allow' }).click()
+      })
+
+      await test.step('Check that they are enabled', async () => {
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain(
+          `@settings(experimentalFeatures = allow)
+${initialCode}`,
+          { shouldNormalise: true }
+        )
+        await expect(toolbar.experimentalFeaturesMenu).toBeVisible()
+      })
+
+      await test.step('Use the indicator to turn them off', async () => {
+        await toolbar.experimentalFeaturesMenu.click()
+        await page.getByRole('button', { name: 'Deny' }).click()
+      })
+
+      await test.step('Check that they are disabled', async () => {
+        await scene.settled(cmdBar)
+        await editor.expectEditor.toContain(
+          `@settings(experimentalFeatures = deny)
+${initialCode}`,
+          { shouldNormalise: true }
+        )
+        await expect(toolbar.experimentalFeaturesMenu).not.toBeVisible()
       })
     })
   }

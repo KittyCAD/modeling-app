@@ -1,6 +1,6 @@
 [package]
 name = "kcl-error"
-version = "0.1.9"
+version = "0.1.107"
 edition = "2024"
 description = "KCL error definitions"
 license = "MIT"
@@ -9,7 +9,7 @@ license = "MIT"
 miette = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
-ts-rs = { version = "11.0.1", features = [
+ts-rs = { version = "11.1.0", features = [
   "uuid-impl",
   "url-impl",
   "chrono-impl",

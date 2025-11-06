@@ -505,7 +505,7 @@ impl ArtifactGraph {
         }
 
         // Output the edges.
-        edges.par_sort_by(|ak, _, bk, _| (if ak.0 == bk.0 { ak.1.cmp(&bk.1) } else { ak.0.cmp(&bk.0) }));
+        edges.par_sort_by(|ak, _, bk, _| if ak.0 == bk.0 { ak.1.cmp(&bk.1) } else { ak.0.cmp(&bk.0) });
         for ((source_id, target_id), edge) in edges {
             let extra = match edge.kind {
                 // Extra length.  This is needed to make the graph layout more

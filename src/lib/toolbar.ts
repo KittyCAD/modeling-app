@@ -3,7 +3,7 @@ import type { EventFrom, StateFrom } from 'xstate'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
 import { isDesktop } from '@src/lib/isDesktop'
-import { commandBarActor } from '@src/lib/singletons'
+import { commandBarActor, kclManager } from '@src/lib/singletons'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
@@ -258,6 +258,26 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           {
             label: 'KCL docs',
             url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-shell'),
+          },
+        ],
+      },
+      {
+        id: 'hole',
+        onClick: () => {
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Hole', groupId: 'modeling' },
+          })
+        },
+        icon: 'hole',
+        status: 'experimental',
+        title: 'Hole',
+        description:
+          'Standard holes that could be drilled or cut into a 3D solid.',
+        links: [
+          {
+            label: 'KCL docs',
+            url: withSiteBaseURL('/docs/kcl-std/modules/std-hole'),
           },
         ],
       },
@@ -547,6 +567,101 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           },
         ],
       },
+      'break',
+      {
+        id: 'gdt',
+        array: [
+          {
+            id: 'gdt-flatness',
+            onClick: () =>
+              commandBarActor.send({
+                type: 'Find and select command',
+                data: { name: 'GDT Flatness', groupId: 'modeling' },
+              }),
+            status: 'experimental',
+            title: 'Flatness',
+            icon: 'gdtFlatness',
+            description:
+              'Specifies flatness tolerance - how much a surface can deviate from perfectly flat.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL(
+                  '/docs/kcl-std/functions/std-gdt-flatness'
+                ),
+              },
+            ],
+          },
+          {
+            id: 'gdt-datum',
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Datum',
+            icon: 'gdtDatum',
+            description:
+              'Defines reference surfaces for measuring other geometric tolerances.',
+            links: [
+              {
+                label: 'KCL docs',
+                url: withSiteBaseURL('/docs/kcl-std/functions/std-gdt-datum'),
+              },
+            ],
+          },
+          {
+            id: 'gdt-profile',
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Profile',
+            description:
+              'Specifies how much a surface or edge can deviate from its ideal shape.',
+            links: [],
+          },
+          {
+            id: 'gdt-position',
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Position',
+            description:
+              'Controls location tolerance of holes, pins, and other features.',
+            links: [],
+          },
+          {
+            id: 'gdt-perpendicularity',
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Perpendicularity',
+            description:
+              'Specifies how perpendicular one feature must be to another.',
+            links: [],
+          },
+          {
+            id: 'gdt-parallelism',
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Parallelism',
+            description:
+              'Specifies how parallel one feature must be to another.',
+            links: [],
+          },
+          {
+            id: 'gdt-dimension',
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Dimension',
+            description: 'Adds size dimensions with manufacturing tolerances.',
+            links: [],
+          },
+          {
+            id: 'gdt-note',
+            onClick: () => {},
+            status: 'unavailable',
+            title: 'Note',
+            description:
+              'Adds text notes for manufacturing instructions or inspection requirements.',
+            links: [],
+          },
+        ],
+      },
     ],
   },
   sketching: {
@@ -645,15 +760,33 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               }),
             icon: 'arc',
             status: 'available',
-            disabled: (state) =>
-              (!isEditingExistingSketch(state.context) &&
-                !state.matches({ Sketch: 'Tangential arc to' })) ||
-              pipeHasCircle(state.context),
-            disabledReason: (state) =>
-              !isEditingExistingSketch(state.context) &&
-              !state.matches({ Sketch: 'Tangential arc to' })
+            disabled: (state) => {
+              const theKclManager = state.context.kclManager
+                ? state.context.kclManager
+                : kclManager
+              return (
+                (!isEditingExistingSketch({
+                  sketchDetails: state.context.sketchDetails,
+                  kclManager: theKclManager,
+                }) &&
+                  !state.matches({ Sketch: 'Tangential arc to' })) ||
+                pipeHasCircle({
+                  sketchDetails: state.context.sketchDetails,
+                  kclManager: theKclManager,
+                })
+              )
+            },
+            disabledReason: (state) => {
+              const theKclManager = state.context.kclManager
+                ? state.context.kclManager
+                : kclManager
+              return !isEditingExistingSketch({
+                sketchDetails: state.context.sketchDetails,
+                kclManager: theKclManager,
+              }) && !state.matches({ Sketch: 'Tangential arc to' })
                 ? "Cannot start a tangential arc because there's no previous line to be tangential to.  Try drawing a line first or selecting an existing sketch to edit."
-                : undefined,
+                : undefined
+            },
             title: 'Tangential Arc',
             hotkey: (state) =>
               state.matches({ Sketch: 'Tangential arc to' })

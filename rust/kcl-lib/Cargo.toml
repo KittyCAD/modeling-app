@@ -1,11 +1,10 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.102"
+version = "0.2.107"
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
-rust-version = "1.88"
 authors = ["Jess Frazelle", "Adam Chalmers", "KittyCAD, Inc"]
 keywords = ["kcl", "KittyCAD", "CAD"]
 exclude = [
@@ -48,7 +47,7 @@ async-trait = { workspace = true }
 base64 = "0.22.1"
 bson = { workspace = true }
 chrono = "0.4.42"
-clap = { version = "4.5.48", default-features = false, optional = true, features = [
+clap = { version = "4.5.50", default-features = false, optional = true, features = [
   "std",
   "derive",
 ] }
@@ -68,18 +67,20 @@ itertools = "0.14.0"
 kcl-api = { version = "0.1", path = "../kcl-api" }
 kcl-derive-docs = { version = "0.1", path = "../kcl-derive-docs" }
 kcl-error = { version = "0.1", path = "../kcl-error" }
+kcl-ezpz = { workspace = true }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 lazy_static = { workspace = true }
 libm = "0.2.15"
-measurements = "0.11.0"
+measurements = "0.11.1"
 miette = { workspace = true }
 mime_guess = "2.0.5"
 nalgebra-glm = "0.20.0"
 parse-display = "0.10.0"
 pyo3 = { workspace = true, optional = true }
 pyo3-stub-gen = { workspace = true, optional = true }
-regex = "1.11.3"
+rayon = { workspace = true }
+regex = "1.12.2"
 reqwest = { version = "0.12", default-features = false, features = [
   "stream",
   "rustls-tls",
@@ -99,8 +100,8 @@ sha2 = "0.10.9"
 tabled = { version = "0.20.0", optional = true }
 tempfile = "3.23"
 thiserror = "2.0.17"
-toml = "0.9.7"
-ts-rs = { version = "11.0.1", features = [
+toml = "0.9.8"
+ts-rs = { version = "11.1.0", features = [
   "uuid-impl",
   "url-impl",
   "chrono-impl",
@@ -147,7 +148,7 @@ insta = { version = "1.43.2", features = ["json", "filters", "redactions"] }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
-tokio = { version = "1.47.1", features = ["rt-multi-thread", "macros", "time"] }
+tokio = { version = "1.48.0", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8.2"
 
 [lints]

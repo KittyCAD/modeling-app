@@ -647,6 +647,7 @@ export class ConnectionManager extends EventTarget {
     if (timeoutPendingCommand) {
       setTimeout(() => {
         if (!isSettled) {
+          console.warn(message.command)
           toast.error(
             `command took more than ${PENDING_COMMAND_TIMEOUT} milliseconds to finish, rejecting the command.`
           )
@@ -938,6 +939,10 @@ export class ConnectionManager extends EventTarget {
     } else if (options?.peerConnectionFailed) {
       this.dispatchEvent(
         new CustomEvent(EngineCommandManagerEvents.peerConnectionFailed, {})
+      )
+    } else if (options?.dataChannelClosed) {
+      this.dispatchEvent(
+        new CustomEvent(EngineCommandManagerEvents.dataChannelClose, {})
       )
     }
 

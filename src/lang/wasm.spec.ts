@@ -11,35 +11,66 @@ import {
   parse,
   rustImplPathToNode,
 } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type RustContext from '@src/lib/rustContext'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+
+let instanceInThisFile: ModuleType = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+let rustContextInThisFile: RustContext = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
 beforeEach(async () => {
-  await initPromise
+  if (instanceInThisFile) {
+    return
+  }
+
+  const { instance, engineCommandManager, rustContext } =
+    await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  engineCommandManagerInThisFile = engineCommandManager
+  rustContextInThisFile = rustContext
+})
+
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
 })
 
 it('can execute parsed AST', async () => {
   const code = `x = 1
 // A comment.`
-  const result = parse(code)
+  const result = parse(code, instanceInThisFile)
   expect(err(result)).toEqual(false)
   const pResult = result as ParseResult
   expect(pResult.errors.length).toEqual(0)
   expect(pResult.program).not.toEqual(null)
-  const execState = await enginelessExecutor(pResult.program as Node<Program>)
+  const execState = await enginelessExecutor(
+    pResult.program as Node<Program>,
+    undefined,
+    undefined,
+    rustContextInThisFile
+  )
   expect(err(execState)).toEqual(false)
   expect(execState.variables['x']?.value).toEqual(1)
 })
 
 it('formats numbers with units', () => {
-  expect(formatNumberLiteral(1, 'None')).toEqual('1')
-  expect(formatNumberLiteral(1, 'Count')).toEqual('1_')
-  expect(formatNumberLiteral(1, 'Mm')).toEqual('1mm')
-  expect(formatNumberLiteral(1, 'Inch')).toEqual('1in')
-  expect(formatNumberLiteral(0.5, 'Mm')).toEqual('0.5mm')
-  expect(formatNumberLiteral(-0.5, 'Mm')).toEqual('-0.5mm')
-  expect(formatNumberLiteral(1, 'Unknown')).toEqual(
+  expect(formatNumberLiteral(1, 'None', instanceInThisFile)).toEqual('1')
+  expect(formatNumberLiteral(1, 'Count', instanceInThisFile)).toEqual('1_')
+  expect(formatNumberLiteral(1, 'Mm', instanceInThisFile)).toEqual('1mm')
+  expect(formatNumberLiteral(1, 'Inch', instanceInThisFile)).toEqual('1in')
+  expect(formatNumberLiteral(0.5, 'Mm', instanceInThisFile)).toEqual('0.5mm')
+  expect(formatNumberLiteral(-0.5, 'Mm', instanceInThisFile)).toEqual('-0.5mm')
+  expect(formatNumberLiteral(1, 'Unknown', instanceInThisFile)).toEqual(
     new Error('Error formatting number literal: value=1, suffix=Unknown')
   )
 })
@@ -60,24 +91,30 @@ it('converts Rust NodePath to PathToNode', async () => {
   // Convenience for making a SourceRange.
   const sr = topLevelRange
 
-  const ast = assertParse(`x = 1 + 2
-y = foo(center = [3, 4])`)
-  expect(await rustImplPathToNode(ast, sr(4, 5))).toStrictEqual(
-    getNodePathFromSourceRange(ast, sr(4, 5))
+  const ast = assertParse(
+    `x = 1 + 2
+y = foo(center = [3, 4])`,
+    instanceInThisFile
   )
-  expect(await rustImplPathToNode(ast, sr(31, 32))).toStrictEqual(
-    getNodePathFromSourceRange(ast, sr(31, 32))
-  )
+  expect(
+    await rustImplPathToNode(ast, sr(4, 5), instanceInThisFile)
+  ).toStrictEqual(getNodePathFromSourceRange(ast, sr(4, 5)))
+  expect(
+    await rustImplPathToNode(ast, sr(31, 32), instanceInThisFile)
+  ).toStrictEqual(getNodePathFromSourceRange(ast, sr(31, 32)))
 
-  const ast2 = assertParse(`a1 = startSketchOn({
+  const ast2 = assertParse(
+    `a1 = startSketchOn({
   origin = { x = 0, y = 0, z = 0 },
   xAxis = { x = 1, y = 0, z = 0 },
   //            ^
   yAxis = { x = 0, y = 1, z = 0 },
   zAxis = { x = 0, y = 0, z = 1 }
 })
-`)
-  expect(await rustImplPathToNode(ast2, sr(73, 74))).toStrictEqual(
-    getNodePathFromSourceRange(ast2, sr(73, 74))
+`,
+    instanceInThisFile
   )
+  expect(
+    await rustImplPathToNode(ast2, sr(73, 74), instanceInThisFile)
+  ).toStrictEqual(getNodePathFromSourceRange(ast2, sr(73, 74)))
 })

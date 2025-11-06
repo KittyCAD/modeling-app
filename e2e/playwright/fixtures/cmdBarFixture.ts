@@ -29,11 +29,15 @@ export class CmdBarFixture {
   public page: Page
   public cmdBarOpenBtn!: Locator
   public cmdBarElement!: Locator
+  public cmdBarLoadingCheckingArguments!: Locator
 
   constructor(page: Page) {
     this.page = page
     this.cmdBarOpenBtn = this.page.getByTestId('command-bar-open-button')
     this.cmdBarElement = this.page.getByTestId('command-bar')
+    this.cmdBarLoadingCheckingArguments = this.page.getByTestId(
+      'command-bar-loading-checking-arguments'
+    )
   }
 
   get currentArgumentInput() {
@@ -78,6 +82,52 @@ export class CmdBarFixture {
       }
     }
 
+    // Check if we're dealing with vector2d inputs
+    const vector2dInputsExist = await this.page
+      .getByTestId('vector2d-x-input')
+      .isVisible()
+      .catch(() => false)
+    if (vector2dInputsExist) {
+      // Validate that both vector2d inputs are present
+      const inputsPresent = await Promise.all([
+        this.page.getByTestId('vector2d-x-input').isVisible(),
+        this.page.getByTestId('vector2d-y-input').isVisible(),
+      ])
+
+      if (!inputsPresent.every(Boolean)) {
+        throw new Error('Not all vector2d inputs are present')
+      }
+
+      const [
+        headerArguments,
+        highlightedHeaderArg,
+        commandName,
+        xValue,
+        yValue,
+      ] = await Promise.all([
+        getHeaderArgs(),
+        this.page
+          .locator('[data-is-current-arg="true"]')
+          .locator('[data-test-name="arg-name"]')
+          .textContent(),
+        getCommandName(),
+        this.page.getByTestId('vector2d-x-input').inputValue(),
+        this.page.getByTestId('vector2d-y-input').inputValue(),
+      ])
+
+      const vectorValue = `[${xValue}, ${yValue}]`
+
+      return {
+        stage: 'arguments',
+        currentArgKey: highlightedHeaderArg || '',
+        currentArgValue: vectorValue,
+        headerArguments,
+        highlightedHeaderArg: highlightedHeaderArg || '',
+        commandName: commandName || '',
+      }
+    }
+
+    // Check if we're dealing with vector3d inputs
     const vector3dInputsExist = await this.page
       .getByTestId('vector3d-x-input')
       .isVisible()
@@ -151,6 +201,10 @@ export class CmdBarFixture {
     }
   }
   expectState = async (expected: CmdBarSerialised) => {
+    if (expected.stage === 'review') {
+      await this.cmdBarLoadingCheckingArguments.waitFor({ state: 'hidden' })
+    }
+
     return expect.poll(() => this._serialiseCmdBar()).toEqual(expected)
   }
   /**
@@ -238,6 +292,13 @@ export class CmdBarFixture {
    */
   clickOptionalArgument = async (argName: string) => {
     await this.page.getByTestId(`cmd-bar-add-optional-arg-${argName}`).click()
+  }
+
+  /**
+   * Select an argument in header from the command bar
+   */
+  clickHeaderArgument = async (argName: string) => {
+    await this.page.getByTestId(`arg-name-${argName}`).click()
   }
 
   /**
@@ -385,10 +446,7 @@ export class CmdBarFixture {
 
   async expectCommandName(value: string) {
     // Check the placeholder project name exists
-    const actual = await this.cmdBarElement
-      .getByTestId('command-name')
-      .textContent()
-    const expected = value
-    expect(actual).toBe(expected)
+    const cmdNameElement = this.cmdBarElement.getByTestId('command-name')
+    return await expect(cmdNameElement).toHaveText(value)
   }
 }

@@ -4,9 +4,13 @@ import { vi } from 'vitest'
 import { MlEphantConversation2 } from '@src/components/MlEphantConversation2'
 import type { BillingContext } from '@src/machines/billingMachine'
 import type { Conversation } from '@src/machines/mlEphantManagerMachine2'
+import type { MlCopilotMode } from '@kittycad/lib'
+import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 
 describe('MlEphantConversation2', () => {
-  test('renders request bubble, shows thinking state, then displays response text after completion', () => {
+  function rendersRequestBubbleThenDisplayResponse(
+    mode: MlCopilotMode = DEFAULT_ML_COPILOT_MODE
+  ) {
     vi.useFakeTimers()
 
     const billingContext: BillingContext = {
@@ -28,6 +32,7 @@ describe('MlEphantConversation2', () => {
               content: prompt,
             },
             responses: [],
+            deltasAggregated: '',
           },
         ],
       }
@@ -55,12 +60,17 @@ describe('MlEphantConversation2', () => {
     try {
       const promptText = 'Generate a cube with rounded edges'
 
+      if (mode !== DEFAULT_ML_COPILOT_MODE) {
+        fireEvent.click(screen.getByTestId('ml-copilot-efforts-button'))
+        fireEvent.click(screen.getByTestId(`ml-copilot-effort-button-${mode}`))
+      }
+
       const promptInput = screen.getByTestId('ml-ephant-conversation-input')
 
       fireEvent.input(promptInput, { target: { textContent: promptText } })
       fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
 
-      expect(handleProcess).toHaveBeenCalledWith(promptText, expect.any(Set))
+      expect(handleProcess).toHaveBeenCalledWith(promptText, mode)
 
       act(() => {
         rerender(renderConversation(latestConversation))
@@ -84,16 +94,12 @@ describe('MlEphantConversation2', () => {
             },
             responses: [
               {
-                delta: {
-                  delta: finalResponse,
-                },
-              },
-              {
                 end_of_stream: {
                   whole_response: finalResponse,
                 },
               },
             ],
+            deltasAggregated: finalResponse,
           },
         ],
       }
@@ -112,6 +118,14 @@ describe('MlEphantConversation2', () => {
       vi.clearAllTimers()
       vi.useRealTimers()
     }
+  }
+
+  test('renders request bubble, shows thinking state, then displays response text after completion', () => {
+    rendersRequestBubbleThenDisplayResponse()
+  })
+
+  test('renders request bubble, shows thinking state, then displays response text after completion (non-default reasoning effort)', () => {
+    rendersRequestBubbleThenDisplayResponse('thoughtful')
   })
 
   test('does not render unknown response types', () => {
@@ -139,6 +153,7 @@ describe('MlEphantConversation2', () => {
               },
             } as any, // we must do this because it's a type that doesn't exist.
           ],
+          deltasAggregated: '',
         },
       ],
     }

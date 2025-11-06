@@ -4,7 +4,6 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import { assertParse } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import type { Selection } from '@src/machines/modelingSharedTypes'
@@ -12,10 +11,7 @@ import {
   codeToIdSelections,
   findLastRangeStartingBefore,
 } from '@src/lib/selections'
-
-beforeAll(async () => {
-  await initPromise
-})
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
@@ -1289,7 +1285,8 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
   test.each(cases)(
     `testing source range to artifact %s`,
     async (_name, { snippet, artifactDetails }) => {
-      const ast = assertParse(MY_CODE)
+      const { instance } = await buildTheWorldAndNoEngineConnection()
+      const ast = assertParse(MY_CODE, instance)
       const lineIndex = MY_CODE.indexOf(snippet)
       expect(lineIndex).toBeGreaterThanOrEqual(0)
       const end = lineIndex + snippet.length

@@ -156,9 +156,6 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -264,14 +261,5 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

@@ -93,7 +93,7 @@ export const settingsMachine = setup({
     >(async ({ input }) => {
       // Without this, when a user changes the file, it'd
       // create a detection loop with the file-system watcher.
-      if (input.doNotPersist) return
+      if (input.doNotPersist || !input.rootContext) return
 
       input.rootContext.codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       const { currentProject, ...settings } = input.context
@@ -199,8 +199,8 @@ export const settingsMachine = setup({
   },
   actions: {
     setEngineTheme: ({ context, self }) => {
-      const rootContext = self.system.get('root').getSnapshot().context
-      const engineCommandManager = rootContext.engineCommandManager
+      const rootContext = self.system.get('root')?.getSnapshot().context
+      const engineCommandManager = rootContext?.engineCommandManager
       if (engineCommandManager && context.app.theme.current) {
         engineCommandManager
           .setTheme(context.app.theme.current)
@@ -208,9 +208,9 @@ export const settingsMachine = setup({
       }
     },
     setClientTheme: ({ context, self }) => {
-      const rootContext = self.system.get('root').getSnapshot().context
-      const sceneInfra = rootContext.sceneInfra
-      const sceneEntitiesManager = rootContext.sceneEntitiesManager
+      const rootContext = self.system.get('root')?.getSnapshot().context
+      const sceneInfra = rootContext?.sceneInfra
+      const sceneEntitiesManager = rootContext?.sceneEntitiesManager
 
       if (!sceneInfra || !sceneEntitiesManager) {
         return
@@ -220,9 +220,9 @@ export const settingsMachine = setup({
       sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
     },
     setAllowOrbitInSketchMode: ({ context, self }) => {
-      const rootContext = self.system.get('root').getSnapshot().context
-      const sceneInfra = rootContext.sceneInfra
-      if (!sceneInfra.camControls) {
+      const rootContext = self.system.get('root')?.getSnapshot().context
+      const sceneInfra = rootContext?.sceneInfra
+      if (!sceneInfra?.camControls) {
         return
       }
       sceneInfra.camControls._setting_allowOrbitInSketchMode =
@@ -255,8 +255,8 @@ export const settingsMachine = setup({
       })
     },
     'Execute AST': ({ context, event, self }) => {
-      const rootContext = self.system.get('root').getSnapshot().context
-      const kclManager = rootContext.kclManager
+      const rootContext = self.system.get('root')?.getSnapshot().context
+      const kclManager = rootContext?.kclManager
       try {
         const relevantSetting = (s: typeof settings) => {
           return (
@@ -295,12 +295,6 @@ export const settingsMachine = setup({
       } catch (e) {
         console.error('Error executing AST after settings change', e)
       }
-    },
-    setThemeColor: ({ context }) => {
-      document.documentElement.style.setProperty(
-        `--primary-hue`,
-        context.app.themeColor.current
-      )
     },
     /**
      * Update the --cursor-color CSS variable
@@ -373,9 +367,9 @@ export const settingsMachine = setup({
     },
     setEngineCameraProjection: ({ context, self }) => {
       const newCurrentProjection = context.modeling.cameraProjection.current
-      const rootContext = self.system.get('root').getSnapshot().context
-      const sceneInfra = rootContext.sceneInfra
-      sceneInfra.camControls.setEngineCameraProjection(newCurrentProjection)
+      const rootContext = self.system.get('root')?.getSnapshot().context
+      const sceneInfra = rootContext?.sceneInfra
+      sceneInfra?.camControls?.setEngineCameraProjection(newCurrentProjection)
     },
     sendThemeToWatcher: sendTo('watchSystemTheme', ({ context }) => ({
       type: 'update.themeWatcher',
@@ -439,13 +433,6 @@ export const settingsMachine = setup({
 
           // No toast
           actions: ['setSettingAtLevel'],
-        },
-
-        'set.app.themeColor': {
-          target: 'persisting settings',
-
-          // No toast
-          actions: ['setSettingAtLevel', 'setThemeColor'],
         },
 
         'set.commandBar.includeSettings': {
@@ -514,6 +501,12 @@ export const settingsMachine = setup({
           actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
         },
 
+        'set.meta.disableCopilot': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel', 'toastSuccess'],
+        },
+
         'Reset settings': {
           target: 'persisting settings',
 
@@ -521,7 +514,6 @@ export const settingsMachine = setup({
             'resetSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setThemeColor',
             'Execute AST',
             'setClientTheme',
             'setAllowOrbitInSketchMode',
@@ -541,7 +533,6 @@ export const settingsMachine = setup({
             'setAllSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setThemeColor',
             'Execute AST',
             'setClientTheme',
             'setAllowOrbitInSketchMode',
@@ -571,7 +562,6 @@ export const settingsMachine = setup({
           actions: [
             'clearProjectSettings',
             'clearCurrentProject',
-            'setThemeColor',
             sendTo(
               'registerCommands',
               ({ context: { currentProject: _, ...settings } }) => ({
@@ -605,14 +595,14 @@ export const settingsMachine = setup({
               doNotPersist: event.doNotPersist ?? false,
               context,
               toastCallback: event.data.toastCallback,
-              rootContext: self.system.get('root').getSnapshot().context,
+              rootContext: self.system.get('root')?.getSnapshot().context,
             }
           }
 
           return {
             doNotPersist: event.doNotPersist ?? false,
             context,
-            rootContext: self.system.get('root').getSnapshot().context,
+            rootContext: self.system.get('root')?.getSnapshot().context,
           }
         },
       },
@@ -627,7 +617,6 @@ export const settingsMachine = setup({
             'setAllSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setThemeColor',
             'setClientTheme',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
@@ -663,7 +652,6 @@ export const settingsMachine = setup({
             'setAllSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setThemeColor',
             'Execute AST',
             'setClientTheme',
             'setAllowOrbitInSketchMode',

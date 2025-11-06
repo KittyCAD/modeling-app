@@ -8,6 +8,7 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Editor tests', () => {
   test('can comment out code with ctrl+/', async ({ page, homePage }) => {
@@ -912,6 +913,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.waitForTimeout(100)
       // press arrow down then enter to accept xLine
       await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('ArrowDown')
       await page.keyboard.press('Enter')
       // finish line with comment
       await page.keyboard.type('5')
@@ -982,6 +984,7 @@ sketch001 = startSketchOn(XZ)
       await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
       await page.waitForTimeout(100)
       // press arrow down then tab to accept xLine
+      await page.keyboard.press('ArrowDown')
       await page.keyboard.press('ArrowDown')
       // finish line with comment
       await page.keyboard.press('Tab')
@@ -1060,6 +1063,7 @@ sketch001 = startSketchOn(XZ)
     await page.waitForTimeout(200)
     await toolbar.extrudeButton.click()
     await cmdBar.progressCmdBar()
+    await cmdBar.clickOptionalArgument('length')
     await cmdBar.expectState({
       stage: 'arguments',
       currentArgKey: 'length',
@@ -1298,7 +1302,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await toolbar.editSketch(0)
 
     await page.waitForTimeout(1000)
-    await toolbar.closePane('code')
+    await toolbar.closePane(DefaultLayoutPaneID.Code)
 
     // Click on the bottom segment that lies on the x axis
     const clickCoords = await scene.convertPagePositionToStream(

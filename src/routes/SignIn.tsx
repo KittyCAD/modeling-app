@@ -46,7 +46,7 @@ const SignIn = () => {
 
   // Last saved environment
   // TODO: Reduce this logic
-  const lastSelectedEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN || ''
+  const lastSelectedEnvironmentName = env().VITE_ZOO_BASE_DOMAIN || ''
   const [selectedEnvironment, setSelectedEnvironment] = useState(
     lastSelectedEnvironmentName
   )

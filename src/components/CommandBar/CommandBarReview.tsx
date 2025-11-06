@@ -10,7 +10,7 @@ import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   const commandBarState = useCommandBarState()
   const {
-    context: { argumentsToSubmit, selectedCommand },
+    context: { argumentsToSubmit, selectedCommand, reviewValidationError },
   } = commandBarState
 
   useHotkeys('backspace+meta', stepBack, {
@@ -57,7 +57,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     e.preventDefault()
     commandBarActor.send({
       type: 'Submit command',
-      output: argumentsToSubmit,
+      output: { argumentsToSubmit },
     })
   }
 
@@ -77,10 +77,13 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     return s
   }, [selectedCommand, commandBarState.context])
   return (
-    <CommandBarHeaderFooter stepBack={stepBack}>
+    <CommandBarHeaderFooter
+      stepBack={stepBack}
+      submitDisabled={!!reviewValidationError}
+    >
       {selectedCommand?.reviewMessage && (
         <>
-          <p className="px-4 py-2">
+          <p className="px-4 py-2 text-sm">
             {selectedCommand.reviewMessage instanceof Function
               ? selectedCommand.reviewMessage(commandBarState.context)
               : selectedCommand.reviewMessage}
@@ -88,10 +91,31 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
           <CommandBarDivider />
         </>
       )}
+      {reviewValidationError && (
+        <>
+          <p className="px-4 py-2 text-red-500 text-sm">
+            {reviewValidationError}
+          </p>
+          <CommandBarDivider />
+        </>
+      )}
+      {selectedCommand?.status === 'experimental' && (
+        <>
+          <p className="px-4 py-2 text-sm">
+            <span className="font-bold">Warning: </span>
+            <span>
+              this command is experimental, which means the feature it generates
+              may not be compatible with future versions of Zoo Design Studio.
+              Use at your own risk, and please report issues!
+            </span>
+          </p>
+          <CommandBarDivider />
+        </>
+      )}
       {Object.entries(availableOptionalArgs || {}).length > 0 && (
         <>
           <div className="px-4 flex flex-wrap gap-2 items-baseline">
-            <span className="text-sm mr-4">Optional</span>
+            <span className="text-sm mr-4">Arguments</span>
             {Object.entries(availableOptionalArgs || {}).map(
               ([argName, arg]) => {
                 return (

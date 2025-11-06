@@ -57,13 +57,6 @@ The onboarding status of the app.
 
 **Default:** None
 
-##### dismiss_web_banner
-
-Permanently dismiss the banner warning to download the desktop app. This setting only applies to the web app. And is temporary until we have Linux support.
-
-
-**Default:** None
-
 ##### stream_idle_mode
 
 When the user is idle, teardown the stream after some time.
@@ -127,13 +120,6 @@ The controls for how to navigate the 3D view.
 ##### enable_touch_controls
 
 Toggle touch controls for 3D view navigation
-
-
-**Default:** None
-
-##### enable_copilot
-
-Toggle copilot features
 
 
 **Default:** None

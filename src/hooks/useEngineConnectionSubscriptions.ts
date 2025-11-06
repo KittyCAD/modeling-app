@@ -14,6 +14,7 @@ import {
   engineCommandManager,
   kclManager,
   sceneInfra,
+  rustContext,
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 
@@ -71,47 +72,63 @@ export function useEngineConnectionSubscriptions() {
       event: 'select_with_point',
       callback: state.matches('Sketch no face')
         ? ({ data }) => {
-            ;(async () => {
-              let planeOrFaceId = data.entity_id
-              if (!planeOrFaceId) return
-
-              if (context.store.useNewSketchMode?.current) {
-                sceneInfra.modelingSend({
-                  type: 'Select sketch solve plane',
-                  data: planeOrFaceId,
-                })
-                return
-              }
-
-              const defaultSketchPlaneSelected =
-                selectDefaultSketchPlane(planeOrFaceId)
-              if (
-                !err(defaultSketchPlaneSelected) &&
-                defaultSketchPlaneSelected
-              ) {
-                return
-              }
-
-              const artifact = kclManager.artifactGraph.get(planeOrFaceId)
-              const offsetPlaneSelected =
-                await selectOffsetSketchPlane(artifact)
-              if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
-                return
-              }
-
-              const sweepFaceSelected = await selectionBodyFace(planeOrFaceId)
-              if (sweepFaceSelected) {
-                sceneInfra.modelingSend({
-                  type: 'Select sketch plane',
-                  data: sweepFaceSelected,
-                })
-              }
-              return
-            })().catch(reportRejection)
+            void selectSketchPlane(
+              data.entity_id,
+              context.store.useNewSketchMode?.current
+            )
           }
         : () => {},
     })
     return unSub
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [engineCommandManager, state])
+
+  // Re-apply plane visibility when planes are (re)created on the Rust side
+  useEffect(() => {
+    const unsubscribe = rustContext.planesCreated.add(() => {
+      const vis = stateRef.current.context.defaultPlaneVisibility
+      void kclManager.setPlaneVisibilityByKey('xy', vis.xy)
+      void kclManager.setPlaneVisibilityByKey('xz', vis.xz)
+      void kclManager.setPlaneVisibilityByKey('yz', vis.yz)
+    })
+    return unsubscribe
+  }, [])
+}
+
+export async function selectSketchPlane(
+  planeOrFaceId: string | undefined,
+  useNewSketchMode: boolean | undefined
+) {
+  try {
+    if (!planeOrFaceId) return
+
+    if (useNewSketchMode) {
+      sceneInfra.modelingSend({
+        type: 'Select sketch solve plane',
+        data: planeOrFaceId,
+      })
+      return
+    }
+
+    const defaultSketchPlaneSelected = selectDefaultSketchPlane(planeOrFaceId)
+    if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
+      return
+    }
+
+    const artifact = kclManager.artifactGraph.get(planeOrFaceId)
+    const offsetPlaneSelected = await selectOffsetSketchPlane(artifact)
+    if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
+      return
+    }
+
+    const sweepFaceSelected = await selectionBodyFace(planeOrFaceId)
+    if (sweepFaceSelected) {
+      sceneInfra.modelingSend({
+        type: 'Select sketch plane',
+        data: sweepFaceSelected,
+      })
+    }
+  } catch (err) {
+    reportRejection(err)
+  }
 }

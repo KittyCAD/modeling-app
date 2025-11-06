@@ -4,6 +4,9 @@ import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import {
   retrieveFaceSelectionsFromOpArgs,
+  retrieveHoleBodyArgs,
+  retrieveHoleBottomArgs,
+  retrieveHoleTypeArgs,
   retrieveNonDefaultPlaneSelectionFromOpArg,
 } from '@src/lang/modifyAst/faces'
 import {
@@ -14,9 +17,11 @@ import {
   getNodeFromPath,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
+import type { StdLibCallOp } from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
+  getCodeRefsByArtifactId,
   getEdgeCutConsumedCodeRef,
 } from '@src/lang/std/artifactGraph'
 import {
@@ -33,7 +38,7 @@ import type {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
@@ -62,6 +67,114 @@ interface StdLibCallInfo {
     | PrepareToEditFailurePayload
   supportsAppearance?: boolean
   supportsTransform?: boolean
+}
+
+// Helper functions for argument extraction
+async function extractKclArgument(
+  operation: StdLibCallOp,
+  argName: string,
+  isArray = false
+): Promise<KclCommandValue | { error: string }> {
+  const arg = operation.labeledArgs?.[argName]
+  if (!arg?.sourceRange) {
+    return { error: `Missing or invalid ${argName} argument` }
+  }
+
+  const result = await stringToKclExpression(
+    codeManager.code.slice(arg.sourceRange[0], arg.sourceRange[1]),
+    isArray
+  )
+
+  if (err(result) || 'errors' in result) {
+    return { error: `Failed to parse ${argName} argument as KCL expression` }
+  }
+
+  return result
+}
+
+/**
+ * Extracts face selections for GDT annotations.
+ *
+ * Handles following types of face selections through direct tagging:
+ * - Segment faces: Tagged directly on segments, converted to wall artifacts
+ * - Cap faces: Tagged directly on sweeps using tagEnd/tagStart
+ * GDT uses direct tagging for explicit face references.
+ */
+function extractFaceSelections(facesArg: any): Selection[] | { error: string } {
+  const faceValues: any[] =
+    facesArg.value.type === 'Array' ? facesArg.value.value : [facesArg.value]
+
+  const graphSelections: Selection[] = []
+
+  for (const v of faceValues) {
+    if (v.type !== 'TagIdentifier' || !v.artifact_id) {
+      continue
+    }
+
+    const artifact = kclManager.artifactGraph.get(v.artifact_id)
+    if (!artifact) {
+      continue
+    }
+
+    let targetArtifact = artifact
+    let targetCodeRefs = getCodeRefsByArtifactId(
+      v.artifact_id,
+      kclManager.artifactGraph
+    )
+
+    // Handle segment faces: Convert segment artifacts to wall artifacts for 3D operations
+    if (artifact.type === 'segment') {
+      const wallArtifact = Array.from(kclManager.artifactGraph.values()).find(
+        (candidate) =>
+          candidate.type === 'wall' && candidate.segId === artifact.id
+      )
+
+      if (wallArtifact) {
+        targetArtifact = wallArtifact
+        const wallCodeRefs = getCodeRefsByArtifactId(
+          wallArtifact.id,
+          kclManager.artifactGraph
+        )
+
+        if (wallCodeRefs && wallCodeRefs.length > 0) {
+          targetCodeRefs = wallCodeRefs
+        } else {
+          const segArtifact = getArtifactOfTypes(
+            { key: artifact.id, types: ['segment'] },
+            kclManager.artifactGraph
+          )
+          if (!err(segArtifact)) {
+            targetCodeRefs = [segArtifact.codeRef]
+          }
+        }
+      }
+    }
+
+    // Cap faces (from tagEnd/tagStart) are handled directly
+    // as they already reference the correct cap artifacts
+    if (targetCodeRefs && targetCodeRefs.length > 0) {
+      graphSelections.push({
+        artifact: targetArtifact,
+        codeRef: targetCodeRefs[0],
+      })
+    }
+  }
+
+  if (graphSelections.length === 0) {
+    return { error: 'No valid face selections found in TagIdentifier objects' }
+  }
+
+  return graphSelections
+}
+
+function extractStringArgument(
+  operation: StdLibCallOp,
+  argName: string
+): string | undefined {
+  const arg = operation.labeledArgs?.[argName]
+  return arg?.sourceRange
+    ? codeManager.code.slice(arg.sourceRange[0], arg.sourceRange[1])
+    : undefined
 }
 
 /**
@@ -130,14 +243,32 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // 2. Convert the length argument from a string to a KCL expression
-  const length = await stringToKclExpression(
-    codeManager.code.slice(
-      operation.labeledArgs?.['length']?.sourceRange[0],
-      operation.labeledArgs?.['length']?.sourceRange[1]
+  let length: KclCommandValue | undefined
+  if ('length' in operation.labeledArgs && operation.labeledArgs.length) {
+    const result = await stringToKclExpression(
+      codeManager.code.slice(
+        operation.labeledArgs?.['length']?.sourceRange[0],
+        operation.labeledArgs?.['length']?.sourceRange[1]
+      )
     )
-  )
-  if (err(length) || 'errors' in length) {
-    return { reason: "Couldn't retrieve length argument" }
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve length argument" }
+    }
+
+    length = result
+  }
+
+  let to: Selections | undefined
+  if ('to' in operation.labeledArgs && operation.labeledArgs.to) {
+    const result = retrieveNonDefaultPlaneSelectionFromOpArg(
+      operation.labeledArgs.to,
+      kclManager.artifactGraph
+    )
+    if (err(result)) {
+      return { reason: result.message }
+    }
+
+    to = result
   }
 
   // symmetric argument from a string to boolean
@@ -259,6 +390,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   const argDefaultValues: ModelingCommandSchema['Extrude'] = {
     sketches,
     length,
+    to,
     symmetric,
     bidirectionalLength,
     tagStart,
@@ -533,6 +665,81 @@ const prepareToEditShell: PrepareToEditCallback = async ({ operation }) => {
   const argDefaultValues: ModelingCommandSchema['Shell'] = {
     faces,
     thickness,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
+ * Gather up the argument values for the Hole command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'Hole',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  // 1. Map the unlabeled face arguments to solid2d selections
+  if (!operation.unlabeledArg || !operation.labeledArgs?.face) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const result = retrieveFaceSelectionsFromOpArgs(
+    operation.unlabeledArg,
+    operation.labeledArgs.face,
+    kclManager.artifactGraph
+  )
+  if (err(result)) return { reason: result.message }
+  const { faces: face } = result
+
+  // 2.1 Convert the required arg from string to KclExpression
+  const cutAt = await extractKclArgument(operation, 'cutAt')
+  if ('error' in cutAt) return { reason: cutAt.error }
+
+  // 2.2 Handle the holeBody required 'mode' arg and its related optional args
+  const body = await retrieveHoleBodyArgs(operation.labeledArgs?.holeBody)
+  if (err(body)) return { reason: body.message }
+  const { holeBody, blindDepth, blindDiameter } = body
+
+  // 2.3 Handle the holeBottom required 'mode' arg and its related optional args
+  const bottom = await retrieveHoleBottomArgs(operation.labeledArgs?.holeBottom)
+  if (err(bottom)) return { reason: bottom.message }
+  const { holeBottom, drillPointAngle } = bottom
+
+  // 2.3 Handle the holeType required 'mode' arg and its related optional args
+  const rType = await retrieveHoleTypeArgs(operation.labeledArgs?.holeType)
+  if (err(rType)) return { reason: rType.message }
+  const {
+    holeType,
+    counterboreDepth,
+    counterboreDiameter,
+    countersinkAngle,
+    countersinkDiameter,
+  } = rType
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Hole'] = {
+    face,
+    cutAt,
+    holeType,
+    counterboreDepth,
+    counterboreDiameter,
+    countersinkAngle,
+    countersinkDiameter,
+    holeBody,
+    blindDiameter,
+    blindDepth,
+    holeBottom,
+    drillPointAngle,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -1240,6 +1447,72 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
 }
 
 /**
+ * Prepares GDT Flatness annotations for editing.
+ *
+ * Supports following types of face selections through direct tagging:
+ * - Segment faces: Tagged directly on sketch segments (e.g., from line(), arc())
+ * - Cap faces: Tagged directly on sweep expressions using tagEnd/tagStart
+ * GDT uses explicit tagging for predictable face references.
+ */
+const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
+  operation,
+}) => {
+  const baseCommand = {
+    name: 'GDT Flatness',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const facesArg = operation.labeledArgs?.['faces']
+  if (!facesArg || !facesArg.sourceRange) {
+    return { reason: 'Missing or invalid faces argument' }
+  }
+
+  // Extract face selections
+  const graphSelections = extractFaceSelections(facesArg)
+  if ('error' in graphSelections) {
+    return { reason: graphSelections.error }
+  }
+
+  const faces = { graphSelections, otherSelections: [] }
+
+  const tolerance = await extractKclArgument(operation, 'tolerance')
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+  const optionalArgs = await Promise.all([
+    extractKclArgument(operation, 'precision'),
+    extractKclArgument(operation, 'framePosition', true),
+    extractKclArgument(operation, 'fontPointSize'),
+    extractKclArgument(operation, 'fontScale'),
+  ])
+
+  const [precision, framePosition, fontPointSize, fontScale] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
+
+  const framePlane = extractStringArgument(operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Flatness'] = {
+    faces,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    fontPointSize,
+    fontScale,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+/**
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
  */
@@ -1286,6 +1559,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   'gdt::flatness': {
     label: 'Flatness',
     icon: 'gdtFlatness',
+    prepareToEdit: prepareToEditGdtFlatness,
   },
   helix: {
     label: 'Helix',
@@ -1384,6 +1658,13 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'shell',
     prepareToEdit: prepareToEditShell,
     supportsAppearance: true,
+    supportsTransform: true,
+  },
+  'hole::hole': {
+    label: 'Hole',
+    icon: 'hole',
+    prepareToEdit: prepareToEditHole,
+    supportsAppearance: false,
     supportsTransform: true,
   },
   startSketchOn: {
@@ -1492,6 +1773,12 @@ export function getOperationVariableName(
   if (op.type === 'VariableDeclaration') {
     return op.name
   }
+
+  // Handle GDT operations - they don't have variable names as they're standalone statements
+  if (op.type === 'StdLibCall' && op.name.startsWith('gdt::')) {
+    return undefined
+  }
+
   if (
     op.type !== 'StdLibCall' &&
     !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall') &&

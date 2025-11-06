@@ -54,7 +54,7 @@ async fn cache_test(
         let outcome = match ctx.run_with_caching(program).await {
             Ok(outcome) => outcome,
             Err(error) => {
-                let report = error.clone().into_miette_report_with_outputs(variation.code).unwrap();
+                let report = error.into_miette_report_with_outputs(variation.code).unwrap();
                 let report = miette::Report::new(report);
                 panic!("{report:?}");
             }

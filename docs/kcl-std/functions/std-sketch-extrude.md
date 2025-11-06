@@ -35,7 +35,7 @@ can change this behavior by using the `method` parameter. See
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) | Which sketch or sketches should be extruded. | Yes |
+| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | Which sketch or sketches should be extruded. | Yes |
 | `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | How far to extrude the given sketches. Incompatible with `to`. | No |
 | `to` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) or [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Face`](/docs/kcl-std/types/std-types-Face) or [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) | Reference to extrude to. Incompatible with `length` and `twistAngle`. | No |
 | `symmetric` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |
@@ -49,7 +49,7 @@ can change this behavior by using the `method` parameter. See
 
 ### Returns
 
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
 
 
 ### Examples

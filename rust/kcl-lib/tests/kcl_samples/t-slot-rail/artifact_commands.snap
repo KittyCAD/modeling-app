@@ -15,7 +15,7 @@ description: Artifact commands t-slot-rail.kcl
           "z": 0.0
         },
         "x_axis": {
-          "x": 1.0,
+          "x": -1.0,
           "y": 0.0,
           "z": 0.0
         },
@@ -40,8 +40,8 @@ description: Artifact commands t-slot-rail.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -1.0,
-          "z": 0.0
+          "y": 1.0,
+          "z": -0.0
         }
       }
     },
@@ -401,8 +401,8 @@ description: Artifact commands t-slot-rail.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -1.0,
-          "z": 0.0
+          "y": 1.0,
+          "z": -0.0
         }
       }
     },
@@ -498,7 +498,7 @@ description: Artifact commands t-slot-rail.kcl
             "scale": {
               "property": {
                 "x": 1.5,
-                "y": 1.0,
+                "y": 1.5,
                 "z": 1.5
               },
               "set": false,
@@ -522,8 +522,8 @@ description: Artifact commands t-slot-rail.kcl
         "adjust_camera": false,
         "planar_normal": {
           "x": 0.0,
-          "y": -1.0,
-          "z": 0.0
+          "y": 1.0,
+          "z": -0.0
         }
       }
     },
@@ -533,7 +533,7 @@ description: Artifact commands t-slot-rail.kcl
       "command": {
         "type": "extrude",
         "target": "[uuid]",
-        "distance": -609.5999999999999,
+        "distance": 609.5999999999999,
         "faces": null,
         "opposite": "None",
         "extrude_method": "merge"
@@ -572,19 +572,5 @@ description: Artifact commands t-slot-rail.kcl
         "edge_id": "[uuid]"
       }
     }
-  ],
-  "std::appearance": [],
-  "std::array": [],
-  "std::gdt": [],
-  "std::math": [],
-  "std::prelude": [],
-  "std::sketch": [],
-  "std::sketch2": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

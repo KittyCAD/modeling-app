@@ -1,9 +1,34 @@
 import { assertParse } from '@src/lang/wasm'
-import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type RustContext from '@src/lib/rustContext'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 
-beforeAll(async () => {
-  await initPromise
+let instanceInThisFile: ModuleType = null!
+let engineCommandManagerInThisFile: ConnectionManager = null!
+let rustContextInThisFile: RustContext = null!
+
+/**
+ * Every it test could build the world and connect to the engine but this is too resource intensive and will
+ * spam engine connections.
+ *
+ * Reuse the world for this file. This is not the same as global singleton imports!
+ */
+beforeEach(async () => {
+  if (instanceInThisFile) {
+    return
+  }
+
+  const { instance, engineCommandManager, rustContext } =
+    await buildTheWorldAndConnectToEngine()
+  instanceInThisFile = instance
+  engineCommandManagerInThisFile = engineCommandManager
+  rustContextInThisFile = rustContext
+})
+
+afterAll(() => {
+  engineCommandManagerInThisFile.tearDown()
 })
 
 describe('testing artifacts', () => {
@@ -15,7 +40,12 @@ mySketch001 = startSketchOn(XY)
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])
   // |> rx(45)`
-    const execState = await enginelessExecutor(assertParse(code))
+    const execState = await enginelessExecutor(
+      assertParse(code, instanceInThisFile),
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const sketch001 = execState.variables['mySketch001']
     expect(sketch001).toEqual({
       type: 'Sketch',
@@ -73,7 +103,12 @@ mySketch001 = startSketchOn(XY)
   |> line(endAbsolute = [0.46, -5.82])
   // |> rx(45)
   |> extrude(length = 2)`
-    const execState = await enginelessExecutor(assertParse(code))
+    const execState = await enginelessExecutor(
+      assertParse(code, instanceInThisFile),
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const sketch001 = execState.variables['mySketch001']
     expect(sketch001).toEqual({
       type: 'Solid',
@@ -160,7 +195,12 @@ sk2 = startSketchOn(XY)
   |> extrude(length = 2)
 
 `
-    const execState = await enginelessExecutor(assertParse(code))
+    const execState = await enginelessExecutor(
+      assertParse(code, instanceInThisFile),
+      undefined,
+      undefined,
+      rustContextInThisFile
+    )
     const variables = execState.variables
     // @ts-ignore
     const geos = [variables['theExtrude'], variables['sk2']]
