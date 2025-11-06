@@ -15,7 +15,7 @@ import { getKclVersion } from '@src/lib/kclVersion'
 import { Socket } from '@src/lib/socket'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
-import { MockSocket } from '@src/mocks/copilot'
+// import { MockSocket } from '@src/mocks/copilot'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -247,7 +247,7 @@ export const mlEphantManagerMachine2 = setup({
       const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
 
       const ws = await Socket(
-        MockSocket,
+        WebSocket,
         (env().VITE_MLEPHANT_WEBSOCKET_URL ?? '/ws/ml/copilot') +
           (maybeConversationId
             ? `?conversation_id=${maybeConversationId}&replay=true`
