@@ -6,7 +6,6 @@ import type {
   Plane,
   StartSketchOnFace,
   StartSketchOnPlane,
-  SweepSubType,
   Wall,
 } from '@rust/kcl-lib/bindings/Artifact'
 
@@ -69,35 +68,6 @@ export interface WallArtifactRich extends BaseArtifact {
   sweep: SweepArtifact
   paths: Array<PathArtifact>
   faceCodeRef: CodeRef
-}
-
-export interface PathArtifactRich extends BaseArtifact {
-  type: 'path'
-  /** A path must always lie on a plane */
-  plane: PlaneArtifact | WallArtifact | CapArtifact
-  /** A path must always contain 0 or more segments */
-  segments: Array<SegmentArtifact>
-  /** A path may not result in a sweep artifact */
-  sweep: SweepArtifact | null
-  codeRef: CodeRef
-}
-
-interface SegmentArtifactRich extends BaseArtifact {
-  type: 'segment'
-  path: PathArtifact
-  surf: WallArtifact
-  edges: Array<SweepEdge>
-  edgeCut?: EdgeCut
-  codeRef: CodeRef
-}
-
-interface SweepArtifactRich extends BaseArtifact {
-  type: 'sweep'
-  subType: SweepSubType
-  path: PathArtifact
-  surfaces: Array<WallArtifact | CapArtifact>
-  edges: Array<SweepEdge>
-  codeRef: CodeRef
 }
 
 export type EngineCommand = WebSocketRequest

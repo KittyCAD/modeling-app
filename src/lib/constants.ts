@@ -1,6 +1,6 @@
 import type { MlCopilotMode, WebSocketResponse } from '@kittycad/lib'
 
-import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 export const APP_NAME = 'Design Studio'
