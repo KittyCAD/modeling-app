@@ -71,11 +71,15 @@ export function addShell({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
+  // Because of START and END untagged caps, we can't rely on last child here
+  // Haven't found a case where it would be needed anyway
+  const lastChildLookup = false
   const result = buildSolidsAndFacesExprs(
     faces,
     artifactGraph,
     modifiedAst,
-    mNodeToEdit
+    mNodeToEdit,
+    lastChildLookup
   )
   if (err(result)) {
     return result
@@ -877,7 +881,8 @@ export function buildSolidsAndFacesExprs(
     modifiedAst,
     nodeToEdit,
     lastChildLookup,
-    artifactGraph
+    artifactGraph,
+    ['sweep']
   )
   if (err(vars)) {
     return vars
