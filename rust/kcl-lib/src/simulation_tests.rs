@@ -263,6 +263,22 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 })
             }));
 
+            #[cfg(not(feature = "artifact-graph"))]
+            let lint_findings = program_to_lint.lint_all().expect("failed to lint program");
+            #[cfg(feature = "artifact-graph")]
+            let mut lint_findings = program_to_lint.lint_all().expect("failed to lint program");
+            #[cfg(feature = "artifact-graph")]
+            lint_findings.extend(
+                exec_state
+                    .modules()
+                    .values()
+                    .filter_map(|module| match &module.repr {
+                        ModuleRepr::Root | ModuleRepr::Foreign(..) | ModuleRepr::Dummy => None,
+                        ModuleRepr::Kcl(node, _) => Some(node.lint_all().expect("failed to lint program")),
+                    })
+                    .flatten(),
+            );
+
             let (outcome, module_state) = exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
 
             assert_common_snapshots(test, outcome.variables);
@@ -274,12 +290,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 
             ok_snap.unwrap();
 
-            let lint_findings = program_to_lint.lint_all().expect("failed to lint program");
-            if lint_findings.is_empty() {
-                let _ = std::fs::remove_file(format!("tests/{}/lints.snap", test.name));
-            } else {
-                assert_snapshot(test, "Lints", || insta::assert_json_snapshot!("lints", lint_findings));
-            }
+            assert_snapshot(test, "Lints", || insta::assert_json_snapshot!("lints", lint_findings));
         }
         Err(e) => {
             let ok_path = test.output_dir.join("execution_success.snap");
