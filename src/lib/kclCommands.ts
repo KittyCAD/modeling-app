@@ -24,6 +24,7 @@ import {
   editorManager,
   kclManager,
   rustContext,
+  systemIOActor,
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -32,6 +33,9 @@ import { getNodeFromPath } from '@src/lang/queryAst'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
+import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
+import type { Project } from '@src/lib/project'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -46,6 +50,7 @@ interface KclCommandConfig {
   }
   isRestrictedToOrg?: boolean
   password?: string
+  project?: Project
 }
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
@@ -173,7 +178,26 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         path: {
           inputType: 'options',
           required: true,
-          options: commandProps.specialPropsForInsertCommand.providedOptions,
+          options: () => {
+            const providedOptions: { name: string; value: string }[] = []
+            const context = systemIOActor.getSnapshot().context
+            const projectName = commandProps.project?.name
+            const sep = window.electron?.sep
+            const relevantFiles = relevantFileExtensions()
+            if (projectName && sep) {
+              const importableFiles = listAllImportFilesWithinProject(context, {
+                projectFolderName: projectName,
+                importExtensions: relevantFiles,
+              })
+              importableFiles.forEach((file) => {
+                providedOptions.push({
+                  name: file.replaceAll(sep, '/'),
+                  value: file.replaceAll(sep, '/'),
+                })
+              })
+            }
+            return providedOptions
+          },
           validation: async ({ data }) => {
             const importExists = kclManager.ast.body.find(
               (n) =>
