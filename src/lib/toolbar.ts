@@ -1279,6 +1279,20 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         isActive: (state) => false,
       },
       {
+        id: 'Parallel',
+        onClick: ({ modelingSend, isActive }) =>
+          modelingSend({
+            type: 'Parallel',
+          }),
+        icon: 'parallel',
+        status: 'available',
+        title: 'Parallel',
+        hotkey: 'L',
+        description: 'make things Parallel',
+        links: [],
+        isActive: (state) => false,
+      },
+      {
         id: 'equalLength',
         onClick: ({ modelingSend, isActive }) =>
           modelingSend({

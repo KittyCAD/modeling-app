@@ -352,7 +352,12 @@ export type ModelingMachineEvent =
       data: { tool: EquipTool }
     }
   | {
-      type: 'coincident' | 'LinesEqualLength' | 'Vertical' | 'Horizontal'
+      type:
+        | 'coincident'
+        | 'LinesEqualLength'
+        | 'Vertical'
+        | 'Horizontal'
+        | 'Parallel'
     }
   | { type: 'unequip tool' }
   | {
@@ -5650,6 +5655,9 @@ export const modelingMachine = setup({
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         coincident: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        Parallel: {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         LinesEqualLength: {

@@ -228,7 +228,14 @@ export type SketchSolveMachineEvent =
   | { type: 'update selection'; data?: SetSelections }
   | { type: 'unequip tool' }
   | { type: 'equip tool'; data: { tool: EquipTool } }
-  | { type: 'coincident' | 'LinesEqualLength' | 'Vertical' | 'Horizontal' }
+  | {
+      type:
+        | 'coincident'
+        | 'LinesEqualLength'
+        | 'Vertical'
+        | 'Horizontal'
+        | 'Parallel'
+    }
   | { type: 'update selected ids'; data: { selectedIds?: Array<number> } }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
   | {
@@ -665,6 +672,26 @@ export const sketchSolveMachine = setup({
           {
             type: 'Coincident',
             points: context.selectedIds,
+          },
+          await jsAppSettings()
+        )
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
+    Parallel: {
+      actions: async ({ self, context }) => {
+        // TODO this is not how coincident should operate long term, as it should be an equipable tool
+        const result = await rustContext.addConstraint(
+          0,
+          0,
+          {
+            type: 'Parallel',
+            lines: context.selectedIds,
           },
           await jsAppSettings()
         )
