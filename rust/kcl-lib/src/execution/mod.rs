@@ -786,6 +786,8 @@ impl ExecutorContext {
         let result = result?;
 
         // Save this as the last successful execution to the cache.
+        // Gotcha: `CacheResult::ReExecute.program` may be diff-based, do not save that AST
+        // the last-successful AST. Instead, save in the full AST passed in.
         cache::write_old_ast(GlobalState::new(
             exec_state.clone(),
             self.settings.clone(),
