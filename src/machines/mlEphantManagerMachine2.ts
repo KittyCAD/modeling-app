@@ -690,7 +690,7 @@ export const mlEphantManagerMachine2 = setup({
             })
           },
           (args) => {
-            if (args.context.ws?.readyState === WebSocket.CLOSED) {
+            if (args.context.ws?.readyState === WebSocket.OPEN) {
               args.context.ws?.close()
             }
           },
