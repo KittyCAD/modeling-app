@@ -684,10 +684,10 @@ export const mlEphantManagerMachine2 = setup({
             if (args.context.abruptlyClosed) {
               return
             }
-            assign({ conversation: undefined, conversationId: undefined })
+            return assign({ conversation: undefined, conversationId: undefined })
           },
           (args) => {
-            if (args.context.ws?.readyState === 3) {
+            if (args.context.ws?.readyState === WebSocket.CLOSED) {
               args.context.ws?.close()
             }
           },
