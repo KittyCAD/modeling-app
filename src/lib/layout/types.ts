@@ -5,6 +5,7 @@ export enum AreaType {
   TTC = 'ttc',
   Code = 'codeEditor',
   FeatureTree = 'featureTree',
+  Bodies = 'bodies',
   Files = 'files',
   Variables = 'variables',
   Logs = 'logs',

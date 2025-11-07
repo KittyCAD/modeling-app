@@ -27,6 +27,7 @@ import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
 import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
+import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 
 const onCodeNotificationClick: MouseEventHandler = (e) => {
   e.preventDefault()
@@ -50,6 +51,10 @@ export const defaultAreaLibrary = Object.freeze({
     hide: () => false,
     shortcut: 'Shift + T',
     Component: FeatureTreePane,
+  },
+  bodies: {
+    hide: () => false,
+    Component: BodiesPane,
   },
   modeling: {
     hide: () => false,
@@ -130,6 +135,7 @@ function testArea(name: string): AreaTypeDefinition {
 
 export const testAreaLibrary = Object.freeze({
   featureTree: testArea('Feature Tree'),
+  bodies: testArea('Bodies'),
   modeling: testArea('Modeling Scene'),
   ttc: testArea('TTC'),
   codeEditor: testArea('Code Editor'),
