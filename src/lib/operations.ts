@@ -260,15 +260,9 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
 
   let to: Selections | undefined
   if ('to' in operation.labeledArgs && operation.labeledArgs.to) {
-    const result = retrieveNonDefaultPlaneSelectionFromOpArg(
-      operation.labeledArgs.to,
-      kclManager.artifactGraph
-    )
-    if (err(result)) {
-      return { reason: result.message }
-    }
-
-    to = result
+    const graphSelections = extractFaceSelections(operation.labeledArgs.to)
+    if ('error' in graphSelections) return { reason: graphSelections.error }
+    to = { graphSelections, otherSelections: [] }
   }
 
   // symmetric argument from a string to boolean
