@@ -1,9 +1,8 @@
-import type { CallExpressionKw, ExecState, SourceRange } from '@src/lang/wasm'
+import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
 import type { AsyncFn } from '@src/lib/types'
 import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
-import * as THREE from 'three'
 import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const uuidv4 = v4
@@ -562,20 +561,6 @@ export function getModuleId(sourceRange: SourceRange) {
   return sourceRange[2]
 }
 
-export function getModuleIdByFileName(
-  fileName: string,
-  fileNames: ExecState['filenames']
-) {
-  const module = Object.entries(fileNames).find(
-    ([, moduleInfo]) =>
-      moduleInfo?.type === 'Local' && moduleInfo.value === fileName
-  )
-  if (module) {
-    return Number(module[0]) // Return the module ID
-  }
-  return -1
-}
-
 export function getInVariableCase(name: string, prefixIfDigit = 'm') {
   // As of 2025-04-08, standard case for KCL variables is camelCase
   const startsWithANumber = !Number.isNaN(Number(name.charAt(0)))
@@ -596,25 +581,6 @@ export function getInVariableCase(name: string, prefixIfDigit = 'm') {
   }
 
   return likelyPascalCase.slice(0, 1).toLowerCase() + likelyPascalCase.slice(1)
-}
-
-export function computeIsometricQuaternionForEmptyScene() {
-  // Create the direction vector you want to look from
-  const isoDir = new THREE.Vector3(1, 1, 1).normalize() // isometric look direction
-
-  // Target is the point you want to look at (e.g., origin)
-  const target = new THREE.Vector3(0, 0, 0)
-
-  // Compute quaternion for isometric view
-  const up = new THREE.Vector3(0, 0, 1) // default up direction
-  const quaternion = new THREE.Quaternion()
-  quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), isoDir) // align -Z with isoDir
-
-  // Align up vector using a lookAt matrix
-  const m = new THREE.Matrix4()
-  m.lookAt(new THREE.Vector3().addVectors(target, isoDir), target, up)
-  quaternion.setFromRotationMatrix(m)
-  return quaternion
 }
 
 export async function engineStreamZoomToFit({

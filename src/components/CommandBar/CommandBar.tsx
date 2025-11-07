@@ -180,5 +180,3 @@ export const CommandBar = () => {
     </Transition.Root>
   )
 }
-
-export default CommandBar

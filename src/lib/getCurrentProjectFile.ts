@@ -9,6 +9,7 @@ import * as fs from 'fs/promises'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getInVariableCase } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { isExtensionAnImportExtension } from '@src/lib/paths'
 
 /// Get the current project file from the path.
 /// This is used for double-clicking on a file in the file explorer,
@@ -20,8 +21,9 @@ export default async function getCurrentProjectFile(
   // Extract the values into an array
   const allFileImportFormats: string[] = importFileExtensions(wasmInstance)
   const relevantExtensions: string[] = relevantFileExtensions(wasmInstance)
-  const shouldWrapExtension = (extension: string) =>
-    allFileImportFormats.includes(extension)
+  const shouldWrapExtension = (extension: string) => {
+    return isExtensionAnImportExtension(extension, allFileImportFormats)
+  }
 
   // Fix for "." path, which is the current directory.
   let sourcePath = pathString === '.' ? process.cwd() : pathString

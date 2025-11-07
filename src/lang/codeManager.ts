@@ -96,16 +96,6 @@ export default class CodeManager {
   }
 
   /**
-   * This updates the code state and calls the updateState function.
-   */
-  updateCodeState(code: string): void {
-    if (this._code !== code) {
-      this.code = code
-      this.#updateState(code)
-    }
-  }
-
-  /**
    * Update the code in the editor.
    * This is invoked when a segment is being dragged on the canvas, among other things.
    */

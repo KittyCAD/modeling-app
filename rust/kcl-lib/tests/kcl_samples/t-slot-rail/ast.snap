@@ -14,157 +14,6 @@ description: Result of parsing t-slot-rail.kcl
             "commentStart": 0,
             "end": 0,
             "moduleId": 0,
-            "name": "interiorRadius",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "raw": "0.01",
-            "start": 0,
-            "type": "Literal",
-            "type": "Literal",
-            "value": {
-              "value": 0.01,
-              "suffix": "None"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "preComments": [
-          "// Define parameters"
-        ],
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "scoreDepth",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "raw": "0.018",
-            "start": 0,
-            "type": "Literal",
-            "type": "Literal",
-            "value": {
-              "value": 0.018,
-              "suffix": "None"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "arcEnd",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "raw": "0.0275",
-            "start": 0,
-            "type": "Literal",
-            "type": "Literal",
-            "value": {
-              "value": 0.0275,
-              "suffix": "None"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "name": "holeDiameter",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "raw": "0.262",
-            "start": 0,
-            "type": "Literal",
-            "type": "Literal",
-            "value": {
-              "value": 0.262,
-              "suffix": "None"
-            }
-          },
-          "moduleId": 0,
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "moduleId": 0,
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
             "name": "railTslot",
             "start": 0,
             "type": "Identifier"
@@ -172,6 +21,157 @@ description: Result of parsing t-slot-rail.kcl
           "init": {
             "body": {
               "body": [
+                {
+                  "commentStart": 0,
+                  "declaration": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "id": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "interiorRadius",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "0.01",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.01,
+                        "suffix": "None"
+                      }
+                    },
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 0,
+                  "kind": "const",
+                  "moduleId": 0,
+                  "preComments": [
+                    "// Define parameters"
+                  ],
+                  "start": 0,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "commentStart": 0,
+                  "declaration": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "id": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "scoreDepth",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "0.018",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.018,
+                        "suffix": "None"
+                      }
+                    },
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 0,
+                  "kind": "const",
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "commentStart": 0,
+                  "declaration": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "id": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "arcEnd",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "0.0275",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0275,
+                        "suffix": "None"
+                      }
+                    },
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 0,
+                  "kind": "const",
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "commentStart": 0,
+                  "declaration": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "id": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "holeDiameter",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "raw": "0.262",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.262,
+                        "suffix": "None"
+                      }
+                    },
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 0,
+                  "kind": "const",
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
                 {
                   "commentStart": 0,
                   "declaration": {
@@ -213,22 +213,31 @@ description: Result of parsing t-slot-rail.kcl
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": {
+                            "argument": {
+                              "abs_path": false,
                               "commentStart": 0,
                               "end": 0,
                               "moduleId": 0,
-                              "name": "XZ",
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "XZ",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
                               "start": 0,
-                              "type": "Identifier"
+                              "type": "Name",
+                              "type": "Name"
                             },
-                            "path": [],
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "operator": "-",
                             "start": 0,
-                            "type": "Name",
-                            "type": "Name"
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
                           }
                         },
                         {
@@ -2218,6 +2227,35 @@ description: Result of parsing t-slot-rail.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "moduleId": 0,
+                                "name": "y",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": "railHeight",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
                                 "name": "z",
                                 "start": 0,
                                 "type": "Identifier"
@@ -2268,46 +2306,7 @@ description: Result of parsing t-slot-rail.kcl
                           "unlabeled": null
                         },
                         {
-                          "arguments": [
-                            {
-                              "type": "LabeledArg",
-                              "label": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "length",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "arg": {
-                                "argument": {
-                                  "abs_path": false,
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "name": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "name": "railLength",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "operator": "-",
-                                "start": 0,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              }
-                            }
-                          ],
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -2331,7 +2330,24 @@ description: Result of parsing t-slot-rail.kcl
                           "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
-                          "unlabeled": null
+                          "unlabeled": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "length",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
                         }
                       ],
                       "commentStart": 0,
@@ -2434,7 +2450,7 @@ description: Result of parsing t-slot-rail.kcl
               "moduleId": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
-                  "0": [
+                  "4": [
                     {
                       "commentStart": 0,
                       "end": 0,
@@ -2472,7 +2488,7 @@ description: Result of parsing t-slot-rail.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "railLength",
+                  "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 }
@@ -2528,7 +2544,7 @@ description: Result of parsing t-slot-rail.kcl
                 "commentStart": 0,
                 "end": 0,
                 "moduleId": 0,
-                "name": "railLength",
+                "name": "length",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -2674,20 +2690,7 @@ description: Result of parsing t-slot-rail.kcl
     ],
     "moduleId": 0,
     "nonCodeMeta": {
-      "nonCodeNodes": {
-        "3": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "moduleId": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ]
-      },
+      "nonCodeNodes": {},
       "startNodes": [
         {
           "commentStart": 0,
