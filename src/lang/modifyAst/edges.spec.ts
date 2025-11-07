@@ -1,4 +1,4 @@
-import { assertParse, recast } from '@src/lang/wasm'
+import { assertParse, type PathToNode, recast } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { topLevelRange } from '@src/lang/util'
 import { isOverlap } from '@src/lib/utils'
@@ -272,6 +272,60 @@ fillet001 = fillet(
       expect(newCode).toContain(
         extrudedTriangleWithFillet.replace('radius = 1', 'radius = 1.1')
       )
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
+    })
+
+    it('should edit a piped fillet call on sweepEdge', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-18.43, -11.95])
+  |> angledLine(angle = 0, length = 20, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 20)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
+  |> fillet(tags = getCommonEdge(faces = [rectangleSegmentA001, capEnd001]), radius = 2.5)`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const selection = createSelectionFromArtifacts(
+        [[...artifactGraph.values()].find((a) => a.type === 'sweepEdge')!],
+        artifactGraph
+      )
+      const nodeToEdit: PathToNode = [
+        ['body', ''],
+        [2, 'index'],
+        ['declaration', 'VariableDeclaration'],
+        ['init', ''],
+        ['body', 'PipeExpression'],
+        [1, 'index'],
+      ]
+      const radius = (await stringToKclExpression(
+        '2',
+        undefined,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        nodeToEdit,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(code.replace('radius = 2.5', 'radius = 2'))
       await enginelessExecutor(
         result.modifiedAst,
         undefined,

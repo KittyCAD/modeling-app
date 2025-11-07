@@ -222,7 +222,7 @@ function groupSelectionsByBodyAndAddTags(
       bodies: Map<
         string,
         {
-          solidsExpr: Expr
+          solidsExpr: Expr | null
           tagsExpr: Expr
           pathIfPipe?: PathToNode
         }
@@ -236,7 +236,7 @@ function groupSelectionsByBodyAndAddTags(
   const bodies = new Map<
     string,
     {
-      solidsExpr: Expr
+      solidsExpr: Expr | null
       tagsExpr: Expr
       pathIfPipe?: PathToNode
     }
@@ -285,9 +285,6 @@ function groupSelectionsByBodyAndAddTags(
     if (err(vars)) return vars
 
     const solidsExpr = createVariableExpressionsArray(vars.exprs)
-    if (!solidsExpr) {
-      return new Error('No solids found in the selection')
-    }
 
     const tagsExpr = createVariableExpressionsArray(tagsExprs)
     if (!tagsExpr) {
