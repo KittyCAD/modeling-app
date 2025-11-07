@@ -2,9 +2,10 @@ import type { WebSocketResponse } from '@kittycad/lib/dist/types/src'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
+import { filterArtifacts } from '@src/lang/std/artifactGraph'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { engineCommandManager } from '@src/lib/singletons'
+import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import { useEffect, useRef, useState } from 'react'
@@ -31,7 +32,7 @@ type BodyItem = {
   isVisible: boolean
 }
 
-async function getBodies(skip = 0) {
+async function getBodiesFromEngine(skip = 0) {
   return engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
@@ -42,6 +43,13 @@ async function getBodies(skip = 0) {
       take: 5,
     },
   })
+}
+
+function getBodiesFromArtifactGraph() {
+  return filterArtifacts(
+    { types: ['compositeSolid', 'sweep'] },
+    kclManager.artifactGraph
+  )
 }
 
 async function setEngineVisibility(id: string, isVisible: boolean) {
@@ -63,7 +71,9 @@ function BodiesList() {
 
   // add a click handler to send a request to toggle a body's visibility
   const onClick = () => {
-    getBodies()
+    const newBodiesFromArtifactGraph = getBodiesFromArtifactGraph()
+    console.log('FRANK BODIES', newBodiesFromArtifactGraph)
+    getBodiesFromEngine()
       .then((resp) => {
         if (!resp) {
           console.warn('No response')
