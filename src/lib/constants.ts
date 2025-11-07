@@ -32,6 +32,7 @@ export const FILE_EXT = '.kcl'
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
 export const PROJECT_IMAGE_NAME = `thumbnail.png`
+export const PROJECT_THUMBNAILS_DIR = `thumbnails`
 /** The default name given to new kcl files in a project */
 export const DEFAULT_FILE_NAME = 'Untitled'
 /** The default name for a tutorial project */
@@ -294,3 +295,12 @@ export const LAYOUT_PERSIST_PREFIX = 'layout-'
 
 // Copilot input
 export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'fast'
+
+/** Recent projects */
+export const RECENT_PROJECTS_NAME = `recent-projects.json`
+export const RECENT_PROJECTS_COUNT = 100
+export type RecentProject = {
+  path: string
+  id: string
+  lastOpened: Date
+}

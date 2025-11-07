@@ -14,7 +14,10 @@ import {
   parseProjectSettings,
 } from '@src/lang/wasm'
 import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
-import type { EnvironmentConfiguration } from '@src/lib/constants'
+import type {
+  EnvironmentConfiguration,
+  RecentProject,
+} from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   ENVIRONMENT_CONFIGURATION_FOLDER,
@@ -22,6 +25,8 @@ import {
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   PROJECT_SETTINGS_FILE_NAME,
+  PROJECT_THUMBNAILS_DIR,
+  RECENT_PROJECTS_NAME,
   SETTINGS_FILE_NAME,
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
@@ -587,7 +592,32 @@ export const getEnvironmentConfigurationPath = async (
   return electron.path.join(fullPath, environmentName + '.json')
 }
 
-export async function getFullAppDataPath(electron: IElectronAPI) {
+export const getProjectThumbnailsPath = async (electron: IElectronAPI) => {
+  const isTestEnv = electron.process.env.NODE_ENV === 'test'
+  const testSettingsPath = await electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+  const appConfig = await electron.getPath('appData')
+  const fullPath = isTestEnv
+    ? electron.path.resolve(testSettingsPath, '..')
+    : electron.path.join(
+        appConfig,
+        getAppFolderName(electron),
+        PROJECT_THUMBNAILS_DIR
+      )
+  try {
+    await electron.stat(fullPath)
+  } catch (e) {
+    // File/path doesn't exist
+    if (e === 'ENOENT') {
+      await electron.mkdir(fullPath, { recursive: true })
+    }
+  }
+
+  return fullPath
+}
+
+export const getRecentProjectsPath = async (electron: IElectronAPI) => {
   const isTestEnv = electron.process.env.NODE_ENV === 'test'
   const testSettingsPath = await electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
@@ -605,7 +635,35 @@ export async function getFullAppDataPath(electron: IElectronAPI) {
     }
   }
 
-  return fullPath
+  return electron.path.join(fullPath, RECENT_PROJECTS_NAME)
+}
+
+export const readRecentProjectsFile = async (
+  electron: IElectronAPI
+): Promise<RecentProject[] | null> => {
+  const path = await getRecentProjectsPath(electron)
+  console.log('Reading recent projects from', path)
+  if (electron.exists(path)) {
+    const content: string = await electron.readFile(path, {
+      encoding: 'utf-8',
+    })
+    if (!content) return null
+    return JSON.parse(content)
+  }
+  return null
+}
+
+export const writeRecentProjectsFile = async (
+  electron: IElectronAPI,
+  recentProjects: RecentProject[]
+) => {
+  const recentProjectsPath = await getRecentProjectsPath(electron)
+  const result = electron.writeFile(
+    recentProjectsPath,
+    JSON.stringify(recentProjects)
+  )
+  console.log('recent projects written to disk')
+  return result
 }
 
 export const getEnvironmentFilePath = async (electron: IElectronAPI) => {

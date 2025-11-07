@@ -68,6 +68,7 @@ import {
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
 import { useSelector } from '@xstate/react'
+import { getRecentProjects } from '@src/lib/recentProjects'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -94,6 +95,11 @@ const Home = () => {
         .then(() => {
           setNativeFileMenuCreated(true)
         })
+        .catch(reportRejection)
+
+      // TODO: remove, this is just for testing
+      getRecentProjects()
+        .then((rp) => console.log('Recent projects loaded on home:', rp))
         .catch(reportRejection)
     }
     billingActor.send({ type: BillingTransition.Update, apiToken })

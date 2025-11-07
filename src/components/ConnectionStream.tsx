@@ -36,6 +36,7 @@ import type { IndexLoaderData } from '@src/lib/types'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { saveToRecentProjects } from '@src/lib/recentProjects'
 
 export const ConnectionStream = (props: {
   pool: string | null
@@ -49,7 +50,7 @@ export const ConnectionStream = (props: {
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
     useModelingContext()
-  const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const { file, project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const id = 'engine-stream'
   // These will be passed to the engineStreamActor to handle.
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -158,6 +159,15 @@ export const ConnectionStream = (props: {
             console.warn(
               'Cannot create thumbnail PNG on desktop: no file name set'
             )
+          }
+
+          // Save to recent projects
+          if (project && project.path) {
+            saveToRecentProjects(project.path, settings.meta.id.current).catch(
+              reportRejection
+            )
+          } else {
+            console.warn('Cannot save to recent projects: no project path set')
           }
         })
         .catch((e) => {
