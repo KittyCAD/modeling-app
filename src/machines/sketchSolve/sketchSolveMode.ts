@@ -14,8 +14,10 @@ import { machine as pointTool } from '@src/machines/sketchSolve/tools/pointTool'
 import { machine as lineTool } from '@src/machines/sketchSolve/tools/lineTool'
 import type {
   ApiObject,
+  ExistingSegmentCtor,
   Expr,
   SceneGraphDelta,
+  SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
@@ -31,7 +33,7 @@ import {
   segmentUtilsMap,
   updateLineSegmentHover,
 } from '@src/machines/sketchSolve/segments'
-import { Group, Mesh, OrthographicCamera } from 'three'
+import { Group, Mesh, OrthographicCamera, Vector2 } from 'three'
 import { orthoScale } from '@src/clientSideScene/helpers'
 import {
   getParentGroup,
@@ -213,6 +215,121 @@ function getLinkedPoint({
   }
 }
 
+/**
+ * Helper function to extract numeric value from an Expr.
+ * Returns the value and units, or null if the Expr doesn't contain a numeric value.
+ */
+function extractNumericValue(
+  expr: Expr
+): { value: number; units: string } | null {
+  if (expr.type === 'Number' || expr.type === 'Var') {
+    return {
+      value: expr.value,
+      units: expr.units,
+    }
+  }
+  return null
+}
+
+/**
+ * Helper function to apply a drag vector to a Point2D Expr.
+ * Returns a new Expr with the vector applied.
+ */
+function applyVectorToPoint2D(
+  point: { x: Expr; y: Expr },
+  vector: Vector2
+): { x: Expr; y: Expr } {
+  const xValue = extractNumericValue(point.x)
+  const yValue = extractNumericValue(point.y)
+
+  if (!xValue || !yValue) {
+    // If we can't extract values, return original
+    return point
+  }
+
+  return {
+    x: {
+      type: 'Var',
+      value: roundOff(xValue.value + vector.x),
+      units: xValue.units as any,
+    },
+    y: {
+      type: 'Var',
+      value: roundOff(yValue.value + vector.y),
+      units: yValue.units as any,
+    },
+  }
+}
+
+/**
+ * Helper function to build a segment ctor with drag applied.
+ * For the entity under cursor, uses twoD directly.
+ * For other entities, applies twoDVec to their current positions.
+ */
+function buildSegmentCtorWithDrag({
+  objUnderCursor: obj,
+  selectedObjects: objects,
+  isEntityUnderCursor,
+  currentCursorPosition,
+  dragVec,
+}: {
+  objUnderCursor: ApiObject
+  selectedObjects: Array<ApiObject>
+  isEntityUnderCursor: boolean
+  currentCursorPosition: Vector2
+  dragVec: Vector2
+}): SegmentCtor | null {
+  const baseCtor = buildSegmentCtorFromObject(obj, objects)
+  if (!baseCtor) {
+    return null
+  }
+
+  if (baseCtor.type === 'Point') {
+    if (isEntityUnderCursor) {
+      // Use twoD directly for entity under cursor
+      return {
+        type: 'Point',
+        position: {
+          x: {
+            type: 'Var',
+            value: roundOff(currentCursorPosition.x),
+            units: 'Mm',
+          },
+          y: {
+            type: 'Var',
+            value: roundOff(currentCursorPosition.y),
+            units: 'Mm',
+          },
+        },
+      }
+    } else {
+      // Apply drag vector to current position
+      const currentPos = {
+        x: baseCtor.position.x,
+        y: baseCtor.position.y,
+      }
+      const newPos = applyVectorToPoint2D(currentPos, dragVec)
+      return {
+        type: 'Point',
+        position: newPos,
+      }
+    }
+  } else if (baseCtor.type === 'Line') {
+    // For lines, always apply the drag vector to both endpoints (translate the line)
+    // This applies whether it's the entity under cursor or another selected entity
+    const newStart = applyVectorToPoint2D(baseCtor.start, dragVec)
+    console.log('baseCtor.start', baseCtor.start, dragVec, newStart)
+    const newEnd = applyVectorToPoint2D(baseCtor.end, dragVec)
+    return {
+      type: 'Line',
+      start: newStart,
+      end: newEnd,
+    }
+  }
+
+  return baseCtor
+}
+
 export type EquipTool = keyof typeof equipTools
 
 // Type for the spawn function used in XState setup actions
@@ -283,36 +400,103 @@ export const sketchSolveMachine = setup({
       // Not in XState context since it's purely an implementation detail for race condition prevention.
       let isSolveInProgress = false
       let lastHoveredMesh: Mesh | null = null
+      let lastSuccessfulDragFromPoint = new Vector2()
       sceneInfra.setCallbacks({
+        onDragStart: ({ intersectionPoint }) => {
+          // reset on drag start
+          lastSuccessfulDragFromPoint = intersectionPoint.twoD.clone()
+        },
         onDrag: async ({ selected, intersectionPoint }) => {
           if (isSolveInProgress) {
             return
           }
-          const group = getParentGroup(selected, ['point'])
+
+          const snapshot = self.getSnapshot()
+          const selectedIds = snapshot.context.selectedIds
+          const sceneGraphDelta =
+            snapshot.context.sketchExecOutcome?.sceneGraphDelta
+
+          if (!sceneGraphDelta) {
+            return
+          }
+
+          // Get the entity under cursor (could be Point or Line)
+          const groupUnderCursor = getParentGroup(selected, [
+            SEGMENT_TYPE_POINT,
+            SEGMENT_TYPE_LINE,
+          ])
+          const entityUnderCursorId = groupUnderCursor
+            ? Number(groupUnderCursor.name)
+            : null
+
+          // If no entity under cursor and no selectedIds, nothing to do
+          if (!entityUnderCursorId && selectedIds.length === 0) {
+            return
+          }
+
           isSolveInProgress = true
           const twoD = intersectionPoint.twoD
+          const dragVec = twoD.clone().sub(lastSuccessfulDragFromPoint)
+
+          const objects = sceneGraphDelta.new_graph.objects
+          const segmentsToEdit: ExistingSegmentCtor[] = []
+
+          // Collect all IDs to edit (entity under cursor + selectedIds)
+          const idsToEdit = new Set<number>()
+          if (
+            entityUnderCursorId !== null &&
+            !Number.isNaN(entityUnderCursorId)
+          ) {
+            idsToEdit.add(entityUnderCursorId)
+          }
+          selectedIds.forEach((id) => {
+            if (!Number.isNaN(id)) {
+              idsToEdit.add(id)
+            }
+          })
+
+          // Build ctors for each segment
+          for (const id of idsToEdit) {
+            const obj = objects[id]
+            if (!obj) {
+              continue
+            }
+
+            // Skip if not a segment
+            if (obj.kind.type !== 'Segment') {
+              continue
+            }
+
+            const isEntityUnderCursor = id === entityUnderCursorId
+            const ctor = buildSegmentCtorWithDrag({
+              objUnderCursor: obj,
+              selectedObjects: objects,
+              isEntityUnderCursor,
+              currentCursorPosition: twoD,
+              dragVec: dragVec,
+            })
+
+            if (ctor) {
+              segmentsToEdit.push({ id, ctor })
+            }
+          }
+
+          if (segmentsToEdit.length === 0) {
+            isSolveInProgress = false
+            return
+          }
+
           const result = await rustContext
-            .editSegments(
-              0,
-              0,
-              [
-                {
-                  id: Number(group?.name) || 0,
-                  ctor: {
-                    type: 'Point',
-                    position: {
-                      x: { type: 'Var', value: roundOff(twoD.x), units: 'Mm' },
-                      y: { type: 'Var', value: roundOff(twoD.y), units: 'Mm' },
-                    },
-                  },
-                },
-              ],
-              await jsAppSettings()
-            )
+            .editSegments(0, 0, segmentsToEdit, await jsAppSettings())
             .catch((err) => {
               console.error('failed to edit segment', err)
+              return null
             })
+
           isSolveInProgress = false
+          // after successful drag, update the lastSuccessfulDragFromPoint
+          lastSuccessfulDragFromPoint = twoD.clone()
+
           // send event
           if (result) {
             self.send({

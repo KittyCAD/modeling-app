@@ -501,7 +501,22 @@ export class SceneInfra {
       )
       if (!this.selected.hasBeenDragged && hasBeenDragged) {
         this.selected.hasBeenDragged = true
-        // this is where we could fire a onDragStart event
+        // Fire onDragStart event when drag threshold is first exceeded
+        if (
+          planeIntersectPoint &&
+          planeIntersectPoint.twoD &&
+          planeIntersectPoint.threeD
+        ) {
+          await this.onDragStartCallback({
+            mouseEvent,
+            intersectionPoint: {
+              twoD: planeIntersectPoint.twoD,
+              threeD: planeIntersectPoint.threeD,
+            },
+            intersects,
+            selected: this.selected.object,
+          })
+        }
       }
       if (
         this.selected.hasBeenDragged &&
