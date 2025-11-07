@@ -49,7 +49,7 @@ export const ConnectionStream = (props: {
   const { overallState } = useNetworkContext()
   const { state: modelingMachineState, send: modelingSend } =
     useModelingContext()
-  const { file, project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const id = 'engine-stream'
   // These will be passed to the engineStreamActor to handle.
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -150,10 +150,14 @@ export const ConnectionStream = (props: {
       })
         .then(() => {
           // Take a screen shot after the page mounts and zoom to fit runs
-          if (project && project.path) {
+          if (settings.meta.id.current) {
             createThumbnailPNGOnDesktop({
-              projectDirectoryWithoutEndingSlash: project.path,
-            })
+              name: settings.meta.id.current,
+            }).catch(reportRejection)
+          } else {
+            console.warn(
+              'Cannot create thumbnail PNG on desktop: no file name set'
+            )
           }
         })
         .catch((e) => {

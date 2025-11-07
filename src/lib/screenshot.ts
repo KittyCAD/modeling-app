@@ -1,4 +1,4 @@
-import { writeProjectThumbnailFile } from '@src/lib/desktop'
+import { getFullAppDataPath, writeProjectThumbnailFile } from '@src/lib/desktop'
 
 export function takeScreenshotOfVideoStreamCanvas() {
   const canvas = document.querySelector('[data-engine]')
@@ -44,31 +44,23 @@ export default async function screenshot(): Promise<string> {
   return takeScreenshotOfVideoStreamCanvas()
 }
 
-export function createThumbnailPNGOnDesktop({
-  projectDirectoryWithoutEndingSlash,
+export async function createThumbnailPNGOnDesktop({
+  name,
 }: {
-  projectDirectoryWithoutEndingSlash: string
+  name: string
 }) {
-  if (window.electron) {
+  if (window.electron && name) {
     const electron = window.electron
-    setTimeout(() => {
-      if (!projectDirectoryWithoutEndingSlash) {
-        return
-      }
+    try {
+      const appData = await getFullAppDataPath(electron)
+      const filePath = electron.path.join(appData, `${name}.png`)
+      console.log('filePath for thumbnail', filePath)
+      await new Promise((resolve) => setTimeout(resolve, 500))
       const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
       // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
-      writeProjectThumbnailFile(
-        electron,
-        dataUrl,
-        projectDirectoryWithoutEndingSlash
-      )
-        .then(() => {})
-        .catch((e) => {
-          console.error(
-            `Failed to generate thumbnail for ${projectDirectoryWithoutEndingSlash}`
-          )
-          console.error(e)
-        })
-    }, 500)
+      await writeProjectThumbnailFile(electron, dataUrl, filePath)
+    } catch (e) {
+      console.error(`Failed to generate thumbnail`, e)
+    }
   }
 }
