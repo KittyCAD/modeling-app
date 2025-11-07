@@ -272,9 +272,18 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 exec_state
                     .modules()
                     .values()
-                    .filter_map(|module| match &module.repr {
-                        ModuleRepr::Root | ModuleRepr::Foreign(..) | ModuleRepr::Dummy => None,
-                        ModuleRepr::Kcl(node, _) => Some(node.lint_all().expect("failed to lint program")),
+                    .filter_map(|module| {
+                        // Don't lint the stdlib.
+                        if matches!(module.path, ModulePath::Std { .. }) {
+                            return None;
+                        }
+                        // Only lint KCL files.
+                        match &module.repr {
+                            ModuleRepr::Root | ModuleRepr::Foreign(..) | ModuleRepr::Dummy => None,
+                            ModuleRepr::Kcl(node, _exec_result) => {
+                                Some(node.lint_all().expect("failed to lint program"))
+                            }
+                        }
                     })
                     .flatten(),
             );
