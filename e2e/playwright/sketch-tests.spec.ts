@@ -214,6 +214,8 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     homePage,
     toolbar,
     editor,
+    scene,
+    cmdBar,
   }) => {
     // Load the app with empty code
     await page.addInitScript(async () => {
@@ -226,13 +228,10 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     await test.step('Click Start Sketch button', async () => {
-      await page.getByRole('button', { name: 'Start Sketch' }).click()
-      await expect(
-        page.getByRole('button', { name: 'Exit Sketch' })
-      ).toBeVisible()
-      await expect(page.getByText('select a plane or face')).toBeVisible()
+      await toolbar.startSketchBtn.click()
     })
 
     await test.step('Open feature tree and select Front plane (XZ)', async () => {
