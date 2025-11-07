@@ -378,8 +378,11 @@ impl ExecState {
         let mut new_exec_artifacts = IndexMap::new();
         for module in self.global.module_infos.values_mut() {
             match &mut module.repr {
-                ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts)))
-                | ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
+                ModuleRepr::Kcl(_, Some(outcome)) => {
+                    new_commands.extend(outcome.artifacts.process_commands());
+                    new_exec_artifacts.extend(outcome.artifacts.artifacts.clone());
+                }
+                ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
                     new_commands.extend(module_artifacts.process_commands());
                     new_exec_artifacts.extend(module_artifacts.artifacts.clone());
                 }
