@@ -41,6 +41,10 @@ pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
 #[cfg(feature = "artifact-graph")]
 const REPO_ROOT: &str = "../..";
 
+fn is_writing() -> bool {
+    matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"))
+}
+
 impl Test {
     fn new(name: &str) -> Self {
         Self {
@@ -299,7 +303,20 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 
             ok_snap.unwrap();
 
-            assert_snapshot(test, "Lints", || insta::assert_json_snapshot!("lints", lint_findings));
+            let lint_snap_path = test.output_dir.join("lints.snap");
+            if lint_findings.is_empty() {
+                if is_writing() {
+                    let _ = std::fs::remove_file(&lint_snap_path);
+                } else if lint_snap_path.exists() {
+                    eprintln!(
+                        "This test case produced no lints, but it previously did. If this is intended, and the test should actually be lint-free now, please delete kcl-lib/{}.",
+                        lint_snap_path.to_string_lossy()
+                    );
+                    panic!("Missing lints");
+                }
+            } else {
+                assert_snapshot(test, "Lints", || insta::assert_json_snapshot!("lints", lint_findings));
+            }
         }
         Err(e) => {
             let ok_path = test.output_dir.join("execution_success.snap");
@@ -411,7 +428,7 @@ fn assert_artifact_snapshots(
         // can save new expected output.  There's no way to reliably determine
         // if insta will write, as far as I can tell, so we use our own
         // environment variable.
-        let is_writing = matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"));
+        let is_writing = is_writing();
         if !test.skip_assert_artifact_graph || is_writing {
             assert_snapshot(test, "Artifact graph flowchart", || {
                 let flowchart = artifact_graph
