@@ -424,6 +424,7 @@ extrude002 = extrude(profile002, to = capEnd001)`)
 
     // TODO: this isn't producing the right results yet
     // https://github.com/KittyCAD/engine/issues/3855
+    // and https://github.com/KittyCAD/modeling-app/issues/8831
     it('should add an extrude call to a chamfer face', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
