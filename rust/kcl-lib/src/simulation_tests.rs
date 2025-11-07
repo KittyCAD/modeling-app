@@ -231,6 +231,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
 async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     let input = test.read();
     let ast = crate::Program::parse_no_errs(&input).unwrap();
+    let program_to_lint = ast.clone();
 
     // Run the program.
     let exec_res = crate::test_server::execute_and_snapshot_ast(ast, Some(test.entry_point.clone()), export_step).await;
@@ -272,6 +273,13 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             assert_artifact_snapshots(test, module_state, outcome.artifact_graph);
 
             ok_snap.unwrap();
+
+            let lint_findings = program_to_lint.lint_all().expect("failed to lint program");
+            if lint_findings.is_empty() {
+                let _ = std::fs::remove_file(format!("tests/{}/lints.snap", test.name));
+            } else {
+                assert_snapshot(test, "Lints", || insta::assert_json_snapshot!("lints", lint_findings));
+            }
         }
         Err(e) => {
             let ok_path = test.output_dir.join("execution_success.snap");

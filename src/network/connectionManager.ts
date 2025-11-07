@@ -56,7 +56,7 @@ import {
   isModelingBatchResponse,
   isModelingResponse,
 } from '@src/lib/kcSdkGuards'
-import toast from 'react-hot-toast'
+import { showErrorToastPlusReportLink } from '@src/components/ToastErrorPlusReportLink'
 
 export class ConnectionManager extends EventTarget {
   started: boolean
@@ -648,8 +648,14 @@ export class ConnectionManager extends EventTarget {
       setTimeout(() => {
         if (!isSettled) {
           console.warn(message.command)
-          toast.error(
-            `command took more than ${PENDING_COMMAND_TIMEOUT} milliseconds to finish, rejecting the command.`
+          let details = message.command.type
+          if (message.command.type === 'modeling_cmd_req') {
+            details += ` - ${message.command.cmd.type}`
+          }
+          showErrorToastPlusReportLink(
+            `A command timed out and was rejected (${details}).`,
+            message.command,
+            'Command Timeout Error'
           )
           reject(
             `sendCommand rejected, you hit the timeout. ${JSON.stringify(message.command)}`
