@@ -49,6 +49,7 @@ import {
   SKETCH_SOLVE_GROUP,
 } from '@src/clientSideScene/sceneUtils'
 import type { Themes } from '@src/lib/theme'
+import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
 
 const equipTools = Object.freeze({
   centerRectTool,
@@ -413,6 +414,16 @@ export const sketchSolveMachine = setup({
         })
       }
     },
+    'cleanup sketch solve group': () => {
+      console.log('Cleaning up sketch solve group...')
+      const sketchSegments =
+        sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+      if (!sketchSegments || !(sketchSegments instanceof Group)) {
+        console.log('yo no sketch segments to clean up')
+        return
+      }
+      disposeGroupChildren(sketchSegments)
+    },
     'send unequip to tool': sendTo(CHILD_TOOL_ID, { type: 'unequip' }),
     'send update selection to equipped tool': sendTo(CHILD_TOOL_ID, {
       type: 'update selection',
@@ -610,7 +621,7 @@ export const sketchSolveMachine = setup({
     ...equipTools,
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZY1lVWWk1YzV5A3ltDg1tcysEAFoDI2UDWQ4lNWk5A0Uqz28QX2x8IjIKalo6cKiYvFh0cbxCUOxCAFswNIks4VyM-OkBg2VjU40a6-ljF0VGxFbpY2Uug0ubTp07rx8Vv5JkEZmFRGAAI6hZh8PAYQgkPYZA45cTHRDaRQqGoDWROeocWRqBqWZ5GaTKDS9eQ2eTyaSDUraf6jQETQLTELKLaEIKRUQQJbxRIYOgQMRgZTMUSkQjobm8sAAFQRxCR-EEhzRoBOnwpGipPw42jkZlJBTUykGBjUxMG3Q0xpZYyBHOCtAVfIFQoSSQYACd-YR-co+MRogAzYNbT3K1XqzKa1F5GSfc72KrU2R47QDJ4IU7aVQ2+nlS4uDinZ1sgJTd2SnlewVxX2iyHQ2HwxHcfZJlIpgt2ZSE+7GeQaapFLHyfMGdyqQbGOqVNqKG3Vvzsuug5ShISiKBw1VzcFQmFH7vpDXZfvogvG+SUsp49RdA3E-NaItY4y-3Mm20nRGF0txBLk92lQ8u2IBgz07eMe2RPsjh1RAigpT46m0XQTFkG01HzbQFHeLFZA0BQ6kUeppA3VZgU5D1YAAd1YXBIIvGDGFgDBoklcVwWUSIkmDZQExRW9UIQIpzjuCp9ExJdygI81iUfBk8InKi1AUOdaNdbdwNPDs+HY6C6C4niYmUfjJSE+EQzE5DtUkGRjWKNpjGua5pHzV4KW0-QJzURwqiKLwRlEEJ4AyEDazA2hexvFCXIQYLh0KRQxwnO4bEGfNmkyylf2zPFjDabzsL00CGIbRU8H5ZthSSRKtQHcj3LKvCGTUBw83NOxzh0pdyo4RRCSquKat3fcoNVFrkzvEwVGqcl1GqHRHnNR1HzXIkDSxTFFAm+j62UZjWJwUy5qQpLnPyT5vzK21LgNExpBnFTOmUbCaXqeoDEJYLjrdHcmGEA95oklLpF0S0iO07QTGMJxylkfNf2LSo3J-f95GBgyPVCIyYRMg8OMh5LdXI5RXl6SpMp6sp8wO945EUBlFEKKp2fCjwgA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUDWYAuBjAFgAmQHsAbANzDwFlCIwBiMADwEsMBtABgF1FQAHQrFbNCAO14hGiAIwB2ABwBWAHTyAbAGZFAFiXyOAJg0BOADQgAnolkrpHQwe1rFz59I0BfD+bSZcBEnIqGnoAVz4IAEMMClgwYjAsDBFRTh4kEAEhZLEJKQRZNXllRX1jDQM1A3lpA1lzKwQAWgNjA2U1aTVC+07jRQ0NNS8fdGx8IjIKalo6cKiYvFgx-0JQ7EIAWzA0iSzhXIz82sV241qNeW1L+X7nBsQWk2VDaXV1cp1tGxGQX3GAlNgrNQqIwABHULMPh4DCEEi7DL7HLiI6IbSKFRXAyKWRODTaDiFbQPZpGaTKIZvGzyGqlWTSbS-f7+SZBGb0LCEZiiLDMWiidjcPaCA6o0CNJpKSnGYyyGwExW6eqSRBGDjGVSaHR6QwmZkrCaBaYhOgAGR5cAAopDIsQzWBRFAMDhEfxRSiJJLpSY5QrrgH5Cr8urNeotLpSnrjAa-EagRy6AA1MAAJ2SWDtbsyHpSXsePtl8oGAYJQfMIY0Gq1Ed1Rhj3j+hsB7NNAAlCKnmAAvMQYLPCpG5w4SgsqX3FpVl4Nqqth7WR-T12MAtkmkERaKxeKJGIQPD82DZ5F5jLe8dF-1K8uqhChms6qPLxss+Ot2jKTaEIKRUT7uIJEkdAQGIYDKDypCEOgn7fmAAAq8LEMew7iretTnJSQx1IoHDaHIZiWNYaglPIlRqBi+jyFWTIvs2a7AmBX4-n+Sw7kBaapp2yh8MQ0QAGadpsMHkAhCKDu62SnqAxytO09ikZ0QZ4toOKkrU2iqJUNRqLK0guBwtQrqyxoMcJFC-v+bEYAwkLQrCiHIZJI5oXYLyyP0xhUdUcqYvIpIGO4qilMYHBDKROKVEZb7rmBoRCE69kkHMYK2TCcJiekElinkMi4cUGhdHi6iyKFQwkoRCARiUiiysYKl4Woai4VFLYxcocU8lAiXEDZUJpQ54k5k5qH5HKFKtKF2i6CYshkaS3zFDYuIaAooUltILX0RyyiwAA7qwuCdd1dCMLA-YxMoIFgsokRJFxjnZWiCByu0tzGEUuE1RwOlqKS5HFHps0VAM3SkRttFxq1pmghCfV8Ed6U9ad51gVdYG3XCqbKA9npPXY3zKAYrSXJc0hqRhoOhZUjikXKXiNqIITwBkr5QxyIrDTlCBVG5HlebcS1+RVUoXnKQYGTpQZVJtJnbUx5ksQBu4c490mICtsiE20s16U1ROqRVdjtAoE1E1WOGyDLCYhO18VdYjKu42rlX9ITpEFeo1Q6IopJVsUpyFIMmIYooVvvmBe0HTgCOIY7Um3q0Gk1WR5yDCYbx-XUyhTUGSoGES0sQ6uss20wwhOnHznHLoxHfN01yyk4Okqo0sqaR93yYnVNNh21MOpfDCUO0OnN40YmvSO9XRKO9EuksHygMjYem4p5OLg14QA */
   context: ({ input }): SketchSolveContext => ({
     sketchSolveToolName: null,
     selectedIds: [],
@@ -621,7 +632,11 @@ export const sketchSolveMachine = setup({
   on: {
     exit: {
       target: '#Sketch Solve Mode.exiting',
-      actions: ['send unequip to tool', 'send tool unequipped to parent'],
+      actions: [
+        'send unequip to tool',
+        'send tool unequipped to parent',
+        'cleanup sketch solve group',
+      ],
       description:
         'the outside world can request that sketch mode exit, but it needs to handle its own teardown first.',
     },
