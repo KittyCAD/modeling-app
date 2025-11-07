@@ -52,6 +52,7 @@ import {
 } from '@src/clientSideScene/sceneUtils'
 import type { Themes } from '@src/lib/theme'
 import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
+import { forceSuffix } from '@src/lang/util'
 
 const equipTools = Object.freeze({
   centerRectTool,
@@ -251,12 +252,12 @@ function applyVectorToPoint2D(
     x: {
       type: 'Var',
       value: roundOff(xValue.value + vector.x),
-      units: xValue.units as any,
+      units: forceSuffix(xValue.units),
     },
     y: {
       type: 'Var',
       value: roundOff(yValue.value + vector.y),
-      units: yValue.units as any,
+      units: forceSuffix(yValue.units),
     },
   }
 }
@@ -524,16 +525,18 @@ export const sketchSolveMachine = setup({
           const el = document.elementFromPoint(
             mouseEvent.clientX,
             mouseEvent.clientY
-          ) as HTMLElement | null
-          let cur: HTMLElement | null = el
+          )
+          let cur = el
           let pointId: number | null = null
           while (cur) {
-            const idAttr = cur.dataset?.segment_id
-            if (idAttr && !Number.isNaN(Number(idAttr))) {
-              pointId = Number(idAttr)
-              break
+            if (cur instanceof HTMLElement) {
+              const idAttr = cur.dataset?.segment_id
+              if (idAttr && !Number.isNaN(Number(idAttr))) {
+                pointId = Number(idAttr)
+                break
+              }
+              cur = cur.parentElement
             }
-            cur = cur.parentElement
           }
 
           if (pointId != null) {
@@ -553,8 +556,11 @@ export const sketchSolveMachine = setup({
         onMouseEnter: ({ selected }) => {
           if (!selected) return
           // Check if it's a line segment mesh
-          const mesh = selected as Mesh
-          if (mesh.userData?.type === STRAIGHT_SEGMENT_BODY) {
+          const mesh = selected
+          if (
+            mesh.userData?.type === STRAIGHT_SEGMENT_BODY &&
+            mesh instanceof Mesh
+          ) {
             const snapshot = self.getSnapshot()
             const selectedIds = snapshot.context.selectedIds
             updateLineSegmentHover(mesh, true, selectedIds)
@@ -571,8 +577,11 @@ export const sketchSolveMachine = setup({
           }
           // Also handle if selected is provided (for safety)
           if (selected) {
-            const mesh = selected as Mesh
-            if (mesh.userData?.type === STRAIGHT_SEGMENT_BODY) {
+            const mesh = selected
+            if (
+              mesh.userData?.type === STRAIGHT_SEGMENT_BODY &&
+              mesh instanceof Mesh
+            ) {
               const snapshot = self.getSnapshot()
               const selectedIds = snapshot.context.selectedIds
               updateLineSegmentHover(mesh, false, selectedIds)
