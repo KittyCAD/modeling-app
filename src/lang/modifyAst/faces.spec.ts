@@ -320,8 +320,7 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
       )
       const twoCaps = [...artifactGraph.values()]
         .filter((a) => a.type === 'cap' && a.subType === 'end')
-        .slice(0, 2)
-        .reverse()
+        .slice(1, 3)
       const faces = createSelectionFromArtifacts(twoCaps, artifactGraph)
       const thickness = (await stringToKclExpression(
         '5',
@@ -336,6 +335,50 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(multiSolidsShell)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+    })
+
+    it('should add a shell on an end face of an extrude later sketched on in another direction', async () => {
+      // Code from https://github.com/KittyCAD/modeling-app/issues/7334#issuecomment-3493494067
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-207.31, -191.75])
+  |> angledLine(angle = 0deg, length = 414.62, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 383.5, tag = $seg01)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 400)
+sketch002 = startSketchOn(extrude001, face = seg01)
+profile002 = startProfile(sketch002, at = [-108.39, 85.39])
+  |> angledLine(angle = 0deg, length = 216.78, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) + 90deg, length = 245.9)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(profile002, length = 200)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const firstCap = [...artifactGraph.values()]
+        .filter((a) => a.type === 'cap' && a.subType === 'end')
+        .slice(0, 1)
+      const faces = createSelectionFromArtifacts(firstCap, artifactGraph)
+      const thickness = (await stringToKclExpression(
+        '0.1',
+        undefined,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addShell({ ast, artifactGraph, faces, thickness })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${code}
+shell001 = shell(extrude001, faces = END, thickness = 0.1)`)
       await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
     })
   })
