@@ -1,0 +1,30 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints cylinder.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0004",
+      "title": "profiles should not be chained",
+      "description": "Functions like startProfile, circle, ellipse, rectangle, polygon and others that start a new profile should not be chained together in a pipeline ✏️\n\nWhen using multiple profile functions in a pipeline, only the last profile is returned. This can lead to unexpected results if earlier profiles are intended to contribute to the final shape.\n\nInstead, try assigning the result of each profile to a variable and when extruding, use an array of those variables.\n",
+      "experimental": false
+    },
+    "description": "Profiles should not be chained together in a pipeline.",
+    "pos": [
+      351,
+      405,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "Use separate profile variables and handle them all using an array.",
+      "insert": "// Cylinder\n// A cylinder is a primitive shape defined by its diameter and length\n\n\n\n\n@settings(defaultLengthUnit = mm)\n\n// Define parameters\nlength = 10\ndiameter = 10\n\n// create a sketch for the cylinder profile on the XY plane\nsketch = startSketchOn(XY)\n\n// create the profile centered at the origin\nprofile = startProfile(sketch, at = [0, 0])\nprofile1 = circle(sketch, center = profileStart(), radius = diameter / 2)\ncylinder = extrude([profile, profile1], length = length)\n",
+      "source_range": [
+        0,
+        493,
+        0
+      ]
+    }
+  }
+]

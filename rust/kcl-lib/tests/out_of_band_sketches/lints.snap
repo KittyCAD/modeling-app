@@ -1,0 +1,54 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints out_of_band_sketches.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false
+    },
+    "description": "found 'profile001extended'",
+    "pos": [
+      508,
+      526,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'profile001extended' to 'profile001Extended'",
+      "insert": "sketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [27.67, 239.34])\n  // enter sketch mode, start path, move path pen, disable sketch mode\n  |> line(end = [414.61, 0]) // extend path\n  |> line(end = [33.98, -389.36]) // extend path\n\nsketch002 = startSketchOn(XY)\nprofile002 = startProfile(sketch002, at = [67.04, -63.5])\n  // enter sketch mode, start path, move path pen, disable sketch mode\n  |> line(end = [282.37, 0]) // extend path\n  |> line(end = [-12.77, -178.07]) // extend path\n\nprofile001Extended = profile001\n  |> line(end = [-455.38, 0]) // extend path\n  |> close() // close\n\nprofile002extended = profile002\n  |> line(end = [-299.39, 21.28]) // extend path\n  |> close() // close\n\nextrude([profile001Extended, profile002extended], length = 10.14) // for each extrude: enter sketch mode, extrude, exit sketch mode\n",
+      "source_range": [
+        0,
+        844,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false
+    },
+    "description": "found 'profile002extended'",
+    "pos": [
+      608,
+      626,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'profile002extended' to 'profile002Extended'",
+      "insert": "sketch001 = startSketchOn(XZ)\nprofile001 = startProfile(sketch001, at = [27.67, 239.34])\n  // enter sketch mode, start path, move path pen, disable sketch mode\n  |> line(end = [414.61, 0]) // extend path\n  |> line(end = [33.98, -389.36]) // extend path\n\nsketch002 = startSketchOn(XY)\nprofile002 = startProfile(sketch002, at = [67.04, -63.5])\n  // enter sketch mode, start path, move path pen, disable sketch mode\n  |> line(end = [282.37, 0]) // extend path\n  |> line(end = [-12.77, -178.07]) // extend path\n\nprofile001extended = profile001\n  |> line(end = [-455.38, 0]) // extend path\n  |> close() // close\n\nprofile002Extended = profile002\n  |> line(end = [-299.39, 21.28]) // extend path\n  |> close() // close\n\nextrude([profile001extended, profile002Extended], length = 10.14) // for each extrude: enter sketch mode, extrude, exit sketch mode\n",
+      "source_range": [
+        0,
+        844,
+        0
+      ]
+    }
+  }
+]
