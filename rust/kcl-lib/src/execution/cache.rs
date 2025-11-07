@@ -262,8 +262,8 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
 /// [get_changed_program]. This is purely to contain the logic on
 /// how we construct a new [CacheResult].
 ///
-/// A CacheResult's program may be a *diff* of only the parts that need 
-/// to be executed (only in the case of "pure additions" at time of writing.). 
+/// A CacheResult's program may be a *diff* of only the parts that need
+/// to be executed (only in the case of "pure additions" at time of writing.).
 /// This diff-based AST should not be persisted or used anywhere beyond the execution flow,
 /// as it will be incomplete.
 ///
