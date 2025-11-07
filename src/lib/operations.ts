@@ -698,7 +698,8 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
   const { faces: face } = result
 
   // 2.1 Convert the required arg from string to KclExpression
-  const cutAt = await extractKclArgument(operation, 'cutAt')
+  const isArray = true
+  const cutAt = await extractKclArgument(operation, 'cutAt', isArray)
   if ('error' in cutAt) return { reason: cutAt.error }
 
   // 2.2 Handle the holeBody required 'mode' arg and its related optional args
