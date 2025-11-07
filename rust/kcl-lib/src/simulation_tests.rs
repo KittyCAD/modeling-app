@@ -276,7 +276,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 
             let lint_findings = program_to_lint.lint_all().expect("failed to lint program");
             if lint_findings.is_empty() {
-                let _ = std::fs::remove_file(format!("tests/{}/lints.snap", test.name));
+                let _ = std::fs::remove_file(test.output_dir.join("lints.snap"));
             } else {
                 assert_snapshot(test, "Lints", || insta::assert_json_snapshot!("lints", lint_findings));
             }
