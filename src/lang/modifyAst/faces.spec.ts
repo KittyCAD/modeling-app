@@ -379,7 +379,8 @@ extrude002 = extrude(profile002, length = 200)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${code}
 shell001 = shell(extrude001, faces = END, thickness = 0.1)`)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      const modifiedAst = result.modifiedAst
+      await enginelessExecutor(modifiedAst, undefined, undefined, rustContextInThisFile)
     })
   })
 
