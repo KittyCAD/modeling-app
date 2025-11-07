@@ -41,6 +41,10 @@ pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
 #[cfg(feature = "artifact-graph")]
 const REPO_ROOT: &str = "../..";
 
+fn is_writing() -> bool {
+    matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"))
+}
+
 impl Test {
     fn new(name: &str) -> Self {
         Self {
@@ -263,6 +267,31 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 })
             }));
 
+            #[cfg(not(feature = "artifact-graph"))]
+            let lint_findings = program_to_lint.lint_all().expect("failed to lint program");
+            #[cfg(feature = "artifact-graph")]
+            let mut lint_findings = program_to_lint.lint_all().expect("failed to lint program");
+            #[cfg(feature = "artifact-graph")]
+            lint_findings.extend(
+                exec_state
+                    .modules()
+                    .values()
+                    .filter_map(|module| {
+                        // Don't lint the stdlib.
+                        if matches!(module.path, ModulePath::Std { .. }) {
+                            return None;
+                        }
+                        // Only lint KCL files.
+                        match &module.repr {
+                            ModuleRepr::Root | ModuleRepr::Foreign(..) | ModuleRepr::Dummy => None,
+                            ModuleRepr::Kcl(node, _exec_result) => {
+                                Some(node.lint_all().expect("failed to lint program"))
+                            }
+                        }
+                    })
+                    .flatten(),
+            );
+
             let (outcome, module_state) = exec_state.into_test_exec_outcome(env_ref, &ctx, &test.input_dir).await;
 
             assert_common_snapshots(test, outcome.variables);
@@ -274,9 +303,17 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 
             ok_snap.unwrap();
 
-            let lint_findings = program_to_lint.lint_all().expect("failed to lint program");
+            let lint_snap_path = test.output_dir.join("lints.snap");
             if lint_findings.is_empty() {
-                let _ = std::fs::remove_file(format!("tests/{}/lints.snap", test.name));
+                if is_writing() {
+                    let _ = std::fs::remove_file(&lint_snap_path);
+                } else if lint_snap_path.exists() {
+                    eprintln!(
+                        "This test case produced no lints, but it previously did. If this is intended, and the test should actually be lint-free now, please delete kcl-lib/{}.",
+                        lint_snap_path.to_string_lossy()
+                    );
+                    panic!("Missing lints");
+                }
             } else {
                 assert_snapshot(test, "Lints", || insta::assert_json_snapshot!("lints", lint_findings));
             }
@@ -391,7 +428,7 @@ fn assert_artifact_snapshots(
         // can save new expected output.  There's no way to reliably determine
         // if insta will write, as far as I can tell, so we use our own
         // environment variable.
-        let is_writing = matches!(std::env::var("ZOO_SIM_UPDATE").as_deref(), Ok("always"));
+        let is_writing = is_writing();
         if !test.skip_assert_artifact_graph || is_writing {
             assert_snapshot(test, "Artifact graph flowchart", || {
                 let flowchart = artifact_graph
