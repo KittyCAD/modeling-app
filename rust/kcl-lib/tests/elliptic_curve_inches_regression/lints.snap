@@ -1,0 +1,30 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints elliptic_curve_inches_regression.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0004",
+      "title": "profiles should not be chained",
+      "description": "Functions like startProfile, circle, ellipse, rectangle, polygon and others that start a new profile should not be chained together in a pipeline ✏️\n\nWhen using multiple profile functions in a pipeline, only the last profile is returned. This can lead to unexpected results if earlier profiles are intended to contribute to the final shape.\n\nInstead, try assigning the result of each profile to a variable and when extruding, use an array of those variables.\n",
+      "experimental": false
+    },
+    "description": "Profiles should not be chained together in a pipeline.",
+    "pos": [
+      426,
+      593,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "Use separate profile variables and handle them all using an array.",
+      "insert": "// The length unit of this file is inches (in)\n@settings(defaultLengthUnit = in, experimentalFeatures = allow)\n\n// define a plane plane000\nplane000 = {\n  origin = [0, 0, 0],\n  xAxis = [1, 0, 0],\n  yAxis = [0, -1, 0]\n}\n\n// create a sketch sketch000\nsketch000 = startSketchOn(plane000)\n\n// create sketch profile sketch000Profile003\nsketch000Profile003 = startProfile(sketch000, at = [90.65875528983305, 60.85517063645204])\nprofile1 = elliptic(\n       sketch000,\n       center = [0, 60.855171],\n       angleStart = 0deg,\n       angleEnd = 180deg,\n       majorAxis = [90.658755, 0],\n       minorRadius = 16.805477,\n     )\n  |> bezierCurve(end = [50.20468, -26.67249], control1 = [15.007446, -25.538491], control2 = [32.368565, -29.659071])\n  |> bezierCurve(end = [53.78895, 13.192256], control1 = [17.836115, 2.986581], control2 = [36.147227, 13.080324])\n  |> bezierCurve(end = [48.136051, -11.042286], control1 = [17.641723, 0.111932], control2 = [34.614058, -9.757945])\n  |> bezierCurve(end = [29.187829, 24.522519], control1 = [13.521993, -1.284341], control2 = [23.593644, 6.016856])\n  |> close()\n",
+      "source_range": [
+        0,
+        1073,
+        0
+      ]
+    }
+  }
+]

@@ -1,0 +1,30 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints manhole-cover.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0004",
+      "title": "profiles should not be chained",
+      "description": "Functions like startProfile, circle, ellipse, rectangle, polygon and others that start a new profile should not be chained together in a pipeline ✏️\n\nWhen using multiple profile functions in a pipeline, only the last profile is returned. This can lead to unexpected results if earlier profiles are intended to contribute to the final shape.\n\nInstead, try assigning the result of each profile to a variable and when extruding, use an array of those variables.\n",
+      "experimental": false
+    },
+    "description": "Profiles should not be chained together in a pipeline.",
+    "pos": [
+      709,
+      757,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "Use separate profile variables and handle them all using an array.",
+      "insert": "// Vented Manhole Cover\n// Made of cast iron, these covers are strong enough to handle high-volume foot and vehicle traffic. Use them to cover manholes on roads, parking lots, or walkways. ADA Compliant—Covers that are ADA Compliant prevent narrow wheels from getting stuck since they have 1/2\" wide slots.\n\n\n\n\n@settings(defaultLengthUnit = in)\n\n// Define parameters\norigin2D = [0, 0]\ndiameter = 22 + 3 / 4\nedgeThickness = 1 + 3 / 4\nslotWidth = 0.5\npickHoleLength = 1\npickHoleWidth = 2\npickHoleDepth = 1 + 1 / 8\n\n// create a sketch for the manhole cover\nmanholeSketch = startSketchOn(XY)\n\n// create the circular profile for the manhole cover\nmanholeProfile = startProfile(manholeSketch, at = origin2D)\nprofile1 = circle(manholeSketch, center = origin2D, radius = diameter / 2)\nfn slot(start, length, width) {\n  return startProfile(manholeSketch, at = start)\n    |> angledLine(angle = 125, length = length - (width / 2))\n    |> arc(angleStart = 215, angleEnd = 35, radius = width / 2)\n    |> angledLine(angle = -55, length = length - (width / 2))\n    |> arc(angleStart = 35, angleEnd = -145, radius = width / 2)\n    |> close()\n}\n\n// create the slots\nslot1 = slot(start = [5.67437, -8.539703], length = 20.5, width = slotWidth)\nslot2 = slot(start = [3.568886, -9.673446], length = 19.954, width = slotWidth)\nslot3 = slot(start = [1.114006, -10.3082], length = 18.166, width = slotWidth)\nslot4 = slot(start = [-1.814767, -10.266164], length = 14.737, width = slotWidth)\nslot5 = slot(start = [7.46, -6.949], length = 19.954, width = slotWidth)\nslot6 = slot(start = [8.8960, -4.8592], length = 18.166, width = slotWidth)\nslot7 = slot(start = [9.8581, -2.0927], length = 14.737, width = slotWidth)\nslot8 = slot(start = [-5.779208, -8.745042], length = 7.6974, width = slotWidth)\nslot9 = slot(start = [9.7847, 2.1529], length = 7.6974, width = slotWidth)\n\n// create the manhole cover by subtracting the slots from the circular profile, extrude to the desired thickness\nmanhole = manholeProfile\n  |> subtract2d(tool = [\n       slot1,\n       slot2,\n       slot3,\n       slot4,\n       slot5,\n       slot6,\n       slot7,\n       slot8,\n       slot9\n     ])\n  |> extrude(length = edgeThickness / 2, bidirectionalLength = edgeThickness / 2)\n\n// create the pick hole sketch, the pickhole is used for lifting the manhole cover\npickHoleSketch = startSketchOn(offsetPlane(YZ, offset = diameter / 2))\n\n// create the rectangular profile for the pick hole\npickHoleProfile = startProfile(\n       pickHoleSketch,\n       at = [\n         -pickHoleWidth / 2,\n         edgeThickness / 2 + 0.1\n       ],\n     )\n  |> xLine(length = pickHoleWidth)\n  |> yLine(length = -pickHoleDepth)\n  |> xLine(length = -pickHoleWidth)\n  |> close()\n\n// create the pick hole by extruding the rectangular profile and subtracting it from the manhole cover\npickHole = pickHoleProfile\n  |> extrude(length = -pickHoleLength)\n  |> subtract(manhole, tools = %)\n",
+      "source_range": [
+        0,
+        2964,
+        0
+      ]
+    }
+  }
+]
