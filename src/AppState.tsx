@@ -60,8 +60,6 @@ const AppStreamContext = createContext<AppStream>({
   setMediaStream: () => {},
 })
 
-export const useAppStream = () => useContext(AppStreamContext)
-
 export const AppStreamProvider = ({ children }: { children: ReactNode }) => {
   const [mediaStream, setMediaStream] = useState<MediaStream>(
     undefined as unknown as MediaStream

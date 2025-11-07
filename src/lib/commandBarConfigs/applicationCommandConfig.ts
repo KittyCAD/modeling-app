@@ -363,7 +363,7 @@ export function createApplicationCommands({
           }
           return value
         },
-        options: ({ argumentsToSubmit }) => {
+        options: () => {
           const samples = isDesktop()
             ? everyKclSample
             : kclSamplesManifestWithNoMultipleFiles
