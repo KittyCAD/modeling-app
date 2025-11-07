@@ -642,7 +642,6 @@ export const readRecentProjectsFile = async (
   electron: IElectronAPI
 ): Promise<RecentProject[] | null> => {
   const path = await getRecentProjectsPath(electron)
-  console.log('Reading recent projects from', path)
   if (electron.exists(path)) {
     const content: string = await electron.readFile(path, {
       encoding: 'utf-8',
@@ -662,7 +661,6 @@ export const writeRecentProjectsFile = async (
     recentProjectsPath,
     JSON.stringify(recentProjects)
   )
-  console.log('recent projects written to disk')
   return result
 }
 

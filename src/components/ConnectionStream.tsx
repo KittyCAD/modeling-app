@@ -150,24 +150,19 @@ export const ConnectionStream = (props: {
         setShowManualConnect,
       })
         .then(() => {
-          // Take a screen shot after the page mounts and zoom to fit runs
-          if (settings.meta.id.current) {
-            createThumbnailPNGOnDesktop({
-              name: settings.meta.id.current,
-            }).catch(reportRejection)
+          if (project && project.path && settings.meta.id.current) {
+            // Take a screen shot after the page mounts and zoom to fit runs, and save to recent projects
+            Promise.all([
+              createThumbnailPNGOnDesktop({
+                id: settings.meta.id.current,
+                projectDirectoryWithoutEndingSlash: project.path,
+              }),
+              saveToRecentProjects(project.path, settings.meta.id.current),
+            ]).catch(reportRejection)
           } else {
             console.warn(
-              'Cannot create thumbnail PNG on desktop: no file name set'
+              'Cannot save to recent projects or create thumbnail: missing project or settings meta id'
             )
-          }
-
-          // Save to recent projects
-          if (project && project.path) {
-            saveToRecentProjects(project.path, settings.meta.id.current).catch(
-              reportRejection
-            )
-          } else {
-            console.warn('Cannot save to recent projects: no project path set')
           }
         })
         .catch((e) => {

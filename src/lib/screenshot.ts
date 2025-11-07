@@ -2,6 +2,7 @@ import {
   getProjectThumbnailsPath,
   writeProjectThumbnailFile,
 } from '@src/lib/desktop'
+import { PROJECT_IMAGE_NAME } from '@src/lib/constants'
 
 export function takeScreenshotOfVideoStreamCanvas() {
   const canvas = document.querySelector('[data-engine]')
@@ -48,23 +49,36 @@ export default async function screenshot(): Promise<string> {
 }
 
 export async function createThumbnailPNGOnDesktop({
-  name,
+  id,
+  projectDirectoryWithoutEndingSlash,
 }: {
-  name: string
+  id: string
+  projectDirectoryWithoutEndingSlash: string
 }) {
-  if (window.electron && name) {
-    const electron = window.electron
-    try {
-      const thumbnailsDir = await getProjectThumbnailsPath(electron)
-      const filePath = electron.path.join(thumbnailsDir, `${name}.png`)
+  if (!window.electron || !id || !projectDirectoryWithoutEndingSlash) {
+    console.warn(
+      'Cannot create thumbnail PNG: not desktop or missing parameters'
+    )
+    return
+  }
 
-      // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
-      await new Promise((resolve) => setTimeout(resolve, 500))
-      const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
+  const electron = window.electron
+  try {
+    // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
 
-      await writeProjectThumbnailFile(electron, dataUrl, filePath)
-    } catch (e) {
-      console.error(`Failed to generate thumbnail`, e)
-    }
+    const thumbnailsDir = await getProjectThumbnailsPath(electron)
+    const filePath = electron.path.join(thumbnailsDir, `${id}.png`)
+    await writeProjectThumbnailFile(electron, dataUrl, filePath)
+
+    // TODO: remove once we're retiring the old thumbnail.png
+    const oldThumbnailPath = electron.path.join(
+      projectDirectoryWithoutEndingSlash,
+      PROJECT_IMAGE_NAME
+    )
+    await writeProjectThumbnailFile(electron, dataUrl, oldThumbnailPath)
+  } catch (e) {
+    console.error(`Failed to generate thumbnail`, e)
   }
 }
