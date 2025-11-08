@@ -90,6 +90,14 @@ profile002 = startProfile(sketch002, at = [10, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(profile002, length = 5)`
+  const revolvedCShapeWithRectangularProfile = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 1])
+  |> yLine(length = 3)
+  |> xLine(length = 4)
+  |> yLine(length = -3)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+revolve001 = revolve(profile001, angle = 270deg, axis = X)`
 
   describe('Testing addFillet', () => {
     it('should add a basic fillet call on sweepEdge', async () => {
@@ -386,6 +394,52 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       // Should have created two separate fillet calls, one for each body
       expect(newCode).toContain('fillet001 = fillet(extrude001')
       expect(newCode).toContain('fillet002 = fillet(extrude002')
+
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
+    })
+
+    it('should add a fillet call on a 4 unit long edge of revolve', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        revolvedCShapeWithRectangularProfile,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      // Find a sweepEdge from the revolve
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )!
+
+      const selection = createSelectionFromArtifacts([sweepEdge], artifactGraph)
+
+      const radius = (await stringToKclExpression(
+        '0.5',
+        undefined,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+
+      // Verify the fillet was added
+      expect(newCode).toContain('fillet001 = fillet(revolve001')
+      expect(newCode).toContain('radius = 0.5')
 
       await enginelessExecutor(
         result.modifiedAst,
@@ -706,6 +760,52 @@ chamfer001 = chamfer(
         rustContextInThisFile
       )
     })
+
+    it('should add a chamfer call on a 4 unit long edge of revolve', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        revolvedCShapeWithRectangularProfile,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      // Find a sweepEdge from the revolve
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )!
+
+      const selection = createSelectionFromArtifacts([sweepEdge], artifactGraph)
+
+      const length = (await stringToKclExpression(
+        '0.5',
+        undefined,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addChamfer({
+        ast,
+        artifactGraph,
+        selection,
+        length,
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+
+      // Verify the chamfer was added
+      expect(newCode).toContain('chamfer001 = chamfer(revolve001')
+      expect(newCode).toContain('length = 0.5')
+
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
+    })
   })
 
   const runDeleteEdgeTreatmentTest = async (
@@ -972,6 +1072,45 @@ extrude001 = extrude(sketch001, length = -15)
   |> ${edgeTreatmentType}(${parameterName} = 3, tags = [seg01])
   |> fillet(radius = 5, tags = [getOppositeEdge(seg02)])
 chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
+
+          await runDeleteEdgeTreatmentTest(
+            code,
+            edgeTreatmentSnippet,
+            expectedCode,
+            instanceInThisFile,
+            kclManagerInThisFile
+          )
+        }, 10_000)
+        // Revolve-specific test
+        it(`should delete a ${edgeTreatmentType} from a revolved C-shape with rectangular profile`, async () => {
+          const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 1])
+  |> yLine(length = 3)
+  |> xLine(length = 4, tag = $seg01)
+  |> yLine(length = -3)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+revolve001 = revolve(
+  profile001,
+  angle = 270deg,
+  axis = X,
+  tagStart = $capStart001,
+)
+${edgeTreatmentType}001 = ${edgeTreatmentType}(revolve001, tags = getCommonEdge(faces = [seg01, capStart001]), ${parameterName} = 1)`
+          const edgeTreatmentSnippet = `${edgeTreatmentType}001 = ${edgeTreatmentType}(revolve001, tags = getCommonEdge(faces = [seg01, capStart001]), ${parameterName} = 1)`
+          const expectedCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 1])
+  |> yLine(length = 3)
+  |> xLine(length = 4, tag = $seg01)
+  |> yLine(length = -3)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+revolve001 = revolve(
+  profile001,
+  angle = 270deg,
+  axis = X,
+  tagStart = $capStart001,
+)`
 
           await runDeleteEdgeTreatmentTest(
             code,
