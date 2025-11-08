@@ -246,6 +246,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-union-2",
     "std-solid-subtract-0",
     "std-solid-subtract-1",
+    "std-solid-subtract-2",
     "std-transform-mirror2d-0",
     "std-transform-mirror2d-1",
     "std-transform-mirror2d-2",
