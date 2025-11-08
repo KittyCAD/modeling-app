@@ -403,7 +403,7 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       )
     })
 
-    it('should add a fillet call on a 4 unit long edge of revolve', async () => {
+    it('should add a fillet call to revolve', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         revolvedCShapeWithRectangularProfile,
         instanceInThisFile,
@@ -761,7 +761,7 @@ chamfer001 = chamfer(
       )
     })
 
-    it('should add a chamfer call on a 4 unit long edge of revolve', async () => {
+    it('should add a chamfer call to revolve', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         revolvedCShapeWithRectangularProfile,
         instanceInThisFile,
