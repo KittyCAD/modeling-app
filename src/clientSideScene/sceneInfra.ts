@@ -1,5 +1,6 @@
 import * as TWEEN from '@tweenjs/tween.js'
-import type { Group, Intersection, Object3D, Object3DEventMap } from 'three'
+import type { Intersection, Object3D, Object3DEventMap } from 'three'
+import { Group } from 'three'
 import {
   AmbientLight,
   Color,
@@ -13,6 +14,7 @@ import {
   WebGLRenderer,
 } from 'three'
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 import { CameraControls } from '@src/clientSideScene/CameraControls'
 import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
@@ -672,12 +674,97 @@ export class SceneInfra {
     this.modelingSend({ type: 'Set mouse state', data: mouseState })
   }
 
+  /**
+   * Helper function to find a CSS2DObject (point segment) under the cursor
+   * Returns the CSS2DObject and its parent Group if found
+   */
+  private findCSS2DObjectUnderCursor(
+    event: MouseEvent
+  ): { css2dObject: CSS2DObject; parentGroup: Group } | null {
+    const el = document.elementFromPoint(
+      event.clientX,
+      event.clientY
+    ) as HTMLElement | null
+    if (!el) return null
+
+    // Traverse up the DOM to find the element with segment_id
+    let cur: HTMLElement | null = el
+    while (cur) {
+      const idAttr = cur.dataset?.segment_id
+      if (idAttr && !Number.isNaN(Number(idAttr))) {
+        // Found the element, now find the CSS2DObject in the scene
+        // CSS2DObjects are in SKETCH_SOLVE_GROUP, so search there first for efficiency
+        const segmentId = Number(idAttr)
+        const findCSS2DObject = (object: Object3D): CSS2DObject | null => {
+          if (object instanceof CSS2DObject) {
+            // Match by element reference or by segment_id in the element's dataset
+            if (
+              object.element === cur ||
+              (object.element instanceof HTMLElement &&
+                object.element.dataset.segment_id === idAttr)
+            ) {
+              return object
+            }
+          }
+          for (const child of object.children) {
+            const found = findCSS2DObject(child)
+            if (found) return found
+          }
+          return null
+        }
+
+        // Try SKETCH_SOLVE_GROUP first (where point segments are)
+        const sketchSolveGroup = this.scene.getObjectByName('sketchSolveGroup')
+        let css2dObject: CSS2DObject | null = null
+        if (sketchSolveGroup) {
+          css2dObject = findCSS2DObject(sketchSolveGroup)
+        }
+
+        // Fallback to searching entire scene if not found in SKETCH_SOLVE_GROUP
+        if (!css2dObject) {
+          css2dObject = findCSS2DObject(this.scene)
+        }
+
+        if (css2dObject && css2dObject.parent instanceof Group) {
+          // Verify the parent Group's name matches the segment_id
+          const parentGroupId = Number(css2dObject.parent.name)
+          if (!Number.isNaN(parentGroupId) && parentGroupId === segmentId) {
+            return {
+              css2dObject,
+              parentGroup: css2dObject.parent,
+            }
+          }
+        }
+        break
+      }
+      cur = cur.parentElement
+    }
+    return null
+  }
+
   onMouseDown = (event: MouseEvent) => {
     this.updateCurrentMouseVector(event)
 
     const mouseDownVector = this.currentMouseVector.clone()
-    const intersect = this.raycastRing()[0]
 
+    // Always check for CSS2DObject first (point segments) since they're rendered on top
+    // and should take priority over three.js objects
+    const css2dResult = this.findCSS2DObjectUnderCursor(event)
+    if (css2dResult) {
+      // Use the parent Group as the selected object so drag handling works
+      this.selected = {
+        mouseDownVector,
+        object: css2dResult.parentGroup,
+        hasBeenDragged: false,
+      }
+      // Prevent default to ensure drag works properly
+      // This prevents any default browser drag behavior that might interfere
+      event.preventDefault()
+      return
+    }
+
+    // No CSS2DObject found, check for three.js objects
+    const intersect = this.raycastRing()[0]
     if (intersect) {
       const intersectParent = intersect?.object?.parent as Group
       this.selected = intersectParent.isGroup

@@ -14,11 +14,7 @@ import {
   Shape,
   Vector3,
 } from 'three'
-import type { Vector2 } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { sceneInfra, rustContext } from '@src/lib/singletons'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import { roundOff } from '@src/lib/utils'
 import { createLineShape } from '@src/clientSideScene/segments'
 import { STRAIGHT_SEGMENT_BODY } from '@src/clientSideScene/sceneConstants'
 import {
@@ -138,122 +134,6 @@ class PointSegment implements SegmentUtils {
     })
 
     handleDiv.appendChild(innerCircle)
-
-    // Store references for drag handling
-    let isDragging = false
-    let isEditInProgress = false
-    let latestTwoD: Vector2 | null = null
-    let lastAppliedTwoD: Vector2 | null = null
-
-    // Convert screen coordinates to 2D sketch coordinates
-    const screenTo2D = (event: MouseEvent): Vector2 | null => {
-      // Update sceneInfra's current mouse vector (similar to updateCurrentMouseVector)
-      const target = sceneInfra.renderer.domElement
-      const rect = target.getBoundingClientRect()
-      const x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-      const y = -((event.clientY - rect.top) / rect.height) * 2 + 1
-
-      // Temporarily set the mouse vector so getPlaneIntersectPoint works
-      // We're bypassing the normal mouse flow, so we need to set it manually
-      const originalVector = sceneInfra.currentMouseVector.clone()
-      sceneInfra.currentMouseVector.set(x, y)
-
-      const planeIntersect = sceneInfra.getPlaneIntersectPoint()
-
-      // Restore original vector
-      sceneInfra.currentMouseVector.copy(originalVector)
-
-      return planeIntersect?.twoD || null
-    }
-
-    // Apply edit segment for a given 2D position
-    const applyEditSegment = async (twoD: Vector2) => {
-      if (!twoD) return
-
-      isEditInProgress = true
-      lastAppliedTwoD = twoD.clone()
-
-      try {
-        const settings = await jsAppSettings()
-        const result = await rustContext.editSegments(
-          0,
-          0,
-          [
-            {
-              id: args.id,
-              ctor: {
-                type: 'Point',
-                position: {
-                  x: { type: 'Var', value: roundOff(twoD.x), units: 'Mm' },
-                  y: { type: 'Var', value: roundOff(twoD.y), units: 'Mm' },
-                },
-              },
-            },
-          ],
-          settings
-        )
-
-        // Call the callback to notify sketchSolveMode
-        if (result && args.onUpdateSketchOutcome) {
-          args.onUpdateSketchOutcome(result)
-        }
-
-        // After edit completes, check if there's a newer position that needs to be applied
-        if (
-          latestTwoD &&
-          (!lastAppliedTwoD ||
-            latestTwoD.x !== lastAppliedTwoD.x ||
-            latestTwoD.y !== lastAppliedTwoD.y)
-        ) {
-          // There's a newer position, apply it one more time
-          await applyEditSegment(latestTwoD)
-        }
-      } catch (err) {
-        console.error('failed to edit segment', err)
-      } finally {
-        isEditInProgress = false
-      }
-    }
-
-    // Handle drag move
-    const handleMouseMove = (event: MouseEvent) => {
-      if (!isDragging) return
-
-      const twoD = screenTo2D(event)
-      if (!twoD) return
-
-      // Always update the latest position, even if edit is in progress
-      latestTwoD = twoD.clone()
-
-      // Only start a new edit if one isn't already in progress
-      if (!isEditInProgress) {
-        void applyEditSegment(twoD)
-      }
-    }
-
-    // Handle drag end
-    const handleMouseUp = () => {
-      if (isDragging) {
-        isDragging = false
-        innerCircle.style.opacity = '1'
-        // Clear position state
-        latestTwoD = null
-        lastAppliedTwoD = null
-        document.removeEventListener('mousemove', handleMouseMove)
-        document.removeEventListener('mouseup', handleMouseUp)
-      }
-    }
-
-    // Set up mouse down handler to start drag
-    handleDiv.onmousedown = (event: MouseEvent) => {
-      if (event.button !== 0) return // Only handle left mouse button
-      event.stopPropagation()
-      event.preventDefault()
-      isDragging = true
-      innerCircle.style.opacity = '0.7'
-      document.addEventListener('mousemove', handleMouseMove)
-      document.addEventListener('mouseup', handleMouseUp)
-    }
 
     const cssObject = new CSS2DObject(handleDiv)
     cssObject.userData.type = 'handle'

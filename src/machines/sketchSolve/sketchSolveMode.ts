@@ -319,7 +319,6 @@ function buildSegmentCtorWithDrag({
     // For lines, always apply the drag vector to both endpoints (translate the line)
     // This applies whether it's the entity under cursor or another selected entity
     const newStart = applyVectorToPoint2D(baseCtor.start, dragVec)
-    console.log('baseCtor.start', baseCtor.start, dragVec, newStart)
     const newEnd = applyVectorToPoint2D(baseCtor.end, dragVec)
     return {
       type: 'Line',
@@ -402,10 +401,64 @@ export const sketchSolveMachine = setup({
       let isSolveInProgress = false
       let lastHoveredMesh: Mesh | null = null
       let lastSuccessfulDragFromPoint = new Vector2()
+      let draggingPointElement: HTMLElement | null = null
+
+      /**
+       * Helper function to find the CSS2DObject element for visual feedback
+       * Used to update opacity during drag
+       */
+      function findPointSegmentElement(segmentId: number): HTMLElement | null {
+        // Find the element with the matching segment_id
+        const allElements = document.querySelectorAll('[data-segment_id]')
+        for (const el of allElements) {
+          if (
+            el instanceof HTMLElement &&
+            el.dataset.segment_id === String(segmentId)
+          ) {
+            return el
+          }
+        }
+        return null
+      }
+
       sceneInfra.setCallbacks({
-        onDragStart: ({ intersectionPoint }) => {
+        onDragStart: ({ intersectionPoint, selected }) => {
           // reset on drag start
           lastSuccessfulDragFromPoint = intersectionPoint.twoD.clone()
+
+          // Check if we're starting a drag on a point segment (CSS2DObject)
+          // sceneInfra now sets selected to the parent Group for CSS2DObjects
+          if (selected instanceof Group) {
+            const segmentId = Number(selected.name)
+            if (!Number.isNaN(segmentId)) {
+              // Check if this is a point segment by looking for the CSS2DObject
+              const hasCSS2DObject = selected.children.some(
+                (child) => child.userData?.type === 'handle'
+              )
+              if (hasCSS2DObject) {
+                draggingPointElement = findPointSegmentElement(segmentId)
+                // Set opacity to indicate dragging
+                if (draggingPointElement) {
+                  const innerCircle = draggingPointElement.querySelector('div')
+                  if (innerCircle) {
+                    innerCircle.style.opacity = '0.7'
+                  }
+                }
+                return
+              }
+            }
+          }
+          draggingPointElement = null
+        },
+        onDragEnd: () => {
+          // Restore opacity for point segment if we were dragging one
+          if (draggingPointElement) {
+            const innerCircle = draggingPointElement.querySelector('div')
+            if (innerCircle) {
+              innerCircle.style.opacity = '1'
+            }
+            draggingPointElement = null
+          }
         },
         onDrag: async ({ selected, intersectionPoint }) => {
           if (isSolveInProgress) {
@@ -421,14 +474,44 @@ export const sketchSolveMachine = setup({
             return
           }
 
-          // Get the entity under cursor (could be Point or Line)
-          const groupUnderCursor = getParentGroup(selected, [
-            SEGMENT_TYPE_POINT,
-            SEGMENT_TYPE_LINE,
-          ])
-          const entityUnderCursorId = groupUnderCursor
-            ? Number(groupUnderCursor.name)
-            : null
+          // Get the entity under cursor
+          // sceneInfra also handles CSS2DObject detection, so selected will be set
+          // for both three.js objects and CSS2DObjects (as their parent Group)
+          let entityUnderCursorId: number | null = null
+
+          // Check if selected is already a Group with a numeric name (segment group)
+          // This handles CSS2DObjects where sceneInfra sets selected to the parent Group
+          if (selected instanceof Group) {
+            const groupId = Number(selected.name)
+            if (!Number.isNaN(groupId)) {
+              // Check if it's a point or line segment by userData.type or by checking children
+              const isPointSegment =
+                selected.userData?.type === 'point' ||
+                selected.children.some(
+                  (child) => child.userData?.type === 'handle'
+                )
+              const isLineSegment =
+                selected.userData?.type === SEGMENT_TYPE_LINE ||
+                selected.children.some(
+                  (child) => child.userData?.type === STRAIGHT_SEGMENT_BODY
+                )
+
+              if (isPointSegment || isLineSegment) {
+                entityUnderCursorId = groupId
+              }
+            }
+          }
+
+          // If not found above, try getParentGroup (for three.js objects that aren't already Groups)
+          if (!entityUnderCursorId) {
+            const groupUnderCursor = getParentGroup(selected, [
+              SEGMENT_TYPE_POINT,
+              SEGMENT_TYPE_LINE,
+            ])
+            if (groupUnderCursor) {
+              entityUnderCursorId = Number(groupUnderCursor.name)
+            }
+          }
 
           // If no entity under cursor and no selectedIds, nothing to do
           if (!entityUnderCursorId && selectedIds.length === 0) {
@@ -507,13 +590,40 @@ export const sketchSolveMachine = setup({
           }
         },
         onClick: async ({ selected, mouseEvent }) => {
-          const group = getParentGroup(selected, [
-            SEGMENT_TYPE_POINT,
-            SEGMENT_TYPE_LINE,
-          ])
+          // Check if selected is already a Group with a numeric name (segment group)
+          // This handles CSS2DObjects where sceneInfra sets selected to the parent Group
+          let group: Group | null = null
+          if (selected instanceof Group) {
+            const groupId = Number(selected.name)
+            if (!Number.isNaN(groupId)) {
+              // Check if it's a point or line segment
+              const isPointSegment =
+                selected.userData?.type === 'point' ||
+                selected.children.some(
+                  (child) => child.userData?.type === 'handle'
+                )
+              const isLineSegment =
+                selected.userData?.type === SEGMENT_TYPE_LINE ||
+                selected.children.some(
+                  (child) => child.userData?.type === STRAIGHT_SEGMENT_BODY
+                )
+
+              if (isPointSegment || isLineSegment) {
+                group = selected
+              }
+            }
+          }
+
+          // If not found above, try getParentGroup (for three.js objects that aren't already Groups)
+          if (!group) {
+            group = getParentGroup(selected, [
+              SEGMENT_TYPE_POINT,
+              SEGMENT_TYPE_LINE,
+            ])
+          }
 
           if (group) {
-            const newSelectedIds = [Number(group?.name)]
+            const newSelectedIds = [Number(group.name)]
             self.send({
               type: 'update selected ids',
               data: { selectedIds: newSelectedIds },
@@ -521,37 +631,13 @@ export const sketchSolveMachine = setup({
             return
           }
 
-          // No three.js selection under cursor. Check CSS2DObject under mouse.
-          const el = document.elementFromPoint(
-            mouseEvent.clientX,
-            mouseEvent.clientY
-          )
-          let cur = el
-          let pointId: number | null = null
-          while (cur) {
-            if (cur instanceof HTMLElement) {
-              const idAttr = cur.dataset?.segment_id
-              if (idAttr && !Number.isNaN(Number(idAttr))) {
-                pointId = Number(idAttr)
-                break
-              }
-              cur = cur.parentElement
-            }
-          }
-
-          if (pointId != null) {
-            const newSelectedIds = [pointId]
-            self.send({
-              type: 'update selected ids',
-              data: { selectedIds: newSelectedIds },
-            })
-          } else {
-            // Truly dead space: clear selection
-            self.send({
-              type: 'update selected ids',
-              data: {},
-            })
-          }
+          // No segment found - clicked on blank space, clear selection
+          // sceneInfra should have detected CSS2DObjects in onMouseDown, so if we get here
+          // with no group, it means we clicked on nothing
+          self.send({
+            type: 'update selected ids',
+            data: {},
+          })
         },
         onMouseEnter: ({ selected }) => {
           if (!selected) return
