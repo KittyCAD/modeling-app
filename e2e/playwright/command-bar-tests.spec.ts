@@ -72,9 +72,13 @@ test.describe('Command bar tests', () => {
   test('Command bar can change a setting, and switch back and forth between arguments', async ({
     page,
     homePage,
+    toolbar,
+    scene,
+    cmdBar,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
     const cmdSearchBar = page.getByPlaceholder('Search commands')
@@ -89,9 +93,7 @@ test.describe('Command bar tests', () => {
     // This selector changes after we set the setting
     let commandOptionInput = page.getByPlaceholder('On')
 
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     // First try opening the command bar and closing it
     await page
@@ -159,16 +161,18 @@ test.describe('Command bar tests', () => {
   test('Command bar keybinding works from code editor and can change a setting', async ({
     page,
     homePage,
+    toolbar,
+    scene,
+    cmdBar,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     // FIXME: No KCL code, unable to wait for engine execution
     await page.waitForTimeout(10000)
 
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     // Put the cursor in the code editor
     await page.locator('.cm-content').click()
@@ -371,7 +375,7 @@ test.describe('Command bar tests', () => {
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    const sketchButton = page.getByRole('button', { name: 'Start Sketch' })
+    const sketchButton = toolbar.startSketchBtn
     const cmdBarButton = page.getByRole('button', { name: 'Commands' })
     const rectangleToolCommand = page.getByRole('option', {
       name: 'rectangle',

@@ -613,6 +613,8 @@ openSketch = startSketchOn(XY)
     homePage,
     scene,
     editor,
+    toolbar,
+    cmdBar,
   }) => {
     // Locators
     const firstPointLocation = { x: 200, y: 100 }
@@ -664,6 +666,7 @@ openSketch = startSketchOn(XY)
     await test.step(`Initial test setup`, async () => {
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
 
       // Wait for the scene and stream to load
       await scene.expectPixelColor(
@@ -677,7 +680,7 @@ openSketch = startSketchOn(XY)
       await test.step('Get into sketch mode', async () => {
         await editor.closePane()
         await page.waitForTimeout(timeout)
-        await page.getByRole('button', { name: 'Start Sketch' }).click()
+        await toolbar.startSketchBtn.click()
         await page.waitForTimeout(timeout)
         await clickPlane()
         await page.waitForTimeout(1000)
