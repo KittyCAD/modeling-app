@@ -64,7 +64,7 @@ import { getResolvedTheme } from '@src/lib/theme'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
-    .then(() => { })
+    .then(() => {})
     .catch(reportRejection)
 }
 
@@ -265,18 +265,18 @@ export function App() {
               : []),
             ...(getSettings().app.showDebugPanel.current
               ? ([
-                {
-                  id: 'modeling-state',
-                  element: 'text',
-                  label:
-                    modelingState.value instanceof Object
-                      ? (xStateValueToString(modelingState.value) ?? '')
-                      : modelingState.value,
-                  toolTip: {
-                    children: 'The current state of the modeler',
+                  {
+                    id: 'modeling-state',
+                    element: 'text',
+                    label:
+                      modelingState.value instanceof Object
+                        ? (xStateValueToString(modelingState.value) ?? '')
+                        : modelingState.value,
+                    toolTip: {
+                      children: 'The current state of the modeler',
+                    },
                   },
-                },
-              ] satisfies StatusBarItemType[])
+                ] satisfies StatusBarItemType[])
               : []),
             {
               id: 'selection',

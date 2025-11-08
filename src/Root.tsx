@@ -50,7 +50,7 @@ function RootLayout() {
                   </AppStateProvider>
                 </KclContextProvider>
               </LspProvider>
-            </MlEphantManagerReactContext.Provider >
+            </MlEphantManagerReactContext.Provider>
           </Auth>
         </RouteProvider>
       </ShortcutListener>

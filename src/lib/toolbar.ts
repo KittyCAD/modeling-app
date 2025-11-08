@@ -1168,7 +1168,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         status: 'available',
         title: 'Exit sketch',
         showTitle: true,
-        hotkey: 'Esc',
+        sequence: 'Esc',
         description: 'Exit the current sketch',
         links: [],
       },
@@ -1186,7 +1186,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'line',
         status: 'available',
         title: 'Line',
-        hotkey: 'L',
+        sequence: 'L',
         description: 'Start drawing straight lines',
         links: [],
         isActive: (state) =>
@@ -1207,7 +1207,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         icon: 'arrowDown',
         status: 'available',
         title: 'Point',
-        hotkey: 'L',
+        sequence: 'L',
         description: 'Start drawing straight points',
         links: [],
         isActive: (state) =>

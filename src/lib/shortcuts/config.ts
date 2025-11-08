@@ -1,10 +1,12 @@
-import type { SidebarId } from '@src/components/ModelingSidebar/ModelingPanes/types'
 import { Shortcut } from '@src/lib/shortcuts'
 import type { ShortcutProps } from '@src/lib/shortcuts/types'
+import type { DefaultLayoutPaneID } from '@src/lib/layout'
 
 const PANE_PREFIX = 'ctrl+l'
 const TOOLBAR_PREFIX = 'ctrl+period'
-type PaneShortcutConfig = { id: `pane-toggle-${SidebarId}` } & ShortcutProps
+type PaneShortcutConfig = {
+  id: `pane-toggle-${DefaultLayoutPaneID}`
+} & ShortcutProps
 
 export const toolbarShortcutConfigs = {
   sketch: {
@@ -213,7 +215,7 @@ export const initialShortcutConfigs = [
     enabledDescription: 'While in the editor',
   } satisfies PaneShortcutConfig,
   {
-    id: 'pane-toggle-text-to-cad',
+    id: 'pane-toggle-ttc',
     title: 'Toggle Text-to-CAD pane',
     description: 'The Text-to-CAD pane in the right sidebar',
     category: 'Panes',
