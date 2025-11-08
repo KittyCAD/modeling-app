@@ -1191,6 +1191,68 @@ revolve001 = revolve(
           const newCode = recast(result, instanceInThisFile)
           expect(newCode).toContain(expectedCode)
         }, 10_000)
+        // Test deletion of geometrically impossible edge treatment (piped case)
+        it(`should delete a piped ${edgeTreatmentType} with geometrically impossible value from a revolved shape`, async () => {
+          const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 1])
+  |> yLine(length = 3)
+  |> xLine(length = 4)
+  |> yLine(length = -3, tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+revolve001 = revolve(
+  profile001,
+  angle = 270deg,
+  axis = X,
+  tagStart = $capStart001,
+)
+  |> ${edgeTreatmentType}(tags = getCommonEdge(faces = [seg01, capStart001]), ${parameterName} = 5)`
+          const edgeTreatmentSnippet = `${edgeTreatmentType}(tags = getCommonEdge(faces = [seg01, capStart001]), ${parameterName} = 5)`
+          const expectedCode = `yLine(length = -3, tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+revolve001 = revolve(`
+
+          // This test case is special because the fillet/chamfer is geometrically impossible
+          // (value too large), so we can't execute the AST. Instead, we test that the deletion
+          // works purely on the AST level without needing execution artifacts.
+          const ast = assertParse(code, instanceInThisFile)
+
+          // define snippet range
+          const edgeTreatmentRange = topLevelRange(
+            code.indexOf(edgeTreatmentSnippet),
+            code.indexOf(edgeTreatmentSnippet) + edgeTreatmentSnippet.length
+          )
+
+          const edgeTreatmentCodeRef = codeRefFromRange(edgeTreatmentRange, ast)
+
+          // build selection with a mock edgeCut artifact
+          const selection: Selection = {
+            codeRef: edgeTreatmentCodeRef,
+            artifact: {
+              type: 'edgeCut',
+              id: 'mock-edge-cut-id',
+              subType: edgeTreatmentType,
+              consumedEdgeId: 'mock-consumed-edge-id',
+              edgeIds: [],
+              codeRef: {
+                range: edgeTreatmentCodeRef.range,
+                pathToNode: edgeTreatmentCodeRef.pathToNode,
+                nodePath: { steps: [] },
+              },
+            },
+          }
+
+          // delete edge treatment
+          const result = await deleteEdgeTreatment(ast, selection)
+          if (err(result)) {
+            throw result
+          }
+
+          // recast and check
+          const newCode = recast(result, instanceInThisFile)
+          expect(newCode).toContain(expectedCode)
+        }, 10_000)
       })
     }
   )
