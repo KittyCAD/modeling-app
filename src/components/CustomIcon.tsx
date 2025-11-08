@@ -1,6 +1,6 @@
 import { cloneElement } from 'react'
 
-const CustomIconMap = {
+const CustomIconMap = Object.freeze({
   arc: (
     <svg
       viewBox="0 0 20 20"
@@ -239,6 +239,21 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  caretUp: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow up"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.0001 8.70709L6.35352 12.3536L5.64642 11.6465L9.64655 7.64642L10.3537 7.64643L14.3535 11.6465L13.6464 12.3536L10.0001 8.70709Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   caretDown: (
     <svg
       viewBox="0 0 20 20"
@@ -280,6 +295,22 @@ const CustomIconMap = {
         fillRule="evenodd"
         clipRule="evenodd"
         d="M10 4C9.21207 4 8.43186 4.15519 7.7039 4.45672C6.97595 4.75825 6.31451 5.20021 5.75736 5.75736C5.20021 6.31451 4.75825 6.97594 4.45672 7.7039C4.1552 8.43185 4 9.21207 4 10C4 10.7879 4.15519 11.5681 4.45672 12.2961C4.75825 13.0241 5.20021 13.6855 5.75736 14.2426C6.31451 14.7998 6.97594 15.2417 7.7039 15.5433C8.43185 15.8448 9.21207 16 10 16C10.7879 16 11.5681 15.8448 12.2961 15.5433C13.0241 15.2417 13.6855 14.7998 14.2426 14.2426C14.7998 13.6855 15.2417 13.0241 15.5433 12.2961C15.8448 11.5681 16 10.7879 16 10C16 9.21207 15.8448 8.43185 15.5433 7.7039C15.2417 6.97595 14.7998 6.31451 14.2426 5.75736C13.6855 5.20021 13.0241 4.75825 12.2961 4.45672C11.5681 4.15519 10.7879 4 10 4ZM7.32122 3.53284C8.1705 3.18106 9.08075 3 10 3C10.9193 3 11.8295 3.18106 12.6788 3.53284C13.5281 3.88463 14.2997 4.40024 14.9497 5.05025C15.5998 5.70026 16.1154 6.47194 16.4672 7.32122C16.8189 8.1705 17 9.08075 17 10C17 10.9193 16.8189 11.8295 16.4672 12.6788C16.1154 13.5281 15.5998 14.2997 14.9497 14.9497C14.2997 15.5998 13.5281 16.1154 12.6788 16.4672C11.8295 16.8189 10.9193 17 10 17C9.08074 17 8.17049 16.8189 7.32121 16.4672C6.47193 16.1154 5.70026 15.5998 5.05025 14.9497C4.40024 14.2997 3.88462 13.5281 3.53284 12.6788C3.18106 11.8295 3 10.9192 3 10C3 9.08074 3.18106 8.17049 3.53284 7.32121C3.88463 6.47193 4.40024 5.70026 5.05026 5.05025C5.70027 4.40024 6.47194 3.88462 7.32122 3.53284Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  clipboard: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M6.5 3L7 3L13 3L13.5 3V3.5V4.00001L15.5 4.00002L16 4.00002V4.50002V16.5V17H15.5H4.5H4V16.5V4.50001V4.00001L4.5 4.00001L6.5 4.00001V3.5V3ZM6.5 5.00001L5 5.00001V16H15V5.00002L13.5 5.00001V6.50001V7.00001H13L7 7.00001L6.5 7.00001V6.50001V5.00001ZM7.5 4V4.50001V6.00001L12.5 6.00001V4.50001V4L7.5 4ZM13 9H7V8H13V9Z"
         fill="currentColor"
       />
     </svg>
@@ -647,6 +678,34 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  gdtDatum: (
+    <svg
+      width="12"
+      height="16"
+      viewBox="0 0 12 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M12 12H6.5V13.4717L8.85645 15.8281H3.2002L5.5 13.5283V12H0V0H12V12ZM1 11H11V1H1V11ZM8.99902 9.46387H7.72656L7.16016 7.47461H4.78613L4.21875 9.46387H2.99902L5.18164 2H6.81738L8.99902 9.46387ZM5.01074 6.48047H6.93555L6.01562 3.20801H5.92969L5.01074 6.48047Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  gdtFlatness: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M14.2002 14H3L5.7998 6H17L14.2002 14ZM4.41016 13H13.4902L15.5898 7H6.50977L4.41016 13Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   gear: (
     <svg
       viewBox="0 0 20 20"
@@ -826,6 +885,14 @@ const CustomIconMap = {
       <path
         d="M16 12V15H13.5M16 12V9M16 12H13.5M4 12V15H6.5M4 12V9M4 12H6.5M4 9V6H6.5M4 9H6.5M16 9V6H13.5M16 9H13.5M6.5 12V15M6.5 12H7.5M6.5 15H13.5M13.5 15V12M13.5 12H12.5M7.5 12V9M7.5 12H10M7.5 9H8.75M7.5 9H6.5M10 12V9M10 12H12.5M10 9H11.25M10 9H8.75M12.5 12V9M12.5 9H13.5M12.5 9H11.25M13.5 9V6M13.5 6H11.25M11.25 9V6M11.25 6H8.75M8.75 9V6M8.75 6H6.5M6.5 9V6"
         stroke="currentColor"
+      />
+    </svg>
+  ),
+  layout: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16.5 15.5H3.5V5.5H16.5V15.5ZM4.5 14.5H7.5V6.5H4.5V14.5ZM8.5 14.5H15.5V12H8.5V14.5ZM8.5 11H15.5V6.5H8.5V11Z"
+        fill="currentColor"
       />
     </svg>
   ),
@@ -1654,9 +1721,111 @@ const CustomIconMap = {
       />
     </svg>
   ),
-} as const
+  fileExplorer: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M4 6H8V7H4V13H8V14H4V16H3V4H4V6ZM17 15H9V12H17V15ZM17 8H9V5H17V8Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  triangleExclamation: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M17.7879 15.25L16.9217 16.75H3.06622L2.20001 15.25L9.12775 3.25H10.8602L17.7879 15.25ZM3.06622 15.75H16.9217L9.99396 3.75L3.06622 15.75ZM9.992 12.9258C10.2689 12.9258 10.462 12.9838 10.5701 13.0986C10.6848 13.2134 10.742 13.3587 10.742 13.5342V13.7168C10.742 13.8923 10.6848 14.0376 10.5701 14.1523C10.462 14.2672 10.269 14.3252 9.992 14.3252C9.71507 14.3252 9.51895 14.2672 9.40411 14.1523C9.29616 14.0375 9.24204 13.8923 9.242 13.7168V13.5342C9.24201 13.3586 9.29616 13.2135 9.40411 13.0986C9.51895 12.9838 9.71507 12.9258 9.992 12.9258ZM10.4383 9.2168L10.1541 11.8721H9.8299L9.54572 9.2168V7.15918H10.4383V9.2168Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  ellipse1: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="10" cy="10" r="3" fill="currentColor" />
+    </svg>
+  ),
+  brain: (
+    <svg
+      viewBox="-3 -2 28 28"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="currentColor"
+    >
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+      <g
+        id="SVGRepo_tracerCarrier"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></g>
+      <g id="SVGRepo_iconCarrier">
+        {' '}
+        <defs>
+          {' '}
+          <style>
+            {
+              '.cls-1{fill: none;stroke: currentColor;stroke-miterlimit:10;stroke-width:1.5px;}'
+            }
+          </style>{' '}
+        </defs>{' '}
+        <g id="brain">
+          {' '}
+          <path
+            className="cls-1"
+            d="M12,4.36V20.59a1.92,1.92,0,0,1-1.91,1.91,1.93,1.93,0,0,1-1.91-1.91v0a2.45,2.45,0,0,1-.48,0,3.35,3.35,0,0,1-3.34-3.34,3.19,3.19,0,0,1,.08-.7A4.29,4.29,0,0,1,3.6,8.79,3.24,3.24,0,0,1,3.41,7.7,3.34,3.34,0,0,1,6.27,4.4v0a2.87,2.87,0,0,1,5.73,0Z"
+          ></path>{' '}
+          <path className="cls-1" d="M6.75,11.05a3.35,3.35,0,0,1,0-6.69"></path>{' '}
+          <path
+            className="cls-1"
+            d="M8.18,13.91h0A3.82,3.82,0,0,1,12,17.73h0"
+          ></path>{' '}
+          <path
+            className="cls-1"
+            d="M9.14,7.23h0A2.86,2.86,0,0,0,12,4.36h0"
+          ></path>{' '}
+          <path
+            className="cls-1"
+            d="M12,4.36V20.59a1.92,1.92,0,0,0,1.91,1.91,1.93,1.93,0,0,0,1.91-1.91v0a2.45,2.45,0,0,0,.48,0,3.35,3.35,0,0,0,3.34-3.34,3.19,3.19,0,0,0-.08-.7,4.29,4.29,0,0,0,.84-7.76,3.24,3.24,0,0,0,.19-1.09,3.34,3.34,0,0,0-2.86-3.3v0a2.87,2.87,0,0,0-5.73,0Z"
+          ></path>{' '}
+          <path
+            className="cls-1"
+            d="M17.25,11.05a3.35,3.35,0,0,0,0-6.69"
+          ></path>{' '}
+          <path
+            className="cls-1"
+            d="M15.82,13.91h0A3.82,3.82,0,0,0,12,17.73h0"
+          ></path>{' '}
+          <path
+            className="cls-1"
+            d="M14.86,7.23h0A2.86,2.86,0,0,1,12,4.36h0"
+          ></path>{' '}
+        </g>{' '}
+      </g>
+    </svg>
+  ),
+})
 
 export type CustomIconName = keyof typeof CustomIconMap
+export function isCustomIconName(name: unknown): name is CustomIconName {
+  if (typeof name !== 'string') {
+    return false
+  }
+  return Object.keys(CustomIconMap).indexOf(name) >= 0
+}
 
 export const CustomIcon = ({
   name,

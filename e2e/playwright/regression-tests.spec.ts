@@ -1,17 +1,19 @@
 import path from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
-import type { Page } from '@playwright/test'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { Page } from '@playwright/test'
 import * as fsp from 'fs/promises'
 
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
 import type { TestColor } from '@e2e/playwright/test-utils'
 import {
+  NUMBER_REGEXP,
   TEST_COLORS,
   executorInputPath,
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Regression tests', () => {
   // bugs we found that don't fit neatly into other categories
@@ -332,15 +334,15 @@ extrude002 = extrude(profile002, length = 150)`
       await page.setBodyDimensions({ width: 500, height: 500 })
 
       await homePage.goToModelingScene()
-      await toolbar.closePane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
 
       await scene.connectionEstablished()
       await scene.settled(cmdBar)
 
       // expect pixel color to be background color
       const offModelBefore = await scene.convertPagePositionToStream(
+        0.1,
         0.9,
-        0.5,
         'ratio'
       )
       const onModelBefore = await scene.convertPagePositionToStream(
@@ -590,8 +592,8 @@ extrude002 = extrude(profile002, length = 150)`
     const u = await getUtils(page)
 
     // Constants and locators
-    const planeColor: [number, number, number] = [170, 220, 170]
-    const bgColor: [number, number, number] = TEST_COLORS.DARK_MODE_BKGD
+    const planeColor: [number, number, number] = [80, 60, 60]
+    const bgColor: [number, number, number] = [30, 30, 30]
     const middlePixelIsColor = async (color: [number, number, number]) => {
       return u.getGreatestPixDiff({ x: 600, y: 250 }, color)
     }
@@ -667,7 +669,7 @@ extrude002 = extrude(profile002, length = 150)`
 
     await test.step(`Test setup`, async () => {
       await homePage.openProject('lego')
-      await toolbar.closePane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
     })
     await test.step(`Waiting for scene to settle`, async () => {
       await scene.connectionEstablished()
@@ -813,14 +815,18 @@ washer = extrude(washerSketch, length = thicknessMax)`
         .toBe('true')
       await page.waitForTimeout(100)
       await circleCenterClick()
-      // this number will be different if the scale is not set correctly for inches
+      // Just verify that the radius is the correct order of magnitude
+      // this number will be very different if the scale is not set correctly for inches
       await editor.expectEditor.toContain(
-        'circle(sketch001, center = [0.04, -0.06]'
+        /circle\(sketch001, center = \[0\.0\d+, -0\.0\d+\]/
       )
       await circleRadiusClick()
 
+      // Just verify that the radius is the correct order of magnitude
       await editor.expectEditor.toContain(
-        'circle(sketch001, center = [0.04, -0.06], radius = 0.12'
+        new RegExp(
+          `circle\\(sketch001, center = \\[${NUMBER_REGEXP}, ${NUMBER_REGEXP}\\], radius = 0\\.\\d+`
+        )
       )
     })
 

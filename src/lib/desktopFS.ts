@@ -3,6 +3,11 @@ import { fsManager } from '@src/lang/std/fileSystemManager'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT, INDEX_IDENTIFIER, MAX_PADDING } from '@src/lib/constants'
 import type { FileEntry } from '@src/lib/project'
+import {
+  getEXTNoPeriod,
+  getEXTWithPeriod,
+  isExtensionARelevantExtension,
+} from '@src/lib/paths'
 
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')
@@ -92,7 +97,11 @@ export function getUniqueProjectName(name: string, projects: FileEntry[]) {
     return interpolateProjectNameWithIndex(name, nextIndex)
   } else {
     let newName = name
-    while (projects.some((project) => project.name === newName)) {
+    while (
+      projects.some(
+        (project) => project.name.toLowerCase() === newName.toLowerCase()
+      )
+    ) {
       const nameEndsWithNumber = newName.match(/\d+$/)
       newName = nameEndsWithNumber
         ? newName.replace(/\d+$/, (num) => `${parseInt(num, 10) + 1}`)
@@ -133,9 +142,16 @@ export async function getNextFileName({
   entryName: string
   baseDir: string
 }) {
-  // Preserve the extension in case of a relevant but foreign file
-  let extension = fsManager.path.extname(entryName)
-  if (!relevantFileExtensions().includes(extension.replace('.', ''))) {
+  // Check if the file is relevantFile by not using the period
+  const extensionNoPeriod = getEXTNoPeriod(entryName)
+  const extensions = relevantFileExtensions()
+  const isRelevantFile =
+    extensionNoPeriod &&
+    isExtensionARelevantExtension(extensionNoPeriod, extensions)
+
+  // Do the following business logic with the period in the extension
+  let extension = getEXTWithPeriod(entryName)
+  if (!isRelevantFile || !extension) {
     extension = FILE_EXT
   }
 

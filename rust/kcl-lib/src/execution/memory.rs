@@ -215,13 +215,12 @@ use std::{
 use anyhow::Result;
 use env::Environment;
 use indexmap::IndexMap;
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::KclValue,
-    source_range::SourceRange,
 };
 
 /// The distinguished name of the return value of a function.
@@ -692,8 +691,14 @@ impl Stack {
             .map(|(k, _)| k)
     }
 
-    /// Iterate over all key/value pairs in the specified environment which satisfy the provided
-    /// predicate. `env` must either be read-only or owned by `self`.
+    /// Iterate over all key/value pairs in the current environment. `env` must
+    /// either be read-only or owned by `self`.
+    pub fn find_all_in_current_env(&self) -> impl Iterator<Item = (&String, &KclValue)> {
+        self.find_all_in_env(self.current_env)
+    }
+
+    /// Iterate over all key/value pairs in the specified environment. `env`
+    /// must either be read-only or owned by `self`.
     pub fn find_all_in_env(&self, env: EnvironmentRef) -> impl Iterator<Item = (&String, &KclValue)> {
         self.memory.find_all_in_env(env, |_| true, self.id)
     }
@@ -803,7 +808,7 @@ impl PartialEq for Stack {
 /// The first field indexes an environment, the second field is an epoch. An epoch of 0 is indicates
 /// a dummy, error, or placeholder env ref, an epoch of `usize::MAX` represents the current most
 /// recent epoch.
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, Eq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, Eq, ts_rs::TS)]
 pub struct EnvironmentRef(usize, usize);
 
 impl EnvironmentRef {
@@ -1292,11 +1297,15 @@ mod test {
         mem.add(
             "f".to_owned(),
             KclValue::Function {
-                value: FunctionSource::User {
-                    ast: crate::parsing::ast::types::FunctionExpression::dummy(),
-                    settings: crate::MetaSettings::default(),
-                    memory: sn2,
-                },
+                value: Box::new(FunctionSource::kcl(
+                    crate::parsing::ast::types::FunctionExpression::dummy(),
+                    sn2,
+                    crate::execution::kcl_value::KclFunctionSourceParams {
+                        is_std: false,
+                        experimental: false,
+                        include_in_feature_tree: false,
+                    },
+                )),
                 meta: Vec::new(),
             },
             sr(),
@@ -1307,10 +1316,13 @@ mod test {
         assert_get(mem, "a", 1);
         assert_get(mem, "b", 2);
         match mem.get("f", SourceRange::default()).unwrap() {
-            KclValue::Function {
-                value: FunctionSource::User { memory, .. },
-                ..
-            } if memory.0 == mem.current_env.0 => {}
+            KclValue::Function { value, .. } => match &**value {
+                FunctionSource {
+                    body: crate::execution::kcl_value::FunctionBody::Kcl(memory),
+                    ..
+                } if memory.0 == mem.current_env.0 => {}
+                v => panic!("{v:#?}, expected {sn1:?}"),
+            },
             v => panic!("{v:#?}, expected {sn1:?}"),
         }
         assert_eq!(mem.memory.envs().len(), 2);

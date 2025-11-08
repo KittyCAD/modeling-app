@@ -1,15 +1,14 @@
 use indexmap::IndexMap;
 
 use crate::{
-    ExecutorContext,
+    ExecutorContext, SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState,
-        fn_call::{Arg, Args, KwArgs},
+        fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclValue},
         types::RuntimeType,
     },
-    source_range::SourceRange,
 };
 
 /// Apply a function to each element of an array.
@@ -44,16 +43,12 @@ async fn call_map_closure(
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
-    let kw_args = KwArgs {
-        unlabeled: Some((None, Arg::new(input, source_range))),
-        labeled: Default::default(),
-        errors: Vec::new(),
-    };
-    let args = Args::new_kw(
-        kw_args,
+    let args = Args::new(
+        Default::default(),
+        vec![(None, Arg::new(input, source_range))],
         source_range,
+        exec_state,
         ctxt.clone(),
-        exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
     );
     let output = map_fn.call_kw(None, exec_state, ctxt, args, source_range).await?;
     let source_ranges = vec![source_range];
@@ -100,16 +95,12 @@ async fn call_reduce_closure(
     // Call the reduce fn for this repetition.
     let mut labeled = IndexMap::with_capacity(1);
     labeled.insert("accum".to_string(), Arg::new(accum, source_range));
-    let kw_args = KwArgs {
-        unlabeled: Some((None, Arg::new(elem, source_range))),
+    let reduce_fn_args = Args::new(
         labeled,
-        errors: Vec::new(),
-    };
-    let reduce_fn_args = Args::new_kw(
-        kw_args,
+        vec![(None, Arg::new(elem, source_range))],
         source_range,
+        exec_state,
         ctxt.clone(),
-        exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
     );
     let transform_fn_return = reduce_fn
         .call_kw(None, exec_state, ctxt, reduce_fn_args, source_range)

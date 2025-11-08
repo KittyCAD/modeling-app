@@ -17,7 +17,7 @@ getCommonEdge(faces: [TaggedFace; 2]): Edge
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `faces` | `[TaggedFace; 2]` | The tags of the faces you want to find the common edge between. | Yes |
+| `faces` | [[`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 2] | The tags of the faces you want to find the common edge between. | Yes |
 
 ### Returns
 
@@ -53,7 +53,7 @@ commonEdge = getCommonEdge(faces = [chamfer0, end0])
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the getCommonEdge function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-getCommonEdge0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

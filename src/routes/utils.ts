@@ -1,9 +1,9 @@
-import env from '@src/env'
-import { isDesktop } from '@src/lib/isDesktop'
+import env, { viteEnv } from '@src/env'
 import {
-  IS_PLAYWRIGHT_KEY,
   IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM,
+  IS_PLAYWRIGHT_KEY,
 } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
@@ -12,10 +12,12 @@ const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 export function getAppVersion({
   isTestEnvironment,
   NODE_ENV,
+  VERCEL_ENV,
   isDesktop,
 }: {
   isTestEnvironment: boolean
   NODE_ENV: string | undefined
+  VERCEL_ENV: string | undefined
   isDesktop: boolean
 }) {
   if (isTestEnvironment && NODE_ENV === 'development') {
@@ -28,7 +30,7 @@ export function getAppVersion({
   }
 
   // Web based runtimes
-  if (NODE_ENV === 'development') {
+  if (NODE_ENV === 'development' || VERCEL_ENV === 'preview') {
     return 'dev'
   }
 
@@ -38,6 +40,7 @@ export function getAppVersion({
 export const APP_VERSION = getAppVersion({
   isTestEnvironment: isTestEnv,
   NODE_ENV: env().NODE_ENV,
+  VERCEL_ENV: viteEnv().VERCEL_ENV,
   isDesktop: isDesktop(),
 })
 

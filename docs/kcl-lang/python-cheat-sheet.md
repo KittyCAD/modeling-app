@@ -6,6 +6,7 @@ layout: manual
 
 | Feature | **Python** | **KCL** |
 | ------- | ---------- | ------- |
+| **Comments**               | <pre><code># Single line comment<br/><br/>"""<br/>Multi-line comment<br/>"""</code></pre> | <pre><code>// Single line comment<br/><br/>/\*<br/>Multi-line comment<br/>\*/</code></pre> |
 | **Variable Assignment**    | Can be reassigned later.<br/>`x = 42` | Cannot be reassigned once declared.<br/>`x = 42` |
 | **Data Types**             | Numbers, strings, booleans, lists, tuples, dicts, objects, None | Numbers (with units), strings, booleans, arrays, objects |
 | **Immutability**           | Variables can be reassigned. Lists, dicts, and objects are mutable. | Variables cannot be reassigned. Arrays and objects are immutable. |
@@ -21,6 +22,7 @@ layout: manual
 | **Array Concatenation**    | `[1, 2, 3] + [4, 5, 6]` | `concat([1, 2, 3], items = [4, 5, 6])` |
 | **Integer Division**       | `8 // 3`                        | `floor(8 / 3)` |
 | **Raise to a Power**       | `2**5`                          | `2^5`<br/>OR<br/>`pow(2, exp = 5)` |
+| **Minimum and Maximum**    | `min(x, y)`<br/>`max(a, b, c)`  | Varargs are still experimental, so use a single array argument.<br/>`min([x, y])`<br/>`max([a, b, c])` |
 | **Vector Addition**        | <pre><code>a = [1, 2, 3]<br/>b = [4, 5, 6]<br/>result = [x + y for x, y in zip(a, b)]</code></pre>OR<pre><code>import numpy as np<br/>a = np.array([1, 2, 3])<br/>b = np.array([4, 5, 6])<br/>result = a + b</code></pre> | <pre><code>a = [1, 2, 3]<br/>b = [4, 5, 6]<br/>result = vector::add(a, v = b)</code></pre> |
 | **Logical Operators**      | Short circuits.<br/>`a and b`<br/>`a or b`<br/>`not a` | Does not short circuit. See [docs](/docs/kcl-lang/arithmetic).<br/>`a & b`<br/>`a \| b`<br/>`!a` |
 | **Assertion**              | `assert(my_boolean)`<br/>`assert(x == 42)`<br/>`assert(x > 0)` | `assertIs(myBoolean)`<br/>Numbers should use the special [`assert()`](/docs/kcl-std/functions/std-assert) function with the correct parameters so that the error message can include the actual numeric value.<br/>`assert(x, isEqualTo = 42)`<br/>`assert(x, isGreaterThan = 0)` |

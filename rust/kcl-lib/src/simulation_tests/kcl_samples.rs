@@ -146,7 +146,7 @@ fn test(test_name: &str, entry_point: std::path::PathBuf) -> Test {
     }
     Test {
         name: test_name.to_owned(),
-        entry_point: entry_point.clone(),
+        entry_point,
         input_dir: parent.to_path_buf(),
         output_dir: relative_output_dir,
         // Skip is temporary while we have non-deterministic output.

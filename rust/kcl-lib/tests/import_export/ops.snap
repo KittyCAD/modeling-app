@@ -3,7 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_export.kcl
 ---
 {
-  "rust/kcl-lib/tests/import_export/export_1.kcl": [],
   "rust/kcl-lib/tests/import_export/export_2.kcl": [
     {
       "type": "VariableDeclaration",
@@ -13,12 +12,8 @@ description: Operations executed import_export.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "export",
@@ -50,8 +45,6 @@ description: Operations executed import_export.kcl
       "type": "GroupEnd"
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -157,13 +150,5 @@ description: Operations executed import_export.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

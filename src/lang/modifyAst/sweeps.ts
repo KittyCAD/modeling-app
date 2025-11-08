@@ -6,6 +6,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createTagDeclarator,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
@@ -13,46 +14,60 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import {
-  getEdgeTagCall,
+  modifyAstWithTagsForSelection,
   mutateAstWithTagForSketchSegment,
-} from '@src/lang/modifyAst/addEdgeTreatment'
+} from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import {
+  getArtifactOfTypes,
+  getSweepEdgeCodeRef,
+} from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
+  LabeledArg,
   PathToNode,
   Program,
   VariableDeclaration,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import type { Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
-import {
-  getArtifactOfTypes,
-  getSweepEdgeCodeRef,
-} from '@src/lang/std/artifactGraph'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 
 export function addExtrude({
   ast,
+  artifactGraph,
   sketches,
   length,
+  to,
   symmetric,
   bidirectionalLength,
+  tagStart,
+  tagEnd,
   twistAngle,
+  twistAngleStep,
+  twistCenter,
   method,
   nodeToEdit,
 }: {
   ast: Node<Program>
+  artifactGraph: ArtifactGraph
   sketches: Selections
-  length: KclCommandValue
+  length?: KclCommandValue
+  to?: Selections
   symmetric?: boolean
   bidirectionalLength?: KclCommandValue
+  tagStart?: string
+  tagEnd?: string
   twistAngle?: KclCommandValue
+  twistAngleStep?: KclCommandValue
+  twistCenter?: KclCommandValue
   method?: string
   nodeToEdit?: PathToNode
 }):
@@ -61,17 +76,36 @@ export function addExtrude({
       pathToNode: PathToNode
     }
   | Error {
-  // 1. Clone the ast so we can edit it
-  const modifiedAst = structuredClone(ast)
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
+  let modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, nodeToEdit)
+  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
   if (err(vars)) {
     return vars
   }
 
   // Extra labeled args expressions
+  const lengthExpr = length
+    ? [createLabeledArg('length', valueOrVariable(length))]
+    : []
+  // Special handling for 'to' arg
+  let toExpr: LabeledArg[] = []
+  if (to) {
+    if (to.graphSelections.length !== 1) {
+      return new Error('Extrude "to" argument must have exactly one selection.')
+    }
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      to.graphSelections[0],
+      artifactGraph
+    )
+    if (err(tagResult)) return tagResult
+    modifiedAst = tagResult.modifiedAst
+    toExpr = [createLabeledArg('to', createLocalName(tagResult.tags[0]))]
+  }
   const symmetricExpr = symmetric
     ? [createLabeledArg('symmetric', createLiteral(symmetric))]
     : []
@@ -83,8 +117,20 @@ export function addExtrude({
         ),
       ]
     : []
+  const tagStartExpr = tagStart
+    ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
+    : []
+  const tagEndExpr = tagEnd
+    ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
+    : []
   const twistAngleExpr = twistAngle
     ? [createLabeledArg('twistAngle', valueOrVariable(twistAngle))]
+    : []
+  const twistAngleStepExpr = twistAngleStep
+    ? [createLabeledArg('twistAngleStep', valueOrVariable(twistAngleStep))]
+    : []
+  const twistCenterExpr = twistCenter
+    ? [createLabeledArg('twistCenter', valueOrVariable(twistCenter))]
     : []
   const methodExpr = method
     ? [createLabeledArg('method', createLocalName(method))]
@@ -92,16 +138,21 @@ export function addExtrude({
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('extrude', sketchesExpr, [
-    createLabeledArg('length', valueOrVariable(length)),
+    ...lengthExpr,
+    ...toExpr,
     ...symmetricExpr,
     ...bidirectionalLengthExpr,
+    ...tagStartExpr,
+    ...tagEndExpr,
     ...twistAngleExpr,
+    ...twistAngleStepExpr,
+    ...twistCenterExpr,
     ...methodExpr,
   ])
 
   // Insert variables for labeled arguments if provided
-  if ('variableName' in length && length.variableName) {
-    insertVariableAndOffsetPathToNode(length, modifiedAst, nodeToEdit)
+  if (length && 'variableName' in length && length.variableName) {
+    insertVariableAndOffsetPathToNode(length, modifiedAst, mNodeToEdit)
   }
   if (
     bidirectionalLength &&
@@ -111,11 +162,25 @@ export function addExtrude({
     insertVariableAndOffsetPathToNode(
       bidirectionalLength,
       modifiedAst,
-      nodeToEdit
+      mNodeToEdit
     )
   }
   if (twistAngle && 'variableName' in twistAngle && twistAngle.variableName) {
-    insertVariableAndOffsetPathToNode(twistAngle, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(twistAngle, modifiedAst, mNodeToEdit)
+  }
+  if (
+    twistAngleStep &&
+    'variableName' in twistAngleStep &&
+    twistAngleStep.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(twistAngleStep, modifiedAst, mNodeToEdit)
+  }
+  if (
+    twistCenter &&
+    'variableName' in twistCenter &&
+    twistCenter.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(twistCenter, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -123,7 +188,7 @@ export function addExtrude({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE,
   })
@@ -143,6 +208,8 @@ export function addSweep({
   path,
   sectional,
   relativeTo,
+  tagStart,
+  tagEnd,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -150,6 +217,8 @@ export function addSweep({
   path: Selections
   sectional?: boolean
   relativeTo?: string
+  tagStart?: string
+  tagEnd?: string
   nodeToEdit?: PathToNode
 }):
   | {
@@ -157,12 +226,13 @@ export function addSweep({
       pathToNode: PathToNode
     }
   | Error {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, nodeToEdit)
+  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
   if (err(vars)) {
     return vars
   }
@@ -185,12 +255,20 @@ export function addSweep({
   const relativeToExpr = relativeTo
     ? [createLabeledArg('relativeTo', createLiteral(relativeTo))]
     : []
+  const tagStartExpr = tagStart
+    ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
+    : []
+  const tagEndExpr = tagEnd
+    ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
+    : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('sweep', sketchesExpr, [
     createLabeledArg('path', pathExpr),
     ...sectionalExpr,
     ...relativeToExpr,
+    ...tagStartExpr,
+    ...tagEndExpr,
   ])
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -198,7 +276,7 @@ export function addSweep({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP,
   })
@@ -216,11 +294,19 @@ export function addLoft({
   ast,
   sketches,
   vDegree,
+  bezApproximateRational,
+  baseCurveIndex,
+  tagStart,
+  tagEnd,
   nodeToEdit,
 }: {
   ast: Node<Program>
   sketches: Selections
   vDegree?: KclCommandValue
+  bezApproximateRational?: boolean
+  baseCurveIndex?: KclCommandValue
+  tagStart?: string
+  tagEnd?: string
   nodeToEdit?: PathToNode
 }):
   | {
@@ -228,12 +314,13 @@ export function addLoft({
       pathToNode: PathToNode
     }
   | Error {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, nodeToEdit)
+  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
   if (err(vars)) {
     return vars
   }
@@ -242,15 +329,43 @@ export function addLoft({
   const vDegreeExpr = vDegree
     ? [createLabeledArg('vDegree', valueOrVariable(vDegree))]
     : []
+  const bezApproximateRationalExpr = bezApproximateRational
+    ? [
+        createLabeledArg(
+          'bezApproximateRational',
+          createLiteral(bezApproximateRational)
+        ),
+      ]
+    : []
+  const baseCurveIndexExpr = baseCurveIndex
+    ? [createLabeledArg('baseCurveIndex', valueOrVariable(baseCurveIndex))]
+    : []
+  const tagStartExpr = tagStart
+    ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
+    : []
+  const tagEndExpr = tagEnd
+    ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
+    : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('loft', sketchesExpr, [
     ...vDegreeExpr,
+    ...bezApproximateRationalExpr,
+    ...baseCurveIndexExpr,
+    ...tagStartExpr,
+    ...tagEndExpr,
   ])
 
   // Insert variables for labeled arguments if provided
   if (vDegree && 'variableName' in vDegree && vDegree.variableName) {
-    insertVariableAndOffsetPathToNode(vDegree, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(vDegree, modifiedAst, mNodeToEdit)
+  }
+  if (
+    baseCurveIndex &&
+    'variableName' in baseCurveIndex &&
+    baseCurveIndex.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(baseCurveIndex, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -258,7 +373,7 @@ export function addLoft({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.LOFT,
   })
@@ -280,6 +395,8 @@ export function addRevolve({
   edge,
   symmetric,
   bidirectionalAngle,
+  tagStart,
+  tagEnd,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -289,6 +406,8 @@ export function addRevolve({
   edge?: Selections
   symmetric?: boolean
   bidirectionalAngle?: KclCommandValue
+  tagStart?: string
+  tagEnd?: string
   nodeToEdit?: PathToNode
 }):
   | {
@@ -296,12 +415,13 @@ export function addRevolve({
       pathToNode: PathToNode
     }
   | Error {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(sketches, modifiedAst, nodeToEdit)
+  const vars = getVariableExprsFromSelection(sketches, modifiedAst, mNodeToEdit)
   if (err(vars)) {
     return vars
   }
@@ -324,6 +444,12 @@ export function addRevolve({
         ),
       ]
     : []
+  const tagStartExpr = tagStart
+    ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
+    : []
+  const tagEndExpr = tagEnd
+    ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
+    : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw('revolve', sketchesExpr, [
@@ -331,11 +457,13 @@ export function addRevolve({
     createLabeledArg('axis', getAxisResult.generatedAxis),
     ...symmetricExpr,
     ...bidirectionalAngleExpr,
+    ...tagStartExpr,
+    ...tagEndExpr,
   ])
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in angle && angle.variableName) {
-    insertVariableAndOffsetPathToNode(angle, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
   }
 
   if (
@@ -346,7 +474,7 @@ export function addRevolve({
     insertVariableAndOffsetPathToNode(
       bidirectionalAngle,
       modifiedAst,
-      nodeToEdit
+      mNodeToEdit
     )
   }
 
@@ -355,7 +483,7 @@ export function addRevolve({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE,
   })
@@ -519,4 +647,15 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
     return new Error('The type of the axis argument is unsupported')
   }
   return { axisOrEdge, axis, edge }
+}
+
+export function retrieveTagDeclaratorFromOpArg(
+  opArg: OpArg,
+  code: string
+): string {
+  const dollarSignOffset = 1
+  return code.slice(
+    opArg.sourceRange[0] + dollarSignOffset,
+    opArg.sourceRange[1]
+  )
 }

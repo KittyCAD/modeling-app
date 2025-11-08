@@ -4,4 +4,4 @@ description: Result of unparsing var_ref_in_own_def.kcl
 ---
 // This won't work, because `sketch001` is being referenced in its own definition.
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([20, -20], sketch001)
+  |> startProfile(sketch001, at = [20, -20])

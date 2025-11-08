@@ -318,7 +318,7 @@ export class SceneFixture {
   clickYAxis = async () => {
     const pointOnYAxis = await this.convertPagePositionToStream(
       0.5,
-      0.25,
+      0.7,
       'ratio'
     )
     await this.page.mouse.click(pointOnYAxis.x, pointOnYAxis.y)

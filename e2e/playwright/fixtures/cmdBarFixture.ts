@@ -29,11 +29,15 @@ export class CmdBarFixture {
   public page: Page
   public cmdBarOpenBtn!: Locator
   public cmdBarElement!: Locator
+  public cmdBarLoadingCheckingArguments!: Locator
 
   constructor(page: Page) {
     this.page = page
     this.cmdBarOpenBtn = this.page.getByTestId('command-bar-open-button')
     this.cmdBarElement = this.page.getByTestId('command-bar')
+    this.cmdBarLoadingCheckingArguments = this.page.getByTestId(
+      'command-bar-loading-checking-arguments'
+    )
   }
 
   get currentArgumentInput() {
@@ -77,6 +81,100 @@ export class CmdBarFixture {
         commandName: commandName || '',
       }
     }
+
+    // Check if we're dealing with vector2d inputs
+    const vector2dInputsExist = await this.page
+      .getByTestId('vector2d-x-input')
+      .isVisible()
+      .catch(() => false)
+    if (vector2dInputsExist) {
+      // Validate that both vector2d inputs are present
+      const inputsPresent = await Promise.all([
+        this.page.getByTestId('vector2d-x-input').isVisible(),
+        this.page.getByTestId('vector2d-y-input').isVisible(),
+      ])
+
+      if (!inputsPresent.every(Boolean)) {
+        throw new Error('Not all vector2d inputs are present')
+      }
+
+      const [
+        headerArguments,
+        highlightedHeaderArg,
+        commandName,
+        xValue,
+        yValue,
+      ] = await Promise.all([
+        getHeaderArgs(),
+        this.page
+          .locator('[data-is-current-arg="true"]')
+          .locator('[data-test-name="arg-name"]')
+          .textContent(),
+        getCommandName(),
+        this.page.getByTestId('vector2d-x-input').inputValue(),
+        this.page.getByTestId('vector2d-y-input').inputValue(),
+      ])
+
+      const vectorValue = `[${xValue}, ${yValue}]`
+
+      return {
+        stage: 'arguments',
+        currentArgKey: highlightedHeaderArg || '',
+        currentArgValue: vectorValue,
+        headerArguments,
+        highlightedHeaderArg: highlightedHeaderArg || '',
+        commandName: commandName || '',
+      }
+    }
+
+    // Check if we're dealing with vector3d inputs
+    const vector3dInputsExist = await this.page
+      .getByTestId('vector3d-x-input')
+      .isVisible()
+      .catch(() => false)
+    if (vector3dInputsExist) {
+      // Validate that all three vector3d inputs are present
+      const inputsPresent = await Promise.all([
+        this.page.getByTestId('vector3d-x-input').isVisible(),
+        this.page.getByTestId('vector3d-y-input').isVisible(),
+        this.page.getByTestId('vector3d-z-input').isVisible(),
+      ])
+
+      if (!inputsPresent.every(Boolean)) {
+        throw new Error('Not all vector3d inputs are present')
+      }
+
+      const [
+        headerArguments,
+        highlightedHeaderArg,
+        commandName,
+        xValue,
+        yValue,
+        zValue,
+      ] = await Promise.all([
+        getHeaderArgs(),
+        this.page
+          .locator('[data-is-current-arg="true"]')
+          .locator('[data-test-name="arg-name"]')
+          .textContent(),
+        getCommandName(),
+        this.page.getByTestId('vector3d-x-input').inputValue(),
+        this.page.getByTestId('vector3d-y-input').inputValue(),
+        this.page.getByTestId('vector3d-z-input').inputValue(),
+      ])
+
+      const vectorValue = `[${xValue}, ${yValue}, ${zValue}]`
+
+      return {
+        stage: 'arguments',
+        currentArgKey: highlightedHeaderArg || '',
+        currentArgValue: vectorValue,
+        headerArguments,
+        highlightedHeaderArg: highlightedHeaderArg || '',
+        commandName: commandName || '',
+      }
+    }
+
     const [
       currentArgKey,
       currentArgValue,
@@ -103,6 +201,10 @@ export class CmdBarFixture {
     }
   }
   expectState = async (expected: CmdBarSerialised) => {
+    if (expected.stage === 'review') {
+      await this.cmdBarLoadingCheckingArguments.waitFor({ state: 'hidden' })
+    }
+
     return expect.poll(() => this._serialiseCmdBar()).toEqual(expected)
   }
   /**
@@ -143,15 +245,9 @@ export class CmdBarFixture {
     await submitButton.click()
   }
 
-  openCmdBar = async (selectCmd?: 'promptToEdit') => {
+  openCmdBar = async () => {
     await this.cmdBarOpenBtn.click()
     await expect(this.page.getByPlaceholder('Search commands')).toBeVisible()
-    if (selectCmd === 'promptToEdit') {
-      const promptEditCommand = this.selectOption({ name: 'Text-to-CAD Edit' })
-      await expect(promptEditCommand.first()).toBeVisible()
-      await promptEditCommand.first().scrollIntoViewIfNeeded()
-      await promptEditCommand.first().click()
-    }
   }
 
   closeCmdBar = async () => {
@@ -196,6 +292,13 @@ export class CmdBarFixture {
    */
   clickOptionalArgument = async (argName: string) => {
     await this.page.getByTestId(`cmd-bar-add-optional-arg-${argName}`).click()
+  }
+
+  /**
+   * Select an argument in header from the command bar
+   */
+  clickHeaderArgument = async (argName: string) => {
+    await this.page.getByTestId(`arg-name-${argName}`).click()
   }
 
   /**
@@ -267,15 +370,18 @@ export class CmdBarFixture {
           if (part.startsWith('--')) continue
 
           const nameMatch = part.match(/name="([^"]+)"/)
-          if (!nameMatch) continue
+          if (!nameMatch) {
+            console.log('No name match found in part:', part.substring(0, 100))
+            continue
+          }
 
           const name = nameMatch[1]
           const content = part.split(/\r?\n\r?\n/)[1]?.trim()
           if (!content) continue
 
-          if (name === 'event') {
+          if (name === 'body') {
             eventData = JSON.parse(content)
-          } else {
+          } else if (name === 'files') {
             files[name] = content
           }
         }
@@ -340,10 +446,7 @@ export class CmdBarFixture {
 
   async expectCommandName(value: string) {
     // Check the placeholder project name exists
-    const actual = await this.cmdBarElement
-      .getByTestId('command-name')
-      .textContent()
-    const expected = value
-    expect(actual).toBe(expected)
+    const cmdNameElement = this.cmdBarElement.getByTestId('command-name')
+    return await expect(cmdNameElement).toHaveText(value)
   }
 }

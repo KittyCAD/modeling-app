@@ -3,7 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed multiple-foreign-imports-all-render.kcl
 ---
 {
-  "rust/kcl-lib/tests/inputs/cube.step": [],
   "rust/kcl-lib/tests/multiple-foreign-imports-all-render/anothercube.kcl": [
     {
       "type": "StdLibCall",
@@ -27,7 +26,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "type": "GroupBegin",
       "group": {
         "type": "ModuleInstance",
-        "name": "cube.step",
+        "name": "../inputs/cube.step",
         "moduleId": 0
       },
       "nodePath": {
@@ -100,12 +99,8 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
             "value": 1020.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -203,12 +198,8 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
             "value": -1020.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -308,8 +299,6 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -415,13 +404,5 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

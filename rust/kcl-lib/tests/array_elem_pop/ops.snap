@@ -3,9 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed array_elem_pop.kcl
 ---
 {
-  "rust/kcl-lib/tests/array_elem_pop/input.kcl": [],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -111,13 +108,5 @@ description: Operations executed array_elem_pop.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

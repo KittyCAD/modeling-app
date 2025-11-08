@@ -8,22 +8,22 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   ARG_ANGLE,
   ARG_ANGLE_END,
-  ARG_AT,
   ARG_ANGLE_START,
+  ARG_AT,
   ARG_CIRCLE_CENTER,
-  ARG_RADIUS,
   ARG_END,
   ARG_END_ABSOLUTE,
   ARG_END_ABSOLUTE_X,
   ARG_END_ABSOLUTE_Y,
+  ARG_INTERIOR_ABSOLUTE,
   ARG_INTERSECT_TAG,
   ARG_LENGTH,
   ARG_LENGTH_X,
   ARG_LENGTH_Y,
   ARG_OFFSET,
+  ARG_RADIUS,
   ARG_TAG,
   DETERMINING_ARGS,
-  ARG_INTERIOR_ABSOLUTE,
 } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -46,10 +46,6 @@ import {
 import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import {
-  isLiteralArrayOrStatic,
-  isNotLiteralArrayOrStatic,
-} from '@src/lang/std/sketchcombos'
 import type {
   AddTagInfo,
   ArrayItemInput,
@@ -69,6 +65,8 @@ import {
   findKwArgAny,
   findKwArgAnyIndex,
   findKwArgWithIndex,
+  isLiteralArrayOrStatic,
+  isNotLiteralArrayOrStatic,
   topLevelRange,
 } from '@src/lang/util'
 import type {
@@ -93,8 +91,10 @@ import {
   getLength,
   roundOff,
 } from '@src/lib/utils'
-import type { EdgeCutInfo } from '@src/machines/modelingMachine'
 import { cross2d, distance2d, isValidNumber, subVec } from '@src/lib/utils2d'
+import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
+import type { Coords2d } from '@src/lang/util'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const STRAIGHT_SEGMENT_ERR = () =>
   new Error('Invalid input, expected "straight-segment"')
@@ -102,8 +102,6 @@ const ARC_SEGMENT_ERR = () => new Error('Invalid input, expected "arc-segment"')
 const CIRCLE_THREE_POINT_SEGMENT_ERR = new Error(
   'Invalid input, expected "circle-three-point-segment"'
 )
-
-export type Coords2d = [number, number]
 
 export function getCoordsFromPaths(skGroup: Sketch, index = 0): Coords2d {
   const currentPath = skGroup?.paths?.[index]
@@ -2382,7 +2380,14 @@ export const circleThreePoint: SketchLineHelperKw = {
 }
 
 export const angledLine: SketchLineHelperKw = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback, snaps }) => {
+  add: ({
+    node,
+    pathToNode,
+    segmentInput,
+    replaceExistingCallback,
+    snaps,
+    wasmInstance,
+  }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -2411,8 +2416,12 @@ export const angledLine: SketchLineHelperKw = {
             createLocalName(snaps?.previousArcTag),
             []
           )
-      : createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
-    const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
+      : createLiteral(roundOff(getAngle(from, to), 0), 'Deg', wasmInstance)
+    const newLengthVal = createLiteral(
+      roundOff(getLength(from, to), 2),
+      undefined,
+      wasmInstance
+    )
     const newLine = createCallExpressionStdLibKw('angledLine', null, [
       createLabeledArg(ARG_ANGLE, newAngleVal),
       createLabeledArg(ARG_LENGTH, newLengthVal),
@@ -2498,6 +2507,7 @@ export const angledLineOfXLength: SketchLineHelperKw = {
     pathToNode,
     segmentInput,
     replaceExistingCallback,
+    wasmInstance,
   }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { from, to } = segmentInput
@@ -2522,8 +2532,16 @@ export const angledLineOfXLength: SketchLineHelperKw = {
     if (err(sketch)) {
       return sketch
     }
-    const angle = createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
-    const xLength = createLiteral(roundOff(Math.abs(from[0] - to[0]), 2) || 0.1)
+    const angle = createLiteral(
+      roundOff(getAngle(from, to), 0),
+      'Deg',
+      wasmInstance
+    )
+    const xLength = createLiteral(
+      roundOff(Math.abs(from[0] - to[0]), 2) || 0.1,
+      undefined,
+      wasmInstance
+    )
     let newLine: Expr
     if (replaceExistingCallback) {
       const result = replaceExistingCallback([
@@ -2612,6 +2630,7 @@ export const angledLineOfYLength: SketchLineHelperKw = {
     pathToNode,
     segmentInput,
     replaceExistingCallback,
+    wasmInstance,
   }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { from, to } = segmentInput
@@ -2634,8 +2653,16 @@ export const angledLineOfYLength: SketchLineHelperKw = {
     const sketch = sketchFromKclValue(variables[variableName], variableName)
     if (err(sketch)) return sketch
 
-    const angle = createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
-    const yLength = createLiteral(roundOff(Math.abs(from[1] - to[1]), 2) || 0.1)
+    const angle = createLiteral(
+      roundOff(getAngle(from, to), 0),
+      'Deg',
+      wasmInstance
+    )
+    const yLength = createLiteral(
+      roundOff(Math.abs(from[1] - to[1]), 2) || 0.1,
+      undefined,
+      wasmInstance
+    )
     let newLine: Expr
     if (replaceExistingCallback) {
       const result = replaceExistingCallback([
@@ -2718,7 +2745,13 @@ export const angledLineOfYLength: SketchLineHelperKw = {
 }
 
 export const angledLineToX: SketchLineHelperKw = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
+  add: ({
+    node,
+    pathToNode,
+    segmentInput,
+    replaceExistingCallback,
+    wasmInstance,
+  }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -2730,8 +2763,12 @@ export const angledLineToX: SketchLineHelperKw = {
     if (err(nodeMeta)) return nodeMeta
 
     const { node: pipe } = nodeMeta
-    const angle = createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
-    const xArg = createLiteral(roundOff(to[0], 2))
+    const angle = createLiteral(
+      roundOff(getAngle(from, to), 0),
+      'Deg',
+      wasmInstance
+    )
+    const xArg = createLiteral(roundOff(to[0], 2), undefined, wasmInstance)
     if (replaceExistingCallback) {
       const result = replaceExistingCallback([
         {
@@ -2805,7 +2842,13 @@ export const angledLineToX: SketchLineHelperKw = {
 }
 
 export const angledLineToY: SketchLineHelperKw = {
-  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
+  add: ({
+    node,
+    pathToNode,
+    segmentInput,
+    replaceExistingCallback,
+    wasmInstance,
+  }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR()
     const { from, to } = segmentInput
     const _node = { ...node }
@@ -2818,8 +2861,12 @@ export const angledLineToY: SketchLineHelperKw = {
 
     const { node: pipe } = nodeMeta
 
-    const angle = createLiteral(roundOff(getAngle(from, to), 0), 'Deg')
-    const yArg = createLiteral(roundOff(to[1], 2))
+    const angle = createLiteral(
+      roundOff(getAngle(from, to), 0),
+      'Deg',
+      wasmInstance
+    )
+    const yArg = createLiteral(roundOff(to[1], 2), undefined, wasmInstance)
 
     if (replaceExistingCallback) {
       const result = replaceExistingCallback([
@@ -3365,28 +3412,16 @@ export function getConstraintInfoKw(
   )
 }
 
-export function compareVec2Epsilon(
-  vec1: [number, number],
-  vec2: [number, number],
-  compareEpsilon = 0.015625 // or 2^-6
+// Compare if the distance between 2 points is within a threshold
+export function vec2WithinDistance(
+  a: Coords2d,
+  b: Coords2d,
+  threshold = 0.015625 // or 2^-6
 ) {
-  const xDifference = Math.abs(vec1[0] - vec2[0])
-  const yDifference = Math.abs(vec1[1] - vec2[1])
-  return xDifference < compareEpsilon && yDifference < compareEpsilon
-}
-
-// this version uses this distance of the two points instead of comparing x and y separately
-export function compareVec2Epsilon2(
-  vec1: [number, number],
-  vec2: [number, number],
-  compareEpsilon = 0.015625 // or 2^-6
-) {
-  const xDifference = Math.abs(vec1[0] - vec2[0])
-  const yDifference = Math.abs(vec1[1] - vec2[1])
-  const distance = Math.sqrt(
-    xDifference * xDifference + yDifference * yDifference
-  )
-  return distance < compareEpsilon
+  const x = a[0] - b[0]
+  const y = a[1] - b[1]
+  const distanceSquared = x * x + y * y
+  return distanceSquared < threshold * threshold
 }
 
 interface CreateLineFnCallArgs {
@@ -3495,6 +3530,7 @@ export function replaceSketchLine({
   segmentInput,
   replaceExistingCallback,
   referencedSegment,
+  wasmInstance,
 }: {
   node: Node<Program>
   variables: VariableMap
@@ -3503,6 +3539,7 @@ export function replaceSketchLine({
   segmentInput: SegmentInputs
   replaceExistingCallback: (rawArgs: RawArgs) => CreatedSketchExprResult | Error
   referencedSegment?: Path
+  wasmInstance?: ModuleType
 }):
   | {
       modifiedAst: Node<Program>
@@ -3523,6 +3560,7 @@ export function replaceSketchLine({
     referencedSegment,
     segmentInput,
     replaceExistingCallback,
+    wasmInstance,
   })
   if (err(addRetVal)) return addRetVal
 
@@ -3530,7 +3568,8 @@ export function replaceSketchLine({
   return { modifiedAst, valueUsedInTransform, pathToNode }
 }
 
-/** Ostensibly  should be used to add a chamfer tag to a chamfer call expression
+/** Used to add tags to edge cut expressions (chamfer or fillet calls).
+ * Both chamfers and fillets use identical tagging logic.
  *
  * However things get complicated in situations like:
  * ```ts
@@ -3539,8 +3578,8 @@ export function replaceSketchLine({
  *     tags = [tag1, tagOfInterest],
  *   )
  * ```
- * Because tag declarator is not allowed on a chamfer with more than one tag,
- * They must be pulled apart into separate chamfer calls:
+ * Because tag declarator is not allowed on edge cuts with more than one tag,
+ * They must be pulled apart into separate calls:
  * ```ts
  * |> chamfer(
  *     length = 1,
@@ -3552,7 +3591,7 @@ export function replaceSketchLine({
  *   , tag = $newTagDeclarator)
  * ```
  */
-function addTagToChamfer(
+function addTagToEdgeCut(
   tagInfo: AddTagInfo,
   edgeCutMeta: EdgeCutInfo
 ):
@@ -3681,13 +3720,13 @@ export function addTagForSketchOnFace(
   if (expressionName === 'close') {
     return addTagKw()(tagInfo)
   }
-  if (expressionName === 'chamfer') {
+  if (expressionName === 'chamfer' || expressionName === 'fillet') {
     if (edgeCutMeta === null) {
       return new Error(
-        'Cannot add tag to chamfer because no edge cut was provided'
+        'Cannot add tag to edge cut because no edge cut was provided'
       )
     }
-    return addTagToChamfer(tagInfo, edgeCutMeta)
+    return addTagToEdgeCut(tagInfo, edgeCutMeta)
   }
   if (expressionName in sketchLineHelperMapKw) {
     const { addTag } = sketchLineHelperMapKw[expressionName]

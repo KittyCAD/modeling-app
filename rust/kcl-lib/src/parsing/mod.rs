@@ -1,11 +1,10 @@
 use crate::{
-    ModuleId,
+    ModuleId, SourceRange,
     errors::{CompilationError, KclError, KclErrorDetails},
     parsing::{
         ast::types::{Node, Program},
         token::TokenStream,
     },
-    source_range::SourceRange,
 };
 
 pub(crate) mod ast;

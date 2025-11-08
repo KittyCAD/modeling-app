@@ -8,6 +8,7 @@ use crate::{ModuleId, NodePath, SourceRange, parsing::ast::types::ItemVisibility
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
+#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
@@ -159,6 +160,10 @@ pub enum OpKclValue {
     String {
         value: String,
     },
+    SketchVar {
+        value: f64,
+        ty: NumericType,
+    },
     Array {
         value: Vec<OpKclValue>,
     },
@@ -173,6 +178,9 @@ pub enum OpKclValue {
     },
     TagDeclarator {
         name: String,
+    },
+    GdtAnnotation {
+        artifact_id: ArtifactId,
     },
     Plane {
         artifact_id: ArtifactId,
@@ -228,6 +236,10 @@ impl From<&KclValue> for OpKclValue {
             KclValue::Bool { value, .. } => Self::Bool { value: *value },
             KclValue::Number { value, ty, .. } => Self::Number { value: *value, ty: *ty },
             KclValue::String { value, .. } => Self::String { value: value.clone() },
+            KclValue::SketchVar { value, .. } => Self::SketchVar {
+                value: value.initial_value,
+                ty: value.ty,
+            },
             KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
                 let value = value.iter().map(Self::from).collect();
                 Self::Array { value }
@@ -242,6 +254,9 @@ impl From<&KclValue> for OpKclValue {
             },
             KclValue::TagDeclarator(node) => Self::TagDeclarator {
                 name: node.name.clone(),
+            },
+            KclValue::GdtAnnotation { value } => Self::GdtAnnotation {
+                artifact_id: ArtifactId::new(value.id),
             },
             KclValue::Plane { value } => Self::Plane {
                 artifact_id: value.artifact_id,

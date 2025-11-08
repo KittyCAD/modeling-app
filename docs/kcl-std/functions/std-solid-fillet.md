@@ -27,7 +27,7 @@ will smoothly blend the transition.
 |----------|------|-------------|----------|
 | `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose edges should be filletted | Yes |
 | `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The radius of the fillet | Yes |
-| `tags` | [`[Edge; 1+]`](/docs/kcl-std/types/std-types-Edge) | The paths you want to fillet | Yes |
+| `tags` | [[`Edge`](/docs/kcl-std/types/std-types-Edge); 1+] | The paths you want to fillet | Yes |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 | `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this fillet | No |
 
@@ -67,7 +67,7 @@ mountingPlate = extrude(mountingPlateSketch, length = thickness)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the fillet function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -108,7 +108,7 @@ mountingPlate = extrude(mountingPlateSketch, length = thickness)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the fillet function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

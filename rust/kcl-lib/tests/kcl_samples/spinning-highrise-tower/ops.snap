@@ -12,12 +12,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 17.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -45,12 +41,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -78,12 +70,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 30.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -111,12 +99,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 0.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -144,12 +128,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -177,12 +157,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 1.2,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -210,12 +186,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 0.3,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -243,12 +215,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 3.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -276,12 +244,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 24.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -309,12 +273,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 4.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -342,12 +302,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 84.5,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -375,12 +331,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 0.1,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -408,12 +360,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 6.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -441,12 +389,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -474,12 +418,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -507,12 +447,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 6.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -540,12 +476,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 0.2,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -579,12 +511,8 @@ description: Operations executed spinning-highrise-tower.kcl
               "value": -0.2,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -602,12 +530,8 @@ description: Operations executed spinning-highrise-tower.kcl
               "value": 30.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -697,12 +621,8 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": -0.2,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -789,12 +709,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 50.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -831,12 +747,8 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": -0.2,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -880,12 +792,8 @@ description: Operations executed spinning-highrise-tower.kcl
               "value": -5.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -903,12 +811,8 @@ description: Operations executed spinning-highrise-tower.kcl
               "value": 50.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -998,12 +902,8 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": -5.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1099,12 +999,8 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 4.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1144,12 +1040,8 @@ description: Operations executed spinning-highrise-tower.kcl
               "value": 1.7,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1167,12 +1059,8 @@ description: Operations executed spinning-highrise-tower.kcl
               "value": 30.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -1258,12 +1146,8 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 1.7,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -1309,12 +1193,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": -14.7,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1342,12 +1222,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 29.4,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -1427,12 +1303,8 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": -1.2,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2331,12 +2203,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 10.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2364,12 +2232,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 8.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2439,12 +2303,8 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 84.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -2478,12 +2338,8 @@ description: Operations executed spinning-highrise-tower.kcl
         "value": 12.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "M"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "m",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -2517,12 +2373,8 @@ description: Operations executed spinning-highrise-tower.kcl
               "value": 4.5,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2540,12 +2392,8 @@ description: Operations executed spinning-highrise-tower.kcl
               "value": 24.0,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "M"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "m",
+                "angle": "degrees"
               }
             },
             "sourceRange": []
@@ -2635,12 +2483,8 @@ description: Operations executed spinning-highrise-tower.kcl
             "value": 4.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "M"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "m",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -3544,8 +3388,6 @@ description: Operations executed spinning-highrise-tower.kcl
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -3651,13 +3493,5 @@ description: Operations executed spinning-highrise-tower.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

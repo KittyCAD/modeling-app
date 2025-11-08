@@ -1,17 +1,12 @@
-import type {
-  CameraDragInteractionType_type,
-  CameraViewState_type,
-} from '@kittycad/lib/dist/types/src/models'
+import type { CameraDragInteractionType, CameraViewState } from '@kittycad/lib'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { isArray } from '@src/lib/utils'
 
-import type { EngineStreamActor } from '@src/machines/engineStreamMachine'
-import * as TWEEN from '@tweenjs/tween.js'
 import Hammer from 'hammerjs'
 import type { Camera } from 'three'
 import {
   Euler,
   MathUtils,
-  Matrix4,
   OrthographicCamera,
   PerspectiveCamera,
   Quaternion,
@@ -22,7 +17,6 @@ import {
 
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 
-import { isQuaternionVertical } from '@src/clientSideScene/helpers'
 import {
   DEBUG_SHOW_INTERSECTION_PLANE,
   INTERSECTION_PLANE_LAYER,
@@ -30,14 +24,10 @@ import {
   ZOOM_MAGIC_NUMBER,
 } from '@src/clientSideScene/sceneUtils'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
-import type {
-  EngineCommandManager,
-  Subscription,
-  UnreliableSubscription,
-} from '@src/lang/std/engineConnection'
 import type { MouseGuard } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { Signal } from '@src/lib/signal'
 import { reportRejection } from '@src/lib/trap'
 import { err } from '@src/lib/trap'
 import {
@@ -45,15 +35,14 @@ import {
   isReducedMotion,
   roundOff,
   throttle,
-  toSync,
   uuidv4,
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
 import { degToRad } from 'three/src/math/MathUtils'
+import { type ConnectionManager } from '@src/network/connectionManager'
+import type { Subscription, UnreliableSubscription } from '@src/network/utils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
-const FRAMES_TO_ANIMATE_IN = 30
-const ORTHOGRAPHIC_MAGIC_FOV = 4
 const EXPECTED_WORLD_COORD_SYSTEM = 'right_handed_up_z'
 
 // Partial declaration; the front/back/left/right are handled differently.
@@ -61,8 +50,6 @@ enum StandardView {
   TOP = 'top',
   BOTTOM = 'bottom',
 }
-
-const tempQuaternion = new Quaternion() // just used for maths
 
 type interactionType = 'pan' | 'rotate' | 'zoom'
 
@@ -90,8 +77,6 @@ export type ReactCameraProperties =
       quaternion: [number, number, number, number]
     }
 
-const lastCmdDelay = 50
-
 class CameraRateLimiter {
   lastSend?: Date = undefined
   rateLimitMs: number = 16 //60 FPS
@@ -114,8 +99,7 @@ class CameraRateLimiter {
 }
 
 export class CameraControls {
-  engineCommandManager: EngineCommandManager
-  engineStreamActor?: EngineStreamActor
+  engineCommandManager: ConnectionManager
   syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
@@ -126,7 +110,7 @@ export class CameraControls {
   mouseNewPosition: Vector2
   worldDownPosition: Vector3
   cameraDown: Camera
-  oldCameraState: undefined | CameraViewState_type
+  oldCameraState: undefined | CameraViewState
   rotationSpeed = 0.3
   enableRotate = true
   enablePan = true
@@ -237,30 +221,18 @@ export class CameraControls {
       cmd_id: uuidv4(),
       cmd: {
         type: 'default_camera_look_at',
-        ...convertThreeCamValuesToEngineCam(threeValues),
+        ...convertThreeCamValuesToEngineCam(
+          threeValues,
+          this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
+        ),
       },
     }
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand(cmd)
   }, 1000 / 15)
 
-  lastPerspectiveCmd: EngineCommand | null = null
-  lastPerspectiveCmdTime: number = Date.now()
-  lastPerspectiveCmdTimeoutId: number | null = null
-
-  sendLastPerspectiveReliableChannel = () => {
-    if (
-      this.lastPerspectiveCmd &&
-      Date.now() - this.lastPerspectiveCmdTime >= lastCmdDelay
-    ) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.engineCommandManager.sendSceneCommand(this.lastPerspectiveCmd, true)
-      this.lastPerspectiveCmdTime = Date.now()
-    }
-  }
-
   doMove = (
-    interaction: CameraDragInteractionType_type,
+    interaction: CameraDragInteractionType,
     coordinates: [number, number]
   ) => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -294,7 +266,7 @@ export class CameraControls {
 
   constructor(
     domElement: HTMLCanvasElement,
-    engineCommandManager: EngineCommandManager,
+    engineCommandManager: ConnectionManager,
     isOrtho = false
   ) {
     this.engineCommandManager = engineCommandManager
@@ -377,22 +349,12 @@ export class CameraControls {
       }
       if (this.camera instanceof PerspectiveCamera && camSettings.fov_y) {
         this.camera.fov = camSettings.fov_y
-      } else if (
-        this.camera instanceof OrthographicCamera &&
-        camSettings.ortho_scale
-      ) {
-        const distanceToTarget = new Vector3(
-          camSettings.pos.x,
-          camSettings.pos.y,
-          camSettings.pos.z
-        ).distanceTo(
-          new Vector3(
-            camSettings.center.x,
-            camSettings.center.y,
-            camSettings.center.z
-          )
-        )
-        this.camera.zoom = (camSettings.ortho_scale * 40) / distanceToTarget
+      } else if (this.camera instanceof OrthographicCamera) {
+        const fovY = camSettings.fov_y ?? this.perspectiveFovBeforeOrtho ?? 45
+        const eyeOffset = this.camera.position.distanceTo(this.target)
+        const height = viewHeightFactor(fovY) * eyeOffset
+        this.camera.zoom = ORTHOGRAPHIC_CAMERA_SIZE / height
+        this.camera.updateProjectionMatrix()
       }
       this.onCameraChange()
     }
@@ -426,15 +388,8 @@ export class CameraControls {
   setIsCamMovingCallback(cb: (isMoving: boolean, isTween: boolean) => void) {
     this._isCamMovingCallback = cb
   }
-  private _camChangeCallbacks: { [key: string]: () => void } = {}
-  subscribeToCamChange(cb: () => void) {
-    const cbId = uuidv4()
-    this._camChangeCallbacks[cbId] = cb
-    const unsubscribe = () => {
-      delete this._camChangeCallbacks[cbId]
-    }
-    return unsubscribe
-  }
+
+  public readonly cameraChange = new Signal()
 
   onWindowResize = () => {
     if (this.camera instanceof PerspectiveCamera) {
@@ -541,13 +496,17 @@ export class CameraControls {
       if (this.syncDirection === 'engineToClient') {
         const newCmdId = uuidv4()
 
-        const videoRef = this.engineStreamActor?.getSnapshot().context.videoRef
+        // You can use raw JS to fetch the element from the DOM. We do not need to proxy a ref of a ref element on the DOM element
+        // There will be only one of these in the page.
+        const videoElement = <HTMLVideoElement>(
+          document.getElementById('video-stream')
+        )
         // Nonsense to do anything until the video stream is established.
-        if (!videoRef?.current) return
+        if (!videoElement) return
 
         const { x, y } = getNormalisedCoordinates(
           event,
-          videoRef.current,
+          videoElement,
           this.engineCommandManager.streamDimensions
         )
         this.throttledEngCmd({
@@ -742,23 +701,6 @@ export class CameraControls {
     // Calculate the scale factor for the new FOV compared to the old one
     // This needs to be calculated before updating the camera's FOV
     const oldFov = this.camera.fov
-
-    const viewHeightFactor = (fov: number) => {
-      /*       *
-              /|
-             / |
-            /  |
-           /   |
-          /    | viewHeight/2
-         /     |
-        /      |
-       /↙️fov/2 |
-      /________|
-      \        |
-       \._._._.|
-      */
-      return Math.tan(deg2Rad(fov / 2))
-    }
     const scaleFactor = viewHeightFactor(oldFov) / viewHeightFactor(newFov)
 
     this.camera.fov = newFov
@@ -777,13 +719,16 @@ export class CameraControls {
         cmd_id: uuidv4(),
         cmd: {
           type: 'default_camera_look_at',
-          ...convertThreeCamValuesToEngineCam({
-            isPerspective: true,
-            position: newPosition,
-            quaternion: this.camera.quaternion,
-            zoom: this.camera.zoom,
-            target: this.target,
-          }),
+          ...convertThreeCamValuesToEngineCam(
+            {
+              isPerspective: true,
+              position: newPosition,
+              quaternion: this.camera.quaternion,
+              zoom: this.camera.zoom,
+              target: this.target,
+            },
+            this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
+          ),
         },
       })
       await this.engineCommandManager.sendSceneCommand({
@@ -802,13 +747,16 @@ export class CameraControls {
         cmd_id: uuidv4(),
         cmd: {
           type: 'default_camera_perspective_settings',
-          ...convertThreeCamValuesToEngineCam({
-            isPerspective: true,
-            position: newPosition,
-            quaternion: this.camera.quaternion,
-            zoom: this.camera.zoom,
-            target: this.target,
-          }),
+          ...convertThreeCamValuesToEngineCam(
+            {
+              isPerspective: true,
+              position: newPosition,
+              quaternion: this.camera.quaternion,
+              zoom: this.camera.zoom,
+              target: this.target,
+            },
+            this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
+          ),
           fov_y: newFov,
         },
       })
@@ -941,64 +889,7 @@ export class CameraControls {
     this.camera.updateMatrixWorld()
   }
 
-  safeLookAtTarget(up = new Vector3(0, 0, 1)) {
-    const quaternion = _lookAt(this.camera.position, this.target, up)
-    this.camera.quaternion.copy(quaternion)
-    this.camera.updateMatrixWorld()
-  }
-
-  tweenCamToNegYAxis(
-    // -90 degrees from the x axis puts the camera on the negative y axis
-    targetAngle = -Math.PI / 2,
-    duration = 500
-  ): Promise<void> {
-    return new Promise((resolve) => {
-      // should tween the camera so that it has an xPosition of 0, and forcing it's yPosition to be negative
-      // zPosition should stay the same
-      const xyRadius = Math.sqrt(
-        (this.target.x - this.camera.position.x) ** 2 +
-          (this.target.y - this.camera.position.y) ** 2
-      )
-      const xyAngle = Math.atan2(
-        this.camera.position.y - this.target.y,
-        this.camera.position.x - this.target.x
-      )
-      const camAtTime = (obj: { angle: number }) => {
-        const x = xyRadius * Math.cos(obj.angle)
-        const y = xyRadius * Math.sin(obj.angle)
-        this.camera.position.set(
-          this.target.x + x,
-          this.target.y + y,
-          this.camera.position.z
-        )
-        this.update()
-        this.onCameraChange()
-      }
-      const onComplete = (obj: { angle: number }) => {
-        camAtTime(obj)
-        this._isCamMovingCallback(false, true)
-
-        // resolve after a couple of frames
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => resolve())
-        })
-      }
-      this._isCamMovingCallback(true, true)
-
-      if (isReducedMotion()) {
-        onComplete({ angle: targetAngle })
-        return
-      }
-
-      new TWEEN.Tween({ angle: xyAngle })
-        .to({ angle: targetAngle }, duration)
-        .onUpdate(camAtTime)
-        .onComplete(onComplete)
-        .start()
-    })
-  }
-
-  async getCameraView(): Promise<CameraViewState_type | Error> {
+  async getCameraView(): Promise<CameraViewState | Error> {
     const response = await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -1007,14 +898,12 @@ export class CameraControls {
 
     // Check valid response from the engine.
     const singleResponse = isArray(response) ? response[0] : response
-    const noValidResponse =
-      !singleResponse?.success || !('resp' in singleResponse)
-
-    if (noValidResponse) {
+    if (!singleResponse || !isModelingResponse(singleResponse)) {
       return new Error('Failed to get camera view state: no valid response.')
     }
-
-    // Check we actually have the 'modeling_response' field.
+    if (!isModelingResponse(singleResponse)) {
+      return new Error('Failed to get camera view state: wrong response type.')
+    }
     const data = singleResponse.resp.data
     const noModelingResponse = !('modeling_response' in data)
 
@@ -1062,7 +951,7 @@ export class CameraControls {
       )
     }
 
-    const cameraViewTarget: CameraViewState_type = {
+    const cameraViewTarget: CameraViewState = {
       ...cameraView,
       pivot_rotation: Z_AXIS_QUATERNIONS[direction],
       pivot_position: {
@@ -1225,6 +1114,14 @@ export class CameraControls {
     })
   }
 
+  /**
+   * After we successfully save the old camera state and then enable
+   * it in the try connect loop, clear it. It shouldn't be set unless it idles
+   */
+  clearOldCameraState() {
+    this.oldCameraState = undefined
+  }
+
   saveRemoteCameraState(): Promise<void> {
     return new Promise((resolve, reject) => {
       // It's possible we've hit a disconnection, but the browser or nothing
@@ -1240,14 +1137,14 @@ export class CameraControls {
             cmd: { type: 'default_camera_get_view' },
           })
         if (!cameraViewStateResponse) return
-        if (
-          'resp' in cameraViewStateResponse &&
-          'modeling_response' in cameraViewStateResponse.resp.data &&
-          'data' in cameraViewStateResponse.resp.data.modeling_response &&
-          'view' in cameraViewStateResponse.resp.data.modeling_response.data
-        ) {
-          this.oldCameraState =
-            cameraViewStateResponse.resp.data.modeling_response.data.view
+        const r = isArray(cameraViewStateResponse)
+          ? cameraViewStateResponse[0]
+          : cameraViewStateResponse
+        if (r && isModelingResponse(r)) {
+          const mr = r.resp.data.modeling_response
+          if ('data' in mr && 'view' in mr.data) {
+            this.oldCameraState = mr.data.view
+          }
         }
 
         clearTimeout(timeoutId)
@@ -1255,182 +1152,6 @@ export class CameraControls {
       })().catch(reject)
     })
   }
-
-  async tweenCameraToQuaternion(
-    targetQuaternion: Quaternion,
-    targetPosition = new Vector3(),
-    duration = 500,
-    toOrthographic = true
-  ): Promise<void> {
-    if (this.syncDirection === 'engineToClient')
-      console.warn(
-        'tweenCameraToQuaternion not design to work with engineToClient syncDirection.'
-      )
-    const isVertical = isQuaternionVertical(targetQuaternion)
-    let remainingDuration = duration
-    if (isVertical) {
-      remainingDuration = duration * 0.5
-      const orbitRotationDuration = duration * 0.65
-      let targetAngle = -Math.PI / 2
-      const v = new Vector3(0, 0, 1).applyQuaternion(targetQuaternion)
-      if (v.z < 0) targetAngle = Math.PI / 2
-      await this.tweenCamToNegYAxis(targetAngle, orbitRotationDuration)
-    }
-    await this._tweenCameraToQuaternion(
-      targetQuaternion,
-      targetPosition,
-      remainingDuration,
-      toOrthographic
-    )
-  }
-  _tweenCameraToQuaternion(
-    targetQuaternion: Quaternion,
-    targetPosition: Vector3,
-    duration = 500,
-    toOrthographic = false
-  ): Promise<void> {
-    return new Promise((resolve) => {
-      const camera = this.camera
-      this._isCamMovingCallback(true, true)
-      const initialQuaternion = camera.quaternion.clone()
-      const initialTarget = this.target.clone()
-      const isVertical = isQuaternionVertical(targetQuaternion)
-      let tweenEnd = isVertical ? 0.99 : 1
-      const tempVec = new Vector3()
-      const initialDistance = initialTarget.distanceTo(camera.position.clone())
-
-      const cameraAtTime = (animationProgress: number /* 0 - 1 */) => {
-        const currentQ = tempQuaternion.slerpQuaternions(
-          initialQuaternion,
-          targetQuaternion,
-          animationProgress
-        )
-        const up = new Vector3(0, 0, 1).applyQuaternion(currentQ)
-        this.camera.up.copy(up)
-        const currentTarget = tempVec.lerpVectors(
-          initialTarget,
-          targetPosition,
-          animationProgress
-        )
-        if (this.camera instanceof PerspectiveCamera)
-          // changing the camera position back when it's orthographic doesn't do anything
-          // and it messes up animating back to perspective later
-          this.camera.position
-            .set(0, 0, 1)
-            .applyQuaternion(currentQ)
-            .multiplyScalar(initialDistance)
-            .add(currentTarget)
-
-        this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
-        this.camera.quaternion.copy(currentQ)
-        this.target.copy(currentTarget)
-        this.camera.updateProjectionMatrix()
-        this.update()
-        this.onCameraChange()
-      }
-
-      const onComplete = async () => {
-        if (isReducedMotion() && toOrthographic) {
-          cameraAtTime(0.9999)
-          this.useOrthographicCamera()
-        } else if (toOrthographic) {
-          await this.animateToOrthographic()
-        }
-        this.enableRotate = false
-        this._isCamMovingCallback(false, true)
-        resolve()
-      }
-
-      if (isReducedMotion()) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        onComplete()
-        return
-      }
-
-      new TWEEN.Tween({ t: 0 })
-        .to({ t: tweenEnd }, duration)
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .onUpdate(({ t }) => cameraAtTime(t))
-        .onComplete(toSync(onComplete, reportRejection))
-        .start()
-    })
-  }
-
-  animateToOrthographic = () =>
-    new Promise((resolve) => {
-      if (this.syncDirection === 'engineToClient')
-        console.warn(
-          'animate To Orthographic not design to work with engineToClient syncDirection.'
-        )
-      this.isFovAnimationInProgress = true
-      let currentFov = this.lastPerspectiveFov
-      this.perspectiveFovBeforeOrtho = currentFov
-
-      const targetFov = ORTHOGRAPHIC_MAGIC_FOV
-      const fovAnimationStep = (currentFov - targetFov) / FRAMES_TO_ANIMATE_IN
-      let frameWaitOnFinish = 10
-
-      const animateFovChange = () => {
-        if (this.camera instanceof PerspectiveCamera) {
-          if (this.camera.fov > targetFov) {
-            // Decrease the FOV
-            currentFov = Math.max(currentFov - fovAnimationStep, targetFov)
-            this.camera.updateProjectionMatrix()
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            this.dollyZoom(currentFov)
-            requestAnimationFrame(animateFovChange) // Continue the animation
-          } else if (frameWaitOnFinish > 0) {
-            frameWaitOnFinish--
-            requestAnimationFrame(animateFovChange) // Continue the animation
-          } else {
-            // Once the target FOV is reached, switch to the orthographic camera
-            // Needs to wait a couple frames after the FOV animation is complete
-            this.useOrthographicCamera()
-            this.isFovAnimationInProgress = false
-            resolve(true)
-          }
-        }
-      }
-
-      animateFovChange() // Start the animation
-    })
-  animateToPerspective = (targetCamUp = new Vector3(0, 0, 1)) =>
-    new Promise((resolve) => {
-      if (this.syncDirection === 'engineToClient') {
-        console.warn(
-          'animate To Perspective not design to work with engineToClient syncDirection.'
-        )
-      }
-      this.isFovAnimationInProgress = true
-      const targetFov = this.perspectiveFovBeforeOrtho // Target FOV for perspective
-      this.lastPerspectiveFov = ORTHOGRAPHIC_MAGIC_FOV
-      let currentFov = ORTHOGRAPHIC_MAGIC_FOV
-      const initialCameraUp = this.camera.up.clone()
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.usePerspectiveCamera()
-      const tempVec = new Vector3()
-
-      const cameraAtTime = (t: number) => {
-        currentFov =
-          this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov) * t
-        const currentUp = tempVec.lerpVectors(initialCameraUp, targetCamUp, t)
-        this.camera.up.copy(currentUp)
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.dollyZoom(currentFov)
-      }
-
-      const onComplete = () => {
-        this.isFovAnimationInProgress = false
-        resolve(true)
-      }
-
-      new TWEEN.Tween({ t: 0 })
-        .to({ t: 1 }, isReducedMotion() ? 50 : FRAMES_TO_ANIMATE_IN * 16) // Assuming 60fps, hence 16ms per frame
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .onUpdate(({ t }) => cameraAtTime(t))
-        .onComplete(onComplete)
-        .start()
-    })
   snapToPerspectiveBeforeHandingBackControlToEngine = async (
     targetCamUp = new Vector3(0, 0, 1)
   ) => {
@@ -1441,13 +1162,13 @@ export class CameraControls {
     }
     this.isFovAnimationInProgress = true
     const targetFov = this.perspectiveFovBeforeOrtho // Target FOV for perspective
-    let currentFov = ORTHOGRAPHIC_MAGIC_FOV
     const initialCameraUp = this.camera.up.clone()
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.usePerspectiveCamera()
     const tempVec = new Vector3()
 
-    currentFov = this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov)
+    const currentFov =
+      this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov)
     const currentUp = tempVec.lerpVectors(initialCameraUp, targetCamUp, 1)
     this.camera.up.copy(currentUp)
     await this.dollyZoom(currentFov, true)
@@ -1509,11 +1230,11 @@ export class CameraControls {
       })
     }
     this.deferReactUpdate(this.reactCameraProperties)
-    Object.values(this._camChangeCallbacks).forEach((cb) => cb())
+    this.cameraChange.dispatch()
   }
   getInteractionType = (
     event: PointerEvent | WheelEvent | MouseEvent
-  ): CameraDragInteractionType_type | 'none' => {
+  ): CameraDragInteractionType | 'none' => {
     // We just need to send any start value to the engine for touch.
     // I chose "rotate" because it's the 1-finger gesture
     const initialInteractionType =
@@ -1720,13 +1441,27 @@ function calculateNearFarFromFOV(fov: number) {
   return { z_near: 0.01, z_far: 1000 }
 }
 
-function convertThreeCamValuesToEngineCam({
-  target,
-  position,
-  quaternion,
-  zoom,
-  isPerspective,
-}: ThreeCamValues): {
+const viewHeightFactor = (fov: number) => {
+  /*       *
+          /|
+         / |
+        /  |
+       /   |
+      /    | viewHeight/2
+     /     |
+    /      |
+   /↙️fov/2 |
+  /________|
+  \        |
+   \._._._.|
+  */
+  return Math.tan(deg2Rad(fov / 2))
+}
+
+function convertThreeCamValuesToEngineCam(
+  { target, position, quaternion, zoom, isPerspective }: ThreeCamValues,
+  perspectiveFovY = 45
+): {
   center: Vector3
   up: Vector3
   vantage: Vector3
@@ -1742,69 +1477,18 @@ function convertThreeCamValuesToEngineCam({
     }
   }
 
-  // re-implementing stuff here, though this is a bunch of Mike's code
-  // if we need to pull him in again, at least it will be familiar to him
-  // and it's all simple functions.
-  interface Coord3d {
-    x: number
-    y: number
-    z: number
-  }
+  // Orthographic: derive engine eye_offset consistent with createProjectionMatrix
+  const effectiveHalfHeight = ORTHOGRAPHIC_CAMERA_SIZE / zoom
+  const eyeOffset = effectiveHalfHeight / viewHeightFactor(perspectiveFovY)
 
-  function buildLookAt(distance: number, center: Coord3d, eye: Coord3d) {
-    const eyeVector = normalized(sub(eye, center))
-    return { center: center, eye: add(center, mult(eyeVector, distance)) }
-  }
+  const viewDir = position.clone().sub(target).normalize()
+  const vantage = target.clone().add(viewDir.multiplyScalar(eyeOffset))
 
-  function mult(vecA: Coord3d, sc: number): Coord3d {
-    return { x: vecA.x * sc, y: vecA.y * sc, z: vecA.z * sc }
-  }
-
-  function add(vecA: Coord3d, vecB: Coord3d): Coord3d {
-    return { x: vecA.x + vecB.x, y: vecA.y + vecB.y, z: vecA.z + vecB.z }
-  }
-
-  function sub(vecA: Coord3d, vecB: Coord3d): Coord3d {
-    return { x: vecA.x - vecB.x, y: vecA.y - vecB.y, z: vecA.z - vecB.z }
-  }
-
-  function dot(vecA: Coord3d, vecB: Coord3d) {
-    return vecA.x * vecB.x + vecA.y * vecB.y + vecA.z * vecB.z
-  }
-
-  function length(vecA: Coord3d) {
-    return Math.sqrt(dot(vecA, vecA))
-  }
-
-  function normalized(vecA: Coord3d) {
-    return mult(vecA, 1.0 / length(vecA))
-  }
-
-  const lookAt = buildLookAt(64 / zoom, target, position)
   return {
-    center: new Vector3(lookAt.center.x, lookAt.center.y, lookAt.center.z),
-    up: new Vector3(upVector.x, upVector.y, upVector.z),
-    vantage: new Vector3(lookAt.eye.x, lookAt.eye.y, lookAt.eye.z),
+    center: target,
+    up: upVector,
+    vantage,
   }
-}
-
-function _lookAt(position: Vector3, target: Vector3, up: Vector3): Quaternion {
-  // Direction from position to target, normalized.
-  let direction = new Vector3().subVectors(target, position).normalize()
-
-  // Calculate a new "effective" up vector that is orthogonal to the direction.
-  // This step ensures that the up vector does not affect the direction the camera is looking.
-  let right = new Vector3().crossVectors(direction, up).normalize()
-  let orthogonalUp = new Vector3().crossVectors(right, direction).normalize()
-
-  // Create a lookAt matrix using the position, and the recalculated orthogonal up vector.
-  let lookAtMatrix = new Matrix4()
-  lookAtMatrix.lookAt(position, target, orthogonalUp)
-
-  // Create a quaternion from the lookAt matrix.
-  let quaternion = new Quaternion().setFromRotationMatrix(lookAtMatrix)
-
-  return quaternion
 }
 
 function _getInteractionType(
@@ -1835,7 +1519,7 @@ function _getInteractionType(
  */
 
 export async function letEngineAnimateAndSyncCamAfter(
-  engineCommandManager: EngineCommandManager,
+  engineCommandManager: ConnectionManager,
   entityId: string
 ) {
   await engineCommandManager.sendSceneCommand({

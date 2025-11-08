@@ -23,6 +23,12 @@
 @(impl = primitive)
 export type any
 
+/// The type of the none (aka null) value.
+///
+/// Note that this is not the empty type, i.e., a type which represents no values.
+@(impl = primitive, experimental = true)
+export type none
+
 /// A number.
 ///
 /// May be signed or unsigned, an integer or decimal value.
@@ -336,6 +342,10 @@ export type Axis2d
 /// An abstract and infinite line in 3d space.
 @(impl = std_rust)
 export type Axis3d
+
+/// A GD&T annotation.
+@(impl = std_rust, experimental = true)
+export type GdtAnnotation
 
 export type mm = number(mm)
 export type cm = number(cm)

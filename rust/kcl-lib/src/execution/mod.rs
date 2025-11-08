@@ -23,26 +23,23 @@ use kcmc::{
 use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
 pub use memory::EnvironmentRef;
 pub(crate) use modeling::ModelingCmdMeta;
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
 use crate::{
-    CompilationError, ExecError, KclErrorWithOutputs,
+    CompilationError, ExecError, KclErrorWithOutputs, SourceRange,
     engine::{EngineManager, GridScaleBehavior},
     errors::{KclError, KclErrorDetails},
     execution::{
         cache::{CacheInformation, CacheResult},
         import_graph::{Universe, UniverseMap},
         typed_path::TypedPath,
-        types::{UnitAngle, UnitLen},
     },
     fs::FileManager,
-    modules::{ModuleId, ModulePath, ModuleRepr},
+    modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
-    source_range::SourceRange,
 };
 
 pub(crate) mod annotations;
@@ -63,7 +60,7 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
-enum StatementKind<'a> {
+pub(crate) enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,
 }
@@ -90,7 +87,7 @@ pub struct ExecOutcome {
     pub default_planes: Option<DefaultPlanes>,
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct DefaultPlanes {
@@ -102,7 +99,7 @@ pub struct DefaultPlanes {
     pub neg_yz: uuid::Uuid,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct TagIdentifier {
@@ -191,7 +188,7 @@ impl std::hash::Hash for TagIdentifier {
 }
 
 /// Engine information for a tag.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct TagEngineInfo {
@@ -212,7 +209,7 @@ pub enum BodyType {
 }
 
 /// Metadata.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq, Copy)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq, Copy)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Metadata {
@@ -276,7 +273,7 @@ pub struct ExecutorContext {
 }
 
 /// The executor settings.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 pub struct ExecutorSettings {
     /// Highlight edges of 3D objects?
@@ -327,7 +324,7 @@ impl From<crate::settings::types::Settings> for ExecutorSettings {
             replay: None,
             project_directory: None,
             current_file: None,
-            fixed_size_grid: settings.app.fixed_size_grid,
+            fixed_size_grid: settings.modeling.fixed_size_grid,
         }
     }
 }
@@ -379,7 +376,7 @@ impl ExecutorSettings {
                 self.project_directory = Some(TypedPath::from(""));
             }
         } else {
-            self.project_directory = Some(current_file.clone());
+            self.project_directory = Some(current_file);
         }
     }
 }
@@ -433,9 +430,7 @@ impl ExecutorContext {
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
-            engine: Arc::new(Box::new(
-                crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
-            )),
+            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
@@ -602,19 +597,14 @@ impl ExecutorContext {
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
         let grid_scale = if self.settings.fixed_size_grid {
-            GridScaleBehavior::Fixed(
-                program
-                    .meta_settings()
-                    .ok()
-                    .flatten()
-                    .map(|s| s.default_length_units)
-                    .map(kcmc::units::UnitLength::from),
-            )
+            GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
         } else {
             GridScaleBehavior::ScaleWithZoom
         };
 
-        let (program, exec_state, result) = match cache::read_old_ast().await {
+        let original_program = program.clone();
+
+        let (_program, exec_state, result) = match cache::read_old_ast().await {
             Some(mut cached_state) => {
                 let old = CacheInformation {
                     ast: &cached_state.main.ast,
@@ -796,10 +786,12 @@ impl ExecutorContext {
         let result = result?;
 
         // Save this as the last successful execution to the cache.
+        // Gotcha: `CacheResult::ReExecute.program` may be diff-based, do not save that AST
+        // the last-successful AST. Instead, save in the full AST passed in.
         cache::write_old_ast(GlobalState::new(
             exec_state.clone(),
             self.settings.clone(),
-            program.ast,
+            original_program.ast,
             result.0,
         ))
         .await;
@@ -1055,7 +1047,10 @@ impl ExecutorContext {
             ModulePath::Main => {
                 // This should never happen.
             }
-            ModulePath::Local { value, .. } => {
+            ModulePath::Local {
+                value,
+                original_import_path,
+            } => {
                 // We only want to display the top-level module imports in
                 // the Feature Tree, not transitive imports.
                 if universe_map.contains_key(value) {
@@ -1070,11 +1065,12 @@ impl ExecutorContext {
                         NodePath::placeholder()
                     };
 
+                    let name = match original_import_path {
+                        Some(value) => value.to_string_lossy(),
+                        None => value.file_name().unwrap_or_default(),
+                    };
                     exec_state.push_op(Operation::GroupBegin {
-                        group: Group::ModuleInstance {
-                            name: value.file_name().unwrap_or_default(),
-                            module_id,
-                        },
+                        group: Group::ModuleInstance { name, module_id },
                         node_path,
                         source_range,
                     });
@@ -1102,14 +1098,7 @@ impl ExecutorContext {
 
         // Re-apply the settings, in case the cache was busted.
         let grid_scale = if self.settings.fixed_size_grid {
-            GridScaleBehavior::Fixed(
-                program
-                    .meta_settings()
-                    .ok()
-                    .flatten()
-                    .map(|s| s.default_length_units)
-                    .map(kcmc::units::UnitLength::from),
-            )
+            GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
         } else {
             GridScaleBehavior::ScaleWithZoom
         };
@@ -1175,12 +1164,18 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await
-            .map(|(_, env_ref, _, module_artifacts)| {
-                // We need to extend because it may already have operations from
-                // imports.
-                exec_state.global.root_module_artifacts.extend(module_artifacts);
-                env_ref
-            })
+            .map(
+                |ModuleExecutionOutcome {
+                     environment: env_ref,
+                     artifacts: module_artifacts,
+                     ..
+                 }| {
+                    // We need to extend because it may already have operations from
+                    // imports.
+                    exec_state.global.root_module_artifacts.extend(module_artifacts);
+                    env_ref
+                },
+            )
             .map_err(|(err, env_ref, module_artifacts)| {
                 if let Some(module_artifacts) = module_artifacts {
                     // We need to extend because it may already have operations
@@ -1204,8 +1199,8 @@ impl ExecutorContext {
                 op.fill_node_paths(program, cached_body_items);
             }
             for module in exec_state.global.module_infos.values_mut() {
-                if let ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts))) = &mut module.repr {
-                    for op in &mut module_artifacts.operations {
+                if let ModuleRepr::Kcl(_, Some(outcome)) = &mut module.repr {
+                    for op in &mut outcome.artifacts.operations {
                         op.fill_node_paths(program, cached_body_items);
                     }
                 }
@@ -1358,7 +1353,7 @@ impl ExecutorContext {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
 pub struct ArtifactId(Uuid);
 
 impl ArtifactId {
@@ -1416,14 +1411,14 @@ pub(crate) async fn parse_execute_with_project_dir(
     let program = crate::Program::parse_no_errs(code)?;
 
     let exec_ctxt = ExecutorContext {
-        engine: Arc::new(Box::new(
-            crate::engine::conn_mock::EngineConnection::new().await.map_err(|err| {
+        engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().map_err(
+            |err| {
                 KclError::new_internal(crate::errors::KclErrorDetails::new(
                     format!("Failed to create mock engine connection: {err}"),
                     vec![SourceRange::default()],
                 ))
-            })?,
-        )),
+            },
+        )?)),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings {
             project_directory,

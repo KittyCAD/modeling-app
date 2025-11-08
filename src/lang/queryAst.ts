@@ -12,6 +12,7 @@ import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   codeRefFromRange,
+  getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
 } from '@src/lang/std/artifactGraph'
@@ -32,36 +33,34 @@ import type {
   Identifier,
   Literal,
   Name,
-  ObjectExpression,
-  ObjectProperty,
   PathToNode,
   PipeExpression,
   Program,
   ReturnStatement,
+  SegmentArtifact,
   SourceRange,
   SyntaxType,
   VariableDeclaration,
   VariableDeclarator,
   VariableMap,
 } from '@src/lang/wasm'
-import {
-  kclSettings,
-  recast,
-  sketchFromKclValue,
-  unitAngToUnitAngle,
-  unitLenToUnitLength,
-} from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/lib/selections'
+import { kclSettings, recast, sketchFromKclValue } from '@src/lang/wasm'
 import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
 
+import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
+import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
-import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
-import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
+import type {
+  Selection,
+  Selections,
+  EdgeCutInfo,
+} from '@src/machines/modelingSharedTypes'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -76,7 +75,8 @@ export function getNodeFromPath<T>(
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly = false,
   suppressNoise = false,
-  replacement?: any
+  replacement?: any,
+  wasmInstance?: ModuleType
 ):
   | {
       node: T
@@ -103,7 +103,7 @@ export function getNodeFromPath<T>(
         }
       }
       const stackTraceError = new Error()
-      const sourceCode = recast(node)
+      const sourceCode = recast(node, wasmInstance)
       const levels = stackTraceError.stack?.split('\n')
       const aFewFunctionNames: string[] = []
       let tree = ''
@@ -177,7 +177,8 @@ export function getNodeFromPath<T>(
  */
 export function getNodeFromPathCurry(
   node: Program,
-  path: PathToNode
+  path: PathToNode,
+  wasmInstance?: ModuleType
 ): <T>(
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly?: boolean
@@ -188,7 +189,15 @@ export function getNodeFromPathCurry(
     }
   | Error {
   return <T>(stopAt?: SyntaxType | SyntaxType[], returnEarly = false) => {
-    const _node1 = getNodeFromPath<T>(node, path, stopAt, returnEarly)
+    const _node1 = getNodeFromPath<T>(
+      node,
+      path,
+      stopAt,
+      returnEarly,
+      undefined,
+      undefined,
+      wasmInstance
+    )
     if (err(_node1)) return _node1
     const { node: _node, shallowPath } = _node1
     return {
@@ -894,19 +903,11 @@ export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
   return Object.keys(theMap).length > 0
 }
 
-export function getObjExprProperty(
-  node: ObjectExpression,
-  propName: string
-): { expr: ObjectProperty['value']; index: number } | null {
-  const index = node.properties.findIndex(({ key }) => key.name === propName)
-  if (index === -1) return null
-  return { expr: node.properties[index].value, index }
-}
-
 export function isCursorInFunctionDefinition(
   ast: Node<Program>,
   selectionRanges: Selection
 ): boolean {
+  if (ast.body.length === 0) return false
   if (!selectionRanges?.codeRef?.pathToNode) return false
   const node = getNodeFromPath<FunctionExpression>(
     ast,
@@ -960,19 +961,19 @@ export function doesSketchPipeNeedSplitting(
  * Given KCL, returns the settings annotation object if it exists.
  */
 export function getSettingsAnnotation(
-  kcl: string | Node<Program>
+  kcl: string | Node<Program>,
+  instance?: ModuleType
 ): KclSettingsAnnotation | Error {
-  const metaSettings = kclSettings(kcl)
+  const metaSettings = kclSettings(kcl, instance)
   if (err(metaSettings)) return metaSettings
 
   const settings: KclSettingsAnnotation = {}
   // No settings in the KCL.
   if (!metaSettings) return settings
 
-  settings.defaultLengthUnit = unitLenToUnitLength(
-    metaSettings.defaultLengthUnits
-  )
-  settings.defaultAngleUnit = unitAngToUnitAngle(metaSettings.defaultAngleUnits)
+  settings.defaultLengthUnit = metaSettings.defaultLengthUnits
+  settings.defaultAngleUnit = metaSettings.defaultAngleUnits
+  settings.experimentalFeatures = metaSettings.experimentalFeatures
 
   return settings
 }
@@ -1054,7 +1055,8 @@ export function getVariableExprsFromSelection(
   ast: Node<Program>,
   nodeToEdit?: PathToNode,
   lastChildLookup = false,
-  artifactGraph?: ArtifactGraph
+  artifactGraph?: ArtifactGraph,
+  artifactTypeFilter?: Array<Artifact['type']>
 ): Error | { exprs: Expr[]; pathIfPipe?: PathToNode } {
   let pathIfPipe: PathToNode | undefined
   const exprs: Expr[] = []
@@ -1072,7 +1074,11 @@ export function getVariableExprsFromSelection(
         s.artifact,
         artifactGraph
       )
-      const lastChildVariable = getLastVariable(children, ast)
+      const lastChildVariable = getLastVariable(
+        children,
+        ast,
+        artifactTypeFilter
+      )
       if (!lastChildVariable) {
         continue
       }
@@ -1177,6 +1183,17 @@ export function retrieveSelectionsFromOpArg(
       continue
     }
 
+    const isArtifactFromImportedModule = codeRefs.some(
+      (c) => c.pathToNode.length === 0
+    )
+    if (isArtifactFromImportedModule) {
+      // TODO: retrieve module import alias instead of throwing here
+      // https://github.com/KittyCAD/modeling-app/issues/8463
+      return new Error(
+        "The selected artifact is from an imported module, editing isn't supported yet. Please delete the operation and recreate."
+      )
+    }
+
     graphSelections.push({
       artifact,
       codeRef: codeRefs[0],
@@ -1222,6 +1239,33 @@ export function getSelectedPlaneId(selectionRanges: Selections): string | null {
   )
   if (planeSelection) {
     // Found an offset plane in the selection
+    return planeSelection.artifact?.id || null
+  }
+
+  return null
+}
+
+// Returns the plane/wall/cap/edgeCut within the current selection that can be used to start a sketch on.
+export function getSelectedSketchTarget(
+  selectionRanges: Selections
+): string | null {
+  const defaultPlane = selectionRanges.otherSelections.find(
+    (selection) => typeof selection === 'object' && 'name' in selection
+  )
+  if (defaultPlane) {
+    return defaultPlane.id
+  }
+
+  // Try to find an offset plane or wall or cap or chamfer edgeCut
+  const planeSelection = selectionRanges.graphSelections.find((selection) => {
+    const artifactType = selection.artifact?.type || ''
+    return (
+      ['plane', 'wall', 'cap'].includes(artifactType) ||
+      (selection.artifact?.type === 'edgeCut' &&
+        selection.artifact?.subType === 'chamfer')
+    )
+  })
+  if (planeSelection) {
     return planeSelection.artifact?.id || null
   }
 
@@ -1470,24 +1514,42 @@ export function findAllChildrenAndOrderByPlaceInCode(
 
   const resultSet = new Set(result)
   const codeRefArtifacts = getArtifacts(Array.from(resultSet))
-  const orderedByCodeRefDest = codeRefArtifacts.sort((a, b) => {
+  let orderedByCodeRefDest = codeRefArtifacts.sort((a, b) => {
     const aCodeRef = getFaceCodeRef(a)
     const bCodeRef = getFaceCodeRef(b)
     if (!aCodeRef || !bCodeRef) {
       return 0
     }
-    return bCodeRef.range[0] - aCodeRef.range[0]
+    return aCodeRef.range[0] - bCodeRef.range[0]
   })
 
-  return orderedByCodeRefDest
+  // Cut off traversal results at the first NEW sweep (so long as it's not the first sweep)
+  let firstSweep = true
+  const cutoffIndex = orderedByCodeRefDest.findIndex((artifact) => {
+    if (artifact.type === 'sweep' && firstSweep) {
+      firstSweep = false
+      return false
+    }
+    const isNew = artifact.type === 'sweep' && artifact.method === 'new'
+    return isNew && !firstSweep
+  })
+  if (cutoffIndex !== -1) {
+    orderedByCodeRefDest = orderedByCodeRefDest.slice(0, cutoffIndex)
+  }
+
+  return orderedByCodeRefDest.reverse()
 }
 
 /** Returns the last declared in code, relevant child */
 export function getLastVariable(
   orderedDescArtifacts: Artifact[],
-  ast: Node<Program>
+  ast: Node<Program>,
+  typeFilter?: Array<Artifact['type']>
 ) {
   for (const artifact of orderedDescArtifacts) {
+    if (typeFilter && !typeFilter.includes(artifact.type)) {
+      continue
+    }
     const codeRef = getFaceCodeRef(artifact)
     if (codeRef) {
       const pathToNode = getNodePathFromSourceRange(ast, codeRef.range)
@@ -1506,4 +1568,64 @@ export function getLastVariable(
     }
   }
   return null
+}
+
+export function getEdgeCutMeta(
+  artifact: Artifact,
+  ast: Node<Program>,
+  artifactGraph: ArtifactGraph
+): null | EdgeCutInfo {
+  let edgeCutInfo: {
+    segment: SegmentArtifact
+    type: EdgeCutInfo['subType']
+  } | null = null
+  if (
+    artifact?.type === 'edgeCut' &&
+    (artifact.subType === 'chamfer' || artifact.subType === 'fillet')
+  ) {
+    const consumedArtifact = getArtifactOfTypes(
+      {
+        key: artifact.consumedEdgeId,
+        types: ['segment', 'sweepEdge'],
+      },
+      artifactGraph
+    )
+    console.log('consumedArtifact', consumedArtifact)
+    if (err(consumedArtifact)) return null
+    if (consumedArtifact.type === 'segment') {
+      edgeCutInfo = {
+        type: 'base',
+        segment: consumedArtifact,
+      }
+    } else {
+      const segment = getArtifactOfTypes(
+        { key: consumedArtifact.segId, types: ['segment'] },
+        artifactGraph
+      )
+      if (err(segment)) return null
+      edgeCutInfo = {
+        type: consumedArtifact.subType,
+        segment,
+      }
+    }
+  }
+  if (!edgeCutInfo) return null
+  const segmentCallExpr = getNodeFromPath<CallExpressionKw>(
+    ast,
+    edgeCutInfo?.segment.codeRef.pathToNode || [],
+    ['CallExpressionKw']
+  )
+  if (err(segmentCallExpr)) return null
+  if (segmentCallExpr.node.type !== 'CallExpressionKw') return null
+  const sketchNodeArgs = segmentCallExpr.node.arguments.map((la) => la.arg)
+  const tagDeclarator = sketchNodeArgs.find(
+    ({ type }) => type === 'TagDeclarator'
+  )
+  if (!tagDeclarator || tagDeclarator.type !== 'TagDeclarator') return null
+
+  return {
+    type: 'edgeCut',
+    subType: edgeCutInfo.type,
+    tagName: tagDeclarator.value,
+  }
 }

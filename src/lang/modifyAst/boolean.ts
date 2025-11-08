@@ -4,15 +4,15 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
 } from '@src/lang/create'
-import { getVariableExprsFromSelection } from '@src/lang/queryAst'
-import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
-import type { Selections } from '@src/lib/selections'
-import { err } from '@src/lib/trap'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import {
   createVariableExpressionsArray,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { getVariableExprsFromSelection } from '@src/lang/queryAst'
+import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import { err } from '@src/lib/trap'
 
 export function addUnion({
   ast,
@@ -25,15 +25,16 @@ export function addUnion({
   solids: Selections
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
     modifiedAst,
-    nodeToEdit,
+    mNodeToEdit,
     lastChildLookup,
     artifactGraph
   )
@@ -49,7 +50,7 @@ export function addUnion({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
   })
@@ -74,15 +75,16 @@ export function addIntersect({
   solids: Selections
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments (no exposed labeled arguments for boolean yet)
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
     modifiedAst,
-    nodeToEdit,
+    mNodeToEdit,
     lastChildLookup,
     artifactGraph
   )
@@ -98,7 +100,7 @@ export function addIntersect({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
   })
@@ -125,17 +127,19 @@ export function addSubtract({
   tools: Selections
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  // 1. Clone the ast so we can edit it
+  // 1. Clone the ast and nodeToEdit so we can freely edit them
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   const lastChildLookup = true
   const vars = getVariableExprsFromSelection(
     solids,
     modifiedAst,
-    nodeToEdit,
+    mNodeToEdit,
     lastChildLookup,
-    artifactGraph
+    artifactGraph,
+    ['compositeSolid', 'sweep']
   )
   if (err(vars)) {
     return vars
@@ -144,9 +148,10 @@ export function addSubtract({
   const toolVars = getVariableExprsFromSelection(
     tools,
     modifiedAst,
-    nodeToEdit,
+    mNodeToEdit,
     lastChildLookup,
-    artifactGraph
+    artifactGraph,
+    ['compositeSolid', 'sweep']
   )
   if (err(toolVars)) {
     return toolVars
@@ -175,7 +180,7 @@ export function addSubtract({
     ast: modifiedAst,
     call,
     pathIfNewPipe,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SOLID,
   })
   if (err(pathToNode)) {

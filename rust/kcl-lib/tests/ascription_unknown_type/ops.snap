@@ -3,9 +3,6 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed ascription_unknown_type.kcl
 ---
 {
-  "rust/kcl-lib/tests/ascription_unknown_type/input.kcl": [],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -111,13 +108,5 @@ description: Operations executed ascription_unknown_type.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

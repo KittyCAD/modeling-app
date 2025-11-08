@@ -44,12 +44,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "value": 200.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "slabPlate": {
@@ -156,9 +152,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               80.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -175,9 +169,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               80.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -201,9 +193,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               8.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -227,9 +217,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               8.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -246,9 +234,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -272,9 +258,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -291,9 +275,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -303,9 +285,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "x": 0.0,
             "y": 100.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -313,25 +293,19 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -343,9 +317,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -372,11 +344,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 200.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -387,12 +356,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "n": 8.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -405,21 +370,15 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "n": 16.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -428,12 +387,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "value": 300.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "slabPlateBolts": {
@@ -508,9 +463,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   10.392304845413264
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -527,9 +480,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   10.392304845413264
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -546,9 +497,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -565,9 +514,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   -10.392304845413264
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -584,9 +531,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   -10.392304845413264
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -603,9 +548,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -622,9 +565,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -636,17 +577,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -701,9 +638,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                         15.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -720,9 +655,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                         15.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -739,9 +672,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                         -15.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -758,9 +689,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                         -15.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -777,9 +706,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                         -15.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -789,9 +716,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": -13.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "Custom",
@@ -799,25 +724,19 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -829,9 +748,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                       -15.0,
                       -15.0
                     ],
-                    "units": {
-                      "type": "Mm"
-                    },
+                    "units": "mm",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -840,21 +757,14 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
-                "height": -3.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "sectional": false
               },
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "start": {
               "from": [
@@ -865,9 +775,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 -12.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -876,16 +784,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 7.0,
           "startCapId": null,
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       },
@@ -958,9 +861,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   10.392304845413264
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -977,9 +878,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   10.392304845413264
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -996,9 +895,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1015,9 +912,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   -10.392304845413264
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1034,9 +929,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   -10.392304845413264
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1053,9 +946,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1072,9 +963,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               }
             ],
             "on": {
@@ -1086,17 +975,13 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "solid": {
                 "type": "Solid",
@@ -1151,9 +1036,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                         15.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -1170,9 +1053,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                         15.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -1189,9 +1070,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                         -15.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -1208,9 +1087,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                         -15.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     {
                       "__geoMeta": {
@@ -1227,9 +1104,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                         -15.0
                       ],
                       "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -1239,9 +1114,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                       "x": 0.0,
                       "y": 0.0,
                       "z": -13.0,
-                      "units": {
-                        "type": "Mm"
-                      }
+                      "units": "mm"
                     },
                     "type": "plane",
                     "value": "Custom",
@@ -1249,25 +1122,19 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     },
                     "zAxis": {
                       "x": 0.0,
                       "y": 0.0,
                       "z": 1.0,
-                      "units": {
-                        "type": "Unknown"
-                      }
+                      "units": null
                     }
                   },
                   "start": {
@@ -1279,9 +1146,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                       -15.0,
                       -15.0
                     ],
-                    "units": {
-                      "type": "Mm"
-                    },
+                    "units": "mm",
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
@@ -1290,21 +1155,14 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
-                  "units": {
-                    "type": "Mm"
-                  }
+                  "units": "mm"
                 },
-                "height": -3.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
-                "units": {
-                  "type": "Mm"
-                },
+                "units": "mm",
                 "sectional": false
               },
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "start": {
               "from": [
@@ -1315,9 +1173,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 -12.0,
                 0.0
               ],
-              "units": {
-                "type": "Mm"
-              },
+              "units": "mm",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1326,16 +1182,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
-          "height": 7.0,
           "startCapId": null,
           "endCapId": "[uuid]",
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "sectional": false
         }
       }
@@ -1346,12 +1197,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "value": 80.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "slabPlatePunchOne": {
@@ -1458,9 +1305,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               80.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1477,9 +1322,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               80.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1503,9 +1346,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               8.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1529,9 +1370,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               8.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1548,9 +1387,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1574,9 +1411,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1593,9 +1428,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1605,9 +1438,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "x": 0.0,
             "y": 100.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1615,25 +1446,19 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -1645,9 +1470,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -1674,11 +1497,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 200.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -1689,12 +1509,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "n": 8.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -1707,21 +1523,15 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "n": 16.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -1829,9 +1639,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               80.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1848,9 +1656,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               80.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1874,9 +1680,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               8.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1900,9 +1704,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               8.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1919,9 +1721,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1945,9 +1745,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -1964,9 +1762,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -1976,9 +1772,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "x": 0.0,
             "y": 100.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "Custom",
@@ -1986,25 +1780,19 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": -1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2016,9 +1804,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2045,11 +1831,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 200.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -2060,12 +1843,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "n": 8.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -2078,21 +1857,15 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "n": 16.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -2101,12 +1874,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "value": 8.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "slabPlateWidth": {
@@ -2114,12 +1883,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "value": 200.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "wideHoleLength": {
@@ -2127,12 +1892,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "value": 60.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "wideHoleOffset": {
@@ -2140,12 +1901,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   },
   "wideHolePlane": {
@@ -2157,34 +1914,26 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
       "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       }
     }
   },
@@ -2209,9 +1958,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             6.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2233,9 +1980,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -6.0
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2252,9 +1997,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -6.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2276,9 +2019,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             6.0
           ],
           "type": "TangentialArcTo",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         {
           "__geoMeta": {
@@ -2295,9 +2036,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             6.0
           ],
           "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         }
       ],
       "on": {
@@ -2307,9 +2046,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
+          "units": "mm"
         },
         "type": "plane",
         "value": "XY",
@@ -2317,25 +2054,19 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "zAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         }
       },
       "start": {
@@ -2347,9 +2078,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           -24.0,
           6.0
         ],
-        "units": {
-          "type": "Mm"
-        },
+        "units": "mm",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2358,9 +2087,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      }
+      "units": "mm"
     }
   },
   "wideHoleVoidLeft": {
@@ -2418,9 +2145,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               6.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2442,9 +2167,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               -6.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2461,9 +2184,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               -6.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2485,9 +2206,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               6.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2504,9 +2223,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               6.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -2516,9 +2233,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -2526,25 +2241,19 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2556,9 +2265,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -24.0,
             6.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2567,16 +2274,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -2635,9 +2337,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               6.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2659,9 +2359,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               -6.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2678,9 +2376,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               -6.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2702,9 +2398,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               6.0
             ],
             "type": "TangentialArcTo",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           {
             "__geoMeta": {
@@ -2721,9 +2415,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               6.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           }
         ],
         "on": {
@@ -2733,9 +2425,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "XY",
@@ -2743,25 +2433,19 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2773,9 +2457,7 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             -24.0,
             6.0
           ],
-          "units": {
-            "type": "Mm"
-          },
+          "units": "mm",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2784,16 +2466,11 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Mm"
-        }
+        "units": "mm"
       },
-      "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "units": {
-        "type": "Mm"
-      },
+      "units": "mm",
       "sectional": false
     }
   },
@@ -2802,12 +2479,8 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
     "value": 12.0,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Mm"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "mm",
+      "angle": "degrees"
     }
   }
 }

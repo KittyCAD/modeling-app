@@ -43,10 +43,10 @@ use tower_lsp::{
 use crate::{
     ModuleId, Program, SourceRange,
     docs::kcl_doc::ModData,
-    errors::LspSuggestion,
     exec::KclValue,
-    execution::{cache, kcl_value::FunctionSource},
+    execution::cache,
     lsp::{
+        LspSuggestion, ToLspRange,
         backend::Backend as _,
         kcl::hover::{Hover, HoverOpts},
         util::IntoDiagnostic,
@@ -1043,13 +1043,10 @@ impl LanguageServer for Backend {
             Hover::Function { name, range } => {
                 let (sig, docs) = if let Some(Some(result)) = with_cached_var(&name, |value| {
                     match value {
-                        // User-defined or KCL std function
-                        KclValue::Function {
-                            value: FunctionSource::User { ast, .. },
-                            ..
-                        } => {
+                        // User-defined function
+                        KclValue::Function { value, .. } if !value.is_std => {
                             // TODO get docs from comments
-                            Some((ast.signature(), ""))
+                            Some((value.ast.signature(), ""))
                         }
                         _ => None,
                     }

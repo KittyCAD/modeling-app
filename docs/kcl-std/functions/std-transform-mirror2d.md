@@ -20,7 +20,7 @@ Mirror occurs around a local sketch axis rather than a global axis.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) | The sketch or sketches to be reflected. | Yes |
+| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | The sketch or sketches to be reflected. | Yes |
 | `axis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) | The axis to reflect around. | Yes |
 
 ### Returns
@@ -51,7 +51,7 @@ example = extrude(sketch001, length = 10)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the mirror2d function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror2d0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -77,7 +77,7 @@ example = extrude(sketch001, length = 10)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the mirror2d function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror2d1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -107,7 +107,7 @@ sketch001 = startSketchOn(XZ)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the mirror2d function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror2d2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -136,7 +136,7 @@ example = extrude(sketch001, length = 10)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the mirror2d function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror2d3_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -170,7 +170,7 @@ shell([sketch002], faces = [END], thickness = .1)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the mirror2d function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror2d4_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

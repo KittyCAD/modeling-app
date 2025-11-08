@@ -34,6 +34,15 @@ class Discovered:
     @property
     def overridden(self) -> builtins.bool: ...
 
+class DxfExportOptions:
+    r"""
+    Options for exporting DXF format.
+    """
+    def __new__(cls) -> DxfExportOptions:
+        r"""
+        Set the options to their defaults.
+        """
+
 class ExportFile:
     r"""
     A file to be exported to the client.
@@ -42,6 +51,24 @@ class ExportFile:
     def contents(self) -> builtins.list[builtins.int]: ...
     @property
     def name(self) -> builtins.str: ...
+
+class FbxExportOptions:
+    r"""
+    Options for exporting FBX.
+    """
+    def __new__(cls) -> FbxExportOptions:
+        r"""
+        Set the options to their defaults.
+        """
+
+class FbxImportOptions:
+    r"""
+    Options for importing FBX.
+    """
+    def __new__(cls) -> FbxImportOptions:
+        r"""
+        Set the options to their defaults.
+        """
 
 class Finding:
     r"""
@@ -56,6 +83,32 @@ class Finding:
     @property
     def experimental(self) -> builtins.bool: ...
 
+class FixedLints:
+    r"""
+    Result from linting and fixing automatically.
+    Shows the new code after applying fixes,
+    and any lints that couldn't be automatically applied.
+    """
+    ...
+
+class GltfExportOptions:
+    r"""
+    Options for exporting glTF 2.0.
+    """
+    def __new__(cls) -> GltfExportOptions:
+        r"""
+        Set the options to their defaults.
+        """
+
+class GltfImportOptions:
+    r"""
+    Options for importing glTF 2.0.
+    """
+    def __new__(cls) -> GltfImportOptions:
+        r"""
+        Set the options to their defaults.
+        """
+
 class InputFormat3d:
     r"""
     Input format specifier.
@@ -66,8 +119,8 @@ class InputFormat3d:
         """
         __match_args__ = ("_0",)
         @property
-        def _0(self) -> Options: ...
-        def __new__(cls, _0:Options) -> InputFormat3d.Fbx: ...
+        def _0(self) -> FbxImportOptions: ...
+        def __new__(cls, _0:FbxImportOptions) -> InputFormat3d.Fbx: ...
         def __len__(self) -> builtins.int: ...
         def __getitem__(self, key:builtins.int) -> typing.Any: ...
     
@@ -79,8 +132,8 @@ class InputFormat3d:
         """
         __match_args__ = ("_0",)
         @property
-        def _0(self) -> Options: ...
-        def __new__(cls, _0:Options) -> InputFormat3d.Gltf: ...
+        def _0(self) -> GltfImportOptions: ...
+        def __new__(cls, _0:GltfImportOptions) -> InputFormat3d.Gltf: ...
         def __len__(self) -> builtins.int: ...
         def __getitem__(self, key:builtins.int) -> typing.Any: ...
     
@@ -90,8 +143,8 @@ class InputFormat3d:
         """
         __match_args__ = ("_0",)
         @property
-        def _0(self) -> Options: ...
-        def __new__(cls, _0:Options) -> InputFormat3d.Obj: ...
+        def _0(self) -> ObjImportOptions: ...
+        def __new__(cls, _0:ObjImportOptions) -> InputFormat3d.Obj: ...
         def __len__(self) -> builtins.int: ...
         def __getitem__(self, key:builtins.int) -> typing.Any: ...
     
@@ -101,8 +154,8 @@ class InputFormat3d:
         """
         __match_args__ = ("_0",)
         @property
-        def _0(self) -> Options: ...
-        def __new__(cls, _0:Options) -> InputFormat3d.Ply: ...
+        def _0(self) -> PlyImportOptions: ...
+        def __new__(cls, _0:PlyImportOptions) -> InputFormat3d.Ply: ...
         def __len__(self) -> builtins.int: ...
         def __getitem__(self, key:builtins.int) -> typing.Any: ...
     
@@ -112,8 +165,8 @@ class InputFormat3d:
         """
         __match_args__ = ("_0",)
         @property
-        def _0(self) -> Options: ...
-        def __new__(cls, _0:Options) -> InputFormat3d.Sldprt: ...
+        def _0(self) -> SldprtImportOptions: ...
+        def __new__(cls, _0:SldprtImportOptions) -> InputFormat3d.Sldprt: ...
         def __len__(self) -> builtins.int: ...
         def __getitem__(self, key:builtins.int) -> typing.Any: ...
     
@@ -123,8 +176,8 @@ class InputFormat3d:
         """
         __match_args__ = ("_0",)
         @property
-        def _0(self) -> Options: ...
-        def __new__(cls, _0:Options) -> InputFormat3d.Step: ...
+        def _0(self) -> StepImportOptions: ...
+        def __new__(cls, _0:StepImportOptions) -> InputFormat3d.Step: ...
         def __len__(self) -> builtins.int: ...
         def __getitem__(self, key:builtins.int) -> typing.Any: ...
     
@@ -134,132 +187,45 @@ class InputFormat3d:
         """
         __match_args__ = ("_0",)
         @property
-        def _0(self) -> Options: ...
-        def __new__(cls, _0:Options) -> InputFormat3d.Stl: ...
+        def _0(self) -> StlImportOptions: ...
+        def __new__(cls, _0:StlImportOptions) -> InputFormat3d.Stl: ...
         def __len__(self) -> builtins.int: ...
         def __getitem__(self, key:builtins.int) -> typing.Any: ...
     
     ...
 
-class Options:
-    r"""
-    Options for exporting glTF 2.0.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for importing glTF 2.0.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for exporting PLY.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for importing STEP format.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for importing FBX.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for importing OBJ.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for exporting STL.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for exporting FBX.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for importing PLY.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for importing STL.
-    """
-    ...
-
-class Options:
-    r"""
-    Options for exporting DXF format.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
-    r"""
-    Options for importing SolidWorks parts.
-    """
-    def __new__(cls) -> Options:
-        r"""
-        Set the options to their defaults.
-        """
-
-class Options:
+class ObjExportOptions:
     r"""
     Options for exporting OBJ.
     """
-    def __new__(cls) -> Options:
+    def __new__(cls) -> ObjExportOptions:
         r"""
         Set the options to their defaults.
         """
 
-class Options:
+class ObjImportOptions:
     r"""
-    Options for exporting STEP format.
+    Options for importing OBJ.
     """
-    def __new__(cls) -> Options:
+    def __new__(cls) -> ObjImportOptions:
+        r"""
+        Set the options to their defaults.
+        """
+
+class PlyExportOptions:
+    r"""
+    Options for exporting PLY.
+    """
+    def __new__(cls) -> PlyExportOptions:
+        r"""
+        Set the options to their defaults.
+        """
+
+class PlyImportOptions:
+    r"""
+    Options for importing PLY.
+    """
+    def __new__(cls) -> PlyImportOptions:
         r"""
         Set the options to their defaults.
         """
@@ -281,6 +247,15 @@ class RawFile:
     @property
     def name(self) -> builtins.str: ...
 
+class SldprtImportOptions:
+    r"""
+    Options for importing SolidWorks parts.
+    """
+    def __new__(cls) -> SldprtImportOptions:
+        r"""
+        Set the options to their defaults.
+        """
+
 class SnapshotOptions:
     r"""
     Customize a snapshot.
@@ -294,6 +269,39 @@ class SnapshotOptions:
         r"""
         Takes a padding number.
         """
+
+class StepExportOptions:
+    r"""
+    Options for exporting STEP format.
+    """
+    def __new__(cls) -> StepExportOptions:
+        r"""
+        Set the options to their defaults.
+        """
+
+class StepImportOptions:
+    r"""
+    Options for importing STEP format.
+    """
+    def __new__(cls) -> StepImportOptions:
+        r"""
+        Set the options to their defaults.
+        """
+
+class StlExportOptions:
+    r"""
+    Options for exporting STL.
+    """
+    def __new__(cls) -> StlExportOptions:
+        r"""
+        Set the options to their defaults.
+        """
+
+class StlImportOptions:
+    r"""
+    Options for importing STL.
+    """
+    ...
 
 class System:
     r"""
@@ -335,6 +343,34 @@ class Direction(Enum):
     Negative = ...
     r"""
     Decreasing numbers.
+    """
+
+class DxfStorage(Enum):
+    r"""
+    Export storage.
+    """
+    Ascii = ...
+    r"""
+    Plaintext encoding.
+    
+    This is the default setting.
+    """
+    Binary = ...
+    r"""
+    Binary encoding.
+    """
+
+class FbxStorage(Enum):
+    r"""
+    Describes the storage format of an FBX file.
+    """
+    Ascii = ...
+    r"""
+    ASCII FBX encoding.
+    """
+    Binary = ...
+    r"""
+    Binary FBX encoding.
     """
 
 class FileExportFormat(Enum):
@@ -386,35 +422,7 @@ class FileExportFormat(Enum):
     The STL file format. <https://en.wikipedia.org/wiki/STL_(file_format)>
     """
 
-class ImageFormat(Enum):
-    r"""
-    Enum containing the variety of image formats snapshots may be exported to.
-    """
-    Png = ...
-    r"""
-    .png format
-    """
-    Jpeg = ...
-    r"""
-    .jpeg format
-    """
-
-class Storage(Enum):
-    r"""
-    Export storage.
-    """
-    Ascii = ...
-    r"""
-    Plaintext encoding.
-    
-    This is the default setting.
-    """
-    Binary = ...
-    r"""
-    Binary encoding.
-    """
-
-class Storage(Enum):
+class GltfStorage(Enum):
     r"""
     Describes the storage format of a glTF 2.0 scene.
     """
@@ -441,20 +449,37 @@ class Storage(Enum):
     This is the default setting.
     """
 
-class Storage(Enum):
+class ImageFormat(Enum):
     r"""
-    Describes the storage format of an FBX file.
+    Enum containing the variety of image formats snapshots may be exported to.
+    """
+    Png = ...
+    r"""
+    .png format
+    """
+    Jpeg = ...
+    r"""
+    .jpeg format
+    """
+
+class PlyStorage(Enum):
+    r"""
+    The storage for the output PLY file.
     """
     Ascii = ...
     r"""
-    ASCII FBX encoding.
+    Write numbers in their ascii representation (e.g. -13, 6.28, etc.). Properties are separated by spaces and elements are separated by line breaks.
     """
-    Binary = ...
+    BinaryLittleEndian = ...
     r"""
-    Binary FBX encoding.
+    Encode payload as binary using little endian.
+    """
+    BinaryBigEndian = ...
+    r"""
+    Encode payload as binary using big endian.
     """
 
-class Storage(Enum):
+class StlStorage(Enum):
     r"""
     Export storage.
     """
@@ -557,35 +582,6 @@ class UnitLength(Enum):
     Millimeters <https://en.wikipedia.org/wiki/Millimeter>
     """
     Yards = ...
-    r"""
-    Yards <https://en.wikipedia.org/wiki/Yard>
-    """
-
-class UnitLength(Enum):
-    r"""
-    The valid types of length units.
-    """
-    Cm = ...
-    r"""
-    Centimeters <https://en.wikipedia.org/wiki/Centimeter>
-    """
-    Ft = ...
-    r"""
-    Feet <https://en.wikipedia.org/wiki/Foot_(unit)>
-    """
-    In = ...
-    r"""
-    Inches <https://en.wikipedia.org/wiki/Inch>
-    """
-    M = ...
-    r"""
-    Meters <https://en.wikipedia.org/wiki/Meter>
-    """
-    Mm = ...
-    r"""
-    Millimeters <https://en.wikipedia.org/wiki/Millimeter>
-    """
-    Yd = ...
     r"""
     Yards <https://en.wikipedia.org/wiki/Yard>
     """
@@ -706,6 +702,12 @@ def lint(code:builtins.str) -> builtins.list[Discovered]:
     Lint the kcl code.
     """
 
+def lint_and_fix(code:builtins.str) -> FixedLints:
+    r"""
+    Lint the kcl code. Fix any lints that can be fixed with automatic suggestions.
+    Returns any unfixed lints.
+    """
+
 async def mock_execute(path:builtins.str) -> builtins.bool:
     r"""
     Mock execute the kcl code from a file path.
@@ -724,5 +726,10 @@ async def parse(path:builtins.str) -> builtins.bool:
 def parse_code(code:builtins.str) -> builtins.bool:
     r"""
     Parse the kcl code.
+    """
+
+def relevant_file_extensions() -> builtins.list[builtins.str]:
+    r"""
+    Get the allowed relevant file extensions (imports + kcl).
     """
 

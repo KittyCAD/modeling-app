@@ -8,7 +8,6 @@ use serde::{Deserialize, Serialize};
 use crate::{
     KclError, SourceRange,
     errors::{KclErrorDetails, Severity},
-    execution::types::{UnitAngle, UnitLen},
     parsing::ast::types::{Annotation, Expr, LiteralValue, Node, ObjectProperty},
 };
 
@@ -24,6 +23,7 @@ pub(crate) const SETTINGS_EXPERIMENTAL_FEATURES: &str = "experimentalFeatures";
 pub(super) const NO_PRELUDE: &str = "no_std";
 pub(crate) const DEPRECATED: &str = "deprecated";
 pub(crate) const EXPERIMENTAL: &str = "experimental";
+pub(crate) const INCLUDE_IN_FEATURE_TREE: &str = "feature_tree";
 
 pub(super) const IMPORT_FORMAT: &str = "format";
 pub(super) const IMPORT_COORDS: &str = "coords";
@@ -33,9 +33,11 @@ pub(super) const IMPORT_LENGTH_UNIT: &str = "lengthUnit";
 
 pub(crate) const IMPL: &str = "impl";
 pub(crate) const IMPL_RUST: &str = "std_rust";
+pub(crate) const IMPL_CONSTRAINT: &str = "std_rust_constraint";
+pub(crate) const IMPL_CONSTRAINABLE: &str = "std_constrainable";
 pub(crate) const IMPL_KCL: &str = "kcl";
 pub(crate) const IMPL_PRIMITIVE: &str = "primitive";
-pub(super) const IMPL_VALUES: [&str; 3] = [IMPL_RUST, IMPL_KCL, IMPL_PRIMITIVE];
+pub(super) const IMPL_VALUES: [&str; 5] = [IMPL_RUST, IMPL_KCL, IMPL_PRIMITIVE, IMPL_CONSTRAINT, IMPL_CONSTRAINABLE];
 
 pub(crate) const WARNINGS: &str = "warnings";
 pub(crate) const WARN_ALLOW: &str = "allow";
@@ -43,21 +45,27 @@ pub(crate) const WARN_DENY: &str = "deny";
 pub(crate) const WARN_WARN: &str = "warn";
 pub(super) const WARN_LEVELS: [&str; 3] = [WARN_ALLOW, WARN_DENY, WARN_WARN];
 pub(crate) const WARN_UNKNOWN_UNITS: &str = "unknownUnits";
+pub(crate) const WARN_ANGLE_UNITS: &str = "angleUnits";
 pub(crate) const WARN_UNKNOWN_ATTR: &str = "unknownAttribute";
 pub(crate) const WARN_MOD_RETURN_VALUE: &str = "moduleReturnValue";
 pub(crate) const WARN_DEPRECATED: &str = "deprecated";
 pub(crate) const WARN_IGNORED_Z_AXIS: &str = "ignoredZAxis";
+pub(crate) const WARN_SOLVER: &str = "solver";
 pub(crate) const WARN_UNNECESSARY_CLOSE: &str = "unnecessaryClose";
-pub(super) const WARN_VALUES: [&str; 6] = [
+pub(super) const WARN_VALUES: [&str; 8] = [
     WARN_UNKNOWN_UNITS,
+    WARN_ANGLE_UNITS,
     WARN_UNKNOWN_ATTR,
     WARN_MOD_RETURN_VALUE,
     WARN_DEPRECATED,
     WARN_IGNORED_Z_AXIS,
+    WARN_SOLVER,
     WARN_UNNECESSARY_CLOSE,
 ];
 
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type")]
 pub enum WarningLevel {
     Allow,
     Warn,
@@ -70,6 +78,14 @@ impl WarningLevel {
             WarningLevel::Allow => None,
             WarningLevel::Warn => Some(Severity::Warning),
             WarningLevel::Deny => Some(Severity::Error),
+        }
+    }
+
+    pub(crate) fn as_str(self) -> &'static str {
+        match self {
+            WarningLevel::Allow => WARN_ALLOW,
+            WarningLevel::Warn => WARN_WARN,
+            WarningLevel::Deny => WARN_DENY,
         }
     }
 }
@@ -91,7 +107,9 @@ impl FromStr for WarningLevel {
 pub enum Impl {
     #[default]
     Kcl,
+    KclConstrainable,
     Rust,
+    RustConstraint,
     Primitive,
 }
 
@@ -101,6 +119,8 @@ impl FromStr for Impl {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             IMPL_RUST => Ok(Self::Rust),
+            IMPL_CONSTRAINT => Ok(Self::RustConstraint),
+            IMPL_CONSTRAINABLE => Ok(Self::KclConstrainable),
             IMPL_KCL => Ok(Self::Kcl),
             IMPL_PRIMITIVE => Ok(Self::Primitive),
             _ => Err(()),
@@ -109,7 +129,7 @@ impl FromStr for Impl {
 }
 
 pub(crate) fn settings_completion_text() -> String {
-    format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = mm, {SETTINGS_UNIT_ANGLE} = deg, {SETTINGS_VERSION} = 1.0)")
+    format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = mm, {SETTINGS_VERSION} = 1.0)")
 }
 
 pub(super) fn is_significant(attr: &&Node<Annotation>) -> bool {
@@ -217,11 +237,23 @@ pub(super) fn expect_number(expr: &Expr) -> Result<String, KclError> {
     )))
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Default)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub struct FnAttrs {
     pub impl_: Impl,
     pub deprecated: bool,
     pub experimental: bool,
+    pub include_in_feature_tree: bool,
+}
+
+impl Default for FnAttrs {
+    fn default() -> Self {
+        Self {
+            impl_: Impl::default(),
+            deprecated: false,
+            experimental: false,
+            include_in_feature_tree: true,
+        }
+    }
 }
 
 pub(super) fn get_fn_attrs(
@@ -274,9 +306,19 @@ pub(super) fn get_fn_attrs(
                 continue;
             }
 
+            if &*p.key.name == INCLUDE_IN_FEATURE_TREE
+                && let Some(b) = p.value.literal_bool()
+            {
+                if result.is_none() {
+                    result = Some(FnAttrs::default());
+                }
+                result.as_mut().unwrap().include_in_feature_tree = b;
+                continue;
+            }
+
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
-                    "Invalid attribute, expected one of: {IMPL}, {DEPRECATED}, {EXPERIMENTAL}, found `{}`",
+                    "Invalid attribute, expected one of: {IMPL}, {DEPRECATED}, {EXPERIMENTAL}, {INCLUDE_IN_FEATURE_TREE}, found `{}`",
                     &*p.key.name,
                 ),
                 vec![source_range],
@@ -285,36 +327,4 @@ pub(super) fn get_fn_attrs(
     }
 
     Ok(result)
-}
-
-impl UnitLen {
-    pub(super) fn from_str(s: &str, source_range: SourceRange) -> Result<Self, KclError> {
-        match s {
-            "mm" => Ok(UnitLen::Mm),
-            "cm" => Ok(UnitLen::Cm),
-            "m" => Ok(UnitLen::M),
-            "inch" | "in" => Ok(UnitLen::Inches),
-            "ft" => Ok(UnitLen::Feet),
-            "yd" => Ok(UnitLen::Yards),
-            value => Err(KclError::new_semantic(KclErrorDetails::new(
-                format!(
-                    "Unexpected value for length units: `{value}`; expected one of `mm`, `cm`, `m`, `in`, `ft`, `yd`"
-                ),
-                vec![source_range],
-            ))),
-        }
-    }
-}
-
-impl UnitAngle {
-    pub(super) fn from_str(s: &str, source_range: SourceRange) -> Result<Self, KclError> {
-        match s {
-            "deg" => Ok(UnitAngle::Degrees),
-            "rad" => Ok(UnitAngle::Radians),
-            value => Err(KclError::new_semantic(KclErrorDetails::new(
-                format!("Unexpected value for angle units: `{value}`; expected one of `deg`, `rad`"),
-                vec![source_range],
-            ))),
-        }
-    }
 }

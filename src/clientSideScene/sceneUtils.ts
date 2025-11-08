@@ -1,9 +1,6 @@
 // 63.5 is definitely a bit of a magic number, play with it until it looked right
 // if it were 64, that would feel like it's something in the engine where a random
 
-import type { OrthographicCamera, Vector3 } from 'three'
-import { PerspectiveCamera } from 'three'
-
 // power of 2 is used, but it's the 0.5 seems to make things look much more correct
 export const ZOOM_MAGIC_NUMBER = 63.5
 
@@ -30,23 +27,3 @@ export const ARROWHEAD = 'arrowhead'
 export const SEGMENT_LENGTH_LABEL = 'segment-length-label'
 export const SEGMENT_LENGTH_LABEL_TEXT = 'segment-length-label-text'
 export const SEGMENT_LENGTH_LABEL_OFFSET_PX = 30
-export const CIRCLE_3_POINT_DRAFT_POINT = 'circle-3-point-draft-point'
-export const CIRCLE_3_POINT_DRAFT_CIRCLE = 'circle-3-point-draft-circle'
-
-export function getSceneScale(
-  camera: PerspectiveCamera | OrthographicCamera,
-  target: Vector3
-): number {
-  const distance =
-    camera instanceof PerspectiveCamera
-      ? camera.position.distanceTo(target)
-      : 63.7942123 / camera.zoom
-
-  if (distance <= 20) return 0.1
-  else if (distance > 20 && distance <= 200) return 1
-  else if (distance > 200 && distance <= 2000) return 10
-  else if (distance > 2000 && distance <= 20000) return 100
-  else if (distance > 20000) return 1000
-
-  return 1
-}

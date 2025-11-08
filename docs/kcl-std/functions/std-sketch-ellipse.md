@@ -16,7 +16,7 @@ ellipse(
   minorRadius: number(Length),
   majorRadius?: number(Length),
   majorAxis?: Point2d,
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch
 ```
 
@@ -31,7 +31,7 @@ ellipse(
 | `minorRadius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The minor radius of the ellipse. | Yes |
 | `majorRadius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The major radius of the ellipse. Equivalent to majorAxis = [majorRadius, 0]. | No |
 | `majorAxis` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The major axis of the ellipse. | No |
-| `tag` | `tag` | Create a new tag which refers to this ellipse. | No |
+| `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this ellipse. | No |
 
 ### Returns
 
@@ -51,7 +51,7 @@ exampleSketch = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the ellipse function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-ellipse0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

@@ -111,7 +111,7 @@ impl TypedPath {
 
     #[cfg(not(target_arch = "wasm32"))]
     pub fn canonicalize(&self) -> Result<Self, std::io::Error> {
-        self.0.canonicalize().map(|p| TypedPath(p.to_path_buf()))
+        self.0.canonicalize().map(TypedPath)
     }
 
     pub fn to_string_lossy(&self) -> String {
@@ -212,17 +212,6 @@ impl ts_rs::TS for TypedPath {
 
     fn output_path() -> Option<std::path::PathBuf> {
         std::path::PathBuf::output_path()
-    }
-}
-
-impl schemars::JsonSchema for TypedPath {
-    fn schema_name() -> String {
-        "TypedPath".to_owned()
-    }
-
-    fn json_schema(r#gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
-        // TODO: Actually generate a reasonable schema.
-        r#gen.subschema_for::<std::path::PathBuf>()
     }
 }
 

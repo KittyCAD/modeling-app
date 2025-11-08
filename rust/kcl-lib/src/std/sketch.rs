@@ -8,9 +8,8 @@ use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq};
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::shared::PathSegment;
+use kittycad_modeling_cmds::{shared::PathSegment, units::UnitLength};
 use parse_display::{Display, FromStr};
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use super::{
@@ -24,7 +23,7 @@ use crate::{
     execution::{
         BasePath, ExecState, Face, GeoMeta, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
         Sketch, SketchSurface, Solid, TagEngineInfo, TagIdentifier, annotations,
-        types::{ArrayLen, NumericType, PrimitiveType, RuntimeType, UnitLen},
+        types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
     },
     parsing::ast::types::TagNode,
     std::{
@@ -39,7 +38,7 @@ use crate::{
 };
 
 /// A tag for a face.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "snake_case", untagged)]
 pub enum FaceTag {
@@ -83,9 +82,24 @@ impl FaceTag {
             }),
         }
     }
+
+    pub async fn get_face_id_from_tag(
+        &self,
+        exec_state: &mut ExecState,
+        args: &Args,
+        must_be_planar: bool,
+    ) -> Result<uuid::Uuid, KclError> {
+        match self {
+            FaceTag::Tag(t) => args.get_adjacent_face_to_tag(exec_state, t, must_be_planar).await,
+            _ => Err(KclError::new_type(KclErrorDetails::new(
+                "Could not find the face corresponding to this tag".to_string(),
+                vec![args.source_range],
+            ))),
+        }
+    }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -153,6 +167,8 @@ async fn inner_involute_circular(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let id = exec_state.next_uuid();
+    let angle_deg = angle.to_degrees(exec_state, args.source_range);
+    let angle_rad = angle.to_radians(exec_state, args.source_range);
 
     let longer_args_dot_source_range = args.source_range;
     let start_radius = get_radius_labelled(
@@ -174,11 +190,12 @@ async fn inner_involute_circular(
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
             ModelingCmd::from(mcmd::ExtendPath {
+                label: Default::default(),
                 path: sketch.id.into(),
                 segment: PathSegment::CircularInvolute {
                     start_radius: LengthUnit(start_radius.to_mm()),
                     end_radius: LengthUnit(end_radius.to_mm()),
-                    angle: Angle::from_degrees(angle.to_degrees()),
+                    angle: Angle::from_degrees(angle_deg),
                     reverse: reverse.unwrap_or_default(),
                 },
             }),
@@ -194,11 +211,11 @@ async fn inner_involute_circular(
     let theta = f64::sqrt(end_radius * end_radius - start_radius * start_radius) / start_radius;
     let (x, y) = involute_curve(start_radius, theta);
 
-    end.x = x * libm::cos(angle.to_radians()) - y * libm::sin(angle.to_radians());
-    end.y = x * libm::sin(angle.to_radians()) + y * libm::cos(angle.to_radians());
+    end.x = x * libm::cos(angle_rad) - y * libm::sin(angle_rad);
+    end.y = x * libm::sin(angle_rad) + y * libm::cos(angle_rad);
 
-    end.x -= start_radius * libm::cos(angle.to_radians());
-    end.y -= start_radius * libm::sin(angle.to_radians());
+    end.x -= start_radius * libm::cos(angle_rad);
+    end.y -= start_radius * libm::sin(angle_rad);
 
     if reverse.unwrap_or_default() {
         end.x = -end.x;
@@ -222,7 +239,7 @@ async fn inner_involute_circular(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
     new_sketch.paths.push(current_path);
     Ok(new_sketch)
@@ -326,6 +343,7 @@ async fn straight_line(
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
             ModelingCmd::from(mcmd::ExtendPath {
+                label: Default::default(),
                 path: sketch.id.into(),
                 segment: PathSegment::Line {
                     end: KPoint2d::from(point_to_mm(point.clone())).with_z(0.0).map(LengthUnit),
@@ -358,7 +376,7 @@ async fn straight_line(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
     new_sketch.paths.push(current_path);
@@ -550,6 +568,7 @@ async fn inner_angled_line_length(
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
             ModelingCmd::from(mcmd::ExtendPath {
+                label: Default::default(),
                 path: sketch.id.into(),
                 segment: PathSegment::Line {
                     end: KPoint2d::from(untyped_point_to_mm(delta, from.units))
@@ -576,7 +595,7 @@ async fn inner_angled_line_length(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
     new_sketch.paths.push(current_path);
@@ -755,7 +774,7 @@ pub async fn inner_angled_line_that_intersects(
             point_to_len_unit(path.get_to(), from.units),
         ],
         offset.map(|t| t.to_length_units(from.units)).unwrap_or_default(),
-        angle.to_degrees(),
+        angle.to_degrees(exec_state, args.source_range),
         from.ignore_units(),
     );
     let to = [
@@ -768,7 +787,7 @@ pub async fn inner_angled_line_that_intersects(
 
 /// Data for start sketch on.
 /// You can start a sketch on a plane or an solid.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 #[allow(clippy::large_enum_variant)]
@@ -779,7 +798,7 @@ pub enum SketchData {
 }
 
 /// Orientation data that can be used to construct a plane, not a plane in itself.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 #[allow(clippy::large_enum_variant)]
@@ -871,12 +890,6 @@ async fn inner_start_sketch_on(
         }
         SketchData::Plane(plane) => {
             if plane.value == crate::exec::PlaneType::Uninit {
-                if plane.info.origin.units == UnitLen::Unknown {
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                        "Origin of plane has unknown units".to_string(),
-                        vec![args.source_range],
-                    )));
-                }
                 let plane = make_sketch_plane_from_orientation(plane.info.into_plane_data(), exec_state, args).await?;
                 Ok(SketchSurface::Plane(plane))
             } else {
@@ -1013,7 +1026,7 @@ async fn start_sketch_on_face(
     }))
 }
 
-async fn make_sketch_plane_from_orientation(
+pub async fn make_sketch_plane_from_orientation(
     data: PlaneData,
     exec_state: &mut ExecState,
     args: &Args,
@@ -1272,7 +1285,7 @@ pub(crate) async fn inner_close(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
     new_sketch.paths.push(current_path);
     new_sketch.is_closed = true;
@@ -1359,6 +1372,7 @@ pub async fn absolute_arc(
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(args, id),
             ModelingCmd::from(mcmd::ExtendPath {
+                label: Default::default(),
                 path: sketch.id.into(),
                 segment: PathSegment::ArcTo {
                     end: kcmc::shared::Point3d {
@@ -1398,7 +1412,7 @@ pub async fn absolute_arc(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
     new_sketch.paths.push(current_path);
@@ -1418,8 +1432,8 @@ pub async fn relative_arc(
     radius: TyF64,
     tag: Option<TagNode>,
 ) -> Result<Sketch, KclError> {
-    let a_start = Angle::from_degrees(angle_start.to_degrees());
-    let a_end = Angle::from_degrees(angle_end.to_degrees());
+    let a_start = Angle::from_degrees(angle_start.to_degrees(exec_state, args.source_range));
+    let a_end = Angle::from_degrees(angle_end.to_degrees(exec_state, args.source_range));
     let radius = radius.to_length_units(from.units);
     let (center, end) = arc_center_and_end(from.ignore_units(), a_start, a_end, radius);
     if a_start == a_end {
@@ -1434,12 +1448,15 @@ pub async fn relative_arc(
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(args, id),
             ModelingCmd::from(mcmd::ExtendPath {
+                label: Default::default(),
                 path: sketch.id.into(),
                 segment: PathSegment::Arc {
                     start: a_start,
                     end: a_end,
                     center: KPoint2d::from(untyped_point_to_mm(center, from.units)).map(LengthUnit),
-                    radius: LengthUnit(from.units.adjust_to(radius, UnitLen::Mm).0),
+                    radius: LengthUnit(
+                        crate::execution::types::adjust_length(from.units, radius, UnitLength::Millimeters).0,
+                    ),
                     relative: false,
                 },
             }),
@@ -1464,7 +1481,7 @@ pub async fn relative_arc(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
     new_sketch.paths.push(current_path);
@@ -1535,7 +1552,7 @@ async fn inner_tangential_arc(
 }
 
 /// Data to draw a tangential arc.
-#[derive(Debug, Clone, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum TangentialArcData {
@@ -1571,7 +1588,7 @@ async fn inner_tangential_arc_radius_angle(
     let (center, to, ccw) = match data {
         TangentialArcData::RadiusAndOffset { radius, offset } => {
             // KCL stdlib types use degrees.
-            let offset = Angle::from_degrees(offset.to_degrees());
+            let offset = Angle::from_degrees(offset.to_degrees(exec_state, args.source_range));
 
             // Calculate the end point from the angle and radius.
             // atan2 outputs radians.
@@ -1604,6 +1621,7 @@ async fn inner_tangential_arc_radius_angle(
                 .batch_modeling_cmd(
                     ModelingCmdMeta::from_args_id(&args, id),
                     ModelingCmd::from(mcmd::ExtendPath {
+                        label: Default::default(),
                         path: sketch.id.into(),
                         segment: PathSegment::TangentialArc {
                             radius: LengthUnit(radius.to_mm()),
@@ -1633,7 +1651,7 @@ async fn inner_tangential_arc_radius_angle(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
     new_sketch.paths.push(current_path);
@@ -1644,6 +1662,7 @@ async fn inner_tangential_arc_radius_angle(
 // `to` must be in sketch.units
 fn tan_arc_to(sketch: &Sketch, to: [f64; 2]) -> ModelingCmd {
     ModelingCmd::from(mcmd::ExtendPath {
+        label: Default::default(),
         path: sketch.id.into(),
         segment: PathSegment::TangentialArcTo {
             angle_snap_increment: None,
@@ -1722,7 +1741,7 @@ async fn inner_tangential_arc_to_point(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
     new_sketch.paths.push(current_path);
@@ -1795,6 +1814,7 @@ async fn inner_bezier_curve(
                 .batch_modeling_cmd(
                     ModelingCmdMeta::from_args_id(&args, id),
                     ModelingCmd::from(mcmd::ExtendPath {
+                        label: Default::default(),
                         path: sketch.id.into(),
                         segment: PathSegment::Bezier {
                             control1: KPoint2d::from(point_to_mm(control1)).with_z(0.0).map(LengthUnit),
@@ -1814,6 +1834,7 @@ async fn inner_bezier_curve(
                 .batch_modeling_cmd(
                     ModelingCmdMeta::from_args_id(&args, id),
                     ModelingCmd::from(mcmd::ExtendPath {
+                        label: Default::default(),
                         path: sketch.id.into(),
                         segment: PathSegment::Bezier {
                             control1: KPoint2d::from(point_to_mm(control1)).with_z(0.0).map(LengthUnit),
@@ -1849,7 +1870,7 @@ async fn inner_bezier_curve(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
     new_sketch.paths.push(current_path);
@@ -1945,8 +1966,7 @@ async fn inner_elliptic_point(
                     format!(
                         "Invalid input. The x value, {}, cannot be larger than the major radius {}.",
                         x.n, major_radius
-                    )
-                    .to_owned(),
+                    ),
                     vec![args.source_range],
                 ),
             })
@@ -1964,8 +1984,7 @@ async fn inner_elliptic_point(
                     format!(
                         "Invalid input. The y value, {}, cannot be larger than the minor radius {}.",
                         y.n, minor_radius
-                    )
-                    .to_owned(),
+                    ),
                     vec![args.source_range],
                 ),
             })
@@ -2050,8 +2069,8 @@ pub(crate) async fn inner_elliptic(
             },
         ],
     };
-    let start_angle = Angle::from_degrees(angle_start.to_degrees());
-    let end_angle = Angle::from_degrees(angle_end.to_degrees());
+    let start_angle = Angle::from_degrees(angle_start.to_degrees(exec_state, args.source_range));
+    let end_angle = Angle::from_degrees(angle_end.to_degrees(exec_state, args.source_range));
     let major_axis_magnitude = (major_axis[0].to_length_units(from.units) * major_axis[0].to_length_units(from.units)
         + major_axis[1].to_length_units(from.units) * major_axis[1].to_length_units(from.units))
     .sqrt();
@@ -2071,6 +2090,7 @@ pub(crate) async fn inner_elliptic(
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
             ModelingCmd::from(mcmd::ExtendPath {
+                label: Default::default(),
                 path: sketch.id.into(),
                 segment: PathSegment::Ellipse {
                     center: KPoint2d::from(untyped_point_to_mm(center_u, from.units)).map(LengthUnit),
@@ -2101,7 +2121,7 @@ pub(crate) async fn inner_elliptic(
     };
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
     new_sketch.paths.push(current_path);
@@ -2137,8 +2157,7 @@ async fn inner_hyperbolic_point(
                     format!(
                         "Invalid input. The x value, {}, cannot be less than the semi major value, {}.",
                         x.n, semi_major
-                    )
-                    .to_owned(),
+                    ),
                     vec![args.source_range],
                 ),
             })
@@ -2238,6 +2257,7 @@ pub(crate) async fn inner_hyperbolic(
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
             ModelingCmd::from(mcmd::ExtendPath {
+                label: Default::default(),
                 path: sketch.id.into(),
                 segment: PathSegment::ConicTo {
                     start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
@@ -2265,7 +2285,7 @@ pub(crate) async fn inner_hyperbolic(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
     new_sketch.paths.push(current_path);
@@ -2451,6 +2471,7 @@ pub(crate) async fn inner_parabolic(
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
             ModelingCmd::from(mcmd::ExtendPath {
+                label: Default::default(),
                 path: sketch.id.into(),
                 segment: PathSegment::ConicTo {
                     start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
@@ -2478,7 +2499,7 @@ pub(crate) async fn inner_parabolic(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
     new_sketch.paths.push(current_path);
@@ -2605,6 +2626,7 @@ pub(crate) async fn inner_conic(
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(&args, id),
             ModelingCmd::from(mcmd::ExtendPath {
+                label: Default::default(),
                 path: sketch.id.into(),
                 segment: PathSegment::ConicTo {
                     start_tangent: KPoint2d::from(untyped_point_to_mm(start_tangent, from.units)).map(LengthUnit),
@@ -2632,7 +2654,7 @@ pub(crate) async fn inner_conic(
 
     let mut new_sketch = sketch;
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state);
+        new_sketch.add_tag(tag, &current_path, exec_state, None);
     }
 
     new_sketch.paths.push(current_path);

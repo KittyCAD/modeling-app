@@ -11,31 +11,37 @@
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 /// Convert a number to millimeters from its current units.
+@(feature_tree = false)
 export fn toMillimeters(@num: number(Length)): number(mm) {
   return num
 }
 
 /// Convert a number to centimeters from its current units.
+@(feature_tree = false)
 export fn toCentimeters(@num: number(Length)): number(cm) {
   return num
 }
 
 /// Convert a number to meters from its current units.
+@(feature_tree = false)
 export fn toMeters(@num: number(Length)): number(m) {
   return num
 }
 
 /// Convert a number to inches from its current units.
+@(feature_tree = false)
 export fn toInches(@num: number(Length)): number(in) {
   return num
 }
 
 /// Convert a number to feet from its current units.
+@(feature_tree = false)
 export fn toFeet(@num: number(Length)): number(ft) {
   return num
 }
 
 /// Converts a number to yards from its current units.
+@(feature_tree = false)
 export fn toYards(@num: number(Length)): number(yd) {
   return num
 }
@@ -54,6 +60,7 @@ export fn toYards(@num: number(Length)): number(yd) {
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
+@(feature_tree = false)
 export fn toRadians(@num: number(Angle)): number(rad) {
   return num
 }
@@ -72,6 +79,7 @@ export fn toRadians(@num: number(Angle)): number(rad) {
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
+@(feature_tree = false)
 export fn toDegrees(@num: number(Angle)): number(deg) {
   return num
 }

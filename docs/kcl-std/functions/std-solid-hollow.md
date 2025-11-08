@@ -47,7 +47,7 @@ firstSketch = startSketchOn(XY)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the hollow function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-hollow0_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -74,7 +74,7 @@ firstSketch = startSketchOn(-XZ)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the hollow function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-hollow1_output.gltf"
   ar
   environment-image="/moon_1k.hdr"
@@ -111,7 +111,7 @@ hollow(case, thickness = 0.5)
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the  function"
+  alt="Example showing a rendered KCL program that uses the hollow function"
   src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-hollow2_output.gltf"
   ar
   environment-image="/moon_1k.hdr"

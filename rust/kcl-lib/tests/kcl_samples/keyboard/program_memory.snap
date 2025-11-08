@@ -20,12 +20,8 @@ description: Variables in memory after executing keyboard.kcl
     "value": 0.1,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "keyFn": {
@@ -37,12 +33,8 @@ description: Variables in memory after executing keyboard.kcl
     "value": 0.8,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "o": {
@@ -60,12 +52,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -73,12 +61,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -86,12 +70,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.7,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -104,12 +84,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -117,12 +93,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -130,12 +102,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -148,12 +116,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -161,12 +125,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -174,12 +134,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.12186934340514748,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -192,12 +148,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -205,12 +157,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -218,17 +166,14 @@ description: Variables in memory after executing keyboard.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "plane002": {
     "type": "Object",
@@ -241,12 +186,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -254,12 +195,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -267,12 +204,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.81,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -285,12 +218,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -298,12 +227,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -311,12 +236,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -329,12 +250,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -342,12 +259,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -355,12 +268,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.12186934340514748,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
@@ -373,12 +282,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -386,12 +291,8 @@ description: Variables in memory after executing keyboard.kcl
             "value": 0.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           {
@@ -399,17 +300,14 @@ description: Variables in memory after executing keyboard.kcl
             "value": 1.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           }
         ]
       }
-    }
+    },
+    "constrainable": false
   },
   "profile001": {
     "type": "Sketch",
@@ -438,9 +336,7 @@ description: Variables in memory after executing keyboard.kcl
             0.75
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -452,17 +348,13 @@ description: Variables in memory after executing keyboard.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -552,9 +444,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -578,9 +468,7 @@ description: Variables in memory after executing keyboard.kcl
                   1.3990291260903702
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -604,9 +492,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -630,9 +516,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -649,9 +533,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -661,9 +543,7 @@ description: Variables in memory after executing keyboard.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "YZ",
@@ -671,25 +551,19 @@ description: Variables in memory after executing keyboard.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -701,9 +575,7 @@ description: Variables in memory after executing keyboard.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -730,11 +602,8 @@ description: Variables in memory after executing keyboard.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 13.6,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -745,12 +614,8 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -763,12 +628,8 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -781,12 +642,8 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -799,26 +656,18 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
@@ -829,9 +678,7 @@ description: Variables in memory after executing keyboard.kcl
           1.15,
           0.75
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -840,9 +687,7 @@ description: Variables in memory after executing keyboard.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile003": {
@@ -872,9 +717,7 @@ description: Variables in memory after executing keyboard.kcl
             0.75
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -886,17 +729,13 @@ description: Variables in memory after executing keyboard.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -986,9 +825,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1012,9 +849,7 @@ description: Variables in memory after executing keyboard.kcl
                   1.3990291260903702
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1038,9 +873,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1064,9 +897,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1083,9 +914,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -1095,9 +924,7 @@ description: Variables in memory after executing keyboard.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "YZ",
@@ -1105,25 +932,19 @@ description: Variables in memory after executing keyboard.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1135,9 +956,7 @@ description: Variables in memory after executing keyboard.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1164,11 +983,8 @@ description: Variables in memory after executing keyboard.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 13.6,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1179,12 +995,8 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -1197,12 +1009,8 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -1215,12 +1023,8 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -1233,26 +1037,18 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
@@ -1263,9 +1059,7 @@ description: Variables in memory after executing keyboard.kcl
           4.800000000000001,
           0.75
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1274,9 +1068,7 @@ description: Variables in memory after executing keyboard.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile004": {
@@ -1306,9 +1098,7 @@ description: Variables in memory after executing keyboard.kcl
             12.85
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1320,17 +1110,13 @@ description: Variables in memory after executing keyboard.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -1420,9 +1206,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1446,9 +1230,7 @@ description: Variables in memory after executing keyboard.kcl
                   1.3990291260903702
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1472,9 +1254,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1498,9 +1278,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1517,9 +1295,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -1529,9 +1305,7 @@ description: Variables in memory after executing keyboard.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "YZ",
@@ -1539,25 +1313,19 @@ description: Variables in memory after executing keyboard.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -1569,9 +1337,7 @@ description: Variables in memory after executing keyboard.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -1598,11 +1364,8 @@ description: Variables in memory after executing keyboard.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 13.6,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -1613,12 +1376,8 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -1631,12 +1390,8 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -1649,12 +1404,8 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -1667,26 +1418,18 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
@@ -1697,9 +1440,7 @@ description: Variables in memory after executing keyboard.kcl
           1.13,
           12.85
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -1708,9 +1449,7 @@ description: Variables in memory after executing keyboard.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "profile005": {
@@ -1740,9 +1479,7 @@ description: Variables in memory after executing keyboard.kcl
             12.85
           ],
           "type": "Circle",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         }
       ],
       "on": {
@@ -1754,17 +1491,13 @@ description: Variables in memory after executing keyboard.kcl
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
           "z": 1.0,
-          "units": {
-            "type": "Unknown"
-          }
+          "units": null
         },
         "solid": {
           "type": "Solid",
@@ -1854,9 +1587,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.68
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1880,9 +1611,7 @@ description: Variables in memory after executing keyboard.kcl
                   1.3990291260903702
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1906,9 +1635,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1932,9 +1659,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               },
               {
                 "__geoMeta": {
@@ -1951,9 +1676,7 @@ description: Variables in memory after executing keyboard.kcl
                   0.0
                 ],
                 "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
+                "units": "in"
               }
             ],
             "on": {
@@ -1963,9 +1686,7 @@ description: Variables in memory after executing keyboard.kcl
                 "x": 0.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
+                "units": "mm"
               },
               "type": "plane",
               "value": "YZ",
@@ -1973,25 +1694,19 @@ description: Variables in memory after executing keyboard.kcl
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
                 "z": 1.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               },
               "zAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
-                "units": {
-                  "type": "Unknown"
-                }
+                "units": null
               }
             },
             "start": {
@@ -2003,9 +1718,7 @@ description: Variables in memory after executing keyboard.kcl
                 0.0,
                 0.0
               ],
-              "units": {
-                "type": "Inches"
-              },
+              "units": "in",
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
@@ -2032,11 +1745,8 @@ description: Variables in memory after executing keyboard.kcl
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
-          "height": 13.6,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "edgeCuts": [
@@ -2047,12 +1757,8 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -2065,12 +1771,8 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -2083,12 +1785,8 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
@@ -2101,26 +1799,18 @@ description: Variables in memory after executing keyboard.kcl
                 "n": 0.6,
                 "ty": {
                   "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
+                  "len": "in",
+                  "angle": "degrees"
                 }
               },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "sectional": false
         },
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
       "start": {
         "from": [
@@ -2131,9 +1821,7 @@ description: Variables in memory after executing keyboard.kcl
           4.800000000000001,
           12.85
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
@@ -2142,9 +1830,7 @@ description: Variables in memory after executing keyboard.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "row1": {
@@ -2152,12 +1838,8 @@ description: Variables in memory after executing keyboard.kcl
     "value": 0.30000000000000004,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "row2": {
@@ -2165,12 +1847,8 @@ description: Variables in memory after executing keyboard.kcl
     "value": 1.2000000000000002,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "row3": {
@@ -2178,12 +1856,8 @@ description: Variables in memory after executing keyboard.kcl
     "value": 2.1,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "row4": {
@@ -2191,12 +1865,8 @@ description: Variables in memory after executing keyboard.kcl
     "value": 3.0000000000000004,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "row5": {
@@ -2204,12 +1874,8 @@ description: Variables in memory after executing keyboard.kcl
     "value": 3.900000000000001,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "row6": {
@@ -2217,12 +1883,8 @@ description: Variables in memory after executing keyboard.kcl
     "value": 4.800000000000001,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "seg01": {
@@ -2335,9 +1997,7 @@ description: Variables in memory after executing keyboard.kcl
               0.68
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2361,9 +2021,7 @@ description: Variables in memory after executing keyboard.kcl
               1.3990291260903702
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2387,9 +2045,7 @@ description: Variables in memory after executing keyboard.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2413,9 +2069,7 @@ description: Variables in memory after executing keyboard.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           },
           {
             "__geoMeta": {
@@ -2432,9 +2086,7 @@ description: Variables in memory after executing keyboard.kcl
               0.0
             ],
             "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
+            "units": "in"
           }
         ],
         "on": {
@@ -2444,9 +2096,7 @@ description: Variables in memory after executing keyboard.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
+            "units": "mm"
           },
           "type": "plane",
           "value": "YZ",
@@ -2454,25 +2104,19 @@ description: Variables in memory after executing keyboard.kcl
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           },
           "zAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
-            "units": {
-              "type": "Unknown"
-            }
+            "units": null
           }
         },
         "start": {
@@ -2484,9 +2128,7 @@ description: Variables in memory after executing keyboard.kcl
             0.0,
             0.0
           ],
-          "units": {
-            "type": "Inches"
-          },
+          "units": "in",
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
@@ -2513,11 +2155,8 @@ description: Variables in memory after executing keyboard.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
-        }
+        "units": "in"
       },
-      "height": 13.6,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "edgeCuts": [
@@ -2528,12 +2167,8 @@ description: Variables in memory after executing keyboard.kcl
             "n": 0.6,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -2546,12 +2181,8 @@ description: Variables in memory after executing keyboard.kcl
             "n": 0.6,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -2564,12 +2195,8 @@ description: Variables in memory after executing keyboard.kcl
             "n": 0.6,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
@@ -2582,21 +2209,15 @@ description: Variables in memory after executing keyboard.kcl
             "n": 0.6,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "in",
+              "angle": "degrees"
             }
           },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
-      "units": {
-        "type": "Inches"
-      },
+      "units": "in",
       "sectional": false
     }
   },
@@ -2610,17 +2231,13 @@ description: Variables in memory after executing keyboard.kcl
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
         "z": 1.0,
-        "units": {
-          "type": "Unknown"
-        }
+        "units": null
       },
       "solid": {
         "type": "Solid",
@@ -2710,9 +2327,7 @@ description: Variables in memory after executing keyboard.kcl
                 0.68
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -2736,9 +2351,7 @@ description: Variables in memory after executing keyboard.kcl
                 1.3990291260903702
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -2762,9 +2375,7 @@ description: Variables in memory after executing keyboard.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -2788,9 +2399,7 @@ description: Variables in memory after executing keyboard.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             },
             {
               "__geoMeta": {
@@ -2807,9 +2416,7 @@ description: Variables in memory after executing keyboard.kcl
                 0.0
               ],
               "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
+              "units": "in"
             }
           ],
           "on": {
@@ -2819,9 +2426,7 @@ description: Variables in memory after executing keyboard.kcl
               "x": 0.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Mm"
-              }
+              "units": "mm"
             },
             "type": "plane",
             "value": "YZ",
@@ -2829,25 +2434,19 @@ description: Variables in memory after executing keyboard.kcl
               "x": 0.0,
               "y": 1.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
               "z": 1.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             },
             "zAxis": {
               "x": 1.0,
               "y": 0.0,
               "z": 0.0,
-              "units": {
-                "type": "Unknown"
-              }
+              "units": null
             }
           },
           "start": {
@@ -2859,9 +2458,7 @@ description: Variables in memory after executing keyboard.kcl
               0.0,
               0.0
             ],
-            "units": {
-              "type": "Inches"
-            },
+            "units": "in",
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
@@ -2888,11 +2485,8 @@ description: Variables in memory after executing keyboard.kcl
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "units": "in"
         },
-        "height": 13.6,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "edgeCuts": [
@@ -2903,12 +2497,8 @@ description: Variables in memory after executing keyboard.kcl
               "n": 0.6,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -2921,12 +2511,8 @@ description: Variables in memory after executing keyboard.kcl
               "n": 0.6,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -2939,12 +2525,8 @@ description: Variables in memory after executing keyboard.kcl
               "n": 0.6,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
@@ -2957,26 +2539,18 @@ description: Variables in memory after executing keyboard.kcl
               "n": 0.6,
               "ty": {
                 "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
+                "len": "in",
+                "angle": "degrees"
               }
             },
             "edgeId": "[uuid]",
             "tag": null
           }
         ],
-        "units": {
-          "type": "Inches"
-        },
+        "units": "in",
         "sectional": false
       },
-      "units": {
-        "type": "Inches"
-      }
+      "units": "in"
     }
   },
   "spacing": {
@@ -2984,12 +2558,8 @@ description: Variables in memory after executing keyboard.kcl
     "value": 0.1,
     "ty": {
       "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "len": "in",
+      "angle": "degrees"
     }
   },
   "z": {

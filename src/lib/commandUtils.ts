@@ -2,7 +2,7 @@
 // That object also contains some metadata about what to do with the KCL expression,
 // such as whether we need to create a new variable for it.
 // This function extracts the value field from those arg payloads and returns
-import type { Command } from '@src/lib/commandTypes'
+import type { Command, KclCommandValue } from '@src/lib/commandTypes'
 
 // The arg object with all its field as natural values that the command to be executed will expect.
 export function getCommandArgumentKclValuesOnly(args: Record<string, unknown>) {
@@ -52,5 +52,21 @@ export function sortCommands(
   // Sort alphabetically
   return (a.command.displayName || a.command.name).localeCompare(
     b.command.displayName || b.command.name
+  )
+}
+
+/**
+ * Type guard to safely check if a value is a KclCommandValue.
+ *
+ * @param value - The value to check.
+ * @returns True if the value is a KclCommandValue, false otherwise.
+ */
+export function isKclCommandValue(value: unknown): value is KclCommandValue {
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    'valueText' in value &&
+    'valueAst' in value &&
+    'valueCalculated' in value
   )
 }

@@ -8,7 +8,7 @@ description: Operations executed nested_assembly.kcl
       "type": "GroupBegin",
       "group": {
         "type": "ModuleInstance",
-        "name": "main.kcl",
+        "name": "nested/foo/bar/main.kcl",
         "moduleId": 0
       },
       "nodePath": {
@@ -61,12 +61,8 @@ description: Operations executed nested_assembly.kcl
             "value": 360.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -83,12 +79,8 @@ description: Operations executed nested_assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -96,12 +88,8 @@ description: Operations executed nested_assembly.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -114,12 +102,8 @@ description: Operations executed nested_assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   },
                   {
@@ -127,12 +111,8 @@ description: Operations executed nested_assembly.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": {
-                        "type": "Mm"
-                      },
-                      "angle": {
-                        "type": "Degrees"
-                      }
+                      "len": "mm",
+                      "angle": "degrees"
                     }
                   }
                 ]
@@ -148,9 +128,6 @@ description: Operations executed nested_assembly.kcl
       "sourceRange": []
     }
   ],
-  "rust/kcl-lib/tests/nested_assembly/nested/foo/bar/main.kcl": [],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -256,13 +233,5 @@ description: Operations executed nested_assembly.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

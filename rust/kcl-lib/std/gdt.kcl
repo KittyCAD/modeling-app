@@ -1,0 +1,113 @@
+/// Functions for working with geometric dimensioning and tolerancing (GD&T).
+
+@no_std
+@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+
+/// GD&T datum feature.
+///
+/// ```kcl
+/// @settings(experimentalFeatures = allow, defaultLengthUnit = in)
+///
+/// width = 5
+///
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [width, 0], tag = $side1)
+///   |> line(end = [0, width], tag = $side2)
+///   |> line(end = [-width, 0], tag = $side3)
+///   |> line(end = [0, -width], tag = $side4)
+///   |> close()
+///   |> extrude(length = 5, tagStart = $bottom, tagEnd = $top)
+///
+/// gdt::datum(
+///   face = side2,
+///   name = "A",
+///   framePosition = [5, 0],
+///   framePlane = XZ,
+/// )
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = true)
+export fn datum(
+  /// The face to be annotated.
+  @(includeInSnippet = true)
+  face: TaggedFace,
+  /// The name of the datum.
+  @(includeInSnippet = true)
+  name: string,
+  /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// The font point size to use for the annotation text rendering. The default is `36`.
+  fontPointSize?: number(Count),
+  /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
+  fontScale?: number(Count),
+): GdtAnnotation {}
+
+/// GD&T annotation specifying how flat faces should be.
+///
+/// ```kcl
+/// @settings(experimentalFeatures = allow)
+///
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> line(end = [0, -10])
+///   |> close()
+///   |> extrude(length = 5, tagStart = $face1)
+/// gdt::flatness(faces = [face1], tolerance = 0.1mm)
+/// ```
+///
+/// ```kcl
+/// @settings(experimentalFeatures = allow)
+///
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> line(end = [0, -10])
+///   |> close()
+///   |> extrude(length = 5, tagEnd = $face1)
+/// gdt::flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], framePlane = XZ)
+/// ```
+///
+/// ```kcl
+/// @settings(experimentalFeatures = allow)
+///
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0], tag = $face1)
+///   |> line(end = [0, -10])
+///   |> close()
+///   |> extrude(length = 5)
+/// gdt::flatness(faces = [face1], tolerance = 0.02mm, framePosition = [10mm, 20mm], framePlane = XZ)
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = true)
+export fn flatness(
+  /// The faces to be annotated.
+  @(includeInSnippet = true)
+  faces: [TaggedFace; 1+],
+  /// The amount of deviation from a perfect plane that is acceptable.
+  @(includeInSnippet = true)
+  tolerance: number(Length),
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
+  /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// The font point size to use for the annotation text rendering. The default is `36`.
+  fontPointSize?: number(Count),
+  /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
+  fontScale?: number(Count),
+): [GdtAnnotation; 1+] {}

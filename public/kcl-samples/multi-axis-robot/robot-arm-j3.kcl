@@ -61,7 +61,7 @@ sketch020 = startSketchOn(extrude017, face = START)
        ],
        radius = axisJ3CArmWidth / 2,
      )
-extrude020 = extrude(sketch020, length = -0.5)
+extrude020 = extrude(sketch020, length = -0.5, method = NEW)
 
 sketch021 = startSketchOn(extrude017, face = END)
   |> circle(
@@ -72,7 +72,7 @@ sketch021 = startSketchOn(extrude017, face = END)
        radius = axisJ3CArmWidth / 2.01,
      )
 
-extrude021 = extrude(sketch021, length = -0.5)
+extrude021 = extrude(sketch021, length = -0.5, method = NEW)
 
 // Define Grabber Claw Constants
 grabberLength = 7
@@ -88,16 +88,16 @@ sketch023 = startSketchOn(extrude022, face = START)
        1.75 + axisJ2ArmLength * cos(axisJ2) + axisJ3CArmLength * cos(axisJ3C),
        8 + axisJ2ArmLength * sin(axisJ2) + axisJ3CArmLength * sin(axisJ3C)
      ])
-  |> angledLine(angle = axisJ3C + axisJ4 / 2, length = grabberLength / 4)
-  |> arc(angleStart = 150 + axisJ3C + axisJ4 / 2, angleEnd = 30 + axisJ3C + axisJ4 / 2, radius = grabberLength / 3)
-  |> angledLine(angle = axisJ3C + axisJ4 / 2, length = grabberLength / 6)
-  |> angledLine(angle = axisJ3C + axisJ4 / 2 + 132, length = grabberLength / 3.5)
-  |> angledLine(angle = axisJ3C + axisJ4 / 2 + 160, length = grabberLength / 3.5)
-  |> angledLine(angle = axisJ3C + axisJ4 / 2 + 200, length = grabberLength / 3)
+  |> angledLine(angle = axisJ3C, length = grabberLength / 4)
+  |> arc(angleStart = 150 + axisJ3C, angleEnd = 30 + axisJ3C, radius = grabberLength / 3)
+  |> angledLine(angle = axisJ3C, length = grabberLength / 6)
+  |> angledLine(angle = axisJ3C + 132, length = grabberLength / 3.5)
+  |> angledLine(angle = axisJ3C + 160, length = grabberLength / 3.5)
+  |> angledLine(angle = axisJ3C + 200, length = grabberLength / 3)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-extrude023 = extrude(sketch023, length = -1.5)
+extrude023 = extrude(sketch023, length = -1.5, method = NEW)
 
 // Build Lower Claw Finger
 sketch024 = startSketchOn(extrude022, face = START)
@@ -105,14 +105,24 @@ sketch024 = startSketchOn(extrude022, face = START)
        1.75 + axisJ2ArmLength * cos(axisJ2) + axisJ3CArmLength * cos(axisJ3C),
        8 + axisJ2ArmLength * sin(axisJ2) + axisJ3CArmLength * sin(axisJ3C)
      ])
-  |> angledLine(angle = axisJ3C - (axisJ4 / 2), length = grabberLength / 4)
-  |> arc(angleStart = 210 + axisJ3C - (axisJ4 / 2), angleEnd = 330 + axisJ3C - (axisJ4 / 2), radius = grabberLength / 3)
-  |> angledLine(angle = axisJ3C - (axisJ4 / 2), length = grabberLength / 6)
-  |> angledLine(angle = axisJ3C - (axisJ4 / 2) - 132, length = grabberLength / 3.5)
-  |> angledLine(angle = axisJ3C - (axisJ4 / 2) - 160, length = grabberLength / 3.5)
-  |> angledLine(angle = axisJ3C - (axisJ4 / 2) - 200, length = grabberLength / 3)
+  |> angledLine(angle = axisJ3C, length = grabberLength / 4)
+  |> arc(angleStart = 210 + axisJ3C, angleEnd = 330 + axisJ3C, radius = grabberLength / 3)
+  |> angledLine(angle = axisJ3C, length = grabberLength / 6)
+  |> angledLine(angle = axisJ3C - 132, length = grabberLength / 3.5)
+  |> angledLine(angle = axisJ3C - 160, length = grabberLength / 3.5)
+  |> angledLine(angle = axisJ3C - 200, length = grabberLength / 3)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 
-extrude(sketch024, length = -1.5)
-  |> appearance(color = "#6572b3", metalness = 90, roughness = 90)
+extrude024 = extrude(sketch024, length = -1.5, method = NEW)
+appearance(
+  [
+    extrude020,
+    extrude021,
+    extrude023,
+    extrude024
+  ],
+  color = "#6572b3",
+  metalness = 90,
+  roughness = 90,
+)

@@ -80,8 +80,6 @@ description: Operations executed error_inside_fn_also_has_source_range_of_call_s
       "type": "GroupEnd"
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -187,13 +185,5 @@ description: Operations executed error_inside_fn_also_has_source_range_of_call_s
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

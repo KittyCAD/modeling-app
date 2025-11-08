@@ -12,12 +12,8 @@ description: Operations executed router-template-slate.kcl
         "value": 12.7,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -44,9 +40,9 @@ description: Operations executed router-template-slate.kcl
         "type": "Number",
         "value": 0.6875,
         "ty": {
+          "in": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Inches"
+          "type": "Length"
         }
       },
       "visibility": "default",
@@ -74,12 +70,8 @@ description: Operations executed router-template-slate.kcl
         "value": 20.75,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -107,12 +99,8 @@ description: Operations executed router-template-slate.kcl
         "value": 80.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -140,12 +128,8 @@ description: Operations executed router-template-slate.kcl
         "value": 10.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -173,12 +157,8 @@ description: Operations executed router-template-slate.kcl
         "value": 10.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -206,12 +186,8 @@ description: Operations executed router-template-slate.kcl
         "value": 30.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -238,9 +214,9 @@ description: Operations executed router-template-slate.kcl
         "type": "Number",
         "value": 0.07406496062992127,
         "ty": {
+          "in": null,
           "type": "Known",
-          "type": "Length",
-          "type": "Inches"
+          "type": "Length"
         }
       },
       "visibility": "default",
@@ -268,12 +244,8 @@ description: Operations executed router-template-slate.kcl
         "value": 10.75,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -301,12 +273,8 @@ description: Operations executed router-template-slate.kcl
         "value": 110.0,
         "ty": {
           "type": "Default",
-          "len": {
-            "type": "Mm"
-          },
-          "angle": {
-            "type": "Degrees"
-          }
+          "len": "mm",
+          "angle": "degrees"
         }
       },
       "visibility": "default",
@@ -376,12 +344,8 @@ description: Operations executed router-template-slate.kcl
             "value": 5.0,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -463,12 +427,8 @@ description: Operations executed router-template-slate.kcl
             "value": 7.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -550,12 +510,8 @@ description: Operations executed router-template-slate.kcl
             "value": 7.5,
             "ty": {
               "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
+              "len": "mm",
+              "angle": "degrees"
             }
           },
           "sourceRange": []
@@ -578,8 +534,6 @@ description: Operations executed router-template-slate.kcl
       "sourceRange": []
     }
   ],
-  "std::appearance": [],
-  "std::array": [],
   "std::math": [
     {
       "type": "VariableDeclaration",
@@ -685,13 +639,5 @@ description: Operations executed router-template-slate.kcl
       },
       "sourceRange": []
     }
-  ],
-  "std::sketch": [],
-  "std::solid": [],
-  "std::sweep": [],
-  "std::transform": [],
-  "std::turns": [],
-  "std::types": [],
-  "std::units": [],
-  "std::vector": []
+  ]
 }

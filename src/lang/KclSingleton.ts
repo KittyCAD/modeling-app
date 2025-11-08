@@ -1,8 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
-import type {
-  EntityType_type,
-  ModelingCmdReq_type,
-} from '@kittycad/lib/dist/types/src/models'
+import type { EntityType } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type EditorManager from '@src/editor/manager'
 import type CodeManager from '@src/lang/codeManager'
@@ -20,7 +17,6 @@ import {
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
-import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
@@ -38,8 +34,6 @@ import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
 import { markOnce } from '@src/lib/performance'
-import type { Selections } from '@src/lib/selections'
-import { handleSelectionBatch } from '@src/lib/selections'
 import type {
   BaseUnit,
   KclSettingsAnnotation,
@@ -47,8 +41,25 @@ import type {
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
-import { deferExecution, uuidv4 } from '@src/lib/utils'
-import type { PlaneVisibilityMap } from '@src/machines/modelingMachine'
+import { deferExecution } from '@src/lib/utils'
+import type { ConnectionManager } from '@src/network/connectionManager'
+
+import { EngineDebugger } from '@src/lib/debugger'
+
+import { kclEditorActor } from '@src/machines/kclEditorMachine'
+import type {
+  PlaneVisibilityMap,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
+import { type handleSelectionBatch as handleSelectionBatchFn } from '@src/lib/selections'
+
+import { processEnv } from '@src/env'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+
+import {
+  setSelectionFilter,
+  setSelectionFilterToDefault,
+} from '@src/lib/selectionFilterUtils'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -131,7 +142,7 @@ export class KclManager extends EventTarget {
   // In the future this could be a setting.
   public longExecutionTimeMs = 1000 * 60 * 5
 
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: ConnectionManager
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
   private _astCallBack: (arg: Node<Program>) => void = () => {}
@@ -271,16 +282,22 @@ export class KclManager extends EventTarget {
     this._wasmInitFailedCallback(wasmInitFailed)
   }
 
-  constructor(
-    engineCommandManager: EngineCommandManager,
-    singletons: Singletons
-  ) {
+  constructor(engineCommandManager: ConnectionManager, singletons: Singletons) {
     super()
     this.engineCommandManager = engineCommandManager
     this.singletons = singletons
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.ensureWasmInit().then(async () => {
+      if (this.wasmInitFailed) {
+        if (processEnv()?.VITEST) {
+          console.log(
+            'Running in vitest runtime. KclSingleton polluting global runtime.'
+          )
+          return
+        }
+      }
+
       await this.safeParse(this.singletons.codeManager.code).then((ast) => {
         if (ast) {
           this.ast = ast
@@ -367,13 +384,13 @@ export class KclManager extends EventTarget {
       // It was like this in engineConnection.ts already
       deferExecution((a?: null) => {
         this.engineCommandManager.modelingSend({
-          type: 'Artifact graph emptied',
+          type: 'Artifact graph populated',
         })
       }, 200)(null)
     } else {
       deferExecution((a?: null) => {
         this.engineCommandManager.modelingSend({
-          type: 'Artifact graph populated',
+          type: 'Artifact graph emptied',
         })
       }, 200)(null)
     }
@@ -388,8 +405,11 @@ export class KclManager extends EventTarget {
     }, 200)(null)
   }
 
-  async safeParse(code: string): Promise<Node<Program> | null> {
-    const result = parse(code)
+  async safeParse(
+    code: string,
+    wasmInstance?: ModuleType
+  ): Promise<Node<Program> | null> {
+    const result = parse(code, wasmInstance)
     this.diagnostics = []
     this._astParseFailed = false
 
@@ -422,6 +442,13 @@ export class KclManager extends EventTarget {
   }
 
   async ensureWasmInit() {
+    if (processEnv()?.VITEST) {
+      const message =
+        'kclSingle is trying to call ensureWasmInit. This will be blocked in VITEST runtimes.'
+      console.log(message)
+      return Promise.resolve(message)
+    }
+
     try {
       await initPromise
       if (this.wasmInitFailed) {
@@ -449,7 +476,6 @@ export class KclManager extends EventTarget {
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
       )
       // Exit early if we are already executing.
-
       return
     }
 
@@ -469,6 +495,15 @@ export class KclManager extends EventTarget {
       rustContext: this.singletons.rustContext,
     })
 
+    const livePathsToWatch = Object.values(execState.filenames)
+      .filter((file) => {
+        return file?.type === 'Local'
+      })
+      .map((file) => {
+        return file.value
+      })
+    kclEditorActor.send({ type: 'setLivePathsToWatch', data: livePathsToWatch })
+
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
     if (!isInterrupted) {
@@ -476,6 +511,7 @@ export class KclManager extends EventTarget {
         await lintAst({
           ast,
           sourceCode: this.singletons.codeManager.code,
+          instance: this.singletons.rustContext.getRustInstance(),
         })
       )
       await setSelectionFilterToDefault(this.engineCommandManager)
@@ -489,9 +525,11 @@ export class KclManager extends EventTarget {
       return
     }
 
-    let fileSettings = getSettingsAnnotation(ast)
+    let fileSettings = getSettingsAnnotation(
+      ast,
+      this.singletons.rustContext.getRustInstance()
+    )
     if (err(fileSettings)) {
-      console.error(fileSettings)
       fileSettings = {}
     }
     this.fileSettings = fileSettings
@@ -523,6 +561,10 @@ export class KclManager extends EventTarget {
         type: 'code edit during sketch',
       })
     }
+    EngineDebugger.addLog({
+      label: 'executeAst',
+      message: 'execution done',
+    })
     this.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,
       data: null,
@@ -550,15 +592,17 @@ export class KclManager extends EventTarget {
   }
 
   // DO NOT CALL THIS from codemirror ever.
-  async executeAstMock(ast: Program): Promise<null | Error> {
+  async executeAstMock(
+    ast: Program,
+    wasmInstance?: ModuleType
+  ): Promise<null | Error> {
     await this.ensureWasmInit()
-
-    const newCode = recast(ast)
+    const newCode = recast(ast, wasmInstance)
     if (err(newCode)) {
       console.error(newCode)
       return newCode
     }
-    const newAst = await this.safeParse(newCode)
+    const newAst = await this.safeParse(newCode, wasmInstance)
 
     if (!newAst) {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
@@ -599,7 +643,6 @@ export class KclManager extends EventTarget {
       this.clearAst()
       return
     }
-
     clearTimeout(this.executionTimeoutId)
 
     // We consider anything taking longer than 5 minutes a long execution.
@@ -648,15 +691,16 @@ export class KclManager extends EventTarget {
     execute: boolean,
     optionalParams?: {
       focusPath?: Array<PathToNode>
-    }
+    },
+    wasmInstance?: ModuleType
   ): Promise<{
     newAst: Node<Program>
     selections?: Selections
   }> {
-    const newCode = recast(ast)
+    const newCode = recast(ast, wasmInstance)
     if (err(newCode)) return Promise.reject(newCode)
 
-    const astWithUpdatedSource = await this.safeParse(newCode)
+    const astWithUpdatedSource = await this.safeParse(newCode, wasmInstance)
     if (!astWithUpdatedSource) return Promise.reject(new Error('bad ast'))
     let returnVal: Selections | undefined = undefined
 
@@ -702,7 +746,10 @@ export class KclManager extends EventTarget {
       // When we don't re-execute, we still want to update the program
       // memory with the new ast. So we will hit the mock executor
       // instead..
-      const didReParse = await this.executeAstMock(astWithUpdatedSource)
+      const didReParse = await this.executeAstMock(
+        astWithUpdatedSource,
+        wasmInstance
+      )
       if (err(didReParse)) return Promise.reject(didReParse)
     }
 
@@ -777,12 +824,28 @@ export class KclManager extends EventTarget {
   }
 
   /** TODO: this function is hiding unawaited asynchronous work */
-  defaultSelectionFilter(selectionsToRestore?: Selections) {
-    setSelectionFilterToDefault(this.engineCommandManager, selectionsToRestore)
+  setSelectionFilterToDefault(
+    selectionsToRestore?: Selections,
+    handleSelectionBatch?: typeof handleSelectionBatchFn
+  ) {
+    setSelectionFilterToDefault(
+      this.engineCommandManager,
+      selectionsToRestore,
+      handleSelectionBatch
+    )
   }
   /** TODO: this function is hiding unawaited asynchronous work */
-  setSelectionFilter(filter: EntityType_type[]) {
-    setSelectionFilter(filter, this.engineCommandManager)
+  setSelectionFilter(
+    filter: EntityType[],
+    selectionsToRestore?: Selections,
+    handleSelectionBatch?: typeof handleSelectionBatchFn
+  ) {
+    setSelectionFilter(
+      filter,
+      this.engineCommandManager,
+      selectionsToRestore,
+      handleSelectionBatch
+    )
   }
 
   // Determines if there is no KCL code which means it is executing a blank KCL file
@@ -812,77 +875,4 @@ export class KclManager extends EventTarget {
       settings?.defaultLengthUnit || DEFAULT_DEFAULT_LENGTH_UNIT
     )
   }
-}
-
-const defaultSelectionFilter: EntityType_type[] = [
-  'face',
-  'edge',
-  'solid2d',
-  'curve',
-  'object',
-]
-
-/** TODO: This function is not synchronous but is currently treated as such */
-function setSelectionFilterToDefault(
-  engineCommandManager: EngineCommandManager,
-  selectionsToRestore?: Selections
-) {
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  setSelectionFilter(
-    defaultSelectionFilter,
-    engineCommandManager,
-    selectionsToRestore
-  )
-}
-
-/** TODO: This function is not synchronous but is currently treated as such */
-function setSelectionFilter(
-  filter: EntityType_type[],
-  engineCommandManager: EngineCommandManager,
-  selectionsToRestore?: Selections
-) {
-  const { engineEvents } = selectionsToRestore
-    ? handleSelectionBatch({
-        selections: selectionsToRestore,
-      })
-    : { engineEvents: undefined }
-  if (!selectionsToRestore || !engineEvents) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'set_selection_filter',
-        filter,
-      },
-    })
-    return
-  }
-  const modelingCmd: ModelingCmdReq_type[] = []
-  engineEvents.forEach((event) => {
-    if (event.type === 'modeling_cmd_req') {
-      modelingCmd.push({
-        cmd_id: uuidv4(),
-        cmd: event.cmd,
-      })
-    }
-  })
-  // batch is needed other wise the selection flickers.
-  engineCommandManager
-    .sendSceneCommand({
-      type: 'modeling_cmd_batch_req',
-      batch_id: uuidv4(),
-      requests: [
-        {
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'set_selection_filter',
-            filter,
-          },
-        },
-        ...modelingCmd,
-      ],
-      responses: false,
-    })
-    .catch(reportError)
 }

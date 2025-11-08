@@ -1,4 +1,4 @@
-import { getUtils, TEST_COLORS, circleMove } from '@e2e/playwright/test-utils'
+import { TEST_COLORS, circleMove, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Test network related behaviors', () => {
@@ -89,7 +89,7 @@ test.describe('Test network related behaviors', () => {
   test(
     'Engine disconnect & reconnect in sketch mode',
     { tag: '@skipLocalEngine' },
-    async ({ page, homePage, toolbar, scene, cmdBar }) => {
+    async ({ page, homePage, toolbar, scene, cmdBar, editor }) => {
       const networkToggle = page.getByTestId(/network-toggle/)
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
@@ -109,7 +109,9 @@ test.describe('Test network related behaviors', () => {
       await page.waitForTimeout(100)
 
       // select a plane
-      await page.mouse.click(700, 200)
+      await toolbar.openFeatureTreePane()
+      await page.getByRole('button', { name: 'Front plane' }).click()
+      await toolbar.closeFeatureTreePane()
 
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`
@@ -183,9 +185,9 @@ test.describe('Test network related behaviors', () => {
       // Ensure we can continue sketching
       await page.mouse.click(800, 300)
 
-      await expect
-        .poll(u.normalisedEditorCode)
-        .toContain(`profile001 = startProfile(sketch001`)
+      await expect(editor.codeContent).toContainText(
+        `profile001 = startProfile(sketch001`
+      )
       await page.waitForTimeout(100)
 
       // Unequip line tool

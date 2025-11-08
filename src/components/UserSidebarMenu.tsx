@@ -1,5 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
-import type { Models } from '@kittycad/lib'
+import type { User } from '@kittycad/lib'
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -7,18 +7,16 @@ import type { ActionButtonProps } from '@src/components/ActionButton'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
+import env from '@src/env'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
+import { listAllEnvironmentsWithTokens } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { authActor } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import env from '@src/env'
-import { commandBarActor } from '@src/lib/singletons'
-import { listAllEnvironmentsWithTokens } from '@src/lib/desktop'
-
-type User = Models['User_type']
 
 let didListEnvironments = false
 
@@ -30,7 +28,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
   const send = authActor.send
-  const fullEnvironmentName = env().VITE_KITTYCAD_BASE_DOMAIN
+  const fullEnvironmentName = env().VITE_ZOO_BASE_DOMAIN
   const [hasMultipleEnvironments, setHasMultipleEnvironments] = useState(false)
 
   useEffect(() => {
@@ -169,7 +167,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Element: 'button',
           children: <span>Change environment</span>,
           onClick: () => {
-            const environment = env().VITE_KITTYCAD_BASE_DOMAIN
+            const environment = env().VITE_ZOO_BASE_DOMAIN
             if (environment) {
               commandBarActor.send({
                 type: 'Find and select command',
@@ -248,14 +246,14 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
               <img
                 src={user?.image || ''}
                 alt={user?.name || ''}
-                className="h-7 w-7 rounded-full"
+                className="h-6 w-6 rounded-full"
                 referrerPolicy="no-referrer"
                 onError={() => setImageLoadFailed(true)}
               />
             ) : (
               <CustomIcon
                 name="person"
-                className="w-7 h-7 text-chalkboard-70 dark:text-chalkboard-40 bg-chalkboard-20 dark:bg-chalkboard-80"
+                className="w-6 h-6 text-chalkboard-70 dark:text-chalkboard-40 bg-chalkboard-20 dark:bg-chalkboard-80"
               />
             )}
           </div>

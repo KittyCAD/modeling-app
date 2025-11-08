@@ -1,13 +1,20 @@
-import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import type { SystemIOContext } from '@src/machines/systemIO/utils'
-import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
-import { fromPromise } from 'xstate'
 import { newKclFile } from '@src/lang/project'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  LOCAL_STORAGE_ML_CONVERSATIONS,
+} from '@src/lib/constants'
 import { readLocalStorageProjectSettingsFile } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import type { AppMachineContext } from '@src/lib/types'
 import { engineStreamZoomToFit } from '@src/lib/utils'
+import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import type { SystemIOContext } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineActors,
+  jsonToMlConversations,
+  mlConversationsToJson,
+} from '@src/machines/systemIO/utils'
+import { fromPromise } from 'xstate'
 
 export const systemIOMachineWeb = systemIOMachine.provide({
   actors: {
@@ -63,6 +70,30 @@ export const systemIOMachineWeb = systemIOMachine.provide({
           projectName: '',
           subRoute: input.requestedSubRoute || '',
         }
+      }
+    ),
+    [SystemIOMachineActors.getMlEphantConversations]: fromPromise(async () => {
+      const json = localStorage.getItem(LOCAL_STORAGE_ML_CONVERSATIONS)
+      if (json === null) {
+        return new Map()
+      }
+      return jsonToMlConversations(json)
+    }),
+    [SystemIOMachineActors.saveMlEphantConversations]: fromPromise(
+      async (args: {
+        input: {
+          context: SystemIOContext
+          event: { data: { projectId: string; conversationId: string } }
+        }
+      }) => {
+        const next = new Map(args.input.context.mlEphantConversations)
+        next.set(
+          args.input.event.data.projectId,
+          args.input.event.data.conversationId
+        )
+        const json = mlConversationsToJson(next)
+        await localStorage.setItem(LOCAL_STORAGE_ML_CONVERSATIONS, json)
+        return next
       }
     ),
   },

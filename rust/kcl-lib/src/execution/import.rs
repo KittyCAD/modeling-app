@@ -14,14 +14,14 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
+    SourceRange,
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, ExecutorContext, ImportedGeometry, ModelingCmdMeta, annotations, typed_path::TypedPath,
-        types::UnitLen,
+        types::length_from_str,
     },
     fs::FileSystem,
     parsing::ast::types::{Annotation, Node},
-    source_range::SourceRange,
 };
 
 // Zoo co-ordinate system.
@@ -72,7 +72,7 @@ pub async fn import_foreign(
         .map_err(|e| KclError::new_semantic(KclErrorDetails::new(e.to_string(), vec![source_range])))?;
 
     // We want the file_path to be without the parent.
-    let file_name = file_path.file_name().map(|p| p.to_string()).ok_or_else(|| {
+    let file_name = file_path.file_name().ok_or_else(|| {
         KclError::new_semantic(KclErrorDetails::new(
             format!("Could not get the file name from the path `{}`", file_path.display()),
             vec![source_range],
@@ -234,12 +234,12 @@ fn set_coords(fmt: &mut InputFormat3d, coords_str: &str, source_range: SourceRan
 }
 
 fn set_length_unit(fmt: &mut InputFormat3d, units_str: &str, source_range: SourceRange) -> Result<(), KclError> {
-    let units = UnitLen::from_str(units_str, source_range)?;
+    let units = length_from_str(units_str, source_range)?;
 
     match fmt {
-        InputFormat3d::Obj(opts) => opts.units = units.into(),
-        InputFormat3d::Ply(opts) => opts.units = units.into(),
-        InputFormat3d::Stl(opts) => opts.units = units.into(),
+        InputFormat3d::Obj(opts) => opts.units = units,
+        InputFormat3d::Ply(opts) => opts.units = units,
+        InputFormat3d::Stl(opts) => opts.units = units,
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(
@@ -284,7 +284,8 @@ pub async fn send_to_engine(
 
 /// Get the source format from the extension.
 fn get_import_format_from_extension(ext: &str) -> Result<InputFormat3d> {
-    let format = match FileImportFormat::from_str(ext) {
+    let ext = ext.to_lowercase();
+    let format = match FileImportFormat::from_str(&ext) {
         Ok(format) => format,
         Err(_) => {
             if ext == "stp" {
@@ -376,6 +377,27 @@ fn get_name_of_format(type_: InputFormat3d) -> &'static str {
 #[cfg(test)]
 mod test {
     use super::*;
+
+    macro_rules! test_import_format_from_extension {
+        ($name:ident, $xtn:expr, $fmt:path) => {
+            #[test]
+            fn $name() {
+                let x = get_import_format_from_extension($xtn).unwrap();
+                assert!(matches!(x, $fmt(_)));
+            }
+        };
+    }
+
+    test_import_format_from_extension!(test_xtn_step, "step", InputFormat3d::Step);
+    test_import_format_from_extension!(test_xtn_stp, "stp", InputFormat3d::Step);
+    test_import_format_from_extension!(test_xtn_step_upper, "STEP", InputFormat3d::Step);
+    test_import_format_from_extension!(test_xtn_step_spongebob, "STeP", InputFormat3d::Step);
+    test_import_format_from_extension!(test_xtn_fbx, "fbx", InputFormat3d::Fbx);
+    test_import_format_from_extension!(test_xtn_gltf, "gltf", InputFormat3d::Gltf);
+    test_import_format_from_extension!(test_xtn_obj, "obj", InputFormat3d::Obj);
+    test_import_format_from_extension!(test_xtn_ply, "ply", InputFormat3d::Ply);
+    test_import_format_from_extension!(test_xtn_sldprt, "sldprt", InputFormat3d::Sldprt);
+    test_import_format_from_extension!(test_xtn_stl, "stl", InputFormat3d::Stl);
 
     #[test]
     fn annotations() {

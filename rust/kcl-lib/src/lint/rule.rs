@@ -1,12 +1,11 @@
 use anyhow::Result;
-use schemars::JsonSchema;
 use serde::Serialize;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::{
     SourceRange,
     errors::Suggestion,
-    lsp::IntoDiagnostic,
+    lsp::{IntoDiagnostic, ToLspRange, to_lsp_edit},
     parsing::ast::types::{Node as AstNode, Program},
     walk::Node,
 };
@@ -30,7 +29,7 @@ where
 }
 
 /// Specific discovered lint rule Violation of a particular Finding.
-#[derive(Clone, Debug, ts_rs::TS, Serialize, JsonSchema)]
+#[derive(Clone, Debug, ts_rs::TS, Serialize)]
 #[ts(export)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass, pyo3_stub_gen::derive::gen_stub_pyclass)]
 #[serde(rename_all = "camelCase")]
@@ -52,15 +51,34 @@ pub struct Discovered {
 }
 
 impl Discovered {
-    #[cfg(test)]
     pub fn apply_suggestion(&self, src: &str) -> Option<String> {
-        let suggestion = self.suggestion.as_ref()?;
-        Some(format!(
-            "{}{}{}",
-            &src[0..suggestion.source_range.start()],
-            suggestion.insert,
-            &src[suggestion.source_range.end()..]
-        ))
+        self.suggestion.as_ref().map(|suggestion| suggestion.apply(src))
+    }
+}
+
+/// Lint, and try to apply all suggestions.
+/// Returns the new source code, and any lints without suggestions.
+/// # Implementation
+/// Currently, this runs a loop: parse the code, lint it, apply a lint with suggestions,
+/// and loop again, until there's no more lints with suggestions. This is because our auto-fix
+/// system currently replaces the whole program, not just a certain part of it.
+/// If/when we discover that this autofix loop is too slow, we'll change our lint system so that
+/// lints can be applied to a small part of the program.
+pub fn lint_and_fix(mut source: String) -> anyhow::Result<(String, Vec<Discovered>)> {
+    loop {
+        let (program, errors) = crate::Program::parse(&source)?;
+        if !errors.is_empty() {
+            anyhow::bail!("Found errors while parsing, please run the parser and fix them before linting.");
+        }
+        let Some(program) = program else {
+            anyhow::bail!("Could not parse, please run parser and ensure the program is valid before linting");
+        };
+        let lints = program.lint_all()?;
+        if let Some(to_fix) = lints.iter().find_map(|lint| lint.suggestion.clone()) {
+            source = to_fix.apply(&source);
+        } else {
+            return Ok((source, lints));
+        }
     }
 }
 
@@ -103,7 +121,7 @@ impl IntoDiagnostic for &Discovered {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
         let message = self.finding.title.to_owned();
         let source_range = self.pos;
-        let edit = self.suggestion.as_ref().map(|s| s.to_lsp_edit(code));
+        let edit = self.suggestion.as_ref().map(|s| to_lsp_edit(s, code));
 
         vec![Diagnostic {
             range: source_range.to_lsp_range(code),
@@ -125,7 +143,7 @@ impl IntoDiagnostic for &Discovered {
 }
 
 /// Abstract lint problem type.
-#[derive(Clone, Debug, PartialEq, ts_rs::TS, Serialize, JsonSchema)]
+#[derive(Clone, Debug, PartialEq, ts_rs::TS, Serialize)]
 #[ts(export)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass, pyo3_stub_gen::derive::gen_stub_pyclass)]
 #[serde(rename_all = "camelCase")]
@@ -206,6 +224,26 @@ pub(crate) use test::{assert_finding, assert_no_finding, test_finding, test_no_f
 #[cfg(test)]
 mod test {
 
+    #[test]
+    fn test_lint_and_fix() {
+        // This file has some snake_case identifiers.
+        let path = "../kcl-python-bindings/files/box_with_linter_errors.kcl";
+        let f = std::fs::read_to_string(path).unwrap();
+        let prog = crate::Program::parse_no_errs(&f).unwrap();
+
+        // That should cause linter errors.
+        let lints = prog.lint_all().unwrap();
+        assert!(lints.len() >= 4);
+
+        // But the linter errors can be fixed.
+        let (new_code, unfixed) = lint_and_fix(f).unwrap();
+        assert!(unfixed.len() < 4);
+
+        // After the fix, no more snake_case identifiers.
+        eprintln!("{new_code}");
+        assert!(!new_code.contains('_'));
+    }
+
     macro_rules! assert_no_finding {
         ( $check:expr_2021, $finding:expr_2021, $kcl:expr_2021 ) => {
             let prog = $crate::Program::parse_no_errs($kcl).unwrap();
@@ -273,4 +311,6 @@ mod test {
     pub(crate) use assert_no_finding;
     pub(crate) use test_finding;
     pub(crate) use test_no_finding;
+
+    use super::*;
 }

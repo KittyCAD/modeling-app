@@ -1,4 +1,4 @@
-import type { Models } from '@kittycad/lib'
+import type { FaceIsPlanar } from '@kittycad/lib'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -8,11 +8,10 @@ import {
   createLiteral,
   createObjectExpression,
 } from '@src/lang/create'
-import { deleteEdgeTreatment } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
+  findPipesWithImportAlias,
   getNodeFromPath,
   traverse,
-  findPipesWithImportAlias,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
@@ -33,17 +32,17 @@ import type {
   VariableDeclarator,
   VariableMap,
 } from '@src/lang/wasm'
-import type { Selection } from '@src/lib/selections'
+import type { Selection } from '@src/machines/modelingSharedTypes'
 import { err, reportRejection } from '@src/lib/trap'
 import { isArray, roundOff } from '@src/lib/utils'
+import { deleteEdgeTreatment } from '@src/lang/modifyAst/edges'
 
 export async function deleteFromSelection(
   ast: Node<Program>,
   selection: Selection,
   variables: VariableMap,
   artifactGraph: ArtifactGraph,
-  getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
-    ({}) as any
+  getFaceDetails: (id: string) => Promise<FaceIsPlanar> = () => ({}) as any
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
   let deletionArtifact = selection.artifact
@@ -235,7 +234,7 @@ export async function deleteFromSelection(
           const modificationDetails: {
             parentPipe: PipeExpression['body']
             parentInit: VariableDeclarator
-            faceDetails: Models['FaceIsPlanar_type']
+            faceDetails: FaceIsPlanar
             lastKey: number | string
           }[] = []
           const wallArtifact =

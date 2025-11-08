@@ -1,11 +1,12 @@
-use std::{collections::HashMap, fmt};
+use std::{collections::HashMap, fmt, str::FromStr};
 
 use anyhow::Result;
-use schemars::JsonSchema;
+use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    CompilationError, SourceRange,
+    CompilationError, KclError, SourceRange,
+    errors::KclErrorDetails,
     execution::{
         ExecState, Plane, PlaneInfo, Point3d, annotations,
         kcl_value::{KclValue, TypeDef},
@@ -24,7 +25,7 @@ pub enum RuntimeType {
     Array(Box<RuntimeType>, ArrayLen),
     Union(Vec<RuntimeType>),
     Tuple(Vec<RuntimeType>),
-    Object(Vec<(String, RuntimeType)>),
+    Object(Vec<(String, RuntimeType)>, bool),
 }
 
 impl RuntimeType {
@@ -119,19 +120,15 @@ impl RuntimeType {
     }
 
     pub fn length() -> Self {
-        RuntimeType::Primitive(PrimitiveType::Number(NumericType::Known(UnitType::Length(
-            UnitLen::Unknown,
-        ))))
+        RuntimeType::Primitive(PrimitiveType::Number(NumericType::Known(UnitType::GenericLength)))
     }
 
-    pub fn known_length(len: UnitLen) -> Self {
+    pub fn known_length(len: UnitLength) -> Self {
         RuntimeType::Primitive(PrimitiveType::Number(NumericType::Known(UnitType::Length(len))))
     }
 
     pub fn angle() -> Self {
-        RuntimeType::Primitive(PrimitiveType::Number(NumericType::Known(UnitType::Angle(
-            UnitAngle::Unknown,
-        ))))
+        RuntimeType::Primitive(PrimitiveType::Number(NumericType::Known(UnitType::GenericAngle)))
     }
 
     pub fn radians() -> Self {
@@ -158,24 +155,25 @@ impl RuntimeType {
         value: Type,
         exec_state: &mut ExecState,
         source_range: SourceRange,
+        constrainable: bool,
     ) -> Result<Self, CompilationError> {
         match value {
             Type::Primitive(pt) => Self::from_parsed_primitive(pt, exec_state, source_range),
-            Type::Array { ty, len } => {
-                Self::from_parsed(*ty, exec_state, source_range).map(|t| RuntimeType::Array(Box::new(t), len))
-            }
+            Type::Array { ty, len } => Self::from_parsed(*ty, exec_state, source_range, constrainable)
+                .map(|t| RuntimeType::Array(Box::new(t), len)),
             Type::Union { tys } => tys
                 .into_iter()
-                .map(|t| Self::from_parsed(t.inner, exec_state, source_range))
+                .map(|t| Self::from_parsed(t.inner, exec_state, source_range, constrainable))
                 .collect::<Result<Vec<_>, CompilationError>>()
                 .map(RuntimeType::Union),
             Type::Object { properties } => properties
                 .into_iter()
                 .map(|(id, ty)| {
-                    RuntimeType::from_parsed(ty.inner, exec_state, source_range).map(|ty| (id.name.clone(), ty))
+                    RuntimeType::from_parsed(ty.inner, exec_state, source_range, constrainable)
+                        .map(|ty| (id.name.clone(), ty))
                 })
                 .collect::<Result<Vec<_>, CompilationError>>()
-                .map(RuntimeType::Object),
+                .map(|values| RuntimeType::Object(values, constrainable)),
         }
     }
 
@@ -186,6 +184,7 @@ impl RuntimeType {
     ) -> Result<Self, CompilationError> {
         Ok(match value {
             AstPrimitiveType::Any => RuntimeType::Primitive(PrimitiveType::Any),
+            AstPrimitiveType::None => RuntimeType::Primitive(PrimitiveType::None),
             AstPrimitiveType::String => RuntimeType::Primitive(PrimitiveType::String),
             AstPrimitiveType::Boolean => RuntimeType::Primitive(PrimitiveType::Boolean),
             AstPrimitiveType::Number(suffix) => {
@@ -213,10 +212,18 @@ impl RuntimeType {
             .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {alias}")))?;
 
         Ok(match ty_val {
-            KclValue::Type { value, .. } => match value {
-                TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty.clone()),
-                TypeDef::Alias(ty) => ty.clone(),
-            },
+            KclValue::Type {
+                value, experimental, ..
+            } => {
+                let result = match value {
+                    TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty.clone()),
+                    TypeDef::Alias(ty) => ty.clone(),
+                };
+                if *experimental {
+                    exec_state.warn_experimental(&format!("the type `{alias}`"), source_range);
+                }
+                result
+            }
             _ => unreachable!(),
         })
     }
@@ -241,7 +248,7 @@ impl RuntimeType {
                 "a tuple with values of types ({})",
                 tys.iter().map(Self::human_friendly_type).collect::<Vec<_>>().join(", ")
             ),
-            RuntimeType::Object(_) => format!("an object with fields {self}"),
+            RuntimeType::Object(..) => format!("an object with fields {self}"),
         }
     }
 
@@ -258,7 +265,7 @@ impl RuntimeType {
             (Union(ts1), Union(ts2)) => ts1.iter().all(|t| ts2.contains(t)),
             (t1, Union(ts2)) => ts2.iter().any(|t| t1.subtype(t)),
 
-            (Object(t1), Object(t2)) => t2
+            (Object(t1, _), Object(t2, _)) => t2
                 .iter()
                 .all(|(f, t)| t1.iter().any(|(ff, tt)| f == ff && tt.subtype(t))),
 
@@ -269,28 +276,28 @@ impl RuntimeType {
             (RuntimeType::Tuple(t1), t2) if t1.len() == 1 && t1[0].subtype(t2) => true,
 
             // Equivalence between Axis types and their object representation.
-            (Object(t1), Primitive(PrimitiveType::Axis2d)) => {
+            (Object(t1, _), Primitive(PrimitiveType::Axis2d)) => {
                 t1.iter()
                     .any(|(n, t)| n == "origin" && t.subtype(&RuntimeType::point2d()))
                     && t1
                         .iter()
                         .any(|(n, t)| n == "direction" && t.subtype(&RuntimeType::point2d()))
             }
-            (Object(t1), Primitive(PrimitiveType::Axis3d)) => {
+            (Object(t1, _), Primitive(PrimitiveType::Axis3d)) => {
                 t1.iter()
                     .any(|(n, t)| n == "origin" && t.subtype(&RuntimeType::point3d()))
                     && t1
                         .iter()
                         .any(|(n, t)| n == "direction" && t.subtype(&RuntimeType::point3d()))
             }
-            (Primitive(PrimitiveType::Axis2d), Object(t2)) => {
+            (Primitive(PrimitiveType::Axis2d), Object(t2, _)) => {
                 t2.iter()
                     .any(|(n, t)| n == "origin" && t.subtype(&RuntimeType::point2d()))
                     && t2
                         .iter()
                         .any(|(n, t)| n == "direction" && t.subtype(&RuntimeType::point2d()))
             }
-            (Primitive(PrimitiveType::Axis3d), Object(t2)) => {
+            (Primitive(PrimitiveType::Axis3d), Object(t2, _)) => {
                 t2.iter()
                     .any(|(n, t)| n == "origin" && t.subtype(&RuntimeType::point3d()))
                     && t2
@@ -311,7 +318,7 @@ impl RuntimeType {
                 .collect::<Vec<_>>()
                 .join(" or "),
             RuntimeType::Tuple(_) => "tuples".to_owned(),
-            RuntimeType::Object(_) => format!("objects with fields {self}"),
+            RuntimeType::Object(..) => format!("objects with fields {self}"),
         }
     }
 }
@@ -335,7 +342,7 @@ impl fmt::Display for RuntimeType {
                 "{}",
                 ts.iter().map(|t| t.to_string()).collect::<Vec<_>>().join(" | ")
             ),
-            RuntimeType::Object(items) => write!(
+            RuntimeType::Object(items, _) => write!(
                 f,
                 "{{ {} }}",
                 items
@@ -348,7 +355,7 @@ impl fmt::Display for RuntimeType {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, ts_rs::TS)]
 pub enum ArrayLen {
     None,
     Minimum(usize),
@@ -368,11 +375,22 @@ impl ArrayLen {
     }
 
     /// True if the length constraint is satisfied by the supplied length.
-    fn satisfied(self, len: usize, allow_shrink: bool) -> Option<usize> {
+    pub fn satisfied(self, len: usize, allow_shrink: bool) -> Option<usize> {
         match self {
             ArrayLen::None => Some(len),
             ArrayLen::Minimum(s) => (len >= s).then_some(len),
             ArrayLen::Known(s) => (if allow_shrink { len >= s } else { len == s }).then_some(s),
+        }
+    }
+
+    pub fn human_friendly_type(self) -> String {
+        match self {
+            ArrayLen::None | ArrayLen::Minimum(0) => "any number of elements".to_owned(),
+            ArrayLen::Minimum(1) => "at least 1 element".to_owned(),
+            ArrayLen::Minimum(n) => format!("at least {n} elements"),
+            ArrayLen::Known(0) => "no elements".to_owned(),
+            ArrayLen::Known(1) => "exactly 1 element".to_owned(),
+            ArrayLen::Known(n) => format!("exactly {n} elements"),
         }
     }
 }
@@ -380,12 +398,14 @@ impl ArrayLen {
 #[derive(Debug, Clone, PartialEq)]
 pub enum PrimitiveType {
     Any,
+    None,
     Number(NumericType),
     String,
     Boolean,
     TaggedEdge,
     TaggedFace,
     TagDecl,
+    GdtAnnotation,
     Sketch,
     Solid,
     Plane,
@@ -402,10 +422,12 @@ impl PrimitiveType {
     fn display_multiple(&self) -> String {
         match self {
             PrimitiveType::Any => "any values".to_owned(),
+            PrimitiveType::None => "none values".to_owned(),
             PrimitiveType::Number(NumericType::Known(unit)) => format!("numbers({unit})"),
             PrimitiveType::Number(_) => "numbers".to_owned(),
             PrimitiveType::String => "strings".to_owned(),
             PrimitiveType::Boolean => "bools".to_owned(),
+            PrimitiveType::GdtAnnotation => "GD&T Annotations".to_owned(),
             PrimitiveType::Sketch => "Sketches".to_owned(),
             PrimitiveType::Solid => "Solids".to_owned(),
             PrimitiveType::Plane => "Planes".to_owned(),
@@ -437,6 +459,7 @@ impl fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             PrimitiveType::Any => write!(f, "any"),
+            PrimitiveType::None => write!(f, "none"),
             PrimitiveType::Number(NumericType::Known(unit)) => write!(f, "number({unit})"),
             PrimitiveType::Number(NumericType::Unknown) => write!(f, "number(unknown units)"),
             PrimitiveType::Number(NumericType::Default { .. }) => write!(f, "number"),
@@ -446,6 +469,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::TagDecl => write!(f, "tag declarator"),
             PrimitiveType::TaggedEdge => write!(f, "tagged edge"),
             PrimitiveType::TaggedFace => write!(f, "tagged face"),
+            PrimitiveType::GdtAnnotation => write!(f, "GD&T Annotation"),
             PrimitiveType::Sketch => write!(f, "Sketch"),
             PrimitiveType::Solid => write!(f, "Solid"),
             PrimitiveType::Plane => write!(f, "Plane"),
@@ -460,14 +484,14 @@ impl fmt::Display for PrimitiveType {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum NumericType {
     // Specified by the user (directly or indirectly)
     Known(UnitType),
     // Unspecified, using defaults
-    Default { len: UnitLen, angle: UnitAngle },
+    Default { len: UnitLength, angle: UnitAngle },
     // Exceeded the ability of the type system to track.
     Unknown,
     // Type info has been explicitly cast away.
@@ -477,8 +501,8 @@ pub enum NumericType {
 impl Default for NumericType {
     fn default() -> Self {
         NumericType::Default {
-            len: UnitLen::default(),
-            angle: UnitAngle::default(),
+            len: UnitLength::Millimeters,
+            angle: UnitAngle::Degrees,
         }
     }
 }
@@ -489,7 +513,7 @@ impl NumericType {
     }
 
     pub const fn mm() -> Self {
-        NumericType::Known(UnitType::Length(UnitLen::Mm))
+        NumericType::Known(UnitType::Length(UnitLength::Millimeters))
     }
 
     pub const fn radians() -> Self {
@@ -505,23 +529,49 @@ impl NumericType {
     ///
     /// This combinator function is suitable for comparisons where uncertainty should
     /// be handled by the user.
-    pub fn combine_eq(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+    pub fn combine_eq(
+        a: TyF64,
+        b: TyF64,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+    ) -> (f64, f64, NumericType) {
         use NumericType::*;
         match (a.ty, b.ty) {
             (at, bt) if at == bt => (a.n, b.n, at),
             (at, Any) => (a.n, b.n, at),
             (Any, bt) => (a.n, b.n, bt),
 
-            (t @ Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => (a.n, l2.adjust_to(b.n, l1).0, t),
-            (t @ Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => (a.n, a2.adjust_to(b.n, a1).0, t),
+            (t @ Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => (a.n, adjust_length(l2, b.n, l1).0, t),
+            (t @ Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => (a.n, adjust_angle(a2, b.n, a1).0, t),
+
+            (t @ Known(UnitType::Length(_)), Known(UnitType::GenericLength)) => (a.n, b.n, t),
+            (Known(UnitType::GenericLength), t @ Known(UnitType::Length(_))) => (a.n, b.n, t),
+            (t @ Known(UnitType::Angle(_)), Known(UnitType::GenericAngle)) => (a.n, b.n, t),
+            (Known(UnitType::GenericAngle), t @ Known(UnitType::Angle(_))) => (a.n, b.n, t),
 
             (Known(UnitType::Count), Default { .. }) | (Default { .. }, Known(UnitType::Count)) => {
                 (a.n, b.n, Known(UnitType::Count))
             }
             (t @ Known(UnitType::Length(l1)), Default { len: l2, .. }) if l1 == l2 => (a.n, b.n, t),
             (Default { len: l1, .. }, t @ Known(UnitType::Length(l2))) if l1 == l2 => (a.n, b.n, t),
-            (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 => (a.n, b.n, t),
-            (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) if a1 == a2 => (a.n, b.n, t),
+            (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 => {
+                if b.n != 0.0 {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                (a.n, b.n, t)
+            }
+            (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) if a1 == a2 => {
+                if a.n != 0.0 {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                (a.n, b.n, t)
+            }
 
             _ => (a.n, b.n, Unknown),
         }
@@ -534,7 +584,11 @@ impl NumericType {
     /// coerced together, for example two arguments to the same function or two numbers in an array being used as a point.
     ///
     /// Prefer to use `combine_eq` if possible since using that prioritises correctness over ergonomics.
-    pub fn combine_eq_coerce(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+    pub fn combine_eq_coerce(
+        a: TyF64,
+        b: TyF64,
+        for_errs: Option<(&mut ExecState, SourceRange)>,
+    ) -> (f64, f64, NumericType) {
         use NumericType::*;
         match (a.ty, b.ty) {
             (at, bt) if at == bt => (a.n, b.n, at),
@@ -542,18 +596,68 @@ impl NumericType {
             (Any, bt) => (a.n, b.n, bt),
 
             // Known types and compatible, but needs adjustment.
-            (t @ Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => (a.n, l2.adjust_to(b.n, l1).0, t),
-            (t @ Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => (a.n, a2.adjust_to(b.n, a1).0, t),
+            (t @ Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => (a.n, adjust_length(l2, b.n, l1).0, t),
+            (t @ Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => (a.n, adjust_angle(a2, b.n, a1).0, t),
+
+            (t @ Known(UnitType::Length(_)), Known(UnitType::GenericLength)) => (a.n, b.n, t),
+            (Known(UnitType::GenericLength), t @ Known(UnitType::Length(_))) => (a.n, b.n, t),
+            (t @ Known(UnitType::Angle(_)), Known(UnitType::GenericAngle)) => (a.n, b.n, t),
+            (Known(UnitType::GenericAngle), t @ Known(UnitType::Angle(_))) => (a.n, b.n, t),
 
             // Known and unknown => we assume the known one, possibly with adjustment
             (Known(UnitType::Count), Default { .. }) | (Default { .. }, Known(UnitType::Count)) => {
                 (a.n, b.n, Known(UnitType::Count))
             }
 
-            (t @ Known(UnitType::Length(l1)), Default { len: l2, .. }) => (a.n, l2.adjust_to(b.n, l1).0, t),
-            (Default { len: l1, .. }, t @ Known(UnitType::Length(l2))) => (l1.adjust_to(a.n, l2).0, b.n, t),
-            (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) => (a.n, a2.adjust_to(b.n, a1).0, t),
-            (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) => (a1.adjust_to(a.n, a2).0, b.n, t),
+            (t @ Known(UnitType::Length(l1)), Default { len: l2, .. }) => (a.n, adjust_length(l2, b.n, l1).0, t),
+            (Default { len: l1, .. }, t @ Known(UnitType::Length(l2))) => (adjust_length(l1, a.n, l2).0, b.n, t),
+            (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) => {
+                if let Some((exec_state, source_range)) = for_errs
+                    && b.n != 0.0
+                {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                (a.n, adjust_angle(a2, b.n, a1).0, t)
+            }
+            (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) => {
+                if let Some((exec_state, source_range)) = for_errs
+                    && a.n != 0.0
+                {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                (adjust_angle(a1, a.n, a2).0, b.n, t)
+            }
+
+            (Default { len: l1, .. }, Known(UnitType::GenericLength)) => (a.n, b.n, l1.into()),
+            (Known(UnitType::GenericLength), Default { len: l2, .. }) => (a.n, b.n, l2.into()),
+            (Default { angle: a1, .. }, Known(UnitType::GenericAngle)) => {
+                if let Some((exec_state, source_range)) = for_errs
+                    && b.n != 0.0
+                {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                (a.n, b.n, a1.into())
+            }
+            (Known(UnitType::GenericAngle), Default { angle: a2, .. }) => {
+                if let Some((exec_state, source_range)) = for_errs
+                    && a.n != 0.0
+                {
+                    exec_state.warn(
+                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        annotations::WARN_ANGLE_UNITS,
+                    );
+                }
+                (a.n, b.n, a2.into())
+            }
 
             (Known(_), Known(_)) | (Default { .. }, Default { .. }) | (_, Unknown) | (Unknown, _) => {
                 (a.n, b.n, Unknown)
@@ -653,14 +757,14 @@ impl NumericType {
                 angle: settings.default_angle_units,
             },
             NumericSuffix::Count => NumericType::Known(UnitType::Count),
-            NumericSuffix::Length => NumericType::Known(UnitType::Length(UnitLen::Unknown)),
-            NumericSuffix::Angle => NumericType::Known(UnitType::Angle(UnitAngle::Unknown)),
-            NumericSuffix::Mm => NumericType::Known(UnitType::Length(UnitLen::Mm)),
-            NumericSuffix::Cm => NumericType::Known(UnitType::Length(UnitLen::Cm)),
-            NumericSuffix::M => NumericType::Known(UnitType::Length(UnitLen::M)),
-            NumericSuffix::Inch => NumericType::Known(UnitType::Length(UnitLen::Inches)),
-            NumericSuffix::Ft => NumericType::Known(UnitType::Length(UnitLen::Feet)),
-            NumericSuffix::Yd => NumericType::Known(UnitType::Length(UnitLen::Yards)),
+            NumericSuffix::Length => NumericType::Known(UnitType::GenericLength),
+            NumericSuffix::Angle => NumericType::Known(UnitType::GenericAngle),
+            NumericSuffix::Mm => NumericType::Known(UnitType::Length(UnitLength::Millimeters)),
+            NumericSuffix::Cm => NumericType::Known(UnitType::Length(UnitLength::Centimeters)),
+            NumericSuffix::M => NumericType::Known(UnitType::Length(UnitLength::Meters)),
+            NumericSuffix::Inch => NumericType::Known(UnitType::Length(UnitLength::Inches)),
+            NumericSuffix::Ft => NumericType::Known(UnitType::Length(UnitLength::Feet)),
+            NumericSuffix::Yd => NumericType::Known(UnitType::Length(UnitLength::Yards)),
             NumericSuffix::Deg => NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
             NumericSuffix::Rad => NumericType::Known(UnitType::Angle(UnitAngle::Radians)),
             NumericSuffix::Unknown => NumericType::Unknown,
@@ -674,12 +778,16 @@ impl NumericType {
             (_, Any) => true,
             (a, b) if a == b => true,
             (
-                NumericType::Known(UnitType::Length(_)) | NumericType::Default { .. },
-                NumericType::Known(UnitType::Length(UnitLen::Unknown)),
+                NumericType::Known(UnitType::Length(_))
+                | NumericType::Known(UnitType::GenericLength)
+                | NumericType::Default { .. },
+                NumericType::Known(UnitType::GenericLength),
             )
             | (
-                NumericType::Known(UnitType::Angle(_)) | NumericType::Default { .. },
-                NumericType::Known(UnitType::Angle(UnitAngle::Unknown)),
+                NumericType::Known(UnitType::Angle(_))
+                | NumericType::Known(UnitType::GenericAngle)
+                | NumericType::Default { .. },
+                NumericType::Known(UnitType::GenericAngle),
             ) => true,
             (Unknown, _) | (_, Unknown) => false,
             (_, _) => false,
@@ -690,8 +798,8 @@ impl NumericType {
         matches!(
             self,
             NumericType::Unknown
-                | NumericType::Known(UnitType::Angle(UnitAngle::Unknown))
-                | NumericType::Known(UnitType::Length(UnitLen::Unknown))
+                | NumericType::Known(UnitType::GenericAngle)
+                | NumericType::Known(UnitType::GenericLength)
         )
     }
 
@@ -699,8 +807,8 @@ impl NumericType {
         !matches!(
             self,
             NumericType::Unknown
-                | NumericType::Known(UnitType::Angle(UnitAngle::Unknown))
-                | NumericType::Known(UnitType::Length(UnitLen::Unknown))
+                | NumericType::Known(UnitType::GenericAngle)
+                | NumericType::Known(UnitType::GenericLength)
                 | NumericType::Any
                 | NumericType::Default { .. }
         )
@@ -750,7 +858,7 @@ impl NumericType {
 
             // Known types and compatible, but needs adjustment.
             (Known(UnitType::Length(l1)), Known(UnitType::Length(l2))) => {
-                let (value, ty) = l1.adjust_to(*value, *l2);
+                let (value, ty) = adjust_length(*l1, *value, *l2);
                 Ok(KclValue::Number {
                     value,
                     ty: Known(UnitType::Length(ty)),
@@ -758,7 +866,7 @@ impl NumericType {
                 })
             }
             (Known(UnitType::Angle(a1)), Known(UnitType::Angle(a2))) => {
-                let (value, ty) = a1.adjust_to(*value, *a2);
+                let (value, ty) = adjust_angle(*a1, *value, *a2);
                 Ok(KclValue::Number {
                     value,
                     ty: Known(UnitType::Angle(ty)),
@@ -777,7 +885,7 @@ impl NumericType {
             }),
 
             (Default { len: l1, .. }, Known(UnitType::Length(l2))) => {
-                let (value, ty) = l1.adjust_to(*value, *l2);
+                let (value, ty) = adjust_length(*l1, *value, *l2);
                 Ok(KclValue::Number {
                     value,
                     ty: Known(UnitType::Length(ty)),
@@ -786,7 +894,7 @@ impl NumericType {
             }
 
             (Default { angle: a1, .. }, Known(UnitType::Angle(a2))) => {
-                let (value, ty) = a1.adjust_to(*value, *a2);
+                let (value, ty) = adjust_angle(*a1, *value, *a2);
                 Ok(KclValue::Number {
                     value,
                     ty: Known(UnitType::Angle(ty)),
@@ -798,14 +906,7 @@ impl NumericType {
         }
     }
 
-    pub fn expect_length(&self) -> UnitLen {
-        match self {
-            Self::Known(UnitType::Length(len)) | Self::Default { len, .. } => *len,
-            _ => unreachable!("Found {self:?}"),
-        }
-    }
-
-    pub fn as_length(&self) -> Option<UnitLen> {
+    pub fn as_length(&self) -> Option<UnitLength> {
         match self {
             Self::Known(UnitType::Length(len)) | Self::Default { len, .. } => Some(*len),
             _ => None,
@@ -819,9 +920,18 @@ impl From<NumericType> for RuntimeType {
     }
 }
 
-impl From<UnitLen> for NumericType {
-    fn from(value: UnitLen) -> Self {
+impl From<UnitLength> for NumericType {
+    fn from(value: UnitLength) -> Self {
         NumericType::Known(UnitType::Length(value))
+    }
+}
+
+impl From<Option<UnitLength>> for NumericType {
+    fn from(value: Option<UnitLength>) -> Self {
+        match value {
+            Some(v) => v.into(),
+            None => NumericType::Unknown,
+        }
     }
 }
 
@@ -831,21 +941,22 @@ impl From<UnitAngle> for NumericType {
     }
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum UnitType {
     Count,
-    Length(UnitLen),
+    Length(UnitLength),
+    GenericLength,
     Angle(UnitAngle),
+    GenericAngle,
 }
 
 impl UnitType {
     pub(crate) fn to_suffix(self) -> Option<String> {
         match self {
             UnitType::Count => Some("_".to_owned()),
-            UnitType::Length(UnitLen::Unknown) => None,
-            UnitType::Angle(UnitAngle::Unknown) => None,
+            UnitType::GenericLength | UnitType::GenericAngle => None,
             UnitType::Length(l) => Some(l.to_string()),
             UnitType::Angle(a) => Some(a.to_string()),
         }
@@ -857,192 +968,85 @@ impl std::fmt::Display for UnitType {
         match self {
             UnitType::Count => write!(f, "Count"),
             UnitType::Length(l) => l.fmt(f),
+            UnitType::GenericLength => write!(f, "Length"),
             UnitType::Angle(a) => a.fmt(f),
+            UnitType::GenericAngle => write!(f, "Angle"),
         }
     }
 }
 
-// TODO called UnitLen so as not to clash with UnitLength in settings.
-/// A unit of length.
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
-#[ts(export)]
-#[serde(tag = "type")]
-pub enum UnitLen {
-    #[default]
-    Mm,
-    Cm,
-    M,
-    Inches,
-    Feet,
-    Yards,
-    Unknown,
+pub fn adjust_length(from: UnitLength, value: f64, to: UnitLength) -> (f64, UnitLength) {
+    use UnitLength::*;
+
+    if from == to {
+        return (value, to);
+    }
+
+    let (base, base_unit) = match from {
+        Millimeters => (value, Millimeters),
+        Centimeters => (value * 10.0, Millimeters),
+        Meters => (value * 1000.0, Millimeters),
+        Inches => (value, Inches),
+        Feet => (value * 12.0, Inches),
+        Yards => (value * 36.0, Inches),
+    };
+    let (base, base_unit) = match (base_unit, to) {
+        (Millimeters, Inches) | (Millimeters, Feet) | (Millimeters, Yards) => (base / 25.4, Inches),
+        (Inches, Millimeters) | (Inches, Centimeters) | (Inches, Meters) => (base * 25.4, Millimeters),
+        _ => (base, base_unit),
+    };
+
+    let value = match (base_unit, to) {
+        (Millimeters, Millimeters) => base,
+        (Millimeters, Centimeters) => base / 10.0,
+        (Millimeters, Meters) => base / 1000.0,
+        (Inches, Inches) => base,
+        (Inches, Feet) => base / 12.0,
+        (Inches, Yards) => base / 36.0,
+        _ => unreachable!(),
+    };
+
+    (value, to)
 }
 
-impl UnitLen {
-    pub fn adjust_to(self, value: f64, to: UnitLen) -> (f64, UnitLen) {
-        use UnitLen::*;
+pub fn adjust_angle(from: UnitAngle, value: f64, to: UnitAngle) -> (f64, UnitAngle) {
+    use std::f64::consts::PI;
 
-        if self == to {
-            return (value, to);
-        }
+    use UnitAngle::*;
 
-        if to == Unknown {
-            return (value, self);
-        }
+    let value = match (from, to) {
+        (Degrees, Degrees) => value,
+        (Degrees, Radians) => (value / 180.0) * PI,
+        (Radians, Degrees) => 180.0 * value / PI,
+        (Radians, Radians) => value,
+    };
 
-        let (base, base_unit) = match self {
-            Mm => (value, Mm),
-            Cm => (value * 10.0, Mm),
-            M => (value * 1000.0, Mm),
-            Inches => (value, Inches),
-            Feet => (value * 12.0, Inches),
-            Yards => (value * 36.0, Inches),
-            Unknown => unreachable!(),
-        };
-        let (base, base_unit) = match (base_unit, to) {
-            (Mm, Inches) | (Mm, Feet) | (Mm, Yards) => (base / 25.4, Inches),
-            (Inches, Mm) | (Inches, Cm) | (Inches, M) => (base * 25.4, Mm),
-            _ => (base, base_unit),
-        };
+    (value, to)
+}
 
-        let value = match (base_unit, to) {
-            (Mm, Mm) => base,
-            (Mm, Cm) => base / 10.0,
-            (Mm, M) => base / 1000.0,
-            (Inches, Inches) => base,
-            (Inches, Feet) => base / 12.0,
-            (Inches, Yards) => base / 36.0,
-            _ => unreachable!(),
-        };
-
-        (value, to)
+pub(super) fn length_from_str(s: &str, source_range: SourceRange) -> Result<UnitLength, KclError> {
+    // We don't use `from_str` here because we want to be more flexible about the input we accept.
+    match s {
+        "mm" => Ok(UnitLength::Millimeters),
+        "cm" => Ok(UnitLength::Centimeters),
+        "m" => Ok(UnitLength::Meters),
+        "inch" | "in" => Ok(UnitLength::Inches),
+        "ft" => Ok(UnitLength::Feet),
+        "yd" => Ok(UnitLength::Yards),
+        value => Err(KclError::new_semantic(KclErrorDetails::new(
+            format!("Unexpected value for length units: `{value}`; expected one of `mm`, `cm`, `m`, `in`, `ft`, `yd`"),
+            vec![source_range],
+        ))),
     }
 }
 
-impl std::fmt::Display for UnitLen {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            UnitLen::Mm => write!(f, "mm"),
-            UnitLen::Cm => write!(f, "cm"),
-            UnitLen::M => write!(f, "m"),
-            UnitLen::Inches => write!(f, "in"),
-            UnitLen::Feet => write!(f, "ft"),
-            UnitLen::Yards => write!(f, "yd"),
-            UnitLen::Unknown => write!(f, "Length"),
-        }
-    }
-}
-
-impl TryFrom<NumericSuffix> for UnitLen {
-    type Error = ();
-
-    fn try_from(suffix: NumericSuffix) -> std::result::Result<Self, Self::Error> {
-        match suffix {
-            NumericSuffix::Mm => Ok(Self::Mm),
-            NumericSuffix::Cm => Ok(Self::Cm),
-            NumericSuffix::M => Ok(Self::M),
-            NumericSuffix::Inch => Ok(Self::Inches),
-            NumericSuffix::Ft => Ok(Self::Feet),
-            NumericSuffix::Yd => Ok(Self::Yards),
-            _ => Err(()),
-        }
-    }
-}
-
-impl From<crate::UnitLength> for UnitLen {
-    fn from(unit: crate::UnitLength) -> Self {
-        match unit {
-            crate::UnitLength::Cm => UnitLen::Cm,
-            crate::UnitLength::Ft => UnitLen::Feet,
-            crate::UnitLength::In => UnitLen::Inches,
-            crate::UnitLength::M => UnitLen::M,
-            crate::UnitLength::Mm => UnitLen::Mm,
-            crate::UnitLength::Yd => UnitLen::Yards,
-        }
-    }
-}
-
-impl From<UnitLen> for crate::UnitLength {
-    fn from(unit: UnitLen) -> Self {
-        match unit {
-            UnitLen::Cm => crate::UnitLength::Cm,
-            UnitLen::Feet => crate::UnitLength::Ft,
-            UnitLen::Inches => crate::UnitLength::In,
-            UnitLen::M => crate::UnitLength::M,
-            UnitLen::Mm => crate::UnitLength::Mm,
-            UnitLen::Yards => crate::UnitLength::Yd,
-            UnitLen::Unknown => unreachable!(),
-        }
-    }
-}
-
-impl From<UnitLen> for kittycad_modeling_cmds::units::UnitLength {
-    fn from(unit: UnitLen) -> Self {
-        match unit {
-            UnitLen::Cm => kittycad_modeling_cmds::units::UnitLength::Centimeters,
-            UnitLen::Feet => kittycad_modeling_cmds::units::UnitLength::Feet,
-            UnitLen::Inches => kittycad_modeling_cmds::units::UnitLength::Inches,
-            UnitLen::M => kittycad_modeling_cmds::units::UnitLength::Meters,
-            UnitLen::Mm => kittycad_modeling_cmds::units::UnitLength::Millimeters,
-            UnitLen::Yards => kittycad_modeling_cmds::units::UnitLength::Yards,
-            UnitLen::Unknown => unreachable!(),
-        }
-    }
-}
-
-/// A unit of angle.
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
-#[ts(export)]
-#[serde(tag = "type")]
-pub enum UnitAngle {
-    #[default]
-    Degrees,
-    Radians,
-    Unknown,
-}
-
-impl UnitAngle {
-    pub fn adjust_to(self, value: f64, to: UnitAngle) -> (f64, UnitAngle) {
-        use std::f64::consts::PI;
-
-        use UnitAngle::*;
-
-        if to == Unknown {
-            return (value, self);
-        }
-
-        let value = match (self, to) {
-            (Degrees, Degrees) => value,
-            (Degrees, Radians) => (value / 180.0) * PI,
-            (Radians, Degrees) => 180.0 * value / PI,
-            (Radians, Radians) => value,
-            (Unknown, _) | (_, Unknown) => unreachable!(),
-        };
-
-        (value, to)
-    }
-}
-
-impl std::fmt::Display for UnitAngle {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            UnitAngle::Degrees => write!(f, "deg"),
-            UnitAngle::Radians => write!(f, "rad"),
-            UnitAngle::Unknown => write!(f, "Angle"),
-        }
-    }
-}
-
-impl TryFrom<NumericSuffix> for UnitAngle {
-    type Error = ();
-
-    fn try_from(suffix: NumericSuffix) -> std::result::Result<Self, Self::Error> {
-        match suffix {
-            NumericSuffix::Deg => Ok(Self::Degrees),
-            NumericSuffix::Rad => Ok(Self::Radians),
-            _ => Err(()),
-        }
-    }
+pub(super) fn angle_from_str(s: &str, source_range: SourceRange) -> Result<UnitAngle, KclError> {
+    UnitAngle::from_str(s).map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
+            format!("Unexpected value for angle units: `{s}`; expected one of `deg`, `rad`"),
+            vec![source_range],
+        ))
+    })
 }
 
 #[derive(Debug, Clone)]
@@ -1114,7 +1118,9 @@ impl KclValue {
             RuntimeType::Array(ty, len) => self.coerce_to_array_type(ty, convert_units, *len, exec_state, false),
             RuntimeType::Tuple(tys) => self.coerce_to_tuple_type(tys, convert_units, exec_state),
             RuntimeType::Union(tys) => self.coerce_to_union_type(tys, convert_units, exec_state),
-            RuntimeType::Object(tys) => self.coerce_to_object_type(tys, convert_units, exec_state),
+            RuntimeType::Object(tys, constrainable) => {
+                self.coerce_to_object_type(tys, *constrainable, convert_units, exec_state)
+            }
         }
     }
 
@@ -1126,6 +1132,10 @@ impl KclValue {
     ) -> Result<KclValue, CoercionError> {
         match ty {
             PrimitiveType::Any => Ok(self.clone()),
+            PrimitiveType::None => match self {
+                KclValue::KclNone { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::Number(ty) => {
                 if convert_units {
                     return ty.coerce(self);
@@ -1157,6 +1167,10 @@ impl KclValue {
                 KclValue::Bool { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::GdtAnnotation => match self {
+                KclValue::GdtAnnotation { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::Sketch => match self {
                 KclValue::Sketch { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
@@ -1176,7 +1190,7 @@ impl KclValue {
                         Ok(self.clone())
                     }
                     KclValue::Plane { .. } => Ok(self.clone()),
-                    KclValue::Object { value, meta } => {
+                    KclValue::Object { value, meta, .. } => {
                         let origin = value
                             .get("origin")
                             .and_then(Point3d::from_kcl_val)
@@ -1242,7 +1256,9 @@ impl KclValue {
                 _ => Err(self.into()),
             },
             PrimitiveType::Axis2d => match self {
-                KclValue::Object { value: values, meta } => {
+                KclValue::Object {
+                    value: values, meta, ..
+                } => {
                     if values
                         .get("origin")
                         .ok_or(CoercionError::from(self))?
@@ -1277,12 +1293,15 @@ impl KclValue {
                     Ok(KclValue::Object {
                         value: [("origin".to_owned(), origin), ("direction".to_owned(), direction)].into(),
                         meta: meta.clone(),
+                        constrainable: false,
                     })
                 }
                 _ => Err(self.into()),
             },
             PrimitiveType::Axis3d => match self {
-                KclValue::Object { value: values, meta } => {
+                KclValue::Object {
+                    value: values, meta, ..
+                } => {
                     if values
                         .get("origin")
                         .ok_or(CoercionError::from(self))?
@@ -1317,6 +1336,7 @@ impl KclValue {
                     Ok(KclValue::Object {
                         value: [("origin".to_owned(), origin), ("direction".to_owned(), direction)].into(),
                         meta: meta.clone(),
+                        constrainable: false,
                     })
                 }
                 _ => Err(self.into()),
@@ -1476,11 +1496,12 @@ impl KclValue {
     fn coerce_to_object_type(
         &self,
         tys: &[(String, RuntimeType)],
+        constrainable: bool,
         _convert_units: bool,
         _exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
         match self {
-            KclValue::Object { value, .. } => {
+            KclValue::Object { value, meta, .. } => {
                 for (s, t) in tys {
                     // TODO coerce fields
                     if !value.get(s).ok_or(CoercionError::from(self))?.has_type(t) {
@@ -1488,11 +1509,18 @@ impl KclValue {
                     }
                 }
                 // TODO remove non-required fields
-                Ok(self.clone())
+                Ok(KclValue::Object {
+                    value: value.clone(),
+                    meta: meta.clone(),
+                    // Note that we don't check for constrainability, coercing to a constrainable object
+                    // adds that property.
+                    constrainable,
+                })
             }
             KclValue::KclNone { meta, .. } if tys.is_empty() => Ok(KclValue::Object {
                 value: HashMap::new(),
                 meta: meta.clone(),
+                constrainable,
             }),
             _ => Err(self.into()),
         }
@@ -1503,13 +1531,17 @@ impl KclValue {
             KclValue::Bool { .. } => Some(RuntimeType::Primitive(PrimitiveType::Boolean)),
             KclValue::Number { ty, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(*ty))),
             KclValue::String { .. } => Some(RuntimeType::Primitive(PrimitiveType::String)),
-            KclValue::Object { value, .. } => {
+            KclValue::SketchVar { value, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(value.ty))),
+            KclValue::Object {
+                value, constrainable, ..
+            } => {
                 let properties = value
                     .iter()
                     .map(|(k, v)| v.principal_type().map(|t| (k.clone(), t)))
                     .collect::<Option<Vec<_>>>()?;
-                Some(RuntimeType::Object(properties))
+                Some(RuntimeType::Object(properties, *constrainable))
             }
+            KclValue::GdtAnnotation { .. } => Some(RuntimeType::Primitive(PrimitiveType::GdtAnnotation)),
             KclValue::Plane { .. } => Some(RuntimeType::Primitive(PrimitiveType::Plane)),
             KclValue::Sketch { .. } => Some(RuntimeType::Primitive(PrimitiveType::Sketch)),
             KclValue::Solid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Solid)),
@@ -1526,7 +1558,8 @@ impl KclValue {
             KclValue::TagDeclarator(_) => Some(RuntimeType::Primitive(PrimitiveType::TagDecl)),
             KclValue::Uuid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Edge)),
             KclValue::Function { .. } => Some(RuntimeType::Primitive(PrimitiveType::Function)),
-            KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => None,
+            KclValue::KclNone { .. } => Some(RuntimeType::Primitive(PrimitiveType::None)),
+            KclValue::Module { .. } | KclValue::Type { .. } => None,
         }
     }
 
@@ -1579,6 +1612,7 @@ mod test {
             KclValue::Object {
                 value: crate::execution::KclObjectFields::new(),
                 meta: Vec::new(),
+                constrainable: false,
             },
             KclValue::TagIdentifier(Box::new("foo".parse().unwrap())),
             KclValue::TagDeclarator(Box::new(crate::parsing::ast::types::TagDeclarator::new("foo"))),
@@ -1723,13 +1757,14 @@ mod test {
         );
         none.coerce(&tty1, true, &mut exec_state).unwrap_err();
 
-        let oty = RuntimeType::Object(vec![]);
+        let oty = RuntimeType::Object(vec![], false);
         assert_coerce_results(
             &none,
             &oty,
             &KclValue::Object {
                 value: HashMap::new(),
                 meta: Vec::new(),
+                constrainable: false,
             },
             &mut exec_state,
         );
@@ -1742,6 +1777,7 @@ mod test {
         let obj0 = KclValue::Object {
             value: HashMap::new(),
             meta: Vec::new(),
+            constrainable: false,
         };
         let obj1 = KclValue::Object {
             value: [(
@@ -1753,6 +1789,7 @@ mod test {
             )]
             .into(),
             meta: Vec::new(),
+            constrainable: false,
         };
         let obj2 = KclValue::Object {
             value: [
@@ -1782,38 +1819,51 @@ mod test {
             ]
             .into(),
             meta: Vec::new(),
+            constrainable: false,
         };
 
-        let ty0 = RuntimeType::Object(vec![]);
+        let ty0 = RuntimeType::Object(vec![], false);
         assert_coerce_results(&obj0, &ty0, &obj0, &mut exec_state);
         assert_coerce_results(&obj1, &ty0, &obj1, &mut exec_state);
         assert_coerce_results(&obj2, &ty0, &obj2, &mut exec_state);
 
-        let ty1 = RuntimeType::Object(vec![("foo".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))]);
+        let ty1 = RuntimeType::Object(
+            vec![("foo".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))],
+            false,
+        );
         obj0.coerce(&ty1, true, &mut exec_state).unwrap_err();
         assert_coerce_results(&obj1, &ty1, &obj1, &mut exec_state);
         assert_coerce_results(&obj2, &ty1, &obj2, &mut exec_state);
 
         // Different ordering, (TODO - test for covariance once implemented)
-        let ty2 = RuntimeType::Object(vec![
-            (
-                "bar".to_owned(),
-                RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
-            ),
-            ("foo".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean)),
-        ]);
+        let ty2 = RuntimeType::Object(
+            vec![
+                (
+                    "bar".to_owned(),
+                    RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
+                ),
+                ("foo".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean)),
+            ],
+            false,
+        );
         obj0.coerce(&ty2, true, &mut exec_state).unwrap_err();
         obj1.coerce(&ty2, true, &mut exec_state).unwrap_err();
         assert_coerce_results(&obj2, &ty2, &obj2, &mut exec_state);
 
         // field not present
-        let tyq = RuntimeType::Object(vec![("qux".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))]);
+        let tyq = RuntimeType::Object(
+            vec![("qux".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))],
+            false,
+        );
         obj0.coerce(&tyq, true, &mut exec_state).unwrap_err();
         obj1.coerce(&tyq, true, &mut exec_state).unwrap_err();
         obj2.coerce(&tyq, true, &mut exec_state).unwrap_err();
 
         // field with different type
-        let ty1 = RuntimeType::Object(vec![("bar".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))]);
+        let ty1 = RuntimeType::Object(
+            vec![("bar".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))],
+            false,
+        );
         obj2.coerce(&ty1, true, &mut exec_state).unwrap_err();
     }
 
@@ -2085,6 +2135,7 @@ mod test {
             ]
             .into(),
             meta: Vec::new(),
+            constrainable: false,
         };
         let a3d = KclValue::Object {
             value: [
@@ -2137,6 +2188,7 @@ mod test {
             ]
             .into(),
             meta: Vec::new(),
+            constrainable: false,
         };
 
         let ty2d = RuntimeType::Primitive(PrimitiveType::Axis2d);
@@ -2164,7 +2216,7 @@ mod test {
         };
         let inches = KclValue::Number {
             value: 1.0,
-            ty: NumericType::Known(UnitType::Length(UnitLen::Inches)),
+            ty: NumericType::Known(UnitType::Length(UnitLength::Inches)),
             meta: Vec::new(),
         };
         let rads = KclValue::Number {
@@ -2204,8 +2256,8 @@ mod test {
             default
                 .coerce(
                     &NumericType::Default {
-                        len: UnitLen::Yards,
-                        angle: UnitAngle::default()
+                        len: UnitLength::Yards,
+                        angle: UnitAngle::Degrees,
                     }
                     .into(),
                     true,
@@ -2347,7 +2399,12 @@ u = min([3rad, 4in])
         assert_value_and_type("n", &result, 5.0, NumericType::Unknown);
         assert_value_and_type("o", &result, 1.0, NumericType::mm());
         assert_value_and_type("p", &result, 1.0, NumericType::count());
-        assert_value_and_type("q", &result, 2.0, NumericType::Known(UnitType::Length(UnitLen::Inches)));
+        assert_value_and_type(
+            "q",
+            &result,
+            2.0,
+            NumericType::Known(UnitType::Length(UnitLength::Inches)),
+        );
 
         assert_value_and_type("r", &result, 0.0, NumericType::default());
         assert_value_and_type("s", &result, -42.0, NumericType::mm());
@@ -2371,14 +2428,18 @@ b = 180 / PI * a + 360
     #[tokio::test(flavor = "multi_thread")]
     async fn cos_coercions() {
         let program = r#"
-a = cos(units::toRadians(30))
+a = cos(units::toRadians(30deg))
 b = 3 / a
 c = cos(30deg)
-d = cos(30)
+d = cos(1rad)
 "#;
 
         let result = parse_execute(program).await.unwrap();
-        assert!(result.exec_state.errors().is_empty());
+        assert!(
+            result.exec_state.errors().is_empty(),
+            "{:?}",
+            result.exec_state.errors()
+        );
 
         assert_value_and_type("a", &result, 1.0, NumericType::default());
         assert_value_and_type("b", &result, 3.0, NumericType::default());

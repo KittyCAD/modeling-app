@@ -47,6 +47,13 @@ This setting has the following nested options:
 
 **Default:** None
 
+##### disable_copilot
+
+Disable the new Copilot in Text-to-CAD for this project, only available in Zoo Design Studio (Staging).
+
+
+**Default:** None
+
 
 #### app
 
@@ -57,24 +64,9 @@ The settings for the Design Studio.
 
 This setting has the following nested options:
 
-##### appearance
-
-The settings for the appearance of the app.
-
-
-**Default:** None
-
-This setting has further nested options. See the schema for full details.
 ##### onboarding_status
 
 The onboarding status of the app.
-
-
-**Default:** None
-
-##### dismiss_web_banner
-
-Permanently dismiss the banner warning to download the desktop app. This setting only applies to the web app. And is temporary until we have Linux support.
 
 
 **Default:** None
@@ -134,6 +126,41 @@ Highlight edges of 3D objects?
 ##### enable_ssao
 
 Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
+
+
+**Default:** None
+
+##### fixed_size_grid
+
+When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level. If true, the grid cells will be fixed-size, where the width is your default length unit. If false, the grid will get larger as you zoom out, and smaller as you zoom in.
+
+
+**Default:** None
+
+##### snap_to_grid
+
+When enabled, tools like line, rectangle, etc. will snap to the grid.
+
+
+**Default:** None
+
+##### major_grid_spacing
+
+The space between major grid lines, specified in the current unit.
+
+
+**Default:** None
+
+##### minor_grids_per_major
+
+The number of minor grid lines per major grid line.
+
+
+**Default:** None
+
+##### snaps_per_minor
+
+The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
 
 
 **Default:** None

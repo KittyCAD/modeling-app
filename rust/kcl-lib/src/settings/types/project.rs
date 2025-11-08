@@ -2,12 +2,13 @@
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kittycad_modeling_cmds::units::UnitLength;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::settings::types::{
-    AppColor, CommandBarSettings, DefaultTrue, OnboardingStatus, TextEditorSettings, UnitLength, is_default,
+    DefaultTrue, OnboardingStatus, ProjectCommandBarSettings, ProjectTextEditorSettings, is_default,
 };
 
 /// Project specific settings for the app.
@@ -59,11 +60,11 @@ pub struct PerProjectSettings {
     /// Settings that affect the behavior of the KCL text editor.
     #[serde(default)]
     #[validate(nested)]
-    pub text_editor: TextEditorSettings,
+    pub text_editor: ProjectTextEditorSettings,
     /// Settings that affect the behavior of the command bar.
     #[serde(default)]
     #[validate(nested)]
-    pub command_bar: CommandBarSettings,
+    pub command_bar: ProjectCommandBarSettings,
 }
 
 /// Information about the project.
@@ -73,6 +74,9 @@ pub struct PerProjectSettings {
 pub struct ProjectMetaSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub id: uuid::Uuid,
+    /// Disable the new Copilot in Text-to-CAD for this project, only available in Zoo Design Studio (Staging).
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub disable_copilot: bool,
 }
 
 /// Project specific application settings.
@@ -82,17 +86,9 @@ pub struct ProjectMetaSettings {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct ProjectAppSettings {
-    /// The settings for the appearance of the app.
-    #[serde(default, skip_serializing_if = "is_default")]
-    #[validate(nested)]
-    pub appearance: ProjectAppearanceSettings,
     /// The onboarding status of the app.
     #[serde(default, skip_serializing_if = "is_default")]
     pub onboarding_status: OnboardingStatus,
-    /// Permanently dismiss the banner warning to download the desktop app.
-    /// This setting only applies to the web app. And is temporary until we have Linux support.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub dismiss_web_banner: bool,
     /// When the user is idle, and this is true, the stream will be torn down.
     #[serde(default, skip_serializing_if = "is_default")]
     pub stream_idle_mode: bool,
@@ -101,38 +97,44 @@ pub struct ProjectAppSettings {
     pub allow_orbit_in_sketch_mode: bool,
     /// Whether to show the debug panel, which lets you see various states
     /// of the app to aid in development.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub show_debug_panel: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub show_debug_panel: Option<bool>,
     /// Settings that affect the behavior of the command bar.
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub named_views: IndexMap<uuid::Uuid, NamedView>,
 }
 
-/// Project specific appearance settings.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-pub struct ProjectAppearanceSettings {
-    /// The hue of the primary theme color for the app.
-    #[serde(default, skip_serializing_if = "is_default")]
-    #[validate(nested)]
-    pub color: AppColor,
-}
-
 /// Project specific settings that affect the behavior while modeling.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq, Validate)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[serde(rename_all = "snake_case")]
 #[ts(export)]
 pub struct ProjectModelingSettings {
     /// The default unit to use in modeling dimensions.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub base_unit: UnitLength,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub base_unit: Option<UnitLength>,
     /// Highlight edges of 3D objects?
     #[serde(default, skip_serializing_if = "is_default")]
     pub highlight_edges: DefaultTrue,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
+    /// When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.
+    /// If true, the grid cells will be fixed-size, where the width is your default length unit.
+    /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fixed_size_grid: Option<bool>,
+    /// When enabled, tools like line, rectangle, etc. will snap to the grid.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snap_to_grid: Option<bool>,
+    /// The space between major grid lines, specified in the current unit.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub major_grid_spacing: Option<f64>,
+    /// The number of minor grid lines per major grid line.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub minor_grids_per_major: Option<f64>,
+    /// The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snaps_per_minor: Option<f64>,
 }
 
 fn named_view_point_version_one() -> f64 {
@@ -182,8 +184,8 @@ mod tests {
     use serde_json::Value;
 
     use super::{
-        CommandBarSettings, NamedView, PerProjectSettings, ProjectAppSettings, ProjectAppearanceSettings,
-        ProjectConfiguration, ProjectMetaSettings, ProjectModelingSettings, TextEditorSettings,
+        NamedView, PerProjectSettings, ProjectAppSettings, ProjectCommandBarSettings, ProjectConfiguration,
+        ProjectMetaSettings, ProjectModelingSettings, ProjectTextEditorSettings,
     };
     use crate::settings::types::UnitLength;
 
@@ -212,25 +214,6 @@ mod tests {
 
         let parsed = ProjectConfiguration::parse_and_validate(empty_settings_file).unwrap();
         assert_eq!(parsed, ProjectConfiguration::default());
-    }
-
-    #[test]
-    fn test_project_settings_color_validation_error() {
-        let settings_file = r#"[settings.app.appearance]
-color = 1567.4"#;
-
-        let result = ProjectConfiguration::parse_and_validate(settings_file);
-        if let Ok(r) = result {
-            panic!("Expected an error, but got success: {r:?}");
-        }
-        assert!(result.is_err());
-
-        assert!(
-            result
-                .unwrap_err()
-                .to_string()
-                .contains("color: Validation error: color")
-        );
     }
 
     #[test]
@@ -286,14 +269,15 @@ color = 1567.4"#;
     fn test_project_settings_named_views() {
         let conf = ProjectConfiguration {
             settings: PerProjectSettings {
-                meta: ProjectMetaSettings { id: uuid::Uuid::nil() },
+                meta: ProjectMetaSettings {
+                    id: uuid::Uuid::nil(),
+                    disable_copilot: Default::default(),
+                },
                 app: ProjectAppSettings {
-                    appearance: ProjectAppearanceSettings { color: 138.0.into() },
                     onboarding_status: Default::default(),
-                    dismiss_web_banner: false,
                     stream_idle_mode: false,
                     allow_orbit_in_sketch_mode: false,
-                    show_debug_panel: true,
+                    show_debug_panel: Some(true),
                     named_views: IndexMap::from([
                         (
                             uuid::uuid!("323611ea-66e3-43c9-9d0d-1091ba92948c"),
@@ -328,16 +312,21 @@ color = 1567.4"#;
                     ]),
                 },
                 modeling: ProjectModelingSettings {
-                    base_unit: UnitLength::Yd,
+                    base_unit: Some(UnitLength::Yards),
                     highlight_edges: Default::default(),
                     enable_ssao: true.into(),
+                    snap_to_grid: None,
+                    major_grid_spacing: None,
+                    minor_grids_per_major: None,
+                    snaps_per_minor: None,
+                    fixed_size_grid: None,
                 },
-                text_editor: TextEditorSettings {
-                    text_wrapping: false.into(),
-                    blinking_cursor: false.into(),
+                text_editor: ProjectTextEditorSettings {
+                    text_wrapping: Some(false),
+                    blinking_cursor: Some(false),
                 },
-                command_bar: CommandBarSettings {
-                    include_settings: false.into(),
+                command_bar: ProjectCommandBarSettings {
+                    include_settings: Some(false),
                 },
             },
         };
@@ -346,9 +335,6 @@ color = 1567.4"#;
 
 [settings.app]
 show_debug_panel = true
-
-[settings.app.appearance]
-color = 138.0
 
 [settings.app.named_views.323611ea-66e3-43c9-9d0d-1091ba92948c]
 name = "Hello"

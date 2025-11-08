@@ -32,7 +32,7 @@ jobs:
     # Enabling this results in the following error on GitHub Actions:
     #   setarch: failed to set personality to x86_64: Operation not permitted
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Use correct Rust toolchain
         shell: bash
         run: |
@@ -58,4 +58,4 @@ jobs:
           run: cargo codspeed run
           token: ${{ secrets.CODSPEED_TOKEN }}
         env:
-          KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN }}
+          ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}

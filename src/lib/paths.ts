@@ -2,6 +2,8 @@ import type { PlatformPath } from 'path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
+import type { IElectronAPI } from '@root/interface'
+import { fsManager } from '@src/lang/std/fileSystemManager'
 import {
   BROWSER_FILE_NAME,
   BROWSER_PROJECT_NAME,
@@ -9,8 +11,6 @@ import {
 } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import type { IElectronAPI } from '@root/interface'
-import { fsManager } from '@src/lang/std/fileSystemManager'
 
 const SETTINGS = '/settings'
 
@@ -278,4 +278,21 @@ export const getParentAbsolutePath = (absolutePath: string) => {
   split.pop()
   const joined = desktopSafePathJoin(split)
   return joined
+}
+
+/**
+ * Helper function to detect if an extension is an import extension
+ */
+export const isExtensionAnImportExtension = (
+  extension: string,
+  importExtensions: string[]
+) => {
+  return importExtensions.includes(extension.toLowerCase())
+}
+
+export const isExtensionARelevantExtension = (
+  extension: string,
+  relevantExtensions: string[]
+) => {
+  return relevantExtensions.includes(extension.toLowerCase())
 }

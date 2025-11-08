@@ -200,7 +200,7 @@
 /// 
 /// subtract(cube001, tools = cube002)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn startSketchOn(
   /// Profile whose start is being used.
   @planeOrSolid: Solid | Plane,
@@ -267,7 +267,7 @@ export fn startSketchOn(
 ///   |> line(end = [-10, 0])
 ///   |> close()
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn startProfile(
   /// What to start the profile on.
   @startProfileOn: Plane | Face,
@@ -293,7 +293,7 @@ export fn startProfile(
 ///   |> rectangle(corner = [0, 0], width = 10, height = 5)
 //    |> extrude(length = 2)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn rectangle(
   /// Sketch to extend, or plane or surface to sketch on.
   @sketchOrSurface: Sketch | Plane | Face,
@@ -333,7 +333,7 @@ export fn rectangle(
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn circle(
   /// Sketch to extend, or plane or surface to sketch on.
   @sketchOrSurface: Sketch | Plane | Face,
@@ -357,7 +357,7 @@ export fn circle(
 /// exampleSketch = startSketchOn(XY)
 ///   |> ellipse(center = [0, 0], majorRadius = 50, minorRadius = 20)
 /// ```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, experimental = true, feature_tree = true)
 export fn ellipse(
   /// Sketch to extend, or plane or surface to sketch on.
   @sketchOrSurface: Sketch | Plane | Face,
@@ -371,7 +371,7 @@ export fn ellipse(
   /// The major axis of the ellipse.
   majorAxis?: Point2d,
   /// Create a new tag which refers to this ellipse.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Extend a 2-dimensional sketch through a third dimension in order to
@@ -498,12 +498,59 @@ export fn ellipse(
 /// // the cube.
 /// translate(cylinder, x = 1)
 /// ```
-@(impl = std_rust)
+///
+/// ```kcl
+/// // You could also use the 'to' parameter if you want extrusions
+/// // to end at a reference point, axis, scene geometry, tagged geometry, or plane.
+/// 
+/// 
+/// sketch001 = startSketchOn(XY)
+/// profile001 = startProfile(sketch001, at = [2, 2])
+///   |> yLine(length = 1)
+///   |> xLine(length = 1)
+///   |> yLine(length = -1, tag = $facetag0)
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $facetag1)
+///   |> close()
+/// cube = extrude(profile001, length = 1)
+/// 
+/// // extrude a circle to a point reference (red cylinder)
+/// sketch002 = startSketchOn(XZ)
+/// cylinder0 = circle(sketch002, center = [0.5, 0.5], radius = 0.25)
+///   |> extrude(to = [-2, -3, -4])
+///   |> appearance(color='#FF0000')
+/// 
+/// // extrude a circle to an axis reference (green cylinder)
+/// sketch003 = startSketchOn(offsetPlane(XY, offset = -2))
+/// cylinder1 = circle(sketch003, center = [0.5, 0.5], radius = 0.25)
+///   |> extrude(to = Y)
+///   |> appearance(color ='#00FF00')
+/// 
+/// // extrude a circle to a solid reference (blue cylinder)
+/// sketch004 = startSketchOn(offsetPlane(YZ, offset = -1))
+/// cylinder2 = circle(sketch004, center = [0.5, 0.5], radius = 0.25)
+///   |> extrude(to = cube)
+///   |> appearance(color ='#0000FF')
+/// 
+/// // extrude a circle to a tagged edge (cyan cylinder)
+/// sketch005 = startSketchOn(offsetPlane(YZ, offset = 4))
+/// cylinder3 = circle(sketch005, center = [0.5, 0.5], radius = 0.25)
+///   |> extrude(to = getCommonEdge(faces = [facetag0, facetag1]))
+///   |> appearance(color = '#00FFFF')
+/// 
+/// // extrude a circle to a plane (magenta cylinder)
+/// sketch006 = startSketchOn(cube, face = facetag1)
+/// cylinder4 = circle(sketch006, center = [2.5, 0.5], radius = 0.25)
+///   |> extrude(to = XZ, method = NEW)
+///   |> appearance(color ='#FF00FF')
+/// ```
+@(impl = std_rust, feature_tree = true)
 export fn extrude(
   /// Which sketch or sketches should be extruded.
   @sketches: [Sketch; 1+],
-  /// How far to extrude the given sketches.
-  length: number(Length),
+  /// How far to extrude the given sketches. Incompatible with `to`.
+  length?: number(Length),
+  /// Reference to extrude to. Incompatible with `length` and `twistAngle`.
+  to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace,
   /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
   symmetric?: bool,
   /// If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored.
@@ -512,7 +559,7 @@ export fn extrude(
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch.
   tagEnd?: TagDecl,
-  /// If given, the sketch will be twisted around this angle while being extruded.
+  /// If given, the sketch will be twisted around this angle while being extruded. Incompatible with `to`.
   twistAngle?: number(Angle),
   /// The size of each intermediate angle as the sketch twists around.
   /// Must be between 4 and 90 degrees.
@@ -745,7 +792,7 @@ export fn extrude(
 ///     |> circle(center = [-10, 10], radius = 4)
 ///     |> revolve(angle = 90deg, axis = revolveAxis, bidirectionalAngle = 50)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn revolve(
   /// The sketch or set of sketches that should be revolved
   @sketches: [Sketch; 1+],
@@ -778,7 +825,7 @@ export fn revolve(
 ///   |> circle(center = [0, 0], radius = 2)
 ///   |> patternTransform2d(instances = 4, transform = transform)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn patternTransform2d(
   /// The sketch(es) to duplicate.
   @sketches: [Sketch; 1+],
@@ -818,7 +865,7 @@ export fn patternTransform2d(
 ///     tags = [getOppositeEdge(referenceEdge)],
 ///   )
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn getOppositeEdge(
   /// The tag of the edge you want to find the opposite edge of.
   @edge: TaggedEdge,
@@ -852,7 +899,7 @@ export fn getOppositeEdge(
 ///     tags = [getNextAdjacentEdge(referenceEdge)],
 ///   )
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn getNextAdjacentEdge(
   /// The tag of the edge you want to find the next adjacent edge of.
   @edge: TaggedEdge,
@@ -886,7 +933,7 @@ export fn getNextAdjacentEdge(
 ///     tags = [getPreviousAdjacentEdge(referenceEdge)],
 ///   )
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn getPreviousAdjacentEdge(
   /// The tag of the edge you want to find the previous adjacent edge of.
   @edge: TaggedEdge,
@@ -915,7 +962,7 @@ export fn getPreviousAdjacentEdge(
 /// // TODO: uncomment this when ssi for fillets lands
 /// // chamfer(part001, length = 5, tags = [commonEdge])
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn getCommonEdge(
   /// The tags of the faces you want to find the common edge between.
   faces: [TaggedFace; 2],
@@ -928,7 +975,7 @@ export fn getCommonEdge(
 ///   |> circleThreePoint(p1 = [10,10], p2 = [20,8], p3 = [15,5])
 ///   |> extrude(length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn circleThreePoint(
   /// Plane or surface to sketch on.
   @sketchOrSurface: Sketch | Plane | Face,
@@ -968,7 +1015,7 @@ export fn circleThreePoint(
 ///   )
 /// example = extrude(square, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn polygon(
   /// Plane or surface to sketch on.
   @sketchOrSurface: Sketch | Plane | Face,
@@ -1084,7 +1131,7 @@ export fn polygon(
 ///
 /// sweep(circleSketch, path = sweepPath, sectional = true)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn sweep(
   /// The sketch or set of sketches that should be swept in space.
   @sketches: [Sketch; 1+],
@@ -1168,7 +1215,7 @@ export fn sweep(
 ///     vDegree = 2,
 /// )
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn loft(
   /// Which sketches to loft. Must include at least 2 sketches.
   @sketches: [Sketch; 2+],
@@ -1216,7 +1263,7 @@ export fn loft(
 ///
 /// example = extrude(exampleSketch, length = 1)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn patternLinear2d(
   /// The sketch(es) to duplicate.
   @sketches: [Sketch; 1+],
@@ -1252,7 +1299,7 @@ export fn patternLinear2d(
 ///
 /// example = extrude(exampleSketch, length = 1)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn patternCircular2d(
   /// The sketch(es) to duplicate.
   @sketches: [Sketch; 1+],
@@ -1294,7 +1341,7 @@ export fn patternCircular2d(
 /// cylinder(radius = 3, tag = line3)
 /// cylinder(radius = 4, tag = line4)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn segEnd(
   /// The line segment being queried by its tag.
   @tag: TaggedEdge,
@@ -1313,7 +1360,7 @@ export fn segEnd(
 ///  
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn segEndX(
   /// The line segment being queried by its tag.
   @tag: TaggedEdge,
@@ -1333,7 +1380,7 @@ export fn segEndX(
 ///  
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn segEndY(
   /// The line segment being queried by its tag.
   @tag: TaggedEdge,
@@ -1364,7 +1411,7 @@ export fn segEndY(
 /// cylinder(radius = 3, tag = line3)
 /// cylinder(radius = 4, tag = line4)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn segStart(
   /// The line segment being queried by its tag.
   @tag: TaggedEdge,
@@ -1383,7 +1430,7 @@ export fn segStart(
 ///  
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn segStartX(
   /// The line segment being queried by its tag.
   @tag: TaggedEdge,
@@ -1403,7 +1450,7 @@ export fn segStartX(
 ///  
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn segStartY(
   /// The line segment being queried by its tag.
   @tag: TaggedEdge,
@@ -1422,7 +1469,7 @@ export fn segStartY(
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn lastSegX(
   /// The sketch whose line segment is being queried.
   @sketch: Sketch,
@@ -1441,7 +1488,7 @@ export fn lastSegX(
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn lastSegY(
   /// The sketch whose line segment is being queried.
   @sketch: Sketch,
@@ -1466,7 +1513,7 @@ export fn lastSegY(
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn segLen(
   /// The line segment being queried by its tag.
   @tag: TaggedEdge,
@@ -1487,7 +1534,7 @@ export fn segLen(
 ///
 /// example = extrude(exampleSketch, length = 4)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn segAng(
   /// The line segment being queried by its tag.
   @tag: TaggedEdge,
@@ -1564,7 +1611,7 @@ export fn segAng(
 ///   |> line(end = [-15, 0])
 ///   |> close()
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn tangentToEnd(
   /// The line segment being queried by its tag.
   @tag: TaggedEdge,
@@ -1581,7 +1628,7 @@ export fn tangentToEnd(
 ///  |> close()
 ///  |> extrude(length = 20)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn profileStart(
   /// Profile whose start is being used.
   @profile: Sketch,
@@ -1596,7 +1643,7 @@ export fn profileStart(
 ///  |> angledLine(angle = 90deg, length = 50)
 ///  |> angledLine(angle = 30deg, endAbsoluteX = profileStartX(%))
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn profileStartX(
   /// Profile whose start is being used.
   @profile: Sketch,
@@ -1610,7 +1657,7 @@ export fn profileStartX(
 ///  |> angledLine(angle = -60deg, length = 14 )
 ///  |> angledLine(angle = 30deg, endAbsoluteY =  profileStartY(%))
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn profileStartY(
   /// Profile whose start is being used.
   @profile: Sketch,
@@ -1626,7 +1673,7 @@ export fn profileStartY(
 ///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60deg)
 ///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60deg, reverse = true)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn involuteCircular(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -1674,7 +1721,7 @@ export fn involuteCircular(
 ///   |> close()
 ///   |> extrude(length = 5)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn line(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -1709,7 +1756,7 @@ export fn line(
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn xLine(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -1739,7 +1786,7 @@ export fn xLine(
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn yLine(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -1769,7 +1816,7 @@ export fn yLine(
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn angledLine(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -1808,7 +1855,7 @@ export fn angledLine(
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn angledLineThatIntersects(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -1848,7 +1895,7 @@ export fn angledLineThatIntersects(
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn close(
   /// The sketch you want to close.
   @sketch: Sketch,
@@ -1890,7 +1937,7 @@ export fn close(
 ///   |> close()
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn arc(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -1967,7 +2014,7 @@ export fn arc(
 ///
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn tangentialArc(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2014,7 +2061,7 @@ export fn tangentialArc(
 ///   |> close()
 ///   |> extrude(length = 10)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn bezierCurve(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2065,7 +2112,7 @@ export fn bezierCurve(
 ///     |> subtract2d(tool = squareHoleSketch())
 /// example = extrude(exampleSketch, length = 1)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = true)
 export fn subtract2d(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2089,7 +2136,7 @@ export fn subtract2d(
 ///   |> close()
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, experimental = true, feature_tree = true)
 export fn conic(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2108,7 +2155,7 @@ export fn conic(
   /// The tangent of the conic section at the end. Incompatible with `coefficients`.
   endTangent?: Point2d,
   /// Create a new tag which refers to this segment.
-  tag?: tag,
+  tag?: TagDecl,
   ): Sketch {}
 
 /// Add a parabolic segment to an existing sketch.
@@ -2124,7 +2171,7 @@ export fn conic(
 ///   )
 ///   |>close()
 ///```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, experimental = true, feature_tree = true)
 export fn parabolic(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2139,7 +2186,7 @@ export fn parabolic(
   /// Any point between the segment's start and end. Requires `endAbsolute`. Incompatible with `coefficients` or `interior` or `end`.
   interiorAbsolute?: Point2d,
   /// Create a new tag which refers to this segment.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
  
 /// Calculate the point (x, y) on a parabola given x or y and the coefficients [a, b, c] of the parabola.
@@ -2150,7 +2197,7 @@ export fn parabolic(
 /// assert(point001[0], isEqualTo = point002[0])
 /// assert(point001[1], isEqualTo = point002[1])
 ///```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn parabolicPoint(
   /// The coefficients [a, b, c] of the parabolic equation y = ax^2 + bx + c.
   coefficients: [number; 3],
@@ -2175,7 +2222,7 @@ export fn parabolicPoint(
 ///   )
 ///   |>close()
 ///```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, experimental = true, feature_tree = true)
 export fn hyperbolic(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2192,7 +2239,7 @@ export fn hyperbolic(
   /// Where should this segment end? This point is relative to the start point. Requires `interior`. Incompatible with `interiorAbsolute` or `endAbsolute`.
   end?: Point2d,
   /// Create a new tag which refers to this arc.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Calculate the point (x, y) on a hyperbola given x or y and the semi major/minor values of the hyperbolic.
@@ -2200,7 +2247,7 @@ export fn hyperbolic(
 /// ```kcl
 /// point = hyperbolicPoint(x = 5, semiMajor = 2, semiMinor = 1)
 ///```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn hyperbolicPoint(
   /// The semi major value, a, of the hyperbolic equation x^2 / a ^ 2 - y^2 / b^2 = 1.
   semiMajor: number,
@@ -2227,7 +2274,7 @@ export fn hyperbolicPoint(
 ///    |> close()
 /// example = extrude(exampleSketch, length = 10)
 /// ```
-@(impl = std_rust, experimental = true)
+@(impl = std_rust, experimental = true, feature_tree = true)
 export fn elliptic(
   /// Which sketch should this path be added to?
   @sketch: Sketch,
@@ -2249,7 +2296,7 @@ export fn elliptic(
   @(includeInSnippet = true)
   majorAxis?: Point2d,
   /// Create a new tag which refers to this arc.
-  tag?: tag,
+  tag?: TagDecl,
 ): Sketch {}
 
 /// Calculate the point (x, y) on an ellipse given x or y and the center and major/minor radii of the ellipse.
@@ -2260,7 +2307,7 @@ export fn elliptic(
 /// assert(point001[0], isEqualTo = point002[0])
 /// assert(point001[1], isEqualTo = point002[1])
 ///```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn ellipticPoint(
   /// The major radius, a, of the elliptic equation x^2 / a ^ 2 + y^2 / b^2 = 1.
   majorRadius: number,
@@ -2287,7 +2334,7 @@ export fn ellipticPoint(
 /// |> circle(radius = 1, center = [0,0])
 /// |> extrude(length = 1)
 /// ```
-@(impl = std_rust)
+@(impl = std_rust, feature_tree = false)
 export fn planeOf(
   /// The solid whose face is being queried.
   @solid: Solid,
