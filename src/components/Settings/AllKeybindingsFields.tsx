@@ -54,30 +54,35 @@ function KeybindingField({
   return (
     <div
       className={
-        'flex gap-16 justify-between items-start py-1 px-2 -my-1 -mx-2 ' +
+        'grid grid-cols-2 gap-16 py-1 px-2 -mx-2 ' +
         (location.hash === `#${item.id}`
           ? 'bg-primary/5 dark:bg-chalkboard-90'
           : '')
       }
       id={item.id}
     >
-      <div>
+      <div className="flex-grow-0">
         <h3 className="text-lg font-normal capitalize tracking-wide">
           {item.title}
         </h3>
-        <p className="text-xs text-chalkboard-60 dark:text-chalkboard-50">
+        <p className="text-sm text-chalkboard-60 dark:text-chalkboard-50">
           {item.description}
         </p>
-        <p className="text-xs text-chalkboard-60 dark:text-chalkboard-50">
-          Availability: {item.enabledDescription}
-        </p>
       </div>
-      <div className="flex-1 flex flex-wrap justify-end gap-3">
-        {item.sequence.split(' ').map((chord, i) => (
-          <kbd key={`${category}-${item.id}-${chord}-${i}`} className="hotkey">
-            {chord}
-          </kbd>
-        ))}
+      <div className="flex-1 flex flex-col gap-3">
+        <div className="flex flex-wrap justify-end gap-3">
+          {item.sequence.split(' ').map((chord, i) => (
+            <kbd
+              key={`${category}-${item.id}-${chord}-${i}`}
+              className="hotkey"
+            >
+              {chord}
+            </kbd>
+          ))}
+        </div>
+        <p className="text-xs text-chalkboard-60 dark:text-chalkboard-50 text-right">
+          {item.enabledDescription}
+        </p>
       </div>
     </div>
   )
