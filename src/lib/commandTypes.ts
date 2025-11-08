@@ -51,17 +51,6 @@ export type StateMachineCommandSetSchema<T extends AnyStateMachine> = Partial<{
   [EventType in EventFrom<T>['type']]: Record<string, any>
 }>
 
-export type StateMachineCommandSet<
-  T extends AnyStateMachine,
-  Schema extends StateMachineCommandSetSchema<T>,
-> = Partial<{
-  [EventType in EventFrom<T>['type']]: Command<
-    T,
-    EventFrom<T>['type'],
-    Schema[EventType]
-  >
-}>
-
 /**
  * A configuration object for a set of commands tied to a state machine.
  * Each event type can have one or more commands associated with it.

@@ -563,7 +563,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       to: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        // TODO: add edgeCut during https://github.com/KittyCAD/modeling-app/issues/8831
+        selectionTypes: ['cap', 'wall'],
         clearSelectionFirst: true,
         required: false,
         multiple: false,

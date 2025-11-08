@@ -108,10 +108,19 @@ pub enum ModuleRepr {
     // AST, memory, exported names
     Kcl(
         Node<Program>,
-        Option<(Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState)>,
+        /// Cached execution outcome.
+        Option<ModuleExecutionOutcome>,
     ),
     Foreign(PreImportedGeometry, Option<(Option<KclValue>, ModuleArtifactState)>),
     Dummy,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct ModuleExecutionOutcome {
+    pub last_expr: Option<KclValue>,
+    pub environment: EnvironmentRef,
+    pub exports: Vec<String>,
+    pub artifacts: ModuleArtifactState,
 }
 
 #[allow(clippy::large_enum_variant)]
