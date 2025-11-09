@@ -5637,10 +5637,12 @@ export const modelingMachine = setup({
           parentContext: context,
           initialSketchDetails: context.sketchDetails,
           initialSketchSolvePlane: context.sketchSolveInit,
-          codeManager: context.codeManager!,
-          sceneInfra: context.sceneInfra!,
-          sceneEntitiesManager: context.sceneEntitiesManager!,
-          rustContext: context.rustContext!,
+          // Use context values if available, otherwise fall back to singletons
+          codeManager: context.codeManager ?? codeManager,
+          sceneInfra: context.sceneInfra ?? sceneInfra,
+          sceneEntitiesManager:
+            context.sceneEntitiesManager ?? sceneEntitiesManager,
+          rustContext: context.rustContext ?? rustContext,
         }),
         onDone: {
           target: 'idle',
