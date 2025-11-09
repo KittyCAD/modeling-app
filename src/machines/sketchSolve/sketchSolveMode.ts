@@ -20,12 +20,10 @@ import type {
   SegmentCtor,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import {
-  codeManager,
-  rustContext,
-  sceneInfra,
-  sceneEntitiesManager,
-} from '@src/lib/singletons'
+import type CodeManager from '@src/lang/codeManager'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import type RustContext from '@src/lib/rustContext'
 import {
   SEGMENT_TYPE_LINE,
   SEGMENT_TYPE_POINT,
@@ -337,7 +335,13 @@ export type EquipTool = keyof typeof equipTools
 // and ensuring the return type matches the specific tool actor
 type SpawnToolActor = <K extends EquipTool>(
   src: K,
-  options?: { id?: string }
+  options?: {
+    id?: string
+    input?: {
+      sceneInfra: SceneInfra
+      rustContext: RustContext
+    }
+  }
 ) => ActorRefFrom<(typeof equipTools)[K]>
 
 export type SketchSolveMachineEvent =
@@ -373,6 +377,11 @@ type SketchSolveContext = {
   }
   // Plane/face data from the 'animate-to-sketch-solve' actor
   initialPlane?: DefaultPlane | OffsetPlane | ExtrudeFacePlane
+  // Dependencies passed from parent
+  codeManager: CodeManager
+  sceneInfra: SceneInfra
+  sceneEntitiesManager: SceneEntities
+  rustContext: RustContext
 }
 
 export const sketchSolveMachine = setup({
@@ -385,17 +394,21 @@ export const sketchSolveMachine = setup({
         | OffsetPlane
         | ExtrudeFacePlane
         | null
+      codeManager: CodeManager
+      sceneInfra: SceneInfra
+      sceneEntitiesManager: SceneEntities
+      rustContext: RustContext
     },
   },
   actions: {
     'initialize intersection plane': ({ context }) => {
       if (context.initialPlane) {
-        sceneEntitiesManager.initSketchSolveEntityOrientation(
+        context.sceneEntitiesManager.initSketchSolveEntityOrientation(
           context.initialPlane
         )
       }
     },
-    setUpOnDragAndSelectionClickCallbacks: ({ self }) => {
+    setUpOnDragAndSelectionClickCallbacks: ({ self, context }) => {
       // Closure-scoped mutex to prevent concurrent async editSegment operations.
       // Not in XState context since it's purely an implementation detail for race condition prevention.
       let isSolveInProgress = false
@@ -421,7 +434,7 @@ export const sketchSolveMachine = setup({
         return null
       }
 
-      sceneInfra.setCallbacks({
+      context.sceneInfra.setCallbacks({
         onDragStart: ({ intersectionPoint, selected }) => {
           // reset on drag start
           lastSuccessfulDragFromPoint = intersectionPoint.twoD.clone()
@@ -570,7 +583,7 @@ export const sketchSolveMachine = setup({
             return
           }
 
-          const result = await rustContext
+          const result = await context.rustContext
             .editSegments(0, 0, segmentsToEdit, await jsAppSettings())
             .catch((err) => {
               console.error('failed to edit segment', err)
@@ -676,9 +689,9 @@ export const sketchSolveMachine = setup({
         },
       })
     },
-    'clear hover callbacks': ({ self }) => {
+    'clear hover callbacks': ({ self, context }) => {
       // Clear hover callbacks to prevent interference with tool operations
-      sceneInfra.setCallbacks({
+      context.sceneInfra.setCallbacks({
         onMouseEnter: () => {},
         onMouseLeave: () => {},
       })
@@ -687,7 +700,7 @@ export const sketchSolveMachine = setup({
       const snapshot = self.getSnapshot()
       const selectedIds = snapshot.context.selectedIds
       const sketchSegments =
-        sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+        context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
       if (sketchSegments) {
         sketchSegments.traverse((child) => {
           if (
@@ -700,10 +713,10 @@ export const sketchSolveMachine = setup({
         })
       }
     },
-    'cleanup sketch solve group': () => {
+    'cleanup sketch solve group': ({ context }) => {
       console.log('Cleaning up sketch solve group...')
       const sketchSegments =
-        sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+        context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
       if (!sketchSegments || !(sketchSegments instanceof Group)) {
         console.log('yo no sketch segments to clean up')
         return
@@ -758,9 +771,9 @@ export const sketchSolveMachine = setup({
       }
       const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
       const objects = sceneGraphDelta.new_graph.objects
-      const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+      const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
       const factor =
-        sceneInfra.camControls.camera instanceof OrthographicCamera
+        context.sceneInfra.camControls.camera instanceof OrthographicCamera
           ? orthoFactor
           : orthoFactor
 
@@ -768,7 +781,7 @@ export const sketchSolveMachine = setup({
         if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
           return
         }
-        const group = sceneInfra.scene.getObjectByName(String(obj.id))
+        const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
         if (!(group instanceof Group)) {
           return
         }
@@ -781,22 +794,22 @@ export const sketchSolveMachine = setup({
           input: ctor,
           selectedIds: context.selectedIds,
           scale: factor,
-          theme: sceneInfra.theme,
+          theme: context.sceneInfra.theme,
         })
       })
     },
     'update sketch outcome': assign(({ event, self, context }) => {
       assertEvent(event, 'update sketch outcome')
-      codeManager.updateCodeEditor(event.data.kclSource.text)
+      context.codeManager.updateCodeEditor(event.data.kclSource.text)
       const sceneGraphDelta = event.data.sceneGraphDelta
       const objects = sceneGraphDelta.new_graph.objects
-      const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+      const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
       const factor =
-        sceneInfra.camControls.camera instanceof OrthographicCamera
+        context.sceneInfra.camControls.camera instanceof OrthographicCamera
           ? orthoFactor
           : orthoFactor
-      sceneInfra.baseUnitMultiplier
-      const sketchSegments = sceneInfra.scene.children.find(
+      context.sceneInfra.baseUnitMultiplier
+      const sketchSegments = context.sceneInfra.scene.children.find(
         ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
       )
 
@@ -815,14 +828,14 @@ export const sketchSolveMachine = setup({
       })
       if (invalidateScene) {
         sketchSegments?.children.forEach((child) => {
-          sceneInfra.scene.remove(child)
+          context.sceneInfra.scene.remove(child)
         })
       }
       sceneGraphDelta.new_graph.objects.forEach((obj) => {
         if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
           return
         }
-        const group = sceneInfra.scene.getObjectByName(String(obj.id))
+        const group = context.sceneInfra.scene.getObjectByName(String(obj.id))
         const ctor = buildSegmentCtorFromObject(obj, objects)
         if (!(group instanceof Group)) {
           if (!ctor) {
@@ -830,7 +843,7 @@ export const sketchSolveMachine = setup({
           }
           initSegmentGroup({
             input: ctor,
-            theme: sceneInfra.theme,
+            theme: context.sceneInfra.theme,
             scale: factor,
             id: obj.id,
             onUpdateSketchOutcome: (data) =>
@@ -841,7 +854,7 @@ export const sketchSolveMachine = setup({
           })
             .then((group) => {
               const sketchSceneGroup =
-                sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+                context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
               if (sketchSceneGroup) {
                 group.traverse((child) => {
                   child.layers.set(SKETCH_LAYER)
@@ -863,7 +876,7 @@ export const sketchSolveMachine = setup({
           input: ctor,
           selectedIds: context.selectedIds,
           scale: factor,
-          theme: sceneInfra.theme,
+          theme: context.sceneInfra.theme,
         })
       })
 
@@ -892,7 +905,13 @@ export const sketchSolveMachine = setup({
       // this type-annotation informs spawn tool of the association between the EquipTools type and the machines in equipTools
       // It's not an type assertion. TS still checks that _spawn is assignable to SpawnToolActor.
       const typedSpawn: SpawnToolActor = spawn
-      typedSpawn(nameOfToolToSpawn, { id: CHILD_TOOL_ID })
+      typedSpawn(nameOfToolToSpawn, {
+        id: CHILD_TOOL_ID,
+        input: {
+          sceneInfra: context.sceneInfra,
+          rustContext: context.rustContext,
+        },
+      })
 
       return {
         sketchSolveToolName: nameOfToolToSpawn,
@@ -912,6 +931,10 @@ export const sketchSolveMachine = setup({
     sketchSolveToolName: null,
     selectedIds: [],
     initialPlane: input?.initialSketchSolvePlane ?? undefined,
+    codeManager: input.codeManager,
+    sceneInfra: input.sceneInfra,
+    sceneEntitiesManager: input.sceneEntitiesManager,
+    rustContext: input.rustContext,
   }),
   id: 'Sketch Solve Mode',
   initial: 'move and select',
@@ -945,7 +968,7 @@ export const sketchSolveMachine = setup({
     coincident: {
       actions: async ({ self, context }) => {
         // TODO this is not how coincident should operate long term, as it should be an equipable tool
-        const result = await rustContext.addConstraint(
+        const result = await context.rustContext.addConstraint(
           0,
           0,
           {
@@ -965,7 +988,7 @@ export const sketchSolveMachine = setup({
     Parallel: {
       actions: async ({ self, context }) => {
         // TODO this is not how coincident should operate long term, as it should be an equipable tool
-        const result = await rustContext.addConstraint(
+        const result = await context.rustContext.addConstraint(
           0,
           0,
           {
@@ -985,7 +1008,7 @@ export const sketchSolveMachine = setup({
     LinesEqualLength: {
       actions: async ({ self, context }) => {
         // TODO this is not how LinesEqualLength should operate long term, as it should be an equipable tool
-        const result = await rustContext.addConstraint(
+        const result = await context.rustContext.addConstraint(
           0,
           0,
           {
@@ -1007,7 +1030,7 @@ export const sketchSolveMachine = setup({
         let result
         for (const id of context.selectedIds) {
           // TODO this is not how Vertical should operate long term, as it should be an equipable tool
-          result = await rustContext.addConstraint(
+          result = await context.rustContext.addConstraint(
             0,
             0,
             {
@@ -1030,7 +1053,7 @@ export const sketchSolveMachine = setup({
         let result
         for (const id of context.selectedIds) {
           // TODO this is not how Horizontal should operate long term, as it should be an equipable tool
-          result = await rustContext.addConstraint(
+          result = await context.rustContext.addConstraint(
             0,
             0,
             {

@@ -1,6 +1,7 @@
 import { assertEvent, fromPromise, setup } from 'xstate'
 
-import { sceneInfra, rustContext } from '@src/lib/singletons'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type {
   SegmentCtor,
@@ -25,12 +26,19 @@ type ToolEvents =
 
 export const machine = setup({
   types: {
-    context: {} as Record<string, unknown>,
+    context: {} as {
+      sceneInfra: SceneInfra
+      rustContext: RustContext
+    },
     events: {} as ToolEvents,
+    input: {} as {
+      sceneInfra: SceneInfra
+      rustContext: RustContext
+    },
   },
   actions: {
-    'add point listener': ({ self }) => {
-      sceneInfra.setCallbacks({
+    'add point listener': ({ self, context }) => {
+      context.sceneInfra.setCallbacks({
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return // Only left click
@@ -50,10 +58,10 @@ export const machine = setup({
       // Add your action code here
       // ...
     },
-    'remove point listener': () => {
+    'remove point listener': ({ context }) => {
       console.log('should be exiting point tool now')
       // Reset callbacks to remove the onClick listener
-      sceneInfra.setCallbacks({
+      context.sceneInfra.setCallbacks({
         onClick: () => {},
       })
     },
@@ -69,8 +77,15 @@ export const machine = setup({
   },
   actors: {
     modAndSolve: fromPromise(
-      async ({ input }: { input: { pointData: [number, number] } }) => {
-        const { pointData } = input
+      async ({
+        input,
+      }: {
+        input: {
+          pointData: [number, number]
+          rustContext: RustContext
+        }
+      }) => {
+        const { pointData, rustContext } = input
         const [x, y] = pointData
 
         try {
@@ -85,7 +100,7 @@ export const machine = setup({
 
           console.log('Adding point segment:', segmentCtor)
 
-          // Call the addSegment method using the singleton rustContext
+          // Call the addSegment method using the rustContext from context
           const result = await rustContext.addSegment(
             0, // version - TODO: Get this from actual context
             0, // sketchId - TODO: Get this from actual context
@@ -108,7 +123,10 @@ export const machine = setup({
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QAUD2BLAdgFwATdVQBsBiAV0zAEcz0AHAbQAYBdRUO1WdbdVTdiAAeiAIwAmcaIB0AZgCcANlniAHAHZZAVkXilAGhABPRABZp61VvWnFW8Uy0KdogL6vDaLHgLFydCABDbDBcWDAiMABjXn5mNiQQTm5YgUSRBAVxaUVRJlU1JwL5UWtDEwQAWkLpJiZxbVN1ayY7VUV3TwwcfEIiaQAnMECII1wAM1QB3DJw6aiidCiAaxIRiFxOb3jBZJ4+NNAM3VVpeXtVUtL81QVysVVzZrrZK815JU6QLx7ffoBhfjjdADAC2WCguAg6FBYEw3H4sBIEH4YGkWAAbqhlmifj4+tJAZhgWCIVCYXCEfCEJjUFFggd4jtEntUoJjhJpKIrKJTKYmOpRIpFOpxPcEE1pPzZE1rKomKIFKYvnjesRCUCQeDMJDobD4QckWABgMptI6ERgpMwdJVX8NcStWS9ZTDTTMFj6akmaxdlx9vx2WJHKd2iLwzKdKpVOLuYppOJTB95PKlJdzu4PCBMKgIHBBHa+n6Ugcg5lROoLA5FKZ5fZRBXxOpxZUJJWpKZI0wVKJ5LW3FnC+qhiMxtaZnNcAslstiwHDsJELI7FXWrXHFJG83jGJcgmtHVxC1a69TOIVd18eqiSTtbqKQbEXO2elEAUZImZRWtPJHEwSrGe5Hoe6jyLIqjJimF7eGq-QUNQtB0HQELPqWr4IG28gJio4g1kwph5PI6iKLGfL7nUCpNsUpj2JmrhAA */
-  context: {},
+  context: ({ input }) => ({
+    sceneInfra: input.sceneInfra,
+    rustContext: input.rustContext,
+  }),
   id: TOOL_ID,
   initial: 'ready for user click',
   on: {
@@ -134,9 +152,12 @@ export const machine = setup({
 
     [CONFIRMING_DIMENSIONS]: {
       invoke: {
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           assertEvent(event, 'add point')
-          return { pointData: event.data }
+          return {
+            pointData: event.data,
+            rustContext: context.rustContext,
+          }
         },
         onDone: {
           target: 'ready for user click',

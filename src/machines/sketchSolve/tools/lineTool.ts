@@ -1,6 +1,7 @@
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 
-import { sceneInfra, rustContext } from '@src/lib/singletons'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type {
   SceneGraphDelta,
@@ -28,12 +29,18 @@ type ToolEvents =
 type ToolContext = {
   draftPointId?: number
   sceneGraphDelta: SceneGraphDelta
+  sceneInfra: SceneInfra
+  rustContext: RustContext
 }
 
 export const machine = setup({
   types: {
     context: {} as ToolContext,
     events: {} as ToolEvents,
+    input: {} as {
+      sceneInfra: SceneInfra
+      rustContext: RustContext
+    },
   },
   actions: {
     'animate draft segment listener': ({ self, context }) => {
@@ -41,7 +48,7 @@ export const machine = setup({
       let isEditInProgress = false
       // let latestTwoD: Vector2 | null = null
       // let lastAppliedTwoD: Vector2 | null = null
-      sceneInfra.setCallbacks({
+      context.sceneInfra.setCallbacks({
         onMove: async (args) => {
           if (!args || !context.draftPointId) return
           const twoD = args.intersectionPoint?.twoD
@@ -50,7 +57,7 @@ export const machine = setup({
             try {
               isEditInProgress = true
               const settings = await jsAppSettings()
-              const result = await rustContext.editSegments(
+              const result = await context.rustContext.editSegments(
                 0,
                 0,
                 [
@@ -99,10 +106,10 @@ export const machine = setup({
         },
       })
     },
-    'add point listener': ({ self }) => {
+    'add point listener': ({ self, context }) => {
       console.log('Line tool ready for user click')
 
-      sceneInfra.setCallbacks({
+      context.sceneInfra.setCallbacks({
         onClick: (args) => {
           if (!args) return
           if (args.mouseEvent.which !== 1) return // Only left click
@@ -123,10 +130,10 @@ export const machine = setup({
       // Add your action code here
       // ...
     },
-    'remove point listener': () => {
+    'remove point listener': ({ context }) => {
       console.log('should be exiting point tool now')
       // Reset callbacks to remove the onClick listener
-      sceneInfra.setCallbacks({
+      context.sceneInfra.setCallbacks({
         onClick: () => {},
       })
     },
@@ -165,8 +172,12 @@ export const machine = setup({
   },
   actors: {
     modAndSolveFirstPoint: fromPromise(
-      async ({ input }: { input: { pointData: [number, number] } }) => {
-        const { pointData } = input
+      async ({
+        input,
+      }: {
+        input: { pointData: [number, number]; rustContext: RustContext }
+      }) => {
+        const { pointData, rustContext } = input
         const [x, y] = pointData
 
         try {
@@ -185,7 +196,7 @@ export const machine = setup({
 
           console.log('Adding point segment:', segmentCtor)
 
-          // Call the addSegment method using the singleton rustContext
+          // Call the addSegment method using the rustContext from context
           const result = await rustContext.addSegment(
             0, // version - TODO: Get this from actual context
             0, // sketchId - TODO: Get this from actual context
@@ -208,8 +219,14 @@ export const machine = setup({
     modAndSolve: fromPromise(
       async ({
         input,
-      }: { input: { pointData: [number, number]; id: number } }) => {
-        const { pointData, id } = input
+      }: {
+        input: {
+          pointData: [number, number]
+          id: number
+          rustContext: RustContext
+        }
+      }) => {
+        const { pointData, id, rustContext } = input
         console.log('input', input)
         const [x, y] = pointData
 
@@ -225,7 +242,7 @@ export const machine = setup({
 
           console.log('Adding point segment:', segmentCtor)
 
-          // Call the addSegment method using the singleton rustContext
+          // Call the editSegments method using the rustContext from context
           const result = await rustContext.editSegments(
             0, // version - TODO: Get this from actual context
             0, // sketchId - TODO: Get this from actual context
@@ -250,7 +267,12 @@ export const machine = setup({
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QBkCWA7MACALgezwBsBiAV0wEdTUAHAbQAYBdRUGvWVHVPdVkAB6IAjAGZhDAHQMATKJkA2ABwAWAJzyA7EoCsAGhABPRAFo1mycqUMdylZoYqVDTQF9XBtJlwESpGhAAhjjYsGCEYADG3LyMLEgg7JwxfAnGCCaKKgZCCBIqSu6eGNj4RJIATmCBEIZYAGZ4FVikYc2RhKiRANbENRBY7Bg4cfxJXDypoLmZajqSMgyiqqI6BQoMwpr6RoiaFkqiS8I6mzrWKqJqRSBepb6SAMK89agVALYYUFgQqO9g6E4vFgxAgvDAkgwADc8N0IXcfOVnuhXh8vj8-gCgYCENC8JFgpM4qMEuMUvxcipJEo1BsTjpNKJRAoFAZ0iYVDIFmo5DIZCodDpRE5NAKbgiyoQni83p90N9fv9AZMQWAKhUmpIaIRgo0PpIJQ9kai5QrMcrgbj0DCCSlicwxhwJrwKSJhCphJJNMIlNsXJpzCoFNldghRQstmIFEco9Zrh5biVEVKAIIQX7ywZ4Yag8GQ62w+FJyWSNMZ75DdA4K02wmxZgkthO8kJXJRyTCTtbeRbRbiGRsxC2SSrUTbRRzYRqdS2cXFh5l9GVnDENUaipanU4PXvA3z8qLzPLmv4uvoe3xJvJSaujIxyS2TTKVY2f2DjJTkcnRmc0UMJS+ioc7eCWADKAAWeAAO4ACIVIE9Q4HcfTplmwyNokzY3q2ezhkowbLDyMjugySjvvs1JHOIpwnBcVzuAm6B4BAcD8IaRCOteLo4RkOgaNIHreoRApKHy76ZDIaiWABjguKJ9iKDowH3OUVQ1HUeotG0WAdF03Scc6UyCKYazzI4kbCecYmhmsI5UZswjEdsY6FAm7FSsasrooqWIqgZLbTIgRGWAoGjRr6jI6DImjvrZTJLIoDBzGsCidspyaSOQYBULQNBfP52GBXkzIHHxxH8qJCj7O+8gRkJwaXPyZzpSWh4VtmVYFdxRUmO6UmbCyVz-gwSzaLFVLxWOGyXGIDBVS1DwQdBcEIUhJRdUZlIyPMjm2Jy22hRotLjXZxxUVcvoaEpDFAA */
-  context: {} as ToolContext,
+  context: ({ input }): ToolContext => ({
+    draftPointId: undefined,
+    sceneGraphDelta: {} as SceneGraphDelta,
+    sceneInfra: input.sceneInfra,
+    rustContext: input.rustContext,
+  }),
   id: TOOL_ID,
   initial: 'ready for user click',
   on: {
@@ -276,9 +298,13 @@ export const machine = setup({
 
     [CONFIRMING_DIMENSIONS]: {
       invoke: {
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           assertEvent(event, 'add point')
-          return { pointData: event.data, id: event.id || 0 }
+          return {
+            pointData: event.data,
+            id: event.id || 0,
+            rustContext: context.rustContext,
+          }
         },
 
         onDone: {
@@ -305,9 +331,12 @@ export const machine = setup({
     'Adding point': {
       invoke: {
         src: 'modAndSolveFirstPoint',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           assertEvent(event, 'add point')
-          return { pointData: event.data }
+          return {
+            pointData: event.data,
+            rustContext: context.rustContext,
+          }
         },
         onDone: {
           target: 'ShowDraftLine',
