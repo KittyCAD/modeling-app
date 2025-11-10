@@ -871,10 +871,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       cutAt: {
-        inputType: 'kcl',
-        allowArrays: true,
+        inputType: 'vector2d',
         required: true,
-        defaultValue: '[0, 0]',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
       },
       holeBody: {
         inputType: 'options',

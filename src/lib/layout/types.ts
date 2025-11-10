@@ -47,7 +47,7 @@ export enum ActionType {
 }
 
 export type ActionTypeDefinition = {
-  execute: () => void | (() => Promise<void>)
+  execute: () => void
   /** A custom hook for the Action to detect if it should be enabled */
   useDisabled?: () => string | undefined
   shortcut?: string

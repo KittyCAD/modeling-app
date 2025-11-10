@@ -78,7 +78,7 @@ export type Command<
   reviewMessage?:
     | ReactNode
     | ((commandBarContext: CommandBarContext) => ReactNode)
-  reviewValidation?: (context: CommandBarContext) => Promise<void | Error>
+  reviewValidation?: (context: CommandBarContext) => Promise<undefined | Error>
   machineActor?: Actor<T>
   onSubmit: (data?: CommandSchema) => void
   onCancel?: () => void

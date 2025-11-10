@@ -23,6 +23,7 @@ import {
   isCallExprWithName,
   isNodeSafeToReplace,
   isNodeSafeToReplacePath,
+  valueOrVariable,
 } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -43,6 +44,7 @@ import type {
 import { isPathToNodeNumber, parse } from '@src/lang/wasm'
 import type {
   KclCommandValue,
+  KclExpression,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
@@ -678,7 +680,7 @@ export function deleteSegmentOrProfileFromPipeExpression(
 export function deleteTopLevelStatement(
   ast: Node<Program>,
   pathToNode: PathToNode
-): Error | void {
+): Error | undefined {
   const pathStep = pathToNode[1]
   if (!isArray(pathStep) || typeof pathStep[0] !== 'number') {
     return new Error(
@@ -1079,4 +1081,31 @@ export function setCallInAst({
   }
 
   return pathToNode
+}
+
+export function createPoint2dExpression(
+  value: KclExpression
+): Node<Expr> | Error {
+  let expr: Node<Expr> | undefined
+  if ('value' in value && isArray(value.value)) {
+    // Direct array value [x, y]
+    const arrayElements = []
+    for (const val of value.value) {
+      if (
+        typeof val === 'number' ||
+        typeof val === 'string' ||
+        typeof val === 'boolean'
+      ) {
+        arrayElements.push(createLiteral(val))
+      } else {
+        return new Error('Invalid framePosition value type')
+      }
+    }
+    expr = createArrayExpression(arrayElements)
+  } else {
+    // Variable reference or other format
+    expr = valueOrVariable(value)
+  }
+
+  return expr
 }

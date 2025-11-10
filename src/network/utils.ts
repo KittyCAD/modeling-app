@@ -33,7 +33,8 @@ export function isHighlightSetEntity_type(
 
 export type Value<T, U> = U extends undefined
   ? { type: T; value: U }
-  : U extends void
+  : // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+    U extends void
     ? { type: T }
     : { type: T; value: U }
 

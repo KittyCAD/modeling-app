@@ -613,6 +613,8 @@ openSketch = startSketchOn(XY)
     homePage,
     scene,
     editor,
+    toolbar,
+    cmdBar,
   }) => {
     // Locators
     const firstPointLocation = { x: 200, y: 100 }
@@ -656,7 +658,6 @@ openSketch = startSketchOn(XY)
     // in https://github.com/KittyCAD/engine/pull/3804, unclear why
     const edgeColorWhite: [number, number, number] = [230, 230, 230]
     const edgeColorBlue: [number, number, number] = [23, 10, 247]
-    const backgroundColor: [number, number, number] = [30, 30, 30]
     const tolerance = 50
     const timeout = 150
 
@@ -664,20 +665,14 @@ openSketch = startSketchOn(XY)
     await test.step(`Initial test setup`, async () => {
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-
-      // Wait for the scene and stream to load
-      await scene.expectPixelColor(
-        backgroundColor,
-        secondPointLocation,
-        tolerance
-      )
+      await scene.settled(cmdBar)
     })
 
     await test.step('Select and deselect a single sketch segment', async () => {
       await test.step('Get into sketch mode', async () => {
         await editor.closePane()
         await page.waitForTimeout(timeout)
-        await page.getByRole('button', { name: 'Start Sketch' }).click()
+        await toolbar.startSketchBtn.click()
         await page.waitForTimeout(timeout)
         await clickPlane()
         await page.waitForTimeout(1000)
