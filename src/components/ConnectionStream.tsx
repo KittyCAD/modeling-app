@@ -1,5 +1,6 @@
 import type { MouseEventHandler } from 'react'
 import { useRef, useState } from 'react'
+import { NIL as uuidNIL } from 'uuid'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import {
   engineCommandManager,
@@ -150,7 +151,17 @@ export const ConnectionStream = (props: {
         setShowManualConnect,
       })
         .then(() => {
-          if (project && project.path && settings.meta.id.current) {
+          console.log(
+            'project.path, settings.meta.id.current',
+            project?.path,
+            settings.meta.id.current
+          )
+          if (
+            project &&
+            project.path &&
+            settings.meta.id.current &&
+            settings.meta.id.current !== uuidNIL
+          ) {
             // Take a screen shot after the page mounts and zoom to fit runs, and save to recent projects
             Promise.all([
               createThumbnailPNGOnDesktop({
