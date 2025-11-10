@@ -25,7 +25,7 @@ import { err, reject } from '@src/lib/trap'
 export async function mockExecAstAndReportErrors(
   ast: Node<Program>,
   rustContext: RustContext
-): Promise<void | Error> {
+): Promise<undefined | Error> {
   const { errors } = await executeAstMock({ ast, rustContext })
   if (errors.length > 0) {
     return new Error(errors.map((e) => e.message).join('\n'))

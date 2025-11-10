@@ -678,7 +678,7 @@ export function deleteSegmentOrProfileFromPipeExpression(
 export function deleteTopLevelStatement(
   ast: Node<Program>,
   pathToNode: PathToNode
-): Error | void {
+): Error | undefined {
   const pathStep = pathToNode[1]
   if (!isArray(pathStep) || typeof pathStep[0] !== 'number') {
     return new Error(
