@@ -57,7 +57,7 @@ function CommandBarPathInput({
       inputRef.current.value = inputRefVal
     } else if (inputRef.current) {
       const configuration: OpenDialogOptions = {
-        properties: ['openFile'],
+        properties: arg.properties || ['openFile'],
         title: 'Pick a file to load into the current project',
       }
 

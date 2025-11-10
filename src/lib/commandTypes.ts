@@ -46,6 +46,8 @@ export type FileFilter = {
   extensions: string[]
 }
 export type FiltersConfig = FileFilter[]
+export type FileProperties = 'openFile' | 'openDirectory'
+export type PropertiesConfig = FileProperties[]
 
 export type StateMachineCommandSetSchema<T extends AnyStateMachine> = Partial<{
   [EventType in EventFrom<T>['type']]: Record<string, any>
@@ -426,6 +428,7 @@ export type CommandArgument<
             machineContext?: ContextFrom<T>
           ) => OutputType)
       filters: FiltersConfig
+      properties?: PropertiesConfig
     }
   | {
       inputType: 'text'

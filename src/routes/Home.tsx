@@ -68,7 +68,6 @@ import {
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
 import { useSelector } from '@xstate/react'
-import { getRecentProjects } from '@src/lib/recentProjects'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -95,11 +94,6 @@ const Home = () => {
         .then(() => {
           setNativeFileMenuCreated(true)
         })
-        .catch(reportRejection)
-
-      // TODO: remove, this is just for testing
-      getRecentProjects()
-        .then((rp) => console.log('Recent projects loaded on home:', rp))
         .catch(reportRejection)
     }
     billingActor.send({ type: BillingTransition.Update, apiToken })
@@ -448,7 +442,7 @@ function HomeHeader({
     <section {...rest}>
       <div className="flex flex-col md:flex-row gap-4 justify-between md:items-center select-none">
         <div className="flex gap-8 items-center">
-          <h1 className="text-3xl font-bold">Projects</h1>
+          <h1 className="text-3xl font-bold">Recent Projects</h1>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
           <ProjectSearchBar setQuery={setQuery} />
@@ -497,17 +491,6 @@ function HomeHeader({
           </div>
         </div>
       </div>
-      <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
-        Loaded from{' '}
-        <Link
-          data-testid="project-directory-settings-link"
-          to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
-          className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-        >
-          {settings.app.projectDirectory.current}
-        </Link>
-        .
-      </p>
       {!readWriteProjectDir.value && (
         <section>
           <div className="flex items-center select-none">
@@ -563,7 +546,7 @@ function ProjectGrid({
             </ul>
           ) : (
             <p className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70">
-              No projects found
+              No recent projects found
               {projects.length === 0
                 ? ', ready to make your first one?'
                 : ` with the search term "${query}"`}

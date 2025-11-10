@@ -42,29 +42,19 @@ export function createProjectCommands({
     groupId: 'projects',
     needsReview: false,
     onSubmit: (record) => {
-      if (record) {
+      if (record && record.path) {
         systemIOActor.send({
           type: SystemIOMachineEvents.navigateToProject,
-          data: { requestedProjectName: record.name },
+          data: { requestedProjectName: record.path },
         })
       }
     },
     args: {
-      name: {
+      path: {
         required: true,
-        inputType: 'options',
-        options: () => {
-          const folders = folderSnapshot()
-          const options: CommandArgumentOption<string>[] = []
-          folders.forEach((folder) => {
-            options.push({
-              name: folder.name,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
-        },
+        inputType: 'path',
+        filters: [],
+        properties: ['openDirectory'],
       },
     },
   }

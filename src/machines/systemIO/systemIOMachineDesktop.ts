@@ -3,7 +3,6 @@ import {
   createNewProjectDirectory,
   getAppSettingsFilePath,
   getProjectInfo,
-  mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
 } from '@src/lib/desktop'
@@ -20,6 +19,7 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { getRecentProjects } from '@src/lib/recentProjects'
 import type { AppMachineContext } from '@src/lib/types'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
@@ -27,7 +27,6 @@ import type {
   SystemIOContext,
 } from '@src/machines/systemIO/utils'
 import {
-  NO_PROJECT_DIRECTORY,
   SystemIOMachineActors,
   jsonToMlConversations,
   mlConversationsToJson,
@@ -118,42 +117,15 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         if (!window.electron) {
           return Promise.reject(new Error('No file system present'))
         }
+
         const projects = []
-        const projectDirectoryPath = context.projectDirectoryPath
-        if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
-          return []
-        }
-        await mkdirOrNOOP(window.electron, projectDirectoryPath)
-        // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
-        const entries = await window.electron.readdir(projectDirectoryPath)
-        const { value: canReadWriteProjectDirectory } =
-          await window.electron.canReadWriteDirectory(projectDirectoryPath)
-
-        for (let entry of entries) {
-          // Skip directories that start with a dot
-          if (entry.startsWith('.')) {
-            continue
-          }
-          const projectPath = window.electron.path.join(
-            projectDirectoryPath,
-            entry
-          )
-
-          // if it's not a directory ignore.
-          // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
-          const isDirectory = await window.electron.statIsDirectory(projectPath)
-          if (!isDirectory) {
-            continue
-          }
+        const recentProjects = await getRecentProjects()
+        for (let { path: projectPath } of recentProjects) {
           const project: Project = await getProjectInfo(
             window.electron,
             projectPath
           )
-          if (
-            project.kcl_file_count === 0 &&
-            project.readWriteAccess &&
-            canReadWriteProjectDirectory
-          ) {
+          if (project.kcl_file_count === 0 && project.readWriteAccess) {
             continue
           }
           projects.push(project)

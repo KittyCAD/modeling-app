@@ -123,10 +123,7 @@ export function SystemIOMachineLogicListenerDesktop() {
       if (!requestedProjectName.name) {
         return
       }
-      const projectPathWithoutSpecificKCLFile = joinOSPaths(
-        projectDirectoryPath,
-        requestedProjectName.name
-      )
+      const projectPathWithoutSpecificKCLFile = requestedProjectName.name
       const requestedPath = joinRouterPaths(
         PATHS.FILE,
         safeEncodeForRouterPaths(projectPathWithoutSpecificKCLFile),
