@@ -1032,9 +1032,8 @@ sketch001 = startSketchOn(XZ)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await scene.settled(cmdBar)
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     await page.waitForTimeout(100)
     await u.openAndClearDebugPanel()
@@ -1235,7 +1234,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await toolbar.startSketchBtn.click()
 
     // select an axis plane
     await page.mouse.click(700, 200)

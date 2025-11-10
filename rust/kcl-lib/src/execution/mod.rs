@@ -38,7 +38,7 @@ use crate::{
         typed_path::TypedPath,
     },
     fs::FileManager,
-    modules::{ModuleId, ModulePath, ModuleRepr},
+    modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
 };
 
@@ -1164,12 +1164,18 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await
-            .map(|(_, env_ref, _, module_artifacts)| {
-                // We need to extend because it may already have operations from
-                // imports.
-                exec_state.global.root_module_artifacts.extend(module_artifacts);
-                env_ref
-            })
+            .map(
+                |ModuleExecutionOutcome {
+                     environment: env_ref,
+                     artifacts: module_artifacts,
+                     ..
+                 }| {
+                    // We need to extend because it may already have operations from
+                    // imports.
+                    exec_state.global.root_module_artifacts.extend(module_artifacts);
+                    env_ref
+                },
+            )
             .map_err(|(err, env_ref, module_artifacts)| {
                 if let Some(module_artifacts) = module_artifacts {
                     // We need to extend because it may already have operations
@@ -1193,8 +1199,8 @@ impl ExecutorContext {
                 op.fill_node_paths(program, cached_body_items);
             }
             for module in exec_state.global.module_infos.values_mut() {
-                if let ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts))) = &mut module.repr {
-                    for op in &mut module_artifacts.operations {
+                if let ModuleRepr::Kcl(_, Some(outcome)) = &mut module.repr {
+                    for op in &mut outcome.artifacts.operations {
                         op.fill_node_paths(program, cached_body_items);
                     }
                 }

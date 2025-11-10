@@ -177,7 +177,7 @@ export fn flat() {
 fn drawTop(@partialHoleProfile, body, holeType) {
   prof = if holeType.feature == holeTypeSimple {
     partialHoleProfile
-      |> xLine(length = body.diameter)
+      |> xLine(length = body.diameter / 2)
   } else if holeType.feature == holeTypeCounterbore {
     lip = (holeType.diameter - body.diameter) / 2
     partialHoleProfile

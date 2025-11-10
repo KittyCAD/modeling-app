@@ -260,15 +260,9 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
 
   let to: Selections | undefined
   if ('to' in operation.labeledArgs && operation.labeledArgs.to) {
-    const result = retrieveNonDefaultPlaneSelectionFromOpArg(
-      operation.labeledArgs.to,
-      kclManager.artifactGraph
-    )
-    if (err(result)) {
-      return { reason: result.message }
-    }
-
-    to = result
+    const graphSelections = extractFaceSelections(operation.labeledArgs.to)
+    if ('error' in graphSelections) return { reason: graphSelections.error }
+    to = { graphSelections, otherSelections: [] }
   }
 
   // symmetric argument from a string to boolean
@@ -698,7 +692,8 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
   const { faces: face } = result
 
   // 2.1 Convert the required arg from string to KclExpression
-  const cutAt = await extractKclArgument(operation, 'cutAt')
+  const isArray = true
+  const cutAt = await extractKclArgument(operation, 'cutAt', isArray)
   if ('error' in cutAt) return { reason: cutAt.error }
 
   // 2.2 Handle the holeBody required 'mode' arg and its related optional args

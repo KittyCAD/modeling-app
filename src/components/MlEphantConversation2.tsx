@@ -1,4 +1,5 @@
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
+import Loading from '@src/components/Loading'
 import { type Selections } from '@src/machines/modelingSharedTypes'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import Tooltip from '@src/components/Tooltip'
@@ -27,7 +28,9 @@ export interface MlEphantConversationProps {
   contexts: MlEphantManagerPromptContext[]
   billingContext: BillingContext
   onProcess: (request: string, mode: MlCopilotMode) => void
+  onReconnect: () => void
   disabled?: boolean
+  needsReconnect: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
   defaultPrompt?: string
@@ -153,7 +156,9 @@ interface MlEphantConversationInputProps {
   contexts: MlEphantManagerPromptContext[]
   billingContext: BillingContext
   onProcess: MlEphantConversationProps['onProcess']
+  onReconnect: MlEphantConversationProps['onReconnect']
   disabled?: boolean
+  needsReconnect: boolean
   defaultPrompt?: string
 }
 
@@ -259,7 +264,6 @@ export const MlEphantConversationInput = (
         <BillingStatusBarItem billingContext={props.billingContext} />
       </div>
       <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
-        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <textarea
           autoCapitalize="off"
           autoCorrect="off"
@@ -292,14 +296,25 @@ export const MlEphantConversationInput = (
             mode={mode}
             onSetMode={setMode}
           />
-          <button
-            data-testid="ml-ephant-conversation-input-button"
-            disabled={props.disabled}
-            onClick={onClick}
-            className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
-          >
-            <CustomIcon name="caretUp" className="w-5 h-5 animate-bounce" />
-          </button>
+          <div className="flex flex-row gap-1">
+            {props.needsReconnect && (
+              <div className="flex flex-col w-fit items-end">
+                <div className="pr-1 text-xs text-red-500 flex flex-row items-center h-5">
+                  <CustomIcon name="close" className="w-7 h-7" />{' '}
+                  <span>Disconnected</span>
+                </div>
+                <button onClick={props.onReconnect}>Reconnect</button>
+              </div>
+            )}
+            <button
+              data-testid="ml-ephant-conversation-input-button"
+              disabled={props.disabled}
+              onClick={onClick}
+              className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
+            >
+              <CustomIcon name="caretUp" className="w-5 h-5 animate-bounce" />
+            </button>
+          </div>
         </div>
       </div>
       <div className="text-3 text-xs">
@@ -376,7 +391,7 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
                 <></>
               ) : (
                 <div className="text-center p-4 text-3 text-md animate-pulse">
-                  Loading history
+                  <Loading></Loading>
                 </div>
               )}
               {exchangeCards}
@@ -386,7 +401,9 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
             <MlEphantConversationInput
               contexts={props.contexts}
               disabled={props.disabled || props.isLoading}
+              needsReconnect={props.needsReconnect}
               onProcess={onProcess}
+              onReconnect={props.onReconnect}
               billingContext={props.billingContext}
               defaultPrompt={props.defaultPrompt}
             />
