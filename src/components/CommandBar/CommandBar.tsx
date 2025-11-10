@@ -49,6 +49,10 @@ export const CommandBar = () => {
       commandBarActor.send({ type: 'Close' })
     }
   })
+  useHotkeyWrapper(['esc'], () => commandBarActor.send({ type: 'Close' }), {
+    enableOnFormTags: true,
+    enableOnContentEditable: true,
+  })
 
   function stepBack() {
     const entries = Object.entries(selectedCommand?.args || {}).filter(
