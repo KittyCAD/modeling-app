@@ -72,7 +72,10 @@ function BodiesList() {
   // add a click handler to send a request to toggle a body's visibility
   const onClick = () => {
     const newBodiesFromArtifactGraph = getBodiesFromArtifactGraph()
-    console.log('FRANK BODIES', newBodiesFromArtifactGraph)
+    console.log(
+      'BODIES ACCORDING TO ARTIFACT GRAPH',
+      newBodiesFromArtifactGraph
+    )
     getBodiesFromEngine()
       .then((resp) => {
         if (!resp) {
@@ -89,12 +92,14 @@ function BodiesList() {
           const mr = singleResp.resp.data.modeling_response
           if (mr?.type === 'scene_get_entity_ids') {
             const newIDs = mr.data.entity_ids as [string[]]
-            console.log('NEW IDs', newIDs)
+            console.log('BODIES ACCORDING TO ENGINE', newIDs)
             setBodies((current) => {
               const newBodies = Object.assign(
                 {},
                 current,
-                Object.fromEntries(newIDs[0].map((id) => [id, true]))
+                Object.fromEntries(
+                  newBodiesFromArtifactGraph.keys().map((id) => [id, true])
+                )
               )
               return newBodies
             })
@@ -119,21 +124,16 @@ function BodiesList() {
     <section>
       <button onClick={onClick}>Get Bodies</button>
       <ul>
-        {Object.entries(bodies)
-          .toReversed()
-          .map(([id, isVisible], i) => (
-            <li
-              key={id || i}
-              className="flex px-1 py-0.5 group/visibilityToggle"
-            >
-              <CustomIcon name="body" className="w-6 h-6" />
-              <span className="flex-1">Body {i}</span>
-              <VisibilityToggle
-                visible={isVisible}
-                onVisibilityChange={() => setVisibility(id, !isVisible)}
-              />
-            </li>
-          ))}
+        {Object.entries(bodies).map(([id, isVisible], i) => (
+          <li key={id || i} className="flex px-1 py-0.5 group/visibilityToggle">
+            <CustomIcon name="body" className="w-6 h-6" />
+            <span className="flex-1">Body {i}</span>
+            <VisibilityToggle
+              visible={isVisible}
+              onVisibilityChange={() => setVisibility(id, !isVisible)}
+            />
+          </li>
+        ))}
       </ul>
     </section>
   )
