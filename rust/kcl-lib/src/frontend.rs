@@ -18,7 +18,7 @@ use crate::{
             Coincident, Constraint, ExistingSegmentCtor, Horizontal, LineCtor, Point2d, Segment, SegmentCtor,
             SketchApi, SketchArgs, Vertical,
         },
-        traverse::{TraversalReturn, Visitor, dfs_mut},
+        traverse::{MutateBodyItem, TraversalReturn, Visitor, dfs_mut},
     },
     parsing::ast::types as ast,
     walk::{NodeMut, Visitable},
@@ -267,17 +267,22 @@ impl SketchApi for FrontendState {
                 }
             }
         }
-        self.execute_after_edit(ctx, sketch, &mut new_ast).await
+        self.execute_after_edit(ctx, sketch, false, &mut new_ast).await
     }
 
-    async fn delete_segment(
+    async fn delete_segments(
         &mut self,
-        _ctx: &ExecutorContext,
+        ctx: &ExecutorContext,
         _version: Version,
-        _sketch: ObjectId,
-        _segment_id: ObjectId,
+        sketch: ObjectId,
+        segment_ids: Vec<ObjectId>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
-        todo!()
+        // TODO: Check version.
+        let mut new_ast = self.program.ast.clone();
+        for segment_id in segment_ids {
+            self.delete_segment(&mut new_ast, sketch, segment_id)?;
+        }
+        self.execute_after_edit(ctx, sketch, true, &mut new_ast).await
     }
 
     async fn add_constraint(
@@ -704,10 +709,50 @@ impl FrontendState {
         Ok(())
     }
 
+    fn delete_segment(
+        &mut self,
+        new_ast: &mut ast::Node<ast::Program>,
+        sketch: ObjectId,
+        segment_id: ObjectId,
+    ) -> api::Result<()> {
+        // Look up existing sketch.
+        let sketch_id = sketch;
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
+            msg: format!("Sketch not found: {sketch:?}"),
+        })?;
+        let ObjectKind::Sketch(sketch) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+        sketch
+            .segments
+            .iter()
+            .find(|o| **o == segment_id)
+            .ok_or_else(|| Error {
+                msg: format!("Segment not found in sketch: segment={segment_id:?}, sketch={sketch:?}"),
+            })?;
+        // Look up existing segment.
+        let segment_object = self.scene_graph.objects.get(segment_id.0).ok_or_else(|| Error {
+            msg: format!("Segment not found in scene graph: segment={segment_id:?}"),
+        })?;
+        let ObjectKind::Segment { .. } = &segment_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {segment_object:?}"),
+            });
+        };
+
+        // Modify the AST to remove the segment.
+        self.mutate_ast(new_ast, segment_id, AstMutateCommand::DeleteNode)
+            .map_err(|err| Error { msg: err.to_string() })?;
+        Ok(())
+    }
+
     async fn execute_after_edit(
         &mut self,
         ctx: &ExecutorContext,
         _sketch_id: ObjectId,
+        is_delete: bool,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // Convert to string source to create real source ranges.
@@ -729,7 +774,7 @@ impl FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
+        let outcome = ctx.run_mock(&new_program, !is_delete).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -741,7 +786,7 @@ impl FrontendState {
         let outcome = self.update_state_after_exec(outcome);
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
-            invalidates_ids: false,
+            invalidates_ids: is_delete,
             new_objects: Vec::new(),
             exec_outcome: outcome,
         };
@@ -1295,6 +1340,7 @@ enum AstMutateCommand {
         start: ast::Expr,
         end: ast::Expr,
     },
+    DeleteNode,
 }
 
 #[derive(Debug)]
@@ -1332,14 +1378,25 @@ fn filter_and_process(
     // declaration expressions to see if it already has a variable, before
     // continuing. The variable declaration's source range won't match the
     // target; its init expression will.
-    if let AstMutateCommand::AddVariableDeclaration { .. } = &ctx.command
-        && let NodeMut::VariableDeclaration(var_decl) = &node
-    {
+    if let NodeMut::VariableDeclaration(var_decl) = &node {
         let expr_range = SourceRange::from(&var_decl.declaration.init);
         if expr_range == ctx.source_range {
-            // We found the variable declaration expression. It doesn't need
-            // to be added.
-            return TraversalReturn::new_break((node_range, AstMutateCommandReturn::Name(var_decl.name().to_owned())));
+            if let AstMutateCommand::AddVariableDeclaration { .. } = &ctx.command {
+                // We found the variable declaration expression. It doesn't need
+                // to be added.
+                return TraversalReturn::new_break((
+                    node_range,
+                    AstMutateCommandReturn::Name(var_decl.name().to_owned()),
+                ));
+            }
+            if let AstMutateCommand::DeleteNode = &ctx.command {
+                // We found the variable declaration. Delete the variable along
+                // with the segment.
+                return TraversalReturn {
+                    mutate_body_item: MutateBodyItem::Delete,
+                    control_flow: ControlFlow::Break((ctx.source_range, AstMutateCommandReturn::None)),
+                };
+            }
         }
     }
 
@@ -1396,7 +1453,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<AstMutateCo
                         ast::VariableKind::Const,
                     ))));
                 return TraversalReturn {
-                    mutate_body_item: Some(mutate_node),
+                    mutate_body_item: MutateBodyItem::Mutate(Box::new(mutate_node)),
                     control_flow: ControlFlow::Break(AstMutateCommandReturn::Name(name)),
                 };
             }
@@ -1431,6 +1488,12 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<AstMutateCo
                 }
                 return TraversalReturn::new_break(AstMutateCommandReturn::None);
             }
+        }
+        AstMutateCommand::DeleteNode => {
+            return TraversalReturn {
+                mutate_body_item: MutateBodyItem::Delete,
+                control_flow: ControlFlow::Break(AstMutateCommandReturn::None),
+            };
         }
     }
     TraversalReturn::new_continue(())
@@ -2019,6 +2082,94 @@ sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_point_without_var() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [var 1, var 2])
+  sketch2::point(at = [var 3, var 4])
+  sketch2::point(at = [var 5, var 6])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+
+        let point_id = frontend.scene_graph.objects.get(2).unwrap().id;
+
+        let (src_delta, scene_delta) = frontend
+            .delete_segments(&mock_ctx, version, sketch_id, vec![point_id])
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [var 1, var 2])
+  sketch2::point(at = [var 5, var 6])
+}
+"
+        );
+        assert_eq!(scene_delta.new_objects, vec![]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 3);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_point_with_var() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [var 1, var 2])
+  point1 = sketch2::point(at = [var 3, var 4])
+  sketch2::point(at = [var 5, var 6])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+
+        let point_id = frontend.scene_graph.objects.get(2).unwrap().id;
+
+        let (src_delta, scene_delta) = frontend
+            .delete_segments(&mock_ctx, version, sketch_id, vec![point_id])
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [var 1, var 2])
+  sketch2::point(at = [var 5, var 6])
+}
+"
+        );
+        assert_eq!(scene_delta.new_objects, vec![]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 3);
     }
 
     #[tokio::test(flavor = "multi_thread")]

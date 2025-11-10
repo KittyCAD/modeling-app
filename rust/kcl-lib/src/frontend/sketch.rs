@@ -48,12 +48,12 @@ pub trait SketchApi {
         segments: Vec<ExistingSegmentCtor>,
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
-    async fn delete_segment(
+    async fn delete_segments(
         &mut self,
         ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
-        segment_id: ObjectId,
+        segment_ids: Vec<ObjectId>,
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
 
     async fn add_constraint(
@@ -366,14 +366,14 @@ impl SketchApi for SketchApiStub {
         todo!("edit_segments not implemented")
     }
 
-    async fn delete_segment(
+    async fn delete_segments(
         &mut self,
         _ctx: &ExecutorContext,
         _version: Version,
         _sketch: ObjectId,
-        _segment_id: ObjectId,
+        _segment_ids: Vec<ObjectId>,
     ) -> Result<(SourceDelta, SceneGraphDelta)> {
-        todo!("delete_segment not implemented")
+        todo!("delete_segments not implemented")
     }
 
     async fn add_constraint(

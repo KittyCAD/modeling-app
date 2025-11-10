@@ -6,8 +6,22 @@ use std::ops::ControlFlow;
 use crate::{parsing::ast::types as ast, walk::NodeMut};
 
 pub(super) struct TraversalReturn<B, C = ()> {
-    pub mutate_body_item: Option<ast::BodyItem>,
+    pub mutate_body_item: MutateBodyItem,
     pub control_flow: ControlFlow<B, C>,
+}
+
+#[derive(Default)]
+pub(super) enum MutateBodyItem {
+    #[default]
+    None,
+    Mutate(Box<ast::BodyItem>),
+    Delete,
+}
+
+impl MutateBodyItem {
+    fn take(&mut self) -> Self {
+        std::mem::take(self)
+    }
 }
 
 pub(super) trait Visitor {
@@ -25,14 +39,14 @@ pub(super) trait Visitor {
 impl<B, C> TraversalReturn<B, C> {
     pub fn new_break(b: B) -> Self {
         TraversalReturn {
-            mutate_body_item: None,
+            mutate_body_item: MutateBodyItem::None,
             control_flow: ControlFlow::Break(b),
         }
     }
 
     pub fn new_continue(c: C) -> Self {
         TraversalReturn {
-            mutate_body_item: None,
+            mutate_body_item: MutateBodyItem::None,
             control_flow: ControlFlow::Continue(c),
         }
     }
@@ -62,16 +76,27 @@ pub(super) fn dfs_mut<V: Visitor>(
     if ret.is_break() {
         return ret.control_flow;
     }
-    for body_item in &mut program.body {
+    let mut remove_index = None;
+    for (i, body_item) in program.body.iter_mut().enumerate() {
         ret = dfs_mut_body_item(body_item, visitor);
-        // Allow the function to mutate the body item to a different variant of
-        // the enum.
-        if let Some(new_body_item) = ret.mutate_body_item.take() {
-            *body_item = new_body_item;
+        match ret.mutate_body_item.take() {
+            MutateBodyItem::None => {}
+            MutateBodyItem::Mutate(new_body_item) => {
+                // Allow the function to mutate the body item to a different
+                // variant of the enum.
+                *body_item = *new_body_item;
+            }
+            MutateBodyItem::Delete => remove_index = Some(i),
         }
         if ret.is_break() {
-            return ret.control_flow;
+            break;
         }
+    }
+    if let Some(index) = remove_index {
+        program.body.remove(index);
+    }
+    if ret.is_break() {
+        return ret.control_flow;
     }
     let node = NodeMut::from(&mut *program);
     visitor.finish(node);
@@ -154,8 +179,9 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
                 ret = dfs_mut_body_item(body_item, visitor);
                 // Allow the function to mutate the body item to a different
                 // variant of the enum.
-                if let Some(new_body_item) = ret.mutate_body_item.take() {
-                    *body_item = new_body_item;
+                // TODO: sketch-api: handle MutateBodyItem::Delete.
+                if let MutateBodyItem::Mutate(new_body_item) = ret.mutate_body_item.take() {
+                    *body_item = *new_body_item;
                 }
                 if ret.is_break() {
                     return ret;
@@ -271,8 +297,9 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
                 ret = dfs_mut_body_item(body_item, visitor);
                 // Allow the function to mutate the body item to a different
                 // variant of the enum.
-                if let Some(new_body_item) = ret.mutate_body_item.take() {
-                    *body_item = new_body_item;
+                // TODO: sketch-api: handle MutateBodyItem::Delete.
+                if let MutateBodyItem::Mutate(new_body_item) = ret.mutate_body_item.take() {
+                    *body_item = *new_body_item;
                 }
                 if ret.is_break() {
                     return ret;
@@ -289,8 +316,9 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
                     ret = dfs_mut_body_item(body_item, visitor);
                     // Allow the function to mutate the body item to a different
                     // variant of the enum.
-                    if let Some(new_body_item) = ret.mutate_body_item.take() {
-                        *body_item = new_body_item;
+                    // TODO: sketch-api: handle MutateBodyItem::Delete.
+                    if let MutateBodyItem::Mutate(new_body_item) = ret.mutate_body_item.take() {
+                        *body_item = *new_body_item;
                     }
                     if ret.is_break() {
                         return ret;
@@ -303,8 +331,9 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
                 ret = dfs_mut_body_item(body_item, visitor);
                 // Allow the function to mutate the body item to a different
                 // variant of the enum.
-                if let Some(new_body_item) = ret.mutate_body_item.take() {
-                    *body_item = new_body_item;
+                // TODO: sketch-api: handle MutateBodyItem::Delete.
+                if let MutateBodyItem::Mutate(new_body_item) = ret.mutate_body_item.take() {
+                    *body_item = *new_body_item;
                 }
                 if ret.is_break() {
                     return ret;
@@ -343,16 +372,27 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
                     return ret;
                 }
             }
-            for body_item in &mut node.body.items {
+            let mut remove_index = None;
+            for (i, body_item) in node.body.items.iter_mut().enumerate() {
                 ret = dfs_mut_body_item(body_item, visitor);
-                // Allow the function to mutate the body item to a different
-                // variant of the enum.
-                if let Some(new_body_item) = ret.mutate_body_item.take() {
-                    *body_item = new_body_item;
+                match ret.mutate_body_item.take() {
+                    MutateBodyItem::None => {}
+                    MutateBodyItem::Mutate(new_body_item) => {
+                        // Allow the function to mutate the body item to a different
+                        // variant of the enum.
+                        *body_item = *new_body_item;
+                    }
+                    MutateBodyItem::Delete => remove_index = Some(i),
                 }
                 if ret.is_break() {
-                    return ret;
+                    break;
                 }
+            }
+            if let Some(index) = remove_index {
+                node.body.items.remove(index);
+            }
+            if ret.is_break() {
+                return ret;
             }
             let node = NodeMut::from(&mut **node);
             visitor.finish(node);
@@ -487,8 +527,9 @@ fn dfs_mut_binary_part<V: Visitor>(
                 ret = dfs_mut_body_item(body_item, visitor);
                 // Allow the function to mutate the body item to a different
                 // variant of the enum.
-                if let Some(new_body_item) = ret.mutate_body_item.take() {
-                    *body_item = new_body_item;
+                // TODO: sketch-api: handle MutateBodyItem::Delete.
+                if let MutateBodyItem::Mutate(new_body_item) = ret.mutate_body_item.take() {
+                    *body_item = *new_body_item;
                 }
                 if ret.is_break() {
                     return ret;
@@ -505,8 +546,9 @@ fn dfs_mut_binary_part<V: Visitor>(
                     ret = dfs_mut_body_item(body_item, visitor);
                     // Allow the function to mutate the body item to a different
                     // variant of the enum.
-                    if let Some(new_body_item) = ret.mutate_body_item.take() {
-                        *body_item = new_body_item;
+                    // TODO: sketch-api: handle MutateBodyItem::Delete.
+                    if let MutateBodyItem::Mutate(new_body_item) = ret.mutate_body_item.take() {
+                        *body_item = *new_body_item;
                     }
                     if ret.is_break() {
                         return ret;
@@ -519,8 +561,9 @@ fn dfs_mut_binary_part<V: Visitor>(
                 ret = dfs_mut_body_item(body_item, visitor);
                 // Allow the function to mutate the body item to a different
                 // variant of the enum.
-                if let Some(new_body_item) = ret.mutate_body_item.take() {
-                    *body_item = new_body_item;
+                // TODO: sketch-api: handle MutateBodyItem::Delete.
+                if let MutateBodyItem::Mutate(new_body_item) = ret.mutate_body_item.take() {
+                    *body_item = *new_body_item;
                 }
                 if ret.is_break() {
                     return ret;
