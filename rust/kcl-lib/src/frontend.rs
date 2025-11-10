@@ -270,15 +270,19 @@ impl SketchApi for FrontendState {
         self.execute_after_edit(ctx, sketch, false, &mut new_ast).await
     }
 
-    async fn delete_segments(
+    async fn delete_objects(
         &mut self,
         ctx: &ExecutorContext,
         _version: Version,
         sketch: ObjectId,
+        constraint_ids: Vec<ObjectId>,
         segment_ids: Vec<ObjectId>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
         let mut new_ast = self.program.ast.clone();
+        for constraint_id in constraint_ids {
+            self.delete_constraint(&mut new_ast, sketch, constraint_id)?;
+        }
         for segment_id in segment_ids {
             self.delete_segment(&mut new_ast, sketch, segment_id)?;
         }
@@ -744,6 +748,45 @@ impl FrontendState {
 
         // Modify the AST to remove the segment.
         self.mutate_ast(new_ast, segment_id, AstMutateCommand::DeleteNode)
+            .map_err(|err| Error { msg: err.to_string() })?;
+        Ok(())
+    }
+
+    fn delete_constraint(
+        &mut self,
+        new_ast: &mut ast::Node<ast::Program>,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+    ) -> api::Result<()> {
+        // Look up existing sketch.
+        let sketch_id = sketch;
+        let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
+            msg: format!("Sketch not found: {sketch:?}"),
+        })?;
+        let ObjectKind::Sketch(sketch) = &sketch_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a sketch: {sketch_object:?}"),
+            });
+        };
+        sketch
+            .constraints
+            .iter()
+            .find(|o| **o == constraint_id)
+            .ok_or_else(|| Error {
+                msg: format!("Constraint not found in sketch: constraint={constraint_id:?}, sketch={sketch:?}"),
+            })?;
+        // Look up existing constraint.
+        let constraint_object = self.scene_graph.objects.get(constraint_id.0).ok_or_else(|| Error {
+            msg: format!("Constraint not found in scene graph: constraint={constraint_id:?}"),
+        })?;
+        let ObjectKind::Constraint { .. } = &constraint_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a constraint: {constraint_object:?}"),
+            });
+        };
+
+        // Modify the AST to remove the constraint.
+        self.mutate_ast(new_ast, constraint_id, AstMutateCommand::DeleteNode)
             .map_err(|err| Error { msg: err.to_string() })?;
         Ok(())
     }
@@ -2110,7 +2153,7 @@ sketch(on = XY) {
         let point_id = frontend.scene_graph.objects.get(2).unwrap().id;
 
         let (src_delta, scene_delta) = frontend
-            .delete_segments(&mock_ctx, version, sketch_id, vec![point_id])
+            .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point_id])
             .await
             .unwrap();
         assert_eq!(
@@ -2154,7 +2197,7 @@ sketch(on = XY) {
         let point_id = frontend.scene_graph.objects.get(2).unwrap().id;
 
         let (src_delta, scene_delta) = frontend
-            .delete_segments(&mock_ctx, version, sketch_id, vec![point_id])
+            .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point_id])
             .await
             .unwrap();
         assert_eq!(
@@ -2170,6 +2213,52 @@ sketch(on = XY) {
         );
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 3);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_coincident_constraint() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = sketch2::point(at = [var 1, var 2])
+  point2 = sketch2::point(at = [var 3, var 4])
+  sketch2::coincident([point1, point2])
+  sketch2::point(at = [var 5, var 6])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+
+        let coincident_id = frontend.scene_graph.objects.get(3).unwrap().id;
+
+        let (src_delta, scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, vec![coincident_id], Vec::new())
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = sketch2::point(at = [var 1, var 2])
+  point2 = sketch2::point(at = [var 3, var 4])
+  sketch2::point(at = [var 5, var 6])
+}
+"
+        );
+        assert_eq!(scene_delta.new_objects, vec![]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 4);
     }
 
     #[tokio::test(flavor = "multi_thread")]

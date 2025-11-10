@@ -452,10 +452,11 @@ export default class RustContext {
     }
   }
 
-  /** Delete segments in a sketch. */
-  async deleteSegments(
+  /** Delete objects in a sketch. */
+  async deleteObjects(
     version: ApiVersion,
     sketch: ApiObjectId,
+    constraintIds: ApiObjectId[],
     segmentIds: ApiObjectId[],
     settings: DeepPartial<Configuration>
   ): Promise<{
@@ -466,9 +467,10 @@ export default class RustContext {
 
     try {
       const result: [SourceDelta, SceneGraphDelta] =
-        await instance.delete_segments(
+        await instance.delete_objects(
           JSON.stringify(version),
           JSON.stringify(sketch),
+          JSON.stringify(constraintIds),
           JSON.stringify(segmentIds),
           JSON.stringify(settings)
         )

@@ -258,12 +258,13 @@ impl Context {
             .map_err(|e| format!("Could not serialize edit segments result. {TRUE_BUG} Details: {e}"))?)
     }
 
-    /// Delete segments in sketch.
+    /// Delete segments and constraints in sketch.
     #[wasm_bindgen]
-    pub async fn delete_segments(
+    pub async fn delete_objects(
         &self,
         version_json: &str,
         sketch_json: &str,
+        constraint_ids_json: &str,
         segment_ids_json: &str,
         settings: &str,
     ) -> Result<JsValue, JsValue> {
@@ -273,6 +274,8 @@ impl Context {
             serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
         let sketch: kcl_lib::front::ObjectId =
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize sketch ObjectId: {e}"))?;
+        let constraint_ids: Vec<ObjectId> =
+            serde_json::from_str(constraint_ids_json).map_err(|e| format!("Could not deserialize Segment IDs: {e}"))?;
         let segment_ids: Vec<ObjectId> =
             serde_json::from_str(segment_ids_json).map_err(|e| format!("Could not deserialize Segment IDs: {e}"))?;
 
@@ -283,12 +286,12 @@ impl Context {
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
         let result = guard
-            .delete_segments(&ctx, version, sketch, segment_ids)
+            .delete_objects(&ctx, version, sketch, constraint_ids, segment_ids)
             .await
-            .map_err(|e| format!("Failed to delete segments in sketch: {:?}", e))?;
+            .map_err(|e| format!("Failed to delete objects in sketch: {:?}", e))?;
 
         Ok(JsValue::from_serde(&result)
-            .map_err(|e| format!("Could not serialize delete segments result. {TRUE_BUG} Details: {e}"))?)
+            .map_err(|e| format!("Could not serialize delete objects result. {TRUE_BUG} Details: {e}"))?)
     }
 
     /// Add a constraint to sketch.
