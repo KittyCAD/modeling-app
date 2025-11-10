@@ -1,0 +1,30 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints lint_chained_profile_tag_collision.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0004",
+      "title": "profiles should not be chained",
+      "description": "Functions like startProfile, circle, ellipse, rectangle, polygon and others that start a new profile should not be chained together in a pipeline ✏️\n\nWhen using multiple profile functions in a pipeline, only the last profile is returned. This can lead to unexpected results if earlier profiles are intended to contribute to the final shape.\n\nInstead, try assigning the result of each profile to a variable and when extruding, use an array of those variables.\n",
+      "experimental": false
+    },
+    "description": "Profiles should not be chained together in a pipeline.",
+    "pos": [
+      106,
+      142,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "Use separate profile variables and refer to them using an array.",
+      "insert": "sketch1 = startSketchOn(XY)\nprofile1 = circle(\n       sketch1,\n       center = [0, 0],\n       radius = 5,\n       tag = $profile2,\n     )\nprofile3 = circle(sketch1, center = [10, 0], radius = 5)\nextrude([profile1, profile3], length = 5)\n",
+      "source_range": [
+        0,
+        173,
+        0
+      ]
+    }
+  }
+]
