@@ -41,21 +41,14 @@ export const CommandBar = () => {
   }, [pathname])
 
   // Hook up keyboard shortcuts
-  useHotkeyWrapper(
-    [COMMAND_PALETTE_HOTKEY],
-    () => {
-      if (commandBarState.context.commands.length === 0) return
-      if (commandBarState.matches('Closed')) {
-        commandBarActor.send({ type: 'Open' })
-      } else {
-        commandBarActor.send({ type: 'Close' })
-      }
-    },
-    {
-      enableOnFormTags: true,
-      enableOnContentEditable: true,
+  useHotkeyWrapper([COMMAND_PALETTE_HOTKEY], () => {
+    if (commandBarState.context.commands.length === 0) return
+    if (commandBarState.matches('Closed')) {
+      commandBarActor.send({ type: 'Open' })
+    } else {
+      commandBarActor.send({ type: 'Close' })
     }
-  )
+  })
   useHotkeyWrapper(['esc'], () => commandBarActor.send({ type: 'Close' }), {
     enableOnFormTags: true,
     enableOnContentEditable: true,
