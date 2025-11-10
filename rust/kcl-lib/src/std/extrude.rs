@@ -353,7 +353,8 @@ pub(crate) async fn do_post_extrude<'a>(
         edge_id
     } else if let Some(id) = edge_id {
         id
-    } else {
+    }
+    else {
         // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
         // So, let's just use the first one.
         let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
@@ -364,6 +365,20 @@ pub(crate) async fn do_post_extrude<'a>(
         };
         any_edge_id
     };
+
+    // If the sketch is a clone, we will use the original info to get the extrusion face info.
+    let mut extrusion_info_edge_id = any_edge_id;
+    if sketch.clone.is_some() {
+        extrusion_info_edge_id = if let Some(clone_map) = clone_id_map {
+            if let Some(new_edge_id) = clone_map.get(&extrusion_info_edge_id) {
+                *new_edge_id
+            } else {
+                extrusion_info_edge_id
+            }
+        } else {
+            any_edge_id
+        };
+    }
 
     let mut sketch = sketch.clone();
     sketch.is_closed = true;
@@ -376,12 +391,19 @@ pub(crate) async fn do_post_extrude<'a>(
         }
     }
 
+    // Similarly, if the sketch is a clone, we need to use the original sketch id to get the extrusion face info.
+    let sketch_id = if let Some(cloned_from) = sketch.clone {
+        cloned_from
+    } else {
+        sketch.id
+    };
+
     let solid3d_info = exec_state
         .send_modeling_cmd(
             args.into(),
             ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
-                edge_id: any_edge_id,
-                object_id: sketch.id,
+                edge_id: extrusion_info_edge_id,
+                object_id: sketch_id,
             }),
         )
         .await?;
@@ -418,6 +440,11 @@ pub(crate) async fn do_post_extrude<'a>(
         start_cap_id,
         end_cap_id,
     } = analyze_faces(exec_state, args, face_infos).await;
+
+    /// If this is a clone, we will use the clone_id_map to map the face info from the original sketch to the clone sketch.
+    face_id_map.iter().map(fn (k, v) {
+        println!("face_id_map key: {:?}, value: {:?}", k, v);
+    });
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let no_engine_commands = args.ctx.no_engine_commands().await;
     println!("is sketch clone? {:?}", sketch.clone.is_some());
@@ -426,6 +453,7 @@ pub(crate) async fn do_post_extrude<'a>(
     let mut new_value: Vec<ExtrudeSurface> = Vec::with_capacity(sketch.paths.len() + sketch.inner_paths.len() + 2);
     let outer_surfaces = sketch.paths.iter().flat_map(|path| {
         if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
+            println!("found it before clone check for path ID {:?} with actual_face_id {:?}", path.get_base().geo_meta.id, actual_face_id);
             surface_of(path, *actual_face_id)
         } else if no_engine_commands {
             crate::log::logln!(
@@ -458,7 +486,32 @@ pub(crate) async fn do_post_extrude<'a>(
                         );
                         clone_surface_of(path, *new_path, *actual_face_id)
                     }
-                    _ => None,
+                    _ => {
+                        let actual_face_id = face_id_map
+                            .iter()
+                            .find_map(|(key, value)| if let Some(value) = value {
+                                if value == new_path {
+                                    Some(key)
+                                } else {
+                                    None
+                                }
+                            } else {
+                                None
+                            });
+                        match actual_face_id {
+                            Some(actual_face_id) => {
+                                println!(
+                                    "found actual_face_id {:?} for clone path ID {:?} by searching",
+                                    actual_face_id, new_path
+                                );
+                                clone_surface_of(path, *new_path, *actual_face_id)
+                            }
+                            None => {
+                                crate::log::logln!("No face ID found for clone path ID {:?}, so skipping it", new_path);
+                                None
+                            }
+                        }
+                    }
                 }
             } else {
                 None
