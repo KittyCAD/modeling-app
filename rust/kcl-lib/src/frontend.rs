@@ -2216,6 +2216,50 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_delete_multiple_points() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [var 1, var 2])
+  point1 = sketch2::point(at = [var 3, var 4])
+  sketch2::point(at = [var 5, var 6])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+
+        let point1_id = frontend.scene_graph.objects.get(1).unwrap().id;
+        let point2_id = frontend.scene_graph.objects.get(2).unwrap().id;
+
+        let (src_delta, scene_delta) = frontend
+            .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point1_id, point2_id])
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [var 5, var 6])
+}
+"
+        );
+        assert_eq!(scene_delta.new_objects, vec![]);
+        assert_eq!(scene_delta.new_graph.objects.len(), 2);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_delete_coincident_constraint() {
         let initial_source = "\
 @settings(experimentalFeatures = allow)
