@@ -5207,9 +5207,9 @@ dependencies = [
 
 [[package]]
 name = "twenty-twenty"
-version = "0.8.2"
+version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ffd8809f193b83a46e99c2ee0885c463933bc51e208eb6d9417d13301a84e3c5"
+checksum = "f40badf08ea9162f080ee79ef4411b1a91919b44a01a3035c004a080dac39494"
 dependencies = [
  "anyhow",
  "image",
