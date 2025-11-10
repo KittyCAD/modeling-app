@@ -2938,7 +2938,7 @@ export class SceneEntities {
     }
 
     if (!snappedToTangent) {
-		// There was no snapping to tangent -> try snapping to profileStart or the main axes
+      // There was no snapping to tangent -> try snapping to profileStart or the main axes
       let snappedToProfileStart = false
       if (sketchEntryNodePath) {
         const snappedToProfileStartResult =
