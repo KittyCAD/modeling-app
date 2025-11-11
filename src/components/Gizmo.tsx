@@ -120,7 +120,7 @@ export default function Gizmo() {
     })
   }
 
-  const setupHoverFaceMaterial = () => {
+  const setupHoverFaceMaterial = (resolvedTheme: 'dark' | 'light') => {
     const root = gizmoRootRef.current
     if (root) {
       const hoverTexture =
@@ -243,7 +243,7 @@ export default function Gizmo() {
           await ensureThemeTexturesLoaded(themeKey)
           applyThemeTexturesToFaces(themeKey)
           setupHoverEdgeCornerMaterial(themeKey)
-          setupHoverFaceMaterial()
+          setupHoverFaceMaterial(themeKey)
           applyMaxAnisotropyToObject(root, renderer)
           renderer.render(sceneRef.current, cameraRef.current)
         })().catch(console.error)
@@ -420,7 +420,7 @@ export default function Gizmo() {
       applyThemeTexturesToFaces(themeKey)
       applyEdgeCornerBaseColors(gizmoRootRef.current, themeKey)
       setupHoverEdgeCornerMaterial(themeKey)
-      setupHoverFaceMaterial()
+      setupHoverFaceMaterial(themeKey)
       applyMaxAnisotropyToObject(gizmoRootRef.current!, rendererRef.current!)
       rendererRef.current!.render(sceneRef.current, cameraRef.current)
     })().catch(console.error)
