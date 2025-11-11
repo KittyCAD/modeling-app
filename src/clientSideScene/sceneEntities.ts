@@ -2306,7 +2306,7 @@ export class SceneEntities {
               sketchEntryNodePath,
               intersects: args.intersects,
               intersection2d: new Vector2(...maybeSnapToAxis),
-            })
+            }).intersection2d
 
         if (sketchInit.type === 'PipeExpression') {
           const moddedResult = changeSketchArguments(
@@ -2832,7 +2832,8 @@ export class SceneEntities {
     //  - the  three.js object currently being dragged: the new draft segment or existing segment (may not be the last in activeSegments)
     // When placing the draft segment::
     // - the last segment in activeSegments
-    currentObject?: Object3D | Group
+    currentObject?: Object3D | Group,
+    sketchEntryNodePath?: PathToNode
   ) {
     let snappedPoint: Coords2d = [pos.x, pos.y]
 
@@ -2937,18 +2938,58 @@ export class SceneEntities {
     }
 
     if (!snappedToTangent) {
-      // Snap to the main axes if there was no snapping to tangent direction
+      // Snap to axes
       snappedPoint = [
         intersectsYAxis ? 0 : snappedPoint[0],
         intersectsXAxis ? 0 : snappedPoint[1],
       ] as const
 
-      if (!intersectsXAxis && !intersectsYAxis) {
-        ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
-          snappedPoint,
-          mouseEvent
-        ))
+      // Snap to grid
+      ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
+        snappedPoint,
+        mouseEvent
+      ))
+
+      // There was no snapping to tangent -> try snapping to profileStart or the main axes
+      let snappedToProfileStart = false
+      if (sketchEntryNodePath) {
+        // This is incorrect snappedPoint is not in world space!
+        const ndc = new Vector3(snappedPoint[0], snappedPoint[1], 0).project(
+          this.sceneInfra.camControls.camera
+        )
+        this.sceneInfra.currentMouseVector.copy(ndc)
+        intersects = this.sceneInfra.raycastRing()
+
+        const snappedToProfileStartResult =
+          this.maybeSnapProfileStartIntersect2d({
+            sketchEntryNodePath,
+            intersects,
+            intersection2d: new Vector2(...snappedPoint),
+          })
+        if (snappedToProfileStartResult.snapped) {
+          console.log('snap')
+          snappedToProfileStart = true
+          snappedPoint = [
+            snappedToProfileStartResult.intersection2d.x,
+            snappedToProfileStartResult.intersection2d.y,
+          ]
+        }
       }
+
+      // if (!snappedToProfileStart) {
+      //   // Snap to grid if there was no snapping to profileStart either
+      //   snappedPoint = [
+      //     intersectsYAxis ? 0 : snappedPoint[0],
+      //     intersectsXAxis ? 0 : snappedPoint[1],
+      //   ] as const
+      //
+      //   if (!intersectsXAxis && !intersectsYAxis) {
+      //     ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
+      //       snappedPoint,
+      //       mouseEvent
+      //     ))
+      //   }
+      // }
     }
 
     return {
@@ -3008,12 +3049,15 @@ export class SceneEntities {
           intersectsProfileStart.position.y
         )
       : _intersection2d
-    return intersection2d
+    return {
+      snapped: Boolean(intersectsProfileStart),
+      intersection2d,
+    }
   }
 
   async onDragSegment({
     object,
-    intersection2d: _intersection2d,
+    intersection2d,
     sketchEntryNodePath,
     sketchNodePaths,
     draftInfo,
@@ -3031,12 +3075,6 @@ export class SceneEntities {
     }
     mouseEvent: MouseEvent
   }) {
-    const intersection2d = this.maybeSnapProfileStartIntersect2d({
-      sketchEntryNodePath,
-      intersects,
-      intersection2d: _intersection2d,
-    })
-
     const group = getParentGroup(object, SEGMENT_BODIES_PLUS_PROFILE_START)
     const subGroup = getParentGroup(object, [
       ARROWHEAD,
@@ -3066,7 +3104,8 @@ export class SceneEntities {
       intersection2d,
       intersects,
       mouseEvent,
-      object
+      object,
+      sketchEntryNodePath
     )
     let modifiedAst = draftInfo
       ? draftInfo.truncatedAst
