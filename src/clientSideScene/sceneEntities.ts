@@ -2938,9 +2938,28 @@ export class SceneEntities {
     }
 
     if (!snappedToTangent) {
+      // Snap to axes
+      snappedPoint = [
+        intersectsYAxis ? 0 : snappedPoint[0],
+        intersectsXAxis ? 0 : snappedPoint[1],
+      ] as const
+
+      // Snap to grid
+      ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
+        snappedPoint,
+        mouseEvent
+      ))
+
       // There was no snapping to tangent -> try snapping to profileStart or the main axes
       let snappedToProfileStart = false
       if (sketchEntryNodePath) {
+        // This is incorrect snappedPoint is not in world space!
+        const ndc = new Vector3(snappedPoint[0], snappedPoint[1], 0).project(
+          this.sceneInfra.camControls.camera
+        )
+        this.sceneInfra.currentMouseVector.copy(ndc)
+        intersects = this.sceneInfra.raycastRing()
+
         const snappedToProfileStartResult =
           this.maybeSnapProfileStartIntersect2d({
             sketchEntryNodePath,
@@ -2948,6 +2967,7 @@ export class SceneEntities {
             intersection2d: new Vector2(...snappedPoint),
           })
         if (snappedToProfileStartResult.snapped) {
+          console.log('snap')
           snappedToProfileStart = true
           snappedPoint = [
             snappedToProfileStartResult.intersection2d.x,
@@ -2956,20 +2976,20 @@ export class SceneEntities {
         }
       }
 
-      if (!snappedToProfileStart) {
-        // Snap to the main axes if there was no snapping to profileStart either
-        snappedPoint = [
-          intersectsYAxis ? 0 : snappedPoint[0],
-          intersectsXAxis ? 0 : snappedPoint[1],
-        ] as const
-
-        if (!intersectsXAxis && !intersectsYAxis) {
-          ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
-            snappedPoint,
-            mouseEvent
-          ))
-        }
-      }
+      // if (!snappedToProfileStart) {
+      //   // Snap to grid if there was no snapping to profileStart either
+      //   snappedPoint = [
+      //     intersectsYAxis ? 0 : snappedPoint[0],
+      //     intersectsXAxis ? 0 : snappedPoint[1],
+      //   ] as const
+      //
+      //   if (!intersectsXAxis && !intersectsYAxis) {
+      //     ;({ point: snappedPoint, snapped: snappedToGrid } = this.snapToGrid(
+      //       snappedPoint,
+      //       mouseEvent
+      //     ))
+      //   }
+      // }
     }
 
     return {
