@@ -1098,7 +1098,7 @@ export function createPoint2dExpression(
       ) {
         arrayElements.push(createLiteral(val))
       } else {
-        return new Error('Invalid framePosition value type')
+        return new Error('Invalid value type for point2d')
       }
     }
     expr = createArrayExpression(arrayElements)
