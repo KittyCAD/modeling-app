@@ -130,17 +130,12 @@ export default function Gizmo() {
         ? texturesRef.current.darkHover
         : texturesRef.current.lightHover
     if (!hoverTex) return
-    let faceMat: MeshStandardMaterial | null = null
-    root.traverse((node) => {
-      if (!faceMat && isStandardMesh(node) && node.name?.startsWith('face_')) {
-        faceMat = node.material
-      }
-    })
-    if (faceMat) {
-      const cloned = (faceMat as MeshStandardMaterial).clone() as MeshStandardMaterial
-      cloned.map = hoverTex
-      //cloned.emissive = new Color(0x3c73ff)
-      hoverFaceMaterialRef.current = cloned
+    const faceMesh = root.children.find((node) =>
+      node.name?.startsWith('face_')
+    )
+    if (isStandardMesh(faceMesh)) {
+      hoverFaceMaterialRef.current = faceMesh.material.clone()
+      hoverFaceMaterialRef.current.map = hoverTex
     }
   }
 
@@ -272,7 +267,6 @@ export default function Gizmo() {
           if (isOrientationTargetName(obj.name)) clickable.push(obj)
         })
         clickableObjects.current = clickable
-
         ;(async () => {
           const themeKey = resolvedTheme === 'dark' ? 'dark' : 'light'
           await ensureThemeTexturesLoaded(themeKey)
