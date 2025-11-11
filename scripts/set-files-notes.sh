@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 yq -i '.releaseNotes = strenv(NOTES)' out/latest-linux-arm64.yml
 yq -i '.releaseNotes = strenv(NOTES)' out/latest-linux.yml

@@ -506,7 +506,7 @@ impl EngineManager for EngineConnection {
                 let pe = self.pending_errors.read().await;
                 if !pe.is_empty() {
                     return Err(KclError::new_engine(KclErrorDetails::new(
-                        pe.join(", ").to_string(),
+                        pe.join(", "),
                         vec![source_range],
                     )));
                 } else {

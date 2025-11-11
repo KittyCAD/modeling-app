@@ -232,7 +232,7 @@ impl ExecState {
 
     pub(crate) fn push_op(&mut self, op: Operation) {
         #[cfg(feature = "artifact-graph")]
-        self.mod_local.artifacts.operations.push(op.clone());
+        self.mod_local.artifacts.operations.push(op);
         #[cfg(not(feature = "artifact-graph"))]
         drop(op);
     }
@@ -254,7 +254,7 @@ impl ExecState {
 
     pub(super) fn add_path_to_source_id(&mut self, path: ModulePath, id: ModuleId) {
         debug_assert!(!self.global.path_to_source_id.contains_key(&path));
-        self.global.path_to_source_id.insert(path.clone(), id);
+        self.global.path_to_source_id.insert(path, id);
     }
 
     pub(crate) fn add_root_module_contents(&mut self, program: &crate::Program) {
@@ -278,7 +278,7 @@ impl ExecState {
     }
 
     pub(super) fn add_id_to_source(&mut self, id: ModuleId, source: ModuleSource) {
-        self.global.id_to_source.insert(id, source.clone());
+        self.global.id_to_source.insert(id, source);
     }
 
     pub(super) fn add_module(&mut self, id: ModuleId, path: ModulePath, repr: ModuleRepr) {
@@ -378,8 +378,11 @@ impl ExecState {
         let mut new_exec_artifacts = IndexMap::new();
         for module in self.global.module_infos.values_mut() {
             match &mut module.repr {
-                ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts)))
-                | ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
+                ModuleRepr::Kcl(_, Some(outcome)) => {
+                    new_commands.extend(outcome.artifacts.process_commands());
+                    new_exec_artifacts.extend(outcome.artifacts.artifacts.clone());
+                }
+                ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
                     new_commands.extend(module_artifacts.process_commands());
                     new_exec_artifacts.extend(module_artifacts.artifacts.clone());
                 }
@@ -452,7 +455,7 @@ impl GlobalState {
         );
         global.path_to_source_id.insert(
             ModulePath::Local {
-                value: root_path.clone(),
+                value: root_path,
                 original_import_path: None,
             },
             root_id,

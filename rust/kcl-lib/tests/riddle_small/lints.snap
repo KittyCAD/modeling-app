@@ -1,0 +1,30 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints riddle_small.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false
+    },
+    "description": "found 'ANSWER'",
+    "pos": [
+      0,
+      6,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'ANSWER' to 'answer'",
+      "insert": "answer = 41803\n\nfn t(@s) {\n  return (ANSWER * s + 12345) % 214748\n}\n\nxs = 205804\nys = 71816\nox = 35 - (t(xs) % 70)\noy = 35 - (t(ys) % 70)\nr = startSketchOn(XZ)\n  |> startProfile(at = [ox, oy])\n  |> line(end = [1, 0])\n  |> line(end = [0, -1])\n  |> line(end = [-1, 0])\n  |> close(%)\n  |> extrude(length = 1)\n",
+      "source_range": [
+        0,
+        306,
+        0
+      ]
+    }
+  }
+]

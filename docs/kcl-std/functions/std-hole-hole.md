@@ -31,7 +31,7 @@ hole::hole(
 | `holeBottom` |  | Define bottom feature of the hole. E.g. drilled or flat. | Yes |
 | `holeBody` |  | Define the main length of the hole. E.g. a blind distance. | Yes |
 | `holeType` |  | Define the top feature of the hole. E.g. countersink, counterbore, simple. | Yes |
-| `cutAt` | [`[number(Length); 2]`](/docs/kcl-std/types/std-types-number) | Where to place the cut on the given face of the solid. Given as absolute coordinates in the global scene. | Yes |
+| `cutAt` | [[`number(Length)`](/docs/kcl-std/types/std-types-number); 2] | Where to place the cut on the given face of the solid. Given as absolute coordinates in the global scene. | Yes |
 
 
 ### Examples

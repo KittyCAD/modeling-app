@@ -1097,7 +1097,7 @@ pub async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::PathBuf
             files.extend(walk_dir(&path).await?);
         } else if path
             .extension()
-            .is_some_and(|ext| crate::RELEVANT_FILE_EXTENSIONS.contains(&ext.to_string_lossy().to_string()))
+            .is_some_and(|ext| crate::RELEVANT_FILE_EXTENSIONS.contains(&ext.to_string_lossy().to_lowercase()))
         {
             files.push(path);
         }
@@ -1129,7 +1129,7 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
                 let (program, ces) = crate::Program::parse(&contents).map_err(|err| {
                     let report = crate::Report {
                         kcl_source: contents.to_string(),
-                        error: err.clone(),
+                        error: err,
                         filename: file.to_string_lossy().to_string(),
                     };
                     let report = miette::Report::new(report);

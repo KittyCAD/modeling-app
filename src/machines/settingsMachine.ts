@@ -83,7 +83,7 @@ export const settingsMachine = setup({
   },
   actors: {
     persistSettings: fromPromise<
-      void,
+      undefined,
       {
         doNotPersist: boolean
         context: SettingsMachineContext
@@ -98,17 +98,18 @@ export const settingsMachine = setup({
       input.rootContext.codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       const { currentProject, ...settings } = input.context
 
-      const val = await saveSettings(settings, currentProject?.path)
+      await saveSettings(settings, currentProject?.path)
 
       if (input.toastCallback) {
         input.toastCallback()
       }
-      return val
     }),
-    loadUserSettings: fromPromise<SettingsMachineContext, void>(async () => {
-      const { settings } = await loadAndValidateSettings()
-      return settings
-    }),
+    loadUserSettings: fromPromise<SettingsMachineContext, undefined>(
+      async () => {
+        const { settings } = await loadAndValidateSettings()
+        return settings
+      }
+    ),
     loadProjectSettings: fromPromise<
       SettingsMachineContext,
       { project?: Project }
@@ -296,12 +297,6 @@ export const settingsMachine = setup({
         console.error('Error executing AST after settings change', e)
       }
     },
-    setThemeColor: ({ context }) => {
-      document.documentElement.style.setProperty(
-        `--primary-hue`,
-        context.app.themeColor.current
-      )
-    },
     /**
      * Update the --cursor-color CSS variable
      * based on the setting textEditor.blinkingCursor.current
@@ -441,13 +436,6 @@ export const settingsMachine = setup({
           actions: ['setSettingAtLevel'],
         },
 
-        'set.app.themeColor': {
-          target: 'persisting settings',
-
-          // No toast
-          actions: ['setSettingAtLevel', 'setThemeColor'],
-        },
-
         'set.commandBar.includeSettings': {
           target: 'persisting settings',
 
@@ -514,6 +502,12 @@ export const settingsMachine = setup({
           actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
         },
 
+        'set.meta.disableCopilot': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel', 'toastSuccess'],
+        },
+
         'Reset settings': {
           target: 'persisting settings',
 
@@ -521,7 +515,6 @@ export const settingsMachine = setup({
             'resetSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setThemeColor',
             'Execute AST',
             'setClientTheme',
             'setAllowOrbitInSketchMode',
@@ -541,7 +534,6 @@ export const settingsMachine = setup({
             'setAllSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setThemeColor',
             'Execute AST',
             'setClientTheme',
             'setAllowOrbitInSketchMode',
@@ -571,7 +563,6 @@ export const settingsMachine = setup({
           actions: [
             'clearProjectSettings',
             'clearCurrentProject',
-            'setThemeColor',
             sendTo(
               'registerCommands',
               ({ context: { currentProject: _, ...settings } }) => ({
@@ -627,7 +618,6 @@ export const settingsMachine = setup({
             'setAllSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setThemeColor',
             'setClientTheme',
             'setAllowOrbitInSketchMode',
             'sendThemeToWatcher',
@@ -663,7 +653,6 @@ export const settingsMachine = setup({
             'setAllSettings',
             'setThemeClass',
             'setEngineTheme',
-            'setThemeColor',
             'Execute AST',
             'setClientTheme',
             'setAllowOrbitInSketchMode',

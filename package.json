@@ -32,7 +32,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.2",
-    "@kittycad/lib": "^3.1.3",
+    "@kittycad/lib": "^3.1.7",
     "@kittycad/react-shared": "^0.1.6",
     "@lezer/highlight": "^1.2.1",
     "@lezer/lr": "^1.4.1",

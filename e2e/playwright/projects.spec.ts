@@ -12,6 +12,7 @@ import {
   runningOnWindows,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test(
   'projects reload if a new one is created, deleted, or renamed externally',
@@ -224,9 +225,9 @@ test(
 
     await u.doAndWaitForImageDiff(
       async () => {
-        await toolbar.openPane('files')
+        await toolbar.openPane(DefaultLayoutPaneID.Files)
         await toolbar.openFile('empty.kcl')
-        await toolbar.closePane('files')
+        await toolbar.closePane(DefaultLayoutPaneID.Files)
         await scene.settled(cmdBar)
       },
       500,
@@ -265,9 +266,9 @@ test(
 
     await u.doAndWaitForImageDiff(
       async () => {
-        await toolbar.openPane('files')
+        await toolbar.openPane(DefaultLayoutPaneID.Files)
         await toolbar.openFile('broken-code-test.kcl')
-        await toolbar.closePane('files')
+        await toolbar.closePane(DefaultLayoutPaneID.Files)
         await scene.settled(cmdBar, { expectError: true })
 
         await test.step('Verify error appears', async () => {
@@ -1809,7 +1810,7 @@ test.describe('Project id', () => {
         await fsp.writeFile(
           path.join(projectDir, 'project.toml'),
           `[settings.app]
-themeColor = "255"
+theme = "dark"
 `
         )
       })

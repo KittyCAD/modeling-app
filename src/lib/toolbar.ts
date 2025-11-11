@@ -277,7 +277,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [
           {
             label: 'KCL docs',
-            url: withSiteBaseURL('/docs/kcl-std/modules/hole'),
+            url: withSiteBaseURL('/docs/kcl-std/modules/std-hole'),
           },
         ],
       },

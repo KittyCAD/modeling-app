@@ -1042,6 +1042,9 @@ export class SceneEntities {
     position && this.intersectionPlane.position.set(...position)
     this.sceneInfra.scene.add(group)
 
+    // sceneInfra/onMouseMove may call raycastRing() before the next render call,
+    // in which case matrices would not be updated yet.
+    this.sceneInfra.scene.updateMatrixWorld()
     this.sceneInfra.resumeRendering()
 
     this.sceneInfra.camControls.enableRotate = false
@@ -4024,26 +4027,6 @@ function colorSegment(object: Object3D, color: number) {
     })
     return
   }
-}
-
-export function getSketchQuaternion(
-  sketchPathToNode: PathToNode,
-  sketchNormalBackUp: [number, number, number] | null,
-  kclManager: KclManager
-): Quaternion | Error {
-  const sketch = sketchFromPathToNode({
-    pathToNode: sketchPathToNode,
-    variables: kclManager.variables,
-    kclManager,
-  })
-  if (err(sketch)) return sketch
-  const zAxis =
-    sketch?.on.xAxis && sketch?.on.yAxis
-      ? crossProduct(sketch?.on.xAxis, sketch?.on.yAxis)
-      : sketchNormalBackUp
-  if (!zAxis) return Error('Sketch zAxis not found')
-
-  return getQuaternionFromZAxis(massageFormats(zAxis))
 }
 
 export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {

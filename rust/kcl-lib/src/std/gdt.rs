@@ -279,8 +279,7 @@ async fn xy_plane(exec_state: &mut ExecState, args: &Args) -> Result<Plane, KclE
     let plane_value = args
         .ctx
         .execute_expr(&plane_ast, exec_state, &metadata, &[], StatementKind::Expression)
-        .await?
-        .clone();
+        .await?;
     Ok(plane_value
         .as_plane()
         .ok_or_else(|| {

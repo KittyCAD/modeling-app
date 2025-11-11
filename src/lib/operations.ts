@@ -22,7 +22,6 @@ import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
-  getEdgeCutConsumedCodeRef,
 } from '@src/lang/std/artifactGraph'
 import {
   type CallExpressionKw,
@@ -42,6 +41,7 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
+import { retrieveEdgeSelectionsFromOpArgs } from '@src/lang/modifyAst/edges'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -260,15 +260,9 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
 
   let to: Selections | undefined
   if ('to' in operation.labeledArgs && operation.labeledArgs.to) {
-    const result = retrieveNonDefaultPlaneSelectionFromOpArg(
-      operation.labeledArgs.to,
-      kclManager.artifactGraph
-    )
-    if (err(result)) {
-      return { reason: result.message }
-    }
-
-    to = result
+    const graphSelections = extractFaceSelections(operation.labeledArgs.to)
+    if ('error' in graphSelections) return { reason: graphSelections.error }
+    to = { graphSelections, otherSelections: [] }
   }
 
   // symmetric argument from a string to boolean
@@ -517,102 +511,100 @@ const prepareToEditLoft: PrepareToEditCallback = async ({ operation }) => {
 }
 
 /**
- * Gather up the argument values for the Chamfer or Fillet command
+ * Gather up the argument values for the Chamfer command
  * to be used in the command bar edit flow.
  */
-const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
-  operation,
-  artifact,
-}) => {
-  const isChamfer =
-    artifact?.type === 'edgeCut' && artifact.subType === 'chamfer'
-  const isFillet = artifact?.type === 'edgeCut' && artifact.subType === 'fillet'
+const prepareToEditFillet: PrepareToEditCallback = async ({ operation }) => {
   const baseCommand = {
-    name: isChamfer ? 'Chamfer' : 'Fillet',
+    name: 'Fillet',
     groupId: 'modeling',
   }
-  if (
-    operation.type !== 'StdLibCall' ||
-    !operation.labeledArgs ||
-    (!isChamfer && !isFillet)
-  ) {
-    return { reason: 'Wrong operation type or artifact' }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
   }
 
-  // Recreate the selection argument (artiface and codeRef) from what we have
-  const edgeArtifact = getArtifactOfTypes(
-    {
-      key: artifact.consumedEdgeId,
-      types: ['segment', 'sweepEdge'],
-    },
+  // 1. Map the unlabeled and faces arguments to solid2d selections
+  if (!operation.unlabeledArg || !operation.labeledArgs?.tags) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const selection = retrieveEdgeSelectionsFromOpArgs(
+    operation.labeledArgs.tags,
     kclManager.artifactGraph
   )
-  if (err(edgeArtifact)) {
-    return { reason: "Couldn't find edge artifact" }
-  }
+  if (err(selection)) return { reason: selection.message }
 
-  let edgeCodeRef = getEdgeCutConsumedCodeRef(
-    artifact,
-    kclManager.artifactGraph
-  )
-  if (err(edgeCodeRef)) {
-    return { reason: "Couldn't find edge coderef" }
-  }
-  const selection = {
-    graphSelections: [
-      {
-        artifact: edgeArtifact,
-        codeRef: edgeCodeRef,
-      },
-    ],
-    otherSelections: [],
-  }
+  // 2. Convert the radius argument from a string to a KCL expression
+  const radius = await extractKclArgument(operation, 'radius')
+  if ('error' in radius) return { reason: radius.error }
 
-  // Assemble the default argument values for the Fillet command,
-  // with `nodeToEdit` set, which will let the Fillet actor know
+  const tag = extractStringArgument(operation, 'tag')
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
-  const nodeToEdit = pathToNodeFromRustNodePath(operation.nodePath)
+  const argDefaultValues: ModelingCommandSchema['Fillet'] = {
+    selection,
+    radius,
+    tag,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
 
-  let argDefaultValues:
-    | ModelingCommandSchema['Chamfer']
-    | ModelingCommandSchema['Fillet']
-    | undefined
-
-  if (isChamfer) {
-    // Convert the length argument from a string to a KCL expression
-    const length = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs?.['length']?.sourceRange[0],
-        operation.labeledArgs?.['length']?.sourceRange[1]
-      )
-    )
-    if (err(length) || 'errors' in length) {
-      return { reason: 'Error in length argument retrieval' }
-    }
-
-    argDefaultValues = {
-      selection,
-      length,
-      nodeToEdit,
-    }
-  } else if (isFillet) {
-    const radius = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs?.['radius']?.sourceRange[0],
-        operation.labeledArgs?.['radius']?.sourceRange[1]
-      )
-    )
-    if (err(radius) || 'errors' in radius) {
-      return { reason: 'Error in radius argument retrieval' }
-    }
-
-    argDefaultValues = {
-      selection,
-      radius,
-      nodeToEdit,
-    }
+/**
+ * Gather up the argument values for the Chamfer command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditChamfer: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'Chamfer',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
   }
 
+  // 1. Map the unlabeled and faces arguments to solid2d selections
+  if (!operation.unlabeledArg || !operation.labeledArgs?.tags) {
+    return { reason: `Couldn't retrieve operation arguments` }
+  }
+
+  const selection = retrieveEdgeSelectionsFromOpArgs(
+    operation.labeledArgs.tags,
+    kclManager.artifactGraph
+  )
+  if (err(selection)) return { reason: selection.message }
+
+  // 2. Convert the length argument from a string to a KCL expression
+  const length = await extractKclArgument(operation, 'length')
+  if ('error' in length) return { reason: length.error }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(operation, 'secondLength'),
+    extractKclArgument(operation, 'angle'),
+  ])
+
+  const [secondLength, angle] = optionalArgs.map((arg) =>
+    'error' in arg ? undefined : arg
+  )
+
+  const tag = extractStringArgument(operation, 'tag')
+
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Chamfer'] = {
+    selection,
+    length,
+    secondLength,
+    angle,
+    tag,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
   return {
     ...baseCommand,
     argDefaultValues,
@@ -700,7 +692,8 @@ const prepareToEditHole: PrepareToEditCallback = async ({ operation }) => {
   const { faces: face } = result
 
   // 2.1 Convert the required arg from string to KclExpression
-  const cutAt = await extractKclArgument(operation, 'cutAt')
+  const isArray = true
+  const cutAt = await extractKclArgument(operation, 'cutAt', isArray)
   if ('error' in cutAt) return { reason: cutAt.error }
 
   // 2.2 Handle the holeBody required 'mode' arg and its related optional args
@@ -1525,8 +1518,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   chamfer: {
     label: 'Chamfer',
     icon: 'chamfer3d',
-    prepareToEdit: prepareToEditEdgeTreatment,
-    // modelingEvent: 'Chamfer',
+    prepareToEdit: prepareToEditChamfer,
   },
   conic: {
     label: 'Conic',
@@ -1550,7 +1542,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   fillet: {
     label: 'Fillet',
     icon: 'fillet3d',
-    prepareToEdit: prepareToEditEdgeTreatment,
+    prepareToEdit: prepareToEditFillet,
   },
   'gdt::datum': {
     label: 'Datum',

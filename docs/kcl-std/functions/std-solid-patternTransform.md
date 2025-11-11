@@ -58,14 +58,14 @@ Its properties are:
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) | The solid(s) to duplicate. | Yes |
+| `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] | The solid(s) to duplicate. | Yes |
 | `instances` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `transform` | [`fn(number(_)): { }`](/docs/kcl-std/types/std-types-fn) | How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples. | Yes |
 | `useOriginal` | [`bool`](/docs/kcl-std/types/std-types-bool) | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. | No |
 
 ### Returns
 
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
 
 
 ### Examples
@@ -303,6 +303,46 @@ startSketchOn(XY)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-patternTransform5.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+n = 5
+width = 10
+gap = 1.5 * width
+
+// Transform function
+fn chessboard(@i) {
+  row = rem(i, divisor = n)
+  column = floor(i / n)
+  isEven = rem(i, divisor = 2) == 0
+  return [
+    {
+  translate = [row * gap, column * gap, 0],
+  replicate = isEven
+}
+  ]
+}
+
+startSketchOn(XY)
+  |> polygon(numSides = 4, radius = width, center = [0, 0])
+  |> extrude(length = 2)
+  |> rotate(yaw = 45)
+  |> patternTransform(instances = n * n, transform = chessboard)
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the patternTransform function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-patternTransform6_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-patternTransform6.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

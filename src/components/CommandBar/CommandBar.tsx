@@ -10,6 +10,7 @@ import Tooltip from '@src/components/Tooltip'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
+import Loading from '@src/components/Loading'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
@@ -19,10 +20,14 @@ export const CommandBar = () => {
   const {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
-  const isArgumentThatShouldBeHardToDismiss =
-    currentArgument?.inputType === 'selection' ||
-    currentArgument?.inputType === 'selectionMixed' ||
-    currentArgument?.inputType === 'text'
+
+  // The command palette used to have light dismiss behavior, but we've decided
+  // it's not a great fit for workflows where the user may want to review other
+  // parts of the system while paused on a step. We'll leave this logic for now, but
+  // TODO: consider removing this branching for light dismiss, or making it
+  // configurable per-command (or per argument) if there are commands users expect to
+  // be light-dismissable.
+  const isArgumentThatShouldBeHardToDismiss = true
   const WrapperComponent = isArgumentThatShouldBeHardToDismiss
     ? Popover
     : Dialog
@@ -43,6 +48,10 @@ export const CommandBar = () => {
     } else {
       commandBarActor.send({ type: 'Close' })
     }
+  })
+  useHotkeyWrapper(['esc'], () => commandBarActor.send({ type: 'Close' }), {
+    enableOnFormTags: true,
+    enableOnContentEditable: true,
   })
 
   function stepBack() {
@@ -143,9 +152,19 @@ export const CommandBar = () => {
             ) : commandBarState.matches('Gathering arguments') ? (
               <CommandBarArgument stepBack={stepBack} />
             ) : (
-              commandBarState.matches('Review') && (
-                <CommandBarReview stepBack={stepBack} />
-              )
+              <>
+                {commandBarState.matches('Review') && (
+                  <CommandBarReview stepBack={stepBack} />
+                )}
+                {commandBarState.matches('Checking Arguments') && (
+                  <div
+                    className="py-4"
+                    data-testid="command-bar-loading-checking-arguments"
+                  >
+                    <Loading isDummy={true}>Checking arguments...</Loading>
+                  </div>
+                )}
+              </>
             )}
             <div className="flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent">
               <button
@@ -169,5 +188,3 @@ export const CommandBar = () => {
     </Transition.Root>
   )
 }
-
-export default CommandBar

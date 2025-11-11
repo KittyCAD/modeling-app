@@ -31,7 +31,6 @@ import {
   SystemIOMachineEvents,
   determineProjectFilePathFromPrompt,
 } from '@src/machines/systemIO/utils'
-import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
 import { appActor, setLayout } from '@src/lib/singletons'
@@ -364,7 +363,7 @@ export function createApplicationCommands({
           }
           return value
         },
-        options: ({ argumentsToSubmit }) => {
+        options: () => {
           const samples = isDesktop()
             ? everyKclSample
             : kclSamplesManifestWithNoMultipleFiles
@@ -564,7 +563,7 @@ export function createApplicationCommands({
         return
       }
       if (data) {
-        const environmentName = env().VITE_KITTYCAD_BASE_DOMAIN
+        const environmentName = env().VITE_ZOO_BASE_DOMAIN
         if (environmentName)
           writeEnvironmentConfigurationPool(
             window.electron,
@@ -639,7 +638,7 @@ export function createApplicationCommands({
 
   return isDesktop()
     ? [
-        ...(IS_STAGING_OR_DEBUG ? [] : [textToCADCommand]),
+        textToCADCommand,
         addKCLFileToProject,
         resetLayoutCommand,
         setLayoutCommand,
@@ -648,7 +647,7 @@ export function createApplicationCommands({
         choosePoolCommand,
       ]
     : [
-        ...(IS_STAGING_OR_DEBUG ? [] : [textToCADCommand]),
+        textToCADCommand,
         addKCLFileToProject,
         resetLayoutCommand,
         setLayoutCommand,

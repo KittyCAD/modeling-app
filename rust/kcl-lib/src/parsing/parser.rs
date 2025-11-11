@@ -2156,7 +2156,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         ImportPath::Std { path: segments }
     } else if path_string.contains('.') {
         let extn = std::path::Path::new(&path_string).extension().unwrap_or_default();
-        if !IMPORT_FILE_EXTENSIONS.contains(&extn.to_string_lossy().to_string()) {
+        if !IMPORT_FILE_EXTENSIONS.contains(&extn.to_string_lossy().to_lowercase()) {
             ParseContext::warn(CompilationError::err(
                 path_range,
                 format!(

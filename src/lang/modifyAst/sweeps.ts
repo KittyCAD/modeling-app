@@ -13,8 +13,10 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { getEdgeTagCall } from '@src/lang/modifyAst/addEdgeTreatment'
-import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
+import {
+  modifyAstWithTagsForSelection,
+  mutateAstWithTagForSketchSegment,
+} from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
   getVariableExprsFromSelection,
@@ -36,7 +38,7 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { buildSolidsAndFacesExprs } from '@src/lang/modifyAst/faces'
+import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 
 export function addExtrude({
   ast,
@@ -75,7 +77,7 @@ export function addExtrude({
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  const modifiedAst = structuredClone(ast)
+  let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
@@ -92,25 +94,17 @@ export function addExtrude({
   // Special handling for 'to' arg
   let toExpr: LabeledArg[] = []
   if (to) {
-    const result = buildSolidsAndFacesExprs(
-      to,
-      artifactGraph,
-      modifiedAst,
-      mNodeToEdit
-    )
-    if (err(result)) {
-      return result
+    if (to.graphSelections.length !== 1) {
+      return new Error('Extrude "to" argument must have exactly one selection.')
     }
-
-    const { solidsExpr, facesExpr } = result
-    toExpr = [
-      createLabeledArg(
-        'to',
-        createCallExpressionStdLibKw('planeOf', solidsExpr, [
-          createLabeledArg('face', facesExpr),
-        ])
-      ),
-    ]
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      to.graphSelections[0],
+      artifactGraph
+    )
+    if (err(tagResult)) return tagResult
+    modifiedAst = tagResult.modifiedAst
+    toExpr = [createLabeledArg('to', createLocalName(tagResult.tags[0]))]
   }
   const symmetricExpr = symmetric
     ? [createLabeledArg('symmetric', createLiteral(symmetric))]

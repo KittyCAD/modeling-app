@@ -7,7 +7,11 @@ import {
 } from '@src/machines/mlEphantManagerMachine2'
 import ms from 'ms'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
+import Tooltip from '@src/components/Tooltip'
+import toast from 'react-hot-toast'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
+import { SafeRenderer } from '@src/lib/markdown'
+import { Marked, escape } from '@ts-stack/markdown'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -18,6 +22,55 @@ type MlCopilotServerMessageError<T = MlCopilotServerMessage> = T extends {
 }
   ? T
   : never
+
+export const ResponseCardToolBar = (props: {
+  responses?: MlCopilotServerMessage[]
+}) => {
+  const isEndOfStream =
+    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
+    props.responses?.some((x) => 'error' in x || 'info' in x)
+
+  let contentForClipboard: string | undefined = ''
+
+  if (isEndOfStream) {
+    const lastResponse = props.responses?.slice(-1)[0]
+    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
+      contentForClipboard = lastResponse.end_of_stream.whole_response
+    }
+  }
+  return (
+    <div className={'pl-9'}>
+      {isEndOfStream && (
+        <button
+          type="button"
+          onClick={() => {
+            if (!contentForClipboard) {
+              return
+            }
+            navigator.clipboard.writeText(contentForClipboard).then(
+              () => {
+                toast.success('Copied response to clipboard')
+              },
+              () => {
+                toast.error('Failed to copy response to clipboard')
+              }
+            )
+          }}
+          className={`p-0 m-0 border-transparent dark:border-transparent focus-visible:b-default disabled:bg-transparent dark:disabled:bg-transparent disabled:border-transparent dark:disabled:border-transparent disabled:text-4`}
+        >
+          <CustomIcon name="clipboard" className="w-4 h-4" />
+          <Tooltip
+            position="right"
+            hoverOnly={true}
+            contentClassName="text-sm max-w-none flex items-center gap-5"
+          >
+            <span>Copy to clipboard</span>
+          </Tooltip>
+        </button>
+      )}
+    </div>
+  )
+}
 
 export const ExchangeCardStatus = (props: {
   responses?: MlCopilotServerMessage[]
@@ -59,7 +112,7 @@ export const ExchangeCardStatus = (props: {
       {!isEndOfStream && thinker}
     </div>
   ) : (
-    <div>
+    <div className="relative">
       {thinker}
       {props.updatedAt && (
         <div className="text-chalkboard-70 p-2 pb-0">
@@ -167,16 +220,31 @@ export const Delta = (props: { children: ReactNode }) => {
 
 type ResponsesCardProp = {
   items: Exchange['responses']
+  deltasAggregated: Exchange['deltasAggregated']
+}
+
+const MarkedOptions = {
+  gfm: true,
+  breaks: true,
+  sanitize: true,
+  escape,
 }
 
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
   props.maybeError ? (
-    <div className="text-rose-400">
+    <div className="text-rose-400 flex flex-row gap-1 items-start">
       <CustomIcon
         name="triangleExclamation"
         className="w-4 h-4 inline valign"
-      />{' '}
-      {props.maybeError?.error.detail}
+      />
+      <span
+        dangerouslySetInnerHTML={{
+          __html: Marked.parse(props.maybeError?.error.detail, {
+            renderer: new SafeRenderer(MarkedOptions),
+            ...MarkedOptions,
+          }),
+        }}
+      ></span>
     </div>
   ) : null
 
@@ -184,9 +252,13 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
 export const ResponsesCard = (props: ResponsesCardProp) => {
   const items = props.items.map(
     (response: MlCopilotServerMessage, index: number) => {
-      if ('delta' in response) {
-        return <Delta key={index}>{response.delta.delta}</Delta>
-      }
+      // This is INTENTIONALLY left here for documentation.
+      // We aggregate `delta` responses into `Exchange.responseAggregated`
+      // as an optimization. Originally we'd have 1000s of React components,
+      // causing problems like slowness and exceeding stack depth.
+      // if ('delta' in response) {
+      //   return response.delta.delta
+      // }
       if ('info' in response) {
         return <Delta key={index}>{response.info.text}</Delta>
       }
@@ -207,7 +279,10 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       dataTestId="ml-response-chat-bubble"
       placeholderTestId="ml-response-chat-bubble-thinking"
     >
-      {itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null}
+      {[
+        itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null,
+        props.deltasAggregated !== '' ? props.deltasAggregated : null,
+      ].filter((x: ReactNode) => x !== null)}
     </ChatBubble>
   )
 }
@@ -311,7 +386,11 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           />
         </div>
       )}
-      <ResponsesCard items={props.responses} />
+      <ResponsesCard
+        items={props.responses}
+        deltasAggregated={props.deltasAggregated}
+      />
+      <ResponseCardToolBar responses={props.responses} />
     </div>
   )
 }
