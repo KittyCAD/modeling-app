@@ -59,6 +59,11 @@ export default function Gizmo() {
   const hoverFaceMaterialRef = useRef<MeshStandardMaterial | null>(null)
   const gizmoRootRef = useRef<Object3D | null>(null)
   const texturesRef = useRef<GizmoTextures>({})
+  const needsRenderRef = useRef(false)
+  const rafIdRef = useRef(0)
+  const invalidate = () => {
+    needsRenderRef.current = true
+  }
 
   const isPerspective =
     settings.modeling.cameraProjection.current === 'perspective'
@@ -86,7 +91,7 @@ export default function Gizmo() {
       camera.updateMatrix()
       camera.updateProjectionMatrix()
       camera.updateWorldMatrix(true, true)
-      rendererRef.current.render(sceneRef.current, camera)
+      invalidate()
     }
 
     return () => {
@@ -160,7 +165,7 @@ export default function Gizmo() {
             hoverEdgeMaterialRef,
             hoverFaceMaterialRef
           )
-          renderer.render(sceneRef.current, cameraRef.current)
+          invalidate()
         })().catch(console.error)
       },
       undefined,
@@ -193,7 +198,7 @@ export default function Gizmo() {
           hoverEdgeMaterialRef,
           hoverFaceMaterialRef
         )
-        renderer.render(sceneRef.current, cameraRef.current)
+        invalidate()
       } else {
         clearHighlight()
       }
@@ -304,12 +309,22 @@ export default function Gizmo() {
         delta,
         cameraPassiveUpdateTimer
       )
-      renderer.render(sceneRef.current, cameraRef.current)
+      invalidate()
       if (!isDraggingRef.current && lastMouse.current) {
         doRayCast(lastMouse.current)
       }
     }
     sceneInfra.camControls.cameraChange.add(onCameraChange)
+
+    // Start render loop: render only when invalidated
+    const renderLoop = () => {
+      if (needsRenderRef.current && rendererRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current)
+        needsRenderRef.current = false
+      }
+      rafIdRef.current = requestAnimationFrame(renderLoop)
+    }
+    rafIdRef.current = requestAnimationFrame(renderLoop)
 
     return () => {
       renderer.dispose()
@@ -323,6 +338,7 @@ export default function Gizmo() {
       window.removeEventListener('mouseup', onMouseUp)
 
       sceneInfra.camControls.cameraChange.remove(onCameraChange)
+      cancelAnimationFrame(rafIdRef.current)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -339,7 +355,7 @@ export default function Gizmo() {
         hoverEdgeMaterialRef,
         hoverFaceMaterialRef
       )
-      rendererRef.current!.render(sceneRef.current, cameraRef.current)
+      invalidate()
     })().catch(console.error)
   }, [resolvedTheme])
 
