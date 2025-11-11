@@ -1,20 +1,17 @@
 import { Popover } from '@headlessui/react'
 import type { MutableRefObject } from 'react'
 import { useEffect, useRef } from 'react'
-import { Color, OrthographicCamera } from 'three'
+import { Color, OrthographicCamera, SRGBColorSpace } from 'three'
 import type {
   Mesh,
   BufferGeometry,
   Camera,
   Intersection,
   Object3D,
+  Texture,
 } from 'three'
 import {
   Clock,
-  BoxGeometry,
-  EdgesGeometry,
-  LineBasicMaterial,
-  LineSegments,
   Matrix4,
   PerspectiveCamera,
   Quaternion,
@@ -23,6 +20,7 @@ import {
   Vector2,
   Vector3,
   WebGLRenderer,
+  TextureLoader,
 } from 'three'
 import { AmbientLight, DirectionalLight, MeshStandardMaterial } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
@@ -33,14 +31,18 @@ import {
   useViewControlMenuItems,
 } from '@src/components/ViewControlMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 import { sceneInfra } from '@src/lib/singletons'
 import { useSettings } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { btnName } from '@src/lib/cameraControls'
+// Local asset base for gizmo files
+const GIZMO_ASSETS_BASE = '/clientSideSceneAssets/gizmo_cube'
 
 export default function Gizmo() {
   const { state: modelingState } = useModelingContext()
   const settings = useSettings()
+  const resolvedTheme = useResolvedTheme()
   const menuItems = useViewControlMenuItems()
   const wrapperRef = useRef<HTMLDivElement>(null!)
   const rendererRef = useRef<WebGLRenderer | null>(null)
@@ -54,6 +56,15 @@ export default function Gizmo() {
     new Map()
   )
   const hoverMaterialRef = useRef<MeshStandardMaterial | null>(null)
+  const hoverFaceMaterialRef = useRef<MeshStandardMaterial | null>(null)
+  const gizmoRootRef = useRef<Object3D | null>(null)
+  const textureLoaderRef = useRef<TextureLoader | null>(null)
+  const texturesRef = useRef<{
+    light?: Texture
+    dark?: Texture
+    lightHover?: Texture
+    darkHover?: Texture
+  }>({})
 
   const isPerspective =
     settings.modeling.cameraProjection.current === 'perspective'
@@ -63,6 +74,119 @@ export default function Gizmo() {
   const isDraggingRef = useRef(false)
   const dragLastRef = useRef<Vector2 | null>(null)
   const didDragRef = useRef(false)
+
+  // Helpers scoped to component for textures and materials
+  const ensureThemeTexturesLoaded = async (theme: 'light' | 'dark') => {
+    if (!textureLoaderRef.current) return
+    const loader = textureLoaderRef.current
+    const load = (key: keyof typeof texturesRef.current, url: string) =>
+      new Promise<void>((resolve, reject) => {
+        if (texturesRef.current[key]) return resolve()
+        loader.load(
+          url,
+          (t) => {
+            t.flipY = false
+            t.colorSpace = SRGBColorSpace
+            t.needsUpdate = true
+            texturesRef.current[key] = t
+            resolve()
+          },
+          undefined,
+          reject
+        )
+      })
+    if (theme === 'dark') {
+      await load('dark', `${GIZMO_ASSETS_BASE}/labels_dark.png`)
+      await load('darkHover', `${GIZMO_ASSETS_BASE}/labels_dark_hover.png`)
+    } else {
+      await load('light', `${GIZMO_ASSETS_BASE}/labels_light.png`)
+      await load('lightHover', `${GIZMO_ASSETS_BASE}/labels_light_hover.png`)
+    }
+  }
+
+  const applyThemeTexturesToFaces = (theme: 'light' | 'dark') => {
+    const root = gizmoRootRef.current
+    if (!root) return
+    const base =
+      theme === 'dark' ? texturesRef.current.dark : texturesRef.current.light
+    if (!base) return
+    root.traverse((node) => {
+      if (isStandardMesh(node) && node.name?.startsWith('face_')) {
+        node.material.map = base
+        // Ensure white base color behind label textures
+        node.material.color.set(0xffffff)
+        node.material.roughness = 0.6
+        node.material.metalness = 0.0
+        node.material.needsUpdate = true
+      }
+    })
+  }
+
+  const setupHoverFaceMaterial = () => {
+    const root = gizmoRootRef.current
+    if (!root) return
+    const hoverTex =
+      resolvedTheme === 'dark'
+        ? texturesRef.current.darkHover
+        : texturesRef.current.lightHover
+    if (!hoverTex) return
+    let faceMat: MeshStandardMaterial | null = null
+    root.traverse((node) => {
+      if (!faceMat && isStandardMesh(node) && node.name?.startsWith('face_')) {
+        faceMat = node.material
+      }
+    })
+    if (faceMat) {
+      const cloned = (faceMat as MeshStandardMaterial).clone() as MeshStandardMaterial
+      cloned.map = hoverTex
+      //cloned.emissive = new Color(0x3c73ff)
+      hoverFaceMaterialRef.current = cloned
+    }
+  }
+
+  const edgeCornerPalette = {
+    light: {
+      base: new Color('#363837'),
+      hover: new Color('#e2e3de'),
+    },
+    dark: {
+      base: new Color('#e2e3de'),
+      hover: new Color('#363837'),
+    },
+  } as const
+
+  const applyEdgeCornerBaseColors = (theme: 'light' | 'dark') => {
+    const root = gizmoRootRef.current
+    if (!root) return
+    const baseColor = edgeCornerPalette[theme].base
+    root.traverse((node) => {
+      if (
+        isStandardMesh(node) &&
+        (node.name?.startsWith('edge_') || node.name?.startsWith('corner_'))
+      ) {
+        node.material.color.copy(baseColor)
+        node.material.roughness = 0.6
+        node.material.metalness = 0.0
+        node.material.needsUpdate = true
+      }
+    })
+  }
+
+  const setupHoverEdgeCornerMaterial = (theme: 'light' | 'dark') => {
+    const hoverColor = edgeCornerPalette[theme].hover
+    if (!hoverMaterialRef.current) {
+      hoverMaterialRef.current = new MeshStandardMaterial({
+        color: hoverColor,
+        emissive: 0x000000,
+        roughness: 0.6,
+        metalness: 0.0,
+      })
+    } else {
+      hoverMaterialRef.current.color.copy(hoverColor)
+      hoverMaterialRef.current.emissive = new Color(0x000000)
+      hoverMaterialRef.current.needsUpdate = true
+    }
+  }
 
   useEffect(() => {
     const previousCamera = cameraRef.current
@@ -119,23 +243,24 @@ export default function Gizmo() {
     renderer.setPixelRatio(window.devicePixelRatio)
     rendererRef.current = renderer
 
+    textureLoaderRef.current = new TextureLoader()
+
     const ambient = new AmbientLight(0xffffff, 1.5)
     sceneRef.current.add(ambient)
 
     hoverMaterialRef.current = new MeshStandardMaterial({
       color: 0x3c73ff,
       emissive: 0x000000,
-      //emissiveIntensity: 0.4,
       roughness: 0.6,
       metalness: 0.0,
-      transparent: true,
     })
 
     const loader = new GLTFLoader()
     loader.load(
-      '/clientSideSceneAssets/gizmo_cube.glb',
+      `${GIZMO_ASSETS_BASE}/gizmo_cube.glb`,
       (gltf) => {
         const root = gltf.scene
+        gizmoRootRef.current = root
         root.position.set(0, 0, 0)
         root.scale.set(0.675, 0.675, 0.675)
         sceneRef.current.add(root)
@@ -148,29 +273,16 @@ export default function Gizmo() {
         })
         clickableObjects.current = clickable
 
-        // Add a face-outline overlay using EdgesGeometry (filters coplanar diagonals)
-        // Assume cube width = 1 at the root's local space
-        const outlineGeom = new EdgesGeometry(new BoxGeometry(1, 1, 1), 1)
-        const outlineMat = new LineBasicMaterial({ color: 0x3c73ff })
-        const outline = new LineSegments(outlineGeom, outlineMat)
-        root.add(outline)
-
-        root.traverse((node) => {
-          if (isStandardMesh(node)) {
-            node.material.transparent = true
-            // Reduce z-fighting
-            node.material.polygonOffset = true
-            node.material.polygonOffsetFactor = 1
-            node.material.polygonOffsetUnits = 1
-
-            if (node.material.map && !hoverMaterialRef.current?.map) {
-              hoverMaterialRef.current = node.material.clone()
-              hoverMaterialRef.current.emissive = new Color(0x3c73ff)
-            }
-          }
-        })
-
-        applyMaxAnisotropyToObject(root, renderer)
+        ;(async () => {
+          const themeKey = resolvedTheme === 'dark' ? 'dark' : 'light'
+          await ensureThemeTexturesLoaded(themeKey)
+          applyThemeTexturesToFaces(themeKey)
+          applyEdgeCornerBaseColors(themeKey)
+          setupHoverEdgeCornerMaterial(themeKey)
+          setupHoverFaceMaterial()
+          applyMaxAnisotropyToObject(root, renderer)
+          renderer.render(sceneRef.current, cameraRef.current)
+        })().catch(console.error)
       },
       undefined,
       (e) => {
@@ -199,7 +311,8 @@ export default function Gizmo() {
           raycasterIntersect,
           hoveredObjectRef,
           originalMaterialsRef,
-          hoverMaterialRef
+          hoverMaterialRef,
+          hoverFaceMaterialRef
         )
         renderer.render(sceneRef.current, cameraRef.current)
       } else {
@@ -334,6 +447,22 @@ export default function Gizmo() {
     }
   }, [])
 
+  // Update face textures when theme changes
+  useEffect(() => {
+    if (!gizmoRootRef.current || !rendererRef.current) return
+    ;(async () => {
+      const themeKey = resolvedTheme === 'dark' ? 'dark' : 'light'
+      await ensureThemeTexturesLoaded(themeKey)
+      applyThemeTexturesToFaces(themeKey)
+      applyEdgeCornerBaseColors(themeKey)
+      setupHoverEdgeCornerMaterial(themeKey)
+      setupHoverFaceMaterial()
+      applyMaxAnisotropyToObject(gizmoRootRef.current!, rendererRef.current!)
+      rendererRef.current!.render(sceneRef.current, cameraRef.current)
+    })().catch(console.error)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resolvedTheme])
+
   return (
     <div className="relative">
       <div
@@ -436,7 +565,8 @@ const updateRayCaster = (
   raycasterIntersect: MutableRefObject<Intersection | null>,
   hoveredObjectRef: MutableRefObject<StandardMesh | null>,
   originalMaterialsRef: MutableRefObject<Map<string, MeshStandardMaterial>>,
-  hoverMaterialRef: MutableRefObject<MeshStandardMaterial | null>
+  hoverMaterialRef: MutableRefObject<MeshStandardMaterial | null>,
+  hoverFaceMaterialRef: MutableRefObject<MeshStandardMaterial | null>
 ) => {
   raycaster.setFromCamera(mouse, camera)
   const intersects = raycaster.intersectObjects(objects, true)
@@ -457,7 +587,8 @@ const updateRayCaster = (
         applyHighlight(
           obj,
           originalMaterialsRef.current,
-          hoverMaterialRef.current
+          hoverMaterialRef.current,
+          hoverFaceMaterialRef.current
         )
         hoveredObjectRef.current = obj
       }
@@ -471,18 +602,22 @@ const updateRayCaster = (
 function applyHighlight(
   target: Object3D,
   originalMaterials: Map<string, MeshStandardMaterial>,
-  hoverMaterial: MeshStandardMaterial | null
+  hoverMaterial: MeshStandardMaterial | null,
+  hoverFaceMaterial: MeshStandardMaterial | null
 ) {
   if (!isStandardMesh(target)) {
     console.warn('target should be a standard mesh')
     return
   }
-  if (!hoverMaterial) return
   if (!originalMaterials.has(target.uuid)) {
     // Save original material(s)
     originalMaterials.set(target.uuid, target.material)
-    // Apply hover material
-    target.material = hoverMaterial
+    // Apply face-specific hover texture when over faces, otherwise generic hover
+    if (target.name?.startsWith('face_') && hoverFaceMaterial) {
+      target.material = hoverFaceMaterial
+    } else if (hoverMaterial) {
+      target.material = hoverMaterial
+    }
   }
 }
 
