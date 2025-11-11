@@ -43,7 +43,6 @@ import { deg2Rad } from '@src/lib/utils2d'
 import { degToRad } from 'three/src/math/MathUtils'
 import { type ConnectionManager } from '@src/network/connectionManager'
 import type { Subscription, UnreliableSubscription } from '@src/network/utils'
-import { isQuaternionVertical } from '@src/clientSideScene/helpers'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
