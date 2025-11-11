@@ -1,4 +1,4 @@
-import { assertParse, recast, type PlaneArtifact } from '@src/lang/wasm'
+import { recast, type PlaneArtifact } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   createSelectionFromArtifacts,
@@ -431,14 +431,6 @@ ${cylinder}`
   holeType =   hole::simple(),
 )`
 
-    it('mock exec should work with hole::hole', async () => {
-      const code = `${cylinderWithFlag}
-${simpleHole}`
-      console.log('code', code)
-      const ast = assertParse(code, instanceInThisFile)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
-    })
-
     it('should add a simple hole call on cylinder end cap', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         cylinderWithFlag,
@@ -480,9 +472,10 @@ ${simpleHole}`
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      console.log('newCode', newCode)
-      expect(newCode).toContain(cylinderWithFlag)
-      expect(newCode).toContain(simpleHole)
+      if (err(newCode)) throw newCode
+      expect(newCode).toBe(`${cylinderWithFlag}
+${simpleHole}
+`)
       await enginelessExecutor(
         result.modifiedAst,
         undefined,
