@@ -60,10 +60,17 @@ function createRawStr(
   suffix?: NumericSuffix,
   wasmInstance?: ModuleType
 ): string {
-  if (typeof value !== 'number' || !suffix) {
+  // Handle string literals - wrap in double quotes
+  if (typeof value === 'string') {
+    return `"${value}"`
+  }
+
+  // Handle booleans and numbers without suffix
+  if (typeof value === 'boolean' || !suffix) {
     return `${value}`
   }
 
+  // Handle numbers with suffix
   const formatted = formatNumberLiteral(value, suffix, wasmInstance)
   if (err(formatted)) {
     return `${value}`
