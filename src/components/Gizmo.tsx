@@ -657,37 +657,17 @@ function orientationQuaternionForName(name: string): Quaternion | null {
   const up = new Vector3(0, 0, 1)
   const target = new Vector3(0, 0, 0)
 
-  // derive an eye direction from the name
-  // faces: axis aligned; edges: 45° between two axes; corners: towards the vertex (1,1,1) combos
   const dir = new Vector3()
-  if (name.startsWith('face_')) {
-    if (name.endsWith('front')) dir.set(0, -1, 0)
-    else if (name.includes('back')) dir.set(0, 1, 0)
-    else if (name.includes('right')) dir.set(1, 0, 0)
-    else if (name.includes('left')) dir.set(-1, 0, 0)
-    else if (name.includes('top')) dir.set(0, 0, 1)
-    else if (name.includes('bottom')) dir.set(0, 0, -1)
-  } else if (name.startsWith('edge_')) {
-    // edges are equal mixes of two axes (unit, then normalized)
-    if (name.includes('front')) dir.add(new Vector3(0, -1, 0))
-    if (name.includes('back')) dir.add(new Vector3(0, 1, 0))
-    if (name.includes('left')) dir.add(new Vector3(-1, 0, 0))
-    if (name.includes('right')) dir.add(new Vector3(1, 0, 0))
-    if (name.includes('top')) dir.add(new Vector3(0, 0, 1))
-    if (name.includes('bottom')) dir.add(new Vector3(0, 0, -1))
-  } else if (name.startsWith('corner')) {
-    // corners mix three axes
-    if (name.includes('front')) dir.add(new Vector3(0, -1, 0))
-    if (name.includes('back')) dir.add(new Vector3(0, 1, 0))
-    if (name.includes('left')) dir.add(new Vector3(-1, 0, 0))
-    if (name.includes('right')) dir.add(new Vector3(1, 0, 0))
-    if (name.includes('top')) dir.add(new Vector3(0, 0, 1))
-    if (name.includes('bottom')) dir.add(new Vector3(0, 0, -1))
-  } else {
+  if (name.includes('front')) dir.add(new Vector3(0, -1, 0))
+  if (name.includes('back')) dir.add(new Vector3(0, 1, 0))
+  if (name.includes('left')) dir.add(new Vector3(-1, 0, 0))
+  if (name.includes('right')) dir.add(new Vector3(1, 0, 0))
+  if (name.includes('top')) dir.add(new Vector3(0, 0, 1))
+  if (name.includes('bottom')) dir.add(new Vector3(0, 0, -1))
+
+  if (dir.lengthSq() === 0) {
     return null
   }
-
-  if (dir.lengthSq() === 0) return null
   dir.normalize()
 
   // Build a lookAt quaternion placing the eye along the dir vector
