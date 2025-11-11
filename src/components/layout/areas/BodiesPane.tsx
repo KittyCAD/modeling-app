@@ -27,11 +27,6 @@ export function BodiesPane(props: AreaTypeComponentProps) {
   )
 }
 
-type BodyItem = {
-  id: string
-  isVisible: boolean
-}
-
 async function getBodiesFromEngine(skip = 0) {
   return engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
@@ -46,10 +41,16 @@ async function getBodiesFromEngine(skip = 0) {
 }
 
 function getBodiesFromArtifactGraph() {
-  return filterArtifacts(
+  const artifacts = filterArtifacts(
     { types: ['compositeSolid', 'sweep'] },
     kclManager.artifactGraph
   )
+
+  console.log('FRANK FRILTERED FARTIFACTS', artifacts)
+  return artifacts
+    .values()
+    .map((item) => (item.type === 'sweep' ? item.pathId : item.toolIds[0]))
+    .toArray()
 }
 
 async function setEngineVisibility(id: string, isVisible: boolean) {
@@ -98,7 +99,7 @@ function BodiesList() {
                 {},
                 current,
                 Object.fromEntries(
-                  newBodiesFromArtifactGraph.keys().map((id) => [id, true])
+                  newBodiesFromArtifactGraph.map((id) => [id, true])
                 )
               )
               return newBodies
@@ -121,7 +122,7 @@ function BodiesList() {
   }
 
   return (
-    <section>
+    <section className="overflow-auto mr-1 pb-8">
       <button onClick={onClick}>Get Bodies</button>
       <ul>
         {Object.entries(bodies).map(([id, isVisible], i) => (
