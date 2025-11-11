@@ -1,19 +1,18 @@
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclSingleton'
-import {
-  type Artifact,
-  assertParse,
-  recast,
-  type ArtifactGraph,
-} from '@src/lang/wasm'
+import { assertParse, recast, type ArtifactGraph } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { addFlatnessGdt } from '@src/lang/modifyAst/gdt'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type RustContext from '@src/lib/rustContext'
+import {
+  createSelectionFromArtifacts,
+  enginelessExecutor,
+  getCapFromCylinder,
+} from '@src/lib/testHelpers'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -52,34 +51,6 @@ const executeCode = async (
   const artifactGraph = kclManager.artifactGraph
   await new Promise((resolve) => setTimeout(resolve, 100))
   return { ast, artifactGraph }
-}
-
-function createSelectionFromArtifacts(
-  artifacts: Artifact[],
-  artifactGraph: ArtifactGraph
-): Selections {
-  const graphSelections = artifacts.flatMap((artifact) => {
-    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
-    if (!codeRefs || codeRefs.length === 0) {
-      return []
-    }
-
-    return {
-      codeRef: codeRefs[0],
-      artifact,
-    } as Selection
-  })
-  return {
-    graphSelections,
-    otherSelections: [],
-  }
-}
-
-function getCapFromCylinder(artifactGraph: ArtifactGraph) {
-  const endFace = [...artifactGraph.values()].find(
-    (a) => a.type === 'cap' && a.subType === 'end'
-  )
-  return createSelectionFromArtifacts([endFace!], artifactGraph)
 }
 
 function getWallsFromBox(artifactGraph: ArtifactGraph, count: number) {
@@ -191,6 +162,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain(
         'gdt::flatness(faces = [capEnd001], tolerance = 0.1mm)'
       )
+
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add flatness annotations to multiple faces', async () => {
@@ -223,6 +201,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
       expect(newCode).toContain('faces = [seg02], tolerance = 0.1mm')
       expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
+
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add flatness annotations to different bodies', async () => {
@@ -253,6 +238,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Verify each face has its own annotation
       expect(newCode).toContain('faces = [capEnd001], tolerance = 0.1mm')
       expect(newCode).toContain('faces = [capEnd002], tolerance = 0.1mm')
+
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should not create duplicate annotations when same face is selected multiple times', async () => {
@@ -296,6 +288,12 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('faces = [seg01], tolerance = 0.1mm')
       expect(newCode).toContain('faces = [seg02], tolerance = 0.1mm')
       expect(newCode).toContain('faces = [seg03], tolerance = 0.1mm')
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should allow adding another annotation to the same face', async () => {
@@ -319,6 +317,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         tolerance: tolerance1,
       })
       if (err(result1)) throw result1
+
+      await enginelessExecutor(
+        result1.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
 
       // Add second annotation to the same face
       const tolerance2 = await getKclCommandValue(
@@ -344,6 +349,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(gdtCalls).toHaveLength(2)
       expect(newCode).toContain('faces = [capEnd001], tolerance = 0.1mm')
       expect(newCode).toContain('faces = [capEnd001], tolerance = 0.2mm')
+
+      await enginelessExecutor(
+        result2.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add flatness annotation with all optional parameters', async () => {
@@ -408,6 +420,12 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('framePlane = XY')
       expect(newCode).toContain('fontPointSize = 36')
       expect(newCode).toContain('fontScale = 1.5')
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should place GDT annotations at the end of the file', async () => {
@@ -433,6 +451,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const lastExtrudeIndex = newCode.lastIndexOf('extrude')
       const firstGdtIndex = newCode.indexOf('gdt::flatness')
       expect(firstGdtIndex).toBeGreaterThan(lastExtrudeIndex)
+
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add a flatness annotation to an edgeCut (chamfer) face', async () => {
@@ -475,6 +500,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Verify the original chamfer operation is still there
       expect(newCode).toContain('chamfer(')
       expect(newCode).toContain('getCommonEdge(faces = [seg01, capEnd001])')
+
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should successfully add a fillet GDT annotation (tests end-to-end integration)', async () => {
@@ -526,6 +558,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       // Verify the fillet was tagged properly
       expect(newCode).toContain('tag = $seg02')
+
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
   })
 })

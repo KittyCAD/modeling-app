@@ -2,6 +2,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
+  createIdentifier,
   createLabeledArg,
   createLocalName,
 } from '@src/lang/create'
@@ -201,10 +202,14 @@ export function addFlatnessGdt({
 
     // Create the gdt::flatness call
     // Using null for unlabeled args since all args are labeled
+    const nonCodeMeta = undefined
+    const modulePath = [createIdentifier('gdt')]
     const call = createCallExpressionStdLibKw(
-      'gdt::flatness',
+      'flatness',
       null,
-      labeledArgs
+      labeledArgs,
+      nonCodeMeta,
+      modulePath
     )
 
     // Insert the function call into the AST at the appropriate location
