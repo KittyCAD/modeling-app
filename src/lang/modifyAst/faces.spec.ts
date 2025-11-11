@@ -1,4 +1,4 @@
-import { recast, type PlaneArtifact } from '@src/lang/wasm'
+import { assertParse, recast, type PlaneArtifact } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   createSelectionFromArtifacts,
@@ -419,6 +419,9 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)`)
   })
 
   describe('Testing addHole', () => {
+    const cylinderWithFlag = `@settings(experimentalFeatures = allow)
+
+${cylinder}`
     const simpleHole = `hole001 = hole::hole(
   extrude001,
   face = END,
@@ -428,9 +431,17 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)`)
   holeType =   hole::simple(),
 )`
 
+    it('mock exec should work with hole::hole', async () => {
+      const code = `${cylinderWithFlag}
+${simpleHole}`
+      console.log('code', code)
+      const ast = assertParse(code, instanceInThisFile)
+      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+    })
+
     it('should add a simple hole call on cylinder end cap', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
-        cylinder,
+        cylinderWithFlag,
         instanceInThisFile,
         kclManagerInThisFile
       )
@@ -469,9 +480,15 @@ shell001 = shell(extrude001, faces = END, thickness = 0.1)`)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(cylinder)
+      console.log('newCode', newCode)
+      expect(newCode).toContain(cylinderWithFlag)
       expect(newCode).toContain(simpleHole)
-      // TODO: add mock exec once hole::hole is supported
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     // TODO: enable this test once https://github.com/KittyCAD/modeling-app/issues/8616 is closed

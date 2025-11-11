@@ -50,7 +50,7 @@ import {
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
-import { addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
+import { addHole, addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
 import {
   addIntersect,
   addSubtract,
@@ -856,9 +856,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Standard holes that could be drilled or cut into a 3D solid.',
     icon: 'hole',
     needsReview: true,
-    status: 'experimental',
     reviewMessage:
       'The argument cutAt specifies where to place the hole given as absolute coordinates in the global scene. Point selection will be allowed in the future, and more hole bottoms and hole types are coming soon.',
+    reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addHole({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Hole']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
