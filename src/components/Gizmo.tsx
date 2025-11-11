@@ -55,10 +55,10 @@ export default function Gizmo() {
   const originalMaterialsRef = useRef<Map<string, MeshStandardMaterial>>(
     new Map()
   )
-  const hoverMaterialRef = useRef<MeshStandardMaterial | null>(null)
+  const hoverEdgeMaterialRef = useRef<MeshStandardMaterial | null>(null)
   const hoverFaceMaterialRef = useRef<MeshStandardMaterial | null>(null)
   const gizmoRootRef = useRef<Object3D | null>(null)
-  const textureLoaderRef = useRef<TextureLoader | null>(null)
+  const textureLoaderRef = useRef<TextureLoader>(new TextureLoader())
   const texturesRef = useRef<{
     light?: Texture
     dark?: Texture
@@ -75,9 +75,7 @@ export default function Gizmo() {
   const dragLastRef = useRef<Vector2 | null>(null)
   const didDragRef = useRef(false)
 
-  // Helpers scoped to component for textures and materials
   const ensureThemeTexturesLoaded = async (theme: 'light' | 'dark') => {
-    if (!textureLoaderRef.current) return
     const loader = textureLoaderRef.current
     const load = (key: keyof typeof texturesRef.current, url: string) =>
       new Promise<void>((resolve, reject) => {
@@ -124,62 +122,36 @@ export default function Gizmo() {
 
   const setupHoverFaceMaterial = () => {
     const root = gizmoRootRef.current
-    if (!root) return
-    const hoverTex =
-      resolvedTheme === 'dark'
-        ? texturesRef.current.darkHover
-        : texturesRef.current.lightHover
-    if (!hoverTex) return
-    const faceMesh = root.children.find((node) =>
-      node.name?.startsWith('face_')
-    )
-    if (isStandardMesh(faceMesh)) {
-      hoverFaceMaterialRef.current = faceMesh.material.clone()
-      hoverFaceMaterialRef.current.map = hoverTex
-    }
-  }
-
-  const edgeCornerPalette = {
-    light: {
-      base: new Color('#363837'),
-      hover: new Color('#e2e3de'),
-    },
-    dark: {
-      base: new Color('#e2e3de'),
-      hover: new Color('#363837'),
-    },
-  } as const
-
-  const applyEdgeCornerBaseColors = (theme: 'light' | 'dark') => {
-    const root = gizmoRootRef.current
-    if (!root) return
-    const baseColor = edgeCornerPalette[theme].base
-    root.traverse((node) => {
-      if (
-        isStandardMesh(node) &&
-        (node.name?.startsWith('edge_') || node.name?.startsWith('corner_'))
-      ) {
-        node.material.color.copy(baseColor)
-        node.material.roughness = 0.6
-        node.material.metalness = 0.0
-        node.material.needsUpdate = true
+    if (root) {
+      const hoverTexture =
+        resolvedTheme === 'dark'
+          ? texturesRef.current.darkHover
+          : texturesRef.current.lightHover
+      if (hoverTexture) {
+        const faceMesh = root.children.find((node) =>
+          node.name?.startsWith('face_')
+        )
+        if (isStandardMesh(faceMesh)) {
+          hoverFaceMaterialRef.current = faceMesh.material.clone()
+          hoverFaceMaterialRef.current.map = hoverTexture
+        }
       }
-    })
+    }
   }
 
   const setupHoverEdgeCornerMaterial = (theme: 'light' | 'dark') => {
     const hoverColor = edgeCornerPalette[theme].hover
-    if (!hoverMaterialRef.current) {
-      hoverMaterialRef.current = new MeshStandardMaterial({
+    if (!hoverEdgeMaterialRef.current) {
+      hoverEdgeMaterialRef.current = new MeshStandardMaterial({
         color: hoverColor,
         emissive: 0x000000,
         roughness: 0.6,
         metalness: 0.0,
       })
     } else {
-      hoverMaterialRef.current.color.copy(hoverColor)
-      hoverMaterialRef.current.emissive = new Color(0x000000)
-      hoverMaterialRef.current.needsUpdate = true
+      hoverEdgeMaterialRef.current.color.copy(hoverColor)
+      hoverEdgeMaterialRef.current.emissive = new Color(0x000000)
+      hoverEdgeMaterialRef.current.needsUpdate = true
     }
   }
 
@@ -238,12 +210,10 @@ export default function Gizmo() {
     renderer.setPixelRatio(window.devicePixelRatio)
     rendererRef.current = renderer
 
-    textureLoaderRef.current = new TextureLoader()
-
     const ambient = new AmbientLight(0xffffff, 1.5)
     sceneRef.current.add(ambient)
 
-    hoverMaterialRef.current = new MeshStandardMaterial({
+    hoverEdgeMaterialRef.current = new MeshStandardMaterial({
       color: 0x3c73ff,
       emissive: 0x000000,
       roughness: 0.6,
@@ -269,9 +239,9 @@ export default function Gizmo() {
         clickableObjects.current = clickable
         ;(async () => {
           const themeKey = resolvedTheme === 'dark' ? 'dark' : 'light'
+          applyEdgeCornerBaseColors(gizmoRootRef.current, themeKey)
           await ensureThemeTexturesLoaded(themeKey)
           applyThemeTexturesToFaces(themeKey)
-          applyEdgeCornerBaseColors(themeKey)
           setupHoverEdgeCornerMaterial(themeKey)
           setupHoverFaceMaterial()
           applyMaxAnisotropyToObject(root, renderer)
@@ -305,7 +275,7 @@ export default function Gizmo() {
           raycasterIntersect,
           hoveredObjectRef,
           originalMaterialsRef,
-          hoverMaterialRef,
+          hoverEdgeMaterialRef,
           hoverFaceMaterialRef
         )
         renderer.render(sceneRef.current, cameraRef.current)
@@ -448,13 +418,12 @@ export default function Gizmo() {
       const themeKey = resolvedTheme === 'dark' ? 'dark' : 'light'
       await ensureThemeTexturesLoaded(themeKey)
       applyThemeTexturesToFaces(themeKey)
-      applyEdgeCornerBaseColors(themeKey)
+      applyEdgeCornerBaseColors(gizmoRootRef.current, themeKey)
       setupHoverEdgeCornerMaterial(themeKey)
       setupHoverFaceMaterial()
       applyMaxAnisotropyToObject(gizmoRootRef.current!, rendererRef.current!)
       rendererRef.current!.render(sceneRef.current, cameraRef.current)
     })().catch(console.error)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resolvedTheme])
 
   return (
@@ -742,4 +711,34 @@ function isStandardMesh(object: Object3D | undefined): object is StandardMesh {
     }
     return false
   }
+}
+
+const edgeCornerPalette = {
+  light: {
+    base: new Color('#363837'),
+    hover: new Color('#e2e3de'),
+  },
+  dark: {
+    base: new Color('#e2e3de'),
+    hover: new Color('#363837'),
+  },
+} as const
+
+const applyEdgeCornerBaseColors = (
+  root: Object3D | null,
+  theme: 'light' | 'dark'
+) => {
+  if (!root) return
+  const baseColor = edgeCornerPalette[theme].base
+  root.traverse((node) => {
+    if (
+      isStandardMesh(node)
+      // && (node.name?.startsWith('edge_') || node.name?.startsWith('corner_'))
+    ) {
+      node.material.color.copy(baseColor)
+      node.material.roughness = 0.6
+      node.material.metalness = 0.0
+      node.material.needsUpdate = true
+    }
+  })
 }
