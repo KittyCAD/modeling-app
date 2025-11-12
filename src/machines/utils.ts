@@ -5,9 +5,7 @@ export enum S {
   Await = 'await',
 }
 
-export const transitions = <T>(
-  list: T[]
-): Record<string, { target: string }> => {
+export function transitions<T>(list: T[]): Record<string, { target: T }> {
   return list.reduce(
     (obj, cur) => ({ ...obj, [String(cur)]: { target: cur } }),
     {}
