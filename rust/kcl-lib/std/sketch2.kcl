@@ -39,7 +39,7 @@ export fn arc(
 ///
 /// Currently limited to two points.
 @(impl = std_rust_constraint, experimental = true, feature_tree = true)
-export fn coincident(@points: [Point2d | Segment; 2]) {}
+export fn coincident(@points: [Segment; 2]) {}
 
 /// Constrain lines to have equal length.
 ///
