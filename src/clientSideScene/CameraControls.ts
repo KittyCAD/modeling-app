@@ -263,15 +263,14 @@ export class CameraControls {
   doZoom = (zoom: number) => {
     this.handleStart()
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.engineCommandManager
-      .sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd: {
-          type: 'default_camera_zoom',
-          magnitude: (-1 * zoom) / window.devicePixelRatio,
-        },
-        cmd_id: uuidv4(),
-      })
+    this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'default_camera_zoom',
+        magnitude: (-1 * zoom) / window.devicePixelRatio,
+      },
+      cmd_id: uuidv4(),
+    })
     this.handleEnd()
   }
 
