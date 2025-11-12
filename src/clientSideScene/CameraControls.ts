@@ -272,9 +272,6 @@ export class CameraControls {
         },
         cmd_id: uuidv4(),
       })
-      .then((r) => {
-        console.log('default_camera_zoom response', r)
-      })
     this.handleEnd()
   }
 
@@ -1166,7 +1163,6 @@ export class CameraControls {
       })().catch(reject)
     })
   }
-  /////////////////////////////////////
 
   async tweenCameraToQuaternion(
     targetQuaternion: Quaternion,

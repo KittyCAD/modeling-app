@@ -56,8 +56,6 @@ export default function Gizmo() {
       modelingState.matches('Sketch') &&
       !settings.app.allowOrbitInSketchMode.current
 
-    console.log(disabled, modelingState.context)
-
     setDisabledOrbit(disabled)
     renderer.current?.setDisabled(disabled)
     // if (wrapperRef.current) {
