@@ -18,6 +18,8 @@ The left side is for "global" items like your network status, and the right side
 
 The interface within Design Studio where users can choose which project to open, and can create new ones. It consists of a Top Bar, Project Browser, and Status Bar.
 
+![Home](/public/glossary/home.png)
+
 ## Project Browser
 
 The interface element found in the middle of the Home interface. It shows projects available to be opened in an area on the right, and a sidebar on the left with action buttons to create blank, generated, or sample projects.
@@ -25,6 +27,8 @@ The interface element found in the middle of the Home interface. It shows projec
 ## Workbench
 
 The interface within Design Studio where the user does the real CAD work. It consists of a Top Bar, a Layout, and a Status Bar.
+
+![Workbench](/public/glossary/workbench.png)
 
 ## Layout
 
