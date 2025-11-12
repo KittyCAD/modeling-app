@@ -144,15 +144,19 @@ export default class GizmoRenderer {
   }
 
   private updateModel() {
-    const themeMaterials = this.theme === 'light' ? this.materials.light : this.materials.dark
-    this.clickableObjects.forEach(object => {
+    const themeMaterials =
+      this.theme === 'light' ? this.materials.light : this.materials.dark
+    this.clickableObjects.forEach((object) => {
       const hovering = object === this.raycasterIntersect?.object
-      const face =  object.name.includes('face')
-      const material = face ? 
-        (hovering ? themeMaterials.face_hover
-        : themeMaterials.face)
-        :hovering ? themeMaterials.edge_hover : themeMaterials.edge
-        object.material = material
+      const face = object.name.includes('face')
+      const material = face
+        ? hovering
+          ? themeMaterials.face_hover
+          : themeMaterials.face
+        : hovering
+          ? themeMaterials.edge_hover
+          : themeMaterials.edge
+      object.material = material
     })
 
     this.invalidate()
