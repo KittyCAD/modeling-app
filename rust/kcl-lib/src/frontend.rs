@@ -7,7 +7,7 @@ use crate::{
     ExecOutcome, ExecutorContext, Program,
     exec::WarningLevel,
     fmt::format_number_literal,
-    front::{Line, LinesEqualLength, Parallel, PointCtor},
+    front::{Distance, Line, LinesEqualLength, Parallel, PointCtor},
     frontend::{
         api::{
             Error, Expr, FileId, Number, ObjectId, ObjectKind, ProjectId, SceneGraph, SceneGraphDelta, SourceDelta,
@@ -35,6 +35,7 @@ const LINE_FN: &str = "line";
 const LINE_START_PARAM: &str = "start";
 const LINE_END_PARAM: &str = "end";
 const COINCIDENT_FN: &str = "coincident";
+const DISTANCE_FN: &str = "distance";
 const EQUAL_LENGTH_FN: &str = "equalLength";
 const HORIZONTAL_FN: &str = "horizontal";
 const PARALLEL_FN: &str = "parallel";
@@ -301,6 +302,7 @@ impl SketchApi for FrontendState {
         let mut new_ast = self.program.ast.clone();
         let sketch_block_range = match constraint {
             Constraint::Coincident(coincident) => self.add_coincident(sketch, coincident, &mut new_ast).await?,
+            Constraint::Distance(distance) => self.add_distance(sketch, distance, &mut new_ast).await?,
             Constraint::Horizontal(horizontal) => self.add_horizontal(sketch, horizontal, &mut new_ast).await?,
             Constraint::LinesEqualLength(lines_equal_length) => {
                 self.add_lines_equal_length(sketch, lines_equal_length, &mut new_ast)
@@ -942,6 +944,132 @@ impl FrontendState {
                 new_ast,
                 sketch_id,
                 AstMutateCommand::AddSketchBlockExprStmt { expr: coincident_ast },
+            )
+            .map_err(|err| Error { msg: err.to_string() })?;
+        Ok(sketch_block_range)
+    }
+
+    async fn add_distance(
+        &mut self,
+        sketch: ObjectId,
+        distance: Distance,
+        new_ast: &mut ast::Node<ast::Program>,
+    ) -> api::Result<SourceRange> {
+        if distance.points.len() != 2 {
+            return Err(Error {
+                msg: format!(
+                    "Distance constraint must have exactly 2 points, got {}",
+                    distance.points.len()
+                ),
+            });
+        }
+        let sketch_id = sketch;
+
+        // Map the runtime objects back to variable names.
+        let pt0_id = distance.points[0];
+        let pt0_object = self.scene_graph.objects.get(pt0_id.0).ok_or_else(|| Error {
+            msg: format!("Point not found: {pt0_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: pt0_segment } = &pt0_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {pt0_object:?}"),
+            });
+        };
+        let Segment::Point(pt0) = pt0_segment else {
+            return Err(Error {
+                msg: format!("Only points are currently supported: {pt0_object:?}"),
+            });
+        };
+        // If the point is part of a line, refer to the line instead.
+        let pt0_ast = if let Some(line_id) = pt0.owner {
+            let line = self.expect_line(line_id)?;
+            let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
+            let property = if line.start == pt0_id {
+                LINE_PROPERTY_START
+            } else if line.end == pt0_id {
+                LINE_PROPERTY_END
+            } else {
+                return Err(Error {
+                    msg: format!(
+                        "Internal: Point is not part of owner's line segment: point={pt0_id:?}, line={line_id:?}"
+                    ),
+                });
+            };
+            get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
+        } else {
+            get_or_insert_ast_reference(new_ast, &pt0_object.source, "point", None)?
+        };
+
+        let pt1_id = distance.points[1];
+        let pt1_object = self.scene_graph.objects.get(pt1_id.0).ok_or_else(|| Error {
+            msg: format!("Point not found: {pt1_id:?}"),
+        })?;
+        let ObjectKind::Segment { segment: pt1_segment } = &pt1_object.kind else {
+            return Err(Error {
+                msg: format!("Object is not a segment: {pt1_object:?}"),
+            });
+        };
+        let Segment::Point(pt1) = pt1_segment else {
+            return Err(Error {
+                msg: format!("Only points are currently supported: {pt1_object:?}"),
+            });
+        };
+        // If the point is part of a line, refer to the line instead.
+        let pt1_ast = if let Some(line_id) = pt1.owner {
+            let line = self.expect_line(line_id)?;
+            let line_source = &self.scene_graph.objects.get(line_id.0).unwrap().source;
+            let property = if line.start == pt1_id {
+                LINE_PROPERTY_START
+            } else if line.end == pt1_id {
+                LINE_PROPERTY_END
+            } else {
+                return Err(Error {
+                    msg: format!(
+                        "Internal: Point is not part of owner's line segment: point={pt1_id:?}, line={line_id:?}"
+                    ),
+                });
+            };
+            get_or_insert_ast_reference(new_ast, line_source, "line", Some(property))?
+        } else {
+            get_or_insert_ast_reference(new_ast, &pt1_object.source, "point", None)?
+        };
+
+        // Create the distance() call.
+        let distance_call_ast = ast::BinaryPart::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+            callee: ast::Node::no_src(ast_sketch2_name(DISTANCE_FN)),
+            unlabeled: Some(ast::Expr::ArrayExpression(Box::new(ast::Node::no_src(
+                ast::ArrayExpression {
+                    elements: vec![pt0_ast, pt1_ast],
+                    digest: None,
+                    non_code_meta: Default::default(),
+                },
+            )))),
+            arguments: Default::default(),
+            digest: None,
+            non_code_meta: Default::default(),
+        })));
+        let distance_ast = ast::Expr::BinaryExpression(Box::new(ast::Node::no_src(ast::BinaryExpression {
+            left: distance_call_ast,
+            operator: ast::BinaryOperator::Eq,
+            right: ast::BinaryPart::Literal(Box::new(ast::Node::no_src(ast::Literal {
+                value: ast::LiteralValue::Number {
+                    value: distance.distance.value,
+                    suffix: distance.distance.units,
+                },
+                raw: format_number_literal(distance.distance.value, distance.distance.units).map_err(|_| Error {
+                    msg: format!("Could not format numeric suffix: {:?}", distance.distance.units),
+                })?,
+                digest: None,
+            }))),
+            digest: None,
+        })));
+
+        // Add the line to the AST of the sketch block.
+        let (sketch_block_range, _) = self
+            .mutate_ast(
+                new_ast,
+                sketch_id,
+                AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
             )
             .map_err(|err| Error { msg: err.to_string() })?;
         Ok(sketch_block_range)
@@ -1728,7 +1856,7 @@ mod tests {
     use super::*;
     use crate::{
         engine::PlaneName,
-        front::{Plane, Sketch},
+        front::{Distance, Plane, Sketch},
         frontend::sketch::Vertical,
         pretty::NumericSuffix,
     };
@@ -2402,6 +2530,62 @@ sketch(on = XY) {
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             8,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_distance_two_points() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  sketch2::point(at = [var 1, var 2])
+  sketch2::point(at = [var 3, var 4])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+        let point0_id = frontend.scene_graph.objects.get(1).unwrap().id;
+        let point1_id = frontend.scene_graph.objects.get(2).unwrap().id;
+
+        let constraint = Constraint::Distance(Distance {
+            points: vec![point0_id, point1_id],
+            distance: Number {
+                value: 2.0,
+                units: NumericSuffix::Mm,
+            },
+        });
+        let (src_delta, scene_delta) = frontend
+            .add_constraint(&mock_ctx, version, sketch_id, constraint)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            // The lack indentation is a formatter bug.
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  point1 = sketch2::point(at = [var 1, var 2])
+  point2 = sketch2::point(at = [var 3, var 4])
+sketch2::distance([point1, point2]) == 2mm
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            4,
             "{:#?}",
             scene_delta.new_graph.objects
         );

@@ -7,8 +7,9 @@ use crate::front::{
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        AbstractSegment, ExecState, KclValue, SegmentRepr, SketchVarId, UnsolvedExpr, UnsolvedSegment,
-        UnsolvedSegmentKind, normalize_to_solver_unit,
+        AbstractSegment, ConstrainablePoint2d, ExecState, KclValue, SegmentRepr, SketchConstraint,
+        SketchConstraintKind, SketchVarId, UnsolvedExpr, UnsolvedSegment, UnsolvedSegmentKind,
+        normalize_to_solver_unit,
         types::{ArrayLen, PrimitiveType, RuntimeType},
     },
     front::{LineCtor, Point2d, PointCtor},
@@ -452,6 +453,86 @@ fn coincident_constraints_fixed(
     let constraint_x = kcl_ezpz::Constraint::Fixed(p0_x.to_constraint_id(args.source_range)?, p1_x.n);
     let constraint_y = kcl_ezpz::Constraint::Fixed(p0_y.to_constraint_id(args.source_range)?, p1_y.n);
     Ok((constraint_x, constraint_y))
+}
+
+pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let points: Vec<KclValue> = args.get_unlabeled_kw_arg(
+        "points",
+        &RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Any)), ArrayLen::Known(2)),
+        exec_state,
+    )?;
+    if points.len() != 2 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "must have two input points".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    match (&points[0], &points[1]) {
+        (KclValue::Segment { value: seg0 }, KclValue::Segment { value: seg1 }) => {
+            let SegmentRepr::Unsolved { segment: unsolved0 } = &seg0.repr else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "first point must be an unsolved segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let SegmentRepr::Unsolved { segment: unsolved1 } = &seg1.repr else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "second point must be an unsolved segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            match (&unsolved0.kind, &unsolved1.kind) {
+                (
+                    UnsolvedSegmentKind::Point { position: pos0, .. },
+                    UnsolvedSegmentKind::Point { position: pos1, .. },
+                ) => {
+                    // Both segments are points. Create a distance constraint
+                    // between them.
+                    match (&pos0[0], &pos0[1], &pos1[0], &pos1[1]) {
+                        (
+                            UnsolvedExpr::Unknown(p0_x),
+                            UnsolvedExpr::Unknown(p0_y),
+                            UnsolvedExpr::Unknown(p1_x),
+                            UnsolvedExpr::Unknown(p1_y),
+                        ) => {
+                            // All coordinates are sketch vars. Proceed.
+                            let sketch_constraint = SketchConstraint {
+                                kind: SketchConstraintKind::Distance {
+                                    points: [
+                                        ConstrainablePoint2d {
+                                            vars: crate::front::Point2d { x: *p0_x, y: *p0_y },
+                                            object_id: unsolved0.object_id,
+                                        },
+                                        ConstrainablePoint2d {
+                                            vars: crate::front::Point2d { x: *p1_x, y: *p1_y },
+                                            object_id: unsolved1.object_id,
+                                        },
+                                    ],
+                                },
+                                meta: vec![args.source_range.into()],
+                            };
+                            Ok(KclValue::SketchConstraint {
+                                value: Box::new(sketch_constraint),
+                            })
+                        }
+                        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                            "unimplemented: distance() arguments must be all sketch vars in all coordinates".to_owned(),
+                            vec![args.source_range],
+                        ))),
+                    }
+                }
+                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                    "distance() arguments must be unsolved points".to_owned(),
+                    vec![args.source_range],
+                ))),
+            }
+        }
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            "distance() arguments must be point segments".to_owned(),
+            vec![args.source_range],
+        ))),
+    }
 }
 
 pub async fn equal_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

@@ -417,6 +417,7 @@ pub enum PrimitiveType {
     GdtAnnotation,
     Segment,
     Sketch,
+    Constraint,
     Solid,
     Plane,
     Helix,
@@ -440,6 +441,7 @@ impl PrimitiveType {
             PrimitiveType::GdtAnnotation => "GD&T Annotations".to_owned(),
             PrimitiveType::Segment => "Segments".to_owned(),
             PrimitiveType::Sketch => "Sketches".to_owned(),
+            PrimitiveType::Constraint => "Constraints".to_owned(),
             PrimitiveType::Solid => "Solids".to_owned(),
             PrimitiveType::Plane => "Planes".to_owned(),
             PrimitiveType::Helix => "Helices".to_owned(),
@@ -483,6 +485,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::GdtAnnotation => write!(f, "GD&T Annotation"),
             PrimitiveType::Segment => write!(f, "Segment"),
             PrimitiveType::Sketch => write!(f, "Sketch"),
+            PrimitiveType::Constraint => write!(f, "Constraint"),
             PrimitiveType::Solid => write!(f, "Solid"),
             PrimitiveType::Plane => write!(f, "Plane"),
             PrimitiveType::Face => write!(f, "Face"),
@@ -1222,6 +1225,10 @@ impl KclValue {
                 KclValue::Sketch { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::Constraint => match self {
+                KclValue::SketchConstraint { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::Solid => match self {
                 KclValue::Solid { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
@@ -1580,6 +1587,7 @@ impl KclValue {
             KclValue::Number { ty, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(*ty))),
             KclValue::String { .. } => Some(RuntimeType::Primitive(PrimitiveType::String)),
             KclValue::SketchVar { value, .. } => Some(RuntimeType::Primitive(PrimitiveType::Number(value.ty))),
+            KclValue::SketchConstraint { .. } => Some(RuntimeType::Primitive(PrimitiveType::Constraint)),
             KclValue::Object {
                 value, constrainable, ..
             } => {

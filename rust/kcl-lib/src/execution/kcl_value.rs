@@ -10,7 +10,8 @@ use crate::{
     errors::KclErrorDetails,
     execution::{
         AbstractSegment, EnvironmentRef, ExecState, Face, GdtAnnotation, Geometry, GeometryWithImportedGeometry, Helix,
-        ImportedGeometry, Metadata, Plane, Sketch, SketchVar, SketchVarId, Solid, TagIdentifier, UnsolvedExpr,
+        ImportedGeometry, Metadata, Plane, Sketch, SketchConstraint, SketchVar, SketchVarId, Solid, TagIdentifier,
+        UnsolvedExpr,
         annotations::{self, FnAttrs, SETTINGS, SETTINGS_UNIT_LENGTH},
         types::{NumericType, PrimitiveType, RuntimeType},
     },
@@ -51,6 +52,9 @@ pub enum KclValue {
     },
     SketchVar {
         value: Box<SketchVar>,
+    },
+    SketchConstraint {
+        value: Box<SketchConstraint>,
     },
     Tuple {
         value: Vec<KclValue>,
@@ -300,6 +304,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Number { meta, .. } => to_vec_sr(&meta),
             KclValue::String { meta, .. } => to_vec_sr(&meta),
             KclValue::SketchVar { value, .. } => to_vec_sr(&value.meta),
+            KclValue::SketchConstraint { value, .. } => to_vec_sr(&value.meta),
             KclValue::Tuple { meta, .. } => to_vec_sr(&meta),
             KclValue::HomArray { value, .. } => value.iter().flat_map(Into::<Vec<SourceRange>>::into).collect(),
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
@@ -333,6 +338,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Number { meta, .. } => to_vec_sr(meta),
             KclValue::String { meta, .. } => to_vec_sr(meta),
             KclValue::SketchVar { value, .. } => to_vec_sr(&value.meta),
+            KclValue::SketchConstraint { value, .. } => to_vec_sr(&value.meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(meta),
             KclValue::Tuple { meta, .. } => to_vec_sr(meta),
             KclValue::HomArray { value, .. } => value.iter().flat_map(Into::<Vec<SourceRange>>::into).collect(),
@@ -359,6 +365,7 @@ impl KclValue {
             KclValue::Number { meta, .. } => meta.clone(),
             KclValue::String { value: _, meta } => meta.clone(),
             KclValue::SketchVar { value, .. } => value.meta.clone(),
+            KclValue::SketchConstraint { value, .. } => value.meta.clone(),
             KclValue::Tuple { value: _, meta } => meta.clone(),
             KclValue::HomArray { value, .. } => value.iter().flat_map(|v| v.metadata()).collect(),
             KclValue::Object { meta, .. } => meta.clone(),
@@ -395,6 +402,7 @@ impl KclValue {
             KclValue::Uuid { .. } => false,
             KclValue::Bool { .. } | KclValue::Number { .. } | KclValue::String { .. } => true,
             KclValue::SketchVar { .. }
+            | KclValue::SketchConstraint { .. }
             | KclValue::Tuple { .. }
             | KclValue::HomArray { .. }
             | KclValue::Object { .. }
@@ -443,6 +451,7 @@ impl KclValue {
             KclValue::Number { .. } => "a number".to_owned(),
             KclValue::String { .. } => "a string".to_owned(),
             KclValue::SketchVar { .. } => "a sketch variable".to_owned(),
+            KclValue::SketchConstraint { .. } => "a sketch constraint".to_owned(),
             KclValue::Object { .. } => "an object".to_owned(),
             KclValue::Module { .. } => "a module".to_owned(),
             KclValue::Type { .. } => "a type".to_owned(),
@@ -886,6 +895,7 @@ impl KclValue {
             KclValue::Object { .. } => Some("{ ... }".to_owned()),
             KclValue::Module { .. }
             | KclValue::GdtAnnotation { .. }
+            | KclValue::SketchConstraint { .. }
             | KclValue::Solid { .. }
             | KclValue::Sketch { .. }
             | KclValue::Helix { .. }

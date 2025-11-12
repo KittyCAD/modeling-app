@@ -1703,6 +1703,16 @@ impl UnsolvedExpr {
     }
 }
 
+pub type UnsolvedPoint2dExpr = [UnsolvedExpr; 2];
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct ConstrainablePoint2d {
+    pub vars: crate::front::Point2d<SketchVarId>,
+    pub object_id: ObjectId,
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
@@ -1718,12 +1728,12 @@ pub struct UnsolvedSegment {
 #[serde(rename_all = "camelCase")]
 pub enum UnsolvedSegmentKind {
     Point {
-        position: [UnsolvedExpr; 2],
+        position: UnsolvedPoint2dExpr,
         ctor: Box<PointCtor>,
     },
     Line {
-        start: [UnsolvedExpr; 2],
-        end: [UnsolvedExpr; 2],
+        start: UnsolvedPoint2dExpr,
+        end: UnsolvedPoint2dExpr,
         ctor: Box<LineCtor>,
         start_object_id: ObjectId,
         end_object_id: ObjectId,
@@ -1775,4 +1785,20 @@ pub enum SegmentRepr {
     Unsolved { segment: UnsolvedSegment },
     Solved { segment: Segment },
     InEngine { id: Uuid, segment: Segment },
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct SketchConstraint {
+    pub kind: SketchConstraintKind,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Geometry.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum SketchConstraintKind {
+    Distance { points: [ConstrainablePoint2d; 2] },
 }

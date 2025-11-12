@@ -243,6 +243,10 @@ impl From<&KclValue> for OpKclValue {
                 value: value.initial_value,
                 ty: value.ty,
             },
+            KclValue::SketchConstraint { .. } => {
+                debug_assert!(false, "Sketch constraint cannot be represented in operations");
+                Self::KclNone {}
+            }
             KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
                 let value = value.iter().map(Self::from).collect();
                 Self::Array { value }

@@ -13,8 +13,8 @@ use crate::{
     exec::UnitType,
     execution::{
         AbstractSegment, BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, ModelingCmdMeta,
-        ModuleArtifactState, Operation, PlaneType, Segment, SegmentKind, SegmentRepr, StatementKind, TagIdentifier,
-        UnsolvedExpr, UnsolvedSegment, UnsolvedSegmentKind, annotations,
+        ModuleArtifactState, Operation, PlaneType, Segment, SegmentKind, SegmentRepr, SketchConstraintKind,
+        StatementKind, TagIdentifier, UnsolvedExpr, UnsolvedSegment, UnsolvedSegmentKind, annotations,
         cad_op::OpKclValue,
         fn_call::{Arg, Args},
         kcl_value::{FunctionSource, KclFunctionSourceParams, TypeDef},
@@ -1190,6 +1190,10 @@ fn substitute_sketch_var(
                 meta: var.meta.clone(),
             })
         }
+        KclValue::SketchConstraint { .. } => {
+            debug_assert!(false, "Sketch constraints should not appear in substituted values");
+            Ok(value)
+        }
         KclValue::Tuple { value, meta } => {
             let subbed = value
                 .into_iter()
@@ -2323,6 +2327,82 @@ impl Node<BinaryExpression> {
                         )));
                     };
                     sketch_block_state.solver_constraints.push(constraint);
+                    return Ok(KclValue::Bool { value: true, meta });
+                }
+                // One sketch constraint, one number.
+                (KclValue::SketchConstraint { value: constraint }, input_number @ KclValue::Number { .. })
+                | (input_number @ KclValue::Number { .. }, KclValue::SketchConstraint { value: constraint }) => {
+                    let number_value = normalize_to_solver_unit(
+                        input_number,
+                        input_number.into(),
+                        exec_state,
+                        "fixed constraint value",
+                    )?;
+                    let Some(n) = number_value.as_ty_f64() else {
+                        let message = format!(
+                            "Expected number after coercion, but found {}",
+                            number_value.human_friendly_type()
+                        );
+                        debug_assert!(false, "{}", &message);
+                        return Err(KclError::new_internal(KclErrorDetails::new(message, vec![self.into()])));
+                    };
+                    match &constraint.kind {
+                        SketchConstraintKind::Distance { points } => {
+                            let range = self.as_source_range();
+                            let p0 = &points[0];
+                            let p1 = &points[1];
+                            let solver_pt0 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+                                p0.vars.x.to_constraint_id(range)?,
+                                p0.vars.y.to_constraint_id(range)?,
+                            );
+                            let solver_pt1 = kcl_ezpz::datatypes::DatumPoint::new_xy(
+                                p1.vars.x.to_constraint_id(range)?,
+                                p1.vars.y.to_constraint_id(range)?,
+                            );
+                            let solver_constraint = Constraint::Distance(solver_pt0, solver_pt1, n.n);
+
+                            #[cfg(feature = "artifact-graph")]
+                            let constraint_id = exec_state.next_object_id();
+                            let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
+                                let message =
+                                    "Being inside a sketch block should have already been checked above".to_owned();
+                                debug_assert!(false, "{}", &message);
+                                return Err(KclError::new_internal(KclErrorDetails::new(
+                                    message,
+                                    vec![SourceRange::from(self)],
+                                )));
+                            };
+                            sketch_block_state.solver_constraints.push(solver_constraint);
+                            #[cfg(feature = "artifact-graph")]
+                            {
+                                use crate::front::Distance;
+
+                                let constraint = crate::front::Constraint::Distance(Distance {
+                                    points: vec![p0.object_id, p1.object_id],
+                                    distance: n.try_into().map_err(|_| {
+                                        KclError::new_internal(KclErrorDetails::new(
+                                            "Failed to convert distance units numeric suffix:".to_owned(),
+                                            vec![range],
+                                        ))
+                                    })?,
+                                });
+                                sketch_block_state.sketch_constraints.push(constraint_id);
+                                // track_constraint(constraint_id, constraint, exec_state, &args);
+                                exec_state.add_scene_object(
+                                    Object {
+                                        id: constraint_id,
+                                        kind: ObjectKind::Constraint { constraint },
+                                        label: Default::default(),
+                                        comments: Default::default(),
+                                        // TODO: sketch-api: implement artifact ID
+                                        artifact_id: 0,
+                                        source: range.into(),
+                                    },
+                                    range,
+                                );
+                            }
+                        }
+                    }
                     return Ok(KclValue::Bool { value: true, meta });
                 }
                 _ => {
