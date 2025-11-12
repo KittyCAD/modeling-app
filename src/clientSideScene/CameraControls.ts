@@ -861,7 +861,6 @@ export class CameraControls {
   }
 
   rotateCamera = (deltaX: number, deltaY: number) => {
-
     const quat = new Quaternion().setFromUnitVectors(
       new Vector3(0, 0, 1),
       new Vector3(0, 1, 0)

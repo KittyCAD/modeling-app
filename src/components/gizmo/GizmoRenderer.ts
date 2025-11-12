@@ -1,7 +1,14 @@
 import { btnName } from '@src/lib/cameraControls'
 import { sceneInfra } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import type { Object3D, Mesh, BufferGeometry, Intersection } from 'three'
+import type {
+  Object3D,
+  Mesh,
+  BufferGeometry,
+  Intersection,
+  ColorRepresentation,
+  Texture,
+} from 'three'
 import {
   PerspectiveCamera,
   OrthographicCamera,
@@ -15,6 +22,8 @@ import {
   Quaternion,
   Vector3,
   Raycaster,
+  TextureLoader,
+  SRGBColorSpace,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
@@ -27,6 +36,9 @@ export default class GizmoRenderer {
   private camera: PerspectiveCamera | OrthographicCamera
   private clickableObjects: StandardMesh[] = []
   private theme: 'light' | 'dark'
+
+  private _texturePromises = new Map<string, Promise<Texture>>()
+  private _textures = new Map<string, Texture>()
 
   private needsToRender = true
   private raf = -1
@@ -41,11 +53,15 @@ export default class GizmoRenderer {
   private readonly materials: {
     light: {
       edge: MeshStandardMaterial
+      edge_hover: MeshStandardMaterial
       face: MeshStandardMaterial
+      face_hover: MeshStandardMaterial
     }
     dark: {
       edge: MeshStandardMaterial
+      edge_hover: MeshStandardMaterial
       face: MeshStandardMaterial
+      face_hover: MeshStandardMaterial
     }
   }
 
@@ -69,12 +85,28 @@ export default class GizmoRenderer {
     this.theme = this.setTheme(theme)
     this.materials = {
       light: {
-        edge: createMaterial(),
-        face: createMaterial(),
+        edge: this.createMaterial(0x363837),
+        edge_hover: this.createMaterial(0xe2e3de),
+        face: this.createMaterial(
+          0x363837,
+          `${GIZMO_ASSETS_BASE}/labels_light.png`
+        ),
+        face_hover: this.createMaterial(
+          0xe2e3de,
+          `${GIZMO_ASSETS_BASE}/labels_light_hover.png`
+        ),
       },
       dark: {
-        edge: createMaterial(),
-        face: createMaterial(),
+        edge: this.createMaterial(0xe2e3de),
+        edge_hover: this.createMaterial(0x363837),
+        face: this.createMaterial(
+          0xe2e3de,
+          `${GIZMO_ASSETS_BASE}/labels_dark.png`
+        ),
+        face_hover: this.createMaterial(
+          0x363837,
+          `${GIZMO_ASSETS_BASE}/labels_dark_hover.png`
+        ),
       },
     }
 
@@ -321,6 +353,67 @@ export default class GizmoRenderer {
     }
   }
 
+  private createMaterial(
+    baseColor: ColorRepresentation,
+    baseMapUrl?: string
+  ): MeshStandardMaterial {
+    const texture: Texture | undefined = baseMapUrl
+      ? this._textures.get(baseMapUrl)
+      : undefined
+
+    const material = new MeshStandardMaterial({
+      map: texture,
+      color: texture ? 0xffffff : baseColor,
+      emissive: 0x000000,
+      roughness: 0.6,
+      metalness: 0.0,
+    })
+
+    if (baseMapUrl && !this._textures.has(baseMapUrl)) {
+      // baseMap is defined but not loaded yet
+      this.loadTexture(baseMapUrl)
+        .then((texture) => {
+          material.map = texture
+          material.color.setHex(0xffffff)
+        })
+        .catch((e) => {
+          console.error(e)
+        })
+    }
+
+    return material
+  }
+
+  private async loadTexture(url: string): Promise<Texture> {
+    const texture = this._textures.get(url)
+    const texturePromise = this._texturePromises.get(url)
+
+    if (texture) {
+      return texture
+    } else if (texturePromise) {
+      return texturePromise
+    } else {
+      const loader = new TextureLoader()
+      const promise = new Promise<Texture>((resolve, reject) => {
+        loader.load(
+          url,
+          (texture) => {
+            texture.flipY = false
+            texture.colorSpace = SRGBColorSpace
+            texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy()
+            texture.needsUpdate = true
+            this._texturePromises.delete(url)
+            resolve(texture)
+          },
+          undefined,
+          reject
+        )
+      })
+      this._texturePromises.set(url, promise)
+      return promise
+    }
+  }
+
   private clearHighlight() {}
 
   private applyHighlight() {}
@@ -364,15 +457,6 @@ function isOrientationTargetName(name: string): boolean {
     name.startsWith('edge_') ||
     name.startsWith('corner_')
   )
-}
-
-function createMaterial(): MeshStandardMaterial {
-  return new MeshStandardMaterial({
-    color: 0xffffff,
-    emissive: 0x000000,
-    roughness: 0.6,
-    metalness: 0.0,
-  })
 }
 
 // Compute the camera orientation quaternion for a given orientation name.
