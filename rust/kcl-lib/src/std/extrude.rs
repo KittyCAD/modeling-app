@@ -367,7 +367,7 @@ pub(crate) async fn do_post_extrude<'a>(
 
     // If the sketch is a clone, we will use the original info to get the extrusion face info.
     let mut extrusion_info_edge_id = any_edge_id;
-    if sketch.clone.is_some() {
+    if sketch.clone.is_some() && clone_id_map.is_some() {
         extrusion_info_edge_id = if let Some(clone_map) = clone_id_map {
             if let Some(new_edge_id) = clone_map.get(&extrusion_info_edge_id) {
                 *new_edge_id
@@ -391,7 +391,7 @@ pub(crate) async fn do_post_extrude<'a>(
     }
 
     // Similarly, if the sketch is a clone, we need to use the original sketch id to get the extrusion face info.
-    let sketch_id = if let Some(cloned_from) = sketch.clone {
+    let sketch_id = if let Some(cloned_from) = sketch.clone && clone_id_map.is_some() {
         cloned_from
     } else {
         sketch.id

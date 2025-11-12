@@ -63,7 +63,6 @@ async fn inner_clone(
         }
         GeometryWithImportedGeometry::Solid(solid) => {
             // We flush before the clone so all the shit exists.
-            println!("INNER CLONING A SOLID");
             exec_state
                 .flush_batch_for_solids((&args).into(), std::slice::from_ref(solid))
                 .await?;
@@ -112,12 +111,10 @@ async fn fix_tags_and_references(
     match new_geometry {
         GeometryWithImportedGeometry::ImportedGeometry(_) => {}
         GeometryWithImportedGeometry::Sketch(sketch) => {
-            println!("Fixing sketch clone with id: {:?}", sketch.id);
             sketch.clone = Some(old_geometry_id);
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
-            println!("Fixing solid clone with id: {:?}", solid.id);
             // Make the sketch id the new geometry id.
             solid.sketch.id = new_geometry_id;
             solid.sketch.original_id = new_geometry_id;
@@ -231,14 +228,11 @@ async fn fix_sketch_tags_and_references(
     exec_state: &mut ExecState,
     surfaces: Option<Vec<ExtrudeSurface>>,
 ) -> Result<()> {
-    println!("Fixing sketch tags and references using map: {:?}", entity_id_map);
     // Fix the path references in the sketch.
     for path in new_sketch.paths.as_mut_slice() {
         if let Some(new_path_id) = entity_id_map.get(&path.get_id()) {
-            println!("setting path id from {:?} to {:?}", path.get_id(), new_path_id);
             path.set_id(*new_path_id);
         } else {
-            println!("could not find path id for {:?}", path.get_id());
             // We log on these because we might have already flushed and the id is no longer
             // relevant since filleted or something.
             crate::log::logln!("Failed to find new path id for old path id: {:?}", path.get_id());
