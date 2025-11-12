@@ -131,6 +131,7 @@ export default class GizmoRenderer {
   }
 
   public setTheme(theme: 'light' | 'dark') {
+    theme = theme === 'light' ? 'dark' : 'light'
     if (this.theme !== theme) {
       this.theme = theme
       this.updateModel()
