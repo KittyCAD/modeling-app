@@ -81,11 +81,17 @@ longApronProfile = startProfile(stretcherSketch, at = [0, 0])
   |> xLine(length = apronThickness)
   |> yLine(length = -longApronLength)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  ///|> close()
+  |> close()
 
-longApron1 = extrude(longApronProfile, length = -apronHeight)
+longApronProfileMoved = translate(
+  longApronProfile,
+  x = distanceFromTableTopCornerToApronSide,
+  y = distanceFromTableTopCornerToLegBackSide,
+  z = 0,
+)
+longApron1 = extrude(longApronProfileMoved, length = -apronHeight)
 longApron2 = clone(longApron1)
-///  |> translate(x = distanceBetweenLegAxisWidth, y = 0, z = 0)
+  |> translate(x = distanceBetweenLegAxisWidth, y = 0, z = 0)
 
 shortApronProfile = startProfile(stretcherSketch, at = [0, 0])
   |> yLine(length = apronThickness)
@@ -101,5 +107,5 @@ shortApronProfileMoved = translate(
   z = 0,
 )
 shortApron1 = extrude(shortApronProfileMoved, length = -apronHeight)
-/// shortApron2 = clone(shortApron1)
-  /// |> translate(x = 0, y = distanceBetweenLegAxisLength, z = 0)
+shortApron2 = clone(shortApron1)
+  |> translate(x = 0, y = distanceBetweenLegAxisLength, z = 0)
