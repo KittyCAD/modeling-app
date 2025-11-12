@@ -76,7 +76,7 @@ export default function Gizmo() {
         style={{ cursor: disableOrbit ? 'not-allowed' : 'auto' }}
         aria-label="View orientation gizmo"
         data-testid={`gizmo${disableOrbit ? '-disabled' : ''}`}
-        className="grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50 pointer-events-auto bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm"
+        className="grid place-content-center rounded-full overflow-hidden pointer-events-auto backdrop-blur-sm bg-black/10"
       >
         <canvas
           ref={canvasRef}
