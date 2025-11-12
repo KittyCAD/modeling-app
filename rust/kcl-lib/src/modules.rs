@@ -73,6 +73,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "appearance" => Some(include_str!("../std/appearance.kcl")),
         "transform" => Some(include_str!("../std/transform.kcl")),
         "vector" => Some(include_str!("../std/vector.kcl")),
+        "hole" => Some(include_str!("../std/hole.kcl")),
         _ => None,
     }
 }
@@ -107,10 +108,19 @@ pub enum ModuleRepr {
     // AST, memory, exported names
     Kcl(
         Node<Program>,
-        Option<(Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState)>,
+        /// Cached execution outcome.
+        Option<ModuleExecutionOutcome>,
     ),
     Foreign(PreImportedGeometry, Option<(Option<KclValue>, ModuleArtifactState)>),
     Dummy,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct ModuleExecutionOutcome {
+    pub last_expr: Option<KclValue>,
+    pub environment: EnvironmentRef,
+    pub exports: Vec<String>,
+    pub artifacts: ModuleArtifactState,
 }
 
 #[allow(clippy::large_enum_variant)]

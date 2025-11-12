@@ -65,7 +65,7 @@ If you're not a Zoo employee you won't be able to access the dev environment, yo
 
 ### Development environment variables
 
-The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_KITTYCAD_API_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
+The Copilot LSP plugin in the editor requires a Zoo API token to run. In production, we authenticate this with a token via cookie in the browser and device auth token in the desktop environment, but this token is inaccessible in the dev browser version because the cookie is considered "cross-site" (from `localhost` to `zoo.dev`). There is an optional environment variable called `VITE_ZOO_API_TOKEN` that you can populate with a dev token in a `.env.development.local` file to not check it into Git, which will use that token instead of other methods for the LSP service.
 
 ### Developing in Chrome
 
@@ -96,7 +96,7 @@ To package the app for your platform with electron-builder, run `npm run tronb:p
 
 Prepare these system dependencies:
 
-- Set `$VITE_KITTYCAD_API_TOKEN` from https://zoo.dev/account/api-tokens
+- Set `$VITE_ZOO_API_TOKEN` from https://zoo.dev/account/api-tokens
 
 #### Desktop tests (Electron on all platforms)
 
@@ -202,7 +202,7 @@ Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testin
 
 Prepare these system dependencies:
 
-- Set `$KITTYCAD_API_TOKEN` from https://zoo.dev/account/api-tokens
+- Set `$ZOO_API_TOKEN` from https://zoo.dev/account/api-tokens
 - Install `just` following [these instructions](https://just.systems/man/en/packages.html)
 
 then run tests that target the KCL language:

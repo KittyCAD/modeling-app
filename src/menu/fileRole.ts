@@ -2,7 +2,7 @@ import type { BrowserWindow } from 'electron'
 
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
-import { isMac, isStagingOrDebug } from '@src/menu/utils'
+import { isMac } from '@src/menu/utils'
 
 export const projectFileRole = (
   mainWindow: BrowserWindow
@@ -30,7 +30,7 @@ export const projectFileRole = (
           })
         },
       },
-      // TODO https://www.electronjs.org/docs/latest/tutorial/recent-documents
+      // TODO electronjs dot org/docs/latest/tutorial/recent-documents
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
@@ -45,7 +45,6 @@ export const projectFileRole = (
       {
         label: 'Create with Zoo Text-To-CAD',
         id: 'Design.Create with Zoo Text-To-CAD',
-        enabled: !isStagingOrDebug,
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
             menuLabel: 'Design.Create with Zoo Text-To-CAD',
@@ -89,15 +88,6 @@ export const projectFileRole = (
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Theme',
-              })
-            },
-          },
-          {
-            label: 'Theme Color',
-            id: 'File.Preferences.Theme color',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'File.Preferences.Theme color',
               })
             },
           },
@@ -162,7 +152,7 @@ export const modelingFileRole = (
           })
         },
       },
-      // TODO https://www.electronjs.org/docs/latest/tutorial/recent-documents
+      // TODO electronjs dot org/docs/latest/tutorial/recent-documents
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
@@ -229,15 +219,6 @@ export const modelingFileRole = (
             click: () => {
               typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
                 menuLabel: 'File.Preferences.Theme',
-              })
-            },
-          },
-          {
-            label: 'Theme Color',
-            id: 'File.Preferences.Theme color',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'File.Preferences.Theme color',
               })
             },
           },

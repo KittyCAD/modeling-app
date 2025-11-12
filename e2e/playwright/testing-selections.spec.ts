@@ -138,6 +138,9 @@ test.describe('Testing selections', () => {
   test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
     page,
     homePage,
+    toolbar,
+    scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     const selectionsSnippets = {
@@ -196,6 +199,7 @@ test.describe('Testing selections', () => {
     await page.setBodyDimensions({ width: 1200, height: 1000 })
 
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     // wait for execution done
     await u.openDebugPanel()
@@ -203,9 +207,7 @@ test.describe('Testing selections', () => {
     await u.closeDebugPanel()
 
     // wait for start sketch as a proxy for the stream being ready
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
     // expect extrude button to be enabled, since we don't guard
@@ -256,12 +258,8 @@ test.describe('Testing selections', () => {
     await homePage.goToModelingScene()
     await u.openDebugPanel()
 
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeVisible()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).toBeVisible()
 
     // click on "Start Sketch" button
     await toolbar.startSketchOnDefaultPlane('Front plane')

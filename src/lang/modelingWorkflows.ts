@@ -7,6 +7,8 @@
  */
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
+import type RustContext from '@src/lib/rustContext'
+import { executeAstMock } from '@src/lang/langHelpers'
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
@@ -19,6 +21,16 @@ import {
 } from '@src/lib/constants'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err, reject } from '@src/lib/trap'
+
+export async function mockExecAstAndReportErrors(
+  ast: Node<Program>,
+  rustContext: RustContext
+): Promise<undefined | Error> {
+  const { errors } = await executeAstMock({ ast, rustContext })
+  if (errors.length > 0) {
+    return new Error(errors.map((e) => e.message).join('\n'))
+  }
+}
 
 /**
  * Updates the complete modeling state:
@@ -51,16 +63,27 @@ export async function updateModelingState(
     kclManager: KclManager
     editorManager: EditorManager
     codeManager: CodeManager
+    rustContext: RustContext
   },
   options?: {
     focusPath?: Array<PathToNode>
     isDeleting?: boolean
+    skipErrorsOnMockExecution?: boolean
   }
 ): Promise<void> {
   let updatedAst: {
     newAst: Node<Program>
     selections?: Selections
   } = { newAst: ast }
+
+  // Step 0: Mock execute shit so we know it aint broke
+  if (!options?.skipErrorsOnMockExecution) {
+    const res = await mockExecAstAndReportErrors(ast, dependencies.rustContext)
+    if (err(res)) {
+      return Promise.reject(res)
+    }
+  }
+
   // Step 1: Update AST without executing (prepare selections)
   updatedAst = await dependencies.kclManager.updateAst(
     ast,
@@ -97,6 +120,6 @@ export async function updateModelingState(
       // No execution.
     }
   } catch (e) {
-    console.error('Engine execution error (UI is still updated):', e)
+    console.error('KCL execution error (UI is still updated):', e)
   }
 }

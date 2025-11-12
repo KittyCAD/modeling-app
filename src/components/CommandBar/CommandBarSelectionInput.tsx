@@ -41,8 +41,8 @@ function CommandBarSelectionInput({
       ? arg.required(commandBarState.context)
       : arg.required
   const canSubmitSelection = useMemo<boolean>(
-    () => !isArgRequired || canSubmitSelectionArg(selectionsByType, arg),
-    [selectionsByType, arg, isArgRequired]
+    () => canSubmitSelectionArg(selectionsByType, arg),
+    [selectionsByType, arg]
   )
 
   useEffect(() => {
@@ -60,7 +60,7 @@ function CommandBarSelectionInput({
     return () => {
       toSync(() => {
         const promises = [
-          new Promise(() => kclManager.defaultSelectionFilter(selection)),
+          new Promise(() => kclManager.setSelectionFilterToDefault(selection)),
         ]
         if (!kclManager._isAstEmpty(kclManager.ast)) {
           promises.push(kclManager.hidePlanes())
@@ -145,7 +145,7 @@ function CommandBarSelectionInput({
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
     arg.selectionFilter && kclManager.setSelectionFilter(arg.selectionFilter)
-    return () => kclManager.defaultSelectionFilter(selection)
+    return () => kclManager.setSelectionFilterToDefault(selection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.selectionFilter])
 

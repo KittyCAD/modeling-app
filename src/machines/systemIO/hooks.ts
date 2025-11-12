@@ -47,12 +47,6 @@ export const useHasListedProjects = () =>
 export const useClearURLParams = () =>
   useSelector(systemIOActor, (state) => state.context.clearURLParams)
 
-export const useRequestedTextToCadGeneration = () =>
-  useSelector(
-    systemIOActor,
-    (state) => state.context.requestedTextToCadGeneration
-  )
-
 export const useProjectIdToConversationId = (
   mlEphantManagerActor: MlEphantManagerActor,
   mlEphantManagerActor2: MlEphantManagerActor2,

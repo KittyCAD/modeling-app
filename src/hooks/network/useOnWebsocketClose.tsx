@@ -8,7 +8,10 @@ import { useEffect } from 'react'
  * If the websocket closes we want to be able to reconnect or stop forever depending on the disconnection type
  * Look at WebSocketStatusCodes for more details on the code that is sent when the websocket close event happens
  */
-export function useOnWebsocketClose({ callback }: { callback: () => void }) {
+export function useOnWebsocketClose({
+  callback,
+  infiniteDetectionLoopCallback,
+}: { callback: () => void; infiniteDetectionLoopCallback: () => void }) {
   useEffect(() => {
     const onWebsocketClose = (event: CustomEvent) => {
       if (event?.detail?.code === '1006') {
@@ -21,6 +24,8 @@ export function useOnWebsocketClose({ callback }: { callback: () => void }) {
             code: event?.detail?.code,
           },
         })
+
+        infiniteDetectionLoopCallback()
         return
       }
 
@@ -38,5 +43,5 @@ export function useOnWebsocketClose({ callback }: { callback: () => void }) {
         onWebsocketClose as EventListener
       )
     }
-  }, [callback])
+  }, [callback, infiniteDetectionLoopCallback])
 }

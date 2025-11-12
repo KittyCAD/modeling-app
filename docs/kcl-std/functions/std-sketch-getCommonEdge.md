@@ -17,7 +17,7 @@ getCommonEdge(faces: [TaggedFace; 2]): Edge
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `faces` | `[TaggedFace; 2]` | The tags of the faces you want to find the common edge between. | Yes |
+| `faces` | [[`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 2] | The tags of the faces you want to find the common edge between. | Yes |
 
 ### Returns
 

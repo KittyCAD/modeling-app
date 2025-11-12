@@ -1,4 +1,5 @@
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
+import Loading from '@src/components/Loading'
 import { type Selections } from '@src/machines/modelingSharedTypes'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import Tooltip from '@src/components/Tooltip'
@@ -9,7 +10,7 @@ import {
   BillingRemainingMode,
 } from '@kittycad/react-shared'
 import { type BillingContext } from '@src/machines/billingMachine'
-import { type MlCopilotTool } from '@kittycad/lib'
+import type { MlCopilotMode } from '@kittycad/lib'
 import { Popover, Transition } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { ExchangeCard } from '@src/components/ExchangeCard'
@@ -19,216 +20,105 @@ import type {
 } from '@src/machines/mlEphantManagerMachine2'
 import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
+import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 
 export interface MlEphantConversationProps {
   isLoading: boolean
   conversation?: Conversation
   contexts: MlEphantManagerPromptContext[]
   billingContext: BillingContext
-  onProcess: (request: string, forcedTools: Set<MlCopilotTool>) => void
+  onProcess: (request: string, mode: MlCopilotMode) => void
+  onReconnect: () => void
   disabled?: boolean
+  needsReconnect: boolean
   hasPromptCompleted: boolean
   userAvatarSrc?: string
+  defaultPrompt?: string
 }
 
-const ML_COPILOT_TOOLS: Readonly<MlCopilotTool[]> = Object.freeze([
-  'edit_kcl_code',
-  'text_to_cad',
-  'mechanical_knowledge_base',
-  'web_search',
-])
-const ML_COPILOT_TOOLS_META = Object.freeze({
-  edit_kcl_code: {
-    regexp: /edit|make|change/,
-    pretty: 'Edit',
+const ML_COPILOT_MODE_META = Object.freeze({
+  fast: {
+    pretty: 'Fast',
     icon: (props: { className: string }) => (
-      <CustomIcon name="beaker" className={props.className} />
+      <CustomIcon name="stopwatch" className={props.className} />
     ),
   },
-  text_to_cad: {
-    regexp: /create|construct|build|design|model/,
-    pretty: 'Create',
-    icon: (props: { className: string }) => (
-      <CustomIcon name="model" className={props.className} />
-    ),
-  },
-  mechanical_knowledge_base: {
-    regexp: /what|how|where|why|when/,
-    pretty: 'Question',
+  thoughtful: {
+    pretty: 'Thoughtful',
     icon: (props: { className: string }) => (
       <CustomIcon name="brain" className={props.className} />
     ),
   },
-  web_search: {
-    regexp: /search|google/,
-    pretty: 'Web search',
-    icon: (props: { className: string }) => (
-      <CustomIcon name="search" className={props.className} />
-    ),
-  },
 } as const)
 
-const MlCopilotTool = <T extends MlCopilotTool>(props: {
-  tool: T
-  onRemove: (tool: T) => void
-}) => {
-  return (
-    <button
-      className="group/tool flex-none flex flex-row gap-1 items-center p-0 pr-2"
-      onClick={() => props.onRemove(props.tool)}
-    >
-      <CustomIcon
-        name="close"
-        className="w-6 h-6 hidden group-hover/tool:block"
-      />
-      {ML_COPILOT_TOOLS_META[props.tool].icon({
-        className: 'w-6 h-6 block group-hover/tool:hidden',
-      })}
-      {ML_COPILOT_TOOLS_META[props.tool].pretty}
-    </button>
-  )
-}
+const ML_COPILOT_MODE: Readonly<MlCopilotMode[]> = Object.freeze([
+  'fast',
+  'thoughtful',
+])
 
-export interface MlCopilotToolsProps {
-  onAdd: (tool: MlCopilotTool) => void
+export interface MlCopilotModesProps {
+  onClick: (mode: MlCopilotMode) => void
   children: ReactNode
+  current: MlCopilotMode
 }
-const MlCopilotTools = (props: MlCopilotToolsProps) => {
-  const [show, setShow] = useState<boolean>(false)
 
-  const tools = []
-
-  const onClick = (tool: MlCopilotTool) => {
-    setShow(false)
-    props.onAdd(tool)
-  }
-
-  for (let tool of ML_COPILOT_TOOLS) {
-    tools.push(
+const MlCopilotModes = (props: MlCopilotModesProps) => {
+  const modes = []
+  for (const mode of ML_COPILOT_MODE) {
+    modes.push(
       <div
         tabIndex={0}
         role="button"
-        onClick={() => onClick(tool)}
-        className="flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md"
+        key={mode}
+        onClick={() => props.onClick(mode)}
+        className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode ? 'border-primary' : ''}`}
+        data-testid={`ml-copilot-effort-button-${mode}`}
       >
-        {ML_COPILOT_TOOLS_META[tool].icon({ className: 'w-7 h-7' })}
-        {ML_COPILOT_TOOLS_META[tool].pretty}
+        {ML_COPILOT_MODE_META[mode].icon({ className: 'w-5 h-5' })}
+        {ML_COPILOT_MODE_META[mode].pretty}
       </div>
     )
   }
 
   return (
     <div className="flex-none">
-      <div className={`relative ${show ? '' : 'hidden'}`}>
-        <div
-          className="flex flex-col gap-2 absolute bg-default mb-1 p-2 border border-chalkboard-70 text-sm rounded-md"
-          style={{ left: 1, bottom: 0 }}
+      <Popover className="relative">
+        <Popover.Button
+          data-testid="ml-copilot-efforts-button"
+          className="h-7 bg-default flex flex-row items-center gap-1 pl-1 pr-2"
         >
-          {tools}
-        </div>
-      </div>
-      <button
-        onClick={() => setShow(!show)}
-        className="bg-default flex flex-row items-center gap-1 p-0 pr-2"
-      >
-        <CustomIcon name="settings" className="w-6 h-6" />
-        {props.children}
-        <CustomIcon
-          onClick={() => setShow(!show)}
-          name="plus"
-          className="w-5 h-5"
-        />
-      </button>
+          {props.children}
+          <CustomIcon name="caretUp" className="w-5 h-5 ui-open:rotate-180" />
+        </Popover.Button>
+        <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
+          {modes}
+        </Popover.Panel>
+      </Popover>
     </div>
   )
-}
-
-const Dots = (props: { onClick: () => void }) => {
-  return <button onClick={props.onClick}>...</button>
 }
 
 export interface MlEphantExtraInputsProps {
   // TODO: Expand to a list with no type restriction
   context?: Extract<MlEphantManagerPromptContext, { type: 'selections' }>
-  inputToMatch: string
-  forcedTools: Set<MlCopilotTool>
-  excludedTools: Set<MlCopilotTool>
-  onRemove: (tool: MlCopilotTool) => void
-  onAdd: (tool: MlCopilotTool) => void
+  mode: MlCopilotMode
+  onSetMode: (mode: MlCopilotMode) => void
 }
+
 export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
-  const [show, setShow] = useState<boolean>(false)
-  const [overflow, setOverflow] = useState<boolean>(false)
-  const widthFromBeforeCollapse = useRef<number>(0)
-  const refWrap = useRef<HTMLDivElement>(null)
-  const refTools = useRef<HTMLDivElement>(null)
-
-  for (let tool of ML_COPILOT_TOOLS) {
-    if (props.forcedTools.has(tool)) continue
-    if (props.excludedTools.has(tool)) continue
-
-    if (ML_COPILOT_TOOLS_META[tool].regexp.test(props.inputToMatch)) {
-      props.onAdd(tool)
-    }
-  }
-
-  const tools = Array.from(
-    Array.from(props.forcedTools).filter(
-      (tool) => !props.excludedTools.has(tool)
-    )
-  ).map((tool) => <MlCopilotTool tool={tool} onRemove={props.onRemove} />)
-
-  if (show === true && tools.length === 0) {
-    setShow(false)
-  }
-
-  useEffect(() => {
-    if (!refWrap.current) return
-    const observer = new ResizeObserver((entries) => {
-      if (!refTools.current) return
-      if (entries.length === 1) {
-        const widthTools = refTools.current.getBoundingClientRect().width
-        if (widthTools > entries[0].contentRect.width && overflow === false) {
-          widthFromBeforeCollapse.current = widthTools
-          setOverflow(true)
-        } else if (
-          (widthFromBeforeCollapse.current < entries[0].contentRect.width ||
-            tools.length === 0) &&
-          overflow === true
-        ) {
-          setOverflow(false)
-        }
-      }
-    })
-    observer.observe(refWrap.current)
-    return () => {
-      observer.disconnect()
-    }
-  }, [overflow, tools.length, props.context])
-
   return (
-    <div ref={refWrap} className="flex-1 flex min-w-0 items-end">
-      <div className={`relative ${show ? '' : 'hidden'}`}>
-        <div
-          className="flex whitespace-nowrap flex-col gap-2 absolute hover:bg-2 bg-default mb-1 p-2 border b-3 text-sm rounded-md"
-          style={{ left: 1, bottom: 0 }}
-        >
-          {tools}
-        </div>
-      </div>
-      <div ref={refTools} className="flex">
+    <div className="flex-1 flex min-w-0 items-end">
+      <div className="flex flex-row w-fit-content items-end">
         {/* TODO: Generalize to a MlCopilotContexts component */}
         {props.context && (
           <MlCopilotSelectionsContext selections={props.context} />
         )}
-        <MlCopilotTools onAdd={props.onAdd}>
-          <div>
-            {tools.length} Tool{tools.length !== 1 ? 's' : ''}
-          </div>
-        </MlCopilotTools>
-        <div className="overflow-hidden flex gap-1">
-          {overflow ? <Dots onClick={() => setShow(!show)} /> : tools}
-        </div>
+        <MlCopilotModes onClick={props.onSetMode} current={props.mode}>
+          {ML_COPILOT_MODE_META[props.mode].icon({
+            className: 'w-5 h-5',
+          })}
+          {ML_COPILOT_MODE_META[props.mode].pretty}
+        </MlCopilotModes>
       </div>
     </div>
   )
@@ -255,7 +145,7 @@ const MlCopilotSelectionsContext = (props: {
 }) => {
   const selectionText = getSelectionTypeDisplayText(props.selections.data)
   return selectionText ? (
-    <button className="group/tool flex-none flex flex-row gap-1 items-center p-0 pr-2">
+    <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 pl-1 pr-2">
       <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />
       {selectionText}
     </button>
@@ -266,7 +156,10 @@ interface MlEphantConversationInputProps {
   contexts: MlEphantManagerPromptContext[]
   billingContext: BillingContext
   onProcess: MlEphantConversationProps['onProcess']
+  onReconnect: MlEphantConversationProps['onReconnect']
   disabled?: boolean
+  needsReconnect: boolean
+  defaultPrompt?: string
 }
 
 function BillingStatusBarItem(props: { billingContext: BillingContext }) {
@@ -314,43 +207,14 @@ export const MlEphantConversationInput = (
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const [value, setValue] = useState<string>('')
   const [heightConvo, setHeightConvo] = useState(0)
-  const [forcedTools, setForcedTools] = useState<Set<MlCopilotTool>>(new Set())
-  const [excludedTools, setExcludedTools] = useState<Set<MlCopilotTool>>(
-    new Set()
-  )
+  const [mode, setMode] = useState<MlCopilotMode>(DEFAULT_ML_COPILOT_MODE)
   const [lettersForAnimation, setLettersForAnimation] = useState<ReactNode[]>(
     []
   )
   const [isAnimating, setAnimating] = useState(false)
 
-  const onRemoveTool = (tool: MlCopilotTool) => {
-    forcedTools.delete(tool)
-    setForcedTools(new Set(forcedTools))
-
-    if (value.length > 0) {
-      excludedTools.add(tool)
-      setExcludedTools(new Set(excludedTools))
-    }
-  }
-
-  const onAddTool = (tool: MlCopilotTool) => {
-    forcedTools.add(tool)
-    excludedTools.delete(tool)
-
-    setForcedTools(new Set(forcedTools))
-    setExcludedTools(new Set(excludedTools))
-  }
-
-  useEffect(() => {
-    if (
-      value.length === 0 &&
-      (excludedTools.size > 0 || forcedTools.size > 0)
-    ) {
-      setForcedTools(new Set())
-      setExcludedTools(new Set())
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [value.length])
+  // Without this the cursor ends up at the start of the text
+  useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
 
   const onClick = () => {
     if (props.disabled) return
@@ -360,7 +224,7 @@ export const MlEphantConversationInput = (
 
     setHeightConvo(refDiv.current.getBoundingClientRect().height)
 
-    props.onProcess(value, forcedTools)
+    props.onProcess(value, mode)
 
     setLettersForAnimation(
       value.split('').map((c, index) => (
@@ -400,7 +264,6 @@ export const MlEphantConversationInput = (
         <BillingStatusBarItem billingContext={props.billingContext} />
       </div>
       <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
-        {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
         <textarea
           autoCapitalize="off"
           autoCorrect="off"
@@ -417,8 +280,8 @@ export const MlEphantConversationInput = (
               onClick()
             }
           }}
-          className={`bg-transparent outline-none w-full overflow-auto ${isAnimating ? 'hidden' : ''}`}
-          style={{ height: '2lh' }}
+          className={`bg-transparent outline-none w-full text-sm overflow-auto ${isAnimating ? 'hidden' : ''}`}
+          style={{ height: '3lh' }}
         ></textarea>
         <div
           className={`${isAnimating ? '' : 'hidden'} overflow-hidden w-full p-2`}
@@ -430,49 +293,33 @@ export const MlEphantConversationInput = (
         <div className="flex items-end">
           <MlEphantExtraInputs
             context={selectionsContext}
-            inputToMatch={value}
-            forcedTools={forcedTools}
-            excludedTools={excludedTools}
-            onRemove={onRemoveTool}
-            onAdd={onAddTool}
+            mode={mode}
+            onSetMode={setMode}
           />
-          <button
-            data-testid="ml-ephant-conversation-input-button"
-            disabled={props.disabled}
-            onClick={onClick}
-            className="w-10 m-0 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
-          >
-            <CustomIcon name="arrowUp" className="w-5 h-5 animate-bounce" />
-          </button>
+          <div className="flex flex-row gap-1">
+            {props.needsReconnect && (
+              <div className="flex flex-col w-fit items-end">
+                <div className="pr-1 text-xs text-red-500 flex flex-row items-center h-5">
+                  <CustomIcon name="close" className="w-7 h-7" />{' '}
+                  <span>Disconnected</span>
+                </div>
+                <button onClick={props.onReconnect}>Reconnect</button>
+              </div>
+            )}
+            <button
+              data-testid="ml-ephant-conversation-input-button"
+              disabled={props.disabled}
+              onClick={onClick}
+              className="w-10 flex-none bg-ml-green text-chalkboard-100 hover:bg-ml-green p-2 flex justify-center"
+            >
+              <CustomIcon name="caretUp" className="w-5 h-5 animate-bounce" />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  )
-}
-
-const MLEphantConversationStarter = () => {
-  return (
-    <div className="p-8 text-sm">
-      <h2 className="text-lg font-bold">
-        Welcome to{' '}
-        <span className="dark:text-ml-green light:underline decoration-ml-green underline-offset-4">
-          Text-to-CAD
-        </span>
-      </h2>
-      <p className="my-4">Here are some tips for effective prompts:</p>
-      <ul className="list-disc pl-4">
-        <li className="my-4">
-          Be as explicit as possible when describing geometry. Use dimensions,
-          use spatial relationships.
-        </li>
-        <li className="my-4">
-          Try using Text-to-CAD to make a model parametric, it's cool.
-        </li>
-        <li className="my-4">
-          Text-to-CAD is now conversational, so you can refer to previous
-          prompts and iterate.
-        </li>
-      </ul>
+      <div className="text-3 text-xs">
+        Text-to-CAD can make mistakes. Always verify information.
+      </div>
     </div>
   )
 }
@@ -481,9 +328,9 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const [autoScroll, setAutoScroll] = useState<boolean>(true)
 
-  const onProcess = (request: string, forcedTools: Set<MlCopilotTool>) => {
+  const onProcess = (request: string, mode: MlCopilotMode) => {
     setAutoScroll(true)
-    props.onProcess(request, forcedTools)
+    props.onProcess(request, mode)
   }
 
   useEffect(() => {
@@ -541,10 +388,10 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
               {props.isLoading === false ? (
-                <MLEphantConversationStarter />
+                <></>
               ) : (
                 <div className="text-center p-4 text-3 text-md animate-pulse">
-                  Loading history
+                  <Loading></Loading>
                 </div>
               )}
               {exchangeCards}
@@ -554,8 +401,11 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
             <MlEphantConversationInput
               contexts={props.contexts}
               disabled={props.disabled || props.isLoading}
+              needsReconnect={props.needsReconnect}
               onProcess={onProcess}
+              onReconnect={props.onReconnect}
               billingContext={props.billingContext}
+              defaultPrompt={props.defaultPrompt}
             />
           </div>
         </div>

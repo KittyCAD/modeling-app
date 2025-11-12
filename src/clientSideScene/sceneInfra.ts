@@ -221,8 +221,6 @@ export class SceneInfra {
     }, 100) as unknown as number
   }
 
-  overlayThrottleMap: { [pathToNodeString: string]: number } = {}
-
   updateOverlayDetails({
     handle,
     group,
@@ -287,6 +285,7 @@ export class SceneInfra {
   } | null = null
   private isRenderingPaused = false
   private lastFrameTime = 0
+  private animationFrameId = -1
 
   constructor(engineCommandManager: ConnectionManager) {
     // SCENE
@@ -361,7 +360,7 @@ export class SceneInfra {
   }
 
   animate = () => {
-    requestAnimationFrame(this.animate)
+    this.animationFrameId = requestAnimationFrame(this.animate)
     TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
       this.camControls.update()
@@ -379,6 +378,16 @@ export class SceneInfra {
         this.renderer.render(this.scene, this.camControls.camera)
         this.labelRenderer.render(this.scene, this.camControls.camera)
       }
+    }
+  }
+
+  stop = () => {
+    if (this.animationFrameId !== -1) {
+      cancelAnimationFrame(this.animationFrameId)
+      this.animationFrameId = -1
+      // If you stop the renderer it will render a last frame of the sketch scene
+      // clear it since they should not be seeing this renderer anyway
+      this.renderer.clear()
     }
   }
 

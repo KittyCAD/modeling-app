@@ -2,6 +2,7 @@ import * as fs from 'fs'
 import { join } from 'path'
 import { FILE_EXT } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 import {
   createProject,
@@ -43,7 +44,7 @@ test.describe('integrations tests', () => {
 
       const fileName = 'Untitled.kcl'
       await test.step('check sketch mode is exited when creating new file', async () => {
-        await toolbar.openPane('files')
+        await toolbar.openPane(DefaultLayoutPaneID.Files)
         await toolbar.expectFileTreeState(['main.kcl'])
 
         await toolbar.createFile({ fileName, waitForToastToDisappear: true })
@@ -186,7 +187,7 @@ test.describe('when using the file tree to', () => {
     async ({ page, homePage, scene, toolbar, cmdBar }) => {
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
-      await toolbar.openPane('files')
+      await toolbar.openPane(DefaultLayoutPaneID.Files)
       const { createNewFolder } = await getUtils(page, test)
 
       await createNewFolder('folder')

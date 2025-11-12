@@ -12,13 +12,13 @@ import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 
 import { useSelector } from '@xstate/react'
 import type { ActorRefFrom, SnapshotFrom } from 'xstate'
-import { createActor, setup, spawnChild } from 'xstate'
+import { assign, createActor, setup, spawnChild } from 'xstate'
 
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
 import { createSettings } from '@src/lib/settings/initialSettings'
-import type { AppMachineContext } from '@src/lib/types'
+import type { AppMachineContext, AppMachineEvent } from '@src/lib/types'
 import { authMachine } from '@src/machines/authMachine'
 import {
   BILLING_CONTEXT_DEFAULTS,
@@ -69,9 +69,24 @@ export const kclManager = new KclManager(engineCommandManager, {
 import { initPromise } from '@src/lang/wasmUtils'
 // Initialize KCL version
 import { setKclVersion } from '@src/lib/kclVersion'
+import { AppMachineEventType } from '@src/lib/types'
+import {
+  defaultLayout,
+  defaultLayoutConfig,
+  saveLayout,
+  type Layout,
+} from '@src/lib/layout'
+import { processEnv } from '@src/env'
 
 initPromise
   .then(() => {
+    if (processEnv()?.VITEST) {
+      const message =
+        'singletons is trying to call initPromise and setKclVersion. This will be blocked in VITEST runtimes.'
+      console.log(message)
+      return
+    }
+
     setKclVersion(kclManager.kclVersion)
   })
   .catch((e) => {
@@ -146,6 +161,7 @@ const appMachineActors = {
 
 const appMachine = setup({
   types: {} as {
+    events: AppMachineEvent
     context: AppMachineContext
   },
 }).createMachine({
@@ -156,6 +172,7 @@ const appMachine = setup({
     engineCommandManager: engineCommandManager,
     sceneInfra: sceneInfra,
     sceneEntitiesManager: sceneEntitiesManager,
+    layout: defaultLayout,
   },
   entry: [
     /**
@@ -190,6 +207,20 @@ const appMachine = setup({
       },
     }),
   ],
+  on: {
+    [AppMachineEventType.SetLayout]: {
+      actions: [
+        assign({ layout: ({ event }) => structuredClone(event.layout) }),
+        ({ event }) => saveLayout({ layout: event.layout }),
+      ],
+    },
+    [AppMachineEventType.ResetLayout]: {
+      actions: [
+        assign({ layout: structuredClone(defaultLayoutConfig) }),
+        ({ context }) => saveLayout({ layout: context.layout }),
+      ],
+    },
+  },
 })
 
 export const appActor = createActor(appMachine, {
@@ -272,3 +303,10 @@ commandBarActor.send({
     ],
   },
 })
+
+const layoutSelector = (state: SnapshotFrom<typeof appActor>) =>
+  state.context.layout
+export const getLayout = () => appActor.getSnapshot().context.layout
+export const useLayout = () => useSelector(appActor, layoutSelector)
+export const setLayout = (layout: Layout) =>
+  appActor.send({ type: AppMachineEventType.SetLayout, layout })

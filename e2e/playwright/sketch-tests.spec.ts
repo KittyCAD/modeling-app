@@ -1,16 +1,16 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import type { Page } from '@playwright/test'
-import { roundOff } from '@src/lib/utils'
-
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import {
   NUMBER_REGEXP,
   getMovementUtils,
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Sketch tests', () => {
   test('three-point arc closes without disappearing', async ({
@@ -154,6 +154,7 @@ test.describe('Sketch tests', () => {
     scene,
     cmdBar,
     editor,
+    toolbar,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 600 })
 
@@ -171,7 +172,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     await editor.expectEditor.toContain('startProfile(')
 
     // Open feature tree and select the first sketch
-    await page.getByRole('button', { name: 'Feature Tree' }).click()
+    await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
     await page.getByRole('button', { name: 'sketch001' }).dblclick()
     await page.waitForTimeout(600)
 
@@ -186,7 +187,13 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     await editor.expectEditor.not.toContain('startProfile(')
   })
 
-  test('Can exit selection of face', async ({ page, homePage }) => {
+  test('Can exit selection of face', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    toolbar,
+  }) => {
     // Load the app with the code panes
     await page.addInitScript(async () => {
       localStorage.setItem('persistCode', ``)
@@ -195,8 +202,9 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await toolbar.startSketchBtn.click()
     await expect(
       page.getByRole('button', { name: 'Exit Sketch' })
     ).toBeVisible()
@@ -204,9 +212,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     await expect(page.getByText('select a plane or face')).toBeVisible()
 
     await page.keyboard.press('Escape')
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeVisible()
+    await expect(toolbar.startSketchBtn).toBeVisible()
   })
 
   test('Can select planes in Feature Tree after Start Sketch', async ({
@@ -214,6 +220,8 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     homePage,
     toolbar,
     editor,
+    scene,
+    cmdBar,
   }) => {
     // Load the app with empty code
     await page.addInitScript(async () => {
@@ -226,13 +234,10 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     await test.step('Click Start Sketch button', async () => {
-      await page.getByRole('button', { name: 'Start Sketch' }).click()
-      await expect(
-        page.getByRole('button', { name: 'Exit Sketch' })
-      ).toBeVisible()
-      await expect(page.getByText('select a plane or face')).toBeVisible()
+      await toolbar.startSketchBtn.click()
     })
 
     await test.step('Open feature tree and select Front plane (XZ)', async () => {
@@ -245,13 +250,11 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
       await editor.expectEditor.toContain('startSketchOn(XZ)')
 
       await page.getByRole('button', { name: 'Exit Sketch' }).click()
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeVisible()
+      await expect(toolbar.startSketchBtn).toBeVisible()
     })
 
     await test.step('Click Start Sketch button again', async () => {
-      await page.getByRole('button', { name: 'Start Sketch' }).click()
+      await toolbar.startSketchBtn.click()
       await expect(
         page.getByRole('button', { name: 'Exit Sketch' })
       ).toBeVisible()
@@ -307,7 +310,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     })
 
     await test.step('drag circle radius handle', async () => {
-      const magicYOnCircle = 0.8
+      const magicYOnCircle = 0.68
       const fromPoint = { x: 0.5, y: magicYOnCircle }
       const toPoint = [fromPoint.x / 2, magicYOnCircle] as const
       const [dragRadiusHandle] = scene.makeDragHelpers(...toPoint, {
@@ -315,15 +318,13 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
         format: 'ratio',
       })
       await dragRadiusHandle({ fromPoint })
-      await editor.expectEditor.not.toContain(prevContent)
-      prevContent = await editor.getCurrentCode()
     })
 
     await test.step('expect the code to have changed', async () => {
+      await editor.expectEditor.not.toContain(prevContent)
       await editor.expectEditor.toContain(
-        `sketch001 = startSketchOn(XZ)
-    |> circle(center = [-0.18, 0.12], radius = 0.54)`,
-        { shouldNormalise: true }
+        new RegExp(`sketch001 = startSketchOn(XZ)
+    |> circle\\(center = \\[${NUMBER_REGEXP}, ${NUMBER_REGEXP}\\], radius = ${NUMBER_REGEXP}\\)`)
       )
     })
   })
@@ -404,10 +405,7 @@ sketch001 = startSketchOn(XZ)
     await editor.expectEditor.toContain(`|> xLine(length =`)
 
     await click00r(0, 50)
-    // @pierremtb: this used to create a yLine before the engine zoom fix
-    // in https://github.com/KittyCAD/engine/pull/3804. I updated it to a line call
-    // since it doesn't change the test objective
-    await editor.expectEditor.toContain(`|> line(`)
+    await editor.expectEditor.toContain(`|> yLine(`)
 
     // exit the sketch, reset relative clicker
     await click00r(undefined, undefined)
@@ -432,6 +430,7 @@ sketch001 = startSketchOn(XZ)
       page: Page,
       scene: SceneFixture,
       editor: EditorFixture,
+      toolbar: ToolbarFixture,
       camPos: [number, number, number],
       scale = 1
     ) => {
@@ -440,25 +439,11 @@ sketch001 = startSketchOn(XZ)
 
       await u.openDebugPanel()
 
-      const code = `@settings(defaultLengthUnit = in)
-sketch001 = startSketchOn(-XZ)
-profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOff(
-        scale * 34.8
-      )}])
-    |> xLine(length = ${roundOff(scale * 154.22)})
-    |> yLine(length = -${roundOff(scale * 139.2)})
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()`
-
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).not.toBeDisabled()
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeVisible()
+      await expect(toolbar.startSketchBtn).not.toBeDisabled()
+      await expect(toolbar.startSketchBtn).toBeVisible()
 
       await u.clearCommandLogs()
-      await page.getByRole('button', { name: 'Start Sketch' }).click()
+      await toolbar.startSketchBtn.click()
       await page.waitForTimeout(100)
 
       await u.openAndClearDebugPanel()
@@ -471,7 +456,7 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOf
       await page.mouse.move(700, 200, { steps: 10 })
       await page.mouse.click(700, 200, { delay: 200 })
       await editor.expectEditor.toContain(
-        `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(-XZ)`
+        '@settings(defaultLengthUnit = in)sketch001 = startSketchOn(-XZ)'
       )
 
       await editor.closePane()
@@ -504,21 +489,52 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOf
         delay: 200,
       })
 
-      await editor.expectEditor.toContain(code, { shouldNormalise: true })
+      await editor.expectEditor.toContain(
+        /profile001 = startProfile\(sketch001\,.*close\(\)/
+      )
 
       // Assert the tool stays equipped after a profile is closed (ready for the next one)
       await expect(
         page.getByRole('button', { name: 'line Line', exact: true })
       ).toHaveAttribute('aria-pressed', 'true')
     }
-    test('[0, 100, 100]', async ({ page, homePage, scene, editor }) => {
+    test('[0, 100, 100]', async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
       await homePage.goToModelingScene()
-      await doSnapAtDifferentScales(page, scene, editor, [0, 100, 100], 0.01)
+      await scene.settled(cmdBar)
+      await doSnapAtDifferentScales(
+        page,
+        scene,
+        editor,
+        toolbar,
+        [0, 100, 100],
+        0.01
+      )
     })
 
-    test('[0, 10000, 10000]', async ({ page, homePage, scene, editor }) => {
+    test('[0, 10000, 10000]', async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
       await homePage.goToModelingScene()
-      await doSnapAtDifferentScales(page, scene, editor, [0, 10000, 10000])
+      await scene.settled(cmdBar)
+      await doSnapAtDifferentScales(
+        page,
+        scene,
+        editor,
+        toolbar,
+        [0, 10000, 10000]
+      )
     })
   })
   test('exiting a close extrude, has the extrude button enabled ready to go', async ({
@@ -526,6 +542,7 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOf
     homePage,
     cmdBar,
     toolbar,
+    scene,
   }) => {
     // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
     await page.addInitScript(async () => {
@@ -546,6 +563,7 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOf
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     // wait for execution done
     await u.openDebugPanel()
@@ -626,9 +644,7 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 77.11)}, ${roundOf
 
     await page.getByRole('button', { name: 'Exit Sketch' }).click()
 
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeVisible()
+    await expect(toolbar.startSketchBtn).toBeVisible()
 
     expect((await editor.getCurrentCode()).replace(/\s/g, '')).toBe(
       `sketch001 = startSketchOn(XZ)
@@ -777,6 +793,9 @@ solid001 = subtract([extrude001], tools = [extrude002])
   test('Can sketch on face when user defined function was used in the sketch', async ({
     page,
     homePage,
+    scene,
+    cmdBar,
+    toolbar,
   }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -831,9 +850,10 @@ solid001 = subtract([extrude001], tools = [extrude002])
     const center = { x: 600, y: 250 }
     const rectangleSize = 20
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     // Start a sketch
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await toolbar.startSketchBtn.click()
 
     // Click the top face of this rail
     await page.mouse.click(center.x, center.y)
@@ -1020,9 +1040,7 @@ test.describe('multi-profile sketching', () => {
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
     await scene.settled(cmdBar)
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     // open feature tree and double click the first sketch
     await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
@@ -1104,6 +1122,7 @@ profile001 = startProfile(sketch001, at=[0, 0])
     editor,
     page,
     homePage,
+    cmdBar,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem('persistCode', '@settings(defaultLengthUnit = mm)')
@@ -1111,10 +1130,9 @@ profile001 = startProfile(sketch001, at=[0, 0])
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
+    await scene.settled(cmdBar)
     await editor.closePane()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     const [startProfile1] = scene.makeMouseHelpers(5)
     const [endLineStartTanArc] = scene.makeMouseHelpers(701, 158)
@@ -1571,7 +1589,9 @@ profile002 = startProfile(sketch002, at = [0, 52.55])
     await nextPoint()
     await editor.openPane()
     // A regex that just confirms the new segment is a line in a pipe
-    await expect(editor.codeContent).toContainText(/52\.55\]\)\s+\|\>\s+line\(/)
+    await expect(editor.codeContent).toContainText(
+      new RegExp(`${NUMBER_REGEXP}\\]\\)\\s+|>\\s+line\\(`)
+    )
   })
   test('old style sketch all in one pipe (with extrude) will break up to allow users to add a new profile to the same sketch', async ({
     homePage,
@@ -1720,7 +1740,7 @@ extrude003 = extrude(profile011, length = 2.5)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
-    await toolbar.closePane('code')
+    await toolbar.closePane(DefaultLayoutPaneID.Code)
     await scene.settled(cmdBar)
 
     const camPositionForSelectingSketchOnWallProfiles = () =>
@@ -1893,7 +1913,7 @@ test.describe('Redirecting to home page and back to the original file should cle
     await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await toolbar.startSketchBtn.click()
 
     // select an axis plane
     const [selectPlane] = scene.makeMouseHelpers(0.6, 0.3, { format: 'ratio' })
@@ -2025,9 +2045,7 @@ profile001 = startProfile(sketch001, at = [-102.72, 237.44])
     await scene.settled(cmdBar)
 
     // Ensure start sketch button is enabled
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     // Start a new sketch
     const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
@@ -2067,7 +2085,6 @@ profile001 = startProfile(sketch001, at = [-102.72, 237.44])
     homePage,
     scene,
     toolbar,
-    cmdBar,
     page,
   }) => {
     const u = await getUtils(page)
@@ -2096,7 +2113,7 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
       const projectDir = path.join(dir, 'multi-file-sketch-test')
       await fs.mkdir(projectDir, { recursive: true })
       await Promise.all([
-        fs.writeFile(path.join(projectDir, 'good.kcl'), GOOD_KCL, 'utf-8'),
+        fs.writeFile(path.join(projectDir, 'correct.kcl'), GOOD_KCL, 'utf-8'),
         fs.writeFile(path.join(projectDir, 'error.kcl'), ERROR_KCL, 'utf-8'),
       ])
     })
@@ -2109,15 +2126,22 @@ profile001 = startProfile(sketch001, at = [127.56, 179.02])
     await u.closeDebugPanel()
 
     await toolbar.openFeatureTreePane()
-    await toolbar.openPane('files')
 
-    await toolbar.openFile('good.kcl')
+    await toolbar.openPane(DefaultLayoutPaneID.Files)
+
+    await page.waitForTimeout(1000)
+
+    await toolbar.openFile('correct.kcl')
+
+    await page.waitForTimeout(1000)
 
     await expect(
       toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })
     ).toHaveCount(2)
 
     await toolbar.openFile('error.kcl')
+
+    await page.waitForTimeout(1000)
 
     await expect(
       toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })

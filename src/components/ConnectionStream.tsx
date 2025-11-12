@@ -59,7 +59,7 @@ export const ConnectionStream = (props: {
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
-  const { tryConnecting, isConnecting, numberOfConnectionAtttempts } =
+  const { tryConnecting, isConnecting, numberOfConnectionAttempts } =
     useTryConnect()
   // Stream related refs and data
   const [searchParams] = useSearchParams()
@@ -143,7 +143,7 @@ export const ConnectionStream = (props: {
         videoRef,
         setIsSceneReady,
         isConnecting,
-        numberOfConnectionAtttempts,
+        numberOfConnectionAttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
         setShowManualConnect,
@@ -188,7 +188,7 @@ export const ConnectionStream = (props: {
         videoRef,
         setIsSceneReady,
         isConnecting,
-        numberOfConnectionAtttempts,
+        numberOfConnectionAttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
         setShowManualConnect,
@@ -211,7 +211,7 @@ export const ConnectionStream = (props: {
         videoRef,
         setIsSceneReady,
         isConnecting,
-        numberOfConnectionAtttempts,
+        numberOfConnectionAttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
         setShowManualConnect,
@@ -219,6 +219,9 @@ export const ConnectionStream = (props: {
         console.warn(e)
         setShowManualConnect(true)
       })
+    },
+    infiniteDetectionLoopCallback: () => {
+      setShowManualConnect(true)
     },
   })
   useOnVitestEngineOnline({
@@ -231,7 +234,7 @@ export const ConnectionStream = (props: {
         videoRef,
         setIsSceneReady,
         isConnecting,
-        numberOfConnectionAtttempts,
+        numberOfConnectionAttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
         setShowManualConnect,
@@ -251,7 +254,7 @@ export const ConnectionStream = (props: {
         videoRef,
         setIsSceneReady,
         isConnecting,
-        numberOfConnectionAtttempts,
+        numberOfConnectionAttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
         setShowManualConnect,
@@ -275,7 +278,7 @@ export const ConnectionStream = (props: {
         videoRef,
         setIsSceneReady,
         isConnecting,
-        numberOfConnectionAtttempts,
+        numberOfConnectionAttempts,
         timeToConnect: 30_000,
         settings: settingsEngine,
         setShowManualConnect,
@@ -292,6 +295,7 @@ export const ConnectionStream = (props: {
     kclManager,
     resetCameraPosition,
   })
+
   useOnOfflineToExitSketchMode({
     callback: () => {
       modelingSend({ type: 'Cancel' })
@@ -362,7 +366,7 @@ export const ConnectionStream = (props: {
               videoRef,
               setIsSceneReady,
               isConnecting,
-              numberOfConnectionAtttempts,
+              numberOfConnectionAttempts,
               timeToConnect: 30_000,
               settings: settingsEngine,
               setShowManualConnect,

@@ -1,6 +1,6 @@
 import { cloneElement } from 'react'
 
-const CustomIconMap = {
+const CustomIconMap = Object.freeze({
   arc: (
     <svg
       viewBox="0 0 20 20"
@@ -239,6 +239,21 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  caretUp: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="arrow up"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.0001 8.70709L6.35352 12.3536L5.64642 11.6465L9.64655 7.64642L10.3537 7.64643L14.3535 11.6465L13.6464 12.3536L10.0001 8.70709Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   caretDown: (
     <svg
       viewBox="0 0 20 20"
@@ -280,6 +295,22 @@ const CustomIconMap = {
         fillRule="evenodd"
         clipRule="evenodd"
         d="M10 4C9.21207 4 8.43186 4.15519 7.7039 4.45672C6.97595 4.75825 6.31451 5.20021 5.75736 5.75736C5.20021 6.31451 4.75825 6.97594 4.45672 7.7039C4.1552 8.43185 4 9.21207 4 10C4 10.7879 4.15519 11.5681 4.45672 12.2961C4.75825 13.0241 5.20021 13.6855 5.75736 14.2426C6.31451 14.7998 6.97594 15.2417 7.7039 15.5433C8.43185 15.8448 9.21207 16 10 16C10.7879 16 11.5681 15.8448 12.2961 15.5433C13.0241 15.2417 13.6855 14.7998 14.2426 14.2426C14.7998 13.6855 15.2417 13.0241 15.5433 12.2961C15.8448 11.5681 16 10.7879 16 10C16 9.21207 15.8448 8.43185 15.5433 7.7039C15.2417 6.97595 14.7998 6.31451 14.2426 5.75736C13.6855 5.20021 13.0241 4.75825 12.2961 4.45672C11.5681 4.15519 10.7879 4 10 4ZM7.32122 3.53284C8.1705 3.18106 9.08075 3 10 3C10.9193 3 11.8295 3.18106 12.6788 3.53284C13.5281 3.88463 14.2997 4.40024 14.9497 5.05025C15.5998 5.70026 16.1154 6.47194 16.4672 7.32122C16.8189 8.1705 17 9.08075 17 10C17 10.9193 16.8189 11.8295 16.4672 12.6788C16.1154 13.5281 15.5998 14.2997 14.9497 14.9497C14.2997 15.5998 13.5281 16.1154 12.6788 16.4672C11.8295 16.8189 10.9193 17 10 17C9.08074 17 8.17049 16.8189 7.32121 16.4672C6.47193 16.1154 5.70026 15.5998 5.05025 14.9497C4.40024 14.2997 3.88462 13.5281 3.53284 12.6788C3.18106 11.8295 3 10.9192 3 10C3 9.08074 3.18106 8.17049 3.53284 7.32121C3.88463 6.47193 4.40024 5.70026 5.05026 5.05025C5.70027 4.40024 6.47194 3.88462 7.32122 3.53284Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
+  clipboard: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M6.5 3L7 3L13 3L13.5 3V3.5V4.00001L15.5 4.00002L16 4.00002V4.50002V16.5V17H15.5H4.5H4V16.5V4.50001V4.00001L4.5 4.00001L6.5 4.00001V3.5V3ZM6.5 5.00001L5 5.00001V16H15V5.00002L13.5 5.00001V6.50001V7.00001H13L7 7.00001L6.5 7.00001V6.50001V5.00001ZM7.5 4V4.50001V6.00001L12.5 6.00001V4.50001V4L7.5 4ZM13 9H7V8H13V9Z"
         fill="currentColor"
       />
     </svg>
@@ -854,6 +885,14 @@ const CustomIconMap = {
       <path
         d="M16 12V15H13.5M16 12V9M16 12H13.5M4 12V15H6.5M4 12V9M4 12H6.5M4 9V6H6.5M4 9H6.5M16 9V6H13.5M16 9H13.5M6.5 12V15M6.5 12H7.5M6.5 15H13.5M13.5 15V12M13.5 12H12.5M7.5 12V9M7.5 12H10M7.5 9H8.75M7.5 9H6.5M10 12V9M10 12H12.5M10 9H11.25M10 9H8.75M12.5 12V9M12.5 9H13.5M12.5 9H11.25M13.5 9V6M13.5 6H11.25M11.25 9V6M11.25 6H8.75M8.75 9V6M8.75 6H6.5M6.5 9V6"
         stroke="currentColor"
+      />
+    </svg>
+  ),
+  layout: (
+    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16.5 15.5H3.5V5.5H16.5V15.5ZM4.5 14.5H7.5V6.5H4.5V14.5ZM8.5 14.5H15.5V12H8.5V14.5ZM8.5 11H15.5V6.5H8.5V11Z"
+        fill="currentColor"
       />
     </svg>
   ),
@@ -1723,7 +1762,7 @@ const CustomIconMap = {
   ),
   brain: (
     <svg
-      viewBox="-3 0 28 28"
+      viewBox="-3 -2 28 28"
       xmlns="http://www.w3.org/2000/svg"
       fill="currentColor"
     >
@@ -1778,9 +1817,15 @@ const CustomIconMap = {
       </g>
     </svg>
   ),
-} as const
+})
 
 export type CustomIconName = keyof typeof CustomIconMap
+export function isCustomIconName(name: unknown): name is CustomIconName {
+  if (typeof name !== 'string') {
+    return false
+  }
+  return Object.keys(CustomIconMap).indexOf(name) >= 0
+}
 
 export const CustomIcon = ({
   name,

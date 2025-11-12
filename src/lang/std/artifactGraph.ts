@@ -6,7 +6,6 @@ import type {
   Plane,
   StartSketchOnFace,
   StartSketchOnPlane,
-  SweepSubType,
   Wall,
 } from '@rust/kcl-lib/bindings/Artifact'
 
@@ -29,7 +28,7 @@ import type {
   SweepEdge,
   WallArtifact,
 } from '@src/lang/wasm'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
@@ -69,35 +68,6 @@ export interface WallArtifactRich extends BaseArtifact {
   sweep: SweepArtifact
   paths: Array<PathArtifact>
   faceCodeRef: CodeRef
-}
-
-export interface PathArtifactRich extends BaseArtifact {
-  type: 'path'
-  /** A path must always lie on a plane */
-  plane: PlaneArtifact | WallArtifact | CapArtifact
-  /** A path must always contain 0 or more segments */
-  segments: Array<SegmentArtifact>
-  /** A path may not result in a sweep artifact */
-  sweep: SweepArtifact | null
-  codeRef: CodeRef
-}
-
-interface SegmentArtifactRich extends BaseArtifact {
-  type: 'segment'
-  path: PathArtifact
-  surf: WallArtifact
-  edges: Array<SweepEdge>
-  edgeCut?: EdgeCut
-  codeRef: CodeRef
-}
-
-interface SweepArtifactRich extends BaseArtifact {
-  type: 'sweep'
-  subType: SweepSubType
-  path: PathArtifact
-  surfaces: Array<WallArtifact | CapArtifact>
-  edges: Array<SweepEdge>
-  codeRef: CodeRef
 }
 
 export type EngineCommand = WebSocketRequest
@@ -250,107 +220,6 @@ export function expandCap(
   }
 }
 
-export function expandPath(
-  path: PathArtifact,
-  artifactGraph: ArtifactGraph
-): PathArtifactRich | Error {
-  const segs = getArtifactsOfTypes(
-    { keys: path.segIds, types: ['segment'] },
-    artifactGraph
-  )
-  const sweep = path.sweepId
-    ? getArtifactOfTypes(
-        {
-          key: path.sweepId,
-          types: ['sweep'],
-        },
-        artifactGraph
-      )
-    : null
-  const plane = getArtifactOfTypes(
-    { key: path.planeId, types: ['plane', 'wall'] },
-    artifactGraph
-  )
-  if (err(sweep)) return sweep
-  if (err(plane)) return plane
-  return {
-    type: 'path',
-    id: path.id,
-    segments: Array.from(segs.values()),
-    sweep,
-    plane,
-    codeRef: path.codeRef,
-  }
-}
-
-export function expandSweep(
-  sweep: SweepArtifact,
-  artifactGraph: ArtifactGraph
-): SweepArtifactRich | Error {
-  const surfs = getArtifactsOfTypes(
-    { keys: sweep.surfaceIds, types: ['wall', 'cap'] },
-    artifactGraph
-  )
-  const edges = getArtifactsOfTypes(
-    { keys: sweep.edgeIds, types: ['sweepEdge'] },
-    artifactGraph
-  )
-  const path = getArtifactOfTypes(
-    { key: sweep.pathId, types: ['path'] },
-    artifactGraph
-  )
-  if (err(path)) return path
-  return {
-    type: 'sweep',
-    subType: sweep.subType,
-    id: sweep.id,
-    surfaces: Array.from(surfs.values()),
-    edges: Array.from(edges.values()),
-    path,
-    codeRef: sweep.codeRef,
-  }
-}
-
-export function expandSegment(
-  segment: SegmentArtifact,
-  artifactGraph: ArtifactGraph
-): SegmentArtifactRich | Error {
-  const path = getArtifactOfTypes(
-    { key: segment.pathId, types: ['path'] },
-    artifactGraph
-  )
-  const surf = segment.surfaceId
-    ? getArtifactOfTypes(
-        { key: segment.surfaceId, types: ['wall'] },
-        artifactGraph
-      )
-    : undefined
-  const edges = getArtifactsOfTypes(
-    { keys: segment.edgeIds, types: ['sweepEdge'] },
-    artifactGraph
-  )
-  const edgeCut = segment.edgeCutId
-    ? getArtifactOfTypes(
-        { key: segment.edgeCutId, types: ['edgeCut'] },
-        artifactGraph
-      )
-    : undefined
-  if (err(path)) return path
-  if (err(surf)) return surf
-  if (err(edgeCut)) return edgeCut
-  if (!surf) return new Error('Segment does not have a surface')
-
-  return {
-    type: 'segment',
-    id: segment.id,
-    path,
-    surf,
-    edges: Array.from(edges.values()),
-    edgeCut: edgeCut,
-    codeRef: segment.codeRef,
-  }
-}
-
 export function getCapCodeRef(
   cap: CapArtifact,
   artifactGraph: ArtifactGraph
@@ -454,19 +323,6 @@ export function getSweepFromSuspectedSweepSurface(
   )
 }
 
-export function getSweepFromSuspectedPath(
-  id: ArtifactId,
-  artifactGraph: ArtifactGraph
-): SweepArtifact | Error {
-  const path = getArtifactOfTypes({ key: id, types: ['path'] }, artifactGraph)
-  if (err(path)) return path
-  if (!path.sweepId) return new Error('Path does not have a sweepId')
-  return getArtifactOfTypes(
-    { key: path.sweepId, types: ['sweep'] },
-    artifactGraph
-  )
-}
-
 export function getCommonFacesForEdge(
   artifact: SweepEdge | SegmentArtifact,
   artifactGraph: ArtifactGraph
@@ -515,6 +371,25 @@ export function getSweepArtifactFromSelection(
     )
     if (err(_artifact)) return _artifact
     sweepArtifact = _artifact
+  } else if (selection.artifact?.type === 'edgeCut') {
+    // Handle edgeCut by getting its consumed edge (segment or sweepEdge)
+    const segOrEdge = getArtifactOfTypes(
+      {
+        key: selection.artifact.consumedEdgeId,
+        types: ['segment', 'sweepEdge'],
+      },
+      artifactGraph
+    )
+    if (err(segOrEdge)) return segOrEdge
+
+    // Recursively resolve segment or sweepEdge to sweep
+    return getSweepArtifactFromSelection(
+      {
+        artifact: segOrEdge,
+        codeRef: selection.codeRef,
+      },
+      artifactGraph
+    )
   }
   if (!sweepArtifact) return new Error('No sweep artifact found')
 
@@ -838,4 +713,90 @@ export function getFaceCodeRef(
     return artifact.codeRef
   }
   return null
+}
+
+/**
+ * Coerce selections that may contain faces or edges to their parent body (sweep/compositeSolid).
+ * This is useful for commands that only work with bodies, but users may have faces or edges selected.
+ *
+ * @param selections - The selections to coerce
+ * @param artifactGraph - The artifact graph to use for lookups
+ * @returns A new Selections object with only body artifacts, or an Error if coercion fails
+ */
+export function coerceSelectionsToBody(
+  selections: Selections,
+  artifactGraph: ArtifactGraph
+): Selections | Error {
+  const bodySelections: Selection[] = []
+  const seenBodyIds = new Set<string>()
+
+  for (const selection of selections.graphSelections) {
+    if (!selection.artifact) {
+      // Handle selections without artifacts (e.g., imported modules)
+      // TODO: coerce to body when we have ranges for imports
+      // TODO: coerce edges and faces of imported bodies
+      if (selection.codeRef.range[1] - selection.codeRef.range[0] !== 0) {
+        bodySelections.push(selection)
+      }
+      continue
+    }
+
+    // If it's already a body type, use it directly
+    if (
+      selection.artifact.type === 'sweep' ||
+      selection.artifact.type === 'compositeSolid' ||
+      selection.artifact.type === 'path'
+    ) {
+      if (!seenBodyIds.has(selection.artifact.id)) {
+        seenBodyIds.add(selection.artifact.id)
+        bodySelections.push({
+          artifact: selection.artifact,
+          codeRef: selection.codeRef,
+        })
+      }
+    } else {
+      // Get the parent body (sweep) from faces, edges, or edgeCuts
+      const maybeSweep = getSweepArtifactFromSelection(selection, artifactGraph)
+
+      if (err(maybeSweep)) {
+        return new Error(
+          `Unable to find parent body for selected artifact: ${selection.artifact.type}`
+        )
+      }
+
+      // Prefer the path over the sweep for the final selection
+      const maybePath = getArtifactOfTypes(
+        { key: maybeSweep.pathId, types: ['path'] },
+        artifactGraph
+      )
+      if (!err(maybePath)) {
+        // Successfully got the path from the sweep
+        if (!seenBodyIds.has(maybePath.id)) {
+          seenBodyIds.add(maybePath.id)
+          bodySelections.push({
+            artifact: maybePath,
+            codeRef: maybePath.codeRef,
+          })
+        }
+      } else {
+        // Couldn't get path, use the sweep itself
+        const sweepWithType = getArtifactOfTypes(
+          { key: maybeSweep.id, types: ['sweep'] },
+          artifactGraph
+        )
+        if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
+          seenBodyIds.add(sweepWithType.id)
+          bodySelections.push({
+            artifact: sweepWithType,
+            codeRef: maybeSweep.codeRef,
+          })
+        }
+      }
+    }
+  }
+
+  return {
+    graphSelections: bodySelections,
+    otherSelections: selections.otherSelections,
+  }
 }

@@ -266,7 +266,7 @@ profile001 = startProfile(sketch001, at = [-5, -5])
 test(
   'Sketch on face with none z-up',
   { tag: '@snapshot' },
-  async ({ page, context, cmdBar, scene }) => {
+  async ({ page, context, cmdBar, scene, toolbar }) => {
     const u = await getUtils(page)
     await context.addInitScript(async (KCL_DEFAULT_LENGTH) => {
       localStorage.setItem(
@@ -298,11 +298,9 @@ part002 = startSketchOn(part001, face = seg01)
     // rendering, because an execution-done message is not sufficient.
     await page.waitForTimeout(1000)
 
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await toolbar.startSketchBtn.click()
     let previousCodeContent = await page.locator('.cm-content').innerText()
 
     // click at 641, 135

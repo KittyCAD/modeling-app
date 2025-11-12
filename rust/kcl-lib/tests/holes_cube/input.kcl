@@ -1,0 +1,58 @@
+@settings(experimentalFeatures = allow)
+
+cubeLen = 20
+bigCube = startSketchOn(XY)
+  |> startProfile(at = [-cubeLen / 2, -cubeLen / 2 + 10])
+  |> line(end = [cubeLen, 0], tag = $a)
+  |> line(end = [0, cubeLen], tag = $b)
+  |> line(end = [-cubeLen, 0], tag = $c)
+  |> line(end = [0, -cubeLen], tag = $d)
+  |> close()
+  |> extrude(length = cubeLen, symmetric = true)
+  // |> rotate(roll = -45deg)
+  |> translate(x = 5)
+  |> fillet(
+       radius = 1,
+       tags = [
+         // Fillet the 4 base edges
+         a,
+         b,
+         c,
+         d,
+         // Fillet the 4 top edges
+         getOppositeEdge(a),
+         getOppositeEdge(b),
+         getOppositeEdge(c),
+         getOppositeEdge(d),
+         // Fillet the 4 side edges
+         getNextAdjacentEdge(a),
+         getPreviousAdjacentEdge(a),
+         getNextAdjacentEdge(c),
+         getPreviousAdjacentEdge(c)
+       ],
+     )
+
+bigCube
+  |> hole::hole(
+       face = a,
+       cutAt = [0, 5],
+       holeBottom = hole::drill(pointAngle = 110deg),
+       holeBody = hole::blind(depth = cubeLen, diameter = 8),
+       holeType = hole::countersink(diameter = 14, angle = 100deg),
+     )
+  |> hole::hole(
+       face = END,
+       cutAt = [10, 5],
+       holeBottom = hole::drill(pointAngle = 110deg),
+       holeBody = hole::blind(depth = cubeLen * 0.9, diameter = 6),
+       holeType = hole::counterbore(diameter = 12, depth = 3.5),
+     )
+  |> hole::hole(
+       face = b,
+       cutAt = [0, 10],
+       holeBottom = hole::drill(pointAngle = 60deg),
+       holeBody = hole::blind(depth = cubeLen * 0.1, diameter = 4),
+       holeType = hole::simple(),
+     )
+  // Make it look like copper
+  |> appearance(color = "#da4333", roughness = 50, metalness = 90)

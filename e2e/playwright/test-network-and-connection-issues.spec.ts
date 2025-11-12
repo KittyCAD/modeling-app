@@ -5,7 +5,7 @@ test.describe('Test network related behaviors', () => {
   test(
     'simulate network down and network little widget',
     { tag: '@skipLocalEngine' },
-    async ({ page, homePage }) => {
+    async ({ page, homePage, toolbar, scene, cmdBar }) => {
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
       )
@@ -15,13 +15,14 @@ test.describe('Test network related behaviors', () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
 
       const networkToggle = page.getByTestId(/network-toggle/)
 
       // This is how we wait until the stream is online
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).not.toBeDisabled({ timeout: 15000 })
+      await expect(toolbar.startSketchBtn).not.toBeDisabled({
+        timeout: 15000,
+      })
 
       await expect(networkToggle).toBeVisible()
       await networkToggle.hover()
@@ -75,9 +76,9 @@ test.describe('Test network related behaviors', () => {
         uploadThroughput: -1,
       })
 
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).not.toBeDisabled({ timeout: 15000 })
+      await expect(toolbar.startSketchBtn).not.toBeDisabled({
+        timeout: 15000,
+      })
 
       // (Second check) expect the network to be up
       await expect(
@@ -89,7 +90,7 @@ test.describe('Test network related behaviors', () => {
   test(
     'Engine disconnect & reconnect in sketch mode',
     { tag: '@skipLocalEngine' },
-    async ({ page, homePage, toolbar, scene, cmdBar }) => {
+    async ({ page, homePage, toolbar, scene, cmdBar, editor }) => {
       const networkToggle = page.getByTestId(/network-toggle/)
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
@@ -100,6 +101,7 @@ test.describe('Test network related behaviors', () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
       await u.waitForPageLoad()
 
       await u.openDebugPanel()
@@ -137,9 +139,7 @@ test.describe('Test network related behaviors', () => {
       await expect(
         page.getByRole('button', { name: 'Exit Sketch' })
       ).not.toBeVisible()
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeVisible()
+      await expect(toolbar.startSketchBtn).toBeVisible()
 
       // simulate network up
       await u.emulateNetworkConditions({
@@ -151,9 +151,9 @@ test.describe('Test network related behaviors', () => {
       })
 
       // Wait for the app to be ready for use
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).not.toBeDisabled({ timeout: 15000 })
+      await expect(toolbar.startSketchBtn).not.toBeDisabled({
+        timeout: 15000,
+      })
 
       // Expect the network to be up
       await networkToggle.hover()
@@ -178,9 +178,9 @@ test.describe('Test network related behaviors', () => {
       // Ensure we can continue sketching
       await page.mouse.click(800, 300)
 
-      await expect
-        .poll(u.normalisedEditorCode)
-        .toContain(`profile001 = startProfile(sketch001`)
+      await expect(editor.codeContent).toContainText(
+        `profile001 = startProfile(sketch001`
+      )
       await page.waitForTimeout(100)
 
       // Unequip line tool

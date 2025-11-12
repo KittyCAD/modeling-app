@@ -26,7 +26,11 @@ pub use crate::parsing::ast::types::{
 use crate::{
     ModuleId, SourceRange, TypedPath,
     errors::KclError,
-    execution::{KclValue, Metadata, TagIdentifier, annotations, types::ArrayLen},
+    execution::{
+        KclValue, Metadata, TagIdentifier,
+        annotations::{self, WarningLevel},
+        types::ArrayLen,
+    },
     lsp::ToLspRange,
     parsing::{PIPE_OPERATOR, ast::digest::Digest, token::NumericSuffix},
 };
@@ -212,6 +216,12 @@ pub type BoxNode<T> = Box<Node<T>>;
 pub type NodeList<T> = Vec<Node<T>>;
 pub type NodeRef<'a, T> = &'a Node<T>;
 
+/// A way to abstract over blocks of code.
+pub trait CodeBlock {
+    fn body(&self) -> &[BodyItem];
+    fn to_source_range(&self) -> SourceRange;
+}
+
 /// A KCL program top level, or function body.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -244,6 +254,16 @@ impl From<Node<Block>> for Node<Program> {
             block.end,
             block.module_id,
         )
+    }
+}
+
+impl CodeBlock for Node<Program> {
+    fn body(&self) -> &[BodyItem] {
+        &self.body
+    }
+
+    fn to_source_range(&self) -> SourceRange {
+        SourceRange::new(self.start, self.end, self.module_id)
     }
 }
 
@@ -324,6 +344,7 @@ impl Node<Program> {
             crate::lint::checks::lint_object_properties,
             crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
+            crate::lint::checks::lint_profiles_should_not_be_chained,
         ];
 
         let mut findings = vec![];
@@ -374,6 +395,40 @@ impl Node<Program> {
                 settings.inner.add_or_update(
                     annotations::SETTINGS_UNIT_LENGTH,
                     Expr::Name(Box::new(Name::new(&len.to_string()))),
+                );
+            }
+
+            new_program.inner_attrs.push(settings);
+        }
+
+        Ok(new_program)
+    }
+
+    pub fn change_experimental_features(&self, warning_level: Option<WarningLevel>) -> Result<Self, KclError> {
+        let mut new_program = self.clone();
+        let mut found = false;
+        for node in &mut new_program.inner_attrs {
+            if node.name() == Some(annotations::SETTINGS) {
+                if let Some(level) = warning_level {
+                    node.inner.add_or_update(
+                        annotations::SETTINGS_EXPERIMENTAL_FEATURES,
+                        Expr::Name(Box::new(Name::new(level.as_str()))),
+                    );
+                }
+                // Previous source range no longer makes sense, but we want to
+                // preserve other things like comments.
+                node.reset_source();
+                found = true;
+                break;
+            }
+        }
+
+        if !found {
+            let mut settings = Annotation::new(annotations::SETTINGS);
+            if let Some(level) = warning_level {
+                settings.inner.add_or_update(
+                    annotations::SETTINGS_EXPERIMENTAL_FEATURES,
+                    Expr::Name(Box::new(Name::new(level.as_str()))),
                 );
             }
 
@@ -1351,6 +1406,16 @@ impl From<Program> for Block {
     }
 }
 
+impl CodeBlock for Node<Block> {
+    fn body(&self) -> &[BodyItem] {
+        &self.items
+    }
+
+    fn to_source_range(&self) -> SourceRange {
+        SourceRange::new(self.start, self.end, self.module_id)
+    }
+}
+
 impl Block {
     fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         for item in &mut self.items {
@@ -1951,7 +2016,7 @@ impl ImportStatement {
                     return Some(name[start..].to_owned());
                 }
 
-                let name = s.file_name().map(|f| f.to_string())?;
+                let name = s.file_name()?;
                 if name.contains('\\') || name.contains('/') {
                     return None;
                 }
@@ -2231,7 +2296,7 @@ impl VariableDeclaration {
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
-        self.declaration.init.replace_value(source_range, new_value.clone());
+        self.declaration.init.replace_value(source_range, new_value);
     }
 
     /// Returns an Expr that includes the given character position.
@@ -2825,7 +2890,7 @@ impl ArrayRangeExpression {
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
         self.start_element.replace_value(source_range, new_value.clone());
-        self.end_element.replace_value(source_range, new_value.clone());
+        self.end_element.replace_value(source_range, new_value);
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -4430,6 +4495,65 @@ startSketchOn(XY)
         assert_eq!(
             formatted,
             r#"@settings(defaultLengthUnit = mm)
+
+startSketchOn(XY)
+"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_experimental_features_deny_to_allow() {
+        let some_program_string = r#"@settings(experimentalFeatures = deny)
+
+startSketchOn(XY)"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let result = program.meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(meta_settings.experimental_features, WarningLevel::Deny);
+
+        // Edit the ast.
+        let new_program = program.change_experimental_features(Some(WarningLevel::Allow)).unwrap();
+
+        let result = new_program.meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(meta_settings.experimental_features, WarningLevel::Allow);
+
+        let formatted = new_program.recast_top(&Default::default(), 0);
+
+        assert_eq!(
+            formatted,
+            r#"@settings(experimentalFeatures = allow)
+
+startSketchOn(XY)
+"#
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_experimental_features_nothing_to_warn() {
+        let some_program_string = r#"startSketchOn(XY)"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let result = program.meta_settings().unwrap();
+        assert!(result.is_none());
+
+        // Edit the ast.
+        let new_program = program.change_experimental_features(Some(WarningLevel::Warn)).unwrap();
+
+        let result = new_program.meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(meta_settings.experimental_features, WarningLevel::Warn);
+
+        let formatted = new_program.recast_top(&Default::default(), 0);
+
+        assert_eq!(
+            formatted,
+            r#"@settings(experimentalFeatures = warn)
 
 startSketchOn(XY)
 "#

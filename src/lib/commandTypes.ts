@@ -51,17 +51,6 @@ export type StateMachineCommandSetSchema<T extends AnyStateMachine> = Partial<{
   [EventType in EventFrom<T>['type']]: Record<string, any>
 }>
 
-export type StateMachineCommandSet<
-  T extends AnyStateMachine,
-  Schema extends StateMachineCommandSetSchema<T>,
-> = Partial<{
-  [EventType in EventFrom<T>['type']]: Command<
-    T,
-    EventFrom<T>['type'],
-    Schema[EventType]
-  >
-}>
-
 /**
  * A configuration object for a set of commands tied to a state machine.
  * Each event type can have one or more commands associated with it.
@@ -87,11 +76,9 @@ export type Command<
   groupId: T['id']
   needsReview: boolean
   reviewMessage?:
-    | string
     | ReactNode
-    | ((
-        commandBarContext: { argumentsToSubmit: Record<string, unknown> } // Should be the commandbarMachine's context, but it creates a circular dependency
-      ) => string | ReactNode)
+    | ((commandBarContext: CommandBarContext) => ReactNode)
+  reviewValidation?: (context: CommandBarContext) => Promise<undefined | Error>
   machineActor?: Actor<T>
   onSubmit: (data?: CommandSchema) => void
   onCancel?: () => void
@@ -105,6 +92,7 @@ export type Command<
   hideFromSearch?: boolean
   disabled?: boolean
   status?: CommandStatus
+  mlBranding?: boolean
 }
 
 export type CommandConfig<
@@ -294,6 +282,23 @@ export type CommandArgumentConfig<
         context: CommandBarContext
       }) => Promise<boolean | string>
     }
+  | {
+      inputType: 'vector2d'
+      defaultValue?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => string)
+      defaultValueFromContext?: (context: C) => OutputType
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
+    }
 )
 
 export type CommandArgument<
@@ -458,6 +463,22 @@ export type CommandArgument<
     }
   | {
       inputType: 'vector3d'
+      defaultValue?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => string)
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
+    }
+  | {
+      inputType: 'vector2d'
       defaultValue?:
         | string
         | ((

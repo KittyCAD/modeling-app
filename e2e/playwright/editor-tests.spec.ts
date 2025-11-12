@@ -8,6 +8,7 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Editor tests', () => {
   test('can comment out code with ctrl+/', async ({ page, homePage }) => {
@@ -912,6 +913,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.waitForTimeout(100)
       // press arrow down then enter to accept xLine
       await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('ArrowDown')
       await page.keyboard.press('Enter')
       // finish line with comment
       await page.keyboard.type('5')
@@ -983,6 +985,7 @@ sketch001 = startSketchOn(XZ)
       await page.waitForTimeout(100)
       // press arrow down then tab to accept xLine
       await page.keyboard.press('ArrowDown')
+      await page.keyboard.press('ArrowDown')
       // finish line with comment
       await page.keyboard.press('Tab')
       await page.waitForTimeout(100)
@@ -1029,9 +1032,8 @@ sketch001 = startSketchOn(XZ)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await scene.settled(cmdBar)
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     await page.waitForTimeout(100)
     await u.openAndClearDebugPanel()
@@ -1232,7 +1234,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await toolbar.startSketchBtn.click()
 
     // select an axis plane
     await page.mouse.click(700, 200)
@@ -1299,7 +1301,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await toolbar.editSketch(0)
 
     await page.waitForTimeout(1000)
-    await toolbar.closePane('code')
+    await toolbar.closePane(DefaultLayoutPaneID.Code)
 
     // Click on the bottom segment that lies on the x axis
     const clickCoords = await scene.convertPagePositionToStream(

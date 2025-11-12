@@ -822,7 +822,7 @@ impl ArgData {
             format!("{} = ", self.name)
         };
         if let Some(vals) = &self.snippet_array {
-            let mut snippet = label.to_owned();
+            let mut snippet = label;
             snippet.push('[');
             let n = vals.len();
             for (i, val) in vals.iter().enumerate() {

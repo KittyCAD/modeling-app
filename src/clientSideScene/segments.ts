@@ -11,7 +11,6 @@ import {
   Line,
   LineBasicMaterial,
   LineCurve3,
-  LineDashedMaterial,
   Mesh,
   MeshBasicMaterial,
   Shape,
@@ -94,6 +93,7 @@ import toast from 'react-hot-toast'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { ActorRefFrom } from 'xstate'
 import type { KclManager } from '@src/lang/KclSingleton'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {
@@ -110,6 +110,7 @@ interface CreateSegmentArgs {
   selection?: Selections
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
   kclManager: KclManager
+  wasmInstance?: ModuleType
 }
 
 interface UpdateSegmentArgs {
@@ -118,6 +119,7 @@ interface UpdateSegmentArgs {
   group: Group
   sceneInfra: SceneInfra
   scale?: number
+  wasmInstance?: ModuleType
 }
 
 interface CreateSegmentResult {
@@ -161,6 +163,7 @@ class StraightSegment implements SegmentUtils {
     selection,
     commandBarActor,
     kclManager,
+    wasmInstance,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
@@ -401,6 +404,7 @@ class TangentialArcToSegment implements SegmentUtils {
     theme,
     isSelected,
     sceneInfra,
+    wasmInstance,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
@@ -448,6 +452,7 @@ class TangentialArcToSegment implements SegmentUtils {
       group,
       scale,
       sceneInfra,
+      wasmInstance,
     })
     if (err(updateOverlaysCallback)) return updateOverlaysCallback
 
@@ -463,6 +468,7 @@ class TangentialArcToSegment implements SegmentUtils {
     group,
     scale = 1,
     sceneInfra,
+    wasmInstance,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
@@ -478,6 +484,7 @@ class TangentialArcToSegment implements SegmentUtils {
       arcEndPoint: to,
       tanPreviousPoint: getTanPreviousPoint(prevSegment),
       obtuse: true,
+      wasmInstance,
     })
 
     const pxLength = arcInfo.arcLength / scale
@@ -1998,43 +2005,43 @@ export function createArcGeometry({
 // https://threejs.org/docs/#api/en/extras/curves/EllipseCurve
 // I'm not sure why it wasn't done like this in the first place?
 // I don't touch the code above because it may break something else.
-export function createCircleGeometry({
-  center,
-  radius,
-  color,
-  isDashed = false,
-  scale = 1,
-}: {
-  center: Coords2d
-  radius: number
-  color: number
-  isDashed?: boolean
-  scale?: number
-}): Line {
-  const circle = new EllipseCurve(
-    center[0],
-    center[1],
-    radius,
-    radius,
-    0,
-    Math.PI * 2,
-    true,
-    scale
-  )
-  const points = circle.getPoints(75) // just enough points to not see edges.
-  const geometry = new BufferGeometry().setFromPoints(points)
-  const material = !isDashed
-    ? new LineBasicMaterial({ color })
-    : new LineDashedMaterial({
-        color,
-        scale,
-        dashSize: 6,
-        gapSize: 6,
-      })
-  const line = new Line(geometry, material)
-  line.computeLineDistances()
-  return line
-}
+// export function createCircleGeometry({
+//   center,
+//   radius,
+//   color,
+//   isDashed = false,
+//   scale = 1,
+// }: {
+//   center: Coords2d
+//   radius: number
+//   color: number
+//   isDashed?: boolean
+//   scale?: number
+// }): Line {
+//   const circle = new EllipseCurve(
+//     center[0],
+//     center[1],
+//     radius,
+//     radius,
+//     0,
+//     Math.PI * 2,
+//     true,
+//     scale
+//   )
+//   const points = circle.getPoints(75) // just enough points to not see edges.
+//   const geometry = new BufferGeometry().setFromPoints(points)
+//   const material = !isDashed
+//     ? new LineBasicMaterial({ color })
+//     : new LineDashedMaterial({
+//         color,
+//         scale,
+//         dashSize: 6,
+//         gapSize: 6,
+//       })
+//   const line = new Line(geometry, material)
+//   line.computeLineDistances()
+//   return line
+// }
 
 export function dashedStraight(
   from: Coords2d,

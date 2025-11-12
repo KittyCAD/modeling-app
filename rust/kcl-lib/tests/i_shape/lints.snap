@@ -1,0 +1,102 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Lints i_shape.kcl
+---
+[
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false
+    },
+    "description": "found 'd_wrist_circumference'",
+    "pos": [
+      0,
+      21,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'd_wrist_circumference' to 'dWristCircumference'",
+      "insert": "dWristCircumference = [22.8, 10.7, 16.4, 18.5]\nwidth = dWristCircumference[0] + dWristCircumference[1] + dWristCircumference[2] + dWristCircumference[3]\nlength = 120.0\nhand_thickness = 24.0\ncorner_radius = 5.0\n\n// At first I thought this was going to be symmetric,\n// but I measured intentionally to not be symmetric,\n// because your wrist isn't a perfect cylindrical surface\nbrace_base = startSketchOn(XY)\n  |> startProfile(at = [corner_radius, 0])\n  |> line(end = [width - corner_radius, 0.0])\n  |> tangentialArc(end = [corner_radius, corner_radius])\n  |> yLine(length = 25.0 - corner_radius)\n  |> tangentialArc(end = [-corner_radius, corner_radius])\n  |> xLine(length = -(dWristCircumference[0] - (corner_radius * 2)))\n  |> tangentialArc(end = [-corner_radius, corner_radius])\n  |> yLine(length = length - 25.0 - 23.0 - (corner_radius * 2))\n  |> tangentialArc(end = [corner_radius, corner_radius])\n  |> xLine(length = 15.0 - (corner_radius * 2))\n  |> tangentialArc(end = [corner_radius, corner_radius])\n  |> yLine(length = 23.0 - corner_radius)\n  |> tangentialArc(end = [-corner_radius, corner_radius])\n  |> xLine(length = -(hand_thickness + 15.0 + 15.0 - (corner_radius * 2)))\n  |> tangentialArc(end = [-corner_radius, -corner_radius])\n  |> yLine(length = -(23.0 - corner_radius))\n  |> tangentialArc(end = [corner_radius, -corner_radius])\n  |> xLine(length = 15.0 - (corner_radius * 2))\n  |> tangentialArc(end = [corner_radius, -corner_radius])\n  |> yLine(length = -(length - 25.0 - 23.0 - (corner_radius * 2)))\n  |> tangentialArc(end = [-corner_radius, -corner_radius])\n  |> xLine(length = -(dWristCircumference[1] + dWristCircumference[2] + dWristCircumference[3] - hand_thickness - corner_radius))\n  |> tangentialArc(end = [-corner_radius, -corner_radius])\n  |> yLine(length = -(25.0 - corner_radius))\n  |> tangentialArc(end = [corner_radius, -corner_radius])\n  |> close(%)\n\ninner = startSketchOn(XY)\n  |> startProfile(at = [0, 0])\n  |> xLine(length = 1.0)\n  |> tangentialArc(end = [corner_radius, corner_radius])\n  |> yLine(length = 25.0 - (corner_radius * 2))\n  |> tangentialArc(end = [-corner_radius, corner_radius])\n  |> xLine(length = -1.0)\n  |> tangentialArc(end = [-corner_radius, -corner_radius])\n  |> yLine(length = -(25.0 - (corner_radius * 2)))\n  |> tangentialArc(end = [corner_radius, -corner_radius])\n  |> close(%)\n\nfinal = brace_base\n  |> subtract2d(tool = inner)\n  |> extrude(length = 3.0)\n",
+      "source_range": [
+        0,
+        2430,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false
+    },
+    "description": "found 'hand_thickness'",
+    "pos": [
+      178,
+      192,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'hand_thickness' to 'handThickness'",
+      "insert": "d_wrist_circumference = [22.8, 10.7, 16.4, 18.5]\nwidth = d_wrist_circumference[0] + d_wrist_circumference[1] + d_wrist_circumference[2] + d_wrist_circumference[3]\nlength = 120.0\nhandThickness = 24.0\ncorner_radius = 5.0\n\n// At first I thought this was going to be symmetric,\n// but I measured intentionally to not be symmetric,\n// because your wrist isn't a perfect cylindrical surface\nbrace_base = startSketchOn(XY)\n  |> startProfile(at = [corner_radius, 0])\n  |> line(end = [width - corner_radius, 0.0])\n  |> tangentialArc(end = [corner_radius, corner_radius])\n  |> yLine(length = 25.0 - corner_radius)\n  |> tangentialArc(end = [-corner_radius, corner_radius])\n  |> xLine(length = -(d_wrist_circumference[0] - (corner_radius * 2)))\n  |> tangentialArc(end = [-corner_radius, corner_radius])\n  |> yLine(length = length - 25.0 - 23.0 - (corner_radius * 2))\n  |> tangentialArc(end = [corner_radius, corner_radius])\n  |> xLine(length = 15.0 - (corner_radius * 2))\n  |> tangentialArc(end = [corner_radius, corner_radius])\n  |> yLine(length = 23.0 - corner_radius)\n  |> tangentialArc(end = [-corner_radius, corner_radius])\n  |> xLine(length = -(handThickness + 15.0 + 15.0 - (corner_radius * 2)))\n  |> tangentialArc(end = [-corner_radius, -corner_radius])\n  |> yLine(length = -(23.0 - corner_radius))\n  |> tangentialArc(end = [corner_radius, -corner_radius])\n  |> xLine(length = 15.0 - (corner_radius * 2))\n  |> tangentialArc(end = [corner_radius, -corner_radius])\n  |> yLine(length = -(length - 25.0 - 23.0 - (corner_radius * 2)))\n  |> tangentialArc(end = [-corner_radius, -corner_radius])\n  |> xLine(length = -(d_wrist_circumference[1] + d_wrist_circumference[2] + d_wrist_circumference[3] - handThickness - corner_radius))\n  |> tangentialArc(end = [-corner_radius, -corner_radius])\n  |> yLine(length = -(25.0 - corner_radius))\n  |> tangentialArc(end = [corner_radius, -corner_radius])\n  |> close(%)\n\ninner = startSketchOn(XY)\n  |> startProfile(at = [0, 0])\n  |> xLine(length = 1.0)\n  |> tangentialArc(end = [corner_radius, corner_radius])\n  |> yLine(length = 25.0 - (corner_radius * 2))\n  |> tangentialArc(end = [-corner_radius, corner_radius])\n  |> xLine(length = -1.0)\n  |> tangentialArc(end = [-corner_radius, -corner_radius])\n  |> yLine(length = -(25.0 - (corner_radius * 2)))\n  |> tangentialArc(end = [corner_radius, -corner_radius])\n  |> close(%)\n\nfinal = brace_base\n  |> subtract2d(tool = inner)\n  |> extrude(length = 3.0)\n",
+      "source_range": [
+        0,
+        2430,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false
+    },
+    "description": "found 'corner_radius'",
+    "pos": [
+      200,
+      213,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'corner_radius' to 'cornerRadius'",
+      "insert": "d_wrist_circumference = [22.8, 10.7, 16.4, 18.5]\nwidth = d_wrist_circumference[0] + d_wrist_circumference[1] + d_wrist_circumference[2] + d_wrist_circumference[3]\nlength = 120.0\nhand_thickness = 24.0\ncornerRadius = 5.0\n\n// At first I thought this was going to be symmetric,\n// but I measured intentionally to not be symmetric,\n// because your wrist isn't a perfect cylindrical surface\nbrace_base = startSketchOn(XY)\n  |> startProfile(at = [cornerRadius, 0])\n  |> line(end = [width - cornerRadius, 0.0])\n  |> tangentialArc(end = [cornerRadius, cornerRadius])\n  |> yLine(length = 25.0 - cornerRadius)\n  |> tangentialArc(end = [-cornerRadius, cornerRadius])\n  |> xLine(length = -(d_wrist_circumference[0] - (cornerRadius * 2)))\n  |> tangentialArc(end = [-cornerRadius, cornerRadius])\n  |> yLine(length = length - 25.0 - 23.0 - (cornerRadius * 2))\n  |> tangentialArc(end = [cornerRadius, cornerRadius])\n  |> xLine(length = 15.0 - (cornerRadius * 2))\n  |> tangentialArc(end = [cornerRadius, cornerRadius])\n  |> yLine(length = 23.0 - cornerRadius)\n  |> tangentialArc(end = [-cornerRadius, cornerRadius])\n  |> xLine(length = -(hand_thickness + 15.0 + 15.0 - (cornerRadius * 2)))\n  |> tangentialArc(end = [-cornerRadius, -cornerRadius])\n  |> yLine(length = -(23.0 - cornerRadius))\n  |> tangentialArc(end = [cornerRadius, -cornerRadius])\n  |> xLine(length = 15.0 - (cornerRadius * 2))\n  |> tangentialArc(end = [cornerRadius, -cornerRadius])\n  |> yLine(length = -(length - 25.0 - 23.0 - (cornerRadius * 2)))\n  |> tangentialArc(end = [-cornerRadius, -cornerRadius])\n  |> xLine(length = -(d_wrist_circumference[1] + d_wrist_circumference[2] + d_wrist_circumference[3] - hand_thickness - cornerRadius))\n  |> tangentialArc(end = [-cornerRadius, -cornerRadius])\n  |> yLine(length = -(25.0 - cornerRadius))\n  |> tangentialArc(end = [cornerRadius, -cornerRadius])\n  |> close(%)\n\ninner = startSketchOn(XY)\n  |> startProfile(at = [0, 0])\n  |> xLine(length = 1.0)\n  |> tangentialArc(end = [cornerRadius, cornerRadius])\n  |> yLine(length = 25.0 - (cornerRadius * 2))\n  |> tangentialArc(end = [-cornerRadius, cornerRadius])\n  |> xLine(length = -1.0)\n  |> tangentialArc(end = [-cornerRadius, -cornerRadius])\n  |> yLine(length = -(25.0 - (cornerRadius * 2)))\n  |> tangentialArc(end = [cornerRadius, -cornerRadius])\n  |> close(%)\n\nfinal = brace_base\n  |> subtract2d(tool = inner)\n  |> extrude(length = 3.0)\n",
+      "source_range": [
+        0,
+        2430,
+        0
+      ]
+    }
+  },
+  {
+    "finding": {
+      "code": "Z0001",
+      "title": "Identifiers should be lowerCamelCase",
+      "description": "By convention, variable names are lowerCamelCase, not snake_case, kebab-case,\nnor upper CamelCase (aka PascalCase). 🐪\n\nFor instance, a good identifier for the variable representing 'box height'\nwould be 'boxHeight', not 'BOX_HEIGHT', 'box_height' nor 'BoxHeight'. For\nmore information there's a pretty good Wikipedia page at\n\nhttps://en.wikipedia.org/wiki/Camel_case\n",
+      "experimental": false
+    },
+    "description": "found 'brace_base'",
+    "pos": [
+      386,
+      396,
+      0
+    ],
+    "overridden": false,
+    "suggestion": {
+      "title": "rename 'brace_base' to 'braceBase'",
+      "insert": "d_wrist_circumference = [22.8, 10.7, 16.4, 18.5]\nwidth = d_wrist_circumference[0] + d_wrist_circumference[1] + d_wrist_circumference[2] + d_wrist_circumference[3]\nlength = 120.0\nhand_thickness = 24.0\ncorner_radius = 5.0\n\n// At first I thought this was going to be symmetric,\n// but I measured intentionally to not be symmetric,\n// because your wrist isn't a perfect cylindrical surface\nbraceBase = startSketchOn(XY)\n  |> startProfile(at = [corner_radius, 0])\n  |> line(end = [width - corner_radius, 0.0])\n  |> tangentialArc(end = [corner_radius, corner_radius])\n  |> yLine(length = 25.0 - corner_radius)\n  |> tangentialArc(end = [-corner_radius, corner_radius])\n  |> xLine(length = -(d_wrist_circumference[0] - (corner_radius * 2)))\n  |> tangentialArc(end = [-corner_radius, corner_radius])\n  |> yLine(length = length - 25.0 - 23.0 - (corner_radius * 2))\n  |> tangentialArc(end = [corner_radius, corner_radius])\n  |> xLine(length = 15.0 - (corner_radius * 2))\n  |> tangentialArc(end = [corner_radius, corner_radius])\n  |> yLine(length = 23.0 - corner_radius)\n  |> tangentialArc(end = [-corner_radius, corner_radius])\n  |> xLine(length = -(hand_thickness + 15.0 + 15.0 - (corner_radius * 2)))\n  |> tangentialArc(end = [-corner_radius, -corner_radius])\n  |> yLine(length = -(23.0 - corner_radius))\n  |> tangentialArc(end = [corner_radius, -corner_radius])\n  |> xLine(length = 15.0 - (corner_radius * 2))\n  |> tangentialArc(end = [corner_radius, -corner_radius])\n  |> yLine(length = -(length - 25.0 - 23.0 - (corner_radius * 2)))\n  |> tangentialArc(end = [-corner_radius, -corner_radius])\n  |> xLine(length = -(d_wrist_circumference[1] + d_wrist_circumference[2] + d_wrist_circumference[3] - hand_thickness - corner_radius))\n  |> tangentialArc(end = [-corner_radius, -corner_radius])\n  |> yLine(length = -(25.0 - corner_radius))\n  |> tangentialArc(end = [corner_radius, -corner_radius])\n  |> close(%)\n\ninner = startSketchOn(XY)\n  |> startProfile(at = [0, 0])\n  |> xLine(length = 1.0)\n  |> tangentialArc(end = [corner_radius, corner_radius])\n  |> yLine(length = 25.0 - (corner_radius * 2))\n  |> tangentialArc(end = [-corner_radius, corner_radius])\n  |> xLine(length = -1.0)\n  |> tangentialArc(end = [-corner_radius, -corner_radius])\n  |> yLine(length = -(25.0 - (corner_radius * 2)))\n  |> tangentialArc(end = [corner_radius, -corner_radius])\n  |> close(%)\n\nfinal = braceBase\n  |> subtract2d(tool = inner)\n  |> extrude(length = 3.0)\n",
+      "source_range": [
+        0,
+        2430,
+        0
+      ]
+    }
+  }
+]

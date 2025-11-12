@@ -1,8 +1,9 @@
+import env from '@src/env'
 import { BSON } from 'bson'
 import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
-  MlCopilotTool,
+  MlCopilotMode,
 } from '@kittycad/lib'
 import { assertEvent, assign, setup, fromPromise } from 'xstate'
 import { createActorContext } from '@xstate/react'
@@ -24,6 +25,12 @@ import type { FileMeta } from '@src/lib/types'
 import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/promptToEdit'
 
 import toast from 'react-hot-toast'
+
+export enum MlEphantSetupErrors {
+  ConversationNotFound = 'conversation not found',
+  InvalidConversationId = 'Invalid conversation_id',
+  NoRefParentSend = 'no ref parent send',
+}
 
 type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends {
   type: 'user'
@@ -48,6 +55,8 @@ export enum MlEphantManagerTransitions2 {
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
   ConversationClose = 'conversation-close',
+  AbruptClose = 'abrupt-close',
+  CacheSetupAndConnect = 'cache-setup-and-connect',
 }
 
 export type MlEphantManagerEvents2 =
@@ -58,6 +67,12 @@ export type MlEphantManagerEvents2 =
   | {
       type: 'xstate.error.actor.0.(machine).setup'
       conversationId: undefined
+    }
+  | {
+      type: MlEphantManagerTransitions2.CacheSetupAndConnect
+      refParentSend: (event: MlEphantManagerEvents2) => void
+      // If not present, a new conversation is created.
+      conversationId?: string
     }
   | {
       type: MlEphantManagerStates2.Setup
@@ -74,7 +89,7 @@ export type MlEphantManagerEvents2 =
       projectFiles: FileMeta[]
       selections: Selections
       artifactGraph: ArtifactGraph
-      forcedTools: Set<MlCopilotTool>
+      mode: MlCopilotMode
     }
   | {
       type: MlEphantManagerTransitions2.ResponseReceive
@@ -82,6 +97,9 @@ export type MlEphantManagerEvents2 =
     }
   | {
       type: MlEphantManagerTransitions2.ConversationClose
+    }
+  | {
+      type: MlEphantManagerTransitions2.AbruptClose
     }
 
 export interface Exchange {
@@ -93,7 +111,12 @@ export interface Exchange {
   // It's possible a request triggers multiple responses, such as reasoning,
   // deltas, tool_outputs.
   // The end of a response is signaled by 'end_of_stream'.
+  // NOTE: THIS WILL *NOT* INCLUDE `delta` RESPONSES! SEE BELOW.
   responses: MlCopilotServerMessage[]
+
+  // BELOW:
+  // An optimization. `delta` messages will be appended here.
+  deltasAggregated: string
 }
 
 export type Conversation = {
@@ -103,11 +126,16 @@ export type Conversation = {
 export interface MlEphantManagerContext2 {
   apiToken: string
   ws?: WebSocket
+  abruptlyClosed: boolean
   conversation?: Conversation
   conversationId?: string
   lastMessageId?: number
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
+  cachedSetup?: {
+    refParentSend?: (event: MlEphantManagerEvents2) => void
+    conversationId?: string
+  }
 }
 
 export const mlEphantDefaultContext2 = (args: {
@@ -117,6 +145,7 @@ export const mlEphantDefaultContext2 = (args: {
 }): MlEphantManagerContext2 => ({
   apiToken: args.input?.apiToken ?? '',
   ws: undefined,
+  abruptlyClosed: false,
   conversation: undefined,
   lastMessageId: undefined,
   fileFocusedOnInEditor: undefined,
@@ -192,6 +221,18 @@ export const mlEphantManagerMachine2 = setup({
         toast.error(event.error.message)
       }
     },
+    cacheSetup: assign({
+      cachedSetup: ({ event }) => {
+        assertEvent(event, MlEphantManagerTransitions2.CacheSetupAndConnect)
+        return {
+          refParentSend: event.refParentSend,
+          conversationId: event.conversationId,
+        }
+      },
+    }),
+    clearCacheSetup: assign({
+      cachedSetup: undefined,
+    }),
   },
   actors: {
     [MlEphantManagerStates2.Setup]: fromPromise(async function (
@@ -199,23 +240,31 @@ export const mlEphantManagerMachine2 = setup({
     ): Promise<Partial<MlEphantManagerContext2>> {
       assertEvent(args.input.event, MlEphantManagerStates2.Setup)
 
+      // On future reenters of this actor it will not have args.input.event
+      // You must read from the context for the cached conversationId
+      const maybeConversationId =
+        args.input.context?.cachedSetup?.conversationId
+      const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
+
       const ws = await Socket(
         WebSocket,
-        '/ws/ml/copilot' +
-          (args.input.event.conversationId
-            ? `?conversation_id=${args.input.event.conversationId}&replay=true`
+        (env().VITE_MLEPHANT_WEBSOCKET_URL ?? '/ws/ml/copilot') +
+          (maybeConversationId
+            ? `?conversation_id=${maybeConversationId}&replay=true`
             : ''),
         args.input.context.apiToken
       )
       ws.binaryType = 'arraybuffer'
 
+      // TODO: Get the server side to instead insert "interrupt"...
       const addErrorIfInterrupted = (exchanges: Exchange[]) => {
         const lastExchange = exchanges.slice(-1)[0]
         const lastResponse = lastExchange?.responses.slice(-1)[0]
         if (
-          lastExchange?.responses?.length > 0 &&
-          lastResponse !== undefined &&
-          !('end_of_stream' in lastResponse)
+          (lastExchange?.responses?.length > 0 &&
+            lastResponse !== undefined &&
+            !('end_of_stream' in lastResponse)) ||
+          lastExchange?.responses?.length === 0
         ) {
           lastExchange.responses.push({
             error: {
@@ -229,6 +278,8 @@ export const mlEphantManagerMachine2 = setup({
 
       return await new Promise<Partial<MlEphantManagerContext2>>(
         (onFulfilled, onRejected) => {
+          let devCalledClose = false
+
           ws.addEventListener('message', function (event: MessageEvent<any>) {
             let response: unknown
             if (!isString(event.data)) {
@@ -263,10 +314,18 @@ export const mlEphantManagerMachine2 = setup({
 
             if (
               'error' in response &&
-              response.error.detail.includes('conversation not found')
+              (response.error.detail.includes(
+                MlEphantSetupErrors.ConversationNotFound
+              ) ||
+                response.error.detail.includes(
+                  MlEphantSetupErrors.InvalidConversationId
+                ))
             ) {
+              devCalledClose = true
               ws.close()
-              onRejected()
+              // Pass that the conversation is not found to the onError handler which will set the conversationId
+              // to undefined to get us a new id.
+              onRejected(MlEphantSetupErrors.ConversationNotFound)
               return
             }
 
@@ -295,6 +354,7 @@ export const mlEphantManagerMachine2 = setup({
                     maybeReplayedExchanges.push({
                       request: responseReplay,
                       responses: [],
+                      deltasAggregated: '',
                     })
                   }
                   continue
@@ -303,6 +363,7 @@ export const mlEphantManagerMachine2 = setup({
                 if ('error' in responseReplay || 'info' in responseReplay) {
                   maybeReplayedExchanges.push({
                     responses: [responseReplay],
+                    deltasAggregated: '',
                   })
                   continue
                 }
@@ -313,12 +374,8 @@ export const mlEphantManagerMachine2 = setup({
 
                 // Instead we transform a end_of_stream into a delta!
                 if ('end_of_stream' in responseReplay) {
-                  const fakeDelta = {
-                    delta: {
-                      delta: responseReplay.end_of_stream.whole_response ?? '',
-                    },
-                  }
-                  lastExchange.responses.push(fakeDelta)
+                  lastExchange.deltasAggregated =
+                    responseReplay.end_of_stream.whole_response ?? ''
                 }
                 lastExchange.responses.push(responseReplay)
               }
@@ -339,14 +396,22 @@ export const mlEphantManagerMachine2 = setup({
               return
             }
 
-            args.input.event.refParentSend({
-              type: MlEphantManagerTransitions2.ResponseReceive,
-              response,
-            })
+            if (theRefParentSend) {
+              theRefParentSend({
+                type: MlEphantManagerTransitions2.ResponseReceive,
+                response,
+              })
+            } else {
+              onRejected(MlEphantSetupErrors.NoRefParentSend)
+            }
           })
 
           ws.addEventListener('close', function (event: Event) {
-            console.log(event)
+            if (theRefParentSend !== undefined && devCalledClose === false) {
+              theRefParentSend({
+                type: MlEphantManagerTransitions2.AbruptClose,
+              })
+            }
           })
         }
       )
@@ -386,7 +451,7 @@ export const mlEphantManagerMachine2 = setup({
         project_name: requestData.body.project_name,
         source_ranges: requestData.body.source_ranges,
         current_files: filesAsByteArrays,
-        forced_tools: Array.from(event.forcedTools),
+        mode: event.mode,
       }
 
       context.ws.send(JSON.stringify(request))
@@ -398,6 +463,7 @@ export const mlEphantManagerMachine2 = setup({
       conversation.exchanges.push({
         request,
         responses: [],
+        deltasAggregated: '',
       })
 
       return {
@@ -412,7 +478,13 @@ export const mlEphantManagerMachine2 = setup({
   context: mlEphantDefaultContext2,
   states: {
     [S.Await]: {
-      on: transitions([MlEphantManagerStates2.Setup]),
+      on: {
+        [MlEphantManagerTransitions2.CacheSetupAndConnect]: {
+          target: MlEphantManagerStates2.Setup,
+          actions: [assign({ abruptlyClosed: false }), 'cacheSetup'],
+        },
+        ...transitions([MlEphantManagerStates2.Setup]),
+      },
     },
     [MlEphantManagerStates2.Setup]: {
       invoke: {
@@ -421,6 +493,7 @@ export const mlEphantManagerMachine2 = setup({
             MlEphantManagerStates2.Setup,
             'xstate.done.state.(machine).ready',
             'xstate.error.actor.0.(machine).setup',
+            MlEphantManagerTransitions2.CacheSetupAndConnect,
           ])
 
           return {
@@ -435,14 +508,41 @@ export const mlEphantManagerMachine2 = setup({
         src: MlEphantManagerStates2.Setup,
         onDone: {
           target: MlEphantManagerStates2.Ready,
-          actions: [assign(({ event }) => event.output)],
+          actions: [assign(({ event }) => event.output), 'clearCacheSetup'],
         },
         onError: {
           target: MlEphantManagerStates2.Setup,
+          actions: [
+            assign(({ event, context }) => {
+              if (event.error === MlEphantSetupErrors.ConversationNotFound) {
+                // set the conversation Id to undefined to have the reenter make a new conversation id
+                return {
+                  cachedSetup: {
+                    refParentSend: context.cachedSetup?.refParentSend,
+                    conversationId: undefined,
+                  },
+                }
+              }
+
+              // otherwise keep the same one
+              return {
+                cachedSetup: {
+                  refParentSend: context.cachedSetup?.refParentSend,
+                  conversationId: context.cachedSetup?.conversationId,
+                },
+              }
+            }),
+          ],
           reenter: true,
         },
       },
-      on: transitions([MlEphantManagerTransitions2.ConversationClose]),
+      on: {
+        ...transitions([MlEphantManagerTransitions2.ConversationClose]),
+        [MlEphantManagerTransitions2.AbruptClose]: {
+          target: MlEphantManagerTransitions2.AbruptClose,
+          actions: [assign({ abruptlyClosed: true })],
+        },
+      },
     },
     [MlEphantManagerStates2.Ready]: {
       type: 'parallel',
@@ -451,12 +551,21 @@ export const mlEphantManagerMachine2 = setup({
           initial: S.Await,
           states: {
             [S.Await]: {
-              on: transitions([
-                MlEphantManagerTransitions2.ResponseReceive,
-                MlEphantManagerTransitions2.ConversationClose,
-              ]),
+              on: {
+                ...transitions([
+                  MlEphantManagerTransitions2.ResponseReceive,
+                  MlEphantManagerTransitions2.ConversationClose,
+                ]),
+                [MlEphantManagerTransitions2.AbruptClose]: {
+                  target: MlEphantManagerTransitions2.AbruptClose,
+                  actions: [assign({ abruptlyClosed: true })],
+                },
+              },
             },
             [MlEphantManagerTransitions2.ConversationClose]: {
+              type: 'final',
+            },
+            [MlEphantManagerTransitions2.AbruptClose]: {
               type: 'final',
             },
             // Triggered by the WebSocket 'message' event.
@@ -482,6 +591,7 @@ export const mlEphantManagerMachine2 = setup({
                     if ('error' in event.response || 'info' in event.response) {
                       conversation.exchanges.push({
                         responses: [event.response],
+                        deltasAggregated: '',
                       })
                       return {
                         conversation,
@@ -495,8 +605,15 @@ export const mlEphantManagerMachine2 = setup({
                     if (lastExchange === undefined) {
                       lastExchange = {
                         responses: [event.response],
+                        deltasAggregated: '',
                       }
                       conversation.exchanges.push(lastExchange)
+
+                      // OPTIMIZATION: `delta` responses are aggregated instead
+                      // of being included in the responses list.
+                    } else if ('delta' in event.response) {
+                      lastExchange.deltasAggregated +=
+                        event.response.delta.delta
                     } else {
                       lastExchange.responses.push(event.response)
                     }
@@ -518,9 +635,13 @@ export const mlEphantManagerMachine2 = setup({
               on: transitions([
                 MlEphantManagerTransitions2.MessageSend,
                 MlEphantManagerTransitions2.ConversationClose,
+                MlEphantManagerTransitions2.AbruptClose,
               ]),
             },
             [MlEphantManagerTransitions2.ConversationClose]: {
+              type: 'final',
+            },
+            [MlEphantManagerTransitions2.AbruptClose]: {
               type: 'final',
             },
             [MlEphantManagerTransitions2.MessageSend]: {
@@ -549,12 +670,30 @@ export const mlEphantManagerMachine2 = setup({
         target: MlEphantManagerTransitions2.ConversationClose,
       },
     },
+    [MlEphantManagerTransitions2.AbruptClose]: {
+      always: {
+        target: MlEphantManagerTransitions2.ConversationClose,
+      },
+    },
     [MlEphantManagerTransitions2.ConversationClose]: {
       always: {
         target: S.Await,
         actions: [
-          assign({ conversation: undefined, conversationId: undefined }),
-          (args) => args.context.ws?.close(),
+          (args) => {
+            // We want to keep the context around to recover.
+            if (args.context.abruptlyClosed) {
+              return
+            }
+            return assign({
+              conversation: undefined,
+              conversationId: undefined,
+            })
+          },
+          (args) => {
+            if (args.context.ws?.readyState === WebSocket.OPEN) {
+              args.context.ws?.close()
+            }
+          },
         ],
       },
     },

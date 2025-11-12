@@ -88,6 +88,9 @@ export class Connection extends EventTarget {
   // Unit testing requirements
   isUsingUnitTestingConnection: boolean = false
 
+  /** Did the whole universe align and gift you a connection? */
+  connected = false
+
   // callback functions
   handleOnDataChannelMessage: (event: MessageEvent<any>) => void
   tearDownManager: (options?: ManagerTearDown) => void
@@ -198,10 +201,6 @@ export class Connection extends EventTarget {
     return this._token
   }
 
-  get pingPongSpan() {
-    return this._pingPongSpan
-  }
-
   get pingIntervalId() {
     return this._pingIntervalId
   }
@@ -288,6 +287,9 @@ export class Connection extends EventTarget {
       this.deferredMediaStreamAndWebrtcStatsCollector.promise,
       this.deferredSdpAnswer.promise,
     ])
+
+    // Praise be, tell the world the good news
+    this.connected = true
 
     // Gotcha: tricky to await initiateConnectionExclusive, there are multiple locations for firing?
     return this.deferredConnection.promise
@@ -478,6 +480,7 @@ export class Connection extends EventTarget {
       connectionPromiseResolve: this.deferredConnection.resolve,
       // don't bind this, it was passed into the class
       handleOnDataChannelMessage: this.handleOnDataChannelMessage,
+      tearDownManager: this.tearDownManager.bind(this),
     })
 
     // Watch out human! The names of the next couple events are really similar!
@@ -782,7 +785,9 @@ export class Connection extends EventTarget {
 
   disconnectPeerConnection() {
     if (!this.peerConnection) {
-      console.warn('peerConnection is undefined')
+      console.warn(
+        'peerConnection is undefined during disconnectPeerConnection'
+      )
       return
     }
 
