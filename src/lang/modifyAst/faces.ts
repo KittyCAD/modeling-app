@@ -3,6 +3,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
   createCallExpressionStdLibKw,
+  createIdentifier,
   createLabeledArg,
   createLiteral,
   createLocalName,
@@ -181,49 +182,87 @@ export function addHole({
 
   const { solidsExpr, facesExpr, pathIfPipe } = result
 
+  // Extra args for createCallExpressionStdLibKw as we're calling functions from a module
+  const nonCodeMeta = undefined
+  const modulePath = [createIdentifier('hole')]
+
   // Prep the big label args
   let holeBodyNode: Node<CallExpressionKw> | undefined
   if (holeBody === 'blind' && blindDepth && blindDiameter) {
-    holeBodyNode = createCallExpressionStdLibKw('hole::blind', null, [
-      createLabeledArg('depth', valueOrVariable(blindDepth)),
-      createLabeledArg('diameter', valueOrVariable(blindDiameter)),
-    ])
+    holeBodyNode = createCallExpressionStdLibKw(
+      'blind',
+      null,
+      [
+        createLabeledArg('depth', valueOrVariable(blindDepth)),
+        createLabeledArg('diameter', valueOrVariable(blindDiameter)),
+      ],
+      nonCodeMeta,
+      modulePath
+    )
   } else {
     return new Error('Unsupported hole body type')
   }
 
   let holeBottomNode: Node<CallExpressionKw> | undefined
   if (holeBottom === 'flat') {
-    holeBottomNode = createCallExpressionStdLibKw('hole::flat', null, [])
+    holeBottomNode = createCallExpressionStdLibKw(
+      'flat',
+      null,
+      [],
+      nonCodeMeta,
+      modulePath
+    )
   } else if (holeBottom === 'drill' && drillPointAngle) {
-    holeBottomNode = createCallExpressionStdLibKw('hole::drill', null, [
-      createLabeledArg('pointAngle', valueOrVariable(drillPointAngle)),
-    ])
+    holeBottomNode = createCallExpressionStdLibKw(
+      'drill',
+      null,
+      [createLabeledArg('pointAngle', valueOrVariable(drillPointAngle))],
+      nonCodeMeta,
+      modulePath
+    )
   } else {
     return new Error('Unsupported hole bottom type or missing parameters')
   }
 
   let holeTypeNode: Node<CallExpressionKw> | undefined
   if (holeType === 'simple') {
-    holeTypeNode = createCallExpressionStdLibKw('hole::simple', null, [])
+    holeTypeNode = createCallExpressionStdLibKw(
+      'simple',
+      null,
+      [],
+      nonCodeMeta,
+      modulePath
+    )
   } else if (
     holeType === 'counterbore' &&
     counterboreDepth &&
     counterboreDiameter
   ) {
-    holeTypeNode = createCallExpressionStdLibKw('hole::counterbore', null, [
-      createLabeledArg('depth', valueOrVariable(counterboreDepth)),
-      createLabeledArg('diameter', valueOrVariable(counterboreDiameter)),
-    ])
+    holeTypeNode = createCallExpressionStdLibKw(
+      'counterbore',
+      null,
+      [
+        createLabeledArg('depth', valueOrVariable(counterboreDepth)),
+        createLabeledArg('diameter', valueOrVariable(counterboreDiameter)),
+      ],
+      nonCodeMeta,
+      modulePath
+    )
   } else if (
     holeType === 'countersink' &&
     countersinkAngle &&
     countersinkDiameter
   ) {
-    holeTypeNode = createCallExpressionStdLibKw('hole::countersink', null, [
-      createLabeledArg('angle', valueOrVariable(countersinkAngle)),
-      createLabeledArg('diameter', valueOrVariable(countersinkDiameter)),
-    ])
+    holeTypeNode = createCallExpressionStdLibKw(
+      'countersink',
+      null,
+      [
+        createLabeledArg('angle', valueOrVariable(countersinkAngle)),
+        createLabeledArg('diameter', valueOrVariable(countersinkDiameter)),
+      ],
+      nonCodeMeta,
+      modulePath
+    )
   } else {
     return new Error('Unsupported hole type or missing parameters')
   }
@@ -231,14 +270,19 @@ export function addHole({
   let cutAtExpr = createPoint2dExpression(cutAt)
   if (err(cutAtExpr)) return cutAtExpr
 
-  // TODO: should there be a createCallExpression for modules?
-  const call = createCallExpressionStdLibKw('hole::hole', solidsExpr, [
-    createLabeledArg('face', facesExpr),
-    createLabeledArg('cutAt', cutAtExpr),
-    createLabeledArg('holeBottom', holeBottomNode),
-    createLabeledArg('holeBody', holeBodyNode),
-    createLabeledArg('holeType', holeTypeNode),
-  ])
+  const call = createCallExpressionStdLibKw(
+    'hole',
+    solidsExpr,
+    [
+      createLabeledArg('face', facesExpr),
+      createLabeledArg('cutAt', cutAtExpr),
+      createLabeledArg('holeBottom', holeBottomNode),
+      createLabeledArg('holeBody', holeBodyNode),
+      createLabeledArg('holeType', holeTypeNode),
+    ],
+    nonCodeMeta,
+    modulePath
+  )
 
   // Insert variables for labeled arguments if provided
   // Only insert cutAt variable if we used valueOrVariable (not for arrays)
