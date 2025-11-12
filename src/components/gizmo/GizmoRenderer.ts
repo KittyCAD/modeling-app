@@ -23,7 +23,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 const GIZMO_ASSETS_BASE = '/clientSideSceneAssets/gizmo_cube'
 
 export default class GizmoRenderer {
-    private readonly canvas: HTMLCanvasElement
+  private readonly canvas: HTMLCanvasElement
   private readonly renderer: WebGLRenderer
   private readonly scene: Scene
   private camera: PerspectiveCamera | OrthographicCamera
@@ -48,9 +48,13 @@ export default class GizmoRenderer {
     }
   }
 
-  constructor(canvas: HTMLCanvasElement, isPerspective: boolean, theme: 'light' | 'dark') {
+  constructor(
+    canvas: HTMLCanvasElement,
+    isPerspective: boolean,
+    theme: 'light' | 'dark'
+  ) {
     this.canvas = canvas
-    this.renderer = new WebGLRenderer({ canvas , antialias: true, alpha: true })
+    this.renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true })
     this.renderer.setSize(120, 120)
     this.renderer.setPixelRatio(window.devicePixelRatio)
     // TODO listen dpr change
@@ -61,7 +65,7 @@ export default class GizmoRenderer {
 
     this.camera = createCamera(isPerspective)
     this.setPerspective(isPerspective)
-    this._theme =this.setTheme(theme)
+    this._theme = this.setTheme(theme)
     this.materials = {
       light: {
         edge: createMaterial(),
@@ -93,7 +97,7 @@ export default class GizmoRenderer {
       this._theme = theme
       this.updateModel()
     }
-    return theme;
+    return theme
   }
 
   public setDisabled(disabled: boolean) {
@@ -117,7 +121,7 @@ export default class GizmoRenderer {
           if (!isStandardMesh(obj)) return
           if (isOrientationTargetName(obj.name)) this.clickableObjects.push(obj)
         })
-    this.initListeners();
+        this.initListeners()
         // ;(async () => {
         //   await initTextures(
         //     root,
@@ -146,8 +150,7 @@ export default class GizmoRenderer {
     this.canvas.addEventListener('click', this.onClick)
   }
 
-  public dispose() {
-  }
+  public dispose() {}
 
   private onCanvasMouseMove = (event: MouseEvent) => {
     const { left, top, width, height } = this.canvas.getBoundingClientRect()
@@ -236,41 +239,37 @@ export default class GizmoRenderer {
 
   private doRayCast(mouse: Vector2, force = false) {
     if (force || !this.disabled) {
-        // raycaster.setFromCamera(mouse, camera)
-        // const intersects = raycaster.intersectObjects(objects, true)
-      
-        // // Clear previous highlight if any
-        // if (
-        //   hoveredObjectRef.current &&
-        //   (!intersects.length || hoveredObjectRef.current !== intersects[0].object)
-        // ) {
-        //   restoreHighlight(hoveredObjectRef.current, originalMaterialsRef.current)
-        //   hoveredObjectRef.current = null
-        // }
-      
-        // if (intersects.length) {
-        //   const obj = intersects[0].object
-        //   if (isStandardMesh(obj)) {
-        //     if (hoveredObjectRef.current !== obj) {
-        //       applyHighlight(
-        //         obj,
-        //         originalMaterialsRef.current,
-        //         hoverMaterialRef.current,
-        //         hoverFaceMaterialRef.current
-        //       )
-        //       hoveredObjectRef.current = obj
-        //     }
-        //     raycasterIntersect.current = intersects[0] // filter first object
-        //   }
-        // } else {
-        //   raycasterIntersect.current = null
-        // }
-
+      // raycaster.setFromCamera(mouse, camera)
+      // const intersects = raycaster.intersectObjects(objects, true)
+      // // Clear previous highlight if any
+      // if (
+      //   hoveredObjectRef.current &&
+      //   (!intersects.length || hoveredObjectRef.current !== intersects[0].object)
+      // ) {
+      //   restoreHighlight(hoveredObjectRef.current, originalMaterialsRef.current)
+      //   hoveredObjectRef.current = null
+      // }
+      // if (intersects.length) {
+      //   const obj = intersects[0].object
+      //   if (isStandardMesh(obj)) {
+      //     if (hoveredObjectRef.current !== obj) {
+      //       applyHighlight(
+      //         obj,
+      //         originalMaterialsRef.current,
+      //         hoverMaterialRef.current,
+      //         hoverFaceMaterialRef.current
+      //       )
+      //       hoveredObjectRef.current = obj
+      //     }
+      //     raycasterIntersect.current = intersects[0] // filter first object
+      //   }
+      // } else {
+      //   raycasterIntersect.current = null
+      // }
     } else {
       //this.clearHighlight()
     }
   }
-
 }
 
 const createCamera = (
@@ -323,45 +322,45 @@ function createMaterial(): MeshStandardMaterial {
 // Compute the camera orientation quaternion for a given orientation name.
 // Camera looks from +Z towards origin by default, so we rotate that view accordingly.
 function orientationQuaternionForName(name: string): Quaternion | null {
-    const q = new Quaternion()
-    const up = new Vector3(0, 0, 1)
-    const target = new Vector3(0, 0, 0)
-  
-    const dir = new Vector3()
-    if (name.includes('front')) dir.add(new Vector3(0, -1, 0))
-    if (name.includes('back')) dir.add(new Vector3(0, 1, 0))
-    if (name.includes('left')) dir.add(new Vector3(-1, 0, 0))
-    if (name.includes('right')) dir.add(new Vector3(1, 0, 0))
-    if (name.includes('top')) dir.add(new Vector3(0, 0, 1))
-    if (name.includes('bottom')) dir.add(new Vector3(0, 0, -1))
-  
-    if (dir.lengthSq() === 0) {
-      return null
-    }
-    dir.normalize()
-  
-    // Build a lookAt quaternion placing the eye along the dir vector
-    const distance = 1
-    const eye = target.clone().add(dir.clone().multiplyScalar(distance))
-    const m = new Matrix4().lookAt(eye, target, up)
-    return q.setFromRotationMatrix(m)
-  }
+  const q = new Quaternion()
+  const up = new Vector3(0, 0, 1)
+  const target = new Vector3(0, 0, 0)
 
-  async function animateCameraToQuaternion(targetQuat: Quaternion) {
-    const camControls = sceneInfra.camControls
-    camControls.syncDirection = 'clientToEngine'
-    camControls.enableRotate = false
-    try {
-      sceneInfra.animate()
-      await camControls.tweenCameraToQuaternion(
-        targetQuat,
-        camControls.target.clone(),
-        500,
-        false // !isPerspective: this doesn't work
-      )
-    } finally {
-      sceneInfra.stop()
-      camControls.enableRotate = true
-      camControls.syncDirection = 'engineToClient'
-    }
+  const dir = new Vector3()
+  if (name.includes('front')) dir.add(new Vector3(0, -1, 0))
+  if (name.includes('back')) dir.add(new Vector3(0, 1, 0))
+  if (name.includes('left')) dir.add(new Vector3(-1, 0, 0))
+  if (name.includes('right')) dir.add(new Vector3(1, 0, 0))
+  if (name.includes('top')) dir.add(new Vector3(0, 0, 1))
+  if (name.includes('bottom')) dir.add(new Vector3(0, 0, -1))
+
+  if (dir.lengthSq() === 0) {
+    return null
   }
+  dir.normalize()
+
+  // Build a lookAt quaternion placing the eye along the dir vector
+  const distance = 1
+  const eye = target.clone().add(dir.clone().multiplyScalar(distance))
+  const m = new Matrix4().lookAt(eye, target, up)
+  return q.setFromRotationMatrix(m)
+}
+
+async function animateCameraToQuaternion(targetQuat: Quaternion) {
+  const camControls = sceneInfra.camControls
+  camControls.syncDirection = 'clientToEngine'
+  camControls.enableRotate = false
+  try {
+    sceneInfra.animate()
+    await camControls.tweenCameraToQuaternion(
+      targetQuat,
+      camControls.target.clone(),
+      500,
+      false // !isPerspective: this doesn't work
+    )
+  } finally {
+    sceneInfra.stop()
+    camControls.enableRotate = true
+    camControls.syncDirection = 'engineToClient'
+  }
+}
