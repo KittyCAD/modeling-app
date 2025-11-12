@@ -279,3 +279,20 @@ export const getParentAbsolutePath = (absolutePath: string) => {
   const joined = desktopSafePathJoin(split)
   return joined
 }
+
+/**
+ * Helper function to detect if an extension is an import extension
+ */
+export const isExtensionAnImportExtension = (
+  extension: string,
+  importExtensions: string[]
+) => {
+  return importExtensions.includes(extension.toLowerCase())
+}
+
+export const isExtensionARelevantExtension = (
+  extension: string,
+  relevantExtensions: string[]
+) => {
+  return relevantExtensions.includes(extension.toLowerCase())
+}

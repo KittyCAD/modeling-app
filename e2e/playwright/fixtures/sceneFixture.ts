@@ -33,13 +33,17 @@ type SceneSerialised = {
   }
 }
 
-type ClickHandler = (clickParams?: MouseParams) => Promise<void | boolean>
-type MoveHandler = (moveParams?: MouseParams) => Promise<void | boolean>
-type DblClickHandler = (clickParams?: MouseParams) => Promise<void | boolean>
-type DragToHandler = (dragParams: MouseDragToParams) => Promise<void | boolean>
+type ClickHandler = (clickParams?: MouseParams) => Promise<undefined | boolean>
+type MoveHandler = (moveParams?: MouseParams) => Promise<undefined | boolean>
+type DblClickHandler = (
+  clickParams?: MouseParams
+) => Promise<undefined | boolean>
+type DragToHandler = (
+  dragParams: MouseDragToParams
+) => Promise<undefined | boolean>
 type DragFromHandler = (
   dragParams: MouseDragFromParams
-) => Promise<void | boolean>
+) => Promise<undefined | boolean>
 
 export class SceneFixture {
   public page: Page
@@ -149,16 +153,16 @@ export class SceneFixture {
             clickParams.pixelDiff
           )
         }
-        return clickParams?.shouldDbClick
-          ? this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
+        clickParams?.shouldDbClick
+          ? await this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
               delay: clickParams?.delay || 0,
             })
           : clickParams?.shouldRightClick
-            ? this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+            ? await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
                 button: 'right',
                 delay: clickParams?.delay || 0,
               })
-            : this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+            : await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
                 delay: clickParams?.delay || 0,
               })
       },
@@ -176,7 +180,7 @@ export class SceneFixture {
             moveParams.pixelDiff
           )
         }
-        return this.page.mouse.move(resolvedPoint.x, resolvedPoint.y, { steps })
+        await this.page.mouse.move(resolvedPoint.x, resolvedPoint.y, { steps })
       },
       async (clickParams?: MouseParams) => {
         const resolvedPoint = await this.convertPagePositionToStream(
@@ -191,7 +195,7 @@ export class SceneFixture {
             clickParams.pixelDiff
           )
         }
-        return this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y)
+        await this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y)
       },
     ] as const
   makeDragHelpers = (
@@ -244,7 +248,7 @@ export class SceneFixture {
             dragToParams.pixelDiff
           )
         }
-        return this.page.dragAndDrop('#stream', '#stream', {
+        await this.page.dragAndDrop('#stream', '#stream', {
           sourcePosition: resolvedFromPoint,
           targetPosition: resolvedToPoint,
         })
@@ -282,7 +286,7 @@ export class SceneFixture {
             dragFromParams.pixelDiff
           )
         }
-        return this.page.dragAndDrop('#stream', '#stream', {
+        await this.page.dragAndDrop('#stream', '#stream', {
           sourcePosition: resolvedFromPoint,
           targetPosition: resolvedToPoint,
         })

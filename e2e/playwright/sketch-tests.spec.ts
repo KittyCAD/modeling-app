@@ -3,6 +3,7 @@ import path from 'node:path'
 import type { Page } from '@playwright/test'
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import {
   NUMBER_REGEXP,
   getMovementUtils,
@@ -186,7 +187,13 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     await editor.expectEditor.not.toContain('startProfile(')
   })
 
-  test('Can exit selection of face', async ({ page, homePage }) => {
+  test('Can exit selection of face', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    toolbar,
+  }) => {
     // Load the app with the code panes
     await page.addInitScript(async () => {
       localStorage.setItem('persistCode', ``)
@@ -195,8 +202,9 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await toolbar.startSketchBtn.click()
     await expect(
       page.getByRole('button', { name: 'Exit Sketch' })
     ).toBeVisible()
@@ -204,9 +212,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     await expect(page.getByText('select a plane or face')).toBeVisible()
 
     await page.keyboard.press('Escape')
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeVisible()
+    await expect(toolbar.startSketchBtn).toBeVisible()
   })
 
   test('Can select planes in Feature Tree after Start Sketch', async ({
@@ -214,6 +220,8 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     homePage,
     toolbar,
     editor,
+    scene,
+    cmdBar,
   }) => {
     // Load the app with empty code
     await page.addInitScript(async () => {
@@ -226,13 +234,10 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     await test.step('Click Start Sketch button', async () => {
-      await page.getByRole('button', { name: 'Start Sketch' }).click()
-      await expect(
-        page.getByRole('button', { name: 'Exit Sketch' })
-      ).toBeVisible()
-      await expect(page.getByText('select a plane or face')).toBeVisible()
+      await toolbar.startSketchBtn.click()
     })
 
     await test.step('Open feature tree and select Front plane (XZ)', async () => {
@@ -246,13 +251,11 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
       await editor.expectEditor.toContain('startSketchOn(XZ)')
 
       await page.getByRole('button', { name: 'Exit Sketch' }).click()
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeVisible()
+      await expect(toolbar.startSketchBtn).toBeVisible()
     })
 
     await test.step('Click Start Sketch button again', async () => {
-      await page.getByRole('button', { name: 'Start Sketch' }).click()
+      await toolbar.startSketchBtn.click()
       await expect(
         page.getByRole('button', { name: 'Exit Sketch' })
       ).toBeVisible()
@@ -428,6 +431,7 @@ sketch001 = startSketchOn(XZ)
       page: Page,
       scene: SceneFixture,
       editor: EditorFixture,
+      toolbar: ToolbarFixture,
       camPos: [number, number, number],
       scale = 1
     ) => {
@@ -436,15 +440,11 @@ sketch001 = startSketchOn(XZ)
 
       await u.openDebugPanel()
 
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).not.toBeDisabled()
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeVisible()
+      await expect(toolbar.startSketchBtn).not.toBeDisabled()
+      await expect(toolbar.startSketchBtn).toBeVisible()
 
       await u.clearCommandLogs()
-      await page.getByRole('button', { name: 'Start Sketch' }).click()
+      await toolbar.startSketchBtn.click()
       await page.waitForTimeout(100)
 
       await u.openAndClearDebugPanel()
@@ -499,14 +499,43 @@ sketch001 = startSketchOn(XZ)
         page.getByRole('button', { name: 'line Line', exact: true })
       ).toHaveAttribute('aria-pressed', 'true')
     }
-    test('[0, 100, 100]', async ({ page, homePage, scene, editor }) => {
+    test('[0, 100, 100]', async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
       await homePage.goToModelingScene()
-      await doSnapAtDifferentScales(page, scene, editor, [0, 100, 100], 0.01)
+      await scene.settled(cmdBar)
+      await doSnapAtDifferentScales(
+        page,
+        scene,
+        editor,
+        toolbar,
+        [0, 100, 100],
+        0.01
+      )
     })
 
-    test('[0, 10000, 10000]', async ({ page, homePage, scene, editor }) => {
+    test('[0, 10000, 10000]', async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+    }) => {
       await homePage.goToModelingScene()
-      await doSnapAtDifferentScales(page, scene, editor, [0, 10000, 10000])
+      await scene.settled(cmdBar)
+      await doSnapAtDifferentScales(
+        page,
+        scene,
+        editor,
+        toolbar,
+        [0, 10000, 10000]
+      )
     })
   })
   test('exiting a close extrude, has the extrude button enabled ready to go', async ({
@@ -514,6 +543,7 @@ sketch001 = startSketchOn(XZ)
     homePage,
     cmdBar,
     toolbar,
+    scene,
   }) => {
     // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
     await page.addInitScript(async () => {
@@ -534,6 +564,7 @@ sketch001 = startSketchOn(XZ)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     // wait for execution done
     await u.openDebugPanel()
@@ -614,9 +645,7 @@ sketch001 = startSketchOn(XZ)
 
     await page.getByRole('button', { name: 'Exit Sketch' }).click()
 
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeVisible()
+    await expect(toolbar.startSketchBtn).toBeVisible()
 
     expect((await editor.getCurrentCode()).replace(/\s/g, '')).toBe(
       `sketch001 = startSketchOn(XZ)
@@ -765,6 +794,9 @@ solid001 = subtract([extrude001], tools = [extrude002])
   test('Can sketch on face when user defined function was used in the sketch', async ({
     page,
     homePage,
+    scene,
+    cmdBar,
+    toolbar,
   }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -819,9 +851,10 @@ solid001 = subtract([extrude001], tools = [extrude002])
     const center = { x: 600, y: 250 }
     const rectangleSize = 20
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     // Start a sketch
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await toolbar.startSketchBtn.click()
 
     // Click the top face of this rail
     await page.mouse.click(center.x, center.y)
@@ -1008,9 +1041,7 @@ test.describe('multi-profile sketching', () => {
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
     await scene.settled(cmdBar)
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     // open feature tree and double click the first sketch
     await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
@@ -1092,6 +1123,7 @@ profile001 = startProfile(sketch001, at=[0, 0])
     editor,
     page,
     homePage,
+    cmdBar,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem('persistCode', '@settings(defaultLengthUnit = mm)')
@@ -1099,10 +1131,9 @@ profile001 = startProfile(sketch001, at=[0, 0])
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
+    await scene.settled(cmdBar)
     await editor.closePane()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
 
@@ -1887,7 +1918,7 @@ test.describe('Redirecting to home page and back to the original file should cle
     await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
+    await toolbar.startSketchBtn.click()
 
     // select an axis plane
     const [selectPlane] = scene.makeMouseHelpers(0.6, 0.3, { format: 'ratio' })
@@ -2019,9 +2050,7 @@ profile001 = startProfile(sketch001, at = [-102.72, 237.44])
     await scene.settled(cmdBar)
 
     // Ensure start sketch button is enabled
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     // Start a new sketch
     const [selectXZPlane] = scene.makeMouseHelpers(650, 150)

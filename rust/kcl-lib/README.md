@@ -15,7 +15,7 @@ We've built a lot of tooling to make contributing to KCL easier. If you are inte
 7. An inner function that is published only to the crate
 8. Add your new standard library function to [the long list of CORE_FNS in mod.rs](https://github.com/KittyCAD/modeling-app/blob/main/rust/kcl-lib/src/std/mod.rs#L42)
 9. Get a production Zoo dev token and run `export ZOO_API_TOKEN=your-token-here` in a terminal
-10. Run `TWENTY_TWENTY=overwrite cargo nextest run --workspace --no-fail-fast` to take snapshot tests of your example code running in the engine
+10. Run `TWENTY_TWENTY=update cargo nextest run --workspace --no-fail-fast` to take snapshot tests of your example code running in the engine
 11. Run `just redo-kcl-stdlib-docs` to generate new Markdown documentation for your function that will be used [to generate docs on our website](https://zoo.dev/docs/kcl).
 12. Create a PR in GitHub.
 

@@ -23,10 +23,10 @@ export function setPropertyByPath<
   return obj
 }
 
-export function getPropertyByPath<
-  T extends { [key: string]: any },
-  P extends Paths<T, 4>,
->(obj: T, path: P): unknown {
+export function getPropertyByPath<T extends { [key: string]: any }>(
+  obj: T,
+  path: Paths<T, 4>
+): unknown {
   if (typeof path === 'string') {
     return path.split('.').reduce((accumulator, currentValue) => {
       if (accumulator) return accumulator[currentValue]

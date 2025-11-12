@@ -38,7 +38,7 @@ use crate::{
         typed_path::TypedPath,
     },
     fs::FileManager,
-    modules::{ModuleId, ModulePath, ModuleRepr},
+    modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
 };
 
@@ -602,7 +602,9 @@ impl ExecutorContext {
             GridScaleBehavior::ScaleWithZoom
         };
 
-        let (program, exec_state, result) = match cache::read_old_ast().await {
+        let original_program = program.clone();
+
+        let (_program, exec_state, result) = match cache::read_old_ast().await {
             Some(mut cached_state) => {
                 let old = CacheInformation {
                     ast: &cached_state.main.ast,
@@ -784,10 +786,12 @@ impl ExecutorContext {
         let result = result?;
 
         // Save this as the last successful execution to the cache.
+        // Gotcha: `CacheResult::ReExecute.program` may be diff-based, do not save that AST
+        // the last-successful AST. Instead, save in the full AST passed in.
         cache::write_old_ast(GlobalState::new(
             exec_state.clone(),
             self.settings.clone(),
-            program.ast,
+            original_program.ast,
             result.0,
         ))
         .await;
@@ -1160,12 +1164,18 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await
-            .map(|(_, env_ref, _, module_artifacts)| {
-                // We need to extend because it may already have operations from
-                // imports.
-                exec_state.global.root_module_artifacts.extend(module_artifacts);
-                env_ref
-            })
+            .map(
+                |ModuleExecutionOutcome {
+                     environment: env_ref,
+                     artifacts: module_artifacts,
+                     ..
+                 }| {
+                    // We need to extend because it may already have operations from
+                    // imports.
+                    exec_state.global.root_module_artifacts.extend(module_artifacts);
+                    env_ref
+                },
+            )
             .map_err(|(err, env_ref, module_artifacts)| {
                 if let Some(module_artifacts) = module_artifacts {
                     // We need to extend because it may already have operations
@@ -1189,8 +1199,8 @@ impl ExecutorContext {
                 op.fill_node_paths(program, cached_body_items);
             }
             for module in exec_state.global.module_infos.values_mut() {
-                if let ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts))) = &mut module.repr {
-                    for op in &mut module_artifacts.operations {
+                if let ModuleRepr::Kcl(_, Some(outcome)) = &mut module.repr {
+                    for op in &mut outcome.artifacts.operations {
                         op.fill_node_paths(program, cached_body_items);
                     }
                 }

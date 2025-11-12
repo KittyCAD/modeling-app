@@ -6,7 +6,6 @@ import type {
   Plane,
   StartSketchOnFace,
   StartSketchOnPlane,
-  SweepSubType,
   Wall,
 } from '@rust/kcl-lib/bindings/Artifact'
 
@@ -69,35 +68,6 @@ export interface WallArtifactRich extends BaseArtifact {
   sweep: SweepArtifact
   paths: Array<PathArtifact>
   faceCodeRef: CodeRef
-}
-
-export interface PathArtifactRich extends BaseArtifact {
-  type: 'path'
-  /** A path must always lie on a plane */
-  plane: PlaneArtifact | WallArtifact | CapArtifact
-  /** A path must always contain 0 or more segments */
-  segments: Array<SegmentArtifact>
-  /** A path may not result in a sweep artifact */
-  sweep: SweepArtifact | null
-  codeRef: CodeRef
-}
-
-interface SegmentArtifactRich extends BaseArtifact {
-  type: 'segment'
-  path: PathArtifact
-  surf: WallArtifact
-  edges: Array<SweepEdge>
-  edgeCut?: EdgeCut
-  codeRef: CodeRef
-}
-
-interface SweepArtifactRich extends BaseArtifact {
-  type: 'sweep'
-  subType: SweepSubType
-  path: PathArtifact
-  surfaces: Array<WallArtifact | CapArtifact>
-  edges: Array<SweepEdge>
-  codeRef: CodeRef
 }
 
 export type EngineCommand = WebSocketRequest
@@ -250,107 +220,6 @@ export function expandCap(
   }
 }
 
-export function expandPath(
-  path: PathArtifact,
-  artifactGraph: ArtifactGraph
-): PathArtifactRich | Error {
-  const segs = getArtifactsOfTypes(
-    { keys: path.segIds, types: ['segment'] },
-    artifactGraph
-  )
-  const sweep = path.sweepId
-    ? getArtifactOfTypes(
-        {
-          key: path.sweepId,
-          types: ['sweep'],
-        },
-        artifactGraph
-      )
-    : null
-  const plane = getArtifactOfTypes(
-    { key: path.planeId, types: ['plane', 'wall'] },
-    artifactGraph
-  )
-  if (err(sweep)) return sweep
-  if (err(plane)) return plane
-  return {
-    type: 'path',
-    id: path.id,
-    segments: Array.from(segs.values()),
-    sweep,
-    plane,
-    codeRef: path.codeRef,
-  }
-}
-
-export function expandSweep(
-  sweep: SweepArtifact,
-  artifactGraph: ArtifactGraph
-): SweepArtifactRich | Error {
-  const surfs = getArtifactsOfTypes(
-    { keys: sweep.surfaceIds, types: ['wall', 'cap'] },
-    artifactGraph
-  )
-  const edges = getArtifactsOfTypes(
-    { keys: sweep.edgeIds, types: ['sweepEdge'] },
-    artifactGraph
-  )
-  const path = getArtifactOfTypes(
-    { key: sweep.pathId, types: ['path'] },
-    artifactGraph
-  )
-  if (err(path)) return path
-  return {
-    type: 'sweep',
-    subType: sweep.subType,
-    id: sweep.id,
-    surfaces: Array.from(surfs.values()),
-    edges: Array.from(edges.values()),
-    path,
-    codeRef: sweep.codeRef,
-  }
-}
-
-export function expandSegment(
-  segment: SegmentArtifact,
-  artifactGraph: ArtifactGraph
-): SegmentArtifactRich | Error {
-  const path = getArtifactOfTypes(
-    { key: segment.pathId, types: ['path'] },
-    artifactGraph
-  )
-  const surf = segment.surfaceId
-    ? getArtifactOfTypes(
-        { key: segment.surfaceId, types: ['wall'] },
-        artifactGraph
-      )
-    : undefined
-  const edges = getArtifactsOfTypes(
-    { keys: segment.edgeIds, types: ['sweepEdge'] },
-    artifactGraph
-  )
-  const edgeCut = segment.edgeCutId
-    ? getArtifactOfTypes(
-        { key: segment.edgeCutId, types: ['edgeCut'] },
-        artifactGraph
-      )
-    : undefined
-  if (err(path)) return path
-  if (err(surf)) return surf
-  if (err(edgeCut)) return edgeCut
-  if (!surf) return new Error('Segment does not have a surface')
-
-  return {
-    type: 'segment',
-    id: segment.id,
-    path,
-    surf,
-    edges: Array.from(edges.values()),
-    edgeCut: edgeCut,
-    codeRef: segment.codeRef,
-  }
-}
-
 export function getCapCodeRef(
   cap: CapArtifact,
   artifactGraph: ArtifactGraph
@@ -450,19 +319,6 @@ export function getSweepFromSuspectedSweepSurface(
   }
   return getArtifactOfTypes(
     { key: segOrEdge.sweepId, types: ['sweep'] },
-    artifactGraph
-  )
-}
-
-export function getSweepFromSuspectedPath(
-  id: ArtifactId,
-  artifactGraph: ArtifactGraph
-): SweepArtifact | Error {
-  const path = getArtifactOfTypes({ key: id, types: ['path'] }, artifactGraph)
-  if (err(path)) return path
-  if (!path.sweepId) return new Error('Path does not have a sweepId')
-  return getArtifactOfTypes(
-    { key: path.sweepId, types: ['sweep'] },
     artifactGraph
   )
 }

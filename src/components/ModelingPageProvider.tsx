@@ -149,6 +149,7 @@ export const ModelingPageProvider = ({
           settings.modeling.defaultUnit.current ?? DEFAULT_DEFAULT_LENGTH_UNIT,
       },
       specialPropsForInsertCommand: { providedOptions },
+      project,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [codeManager, kclManager, project, file])
