@@ -442,21 +442,11 @@ pub(crate) async fn do_post_extrude<'a>(
 
     // If this is a clone, we will use the clone_id_map to map the face info from the original sketch to the clone sketch.
     if sketch.clone.is_some() && clone_id_map.is_some() {
-        let old_clone_map = clone_id_map.unwrap();
         face_id_map = face_id_map
             .into_iter()
             .filter_map(|(k, v)| {
-                let fe_key = old_clone_map.get(&k)?;
-                let fe_value = if let Some(v) = v {
-                    if let Some(clone_value) = old_clone_map.get(&v) {
-                        Some(*clone_value)
-                    } else {
-                        None
-                    }
-                } else {
-                    None
-                };
-
+                let fe_key = clone_id_map?.get(&k)?;
+                let fe_value = clone_id_map?.get(&(v?)).map(|clone_value| *clone_value);
                 Some((*fe_key, fe_value))
             })
             .collect::<HashMap<Uuid, Option<Uuid>>>();
