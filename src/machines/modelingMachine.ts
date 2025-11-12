@@ -3228,9 +3228,6 @@ export const modelingMachine = setup({
           },
           {
             focusPath: [pathToNode],
-            // This is needed because hole::hole is experimental,
-            // and mock exec will fail due to that
-            skipErrorsOnMockExecution: true,
           }
         )
       }
