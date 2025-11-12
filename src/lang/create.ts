@@ -60,7 +60,13 @@ function createRawStr(
   suffix?: NumericSuffix,
   wasmInstance?: ModuleType
 ): string {
-  if (typeof value !== 'number' || !suffix) {
+  // For strings, include double quotes in raw so they're preserved during unparse
+  if (typeof value === 'string') {
+    return `"${value}"`
+  }
+
+  // For booleans or numbers without suffix, just return the value
+  if (typeof value === 'boolean' || !suffix) {
     return `${value}`
   }
 
