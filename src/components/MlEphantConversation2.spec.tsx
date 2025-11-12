@@ -48,6 +48,8 @@ describe('MlEphantConversation2', () => {
           conversation={conversation}
           billingContext={billingContext}
           onProcess={handleProcess}
+          onReconnect={() => {}}
+          needsReconnect={false}
           contexts={[]}
           disabled={false}
           hasPromptCompleted={hasPromptCompleted}
@@ -164,6 +166,8 @@ describe('MlEphantConversation2', () => {
         conversation={conversation}
         billingContext={billingContext}
         onProcess={vi.fn()}
+        onReconnect={() => {}}
+        needsReconnect={false}
         disabled={false}
         hasPromptCompleted={true}
         contexts={[]}

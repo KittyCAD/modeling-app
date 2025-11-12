@@ -1,4 +1,4 @@
-import { assertParse, recast } from '@src/lang/wasm'
+import { assertParse, type PathToNode, recast } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
 import { topLevelRange } from '@src/lang/util'
 import { isOverlap } from '@src/lib/utils'
@@ -90,6 +90,14 @@ profile002 = startProfile(sketch002, at = [10, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(profile002, length = 5)`
+  const revolvedCShapeWithRectangularProfile = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 1])
+  |> yLine(length = 3)
+  |> xLine(length = 4)
+  |> yLine(length = -3)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+revolve001 = revolve(profile001, angle = 270deg, axis = X)`
 
   describe('Testing addFillet', () => {
     it('should add a basic fillet call on sweepEdge', async () => {
@@ -280,6 +288,60 @@ fillet001 = fillet(
       )
     })
 
+    it('should edit a piped fillet call on sweepEdge', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-18.43, -11.95])
+  |> angledLine(angle = 0, length = 20, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 20)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
+  |> fillet(tags = getCommonEdge(faces = [rectangleSegmentA001, capEnd001]), radius = 2.5)`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const selection = createSelectionFromArtifacts(
+        [[...artifactGraph.values()].find((a) => a.type === 'sweepEdge')!],
+        artifactGraph
+      )
+      const nodeToEdit: PathToNode = [
+        ['body', ''],
+        [2, 'index'],
+        ['declaration', 'VariableDeclaration'],
+        ['init', ''],
+        ['body', 'PipeExpression'],
+        [1, 'index'],
+      ]
+      const radius = (await stringToKclExpression(
+        '2',
+        undefined,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        nodeToEdit,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(code.replace('radius = 2.5', 'radius = 2'))
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
+    })
+
     it('should add fillet calls on two bodies with one edge selected on each', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         twoExtrudedTriangles,
@@ -332,6 +394,52 @@ fillet001 = fillet(
       // Should have created two separate fillet calls, one for each body
       expect(newCode).toContain('fillet001 = fillet(extrude001')
       expect(newCode).toContain('fillet002 = fillet(extrude002')
+
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
+    })
+
+    it('should add a fillet call to revolve', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        revolvedCShapeWithRectangularProfile,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      // Find a sweepEdge from the revolve
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )!
+
+      const selection = createSelectionFromArtifacts([sweepEdge], artifactGraph)
+
+      const radius = (await stringToKclExpression(
+        '0.5',
+        undefined,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+
+      // Verify the fillet was added
+      expect(newCode).toContain('fillet001 = fillet(revolve001')
+      expect(newCode).toContain('radius = 0.5')
 
       await enginelessExecutor(
         result.modifiedAst,
@@ -652,6 +760,52 @@ chamfer001 = chamfer(
         rustContextInThisFile
       )
     })
+
+    it('should add a chamfer call to revolve', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        revolvedCShapeWithRectangularProfile,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      // Find a sweepEdge from the revolve
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )!
+
+      const selection = createSelectionFromArtifacts([sweepEdge], artifactGraph)
+
+      const length = (await stringToKclExpression(
+        '0.5',
+        undefined,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addChamfer({
+        ast,
+        artifactGraph,
+        selection,
+        length,
+      })
+
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+
+      // Verify the chamfer was added
+      expect(newCode).toContain('chamfer001 = chamfer(revolve001')
+      expect(newCode).toContain('length = 0.5')
+
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
+    })
   })
 
   const runDeleteEdgeTreatmentTest = async (
@@ -926,6 +1080,178 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
             instanceInThisFile,
             kclManagerInThisFile
           )
+        }, 10_000)
+        // Revolve-specific test
+        it(`should delete a ${edgeTreatmentType} from a revolved C-shape with rectangular profile`, async () => {
+          const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 1])
+  |> yLine(length = 3)
+  |> xLine(length = 4, tag = $seg01)
+  |> yLine(length = -3)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+revolve001 = revolve(
+  profile001,
+  angle = 270deg,
+  axis = X,
+  tagStart = $capStart001,
+)
+${edgeTreatmentType}001 = ${edgeTreatmentType}(revolve001, tags = getCommonEdge(faces = [seg01, capStart001]), ${parameterName} = 1)`
+          const edgeTreatmentSnippet = `${edgeTreatmentType}001 = ${edgeTreatmentType}(revolve001, tags = getCommonEdge(faces = [seg01, capStart001]), ${parameterName} = 1)`
+          const expectedCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 1])
+  |> yLine(length = 3)
+  |> xLine(length = 4, tag = $seg01)
+  |> yLine(length = -3)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+revolve001 = revolve(
+  profile001,
+  angle = 270deg,
+  axis = X,
+  tagStart = $capStart001,
+)`
+
+          await runDeleteEdgeTreatmentTest(
+            code,
+            edgeTreatmentSnippet,
+            expectedCode,
+            instanceInThisFile,
+            kclManagerInThisFile
+          )
+        }, 10_000)
+        // Test deletion of geometrically impossible edge treatment
+        it(`should delete a ${edgeTreatmentType} with geometrically impossible value from a revolved shape`, async () => {
+          const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 1])
+  |> yLine(length = 3)
+  |> xLine(length = 4)
+  |> yLine(length = -3, tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+revolve001 = revolve(
+  profile001,
+  angle = 270deg,
+  axis = X,
+  tagStart = $capStart001,
+)
+${edgeTreatmentType}001 = ${edgeTreatmentType}(revolve001, tags = getCommonEdge(faces = [seg01, capStart001]), ${parameterName} = 5)`
+          const edgeTreatmentSnippet = `${edgeTreatmentType}001 = ${edgeTreatmentType}(revolve001, tags = getCommonEdge(faces = [seg01, capStart001]), ${parameterName} = 5)`
+          const expectedCode = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 1])
+  |> yLine(length = 3)
+  |> xLine(length = 4)
+  |> yLine(length = -3, tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+revolve001 = revolve(
+  profile001,
+  angle = 270deg,
+  axis = X,
+  tagStart = $capStart001,
+)`
+
+          // This test case is special because the fillet/chamfer is geometrically impossible
+          // (value too large), so we can't execute the AST. Instead, we test that the deletion
+          // works purely on the AST level without needing execution artifacts.
+          const ast = assertParse(code, instanceInThisFile)
+
+          // define snippet range
+          const edgeTreatmentRange = topLevelRange(
+            code.indexOf(edgeTreatmentSnippet),
+            code.indexOf(edgeTreatmentSnippet) + edgeTreatmentSnippet.length
+          )
+
+          const edgeTreatmentCodeRef = codeRefFromRange(edgeTreatmentRange, ast)
+
+          // build selection with a mock edgeCut artifact
+          const selection: Selection = {
+            codeRef: edgeTreatmentCodeRef,
+            artifact: {
+              type: 'edgeCut',
+              id: 'mock-edge-cut-id',
+              subType: edgeTreatmentType,
+              consumedEdgeId: 'mock-consumed-edge-id',
+              edgeIds: [],
+              codeRef: {
+                range: edgeTreatmentCodeRef.range,
+                pathToNode: edgeTreatmentCodeRef.pathToNode,
+                nodePath: { steps: [] },
+              },
+            },
+          }
+
+          // delete edge treatment
+          const result = await deleteEdgeTreatment(ast, selection)
+          if (err(result)) {
+            throw result
+          }
+
+          // recast and check
+          const newCode = recast(result, instanceInThisFile)
+          expect(newCode).toContain(expectedCode)
+        }, 10_000)
+        // Test deletion of geometrically impossible edge treatment (piped case)
+        it(`should delete a piped ${edgeTreatmentType} with geometrically impossible value from a revolved shape`, async () => {
+          const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 1])
+  |> yLine(length = 3)
+  |> xLine(length = 4)
+  |> yLine(length = -3, tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+revolve001 = revolve(
+  profile001,
+  angle = 270deg,
+  axis = X,
+  tagStart = $capStart001,
+)
+  |> ${edgeTreatmentType}(tags = getCommonEdge(faces = [seg01, capStart001]), ${parameterName} = 5)`
+          const edgeTreatmentSnippet = `${edgeTreatmentType}(tags = getCommonEdge(faces = [seg01, capStart001]), ${parameterName} = 5)`
+          const expectedCode = `yLine(length = -3, tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+revolve001 = revolve(`
+
+          // This test case is special because the fillet/chamfer is geometrically impossible
+          // (value too large), so we can't execute the AST. Instead, we test that the deletion
+          // works purely on the AST level without needing execution artifacts.
+          const ast = assertParse(code, instanceInThisFile)
+
+          // define snippet range
+          const edgeTreatmentRange = topLevelRange(
+            code.indexOf(edgeTreatmentSnippet),
+            code.indexOf(edgeTreatmentSnippet) + edgeTreatmentSnippet.length
+          )
+
+          const edgeTreatmentCodeRef = codeRefFromRange(edgeTreatmentRange, ast)
+
+          // build selection with a mock edgeCut artifact
+          const selection: Selection = {
+            codeRef: edgeTreatmentCodeRef,
+            artifact: {
+              type: 'edgeCut',
+              id: 'mock-edge-cut-id',
+              subType: edgeTreatmentType,
+              consumedEdgeId: 'mock-consumed-edge-id',
+              edgeIds: [],
+              codeRef: {
+                range: edgeTreatmentCodeRef.range,
+                pathToNode: edgeTreatmentCodeRef.pathToNode,
+                nodePath: { steps: [] },
+              },
+            },
+          }
+
+          // delete edge treatment
+          const result = await deleteEdgeTreatment(ast, selection)
+          if (err(result)) {
+            throw result
+          }
+
+          // recast and check
+          const newCode = recast(result, instanceInThisFile)
+          expect(newCode).toContain(expectedCode)
         }, 10_000)
       })
     }

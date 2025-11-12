@@ -563,7 +563,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       to: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        // TODO: add edgeCut during https://github.com/KittyCAD/modeling-app/issues/8831
+        selectionTypes: ['cap', 'wall'],
         clearSelectionFirst: true,
         required: false,
         multiple: false,
@@ -870,10 +871,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       cutAt: {
-        inputType: 'kcl',
-        allowArrays: true,
+        inputType: 'vector2d',
         required: true,
-        defaultValue: '[0, 0]',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
       },
       holeBody: {
         inputType: 'options',

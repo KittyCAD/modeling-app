@@ -36,6 +36,7 @@
     "@typescript-eslint/no-for-in-array": "error",
     "no-implied-eval": "off", // This is wrong; use the @typescript-eslint one instead.
     "@typescript-eslint/no-implied-eval": "error",
+    "@typescript-eslint/no-invalid-void-type": "error",
     "@typescript-eslint/no-misused-new": "error",
     "@typescript-eslint/no-misused-promises": "error",
     "@typescript-eslint/no-namespace": "error",
@@ -44,6 +45,7 @@
     "@typescript-eslint/no-this-alias": "warn",
     "@typescript-eslint/no-unnecessary-type-assertion": "error",
     "@typescript-eslint/no-unnecessary-type-constraint": "error",
+    "@typescript-eslint/no-unnecessary-type-parameters": "error",
     "no-unused-vars": "off", // This is wrong; use the @typescript-eslint one instead.
     "@typescript-eslint/no-unused-vars": [
       "error",

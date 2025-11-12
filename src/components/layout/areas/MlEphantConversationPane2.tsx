@@ -39,6 +39,9 @@ export const MlEphantConversationPane2 = (props: {
   const conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
   })
+  const abruptlyClosed = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.abruptlyClosed
+  })
 
   const billingContext = useSelector(props.billingActor, (actor) => {
     return actor.context
@@ -87,6 +90,15 @@ export const MlEphantConversationPane2 = (props: {
       ) === false
     : false
 
+  const needsReconnect = abruptlyClosed
+
+  const onReconnect = () => {
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions2.CacheSetupAndConnect,
+      refParentSend: props.mlEphantManagerActor.send,
+    })
+  }
+
   const tryToGetExchanges = () => {
     const mlEphantConversations =
       props.systemIOActor.getSnapshot().context.mlEphantConversations
@@ -109,7 +121,10 @@ export const MlEphantConversationPane2 = (props: {
 
     // We can now reliably use the mlConversations data.
     // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
-    if (props.theProject !== undefined) {
+    if (
+      props.theProject !== undefined &&
+      props.mlEphantManagerActor.getSnapshot().context.abruptlyClosed === false
+    ) {
       props.mlEphantManagerActor.send({
         type: MlEphantManagerTransitions2.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
@@ -204,7 +219,9 @@ export const MlEphantConversationPane2 = (props: {
       onProcess={(request: string, mode: MlCopilotMode) => {
         onProcess(request, mode).catch(reportRejection)
       }}
-      disabled={isProcessing}
+      onReconnect={onReconnect}
+      disabled={isProcessing || needsReconnect}
+      needsReconnect={needsReconnect}
       hasPromptCompleted={isProcessing}
       userAvatarSrc={props.user?.image}
       defaultPrompt={defaultPrompt}

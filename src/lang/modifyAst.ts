@@ -6,7 +6,6 @@ import {
   createArrayExpression,
   createCallExpressionStdLibKw,
   createExpressionStatement,
-  createIdentifier,
   createImportAsSelector,
   createImportStatement,
   createLabeledArg,
@@ -19,23 +18,21 @@ import {
 } from '@src/lang/create'
 import {
   findAllPreviousVariables,
-  findAllPreviousVariablesPath,
   getBodyIndex,
   getNodeFromPath,
   isCallExprWithName,
   isNodeSafeToReplace,
   isNodeSafeToReplacePath,
+  valueOrVariable,
 } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { PathToNodeMap } from '@src/lang/util'
 import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import type {
-  ArrayExpression,
   CallExpressionKw,
   Expr,
   ExpressionStatement,
-  Literal,
   PathToNode,
   PipeExpression,
   Program,
@@ -47,6 +44,7 @@ import type {
 import { isPathToNodeNumber, parse } from '@src/lang/wasm'
 import type {
   KclCommandValue,
+  KclExpression,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
@@ -280,61 +278,6 @@ export function removeKwArgs(labels: string[], node: CallExpressionKw) {
   }
 }
 
-export function mutateArrExp(node: Expr, updateWith: ArrayExpression): boolean {
-  if (node.type === 'ArrayExpression') {
-    node.elements.forEach((element, i) => {
-      if (isLiteralArrayOrStatic(element)) {
-        node.elements[i] = updateWith.elements[i]
-      }
-    })
-    return true
-  }
-  return false
-}
-
-export function mutateObjExpProp(
-  node: Expr,
-  updateWith: Node<Literal> | Node<ArrayExpression>,
-  key: string
-): boolean {
-  if (node.type === 'ObjectExpression') {
-    const keyIndex = node.properties.findIndex((a) => a.key.name === key)
-    if (keyIndex !== -1) {
-      if (
-        isLiteralArrayOrStatic(updateWith) &&
-        isLiteralArrayOrStatic(node.properties[keyIndex].value)
-      ) {
-        node.properties[keyIndex].value = updateWith
-        return true
-      } else if (
-        node.properties[keyIndex].value.type === 'ArrayExpression' &&
-        updateWith.type === 'ArrayExpression'
-      ) {
-        const arrExp = node.properties[keyIndex].value as ArrayExpression
-        arrExp.elements.forEach((element, i) => {
-          if (isLiteralArrayOrStatic(element)) {
-            arrExp.elements[i] = updateWith.elements[i]
-          }
-        })
-      }
-      return true
-    } else {
-      node.properties.push({
-        type: 'ObjectProperty',
-        key: createIdentifier(key),
-        value: updateWith,
-        start: 0,
-        end: 0,
-        moduleId: 0,
-        outerAttrs: [],
-        preComments: [],
-        commentStart: 0,
-      })
-    }
-  }
-  return false
-}
-
 export function sketchOnExtrudedFace(
   node: Node<Program>,
   sketchPathToNode: PathToNode,
@@ -535,9 +478,6 @@ export function sketchOnOffsetPlane(
   }
 }
 
-export const getLastIndex = (pathToNode: PathToNode): number =>
-  splitPathAtLastIndex(pathToNode).index
-
 export function splitPathAtLastIndex(pathToNode: PathToNode): {
   path: PathToNode
   index: number
@@ -606,35 +546,6 @@ export function replaceValueAtNodePath({
   }
 
   return replacer(ast, newExpressionString)
-}
-
-export function moveValueIntoNewVariablePath(
-  ast: Node<Program>,
-  memVars: VariableMap,
-  pathToNode: PathToNode,
-  variableName: string
-): {
-  modifiedAst: Node<Program>
-  pathToReplacedNode?: PathToNode
-} {
-  const meta = isNodeSafeToReplacePath(ast, pathToNode)
-  if (trap(meta)) return { modifiedAst: ast }
-  const { isSafe, value, replacer } = meta
-
-  if (!isSafe || value.type === 'Name') return { modifiedAst: ast }
-
-  const { insertIndex } = findAllPreviousVariablesPath(ast, memVars, pathToNode)
-  let _node = structuredClone(ast)
-  const boop = replacer(_node, variableName)
-  if (trap(boop)) return { modifiedAst: ast }
-
-  _node = boop.modifiedAst
-  _node.body.splice(
-    insertIndex,
-    0,
-    createVariableDeclaration(variableName, value)
-  )
-  return { modifiedAst: _node, pathToReplacedNode: boop.pathToReplaced }
 }
 
 export function moveValueIntoNewVariable(
@@ -769,7 +680,7 @@ export function deleteSegmentOrProfileFromPipeExpression(
 export function deleteTopLevelStatement(
   ast: Node<Program>,
   pathToNode: PathToNode
-): Error | void {
+): Error | undefined {
   const pathStep = pathToNode[1]
   if (!isArray(pathStep) || typeof pathStep[0] !== 'number') {
     return new Error(
@@ -1170,4 +1081,31 @@ export function setCallInAst({
   }
 
   return pathToNode
+}
+
+export function createPoint2dExpression(
+  value: KclExpression
+): Node<Expr> | Error {
+  let expr: Node<Expr> | undefined
+  if ('value' in value && isArray(value.value)) {
+    // Direct array value [x, y]
+    const arrayElements = []
+    for (const val of value.value) {
+      if (
+        typeof val === 'number' ||
+        typeof val === 'string' ||
+        typeof val === 'boolean'
+      ) {
+        arrayElements.push(createLiteral(val))
+      } else {
+        return new Error('Invalid value type for point2d')
+      }
+    }
+    expr = createArrayExpression(arrayElements)
+  } else {
+    // Variable reference or other format
+    expr = valueOrVariable(value)
+  }
+
+  return expr
 }

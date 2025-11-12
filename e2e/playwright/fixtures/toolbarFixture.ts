@@ -139,12 +139,8 @@ export class ToolbarFixture {
 
   exitSketch = async () => {
     await this.exitSketchBtn.click()
-    await expect(
-      this.page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeVisible()
-    await expect(
-      this.page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(this.startSketchBtn).toBeVisible()
+    await expect(this.startSketchBtn).not.toBeDisabled()
   }
 
   editSketch = async (operationIndex = 0) => {

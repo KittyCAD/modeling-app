@@ -1152,7 +1152,7 @@ export class ConnectionManager extends EventTarget {
     rangeStr: string,
     commandStr: string,
     idToRangeStr: string
-  ): void | Error {
+  ): undefined | Error {
     if (this.connection === undefined) {
       return new Error('this.connection is undefined')
     }
@@ -1196,7 +1196,7 @@ export class ConnectionManager extends EventTarget {
     rangeStr: string,
     commandStr: string,
     idToRangeStr: string
-  ): Promise<Uint8Array | void> {
+  ): Promise<Uint8Array | undefined> {
     if (this.connection === undefined) {
       return Promise.reject(new Error('this.connection is undefined'))
     }
