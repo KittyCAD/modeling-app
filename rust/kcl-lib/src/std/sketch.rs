@@ -1270,7 +1270,7 @@ pub(crate) async fn inner_close(
         )
         .await?;
 
-  let mut new_sketch = sketch;
+    let mut new_sketch = sketch;
 
     let distance = ((from.x - to[0]).powi(2) + (from.y - to[1]).powi(2)).sqrt();
     if distance > super::EQUAL_POINTS_DIST_EPSILON {
