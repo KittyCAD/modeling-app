@@ -69,6 +69,7 @@ import {
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
+import { addFlatnessGdt } from '@src/lang/modifyAst/gdt'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -1810,6 +1811,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add flatness geometric dimensioning & tolerancing annotation to faces.',
     icon: 'gdtFlatness',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addFlatnessGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Flatness']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     status: 'experimental',
     args: {
       nodeToEdit: {
