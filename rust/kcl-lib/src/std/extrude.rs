@@ -1,6 +1,7 @@
 //! Functions related to extruding.
 
 use std::collections::HashMap;
+use std::hash::Hash;
 
 use anyhow::Result;
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
@@ -436,15 +437,30 @@ pub(crate) async fn do_post_extrude<'a>(
     }
 
     let Faces {
-        sides: face_id_map,
+        sides: mut face_id_map,
         start_cap_id,
         end_cap_id,
     } = analyze_faces(exec_state, args, face_infos).await;
 
-    /// If this is a clone, we will use the clone_id_map to map the face info from the original sketch to the clone sketch.
-    face_id_map.iter().map(fn (k, v) {
-        println!("face_id_map key: {:?}, value: {:?}", k, v);
-    });
+    // If this is a clone, we will use the clone_id_map to map the face info from the original sketch to the clone sketch.
+    if sketch.clone.is_some() && clone_id_map.is_some() {
+        let old_clone_map = clone_id_map.unwrap();
+        face_id_map = face_id_map.into_iter().filter_map(|(k, v)| {
+        let fe_key = old_clone_map.get(&k)?; 
+        let fe_value = if let Some(v) = v {
+            if let Some(clone_value) = old_clone_map.get(&v) {
+                Some(*clone_value)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
+        Some((*fe_key, fe_value))
+    }).collect::<HashMap<Uuid, Option<Uuid>>>();
+}
+
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let no_engine_commands = args.ctx.no_engine_commands().await;
     println!("is sketch clone? {:?}", sketch.clone.is_some());
@@ -456,6 +472,7 @@ pub(crate) async fn do_post_extrude<'a>(
             println!("found it before clone check for path ID {:?} with actual_face_id {:?}", path.get_base().geo_meta.id, actual_face_id);
             surface_of(path, *actual_face_id)
         } else if no_engine_commands {
+            println!("checking clone map for path ID1 {:?}", path.get_base().geo_meta.id);
             crate::log::logln!(
                 "No face ID found for path ID {:?}, but in no-engine-commands mode, so faking it",
                 path.get_base().geo_meta.id
@@ -517,6 +534,7 @@ pub(crate) async fn do_post_extrude<'a>(
                 None
             }
         } else {
+            println!("checking clone map for path ID2 {:?}", path.get_base().geo_meta.id);
             crate::log::logln!(
                 "No face ID found for path ID {:?}, and not in no-engine-commands mode, so skipping it",
                 path.get_base().geo_meta.id
