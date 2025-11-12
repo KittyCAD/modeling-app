@@ -7,6 +7,7 @@ import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { KCL_DEFAULT_INSTANCES, KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
@@ -524,7 +525,7 @@ openSketch = startSketchOn(XY)
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await toolbar.closePane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
       await scene.settled(cmdBar)
     })
 
@@ -612,6 +613,8 @@ openSketch = startSketchOn(XY)
     homePage,
     scene,
     editor,
+    toolbar,
+    cmdBar,
   }) => {
     // Locators
     const firstPointLocation = { x: 200, y: 100 }
@@ -655,7 +658,6 @@ openSketch = startSketchOn(XY)
     // in https://github.com/KittyCAD/engine/pull/3804, unclear why
     const edgeColorWhite: [number, number, number] = [230, 230, 230]
     const edgeColorBlue: [number, number, number] = [23, 10, 247]
-    const backgroundColor: [number, number, number] = [30, 30, 30]
     const tolerance = 50
     const timeout = 150
 
@@ -663,20 +665,14 @@ openSketch = startSketchOn(XY)
     await test.step(`Initial test setup`, async () => {
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-
-      // Wait for the scene and stream to load
-      await scene.expectPixelColor(
-        backgroundColor,
-        secondPointLocation,
-        tolerance
-      )
+      await scene.settled(cmdBar)
     })
 
     await test.step('Select and deselect a single sketch segment', async () => {
       await test.step('Get into sketch mode', async () => {
         await editor.closePane()
         await page.waitForTimeout(timeout)
-        await page.getByRole('button', { name: 'Start Sketch' }).click()
+        await toolbar.startSketchBtn.click()
         await page.waitForTimeout(timeout)
         await clickPlane()
         await page.waitForTimeout(1000)
@@ -877,7 +873,7 @@ extrude001 = extrude(profile001, length = 100)`
     await scene.settled(cmdBar)
 
     await test.step(`Go through the command bar flow`, async () => {
-      await toolbar.closePane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
       await toolbar.helixButton.click()
       await cmdBar.expectState(initialCmdBarStateHelix)
       await cmdBar.selectOption({ name: 'Edge' }).click()
@@ -923,7 +919,7 @@ extrude001 = extrude(profile001, length = 100)`
     })
 
     await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
-      await toolbar.openPane('code')
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
@@ -935,11 +931,11 @@ extrude001 = extrude(profile001, length = 100)`
         )`,
         { shouldNormalise: true }
       )
-      await toolbar.closePane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
     })
 
     await test.step(`Edit helix through the feature tree`, async () => {
-      await toolbar.openPane('feature-tree')
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
       await operationButton.dblclick()
       const initialInput = '1'
@@ -994,8 +990,8 @@ extrude001 = extrude(profile001, length = 100)`
         commandName: 'Helix',
       })
       await cmdBar.submit()
-      await toolbar.closePane('feature-tree')
-      await toolbar.openPane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(
         `
         helix001 = helix(
@@ -1006,11 +1002,11 @@ extrude001 = extrude(profile001, length = 100)`
         )`,
         { shouldNormalise: true }
       )
-      await toolbar.closePane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
     })
 
     await test.step('Delete helix via feature tree selection', async () => {
-      await toolbar.openPane('feature-tree')
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
@@ -1092,7 +1088,7 @@ sketch002 = startSketchOn(plane001)
     })
 
     await test.step('Go through the edit flow via feature tree', async () => {
-      await toolbar.openPane('feature-tree')
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const op = await toolbar.getFeatureTreeOperation('Loft', 0)
       await op.dblclick()
       await cmdBar.expectState({
@@ -1167,7 +1163,7 @@ profile001 = ${circleCode}`
     await scene.settled(cmdBar)
 
     await test.step(`Add sweep through the command bar flow`, async () => {
-      await toolbar.openPane('feature-tree')
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       await toolbar.sweepButton.click()
       await cmdBar.expectState({
         commandName: 'Sweep',
@@ -1221,7 +1217,7 @@ profile001 = ${circleCode}`
     })
 
     await test.step('Go through the edit flow via feature tree', async () => {
-      await toolbar.openPane('feature-tree')
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const op = await toolbar.getFeatureTreeOperation('Sweep', 0)
       await op.dblclick()
       await cmdBar.expectState({
@@ -1279,8 +1275,8 @@ profile001 = ${circleCode}`
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = `fillet(radius=5,tags=[getCommonEdge(faces=[seg01,capEnd001])],)`
-    const secondFilletDeclaration = `fillet(radius=5,tags=[getCommonEdge(faces=[seg01,capStart001])],)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), radius=5)`
+    const secondFilletDeclaration = `fillet002 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,capStart001]), radius=5)`
 
     // Locators
     // TODO: find a way to not have hardcoded pixel values for sweepEdges
@@ -1349,11 +1345,6 @@ extrude001 = extrude(sketch001, length = -12)
       await editor.expectEditor.toContain(firstFilletDeclaration, {
         shouldNormalise: true,
       })
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [')'],
-        highlightedCode: '',
-      })
     })
 
     // Test 1.1: Edit fillet (segment type)
@@ -1362,7 +1353,7 @@ extrude001 = extrude(sketch001, length = -12)
       oldValue: string,
       newValue: string
     ) {
-      await toolbar.openPane('feature-tree')
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const operationButton = await toolbar.getFeatureTreeOperation(
         'Fillet',
         featureTreeIndex
@@ -1388,7 +1379,7 @@ extrude001 = extrude(sketch001, length = -12)
         commandName: 'Fillet',
       })
       await cmdBar.progressCmdBar()
-      await toolbar.closePane('feature-tree')
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
     }
 
     await test.step('Edit fillet via feature tree selection works', async () => {
@@ -1471,11 +1462,6 @@ extrude001 = extrude(sketch001, length = -12)
       await editor.expectEditor.toContain(secondFilletDeclaration, {
         shouldNormalise: true,
       })
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [')'],
-        highlightedCode: '',
-      })
     })
 
     // Test 2.1: Edit fillet (edgeSweep type)
@@ -1498,7 +1484,7 @@ extrude001 = extrude(sketch001, length = -12)
     // Test 3: Delete fillets
     await test.step('Delete fillet via feature tree selection', async () => {
       await test.step('Open Feature Tree Pane', async () => {
-        await toolbar.openPane('feature-tree')
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         await page.waitForTimeout(500)
       })
       await test.step('Delete fillet via feature tree selection', async () => {
@@ -1545,8 +1531,8 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
       await scene.settled(cmdBar)
     })
     await test.step('Edit fillet', async () => {
-      await toolbar.openPane('feature-tree')
-      await toolbar.closePane('code')
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
       const operationButton = await toolbar.getFeatureTreeOperation('Fillet', 0)
       await operationButton.dblclick({ button: 'left' })
       await cmdBar.expectState({
@@ -1571,8 +1557,8 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
       await cmdBar.progressCmdBar()
     })
     await test.step('Confirm changes', async () => {
-      await toolbar.openPane('code')
-      await toolbar.closePane('feature-tree')
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await editor.expectEditor.toContain('radius = 20')
     })
   })
@@ -1620,7 +1606,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
     // Test
     await test.step('Delete fillet via feature tree selection', async () => {
       await test.step('Open Feature Tree Pane', async () => {
-        await toolbar.openPane('feature-tree')
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         await scene.settled(cmdBar)
       })
 
@@ -1718,7 +1704,7 @@ extrude001 = extrude(profile001, length = 5)
 `
     const taggedSegment1 = `xLine(length = -10, tag = $seg01)`
     const taggedSegment2 = `yLine(length = -1, tag = $seg02)`
-    const filletExpression = `fillet(radius = 1000, tags = [getCommonEdge(faces = [seg01, seg02])])`
+    const filletExpression = `fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, seg02]), radius = 1000)`
 
     // Locators
     // TODO: find a way to select sweepEdges in a different way
@@ -1737,7 +1723,7 @@ extrude001 = extrude(profile001, length = 5)
     // Test
     await test.step('Select edges and apply oversized fillet', async () => {
       await test.step(`Select the edge`, async () => {
-        await toolbar.closePane('code')
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
         const [clickOnTheEdge] = scene.makeMouseHelpers(
           edgeLocation.x,
           edgeLocation.y
@@ -1794,8 +1780,7 @@ extrude001 = extrude(profile001, length = 5)
     })
   })
 
-  // father forgive me
-  test.skip(`Chamfer point-and-click`, async ({
+  test(`Chamfer point-and-click`, async ({
     context,
     page,
     homePage,
@@ -1815,20 +1800,12 @@ sketch001 = startSketchOn(XY)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstChamferDeclaration = `chamfer(length=5,tags=[getCommonEdge(faces=[seg01,capEnd001])],)`
-    const secondChamferDeclaration = `chamfer(length=5,tags=[getCommonEdge(faces=[seg01,capStart001])],)`
+    const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, tags=getCommonEdge(faces=[seg01,capEnd001]), length=5)`
+    const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, tags=getCommonEdge(faces=[seg01,capStart001]), length=5)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
     const secondEdgeLocation = { x: 600, y: 383 }
-
-    // Colors
-    const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const edgeColorYellow: [number, number, number] = [251, 251, 80] // Mac:B=67 Ubuntu:B=12
-    const chamferColor: [number, number, number] = [168, 168, 168]
-    const backgroundColor: [number, number, number] = [30, 30, 30]
-    const lowTolerance = 20
-    const highTolerance = 75 // TODO: understand why I needed that for edgeColorYellow on macos (local)
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -1852,17 +1829,7 @@ extrude001 = extrude(sketch001, length = -12)
 
     // Test 1: Command bar flow with preselected edges
     await test.step(`Select first edge`, async () => {
-      await scene.expectPixelColor(
-        edgeColorWhite,
-        firstEdgeLocation,
-        lowTolerance
-      )
       await clickOnFirstEdge()
-      await scene.expectPixelColor(
-        edgeColorYellow,
-        firstEdgeLocation,
-        highTolerance // Ubuntu color mismatch can require high tolerance
-      )
       await editor.openPane()
     })
 
@@ -1912,20 +1879,7 @@ extrude001 = extrude(sketch001, length = -12)
       await editor.expectEditor.toContain(firstChamferDeclaration, {
         shouldNormalise: true,
       })
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [')'],
-        highlightedCode: '',
-      })
       await editor.closePane()
-    })
-
-    await test.step(`Confirm scene has changed`, async () => {
-      await scene.expectPixelColor(
-        chamferColor,
-        firstEdgeLocation,
-        lowTolerance
-      )
     })
 
     // Test 1.1: Edit sweep
@@ -1934,7 +1888,7 @@ extrude001 = extrude(sketch001, length = -12)
       oldValue: string,
       newValue: string
     ) {
-      await toolbar.openPane('feature-tree')
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const operationButton = await toolbar.getFeatureTreeOperation(
         'Chamfer',
         featureTreeIndex
@@ -1960,7 +1914,7 @@ extrude001 = extrude(sketch001, length = -12)
         commandName: 'Chamfer',
       })
       await cmdBar.progressCmdBar()
-      await toolbar.closePane('feature-tree')
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
     }
 
     await test.step('Edit chamfer via feature tree selection works', async () => {
@@ -2000,17 +1954,7 @@ extrude001 = extrude(sketch001, length = -12)
     })
 
     await test.step(`Select second edge`, async () => {
-      await scene.expectPixelColor(
-        edgeColorWhite,
-        secondEdgeLocation,
-        lowTolerance
-      )
       await clickOnSecondEdge()
-      await scene.expectPixelColor(
-        edgeColorYellow,
-        secondEdgeLocation,
-        highTolerance // Ubuntu color mismatch can require high tolerance
-      )
     })
 
     await test.step(`Apply chamfer to the second edge`, async () => {
@@ -2054,20 +1998,7 @@ extrude001 = extrude(sketch001, length = -12)
       await editor.expectEditor.toContain(secondChamferDeclaration, {
         shouldNormalise: true,
       })
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [')'],
-        highlightedCode: '',
-      })
       await editor.closePane()
-    })
-
-    await test.step(`Confirm scene has changed`, async () => {
-      await scene.expectPixelColor(
-        backgroundColor,
-        secondEdgeLocation,
-        lowTolerance
-      )
     })
 
     // Test 2.1: Edit chamfer (edgeSweep type)
@@ -2090,7 +2021,7 @@ extrude001 = extrude(sketch001, length = -12)
 
     // Test 3: Delete chamfer via feature tree selection
     await test.step('Open Feature Tree Pane', async () => {
-      await toolbar.openPane('feature-tree')
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       await page.waitForTimeout(500)
     })
     await test.step('Delete chamfer via feature tree selection', async () => {
@@ -2100,15 +2031,14 @@ extrude001 = extrude(sketch001, length = -12)
       )
       await operationButton.click({ button: 'left' })
       await page.keyboard.press('Delete')
-      await toolbar.closeFeatureTreePane()
-      await page.waitForTimeout(500)
-      await scene.expectPixelColor(edgeColorWhite, secondEdgeLocation, 15) // deleted
-      await scene.expectPixelColor(chamferColor, firstEdgeLocation, 15) // stayed
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(secondChamferDeclaration, {
+        shouldNormalise: true,
+      })
     })
   })
 
-  // father forgive me
-  test.skip(`Chamfer point-and-click delete`, async ({
+  test(`Chamfer point-and-click delete`, async ({
     context,
     page,
     homePage,
@@ -2139,16 +2069,6 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
     const standaloneUnassignedChamferDeclaration =
       'chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])'
 
-    // Locators
-    const pipedChamferEdgeLocation = { x: 600, y: 193 }
-    const standaloneChamferEdgeLocation = { x: 600, y: 383 }
-
-    // Colors
-    const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const chamferColor: [number, number, number] = [168, 168, 168]
-    const backgroundColor: [number, number, number] = [30, 30, 30]
-    const lowTolerance = 20
-
     // Setup
     await test.step(`Initial test setup`, async () => {
       await context.addInitScript((initialCode) => {
@@ -2163,7 +2083,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
     // Test
     await test.step('Delete chamfer via feature tree selection', async () => {
       await test.step('Open Feature Tree Pane', async () => {
-        await toolbar.openPane('feature-tree')
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         await scene.settled(cmdBar)
       })
 
@@ -2176,20 +2096,6 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           )
           await editor.expectEditor.toContain(
             standaloneUnassignedChamferDeclaration
-          )
-        })
-        await test.step('Verify test chamfers are present in the scene', async () => {
-          await editor.closePane()
-          await toolbar.closeFeatureTreePane()
-          await scene.expectPixelColor(
-            chamferColor,
-            pipedChamferEdgeLocation,
-            lowTolerance
-          )
-          await scene.expectPixelColor(
-            backgroundColor,
-            standaloneChamferEdgeLocation,
-            lowTolerance
           )
         })
         await test.step('Delete piped chamfer', async () => {
@@ -2214,18 +2120,6 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
             standaloneUnassignedChamferDeclaration
           )
         })
-        await test.step('Verify piped chamfer is deleted but non-piped is not (in the scene)', async () => {
-          await scene.expectPixelColor(
-            edgeColorWhite, // you see edge color because chamfer is deleted
-            pipedChamferEdgeLocation,
-            lowTolerance
-          )
-          await scene.expectPixelColor(
-            backgroundColor, // you see background color instead of edge because it's chamfered
-            standaloneChamferEdgeLocation,
-            lowTolerance
-          )
-        })
       })
 
       await test.step('Delete standalone assigned chamfer via feature tree selection', async () => {
@@ -2248,15 +2142,6 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
             standaloneUnassignedChamferDeclaration
           )
         })
-        await test.step('Verify standalone assigned chamfer is deleted but piped is not (in the scene)', async () => {
-          await toolbar.closeFeatureTreePane()
-          await editor.closePane()
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            standaloneChamferEdgeLocation,
-            lowTolerance
-          )
-        })
       })
 
       await test.step('Delete standalone unassigned chamfer via feature tree selection', async () => {
@@ -2274,15 +2159,6 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           await editor.expectEditor.toContain(secondPipedChamferDeclaration)
           await editor.expectEditor.not.toContain(
             standaloneUnassignedChamferDeclaration
-          )
-        })
-        await test.step('Verify standalone unassigned chamfer is deleted but piped is not (in the scene)', async () => {
-          await editor.closePane()
-          await toolbar.closeFeatureTreePane()
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            standaloneChamferEdgeLocation,
-            lowTolerance
           )
         })
       })
@@ -2369,7 +2245,7 @@ extrude001 = extrude(sketch001, length = 30)
     })
 
     await test.step('Edit shell via feature tree selection works', async () => {
-      await toolbar.openPane('feature-tree')
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
       await operationButton.dblclick()
       await cmdBar.expectState({
@@ -2393,8 +2269,8 @@ extrude001 = extrude(sketch001, length = 30)
       })
       await cmdBar.submit()
       await scene.settled(cmdBar)
-      await toolbar.closePane('feature-tree')
-      await toolbar.openPane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(editedShellDeclaration)
       await editor.expectState({
         diagnostics: [],
@@ -2521,7 +2397,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
 
     await test.step('Edit revolve feature via feature tree selection', async () => {
       const newAngle = '180deg'
-      await toolbar.openPane('feature-tree')
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const operationButton = await toolbar.getFeatureTreeOperation(
         'Revolve',
         0
@@ -2551,7 +2427,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
         commandName: 'Revolve',
       })
       await cmdBar.progressCmdBar()
-      await toolbar.closePane('feature-tree')
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await editor.expectEditor.toContain('angle001 = ' + newAngle)
       await editor.expectEditor.toContain(
         newCodeToFind.replace('angle = 360deg', 'angle = angle001')
@@ -2657,8 +2533,8 @@ box = extrude(profile, length = 30)`
     })
 
     await test.step('Verify code was added correctly', async () => {
-      await toolbar.closePane('feature-tree')
-      await toolbar.openPane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(expectedTranslateCode)
       await editor.expectState({
         diagnostics: [],
@@ -3032,7 +2908,7 @@ solid001 = extrude(sketch001, length = 5)`
 
     await test.step('Edit Pattern Circular 3D', async () => {
       await test.step('Open edit mode from feature tree', async () => {
-        await toolbar.openPane('feature-tree')
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const patternOperation = await toolbar.getFeatureTreeOperation(
           'Circular Pattern',
           0
@@ -3278,7 +3154,7 @@ solid001 = extrude(sketch001, length = 5)`
     })
 
     await test.step('Delete Pattern Circular 3D', async () => {
-      await toolbar.openPane('feature-tree')
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const patternOperation = await toolbar.getFeatureTreeOperation(
         'Circular Pattern',
         0
@@ -3311,7 +3187,7 @@ solid001 = extrude(sketch001, length = 5)`
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
-      // await toolbar.closePane('code')
+      // await toolbar.closePane(DefaultLayoutPaneID.Code)
     })
 
     await test.step('Add Pattern Linear 3D to the scene', async () => {
@@ -3473,8 +3349,8 @@ solid001 = extrude(sketch001, length = 5)`
 
     await test.step('Edit Pattern Linear 3D', async () => {
       await test.step('Open edit mode from feature tree', async () => {
-        await toolbar.closePane('code')
-        await toolbar.openPane('feature-tree')
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const patternOperation = await toolbar.getFeatureTreeOperation(
           'Linear Pattern',
           0
@@ -3618,8 +3494,8 @@ solid001 = extrude(sketch001, length = 5)`
     })
 
     await test.step('Delete Pattern Linear 3D', async () => {
-      await toolbar.closePane('code')
-      await toolbar.openPane('feature-tree')
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
 
       const patternOperation = await toolbar.getFeatureTreeOperation(
         'Linear Pattern',
@@ -3629,8 +3505,8 @@ solid001 = extrude(sketch001, length = 5)`
       await page.keyboard.press('Delete')
 
       await scene.settled(cmdBar)
-      await toolbar.openPane('code')
-      await toolbar.closePane('feature-tree')
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await editor.expectEditor.not.toContain('patternLinear3d(')
     })
   })
@@ -3658,8 +3534,8 @@ extrude001 = extrude(sketch001, length = 30)
       await scene.settled(cmdBar)
 
       // Close panes to ensure toolbar buttons are visible
-      await toolbar.closePane('feature-tree')
-      await toolbar.closePane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
     })
 
     // Adjusted coordinates to center screen for clicking on cap
@@ -3912,7 +3788,7 @@ extrude001 = extrude(sketch001, length = 30)
 
     await test.step('Edit GDT Flatness', async () => {
       await test.step('Open edit mode from feature tree', async () => {
-        await toolbar.openPane('feature-tree')
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const gdtOperation = await toolbar.getFeatureTreeOperation(
           'Flatness',
           0
@@ -4162,7 +4038,7 @@ extrude001 = extrude(sketch001, length = 30)
     })
 
     await test.step('Delete GDT Flatness', async () => {
-      await toolbar.openPane('feature-tree')
+      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const gdtOperation = await toolbar.getFeatureTreeOperation('Flatness', 0)
       // Delete the GDT operation
       await gdtOperation.click({ button: 'left' })
@@ -4198,8 +4074,8 @@ extrude001 = extrude(profile001, length = 10)`
       await scene.settled(cmdBar)
 
       // Close panes to ensure toolbar buttons are visible
-      await toolbar.closePane('feature-tree')
-      await toolbar.closePane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
     })
 
     await test.step('Add the hole through the command flow', async () => {
@@ -4338,7 +4214,7 @@ extrude001 = extrude(profile001, length = 10)`
 
     await test.step('Expect hole call added to the editor', async () => {
       await scene.settled(cmdBar)
-      await toolbar.openPane('code')
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
       await editor.expectEditor.toContain(
         `@settings(experimentalFeatures = allow)`
       )

@@ -68,6 +68,7 @@ import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
+import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -206,15 +207,19 @@ export type ModelingCommandSchema = {
     // Enables editing workflow
     nodeToEdit?: PathToNode
     // KCL stdlib arguments
-    selection: Selections
+    selection: Selections // this is named 'tags' in the stdlib
     radius: KclCommandValue
+    tag?: string
   }
   Chamfer: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
     // KCL stdlib arguments
-    selection: Selections
+    selection: Selections // this is named 'tags' in the stdlib
     length: KclCommandValue
+    secondLength?: KclCommandValue
+    angle?: KclCommandValue
+    tag?: string
   }
   'Offset plane': {
     // Enables editing workflow
@@ -558,7 +563,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       to: {
         inputType: 'selection',
-        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        // TODO: add edgeCut during https://github.com/KittyCAD/modeling-app/issues/8831
+        selectionTypes: ['cap', 'wall'],
         clearSelectionFirst: true,
         required: false,
         multiple: false,
@@ -866,10 +872,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       cutAt: {
-        inputType: 'kcl',
-        allowArrays: true,
+        inputType: 'vector2d',
         required: true,
-        defaultValue: '[0, 0]',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
       },
       holeBody: {
         inputType: 'options',
@@ -1215,7 +1220,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Fillet edge',
     icon: 'fillet3d',
     needsReview: true,
-    // TODO: add reviewMessage with mock exec once refactored
+    reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addFillet({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Fillet']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1233,13 +1254,34 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
       },
+      tag: {
+        inputType: 'tagDeclarator',
+        required: false,
+        // TODO: add validation like for Clone command
+      },
     },
   },
   Chamfer: {
     description: 'Chamfer edge',
     icon: 'chamfer3d',
     needsReview: true,
-    // TODO: add reviewMessage with mock exec once refactored
+    reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addChamfer({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Chamfer']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1256,6 +1298,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+      },
+      secondLength: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: false,
+      },
+      angle: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_DEGREE,
+        required: false,
+      },
+      tag: {
+        inputType: 'tagDeclarator',
+        required: false,
+        // TODO: add validation like for Clone command
       },
     },
   },

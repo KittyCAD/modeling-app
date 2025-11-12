@@ -17,7 +17,7 @@ export const deletionErrorMessage =
 
 export async function deleteSelectionPromise(
   selection: Selection
-): Promise<Error | void> {
+): Promise<Error | undefined> {
   let ast = kclManager.ast
 
   const modifiedAst = await deleteFromSelection(

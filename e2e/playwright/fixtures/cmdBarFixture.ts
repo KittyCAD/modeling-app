@@ -203,6 +203,8 @@ export class CmdBarFixture {
   expectState = async (expected: CmdBarSerialised) => {
     if (expected.stage === 'review') {
       await this.cmdBarLoadingCheckingArguments.waitFor({ state: 'hidden' })
+    } else if (expected.stage === 'commandBarClosed') {
+      await expect(this.cmdBarElement).not.toBeAttached()
     }
 
     return expect.poll(() => this._serialiseCmdBar()).toEqual(expected)

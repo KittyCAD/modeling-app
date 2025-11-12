@@ -8,6 +8,7 @@ import {
   pollEditorLinesSelectedLength,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Testing constraints', () => {
   test('Can constrain line length', async ({ page, homePage, cmdBar }) => {
@@ -380,7 +381,7 @@ test.describe('Testing constraints', () => {
 
         await page.getByText('line(end = [20, 20])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
-        await toolbar.closePane('code')
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
 
         // Wait for overlays to populate
         await page.waitForTimeout(1000)
@@ -425,7 +426,7 @@ test.describe('Testing constraints', () => {
         // checking activeLines assures the cursors are where they should be
         const codeAfter = [`|> line(endAbsolute = [${value}])`]
 
-        await toolbar.openPane('code')
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
         const activeLinesContent = await page.locator('.cm-activeLine').all()
         await Promise.all(
           activeLinesContent.map(async (line, i) => {
@@ -1029,10 +1030,10 @@ test.describe('Electron constraint tests', () => {
 
       await test.step('Double click to constrain', async () => {
         // Enter sketch edit mode via feature tree
-        await toolbar.openPane('feature-tree')
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const op = await toolbar.getFeatureTreeOperation('Sketch', 0)
         await op.dblclick()
-        await toolbar.closePane('feature-tree')
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
 
         await clickOnFirstSegmentLabel()
         await cmdBar.progressCmdBar()

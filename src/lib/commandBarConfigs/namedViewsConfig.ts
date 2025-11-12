@@ -72,11 +72,8 @@ function cameraViewStateToNamedView(
   name: string,
   cameraViewState: CameraViewState
 ): NamedView | Error {
-  let pivot_position: Tuple3 | null = null
-  let pivot_rotation: Tuple4 | null = null
-
-  pivot_position = point3DToNumberArray(cameraViewState.pivot_position)
-  pivot_rotation = point4DToNumberArray(cameraViewState.pivot_rotation)
+  const pivot_position = point3DToNumberArray(cameraViewState.pivot_position)
+  const pivot_rotation = point4DToNumberArray(cameraViewState.pivot_rotation)
 
   // Create a new named view
   const requestedView: NamedView = {

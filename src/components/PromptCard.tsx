@@ -2,42 +2,8 @@ import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Thinking } from '@src/components/Thinking'
 import type { Prompt } from '@src/lib/prompt'
-import type { Conversation } from '@kittycad/lib'
 import ms from 'ms'
 import { useState } from 'react'
-
-// In the future we can split this out but the code is 99% the same as
-// the PromptCard, which came first.
-export interface ConvoCardProps extends Conversation {
-  onAction?: (prompt: Conversation['first_prompt']) => void
-}
-
-export const ConvoCard = (props: ConvoCardProps) => {
-  const cssCard = `flex flex-col border b-4 rounded-md p-2 gap-2 justify-between`
-  return (
-    <div className={cssCard}>
-      <div className="flex flex-row justify-between gap-2">
-        <div>{props.first_prompt}</div>
-      </div>
-      <div className="flex flex-row justify-between">
-        <div className="flex flex-row gap-2">
-          {props.onAction !== undefined && (
-            <PromptCardActionButton
-              status={'completed' as Prompt['status']}
-              onClick={() => props.onAction?.(props.first_prompt)}
-            />
-          )}
-        </div>
-        <div className="text-sm text-chalkboard-70">
-          {ms(Date.now() - new Date(props.created_at).getTime(), {
-            long: true,
-          })}{' '}
-          ago
-        </div>
-      </div>
-    </div>
-  )
-}
 
 export type PromptCardProps = Prompt & {
   disabled?: boolean

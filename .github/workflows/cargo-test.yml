@@ -235,7 +235,7 @@ jobs:
           popd
           .github/ci-cd-scripts/upload-results.sh
         env:
-          TWENTY_TWENTY: overwrite
+          TWENTY_TWENTY: update
           INSTA_UPDATE: always
           EXPECTORATE: overwrite
           ZOO_API_TOKEN: ${{secrets.ZOO_API_TOKEN}}
