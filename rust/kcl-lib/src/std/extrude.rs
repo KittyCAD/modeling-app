@@ -446,7 +446,7 @@ pub(crate) async fn do_post_extrude<'a>(
             .into_iter()
             .filter_map(|(k, v)| {
                 let fe_key = clone_id_map?.get(&k)?;
-                let fe_value = clone_id_map?.get(&(v?)).map(|clone_value| *clone_value);
+                let fe_value = clone_id_map?.get(&(v?)).copied();
                 Some((*fe_key, fe_value))
             })
             .collect::<HashMap<Uuid, Option<Uuid>>>();
