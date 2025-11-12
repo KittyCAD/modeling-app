@@ -80,9 +80,6 @@ export default class GizmoRenderer {
     const ambient = new AmbientLight(0xffffff, 1.5)
     this.scene.add(ambient)
 
-    this.camera = createCamera(isPerspective)
-    this.setPerspective(isPerspective)
-    this.theme = this.setTheme(theme)
     this.materials = {
       light: {
         edge: this.createMaterial(0x363837),
@@ -109,6 +106,10 @@ export default class GizmoRenderer {
         ),
       },
     }
+
+    this.camera = createCamera(isPerspective)
+    this.setPerspective(isPerspective)
+    this.theme = this.setTheme(theme)
 
     this.loadModel()
   }
@@ -143,7 +144,17 @@ export default class GizmoRenderer {
   }
 
   private updateModel() {
-    //...
+    const themeMaterials = this.theme === 'light' ? this.materials.light : this.materials.dark
+    this.clickableObjects.forEach(object => {
+      const hovering = object === this.raycasterIntersect?.object
+      const face =  object.name.includes('face')
+      const material = face ? 
+        (hovering ? themeMaterials.face_hover
+        : themeMaterials.face)
+        :hovering ? themeMaterials.edge_hover : themeMaterials.edge
+        object.material = material
+    })
+
     this.invalidate()
   }
 
@@ -375,6 +386,7 @@ export default class GizmoRenderer {
         .then((texture) => {
           material.map = texture
           material.color.setHex(0xffffff)
+          this.invalidate()
         })
         .catch((e) => {
           console.error(e)
