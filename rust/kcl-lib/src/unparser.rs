@@ -589,7 +589,7 @@ impl Literal {
                 if let Some(suggestion) = deprecation(s, DeprecationKind::String) {
                     return write!(buf, "{suggestion}").unwrap();
                 }
-                let quote = if self.raw.trim().starts_with('\'') { '\'' } else { '"' };
+                let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
                 write(buf, quote);
                 write(buf, s);
                 write(buf, quote);
