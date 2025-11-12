@@ -178,17 +178,6 @@ export default class GizmoRenderer {
         })
         this.initListeners()
         this.updateModel()
-        // ;(async () => {
-        //   await initTextures(
-        //     root,
-        //     resolvedTheme,
-        //     renderer,
-        //     texturesRef,
-        //     hoverEdgeMaterialRef,
-        //     hoverFaceMaterialRef
-        //   )
-        //   invalidate()
-        // })().catch(console.error)
       },
       undefined,
       (e) => {
