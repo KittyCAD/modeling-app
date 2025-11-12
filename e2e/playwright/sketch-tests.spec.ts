@@ -1134,7 +1134,7 @@ profile001 = startProfile(sketch001, at=[0, 0])
     await editor.closePane()
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
-    const [startProfile1] = scene.makeMouseHelpers(5)
+    const [startProfile1] = scene.makeMouseHelpers(568, 158)
     const [endLineStartTanArc] = scene.makeMouseHelpers(701, 158)
     const [endArcStartLine] = scene.makeMouseHelpers(765, 210)
 
