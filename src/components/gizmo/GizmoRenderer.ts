@@ -204,7 +204,7 @@ export default class GizmoRenderer {
   }
 
   private initListeners() {
-    this.canvas.addEventListener('mousemove', this.onCanvasMouseMove)
+    this.canvas.addEventListener('mousemove', this.onMouseMove)
     this.canvas.addEventListener('mousedown', this.onMouseDown)
     this.canvas.addEventListener('contextmenu', this.onContextMenu)
     this.canvas.addEventListener('click', this.onClick)
@@ -212,7 +212,7 @@ export default class GizmoRenderer {
   }
 
   public dispose() {
-    this.canvas.removeEventListener('mousemove', this.onCanvasMouseMove)
+    this.canvas.removeEventListener('mousemove', this.onMouseMove)
     this.canvas.removeEventListener('mousedown', this.onMouseDown)
     this.canvas.removeEventListener('contextmenu', this.onContextMenu)
     this.canvas.removeEventListener('click', this.onClick)
@@ -233,11 +233,13 @@ export default class GizmoRenderer {
     this.camera.position.set(0, 0, 2.2).applyQuaternion(currentQuaternion)
     this.camera.quaternion.copy(currentQuaternion)
 
+    if (this.lastMouse && !this.isDragging) {
+      this.doRayCast(this.lastMouse)
+    }
     this.invalidate()
-    // doRaycast?
   }
 
-  private onCanvasMouseMove = (event: MouseEvent) => {
+  private onMouseMove = (event: MouseEvent) => {
     const { left, top, width, height } = this.canvas.getBoundingClientRect()
     const mousePos = new Vector2(
       ((event.clientX - left) / width) * 2 - 1,
@@ -260,6 +262,11 @@ export default class GizmoRenderer {
         const dx = now.x - last.x
         const dy = now.y - last.y
         this.didDrag = this.didDrag || Math.hypot(dx, dy) > 1
+
+        if (this.didDrag) {
+          this.updateHoveringMesh(null)
+        }
+
         sceneInfra.camControls.rotateCamera(dx, dy)
         sceneInfra.camControls.safeLookAtTarget()
 
@@ -269,8 +276,8 @@ export default class GizmoRenderer {
   }
 
   private onMouseDown = (event: MouseEvent) => {
-    const isRightButton = btnName(event).right
-    if (isRightButton || btnName(event).left) {
+    const btnNames = btnName(event)
+    if (btnNames.right || btnNames.left) {
       this.isDragging = true
       this.didDrag = false
       this.dragLast = new Vector2(event.clientX, event.clientY)
@@ -303,7 +310,7 @@ export default class GizmoRenderer {
     if (!this.hoveringMesh) {
       // If we have no current intersection (e.g., orbit disabled), do a forced raycast at the last mouse position
       if (this.lastMouse) {
-        this.doRayCast(this.lastMouse, true)
+        this.doRayCast(this.lastMouse)
       }
       if (!this.hoveringMesh) {
         return
@@ -321,9 +328,9 @@ export default class GizmoRenderer {
     }
   }
 
-  private doRayCast(mouse: Vector2, force = false) {
+  private doRayCast(mouse: Vector2) {
     let hoveringMesh: StandardMesh | null = null
-    if (force || !this.disabled) {
+    if (!this.disabled) {
       const raycaster = new Raycaster()
       raycaster.setFromCamera(mouse, this.camera)
       const intersects = raycaster.intersectObjects(this.clickableObjects, true)
@@ -336,6 +343,10 @@ export default class GizmoRenderer {
       }
     }
 
+    this.updateHoveringMesh(hoveringMesh)
+  }
+
+  private updateHoveringMesh(hoveringMesh: StandardMesh | null) {
     if (this.hoveringMesh !== hoveringMesh) {
       this.hoveringMesh = hoveringMesh
       this.updateModel()
