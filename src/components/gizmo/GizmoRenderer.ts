@@ -5,7 +5,6 @@ import type {
   Object3D,
   Mesh,
   BufferGeometry,
-  Intersection,
   ColorRepresentation,
   Texture,
 } from 'three'
@@ -48,7 +47,7 @@ export default class GizmoRenderer {
   private dragLast: Vector2 | null = null
   private didDrag = false
   private lastMouse: Vector2 | null = null
-  private raycasterIntersect: Intersection | null = null
+  private hoveringMesh: StandardMesh | null = null
 
   private readonly materials: {
     light: {
@@ -147,7 +146,7 @@ export default class GizmoRenderer {
     const themeMaterials =
       this.theme === 'light' ? this.materials.light : this.materials.dark
     this.clickableObjects.forEach((object) => {
-      const hovering = object === this.raycasterIntersect?.object
+      const hovering = object === this.hoveringMesh
       const face = object.name.includes('face')
       const material = face
         ? hovering
@@ -285,7 +284,6 @@ export default class GizmoRenderer {
       this.isDragging = true
       this.didDrag = false
       this.dragLast = new Vector2(event.clientX, event.clientY)
-      this.clearHighlight()
       window.addEventListener('mousemove', this.onWindowMouseMove)
       window.addEventListener('mouseup', this.onMouseUp)
     }
@@ -312,21 +310,21 @@ export default class GizmoRenderer {
       return
     }
     // If orbits are disabled, skip click logic
-    if (!this.raycasterIntersect) {
+    if (!this.hoveringMesh) {
       // If we have no current intersection (e.g., orbit disabled), do a forced raycast at the last mouse position
       if (this.lastMouse) {
         this.doRayCast(this.lastMouse, true)
       }
-      if (!this.raycasterIntersect) {
+      if (!this.hoveringMesh) {
         return
       }
     }
-    let obj: Object3D | null = this.raycasterIntersect.object
+    let obj: Object3D | null = this.hoveringMesh
     // Go up to a parent whose name matches if needed
     while (obj && !isOrientationTargetName(obj.name)) {
       obj = obj.parent
     }
-    const pickedName = obj?.name || this.raycasterIntersect.object.name
+    const pickedName = obj?.name || this.hoveringMesh.name
     const targetQuat = orientationQuaternionForName(pickedName)
     if (targetQuat) {
       animateCameraToQuaternion(targetQuat).catch(reportRejection)
@@ -334,37 +332,23 @@ export default class GizmoRenderer {
   }
 
   private doRayCast(mouse: Vector2, force = false) {
+    let hoveringMesh: StandardMesh | null = null
     if (force || !this.disabled) {
       const raycaster = new Raycaster()
       raycaster.setFromCamera(mouse, this.camera)
       const intersects = raycaster.intersectObjects(this.clickableObjects, true)
-      // Clear previous highlight if any
-      // if (
-      //   hoveredObjectRef.current &&
-      //   (!intersects.length || hoveredObjectRef.current !== intersects[0].object)
-      // ) {
-      //   this.restoreHighlight(hoveredObjectRef.current, originalMaterialsRef.current)
-      //   hoveredObjectRef.current = null
-      // }
+
       if (intersects.length) {
-        // const obj = intersects[0].object
-        // if (isStandardMesh(obj)) {
-        //   if (hoveredObjectRef.current !== obj) {
-        //     this.applyHighlight(
-        //       obj,
-        //       originalMaterialsRef.current,
-        //       hoverMaterialRef.current,
-        //       hoverFaceMaterialRef.current
-        //     )
-        //     hoveredObjectRef.current = obj
-        //   }
-        //   this.raycasterIntersect = intersects[0] // filter first object
-        // }
-      } else {
-        this.raycasterIntersect = null
+        const obj = intersects[0]?.object
+        if (isStandardMesh(obj)) {
+          hoveringMesh = obj
+        }
       }
-    } else {
-      this.clearHighlight()
+    }
+
+    if (this.hoveringMesh !== hoveringMesh) {
+      this.hoveringMesh = hoveringMesh
+      this.updateModel()
     }
   }
 
@@ -377,7 +361,7 @@ export default class GizmoRenderer {
       : undefined
 
     const material = new MeshStandardMaterial({
-      map: texture,
+      ...(texture ? { map: texture } : {}),
       color: texture ? 0xffffff : baseColor,
       emissive: 0x000000,
       roughness: 0.6,
@@ -390,6 +374,7 @@ export default class GizmoRenderer {
         .then((texture) => {
           material.map = texture
           material.color.setHex(0xffffff)
+          material.needsUpdate = true
           this.invalidate()
         })
         .catch((e) => {
@@ -429,12 +414,6 @@ export default class GizmoRenderer {
       return promise
     }
   }
-
-  private clearHighlight() {}
-
-  private applyHighlight() {}
-
-  private restoreHighlight() {}
 }
 
 const createCamera = (

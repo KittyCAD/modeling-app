@@ -1,5 +1,5 @@
 import { Popover } from '@headlessui/react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import {
   ViewControlContextMenu,
@@ -17,7 +17,7 @@ export default function Gizmo() {
   const menuItems = useViewControlMenuItems()
   const wrapperRef = useRef<HTMLDivElement>(null!)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const disableOrbitRef = useRef(false)
+  const [disableOrbit, setDisabledOrbit] = useState(false)
 
   const renderer = useRef<GizmoRenderer | null>(null)
 
@@ -56,13 +56,16 @@ export default function Gizmo() {
       modelingState.matches('Sketch') &&
       !settings.app.allowOrbitInSketchMode.current
 
+    console.log(disabled, modelingState.context)
+
+    setDisabledOrbit(disabled)
     renderer.current?.setDisabled(disabled)
-    if (wrapperRef.current) {
-      // wrapperRef.current.style.filter = disableOrbitRef.current
-      //   ? 'grayscale(100%)'
-      //   : 'none'
-      wrapperRef.current.style.cursor = disabled ? 'not-allowed' : 'auto'
-    }
+    // if (wrapperRef.current) {
+    //   // wrapperRef.current.style.filter = disableOrbitRef.current
+    //   //   ? 'grayscale(100%)'
+    //   //   : 'none'
+    //   wrapperRef.current.style.cursor = disabled ? 'not-allowed' : 'auto'
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [modelingState, settings.app.allowOrbitInSketchMode.current])
 
@@ -70,11 +73,15 @@ export default function Gizmo() {
     <div className="relative">
       <div
         ref={wrapperRef}
+        style={{ cursor: disableOrbit ? 'not-allowed' : 'auto' }}
         aria-label="View orientation gizmo"
-        data-testid={`gizmo${disableOrbitRef.current ? '-disabled' : ''}`}
+        data-testid={`gizmo${disableOrbit ? '-disabled' : ''}`}
         className="grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50 pointer-events-auto bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm"
       >
-        <canvas ref={canvasRef} />
+        <canvas
+          ref={canvasRef}
+          style={{ pointerEvents: disableOrbit ? 'none' : 'auto' }}
+        />
         <ViewControlContextMenu menuTargetElement={wrapperRef} />
       </div>
       <GizmoDropdown items={menuItems} />
