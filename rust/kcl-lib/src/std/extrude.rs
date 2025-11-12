@@ -1,7 +1,6 @@
 //! Functions related to extruding.
 
 use std::collections::HashMap;
-use std::hash::Hash;
 
 use anyhow::Result;
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
@@ -354,8 +353,7 @@ pub(crate) async fn do_post_extrude<'a>(
         edge_id
     } else if let Some(id) = edge_id {
         id
-    }
-    else {
+    } else {
         // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
         // So, let's just use the first one.
         let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
@@ -445,21 +443,24 @@ pub(crate) async fn do_post_extrude<'a>(
     // If this is a clone, we will use the clone_id_map to map the face info from the original sketch to the clone sketch.
     if sketch.clone.is_some() && clone_id_map.is_some() {
         let old_clone_map = clone_id_map.unwrap();
-        face_id_map = face_id_map.into_iter().filter_map(|(k, v)| {
-        let fe_key = old_clone_map.get(&k)?; 
-        let fe_value = if let Some(v) = v {
-            if let Some(clone_value) = old_clone_map.get(&v) {
-                Some(*clone_value)
-            } else {
-                None
-            }
-        } else {
-            None
-        };
+        face_id_map = face_id_map
+            .into_iter()
+            .filter_map(|(k, v)| {
+                let fe_key = old_clone_map.get(&k)?;
+                let fe_value = if let Some(v) = v {
+                    if let Some(clone_value) = old_clone_map.get(&v) {
+                        Some(*clone_value)
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                };
 
-        Some((*fe_key, fe_value))
-    }).collect::<HashMap<Uuid, Option<Uuid>>>();
-}
+                Some((*fe_key, fe_value))
+            })
+            .collect::<HashMap<Uuid, Option<Uuid>>>();
+    }
 
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let no_engine_commands = args.ctx.no_engine_commands().await;
@@ -469,7 +470,11 @@ pub(crate) async fn do_post_extrude<'a>(
     let mut new_value: Vec<ExtrudeSurface> = Vec::with_capacity(sketch.paths.len() + sketch.inner_paths.len() + 2);
     let outer_surfaces = sketch.paths.iter().flat_map(|path| {
         if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
-            println!("found it before clone check for path ID {:?} with actual_face_id {:?}", path.get_base().geo_meta.id, actual_face_id);
+            println!(
+                "found it before clone check for path ID {:?} with actual_face_id {:?}",
+                path.get_base().geo_meta.id,
+                actual_face_id
+            );
             surface_of(path, *actual_face_id)
         } else if no_engine_commands {
             println!("checking clone map for path ID1 {:?}", path.get_base().geo_meta.id);
@@ -504,17 +509,13 @@ pub(crate) async fn do_post_extrude<'a>(
                         clone_surface_of(path, *new_path, *actual_face_id)
                     }
                     _ => {
-                        let actual_face_id = face_id_map
-                            .iter()
-                            .find_map(|(key, value)| if let Some(value) = value {
-                                if value == new_path {
-                                    Some(key)
-                                } else {
-                                    None
-                                }
+                        let actual_face_id = face_id_map.iter().find_map(|(key, value)| {
+                            if let Some(value) = value {
+                                if value == new_path { Some(key) } else { None }
                             } else {
                                 None
-                            });
+                            }
+                        });
                         match actual_face_id {
                             Some(actual_face_id) => {
                                 println!(
