@@ -1,22 +1,20 @@
 import { btnName } from '@src/lib/cameraControls'
 import { sceneInfra } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
+import type { Object3D, Mesh, BufferGeometry, Intersection } from 'three'
 import {
   PerspectiveCamera,
   OrthographicCamera,
   Scene,
   WebGLRenderer,
-  Object3D,
-  Mesh,
   MeshStandardMaterial,
-  BufferGeometry,
   DirectionalLight,
   AmbientLight,
   Vector2,
   Matrix4,
   Quaternion,
   Vector3,
-  Intersection,
+  Raycaster,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
@@ -28,7 +26,10 @@ export default class GizmoRenderer {
   private readonly scene: Scene
   private camera: PerspectiveCamera | OrthographicCamera
   private clickableObjects: StandardMesh[] = []
-  private _theme: 'light' | 'dark'
+  private theme: 'light' | 'dark'
+
+  private needsToRender = true
+  private raf = -1
 
   private disabled = false
   private isDragging = false
@@ -65,7 +66,7 @@ export default class GizmoRenderer {
 
     this.camera = createCamera(isPerspective)
     this.setPerspective(isPerspective)
-    this._theme = this.setTheme(theme)
+    this.theme = this.setTheme(theme)
     this.materials = {
       light: {
         edge: createMaterial(),
@@ -90,11 +91,16 @@ export default class GizmoRenderer {
     const light = new DirectionalLight(0xffffff, 1.9)
     light.position.set(2.5, 0.25, 1)
     this.camera.add(light)
+
+    // Add camera to scene so child light is evaluated
+    this.scene.add(this.camera)
+
+    this.invalidate()
   }
 
   public setTheme(theme: 'light' | 'dark') {
-    if (this._theme !== theme) {
-      this._theme = theme
+    if (this.theme !== theme) {
+      this.theme = theme
       this.updateModel()
     }
     return theme
@@ -104,7 +110,10 @@ export default class GizmoRenderer {
     this.disabled = disabled
   }
 
-  private updateModel() {}
+  private updateModel() {
+    //...
+    this.invalidate()
+  }
 
   private loadModel() {
     const loader = new GLTFLoader()
@@ -122,6 +131,7 @@ export default class GizmoRenderer {
           if (isOrientationTargetName(obj.name)) this.clickableObjects.push(obj)
         })
         this.initListeners()
+        this.updateModel()
         // ;(async () => {
         //   await initTextures(
         //     root,
@@ -143,14 +153,53 @@ export default class GizmoRenderer {
     )
   }
 
+  private invalidate() {
+    this.needsToRender = true
+    if (!(this.raf > -1)) {
+      this.raf = requestAnimationFrame(this.onFrame)
+    }
+  }
+  private onFrame = () => {
+    this.raf = -1
+    if (this.needsToRender) {
+      this.needsToRender = false
+      this.renderer.render(this.scene, this.camera)
+    }
+  }
+
   private initListeners() {
     this.canvas.addEventListener('mousemove', this.onCanvasMouseMove)
     this.canvas.addEventListener('mousedown', this.onMouseDown)
     this.canvas.addEventListener('contextmenu', this.onContextMenu)
     this.canvas.addEventListener('click', this.onClick)
+    sceneInfra.camControls.cameraChange.add(this.onCameraChange)
   }
 
-  public dispose() {}
+  public dispose() {
+    this.canvas.removeEventListener('mousemove', this.onCanvasMouseMove)
+    this.canvas.removeEventListener('mousedown', this.onMouseDown)
+    this.canvas.removeEventListener('contextmenu', this.onContextMenu)
+    this.canvas.removeEventListener('click', this.onClick)
+    sceneInfra.camControls.cameraChange.remove(this.onCameraChange)
+
+    window.removeEventListener('mousemove', this.onWindowMouseMove)
+    window.removeEventListener('mouseup', this.onMouseUp)
+    document.removeEventListener('mouseleave', this.onMouseUp)
+
+    if (this.raf > -1) {
+      cancelAnimationFrame(this.raf)
+    }
+    this.renderer.dispose()
+  }
+
+  private onCameraChange = () => {
+    const currentQuaternion = sceneInfra.camControls.camera.quaternion
+    this.camera.position.set(0, 0, 2.2).applyQuaternion(currentQuaternion)
+    this.camera.quaternion.copy(currentQuaternion)
+
+    this.invalidate()
+    // doRaycast?
+  }
 
   private onCanvasMouseMove = (event: MouseEvent) => {
     const { left, top, width, height } = this.canvas.getBoundingClientRect()
@@ -160,7 +209,7 @@ export default class GizmoRenderer {
     )
     this.lastMouse = mousePos
     if (!this.isDragging) {
-      doRayCast(mousePos)
+      this.doRayCast(mousePos)
     }
   }
 
@@ -189,7 +238,7 @@ export default class GizmoRenderer {
       this.isDragging = true
       this.didDrag = false
       this.dragLast = new Vector2(event.clientX, event.clientY)
-      //clearHighlight()
+      this.clearHighlight()
       window.addEventListener('mousemove', this.onWindowMouseMove)
       window.addEventListener('mouseup', this.onMouseUp)
     }
@@ -219,18 +268,18 @@ export default class GizmoRenderer {
     if (!this.raycasterIntersect) {
       // If we have no current intersection (e.g., orbit disabled), do a forced raycast at the last mouse position
       if (this.lastMouse) {
-        doRayCast(this.lastMouse, true)
+        this.doRayCast(this.lastMouse, true)
       }
-      if (!raycasterIntersect.current) {
+      if (!this.raycasterIntersect) {
         return
       }
     }
-    let obj: Object3D | null = raycasterIntersect.current.object
+    let obj: Object3D | null = this.raycasterIntersect.object
     // Go up to a parent whose name matches if needed
     while (obj && !isOrientationTargetName(obj.name)) {
       obj = obj.parent
     }
-    const pickedName = obj?.name || raycasterIntersect.current.object.name
+    const pickedName = obj?.name || this.raycasterIntersect.object.name
     const targetQuat = orientationQuaternionForName(pickedName)
     if (targetQuat) {
       animateCameraToQuaternion(targetQuat).catch(reportRejection)
@@ -239,37 +288,44 @@ export default class GizmoRenderer {
 
   private doRayCast(mouse: Vector2, force = false) {
     if (force || !this.disabled) {
-      // raycaster.setFromCamera(mouse, camera)
-      // const intersects = raycaster.intersectObjects(objects, true)
-      // // Clear previous highlight if any
+      const raycaster = new Raycaster()
+      raycaster.setFromCamera(mouse, this.camera)
+      const intersects = raycaster.intersectObjects(this.clickableObjects, true)
+      // Clear previous highlight if any
       // if (
       //   hoveredObjectRef.current &&
       //   (!intersects.length || hoveredObjectRef.current !== intersects[0].object)
       // ) {
-      //   restoreHighlight(hoveredObjectRef.current, originalMaterialsRef.current)
+      //   this.restoreHighlight(hoveredObjectRef.current, originalMaterialsRef.current)
       //   hoveredObjectRef.current = null
       // }
-      // if (intersects.length) {
-      //   const obj = intersects[0].object
-      //   if (isStandardMesh(obj)) {
-      //     if (hoveredObjectRef.current !== obj) {
-      //       applyHighlight(
-      //         obj,
-      //         originalMaterialsRef.current,
-      //         hoverMaterialRef.current,
-      //         hoverFaceMaterialRef.current
-      //       )
-      //       hoveredObjectRef.current = obj
-      //     }
-      //     raycasterIntersect.current = intersects[0] // filter first object
-      //   }
-      // } else {
-      //   raycasterIntersect.current = null
-      // }
+      if (intersects.length) {
+        // const obj = intersects[0].object
+        // if (isStandardMesh(obj)) {
+        //   if (hoveredObjectRef.current !== obj) {
+        //     this.applyHighlight(
+        //       obj,
+        //       originalMaterialsRef.current,
+        //       hoverMaterialRef.current,
+        //       hoverFaceMaterialRef.current
+        //     )
+        //     hoveredObjectRef.current = obj
+        //   }
+        //   this.raycasterIntersect = intersects[0] // filter first object
+        // }
+      } else {
+        this.raycasterIntersect = null
+      }
     } else {
-      //this.clearHighlight()
+      this.clearHighlight()
     }
   }
+
+  private clearHighlight() {}
+
+  private applyHighlight() {}
+
+  private restoreHighlight() {}
 }
 
 const createCamera = (

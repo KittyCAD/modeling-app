@@ -320,7 +320,6 @@ export class CameraControls {
     >[0]
 
     const cb = ({ data, type }: CallBackParam) => {
-      console.log('cb', type)
       const camSettings = data.settings
       this.camera.position.set(
         camSettings.pos.x,
@@ -862,7 +861,6 @@ export class CameraControls {
   }
 
   rotateCamera = (deltaX: number, deltaY: number) => {
-    console.log('rotateCamera', deltaX, deltaY)
 
     const quat = new Quaternion().setFromUnitVectors(
       new Vector3(0, 0, 1),
