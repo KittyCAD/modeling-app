@@ -40,11 +40,23 @@ A kind of Layout that consists of two or more Layouts divided, with a draggable 
 
 ## Panes
 
-A kind of Layout that consists of a toolbar, which can be on the top, bottom, left, or right side of the Pane layout, containing 1 or more layout definitions. The toolbar buttons allow users to toggle the activity of the pane layout. All the active panes are displayed as a set of Splits next to the toolbar.
+A kind of Split Layout that lets users toggle which layout elements are active within it. It consists of a pane control bar and a Split layout of all active panes.
+
+### Pane control bar
+
+An interface element which contains a row of buttons that allow users to toggle the activity of panes. It can be on the top, bottom, left, or right side of a Pane layout.
 
 ## Scene
 
 An Area showing the 3D modeling scene. It contains controls to manipulate the CAD assembly and scene via "point & click" interaction. It houses a toolbar of modeling operations to perform, as well as view orientation controls.
+
+### Toolbar
+
+An interface element within the Scene that contains buttons to invoke modeling operations. It changes based on the current modeling state, such as being in sketch mode.
+
+### View Controls
+
+A cluster of interface elements within the Scene that help the user orient themselves in the 3D space of the Scene.
 
 ## Feature Tree
 
