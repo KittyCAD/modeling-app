@@ -1,9 +1,7 @@
 These are principles we try to follow as a team working on this product. Anyone can suggest additions or edits. 
 
 ## 0. Application architecture
-1. Use classes with Signals to encapsulate non-React reactive state
-2. Use React as a thin view layer unless absolutely necessary, presenting state that is defined outside of React.
-3. Use XState sparingly for complex state chart definition within a system's class
+1. Use React as a thin view layer unless absolutely necessary, presenting state that is defined outside of React.
 
 ## 1. UX design
 1. Animate sparingly
