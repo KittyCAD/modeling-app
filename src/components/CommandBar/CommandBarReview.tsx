@@ -17,6 +17,10 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     enableOnFormTags: true,
     enableOnContentEditable: true,
   })
+  useHotkeys('esc', () => commandBarActor.send({ type: 'Close' }), {
+    enableOnFormTags: true,
+    enableOnContentEditable: true,
+  })
 
   useHotkeys(
     [

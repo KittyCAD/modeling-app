@@ -41,8 +41,8 @@ function CommandBarSelectionInput({
       ? arg.required(commandBarState.context)
       : arg.required
   const canSubmitSelection = useMemo<boolean>(
-    () => !isArgRequired || canSubmitSelectionArg(selectionsByType, arg),
-    [selectionsByType, arg, isArgRequired]
+    () => canSubmitSelectionArg(selectionsByType, arg),
+    [selectionsByType, arg]
   )
 
   useEffect(() => {

@@ -203,9 +203,7 @@ export function deferExecution<T>(func: (args: T) => any, wait: number) {
  */
 export function toSync<F extends AsyncFn<F>>(
   fn: F,
-  onReject: (
-    reason: any
-  ) => void | PromiseLike<void | null | undefined> | null | undefined
+  onReject: (reason: any) => PromiseLike<null | undefined> | null | undefined
 ): (...args: Parameters<F>) => void {
   return (...args: Parameters<F>) => {
     void fn(...args).catch((...args) => {
