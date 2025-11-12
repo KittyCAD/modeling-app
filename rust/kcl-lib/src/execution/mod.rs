@@ -42,6 +42,9 @@ use crate::{
     parsing::ast::types::{Expr, ImportPath, NodeRef},
 };
 
+#[cfg(feature = "artifact-graph")]
+use crate::parsing::ast::types::{Node, Program};
+
 pub(crate) mod annotations;
 #[cfg(feature = "artifact-graph")]
 mod artifact;
@@ -97,6 +100,30 @@ pub struct DefaultPlanes {
     pub neg_xy: uuid::Uuid,
     pub neg_xz: uuid::Uuid,
     pub neg_yz: uuid::Uuid,
+}
+
+/// Provides project-wide access to cloned module ASTs for resolving node paths.
+#[cfg(feature = "artifact-graph")]
+pub struct ProjectProgramLookup {
+    programs: IndexMap<ModuleId, Node<Program>>,
+}
+
+#[cfg(feature = "artifact-graph")]
+impl ProjectProgramLookup {
+    pub fn new(main_program: &Node<Program>, module_infos: &state::ModuleInfoMap) -> Self {
+        let mut programs = IndexMap::new();
+        programs.insert(main_program.module_id, main_program.clone());
+        for (id, info) in module_infos {
+            if let ModuleRepr::Kcl(program, _) = &info.repr {
+                programs.entry(*id).or_insert_with(|| program.clone());
+            }
+        }
+        Self { programs }
+    }
+
+    pub fn program_for_module(&self, module_id: ModuleId) -> Option<&Node<Program>> {
+        self.programs.get(&module_id)
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS)]
@@ -1188,6 +1215,7 @@ impl ExecutorContext {
         #[cfg(feature = "artifact-graph")]
         {
             // Fill in NodePath for operations.
+            let lookup = ProjectProgramLookup::new(program, &exec_state.global.module_infos);
             let cached_body_items = exec_state.global.artifacts.cached_body_items();
             for op in exec_state
                 .global
@@ -1196,12 +1224,12 @@ impl ExecutorContext {
                 .iter_mut()
                 .skip(start_op)
             {
-                op.fill_node_paths(program, cached_body_items);
+                op.fill_node_paths(&lookup, cached_body_items);
             }
             for module in exec_state.global.module_infos.values_mut() {
                 if let ModuleRepr::Kcl(_, Some(outcome)) = &mut module.repr {
                     for op in &mut outcome.artifacts.operations {
-                        op.fill_node_paths(program, cached_body_items);
+                        op.fill_node_paths(&lookup, cached_body_items);
                     }
                 }
             }

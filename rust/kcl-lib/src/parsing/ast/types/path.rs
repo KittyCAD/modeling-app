@@ -2,6 +2,8 @@ use serde::Serialize;
 
 use super::{BodyItem, Expr, Node, Program};
 use crate::SourceRange;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ProjectProgramLookup;
 
 /// A traversal path through the AST to a node.
 ///
@@ -69,16 +71,27 @@ impl NodePath {
     }
 
     #[cfg(feature = "artifact-graph")]
-    pub(crate) fn fill_placeholder(&mut self, program: &Node<Program>, cached_body_items: usize, range: SourceRange) {
+    pub(crate) fn fill_placeholder(
+        &mut self,
+        programs: &ProjectProgramLookup,
+        cached_body_items: usize,
+        range: SourceRange,
+    ) {
         if !self.is_empty() {
             return;
         }
-        *self = Self::from_range(program, cached_body_items, range).unwrap_or_default();
+
+        *self = programs
+            .program_for_module(range.module_id())
+            .and_then(|program| Self::from_range(program, cached_body_items, range))
+            .unwrap_or_default();
     }
 
     /// Given a program and a [`SourceRange`], return the path to the node that
     /// contains the range.
     pub(crate) fn from_range(program: &Node<Program>, cached_body_items: usize, range: SourceRange) -> Option<Self> {
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::log_1(&format!("range: {range:?}, this program's module ID: {}", program.module_id).into());
         Self::from_body(&program.body, cached_body_items, range, NodePath::default())
     }
 
