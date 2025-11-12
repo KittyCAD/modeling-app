@@ -73,9 +73,13 @@ pub(crate) async fn inner_union(
     };
 
     // If we have more solids, set those as well.
-    if !extra_solid_ids.is_empty() {
-        solid.set_id(extra_solid_ids[0]);
-        new_solids.push(solid.clone());
+    for extra_solid_id in extra_solid_ids {
+        if extra_solid_id == solid_out_id {
+            continue;
+        }
+        let mut new_solid = solid.clone();
+        new_solid.set_id(extra_solid_id);
+        new_solids.push(new_solid);
     }
 
     Ok(new_solids)
@@ -138,9 +142,13 @@ pub(crate) async fn inner_intersect(
     };
 
     // If we have more solids, set those as well.
-    if !extra_solid_ids.is_empty() {
-        solid.set_id(extra_solid_ids[0]);
-        new_solids.push(solid.clone());
+    for extra_solid_id in extra_solid_ids {
+        if extra_solid_id == solid_out_id {
+            continue;
+        }
+        let mut new_solid = solid.clone();
+        new_solid.set_id(extra_solid_id);
+        new_solids.push(new_solid);
     }
 
     Ok(new_solids)
@@ -202,9 +210,13 @@ pub(crate) async fn inner_subtract(
     };
 
     // If we have more solids, set those as well.
-    if !extra_solid_ids.is_empty() {
-        solid.set_id(extra_solid_ids[0]);
-        new_solids.push(solid.clone());
+    for extra_solid_id in extra_solid_ids {
+        if extra_solid_id == solid_out_id {
+            continue;
+        }
+        let mut new_solid = solid.clone();
+        new_solid.set_id(extra_solid_id);
+        new_solids.push(new_solid);
     }
 
     Ok(new_solids)
