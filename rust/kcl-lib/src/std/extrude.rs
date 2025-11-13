@@ -443,12 +443,14 @@ pub(crate) async fn do_post_extrude<'a>(
     } = analyze_faces(exec_state, args, face_infos).await;
 
     // If this is a clone, we will use the clone_id_map to map the face info from the original sketch to the clone sketch.
-    if sketch.clone.is_some() && clone_id_map.is_some() {
+    if sketch.clone.is_some()
+        && let Some(clone_id_map) = clone_id_map
+    {
         face_id_map = face_id_map
             .into_iter()
             .filter_map(|(k, v)| {
-                let fe_key = clone_id_map?.get(&k)?;
-                let fe_value = clone_id_map?.get(&(v?)).copied();
+                let fe_key = clone_id_map.get(&k)?;
+                let fe_value = clone_id_map.get(&(v?)).copied();
                 Some((*fe_key, fe_value))
             })
             .collect::<HashMap<Uuid, Option<Uuid>>>();
