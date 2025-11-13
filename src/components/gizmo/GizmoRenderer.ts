@@ -82,28 +82,28 @@ export default class GizmoRenderer {
     this.scene.add(ambient)
 
     this.materials = {
-      light: {
+      dark: {
         edge: this.createMaterial(0x363837),
         edge_hover: this.createMaterial(0xe2e3de),
         face: this.createMaterial(
           0x363837,
-          `${GIZMO_ASSETS_BASE}/labels_light.png`
+          `${GIZMO_ASSETS_BASE}/labels_dark.png`
         ),
         face_hover: this.createMaterial(
           0xe2e3de,
-          `${GIZMO_ASSETS_BASE}/labels_light_hover.png`
+          `${GIZMO_ASSETS_BASE}/labels_dark_hover.png`
         ),
       },
-      dark: {
+      light: {
         edge: this.createMaterial(0xe2e3de),
         edge_hover: this.createMaterial(0x363837),
         face: this.createMaterial(
           0xe2e3de,
-          `${GIZMO_ASSETS_BASE}/labels_dark.png`
+          `${GIZMO_ASSETS_BASE}/labels_light.png`
         ),
         face_hover: this.createMaterial(
           0x363837,
-          `${GIZMO_ASSETS_BASE}/labels_dark_hover.png`
+          `${GIZMO_ASSETS_BASE}/labels_light_hover.png`
         ),
       },
     }
@@ -138,7 +138,6 @@ export default class GizmoRenderer {
   }
 
   public setTheme(theme: 'light' | 'dark') {
-    theme = theme === 'light' ? 'dark' : 'light'
     if (this.theme !== theme) {
       this.theme = theme
       this.updateModel()
