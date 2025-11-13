@@ -65,7 +65,6 @@ import {
 } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
-import Tooltip from '@src/components/Tooltip'
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
