@@ -111,17 +111,21 @@ pub struct ProjectProgramLookup {
 #[cfg(feature = "artifact-graph")]
 impl ProjectProgramLookup {
     pub fn new(main_program: &Node<Program>, module_infos: &state::ModuleInfoMap) -> Self {
-        let mut programs = IndexMap::new();
-        programs.insert(main_program.module_id, main_program.clone());
+        let mut programs = IndexMap::with_capacity(module_infos.len());
         for (id, info) in module_infos {
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("ProjectProgramLookup module {}: {:?}", id.as_usize(), info.path).into());
             if let ModuleRepr::Kcl(program, _) = &info.repr {
-                programs.entry(*id).or_insert_with(|| program.clone());
+                programs.insert(*id, program.to_owned());
             }
         }
         Self { programs }
     }
 
     pub fn program_for_module(&self, module_id: ModuleId) -> Option<&Node<Program>> {
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::log_1(&format!("Looking up module ID {}", module_id.as_usize()).into());
+
         self.programs.get(&module_id)
     }
 }
