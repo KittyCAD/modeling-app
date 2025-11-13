@@ -482,11 +482,12 @@ function orientationQuaternionForName(name: string): Quaternion | null {
 
   const distance = 1
   const eye = target.clone().add(dir.clone().multiplyScalar(distance))
-  const up = name === 'face_top'
-    ? new Vector3(0, 1, 0)
-    : name === 'face_bottom'
-      ? new Vector3(0, -1, 0)
-      : defaultUp
+  const up =
+    name === 'face_top'
+      ? new Vector3(0, 1, 0)
+      : name === 'face_bottom'
+        ? new Vector3(0, -1, 0)
+        : defaultUp
   const m = new Matrix4().lookAt(eye, target, up)
   return q.setFromRotationMatrix(m)
 }
