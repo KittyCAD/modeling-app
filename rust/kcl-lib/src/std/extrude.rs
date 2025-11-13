@@ -456,20 +456,11 @@ pub(crate) async fn do_post_extrude<'a>(
 
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let no_engine_commands = args.ctx.no_engine_commands().await;
-    println!("is sketch clone? {:?}", sketch.clone.is_some());
-    println!("clone_id_map: {:?}", clone_id_map);
-    println!("face_id_map: {:?}", face_id_map);
     let mut new_value: Vec<ExtrudeSurface> = Vec::with_capacity(sketch.paths.len() + sketch.inner_paths.len() + 2);
     let outer_surfaces = sketch.paths.iter().flat_map(|path| {
         if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
-            println!(
-                "found it before clone check for path ID {:?} with actual_face_id {:?}",
-                path.get_base().geo_meta.id,
-                actual_face_id
-            );
             surface_of(path, *actual_face_id)
         } else if no_engine_commands {
-            println!("checking clone map for path ID1 {:?}", path.get_base().geo_meta.id);
             crate::log::logln!(
                 "No face ID found for path ID {:?}, but in no-engine-commands mode, so faking it",
                 path.get_base().geo_meta.id
@@ -479,27 +470,11 @@ pub(crate) async fn do_post_extrude<'a>(
         } else if sketch.clone.is_some()
             && let Some(clone_map) = clone_id_map
         {
-            println!(
-                "No face ID found for path ID {:?}, but sketch is a clone, so looking up the clone path ID",
-                path.get_base().geo_meta.id
-            );
             let new_path = clone_map.get(&(path.get_base().geo_meta.id));
-            println!("new_path: {:?}", new_path);
-            println!(
-                "Found clone path ID {:?} for original path ID {:?}",
-                new_path,
-                path.get_base().geo_meta.id
-            );
 
             if let Some(new_path) = new_path {
                 match face_id_map.get(new_path) {
-                    Some(Some(actual_face_id)) => {
-                        println!(
-                            "found actual_face_id {:?} for clone path ID {:?}",
-                            actual_face_id, new_path
-                        );
-                        clone_surface_of(path, *new_path, *actual_face_id)
-                    }
+                    Some(Some(actual_face_id)) => clone_surface_of(path, *new_path, *actual_face_id),
                     _ => {
                         let actual_face_id = face_id_map.iter().find_map(|(key, value)| {
                             if let Some(value) = value {
@@ -509,13 +484,7 @@ pub(crate) async fn do_post_extrude<'a>(
                             }
                         });
                         match actual_face_id {
-                            Some(actual_face_id) => {
-                                println!(
-                                    "found actual_face_id {:?} for clone path ID {:?} by searching",
-                                    actual_face_id, new_path
-                                );
-                                clone_surface_of(path, *new_path, *actual_face_id)
-                            }
+                            Some(actual_face_id) => clone_surface_of(path, *new_path, *actual_face_id),
                             None => {
                                 crate::log::logln!("No face ID found for clone path ID {:?}, so skipping it", new_path);
                                 None
@@ -527,7 +496,6 @@ pub(crate) async fn do_post_extrude<'a>(
                 None
             }
         } else {
-            println!("checking clone map for path ID2 {:?}", path.get_base().geo_meta.id);
             crate::log::logln!(
                 "No face ID found for path ID {:?}, and not in no-engine-commands mode, so skipping it",
                 path.get_base().geo_meta.id
