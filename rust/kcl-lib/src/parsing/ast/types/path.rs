@@ -1,9 +1,9 @@
 use serde::Serialize;
 
-use super::{BodyItem, Expr};
-use crate::SourceRange;
 #[cfg(feature = "artifact-graph")]
-use crate::execution::ProgramLookup;
+use super::{BodyItem, Expr};
+#[cfg(feature = "artifact-graph")]
+use crate::{SourceRange, execution::ProgramLookup};
 
 /// A traversal path through the AST to a node.
 ///
@@ -80,6 +80,7 @@ impl NodePath {
 
     /// Given a program and a [`SourceRange`], return the path to the node that
     /// contains the range.
+    #[cfg(feature = "artifact-graph")]
     pub(crate) fn from_range(
         programs: &crate::execution::ProgramLookup,
         cached_body_items: usize,
@@ -89,6 +90,7 @@ impl NodePath {
         Self::from_body(&program.body, cached_body_items, range, NodePath::default())
     }
 
+    #[cfg(feature = "artifact-graph")]
     fn from_body(
         body: &[BodyItem],
         cached_body_items: usize,
@@ -107,6 +109,7 @@ impl NodePath {
         None
     }
 
+    #[cfg(feature = "artifact-graph")]
     fn from_body_item(body_item: &BodyItem, range: SourceRange, mut path: NodePath) -> Option<NodePath> {
         match body_item {
             BodyItem::ImportStatement(node) => match &node.selector {
@@ -160,6 +163,7 @@ impl NodePath {
         Some(path)
     }
 
+    #[cfg(feature = "artifact-graph")]
     fn from_expr(expr: &Expr, range: SourceRange, mut path: NodePath) -> Option<NodePath> {
         match expr {
             Expr::Literal(node) => {
@@ -355,12 +359,13 @@ impl NodePath {
         self.steps.is_empty()
     }
 
+    #[cfg(feature = "artifact-graph")]
     fn push(&mut self, step: Step) {
         self.steps.push(step);
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "artifact-graph"))]
 mod tests {
     use super::*;
     use crate::ModuleId;

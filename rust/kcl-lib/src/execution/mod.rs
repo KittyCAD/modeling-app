@@ -1442,19 +1442,12 @@ pub(crate) struct ExecTestResults {
 /// There are several places where we want to traverse a KCL program or find a symbol in it,
 /// but because KCL modules can import each other, we need to traverse multiple programs.
 /// This stores multiple programs, keyed by their module ID for quick access.
+#[cfg(feature = "artifact-graph")]
 pub struct ProgramLookup {
     programs: IndexMap<ModuleId, crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>>,
 }
 
-#[cfg(not(feature = "artifact-graph"))]
-impl Default for ProgramLookup {
-    fn default() -> Self {
-        Self {
-            programs: IndexMap::new(),
-        }
-    }
-}
-
+#[cfg(feature = "artifact-graph")]
 impl ProgramLookup {
     // TODO: Could this store a reference to KCL programs instead of owning them?
     // i.e. take &state::ModuleInfoMap instead?
