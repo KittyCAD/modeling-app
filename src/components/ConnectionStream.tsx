@@ -37,7 +37,6 @@ import type { IndexLoaderData } from '@src/lib/types'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { saveToRecentProjects } from '@src/lib/recentProjects'
 
 export const ConnectionStream = (props: {
   pool: string | null
@@ -151,11 +150,6 @@ export const ConnectionStream = (props: {
         setShowManualConnect,
       })
         .then(() => {
-          console.log(
-            'project.path, settings.meta.id.current',
-            project?.path,
-            settings.meta.id.current
-          )
           if (
             project &&
             project.path &&
@@ -163,15 +157,12 @@ export const ConnectionStream = (props: {
             settings.meta.id.current !== uuidNIL
           ) {
             // Take a screen shot after the page mounts and zoom to fit runs, and save to recent projects
-            Promise.all([
-              createThumbnailPNGOnDesktop({
-                id: settings.meta.id.current,
-                projectDirectoryWithoutEndingSlash: project.path,
-              }),
-              saveToRecentProjects(project.path, settings.meta.id.current),
-            ]).catch(reportRejection)
+            createThumbnailPNGOnDesktop({
+              id: settings.meta.id.current,
+              projectDirectoryWithoutEndingSlash: project.path,
+            }).catch(reportRejection)
           } else {
-            console.warn(
+            console.log(
               'Cannot save to recent projects or create thumbnail: missing project or settings meta id'
             )
           }

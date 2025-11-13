@@ -70,6 +70,7 @@ export async function createThumbnailPNGOnDesktop({
 
     const thumbnailsDir = await getProjectThumbnailsPath(electron)
     const filePath = electron.path.join(thumbnailsDir, `${id}.png`)
+    console.log('Writing thumbnail to', filePath)
     await writeProjectThumbnailFile(electron, dataUrl, filePath)
 
     // TODO: remove once we're retiring the old thumbnail.png
@@ -77,6 +78,7 @@ export async function createThumbnailPNGOnDesktop({
       projectDirectoryWithoutEndingSlash,
       PROJECT_IMAGE_NAME
     )
+    console.log('Writing thumbnail to', oldThumbnailPath)
     await writeProjectThumbnailFile(electron, dataUrl, oldThumbnailPath)
   } catch (e) {
     console.error(`Failed to generate thumbnail`, e)
