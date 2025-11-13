@@ -1505,6 +1505,44 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditGdtDatum: PrepareToEditCallback = async ({ operation }) => {
+  const baseCommand = {
+    name: 'GDT Datum',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const faceArg = operation.labeledArgs?.['face']
+  if (!faceArg || !faceArg.sourceRange) {
+    return { reason: 'Missing or invalid face argument' }
+  }
+
+  // Extract face selections (datum uses single face)
+  const graphSelections = extractFaceSelections(faceArg)
+  if ('error' in graphSelections) {
+    return { reason: graphSelections.error }
+  }
+
+  const faces = { graphSelections, otherSelections: [] }
+
+  // Extract name argument as a plain string (strip quotes if present)
+  const nameRaw = extractStringArgument(operation, 'name')
+  const name = nameRaw?.replace(/^["']|["']$/g, '') || ''
+
+  const argDefaultValues: ModelingCommandSchema['GDT Datum'] = {
+    faces,
+    name,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 /**
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
@@ -1547,6 +1585,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   'gdt::datum': {
     label: 'Datum',
     icon: 'gdtDatum',
+    prepareToEdit: prepareToEditGdtDatum,
   },
   'gdt::flatness': {
     label: 'Flatness',
