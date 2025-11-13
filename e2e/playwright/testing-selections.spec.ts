@@ -262,13 +262,7 @@ test.describe('Testing selections', () => {
     await expect(toolbar.startSketchBtn).toBeVisible()
 
     // click on "Start Sketch" button
-    await u.clearCommandLogs()
-    await u.doAndWaitForImageDiff(() => toolbar.startSketchBtn.click(), 200)
-
-    // Clicks the XZ Plane
-    await toolbar.openFeatureTreePane()
-    await page.getByRole('button', { name: 'Front plane' }).click()
-    await toolbar.closeFeatureTreePane()
+    await toolbar.startSketchOnDefaultPlane('Front plane')
 
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`
