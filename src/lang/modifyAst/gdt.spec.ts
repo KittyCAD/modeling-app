@@ -648,5 +648,40 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Verify GDT datum annotation was added for chamfer
       expect(newCode).toContain('gdt::datum(face = seg02, name = "D")')
     })
+
+    it('should fail when selecting multiple faces', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const faces = getWallsFromBox(artifactGraph, 2)
+      const name = 'A'
+      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
+      const result = addDatumGdt({ ast, artifactGraph, faces, name })
+
+      expect(err(result)).toBeTruthy()
+      if (!err(result))
+        throw new Error('Should have failed with multiple faces')
+      expect(result.message).toContain(
+        'Datum annotation requires exactly one face'
+      )
+    })
+
+    it('should fail when selecting no faces', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const faces: Selections = { graphSelections: [], otherSelections: [] }
+      const name = 'A'
+      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
+      const result = addDatumGdt({ ast, artifactGraph, faces, name })
+
+      expect(err(result)).toBeTruthy()
+      if (!err(result)) throw new Error('Should have failed with no faces')
+      expect(result.message).toContain('No face selected for datum annotation')
+    })
   })
 })
