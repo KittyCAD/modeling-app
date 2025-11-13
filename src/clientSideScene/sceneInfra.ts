@@ -83,6 +83,19 @@ export interface OnMoveCallbackArgs {
   selected?: Object3D<Object3DEventMap>
 }
 
+export interface OnAreaSelectCallbackArgs {
+  mouseEvent: MouseEvent
+  startPoint: {
+    twoD: Vector2
+    threeD: Vector3
+  }
+  currentPoint: {
+    twoD: Vector2
+    threeD: Vector3
+  }
+  intersects: Intersection<Object3D<Object3DEventMap>>[]
+}
+
 // This singleton class is responsible for all of the under the hood setup for the client side scene.
 // That is the cameras and switching between them, raycasters for click mouse events and their abstractions (onClick etc), setting up controls.
 // Anything that added the the scene for the user to interact with is probably in SceneEntities.ts
@@ -107,6 +120,10 @@ export class SceneInfra {
   onClickCallback: (arg: OnClickCallbackArgs) => Voidish = () => {}
   onMouseEnter: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
   onMouseLeave: (arg: OnMouseEnterLeaveArgs) => Voidish = () => {}
+  onAreaSelectStartCallback: (arg: OnAreaSelectCallbackArgs) => Voidish =
+    () => {}
+  onAreaSelectCallback: (arg: OnAreaSelectCallbackArgs) => Voidish = () => {}
+  onAreaSelectEndCallback: (arg: OnAreaSelectCallbackArgs) => Voidish = () => {}
   setCallbacks = (callbacks: {
     onDragStart?: (arg: OnDragCallbackArgs) => Voidish
     onDragEnd?: (arg: OnDragCallbackArgs) => Voidish
@@ -115,6 +132,9 @@ export class SceneInfra {
     onClick?: (arg: OnClickCallbackArgs) => Voidish
     onMouseEnter?: (arg: OnMouseEnterLeaveArgs) => Voidish
     onMouseLeave?: (arg: OnMouseEnterLeaveArgs) => Voidish
+    onAreaSelectStart?: (arg: OnAreaSelectCallbackArgs) => Voidish
+    onAreaSelect?: (arg: OnAreaSelectCallbackArgs) => Voidish
+    onAreaSelectEnd?: (arg: OnAreaSelectCallbackArgs) => Voidish
   }) => {
     this.onDragStartCallback = callbacks.onDragStart || this.onDragStartCallback
     this.onDragEndCallback = callbacks.onDragEnd || this.onDragEndCallback
@@ -123,6 +143,12 @@ export class SceneInfra {
     this.onClickCallback = callbacks.onClick || this.onClickCallback
     this.onMouseEnter = callbacks.onMouseEnter || this.onMouseEnter
     this.onMouseLeave = callbacks.onMouseLeave || this.onMouseLeave
+    this.onAreaSelectStartCallback =
+      callbacks.onAreaSelectStart || this.onAreaSelectStartCallback
+    this.onAreaSelectCallback =
+      callbacks.onAreaSelect || this.onAreaSelectCallback
+    this.onAreaSelectEndCallback =
+      callbacks.onAreaSelectEnd || this.onAreaSelectEndCallback
     this.selected = null // following selections between callbacks being set is too tricky
   }
 
@@ -175,6 +201,9 @@ export class SceneInfra {
       onClick: () => {},
       onMouseEnter: () => {},
       onMouseLeave: () => {},
+      onAreaSelectStart: () => {},
+      onAreaSelect: () => {},
+      onAreaSelectEnd: () => {},
     })
   }
 
@@ -283,6 +312,14 @@ export class SceneInfra {
   selected: {
     mouseDownVector: Vector2
     object: Object3D<Object3DEventMap>
+    hasBeenDragged: boolean
+  } | null = null
+  areaSelect: {
+    mouseDownVector: Vector2
+    startPoint: {
+      twoD: Vector2
+      threeD: Vector3
+    }
     hasBeenDragged: boolean
   } | null = null
   private isRenderingPaused = false
@@ -539,6 +576,48 @@ export class SceneInfra {
           on: selected.object,
         })
       }
+    } else if (this.areaSelect) {
+      // Handle area select drag
+      const hasBeenDragged = !vec2WithinDistance(
+        this.ndc2screenSpace(this.currentMouseVector),
+        this.ndc2screenSpace(this.areaSelect.mouseDownVector),
+        10 // Drag threshold in pixels
+      )
+      if (!this.areaSelect.hasBeenDragged && hasBeenDragged) {
+        this.areaSelect.hasBeenDragged = true
+        // Fire onAreaSelectStart event when drag threshold is first exceeded
+        if (
+          planeIntersectPoint &&
+          planeIntersectPoint.twoD &&
+          planeIntersectPoint.threeD
+        ) {
+          await this.onAreaSelectStartCallback({
+            mouseEvent,
+            startPoint: this.areaSelect.startPoint,
+            currentPoint: {
+              twoD: planeIntersectPoint.twoD,
+              threeD: planeIntersectPoint.threeD,
+            },
+            intersects,
+          })
+        }
+      }
+      if (
+        this.areaSelect.hasBeenDragged &&
+        planeIntersectPoint &&
+        planeIntersectPoint.twoD &&
+        planeIntersectPoint.threeD
+      ) {
+        await this.onAreaSelectCallback({
+          mouseEvent,
+          startPoint: this.areaSelect.startPoint,
+          currentPoint: {
+            twoD: planeIntersectPoint.twoD,
+            threeD: planeIntersectPoint.threeD,
+          },
+          intersects,
+        })
+      }
     } else if (
       planeIntersectPoint &&
       planeIntersectPoint.twoD &&
@@ -773,6 +852,25 @@ export class SceneInfra {
           }
         : null
     }
+
+    // If nothing was selected, initialize area select
+    if (!this.selected) {
+      const planeIntersectPoint = this.getPlaneIntersectPoint()
+      if (
+        planeIntersectPoint &&
+        planeIntersectPoint.twoD &&
+        planeIntersectPoint.threeD
+      ) {
+        this.areaSelect = {
+          mouseDownVector,
+          startPoint: {
+            twoD: planeIntersectPoint.twoD.clone(),
+            threeD: planeIntersectPoint.threeD.clone(),
+          },
+          hasBeenDragged: false,
+        }
+      }
+    }
   }
 
   onMouseUp = async (mouseEvent: MouseEvent) => {
@@ -823,6 +921,42 @@ export class SceneInfra {
       }
       // Clear the selected state whether it was dragged or not
       this.selected = null
+    } else if (this.areaSelect) {
+      // Handle area select end
+      if (this.areaSelect.hasBeenDragged) {
+        // Fire onAreaSelectEnd callback
+        if (
+          planeIntersectPoint &&
+          planeIntersectPoint.twoD &&
+          planeIntersectPoint.threeD
+        ) {
+          await this.onAreaSelectEndCallback({
+            mouseEvent,
+            startPoint: this.areaSelect.startPoint,
+            currentPoint: {
+              twoD: planeIntersectPoint.twoD,
+              threeD: planeIntersectPoint.threeD,
+            },
+            intersects,
+          })
+        }
+      } else {
+        // If area select didn't drag, treat as a click on empty space
+        if (planeIntersectPoint?.twoD && planeIntersectPoint?.threeD) {
+          await this.onClickCallback({
+            mouseEvent,
+            intersectionPoint: {
+              twoD: planeIntersectPoint.twoD,
+              threeD: planeIntersectPoint.threeD,
+            },
+            intersects,
+          })
+        } else {
+          await this.onClickCallback({ mouseEvent, intersects })
+        }
+      }
+      // Clear the area select state
+      this.areaSelect = null
     } else if (planeIntersectPoint?.twoD && planeIntersectPoint?.threeD) {
       await this.onClickCallback({
         mouseEvent,

@@ -31,7 +31,17 @@ import {
   segmentUtilsMap,
   updateLineSegmentHover,
 } from '@src/machines/sketchSolve/segments'
-import { Group, Mesh, OrthographicCamera, Vector2 } from 'three'
+import type { Object3D } from 'three'
+import {
+  Box3,
+  ExtrudeGeometry,
+  Group,
+  Mesh,
+  OrthographicCamera,
+  Vector2,
+  Vector3,
+} from 'three'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { orthoScale } from '@src/clientSideScene/helpers'
 import {
   getParentGroup,
@@ -357,7 +367,10 @@ export type SketchSolveMachineEvent =
         | 'Horizontal'
         | 'Parallel'
     }
-  | { type: 'update selected ids'; data: { selectedIds?: Array<number> } }
+  | {
+      type: 'update selected ids'
+      data: { selectedIds?: Array<number>; duringAreaSelectIds?: Array<number> }
+    }
   | { type: typeof CHILD_TOOL_DONE_EVENT }
   | {
       type: 'update sketch outcome'
@@ -371,6 +384,7 @@ type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
   pendingToolName?: EquipTool
   selectedIds: Array<number>
+  duringAreaSelectIds: Array<number>
   sketchExecOutcome?: {
     kclSource: SourceDelta
     sceneGraphDelta: SceneGraphDelta
@@ -415,6 +429,7 @@ export const sketchSolveMachine = setup({
       let lastHoveredMesh: Mesh | null = null
       let lastSuccessfulDragFromPoint = new Vector2()
       let draggingPointElement: HTMLElement | null = null
+      let isAreaSelectActive = false
 
       /**
        * Helper function to find the CSS2DObject element for visual feedback
@@ -432,6 +447,447 @@ export const sketchSolveMachine = setup({
           }
         }
         return null
+      }
+
+      // Selection box visual element
+      let selectionBoxObject: CSS2DObject | null = null
+      let selectionBoxGroup: Group | null = null
+
+      /**
+       * Helper function to create or update the selection box visual
+       * Uses 3D coordinates and projects to screen space for accurate sizing
+       */
+      function updateSelectionBox(
+        startPoint3D: Vector3,
+        currentPoint3D: Vector3
+      ): void {
+        const camera = context.sceneInfra.camControls.camera
+        const renderer = context.sceneInfra.renderer
+
+        // Project 3D coordinates to screen space (NDC)
+        const startScreen = startPoint3D.clone().project(camera)
+        const currentScreen = currentPoint3D.clone().project(camera)
+
+        // Convert NDC to screen pixels
+        // Use client size (CSS pixels) not drawing buffer size (device pixels)
+        const viewportSize = new Vector2(
+          renderer.domElement.clientWidth,
+          renderer.domElement.clientHeight
+        )
+        const startPx = new Vector2(
+          ((startScreen.x + 1) / 2) * viewportSize.x,
+          ((1 - startScreen.y) / 2) * viewportSize.y
+        )
+        const currentPx = new Vector2(
+          ((currentScreen.x + 1) / 2) * viewportSize.x,
+          ((1 - currentScreen.y) / 2) * viewportSize.y
+        )
+
+        // Calculate box dimensions in screen pixels
+        const boxMinPx = new Vector2(
+          Math.min(startPx.x, currentPx.x),
+          Math.min(startPx.y, currentPx.y)
+        )
+        const boxMaxPx = new Vector2(
+          Math.max(startPx.x, currentPx.x),
+          Math.max(startPx.y, currentPx.y)
+        )
+
+        const widthPx = boxMaxPx.x - boxMinPx.x
+        const heightPx = boxMaxPx.y - boxMinPx.y
+
+        // Determine selection direction:
+        // - L to R (dashed intersection box)
+        // - R to L (solid contains box)
+        const isIntersectionBox = startPx.x > currentPx.x
+        const borderStyle = isIntersectionBox ? 'dashed' : 'solid'
+
+        // Calculate center in 3D world space
+        const center3D = new Vector3()
+          .addVectors(startPoint3D, currentPoint3D)
+          .multiplyScalar(0.5)
+
+        // Get the sketch solve group to transform coordinates to its local space
+        const sketchSceneGroup =
+          context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+
+        if (!selectionBoxGroup) {
+          // Create the selection box group and CSS2DObject
+          selectionBoxGroup = new Group()
+          selectionBoxGroup.name = 'selectionBox'
+          selectionBoxGroup.userData.type = 'selectionBox'
+
+          // TODO configure to work with light mode too
+          const boxDiv = document.createElement('div')
+          boxDiv.style.position = 'absolute'
+          boxDiv.style.pointerEvents = 'none'
+          boxDiv.style.border = `1px ${borderStyle} rgba(255, 255, 255, 0.5)`
+          boxDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
+          boxDiv.style.transform = 'translate(-50%, -50%)'
+          boxDiv.style.boxSizing = 'border-box'
+
+          selectionBoxObject = new CSS2DObject(boxDiv)
+          selectionBoxObject.userData.type = 'selectionBox'
+          selectionBoxGroup.add(selectionBoxObject)
+
+          // Add to sketch solve group (will inherit its rotation)
+          if (sketchSceneGroup) {
+            sketchSceneGroup.add(selectionBoxGroup)
+            selectionBoxGroup.layers.set(SKETCH_LAYER)
+            selectionBoxObject.layers.set(SKETCH_LAYER)
+          }
+        }
+
+        if (
+          selectionBoxObject &&
+          selectionBoxObject.element instanceof HTMLElement
+        ) {
+          // Transform center position to sketch solve group's local space
+          // Since the selection box group is a child of the rotated sketch solve group,
+          // we need to position the CSS2DObject in the sketch solve group's local space
+          const localCenter = new Vector3()
+          if (sketchSceneGroup) {
+            // Transform world position to local space of sketch solve group
+            sketchSceneGroup.worldToLocal(localCenter.copy(center3D))
+          } else {
+            localCenter.copy(center3D)
+          }
+          selectionBoxObject.position.copy(localCenter)
+
+          // Size in CSS pixels (already calculated from screen projection)
+          const boxDiv = selectionBoxObject.element
+          boxDiv.style.width = `${widthPx}px`
+          boxDiv.style.height = `${heightPx}px`
+
+          // Update border style based on selection direction
+          boxDiv.style.border = `1px ${borderStyle} rgba(255, 255, 255, 0.5)`
+        }
+      }
+
+      /**
+       * Helper function to remove the selection box visual
+       */
+      function removeSelectionBox(): void {
+        if (selectionBoxGroup) {
+          selectionBoxGroup.removeFromParent()
+          if (selectionBoxObject?.element instanceof HTMLElement) {
+            selectionBoxObject.element.remove()
+          }
+          selectionBoxGroup = null
+          selectionBoxObject = null
+        }
+      }
+
+      /**
+       * Helper function to find segments (line segments and point segments) contained within the selection box
+       * Uses screen-space projection to check if segments are within the box
+       */
+      function findContainedSegments(
+        startPoint3D: Vector3,
+        currentPoint3D: Vector3,
+        boxMinPx: Vector2,
+        boxMaxPx: Vector2
+      ): Array<number> {
+        const camera = context.sceneInfra.camControls.camera
+        const renderer = context.sceneInfra.renderer
+        const sketchSegments =
+          context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+        if (!sketchSegments) {
+          return []
+        }
+
+        // Get scene graph objects to check point ownership
+        const snapshot = self.getSnapshot()
+        const sceneGraphDelta =
+          snapshot.context.sketchExecOutcome?.sceneGraphDelta
+        const objects = sceneGraphDelta?.new_graph.objects
+        if (!objects) {
+          return []
+        }
+
+        const containedIds: Array<number> = []
+        const viewportSize = new Vector2(
+          renderer.domElement.clientWidth,
+          renderer.domElement.clientHeight
+        )
+
+        // Traverse all groups in the sketch solve group
+        sketchSegments.traverse((child: Object3D) => {
+          if (!(child instanceof Group)) {
+            return
+          }
+
+          const segmentId = Number(child.name)
+          if (Number.isNaN(segmentId)) {
+            return
+          }
+
+          // Check if this group has a line segment mesh
+          const lineMesh = child.children.find(
+            (c) =>
+              c instanceof Mesh && c.userData?.type === STRAIGHT_SEGMENT_BODY
+          ) as Mesh | undefined
+
+          if (lineMesh) {
+            // Handle line segment
+            const geometry = lineMesh.geometry
+            if (!(geometry instanceof ExtrudeGeometry)) {
+              return
+            }
+
+            // Get the bounding box of the mesh in world space
+            lineMesh.updateMatrixWorld()
+            const box = new Box3().setFromObject(lineMesh)
+
+            // Get the 8 corners of the bounding box
+            const min = box.min
+            const max = box.max
+
+            // Generate all 8 corners of the bounding box (already in world space)
+            const corners = [
+              new Vector3(min.x, min.y, min.z),
+              new Vector3(max.x, min.y, min.z),
+              new Vector3(min.x, max.y, min.z),
+              new Vector3(max.x, max.y, min.z),
+              new Vector3(min.x, min.y, max.z),
+              new Vector3(max.x, min.y, max.z),
+              new Vector3(min.x, max.y, max.z),
+              new Vector3(max.x, max.y, max.z),
+            ]
+
+            // Project to screen space
+            const screenCorners = corners.map((corner) => {
+              const projected = corner.clone().project(camera)
+              return new Vector2(
+                ((projected.x + 1) / 2) * viewportSize.x,
+                ((1 - projected.y) / 2) * viewportSize.y
+              )
+            })
+
+            // For "contains" selection, check if ALL corners are within the selection box
+            const allCornersContained = screenCorners.every((corner) => {
+              return (
+                corner.x >= boxMinPx.x &&
+                corner.x <= boxMaxPx.x &&
+                corner.y >= boxMinPx.y &&
+                corner.y <= boxMaxPx.y
+              )
+            })
+
+            if (allCornersContained) {
+              containedIds.push(segmentId)
+            }
+            return
+          }
+
+          // Check if this group has a CSS2DObject (point segment)
+          const css2dObject = child.children.find(
+            (c) => c instanceof CSS2DObject && c.userData?.type === 'handle'
+          ) as CSS2DObject | undefined
+
+          if (css2dObject) {
+            // Handle point segment - check if it has an owner (line endpoint)
+            const obj = objects[segmentId]
+            if (
+              obj?.kind?.type === 'Segment' &&
+              obj.kind.segment.type === 'Point'
+            ) {
+              // Skip if point has an owner (it's a line endpoint)
+              // Maybe we can enable these selection with a key modifier in the future
+              if (
+                obj.kind.segment.owner !== null &&
+                obj.kind.segment.owner !== undefined
+              ) {
+                return
+              }
+
+              // Get the world position of the CSS2DObject
+              css2dObject.updateMatrixWorld()
+              const worldPos = new Vector3()
+              css2dObject.getWorldPosition(worldPos)
+
+              // Project to screen space
+              const projected = worldPos.clone().project(camera)
+              const screenPos = new Vector2(
+                ((projected.x + 1) / 2) * viewportSize.x,
+                ((1 - projected.y) / 2) * viewportSize.y
+              )
+
+              // Check if the point is within the selection box
+              if (
+                screenPos.x >= boxMinPx.x &&
+                screenPos.x <= boxMaxPx.x &&
+                screenPos.y >= boxMinPx.y &&
+                screenPos.y <= boxMaxPx.y
+              ) {
+                containedIds.push(segmentId)
+              }
+            }
+          }
+        })
+
+        return containedIds
+      }
+
+      /**
+       * Helper function to find segments (line segments and point segments) that intersect with the selection box
+       * Uses screen-space projection to check if segments intersect the box
+       */
+      function findIntersectingSegments(
+        startPoint3D: Vector3,
+        currentPoint3D: Vector3,
+        boxMinPx: Vector2,
+        boxMaxPx: Vector2
+      ): Array<number> {
+        const camera = context.sceneInfra.camControls.camera
+        const renderer = context.sceneInfra.renderer
+        const sketchSegments =
+          context.sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
+        if (!sketchSegments) {
+          return []
+        }
+
+        // Get scene graph objects to check point ownership
+        const snapshot = self.getSnapshot()
+        const sceneGraphDelta =
+          snapshot.context.sketchExecOutcome?.sceneGraphDelta
+        const objects = sceneGraphDelta?.new_graph.objects
+        if (!objects) {
+          return []
+        }
+
+        const intersectingIds: Array<number> = []
+        const viewportSize = new Vector2(
+          renderer.domElement.clientWidth,
+          renderer.domElement.clientHeight
+        )
+
+        // Traverse all groups in the sketch solve group
+        sketchSegments.traverse((child: Object3D) => {
+          if (!(child instanceof Group)) {
+            return
+          }
+
+          const segmentId = Number(child.name)
+          if (Number.isNaN(segmentId)) {
+            return
+          }
+
+          // Check if this group has a line segment mesh
+          const lineMesh = child.children.find(
+            (c) =>
+              c instanceof Mesh && c.userData?.type === STRAIGHT_SEGMENT_BODY
+          ) as Mesh | undefined
+
+          if (lineMesh) {
+            // Handle line segment
+            const geometry = lineMesh.geometry
+            if (!(geometry instanceof ExtrudeGeometry)) {
+              return
+            }
+
+            // Get the bounding box of the mesh in world space
+            lineMesh.updateMatrixWorld()
+            const box = new Box3().setFromObject(lineMesh)
+
+            // Get the 8 corners of the bounding box
+            const min = box.min
+            const max = box.max
+
+            // Generate all 8 corners of the bounding box (already in world space)
+            const corners = [
+              new Vector3(min.x, min.y, min.z),
+              new Vector3(max.x, min.y, min.z),
+              new Vector3(min.x, max.y, min.z),
+              new Vector3(max.x, max.y, min.z),
+              new Vector3(min.x, min.y, max.z),
+              new Vector3(max.x, min.y, max.z),
+              new Vector3(min.x, max.y, max.z),
+              new Vector3(max.x, max.y, max.z),
+            ]
+
+            // Project to screen space
+            const screenCorners = corners.map((corner) => {
+              const projected = corner.clone().project(camera)
+              return new Vector2(
+                ((projected.x + 1) / 2) * viewportSize.x,
+                ((1 - projected.y) / 2) * viewportSize.y
+              )
+            })
+
+            // For "intersection" selection, check if the bounding box overlaps with the selection box
+            // Compute the bounding box of the line segment in screen space
+            const segmentMinPx = new Vector2(
+              Math.min(...screenCorners.map((c) => c.x)),
+              Math.min(...screenCorners.map((c) => c.y))
+            )
+            const segmentMaxPx = new Vector2(
+              Math.max(...screenCorners.map((c) => c.x)),
+              Math.max(...screenCorners.map((c) => c.y))
+            )
+
+            // Check if bounding boxes overlap (intersect)
+            // Two axis-aligned boxes intersect if:
+            // - segmentMinPx.x <= boxMaxPx.x AND segmentMaxPx.x >= boxMinPx.x AND
+            // - segmentMinPx.y <= boxMaxPx.y AND segmentMaxPx.y >= boxMinPx.y
+            const boxesIntersect =
+              segmentMinPx.x <= boxMaxPx.x &&
+              segmentMaxPx.x >= boxMinPx.x &&
+              segmentMinPx.y <= boxMaxPx.y &&
+              segmentMaxPx.y >= boxMinPx.y
+
+            if (boxesIntersect) {
+              intersectingIds.push(segmentId)
+            }
+            return
+          }
+
+          // Check if this group has a CSS2DObject (point segment)
+          const css2dObject = child.children.find(
+            (c) => c instanceof CSS2DObject && c.userData?.type === 'handle'
+          ) as CSS2DObject | undefined
+
+          if (css2dObject) {
+            // Handle point segment - check if it has an owner (line endpoint)
+            const obj = objects[segmentId]
+            if (
+              obj?.kind?.type === 'Segment' &&
+              obj.kind.segment.type === 'Point'
+            ) {
+              // Skip if point has an owner (it's a line endpoint)
+              if (
+                obj.kind.segment.owner !== null &&
+                obj.kind.segment.owner !== undefined
+              ) {
+                return
+              }
+
+              // Get the world position of the CSS2DObject
+              css2dObject.updateMatrixWorld()
+              const worldPos = new Vector3()
+              css2dObject.getWorldPosition(worldPos)
+
+              // Project to screen space
+              const projected = worldPos.clone().project(camera)
+              const screenPos = new Vector2(
+                ((projected.x + 1) / 2) * viewportSize.x,
+                ((1 - projected.y) / 2) * viewportSize.y
+              )
+
+              // Check if the point is within the selection box
+              if (
+                screenPos.x >= boxMinPx.x &&
+                screenPos.x <= boxMaxPx.x &&
+                screenPos.y >= boxMinPx.y &&
+                screenPos.y <= boxMaxPx.y
+              ) {
+                intersectingIds.push(segmentId)
+              }
+            }
+          }
+        })
+
+        return intersectingIds
       }
 
       context.sceneInfra.setCallbacks({
@@ -639,7 +1095,7 @@ export const sketchSolveMachine = setup({
             const newSelectedIds = [Number(group.name)]
             self.send({
               type: 'update selected ids',
-              data: { selectedIds: newSelectedIds },
+              data: { selectedIds: newSelectedIds, duringAreaSelectIds: [] },
             })
             return
           }
@@ -649,10 +1105,14 @@ export const sketchSolveMachine = setup({
           // with no group, it means we clicked on nothing
           self.send({
             type: 'update selected ids',
-            data: {},
+            data: { selectedIds: [], duringAreaSelectIds: [] },
           })
         },
         onMouseEnter: ({ selected }) => {
+          // Disable hover highlighting during area select
+          if (isAreaSelectActive) {
+            return
+          }
           if (!selected) return
           // Check if it's a line segment mesh
           const mesh = selected
@@ -661,17 +1121,33 @@ export const sketchSolveMachine = setup({
             mesh instanceof Mesh
           ) {
             const snapshot = self.getSnapshot()
-            const selectedIds = snapshot.context.selectedIds
-            updateLineSegmentHover(mesh, true, selectedIds)
+            // Combine selectedIds and duringAreaSelectIds for highlighting
+            const allSelectedIds = Array.from(
+              new Set([
+                ...snapshot.context.selectedIds,
+                ...snapshot.context.duringAreaSelectIds,
+              ])
+            )
+            updateLineSegmentHover(mesh, true, allSelectedIds)
             lastHoveredMesh = mesh
           }
         },
         onMouseLeave: ({ selected }) => {
+          // Disable hover highlighting during area select
+          if (isAreaSelectActive) {
+            return
+          }
           // Clear hover state for the previously hovered mesh
           if (lastHoveredMesh) {
             const snapshot = self.getSnapshot()
-            const selectedIds = snapshot.context.selectedIds
-            updateLineSegmentHover(lastHoveredMesh, false, selectedIds)
+            // Combine selectedIds and duringAreaSelectIds for highlighting
+            const allSelectedIds = Array.from(
+              new Set([
+                ...snapshot.context.selectedIds,
+                ...snapshot.context.duringAreaSelectIds,
+              ])
+            )
+            updateLineSegmentHover(lastHoveredMesh, false, allSelectedIds)
             lastHoveredMesh = null
           }
           // Also handle if selected is provided (for safety)
@@ -682,9 +1158,122 @@ export const sketchSolveMachine = setup({
               mesh instanceof Mesh
             ) {
               const snapshot = self.getSnapshot()
-              const selectedIds = snapshot.context.selectedIds
-              updateLineSegmentHover(mesh, false, selectedIds)
+              // Combine selectedIds and duringAreaSelectIds for highlighting
+              const allSelectedIds = Array.from(
+                new Set([
+                  ...snapshot.context.selectedIds,
+                  ...snapshot.context.duringAreaSelectIds,
+                ])
+              )
+              updateLineSegmentHover(mesh, false, allSelectedIds)
             }
+          }
+        },
+        onAreaSelectStart: ({ startPoint }) => {
+          // Area select started - create the selection box visual and clear any previous area select
+          isAreaSelectActive = true
+          if (startPoint.threeD) {
+            updateSelectionBox(startPoint.threeD, startPoint.threeD)
+            // Clear any previous duringAreaSelectIds
+            self.send({
+              type: 'update selected ids',
+              data: { duringAreaSelectIds: [] },
+            })
+          }
+        },
+        onAreaSelect: ({ startPoint, currentPoint }) => {
+          // Update selection box visual during drag
+          if (startPoint.threeD && currentPoint.threeD) {
+            updateSelectionBox(startPoint.threeD, currentPoint.threeD)
+
+            // Calculate selection box bounds in screen space for contains check
+            const camera = context.sceneInfra.camControls.camera
+            const renderer = context.sceneInfra.renderer
+            const viewportSize = new Vector2(
+              renderer.domElement.clientWidth,
+              renderer.domElement.clientHeight
+            )
+
+            const startScreen = startPoint.threeD.clone().project(camera)
+            const currentScreen = currentPoint.threeD.clone().project(camera)
+
+            const startPx = new Vector2(
+              ((startScreen.x + 1) / 2) * viewportSize.x,
+              ((1 - startScreen.y) / 2) * viewportSize.y
+            )
+            const currentPx = new Vector2(
+              ((currentScreen.x + 1) / 2) * viewportSize.x,
+              ((1 - currentScreen.y) / 2) * viewportSize.y
+            )
+
+            const boxMinPx = new Vector2(
+              Math.min(startPx.x, currentPx.x),
+              Math.min(startPx.y, currentPx.y)
+            )
+            const boxMaxPx = new Vector2(
+              Math.max(startPx.x, currentPx.x),
+              Math.max(startPx.y, currentPx.y)
+            )
+
+            // Determine selection mode based on drag direction
+            const isIntersectionBox = startPx.x > currentPx.x
+            if (!isIntersectionBox) {
+              // Contains box: find segments fully contained within the selection box
+              const containedIds = findContainedSegments(
+                startPoint.threeD,
+                currentPoint.threeD,
+                boxMinPx,
+                boxMaxPx
+              )
+
+              // Update duringAreaSelectIds (temporary selection during drag)
+              self.send({
+                type: 'update selected ids',
+                data: { duringAreaSelectIds: containedIds },
+              })
+            } else {
+              // Intersection box: find segments that intersect with the selection box
+              const intersectingIds = findIntersectingSegments(
+                startPoint.threeD,
+                currentPoint.threeD,
+                boxMinPx,
+                boxMaxPx
+              )
+
+              // Update duringAreaSelectIds (temporary selection during drag)
+              self.send({
+                type: 'update selected ids',
+                data: { duringAreaSelectIds: intersectingIds },
+              })
+            }
+          }
+        },
+        onAreaSelectEnd: ({ startPoint, currentPoint }) => {
+          // Remove selection box visual
+          removeSelectionBox()
+
+          // Disable area select flag
+          isAreaSelectActive = false
+
+          // Merge duringAreaSelectIds into selectedIds and clear duringAreaSelectIds
+          const snapshot = self.getSnapshot()
+          const duringAreaSelectIds = snapshot.context.duringAreaSelectIds
+
+          if (duringAreaSelectIds.length > 0) {
+            // Merge duringAreaSelectIds into selectedIds
+            const mergedIds = Array.from(
+              new Set([...snapshot.context.selectedIds, ...duringAreaSelectIds])
+            )
+            self.send({
+              type: 'update selected ids',
+              data: { selectedIds: mergedIds, duringAreaSelectIds: [] },
+            })
+          } else {
+            // Just clear duringAreaSelectIds
+            self.send({
+              type: 'update selected ids',
+              data: { duringAreaSelectIds: [] },
+            })
           }
         },
       })
@@ -694,6 +1283,9 @@ export const sketchSolveMachine = setup({
       context.sceneInfra.setCallbacks({
         onMouseEnter: () => {},
         onMouseLeave: () => {},
+        onAreaSelectStart: () => {},
+        onAreaSelect: () => {},
+        onAreaSelectEnd: () => {},
       })
 
       // Clear any currently hovered line segment meshes
@@ -711,6 +1303,20 @@ export const sketchSolveMachine = setup({
             updateLineSegmentHover(child, false, selectedIds)
           }
         })
+      }
+
+      // Clean up selection box if it exists
+      const selectionBoxGroup = sketchSegments?.getObjectByName('selectionBox')
+      if (selectionBoxGroup) {
+        selectionBoxGroup.traverse((child) => {
+          if (
+            child instanceof CSS2DObject &&
+            child.element instanceof HTMLElement
+          ) {
+            child.element.remove()
+          }
+        })
+        selectionBoxGroup.removeFromParent()
       }
     },
     'cleanup sketch solve group': ({ context }) => {
@@ -744,25 +1350,41 @@ export const sketchSolveMachine = setup({
     }),
     'update selected ids': assign(({ event, context }) => {
       assertEvent(event, 'update selected ids')
-      const first = event.data?.selectedIds?.[0]
-      if (
-        event.data?.selectedIds?.length === 1 &&
-        first &&
-        context.selectedIds.includes(first)
-      ) {
-        // If only one ID is selected and it's already in the selection, remove only it from the selection
-        return {
-          selectedIds: context.selectedIds.filter((id) => id !== first),
+
+      const updates: Partial<SketchSolveContext> = {}
+
+      // Handle duringAreaSelectIds update (for area select during drag)
+      if (event.data.duringAreaSelectIds !== undefined) {
+        updates.duringAreaSelectIds = event.data.duringAreaSelectIds
+      }
+
+      // Handle regular selectedIds update (for click selection, etc.)
+      if (event.data.selectedIds !== undefined) {
+        // If empty array is provided, clear the selection
+        if (event.data.selectedIds.length === 0) {
+          updates.selectedIds = []
+        } else {
+          const first = event.data.selectedIds[0]
+          if (
+            event.data.selectedIds.length === 1 &&
+            first &&
+            context.selectedIds.includes(first)
+          ) {
+            // If only one ID is selected and it's already in the selection, remove only it from the selection
+            updates.selectedIds = context.selectedIds.filter(
+              (id) => id !== first
+            )
+          } else {
+            // Merge new IDs with existing selection
+            const result = Array.from(
+              new Set([...context.selectedIds, ...event.data.selectedIds])
+            )
+            updates.selectedIds = result
+          }
         }
       }
-      const result = event.data.selectedIds
-        ? Array.from(
-            new Set([...context.selectedIds, ...event.data.selectedIds])
-          )
-        : []
-      return {
-        selectedIds: result,
-      }
+
+      return updates
     }),
     'refresh selection styling': ({ context }) => {
       // Update selection styling for all existing sketch-solve segments
@@ -776,6 +1398,11 @@ export const sketchSolveMachine = setup({
         context.sceneInfra.camControls.camera instanceof OrthographicCamera
           ? orthoFactor
           : orthoFactor
+
+      // Combine selectedIds and duringAreaSelectIds for highlighting
+      const allSelectedIds = Array.from(
+        new Set([...context.selectedIds, ...context.duringAreaSelectIds])
+      )
 
       sceneGraphDelta.new_graph.objects.forEach((obj) => {
         if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
@@ -792,7 +1419,7 @@ export const sketchSolveMachine = setup({
         updateSegmentGroup({
           group,
           input: ctor,
-          selectedIds: context.selectedIds,
+          selectedIds: allSelectedIds,
           scale: factor,
           theme: context.sceneInfra.theme,
         })
@@ -871,10 +1498,16 @@ export const sketchSolveMachine = setup({
         if (!ctor) {
           return
         }
+
+        // Combine selectedIds and duringAreaSelectIds for highlighting
+        const allSelectedIds = Array.from(
+          new Set([...context.selectedIds, ...context.duringAreaSelectIds])
+        )
+
         updateSegmentGroup({
           group,
           input: ctor,
-          selectedIds: context.selectedIds,
+          selectedIds: allSelectedIds,
           scale: factor,
           theme: context.sceneInfra.theme,
         })
@@ -930,6 +1563,7 @@ export const sketchSolveMachine = setup({
   context: ({ input }): SketchSolveContext => ({
     sketchSolveToolName: null,
     selectedIds: [],
+    duringAreaSelectIds: [],
     initialPlane: input?.initialSketchSolvePlane ?? undefined,
     codeManager: input.codeManager,
     sceneInfra: input.sceneInfra,
