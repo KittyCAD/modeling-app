@@ -3,6 +3,7 @@ import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import {
   createCallExpressionStdLibKw,
+  createName,
   createLabeledArg,
   createLiteral,
   createLocalName,
@@ -202,6 +203,9 @@ export function addExtrude({
   }
 }
 
+// From rust/kcl-lib/std/sweep.kcl
+export type SweepRelativeTo = 'SKETCH_PLANE' | 'TRAJECTORY'
+
 export function addSweep({
   ast,
   sketches,
@@ -216,7 +220,7 @@ export function addSweep({
   sketches: Selections
   path: Selections
   sectional?: boolean
-  relativeTo?: string
+  relativeTo?: SweepRelativeTo
   tagStart?: string
   tagEnd?: string
   nodeToEdit?: PathToNode
@@ -253,7 +257,7 @@ export function addSweep({
     ? [createLabeledArg('sectional', createLiteral(sectional))]
     : []
   const relativeToExpr = relativeTo
-    ? [createLabeledArg('relativeTo', createLiteral(relativeTo))]
+    ? [createLabeledArg('relativeTo', createName(['sweep'], relativeTo))]
     : []
   const tagStartExpr = tagStart
     ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
