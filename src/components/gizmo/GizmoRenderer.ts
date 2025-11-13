@@ -27,7 +27,13 @@ import {
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
-const GIZMO_ASSETS_BASE = '/clientSideSceneAssets/gizmo_cube'
+// Resolve assets via Vite so they work in browser and Electron (dev and packaged)
+// Using ?url ensures bundler emits the asset and gives us a valid runtime URL.
+import gizmoModelUrl from '/clientSideSceneAssets/gizmo_cube/gizmo_cube.glb?url'
+import labelsDarkUrl from '/clientSideSceneAssets/gizmo_cube/labels_dark.png?url'
+import labelsDarkHoverUrl from '/clientSideSceneAssets/gizmo_cube/labels_dark_hover.png?url'
+import labelsLightUrl from '/clientSideSceneAssets/gizmo_cube/labels_light.png?url'
+import labelsLightHoverUrl from '/clientSideSceneAssets/gizmo_cube/labels_light_hover.png?url'
 
 export default class GizmoRenderer {
   private readonly canvas: HTMLCanvasElement
@@ -85,26 +91,14 @@ export default class GizmoRenderer {
       dark: {
         edge: this.createMaterial(0x363837),
         edge_hover: this.createMaterial(0xe2e3de),
-        face: this.createMaterial(
-          0x363837,
-          `${GIZMO_ASSETS_BASE}/labels_dark.png`
-        ),
-        face_hover: this.createMaterial(
-          0xe2e3de,
-          `${GIZMO_ASSETS_BASE}/labels_dark_hover.png`
-        ),
+        face: this.createMaterial(0x363837, labelsDarkUrl),
+        face_hover: this.createMaterial(0xe2e3de, labelsDarkHoverUrl),
       },
       light: {
         edge: this.createMaterial(0xe2e3de),
         edge_hover: this.createMaterial(0x363837),
-        face: this.createMaterial(
-          0xe2e3de,
-          `${GIZMO_ASSETS_BASE}/labels_light.png`
-        ),
-        face_hover: this.createMaterial(
-          0x363837,
-          `${GIZMO_ASSETS_BASE}/labels_light_hover.png`
-        ),
+        face: this.createMaterial(0xe2e3de, labelsLightUrl),
+        face_hover: this.createMaterial(0x363837, labelsLightHoverUrl),
       },
     }
 
@@ -171,7 +165,7 @@ export default class GizmoRenderer {
   private loadModel() {
     const loader = new GLTFLoader()
     loader.load(
-      `${GIZMO_ASSETS_BASE}/gizmo_cube.glb`,
+      gizmoModelUrl,
       (gltf) => {
         const root = gltf.scene
         root.position.set(0, 0, 0)
@@ -504,6 +498,8 @@ async function animateCameraToQuaternion(targetQuat: Quaternion) {
       500,
       false // !isPerspective: this doesn't work
     )
+  } catch(e) {
+    console.warn(e)
   } finally {
     sceneInfra.stop()
     camControls.enableRotate = true
