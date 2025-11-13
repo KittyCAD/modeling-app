@@ -107,7 +107,10 @@ export function createIdentifier(name: string): Node<Identifier> {
   }
 }
 
-export function createLocalName(name: string): Node<Name> {
+export function createLocalName(
+  name: string,
+  path: Node<Identifier>[] = []
+): Node<Name> {
   return {
     type: 'Name',
     start: 0,
@@ -118,7 +121,7 @@ export function createLocalName(name: string): Node<Name> {
     commentStart: 0,
 
     abs_path: false,
-    path: [],
+    path,
     name: createIdentifier(name),
   }
 }
@@ -159,7 +162,8 @@ export function createCallExpressionStdLibKw(
   name: string,
   unlabeled: CallExpressionKw['unlabeled'],
   args: CallExpressionKw['arguments'],
-  nonCodeMeta?: NonCodeMeta
+  nonCodeMeta?: NonCodeMeta,
+  path?: Node<Identifier>[]
 ): Node<CallExpressionKw> {
   return {
     type: 'CallExpressionKw',
@@ -170,7 +174,7 @@ export function createCallExpressionStdLibKw(
     preComments: [],
     commentStart: 0,
     nonCodeMeta: nonCodeMeta ?? nonCodeMetaEmpty(),
-    callee: createLocalName(name),
+    callee: createLocalName(name, path),
     unlabeled,
     arguments: args,
   }
