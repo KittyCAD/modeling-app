@@ -2,11 +2,12 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
+  createIdentifier,
   createLabeledArg,
-  createLiteral,
   createLocalName,
 } from '@src/lang/create'
 import {
+  createPoint2dExpression,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
@@ -163,27 +164,11 @@ export function addFlatnessGdt({
     }
 
     // Handle framePosition parameter - should be Point2d [x, y]
-    let framePositionExpr
+    let framePositionExpr: Node<Expr> | undefined
     if (framePosition) {
-      if ('value' in framePosition && isArray(framePosition.value)) {
-        // Direct array value [x, y]
-        const arrayElements = []
-        for (const val of framePosition.value) {
-          if (
-            typeof val === 'number' ||
-            typeof val === 'string' ||
-            typeof val === 'boolean'
-          ) {
-            arrayElements.push(createLiteral(val))
-          } else {
-            return new Error('Invalid framePosition value type')
-          }
-        }
-        framePositionExpr = createArrayExpression(arrayElements)
-      } else {
-        // Variable reference or other format
-        framePositionExpr = valueOrVariable(framePosition)
-      }
+      const res = createPoint2dExpression(framePosition)
+      if (err(res)) return res
+      framePositionExpr = res
     }
 
     // Build labeled arguments
@@ -217,10 +202,14 @@ export function addFlatnessGdt({
 
     // Create the gdt::flatness call
     // Using null for unlabeled args since all args are labeled
+    const nonCodeMeta = undefined
+    const modulePath = [createIdentifier('gdt')]
     const call = createCallExpressionStdLibKw(
-      'gdt::flatness',
+      'flatness',
       null,
-      labeledArgs
+      labeledArgs,
+      nonCodeMeta,
+      modulePath
     )
 
     // Insert the function call into the AST at the appropriate location
