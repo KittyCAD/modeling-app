@@ -85,25 +85,27 @@ export function ToastUpdate({
           <ActionButton
             Element="button"
             iconStart={{
-              icon: 'arrowRotateRight',
+              icon: 'close',
+              iconClassName: 'bg-destroy-80 text-6',
             }}
-            name="restart"
-            onClick={onRestart}
-          >
-            Restart app now
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            iconStart={{
-              icon: 'checkmark',
-            }}
+            data-negative-button="dismiss"
             name="dismiss"
             onClick={() => {
               toast.dismiss()
               onDismiss()
             }}
           >
-            Got it
+            Not right now
+          </ActionButton>
+          <ActionButton
+            Element="button"
+            iconStart={{
+              icon: 'arrowRight',
+            }}
+            name="accept"
+            onClick={onRestart}
+          >
+            Restart to update
           </ActionButton>
         </div>
       </div>
