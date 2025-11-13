@@ -380,7 +380,7 @@ const OperationItemWrapper = ({
     >
       <button
         {...props}
-        className={`reset py-1 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${className}`}
+        className={`reset min-w-[0px] py-1 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${className}`}
       >
         <CustomIcon
           name={icon}
