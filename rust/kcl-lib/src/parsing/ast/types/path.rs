@@ -80,10 +80,12 @@ impl NodePath {
 
     /// Given a program and a [`SourceRange`], return the path to the node that
     /// contains the range.
-    pub(crate) fn from_range(programs: &ProgramLookup, cached_body_items: usize, range: SourceRange) -> Option<Self> {
-        let Some(program) = programs.program_for_module(range.module_id()) else {
-            return None;
-        };
+    pub(crate) fn from_range(
+        programs: &crate::execution::ProgramLookup,
+        cached_body_items: usize,
+        range: SourceRange,
+    ) -> Option<Self> {
+        let program = programs.program_for_module(range.module_id())?;
         Self::from_body(&program.body, cached_body_items, range, NodePath::default())
     }
 

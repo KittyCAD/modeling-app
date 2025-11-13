@@ -862,14 +862,7 @@ impl ExecutorContext {
                 // Clone before mutating.
                 let module_exec_state = exec_state.clone();
 
-                self.add_import_module_ops(
-                    exec_state,
-                    program,
-                    module_id,
-                    &module_path,
-                    source_range,
-                    &universe_map,
-                );
+                self.add_import_module_ops(exec_state, module_id, &module_path, source_range, &universe_map);
 
                 let repr = repr.clone();
                 let exec_ctxt = self.clone();
@@ -1025,7 +1018,6 @@ impl ExecutorContext {
     fn add_import_module_ops(
         &self,
         _exec_state: &mut ExecState,
-        _program: &crate::Program,
         _module_id: ModuleId,
         _module_path: &ModulePath,
         _source_range: SourceRange,
@@ -1037,7 +1029,6 @@ impl ExecutorContext {
     fn add_import_module_ops(
         &self,
         exec_state: &mut ExecState,
-        _program: &crate::Program,
         module_id: ModuleId,
         module_path: &ModulePath,
         source_range: SourceRange,
