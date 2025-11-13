@@ -1298,7 +1298,7 @@ pub(crate) async fn inner_close(
         exec_state.warn(
             crate::CompilationError {
                 source_range: args.source_range,
-                message: "A tag declarator was specified, but no segment was created".to_string(),
+                message: "A tag declarator was specified, but no attached segment was created".to_string(),
                 suggestion: None,
                 severity: crate::errors::Severity::Warning,
                 tag: crate::errors::Tag::Unnecessary,
