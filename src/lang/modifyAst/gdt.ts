@@ -308,6 +308,11 @@ export function addDatumGdt({
     isFaceArtifact(selection.artifact)
   )
 
+  // Validate datum name is a single character
+  if (name.length !== 1) {
+    return new Error('Datum name must be a single character')
+  }
+
   // Datum requires exactly one face
   if (faceSelections.length === 0) {
     return new Error('No face selected for datum annotation')
