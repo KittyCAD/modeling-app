@@ -498,7 +498,7 @@ async function animateCameraToQuaternion(targetQuat: Quaternion) {
       500,
       false // !isPerspective: this doesn't work
     )
-  } catch(e) {
+  } catch (e) {
     console.warn(e)
   } finally {
     sceneInfra.stop()
