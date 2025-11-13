@@ -55,8 +55,8 @@ describe('ToastUpdate tests', () => {
 
     // Locators and other constants
     const versionText = screen.getByTestId('update-version')
-    const restartButton = screen.getByRole('button', { name: /restart/i })
-    const dismissButton = screen.getByRole('button', { name: /got it/i })
+    const restartButton = screen.getByRole('button', { name: /Restart/i })
+    const dismissButton = screen.getByRole('button', { name: /Not/i })
     const releaseNotes = screen.getByTestId('release-notes')
 
     expect(versionText).toBeVisible()
