@@ -305,6 +305,7 @@ export const ConnectionStream = (props: {
     callback: () => {
       modelingSend({ type: 'Cancel' })
     },
+    engineCommandManager,
   })
 
   return (
