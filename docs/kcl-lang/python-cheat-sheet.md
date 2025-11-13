@@ -6,6 +6,7 @@ layout: manual
 
 | Feature | **Python** | **KCL** |
 | ------- | ---------- | ------- |
+| **Comments**               | <pre><code># Single line comment<br/><br/>"""<br/>Multi-line comment<br/>"""</code></pre> | <pre><code>// Single line comment<br/><br/>/\*<br/>Multi-line comment<br/>\*/</code></pre> |
 | **Variable Assignment**    | Can be reassigned later.<br/>`x = 42` | Cannot be reassigned once declared.<br/>`x = 42` |
 | **Data Types**             | Numbers, strings, booleans, lists, tuples, dicts, objects, None | Numbers (with units), strings, booleans, arrays, objects |
 | **Immutability**           | Variables can be reassigned. Lists, dicts, and objects are mutable. | Variables cannot be reassigned. Arrays and objects are immutable. |

@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -47,7 +48,7 @@ test.describe('Point and click for boolean workflows', () => {
       }, file)
       await homePage.goToModelingScene()
       await scene.settled(cmdBar)
-      await toolbar.closePane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
 
       // Test coordinates for selection - these might need adjustment based on actual scene layout
       const cylinderPoint = { x: 592, y: 174 }
@@ -121,12 +122,12 @@ test.describe('Point and click for boolean workflows', () => {
       })
 
       await test.step(`Delete ${operationName} operation via feature tree selection`, async () => {
-        await toolbar.openPane('feature-tree')
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         const op = await toolbar.getFeatureTreeOperation(operationName, 0)
         await op.click({ button: 'right' })
         await page.getByTestId('context-menu-delete').click()
         await scene.settled(cmdBar)
-        await toolbar.closePane('feature-tree')
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
 
         // Expect changes in ft and code
         await editor.expectEditor.not.toContain(operation.code)

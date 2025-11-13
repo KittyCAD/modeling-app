@@ -169,6 +169,9 @@ export const mlEphantManagerMachine = setup({
     events: {} as MlEphantManagerEvents,
   },
   actions: {
+    consoleError: ({ event }) => {
+      console.error(event)
+    },
     toastError: ({ event }) => {
       console.error(event)
       if ('output' in event && event.output instanceof Error) {
@@ -570,7 +573,7 @@ export const mlEphantManagerMachine = setup({
         // On failure we need correct dependencies still.
         onError: {
           target: MlEphantManagerStates.NeedDependencies,
-          actions: 'toastError',
+          actions: 'consoleError',
         },
       },
     },

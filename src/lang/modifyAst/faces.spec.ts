@@ -182,7 +182,12 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain(
         `shell001 = shell(extrude001, faces = END, thickness = 1)`
       )
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add a shell call on variable-less extrude', async () => {
@@ -216,7 +221,12 @@ extrude(p, length = 1000)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${code}
   |> shell(faces = END, thickness = 1)`)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should edit a basic shell call on cylinder end cap with new thickness', async () => {
@@ -252,7 +262,12 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
       expect(newCode).toContain(
         `shell001 = shell(extrude001, faces = END, thickness = 2)`
       )
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add a shell call on box for 2 walls', async () => {
@@ -276,7 +291,12 @@ shell001 = shell(extrude001, faces = END, thickness = 1)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${boxWithTwoTags}
 shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should edit a shell call on box for 2 walls to a new thickness', async () => {
@@ -308,7 +328,12 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 1)`,
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${boxWithTwoTags}
 shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add a shell on two related sweeps end faces', async () => {
@@ -320,8 +345,7 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
       )
       const twoCaps = [...artifactGraph.values()]
         .filter((a) => a.type === 'cap' && a.subType === 'end')
-        .slice(0, 2)
-        .reverse()
+        .slice(1, 3)
       const faces = createSelectionFromArtifacts(twoCaps, artifactGraph)
       const thickness = (await stringToKclExpression(
         '5',
@@ -336,11 +360,68 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(multiSolidsShell)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
+    })
+
+    it('should add a shell on an end face of an extrude later sketched on in another direction', async () => {
+      // Code from https://github.com/KittyCAD/modeling-app/issues/7334#issuecomment-3493494067
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-207.31, -191.75])
+  |> angledLine(angle = 0deg, length = 414.62, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = 383.5, tag = $seg01)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 400)
+sketch002 = startSketchOn(extrude001, face = seg01)
+profile002 = startProfile(sketch002, at = [-108.39, 85.39])
+  |> angledLine(angle = 0deg, length = 216.78, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) + 90deg, length = 245.9)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(profile002, length = 200)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const firstCap = [...artifactGraph.values()]
+        .filter((a) => a.type === 'cap' && a.subType === 'end')
+        .slice(0, 1)
+      const faces = createSelectionFromArtifacts(firstCap, artifactGraph)
+      const thickness = (await stringToKclExpression(
+        '0.1',
+        undefined,
+        instanceInThisFile,
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addShell({ ast, artifactGraph, faces, thickness })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${code}
+shell001 = shell(extrude001, faces = END, thickness = 0.1)`)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
   })
 
   describe('Testing addHole', () => {
+    const cylinderWithFlag = `@settings(experimentalFeatures = allow)
+
+${cylinder}`
     const simpleHole = `hole001 = hole::hole(
   extrude001,
   face = END,
@@ -352,7 +433,7 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
 
     it('should add a simple hole call on cylinder end cap', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
-        cylinder,
+        cylinderWithFlag,
         instanceInThisFile,
         kclManagerInThisFile
       )
@@ -391,9 +472,16 @@ shell001 = shell(extrude001, faces = [seg01, seg02], thickness = 2)`)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(cylinder)
-      expect(newCode).toContain(simpleHole)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toBe(`${cylinderWithFlag}
+${simpleHole}
+`)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     // TODO: enable this test once https://github.com/KittyCAD/modeling-app/issues/8616 is closed
@@ -452,7 +540,7 @@ hole002 = hole::hole(
   holeType =   hole::simple(),
 )`
       )
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      // TODO: add mock exec once hole::hole is supported
     })
 
     it('should add a counterbore hole call on cylinder end cap', async () => {
@@ -521,7 +609,7 @@ hole002 = hole::hole(
   holeType =   hole::counterbore(depth = 1, diameter = 2),
 )`
       )
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      // TODO: add mock exec once hole::hole is supported
     })
 
     it('should edit a simple hole call into a countersink hole call on cylinder end cap with drill end', async () => {
@@ -601,7 +689,7 @@ hole001 = hole::hole(
   holeType =   hole::countersink(angle = 120, diameter = 2),
 )`
       )
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      // TODO: add mock exec once hole::hole is supported
     })
   })
 
@@ -976,7 +1064,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
         const newCode = recast(result.modifiedAst, instanceInThisFile)
         expect(newCode).toContain(`plane001 = offsetPlane(${name}, offset = 1)`)
         await enginelessExecutor(
-          ast,
+          result.modifiedAst,
           undefined,
           undefined,
           rustContextInThisFile
@@ -1053,7 +1141,12 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 1)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${code}
 plane002 = offsetPlane(plane001, offset = 2)`)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
 
       const newOffset = (await stringToKclExpression(
         '3',
@@ -1112,7 +1205,12 @@ plane002 = offsetPlane(plane001, offset = 3)`)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${cylinder}
 plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 2)`)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
 
       const newOffset = (await stringToKclExpression(
         '3',
@@ -1171,7 +1269,12 @@ plane001 = offsetPlane(planeOf(extrude001, face = END), offset = 3)`)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`${boxWithOneTag}
 plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 10)`)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
 
       const newOffset = (await stringToKclExpression(
         '20',
@@ -1232,7 +1335,12 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(boxWithOneTagAndChamferAndPlane)
-      await enginelessExecutor(ast, undefined, undefined, rustContextInThisFile)
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
 
       const newOffset = (await stringToKclExpression(
         '2',

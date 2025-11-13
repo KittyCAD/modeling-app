@@ -10,7 +10,7 @@ import { EditorView, keymap } from '@codemirror/view'
 import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useHotkeys } from 'react-hotkeys-hook'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -117,7 +117,11 @@ function CommandBarKclInput({
       false
   )
   const [canSubmit, setCanSubmit] = useState(true)
-  useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
+  useHotkeyWrapper(
+    ['mod + k', 'esc'],
+    () => commandBarActor.send({ type: 'Close' }),
+    { enableOnFormTags: true, enableOnContentEditable: true }
+  )
   const editorRef = useRef<HTMLDivElement>(null)
 
   const allowArrays = arg.allowArrays ?? false

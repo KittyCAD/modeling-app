@@ -7,11 +7,13 @@ import * as fsp from 'fs/promises'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
 import type { TestColor } from '@e2e/playwright/test-utils'
 import {
+  NUMBER_REGEXP,
   TEST_COLORS,
   executorInputPath,
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Regression tests', () => {
   // bugs we found that don't fit neatly into other categories
@@ -62,6 +64,7 @@ Internal engine error on request`
   test('user should not have to press down twice in cmdbar', async ({
     page,
     homePage,
+    cmdBar,
   }) => {
     // because the model has `line([0,0]..` it is valid code, but the model is invalid
     // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
@@ -82,20 +85,12 @@ extrude001 = extrude(sketch001, length = 50)
       )
     })
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
     await test.step('Check arrow down works', async () => {
-      await page.getByTestId('command-bar-open-button').hover()
-      await page.getByTestId('command-bar-open-button').click()
-
-      const floppy = page.getByRole('option', {
-        name: 'floppy disk arrow Export',
-      })
-
-      await floppy.click()
+      await cmdBar.cmdBarOpenBtn.click()
+      await cmdBar.selectOption({ name: 'floppy disk arrow Export' }).click()
 
       // press arrow down key twice
       await page.keyboard.press('ArrowDown')
@@ -108,14 +103,13 @@ extrude001 = extrude(sketch001, length = 50)
       )
 
       await page.keyboard.press('Escape')
-      await page.waitForTimeout(200)
       await page.keyboard.press('Escape')
-      await page.waitForTimeout(200)
+      await cmdBar.expectState({ stage: 'commandBarClosed' })
     })
 
     await test.step('Check arrow up works', async () => {
       // theme in test is dark, which is the second option, which means we can test arrow up
-      await page.getByTestId('command-bar-open-button').click()
+      await cmdBar.cmdBarOpenBtn.click()
 
       await page.getByText('The overall appearance of the').click()
 
@@ -332,7 +326,7 @@ extrude002 = extrude(profile002, length = 150)`
       await page.setBodyDimensions({ width: 500, height: 500 })
 
       await homePage.goToModelingScene()
-      await toolbar.closePane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
 
       await scene.connectionEstablished()
       await scene.settled(cmdBar)
@@ -667,7 +661,7 @@ extrude002 = extrude(profile002, length = 150)`
 
     await test.step(`Test setup`, async () => {
       await homePage.openProject('lego')
-      await toolbar.closePane('code')
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
     })
     await test.step(`Waiting for scene to settle`, async () => {
       await scene.connectionEstablished()
@@ -822,7 +816,9 @@ washer = extrude(washerSketch, length = thicknessMax)`
 
       // Just verify that the radius is the correct order of magnitude
       await editor.expectEditor.toContain(
-        /circle\(sketch001, center = \[0\.04, -0\.06\], radius = 0\.\d+/
+        new RegExp(
+          `circle\\(sketch001, center = \\[${NUMBER_REGEXP}, ${NUMBER_REGEXP}\\], radius = 0\\.\\d+`
+        )
       )
     })
 

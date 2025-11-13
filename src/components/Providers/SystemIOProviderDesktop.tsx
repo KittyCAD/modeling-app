@@ -298,10 +298,16 @@ export function SystemIOMachineLogicListenerDesktop() {
           }
         })
 
+        // Gotcha: below we're gonna look for the index of the project name,
+        // but what if the project name happens to be in the path earlier than the real one?
+        // Let's put separators on either side of it and offset by one, so we know
+        // it matches a whole directory name.
+        const projectNameWithSeparators =
+          window.electron?.sep + promptMeta.project.name + window.electron?.sep
         // I know, it's confusing as hell.
         const targetFilePathWithoutFileAndRelativeToProjectDir =
           promptMeta.targetFile?.path.slice(
-            promptMeta.targetFile?.path.indexOf(promptMeta.project.name) ?? 0
+            promptMeta.targetFile?.path.indexOf(projectNameWithSeparators) ?? 0
           ) ?? ''
 
         const requestedProjectNameNext =

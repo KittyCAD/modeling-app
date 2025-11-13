@@ -17,7 +17,7 @@ vector::magnitude(@v: [number]): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `v` | [`[number]`](/docs/kcl-std/types/std-types-number) |  | Yes |
+| `v` | [[`number`](/docs/kcl-std/types/std-types-number)] |  | Yes |
 
 ### Returns
 
