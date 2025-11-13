@@ -1745,6 +1745,9 @@ export function getOperationIcon(op: Operation): CustomIconName {
       if (op.group.type === 'ModuleInstance') {
         return 'import' // TODO: Use insert icon.
       }
+      if (op.group.type === 'FunctionCall') {
+        return 'function'
+      }
       return 'make-variable'
     case 'GroupEnd':
       return 'questionMark'

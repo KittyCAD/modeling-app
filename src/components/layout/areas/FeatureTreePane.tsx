@@ -65,6 +65,7 @@ import {
 } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
+import Tooltip from '@src/components/Tooltip'
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -341,6 +342,7 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
 const OperationItemWrapper = ({
   icon,
   name,
+  type,
   variableName,
   visibilityToggle,
   valueDetail,
@@ -354,6 +356,7 @@ const OperationItemWrapper = ({
 }: React.HTMLAttributes<HTMLButtonElement> & {
   icon: CustomIconName
   name: string
+  type?: Operation['type']
   variableName?: string
   visibilityToggle?: VisibilityToggleProps
   valueDetail?: { calculated: OpKclValue; display: string }
@@ -373,33 +376,49 @@ const OperationItemWrapper = ({
     >
       <button
         {...props}
-        className={`reset py-1 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${className}`}
+        className={`reset min-w-[0px] py-1 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${className}`}
       >
         <CustomIcon
           name={icon}
           className="w-6 h-6 block self-start"
           aria-hidden
         />
-        <div className="flex-1 flex flex-wrap items-baseline align-baseline">
-          <div className="flex-1 inline-flex items-baseline flex-wrap gap-x-2">
+        <div className="text-sm flex-1 flex gap-x-2 overflow-x-hidden items-baseline align-baseline">
+          {variableName && valueDetail ? (
+            <>
+              <span className="text-sm">{variableName}</span>
+              <code
+                data-testid="value-detail"
+                className="block min-w-[0px] flex-auto overflow-hidden whitespace-nowrap overflow-ellipsis text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+              >
+                {valueDetail.display}
+              </code>
+            </>
+          ) : (
             <span className="text-sm">{name}</span>
-            {variableName && (
-              <span className="text-xs text-3">{variableName}</span>
-            )}
-            {customSuffix && customSuffix}
-          </div>
-          {valueDetail && (
-            <code
-              data-testid="value-detail"
-              className="text-chalkboard-70 dark:text-chalkboard-40 text-xs"
-            >
-              {valueDetail.display}
-            </code>
           )}
+          {customSuffix && customSuffix}
         </div>
         {errors && errors.length > 0 && (
           <em className="text-destroy-80 text-xs">has error</em>
         )}
+        <Tooltip
+          delay={500}
+          position="bottom-left"
+          wrapperClassName="left-0 right-0"
+          contentClassName="text-sm max-w-full"
+        >
+          {variableName && valueDetail ? (
+            <>
+              {name} {variableName ?? ''} ={' '}
+              <span className="font-mono">{valueDetail.display}</span>
+            </>
+          ) : type === 'GroupBegin' ? (
+            `Function call of ${name} named ${variableName}`
+          ) : (
+            `${variableName ? '' : 'Unnamed '}${name}${variableName ? ` named ${variableName}` : ''}`
+          )}
+        </Tooltip>
       </button>
       {visibilityToggle && <VisibilityToggle {...visibilityToggle} />}
       {menuItems && (
@@ -763,6 +782,7 @@ const OperationItem = (props: {
       selectable={enabled}
       icon={getOperationIcon(props.item)}
       name={name}
+      type={props.item.type}
       variableName={variableName}
       valueDetail={valueDetail}
       menuItems={menuItems}
