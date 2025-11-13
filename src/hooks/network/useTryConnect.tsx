@@ -66,7 +66,7 @@ const attemptToConnectToEngine = async ({
         if (!videoRef.current) {
           EngineDebugger.addLog({
             label: 'ConnectionStream.tsx',
-            message: 'Unable to reference the video',
+            message: 'Unable to reference the video. Calling tearDown()',
           })
           engineCommandManager.tearDown()
           return reject('Unable to reference the video, calling tearDown()')
@@ -178,6 +178,10 @@ async function tryConnecting({
       const cancelTimeout = setTimeout(() => {
         isConnecting.current = false
         setAppState({ isStreamAcceptingInput: false })
+        EngineDebugger.addLog({
+          label: 'useTryConnect.tsx',
+          message: 'Took too long to connect, calling tearDown()',
+        })
         engineCommandManager.tearDown()
         clearInterval(cancelTimeout)
         reject('took too long to connect')
@@ -210,6 +214,10 @@ async function tryConnecting({
         } catch (e) {
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: false })
+          EngineDebugger.addLog({
+            label: 'useTryConnect.tsx',
+            message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed, calling tearDown()`,
+          })
           engineCommandManager.tearDown()
           // Fail after NUMBER_OF_ENGINE_RETRIES
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
