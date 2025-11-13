@@ -588,6 +588,14 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tagEnd = $capEnd001')
       // Verify the GDT datum annotation was added
       expect(newCode).toContain('gdt::datum(face = capEnd001, name = "A")')
+
+      // Execute to validate runtime consistency
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add datum annotation to a wall face', async () => {
@@ -609,6 +617,14 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tag = $seg01')
       // Verify the GDT datum annotation was added with correct name
       expect(newCode).toContain('gdt::datum(face = seg01, name = "C")')
+
+      // Execute to validate runtime consistency
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add datum annotation to a chamfer face', async () => {
@@ -647,6 +663,14 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('tag = $seg02')
       // Verify GDT datum annotation was added for chamfer
       expect(newCode).toContain('gdt::datum(face = seg02, name = "D")')
+
+      // Execute to validate runtime consistency
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should fail when selecting multiple faces', async () => {
