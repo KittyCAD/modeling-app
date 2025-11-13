@@ -58,23 +58,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           ],
           "type": "Arc",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -120.0,
-            99.99999999999999
-          ],
-          "tag": null,
-          "to": [
-            -120.0,
-            100.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -351,23 +334,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             99.99999999999999
           ],
           "type": "Arc",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            280.0,
-            99.99999999999999
-          ],
-          "tag": null,
-          "to": [
-            280.0,
-            100.0
-          ],
-          "type": "ToPoint",
           "units": "mm"
         }
       ],
@@ -867,23 +833,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             ],
             "type": "Arc",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              280.0,
-              99.99999999999999
-            ],
-            "tag": null,
-            "to": [
-              280.0,
-              100.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -1215,23 +1164,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               99.99999999999999
             ],
             "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -120.0,
-              99.99999999999999
-            ],
-            "tag": null,
-            "to": [
-              -120.0,
-              100.0
-            ],
-            "type": "ToPoint",
             "units": "mm"
           }
         ],

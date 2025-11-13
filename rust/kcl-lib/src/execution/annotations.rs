@@ -60,6 +60,7 @@ pub(crate) const WARN_DEPRECATED: &str = "deprecated";
 pub(crate) const WARN_IGNORED_Z_AXIS: &str = "ignoredZAxis";
 pub(crate) const WARN_SOLVER: &str = "solver";
 pub(crate) const WARN_UNNECESSARY_CLOSE: &str = "unnecessaryClose";
+pub(crate) const WARN_UNUSED_TAGS: &str = "unusedTags";
 pub(super) const WARN_VALUES: [&str; 8] = [
     WARN_UNKNOWN_UNITS,
     WARN_ANGLE_UNITS,

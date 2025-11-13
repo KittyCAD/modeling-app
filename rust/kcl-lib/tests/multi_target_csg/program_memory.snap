@@ -343,23 +343,6 @@ description: Variables in memory after executing multi_target_csg.kcl
             ],
             "type": "Arc",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1625,
-              0.1875
-            ],
-            "tag": null,
-            "to": [
-              -0.1625,
-              0.1875
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "innerPaths": [
@@ -1088,23 +1071,6 @@ description: Variables in memory after executing multi_target_csg.kcl
             0.1875
           ],
           "type": "Arc",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.1625,
-            0.1875
-          ],
-          "tag": null,
-          "to": [
-            -0.1625,
-            0.1875
-          ],
-          "type": "ToPoint",
           "units": "in"
         }
       ],

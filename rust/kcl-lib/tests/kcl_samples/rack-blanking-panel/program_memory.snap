@@ -372,23 +372,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.02991
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.02991
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "innerPaths": [
@@ -808,23 +791,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           ],
           "type": "ToPoint",
           "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.02991
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.02991
-          ],
-          "type": "ToPoint",
-          "units": "in"
         }
       ],
       "innerPaths": [
@@ -1117,23 +1083,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             "from": [
               0.6666666666666679,
               0.0598
-            ],
-            "tag": null,
-            "to": [
-              0.6666666666666666,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.6666666666666666,
-              0.0
             ],
             "tag": null,
             "to": [
@@ -1528,23 +1477,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   ],
                   "type": "ToPoint",
                   "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
-                    0.02991
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.0,
-                    0.02991
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
                 }
               ],
               "innerPaths": [
@@ -1833,23 +1765,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "from": [
             0.6666666666666679,
             0.0598
-          ],
-          "tag": null,
-          "to": [
-            0.6666666666666666,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.6666666666666666,
-            0.0
           ],
           "tag": null,
           "to": [
@@ -2236,23 +2151,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 "from": [
                   0.0000000000000012212453270876722,
                   1.7200900000000001
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.02991
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.02991
                 ],
                 "tag": null,
                 "to": [
@@ -2637,23 +2535,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.6666666666666666,
-              1.6902
-            ],
-            "tag": null,
-            "to": [
-              0.6666666666666666,
-              1.6902
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -3040,23 +2921,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                   ],
                   "type": "ToPoint",
                   "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
-                    0.02991
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.0,
-                    0.02991
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
                 }
               ],
               "innerPaths": [
@@ -3345,23 +3209,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
           "from": [
             0.6666666666666679,
             1.75
-          ],
-          "tag": null,
-          "to": [
-            0.6666666666666666,
-            1.6902
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.6666666666666666,
-            1.6902
           ],
           "tag": null,
           "to": [
@@ -3748,23 +3595,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
                 "from": [
                   0.0000000000000012212453270876722,
                   1.7200900000000001
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.02991
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.02991
                 ],
                 "tag": null,
                 "to": [
@@ -4404,23 +4234,6 @@ description: Variables in memory after executing rack-blanking-panel.kcl
               "from": [
                 0.0000000000000012212453270876722,
                 1.7200900000000001
-              ],
-              "tag": null,
-              "to": [
-                0.0,
-                0.02991
-              ],
-              "type": "ToPoint",
-              "units": "in"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                0.0,
-                0.02991
               ],
               "tag": null,
               "to": [

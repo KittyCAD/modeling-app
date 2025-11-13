@@ -137,23 +137,6 @@ description: Variables in memory after executing mug.kcl
             ],
             "type": "TangentialArcTo",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -9.0,
-              26.25
-            ],
-            "tag": null,
-            "to": [
-              -9.0,
-              26.25
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -750,23 +733,6 @@ description: Variables in memory after executing mug.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              3.2
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              3.2
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -1135,23 +1101,6 @@ description: Variables in memory after executing mug.kcl
             "from": [
               0.0,
               95.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              3.2
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              3.2
             ],
             "tag": null,
             "to": [

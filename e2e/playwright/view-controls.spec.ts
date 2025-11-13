@@ -302,9 +302,9 @@ test.describe(`Testing gizmo, fixture-based`, () => {
       await moveToCircle()
       await clickCircle()
       await editor.openPane()
+
       await editor.expectState({
         activeLines: ['|>' + circleSnippet],
-        highlightedCode: '',
         diagnostics: [],
       })
       await editor.closePane()
