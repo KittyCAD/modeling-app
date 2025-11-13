@@ -1446,6 +1446,43 @@ pub(crate) struct ExecTestResults {
     exec_state: ExecState,
 }
 
+/// Look up the program for a given module ID.
+pub struct ProgramLookup {
+    programs: IndexMap<ModuleId, crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>>,
+}
+
+#[cfg(not(feature = "artifact-graph"))]
+impl Default for ProgramLookup {
+    fn default() -> Self {
+        Self {
+            programs: IndexMap::new(),
+        }
+    }
+}
+
+impl ProgramLookup {
+    pub fn new(module_infos: &state::ModuleInfoMap) -> Self {
+        let mut programs = IndexMap::with_capacity(module_infos.len());
+        for (id, info) in module_infos {
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("ProjectProgramLookup module {}: {:?}", id.as_usize(), info.path).into());
+            if let ModuleRepr::Kcl(program, _) = &info.repr {
+                programs.insert(*id, program.to_owned());
+            }
+        }
+        Self { programs }
+    }
+
+    pub fn program_for_module(
+        &self,
+        module_id: ModuleId,
+    ) -> Option<&crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>> {
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::log_1(&format!("Looking up module ID {}", module_id.as_usize()).into());
+        self.programs.get(&module_id)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
