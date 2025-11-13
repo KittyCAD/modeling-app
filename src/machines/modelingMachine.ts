@@ -88,7 +88,7 @@ import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
-import { addFlatnessGdt } from '@src/lang/modifyAst/gdt'
+import { addFlatnessGdt, addDatumGdt } from '@src/lang/modifyAst/gdt'
 import {
   addAppearance,
   addClone,
@@ -262,6 +262,7 @@ export type ModelingMachineEvent =
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | { type: 'GDT Flatness'; data: ModelingCommandSchema['GDT Flatness'] }
+  | { type: 'GDT Datum'; data: ModelingCommandSchema['GDT Datum'] }
   | {
       type:
         | 'Add circle origin'
@@ -3685,6 +3686,54 @@ export const modelingMachine = setup({
         )
       }
     ),
+    gdtDatumAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['GDT Datum'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        // Remove once this command isn't experimental anymore
+        let astWithNewSetting: Node<Program> | undefined
+        if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
+          const ast = setExperimentalFeatures(codeManager.code, {
+            type: 'Allow',
+          })
+          if (err(ast)) {
+            return Promise.reject(ast)
+          }
+
+          astWithNewSetting = ast
+        }
+
+        const result = addDatumGdt({
+          ...input,
+          ast: astWithNewSetting ?? kclManager.ast,
+          artifactGraph: kclManager.artifactGraph,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+            rustContext,
+          },
+          {
+            focusPath: [result.pathToNode],
+            skipErrorsOnMockExecution: true, // Skip validation since gdt::datum may not be available in runtime yet
+          }
+        )
+      }
+    ),
     exportFromEngine: fromPromise(
       async ({}: { input?: ModelingCommandSchema['Export'] }) => {
         return undefined as Error | undefined
@@ -4152,6 +4201,10 @@ export const modelingMachine = setup({
 
         'GDT Flatness': {
           target: 'Applying GDT Flatness',
+        },
+
+        'GDT Datum': {
+          target: 'Applying GDT Datum',
         },
 
         'Boolean Subtract': {
@@ -6003,6 +6056,22 @@ export const modelingMachine = setup({
         id: 'gdtFlatnessAstMod',
         input: ({ event }) => {
           if (event.type !== 'GDT Flatness') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Datum': {
+      invoke: {
+        src: 'gdtDatumAstMod',
+        id: 'gdtDatumAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'GDT Datum') return undefined
           return event.data
         },
         onDone: ['idle'],
