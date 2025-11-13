@@ -159,23 +159,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -359,23 +342,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -594,23 +560,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -794,23 +743,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -1029,23 +961,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -1229,23 +1144,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -1464,23 +1362,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -1664,23 +1545,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -1899,23 +1763,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -2099,23 +1946,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -2334,23 +2164,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -2534,23 +2347,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -2769,23 +2565,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -2969,23 +2748,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -3204,23 +2966,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  35.4
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  35.4
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -3404,23 +3149,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -3644,23 +3372,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -3844,23 +3555,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -4079,23 +3773,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -4279,23 +3956,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -4514,23 +4174,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -4714,23 +4357,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -4949,23 +4575,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -5149,23 +4758,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -5384,23 +4976,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -5584,23 +5159,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -5819,23 +5377,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -6019,23 +5560,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -6254,23 +5778,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -6454,23 +5961,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -6689,23 +6179,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -6889,23 +6362,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -7124,23 +6580,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -7324,23 +6763,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -7559,23 +6981,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -7759,23 +7164,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -7994,23 +7382,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -8194,23 +7565,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -8429,23 +7783,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -8629,23 +7966,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -8864,23 +8184,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -9064,23 +8367,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -9299,23 +8585,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -9499,23 +8768,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -9734,23 +8986,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -9934,23 +9169,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -10169,23 +9387,6 @@ description: Variables in memory after executing spool.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  75.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  75.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -10369,23 +9570,6 @@ description: Variables in memory after executing spool.kcl
                       "from": [
                         0.0,
                         25.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        75.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        75.0
                       ],
                       "tag": null,
                       "to": [
@@ -10658,23 +9842,6 @@ description: Variables in memory after executing spool.kcl
             "from": [
               0.0,
               25.4
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              75.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              75.0
             ],
             "tag": null,
             "to": [

@@ -2022,23 +2022,6 @@ description: Variables in memory after executing bench-for-kids.kcl
             ],
             "type": "ToPoint",
             "units": "cm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -20.0,
-              15.0
-            ],
-            "tag": null,
-            "to": [
-              -20.0,
-              15.0
-            ],
-            "type": "ToPoint",
-            "units": "cm"
           }
         ],
         "on": {
@@ -2148,23 +2131,6 @@ description: Variables in memory after executing bench-for-kids.kcl
           },
           "from": [
             20.0,
-            15.0
-          ],
-          "tag": null,
-          "to": [
-            -20.0,
-            15.0
-          ],
-          "type": "ToPoint",
-          "units": "cm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -20.0,
             15.0
           ],
           "tag": null,

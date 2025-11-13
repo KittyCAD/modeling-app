@@ -74,23 +74,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ArcThreePoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              -4.5
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              -4.5
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -199,23 +182,6 @@ description: Variables in memory after executing saturn-v.kcl
             -4.5
           ],
           "type": "ArcThreePoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            -4.5
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            -4.5
-          ],
-          "type": "ToPoint",
           "units": "m"
         }
       ],
@@ -505,23 +471,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.23,
-              6.02
-            ],
-            "tag": null,
-            "to": [
-              -4.23,
-              6.02
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -679,23 +628,6 @@ description: Variables in memory after executing saturn-v.kcl
             "from": [
               -4.23,
               11.219999999999999
-            ],
-            "tag": null,
-            "to": [
-              -4.23,
-              6.02
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.23,
-              6.02
             ],
             "tag": null,
             "to": [
@@ -869,23 +801,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.23,
-              6.02
-            ],
-            "tag": null,
-            "to": [
-              -4.23,
-              6.02
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -1051,23 +966,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.23,
-              6.02
-            ],
-            "tag": null,
-            "to": [
-              -4.23,
-              6.02
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -1191,23 +1089,6 @@ description: Variables in memory after executing saturn-v.kcl
           "from": [
             -4.23,
             11.219999999999999
-          ],
-          "tag": null,
-          "to": [
-            -4.23,
-            6.02
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -4.23,
-            6.02
           ],
           "tag": null,
           "to": [
@@ -1384,23 +1265,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -1511,23 +1375,6 @@ description: Variables in memory after executing saturn-v.kcl
             },
             "from": [
               -2.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
               0.0
             ],
             "tag": null,
@@ -1656,23 +1503,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -1792,23 +1622,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -1914,23 +1727,6 @@ description: Variables in memory after executing saturn-v.kcl
           },
           "from": [
             -2.1,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            -0.1,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.1,
             0.0
           ],
           "tag": null,
@@ -2197,23 +1993,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              80.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              80.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -2396,23 +2175,6 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            80.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            80.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
@@ -2569,23 +2331,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ArcThreePoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.5,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -4.5,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -2727,23 +2472,6 @@ description: Variables in memory after executing saturn-v.kcl
           ],
           "type": "ArcThreePoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -4.5,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            -4.5,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
@@ -2847,23 +2575,6 @@ description: Variables in memory after executing saturn-v.kcl
             0.0
           ],
           "type": "ArcThreePoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -4.5,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            -4.5,
-            0.0
-          ],
-          "type": "ToPoint",
           "units": "m"
         }
       ],
@@ -3021,23 +2732,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ArcThreePoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.5,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -4.5,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -3179,23 +2873,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -3306,23 +2983,6 @@ description: Variables in memory after executing saturn-v.kcl
             },
             "from": [
               -2.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
               0.0
             ],
             "tag": null,
@@ -3451,23 +3111,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -3587,23 +3230,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.1,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              -0.1,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -3709,23 +3335,6 @@ description: Variables in memory after executing saturn-v.kcl
           },
           "from": [
             -2.1,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            -0.1,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.1,
             0.0
           ],
           "tag": null,
@@ -4850,23 +4459,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              64.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              64.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -4990,23 +4582,6 @@ description: Variables in memory after executing saturn-v.kcl
           "from": [
             0.0,
             66.5
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            64.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            64.0
           ],
           "tag": null,
           "to": [
@@ -5200,23 +4775,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              64.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              64.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -5340,23 +4898,6 @@ description: Variables in memory after executing saturn-v.kcl
           "from": [
             0.0,
             66.5
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            64.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            64.0
           ],
           "tag": null,
           "to": [
@@ -5518,23 +5059,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              66.5
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              66.5
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -5658,23 +5182,6 @@ description: Variables in memory after executing saturn-v.kcl
           "from": [
             0.0,
             69.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            66.5
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            66.5
           ],
           "tag": null,
           "to": [
@@ -5868,23 +5375,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              66.5
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              66.5
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -6008,23 +5498,6 @@ description: Variables in memory after executing saturn-v.kcl
           "from": [
             0.0,
             69.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            66.5
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            66.5
           ],
           "tag": null,
           "to": [
@@ -6401,23 +5874,6 @@ description: Variables in memory after executing saturn-v.kcl
             ],
             "type": "ArcThreePoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              -4.5
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              -4.5
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -6526,23 +5982,6 @@ description: Variables in memory after executing saturn-v.kcl
             -4.5
           ],
           "type": "ArcThreePoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            -4.5
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            -4.5
-          ],
-          "type": "ToPoint",
           "units": "m"
         }
       ],

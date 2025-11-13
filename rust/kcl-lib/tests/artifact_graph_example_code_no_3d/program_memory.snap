@@ -112,23 +112,6 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            5.82,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            5.82,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
