@@ -27,7 +27,6 @@ use crate::{
     },
     parsing::ast::types::TagNode,
     std::{
-        EQUAL_POINTS_DIST_EPSILON,
         args::{Args, TyF64},
         axis_or_reference::Axis2dOrEdgeReference,
         planes::inner_plane_of,
@@ -1275,7 +1274,7 @@ pub(crate) async fn inner_close(
     let mut new_sketch = sketch;
 
     let distance = ((from.x - to[0]).powi(2) + (from.y - to[1]).powi(2)).sqrt();
-    if distance > EQUAL_POINTS_DIST_EPSILON {
+    if distance > super::EQUAL_POINTS_DIST_EPSILON {
         // These will NOT be the same point in the engine, and an additional segment will be created.
         let current_path = Path::ToPoint {
             base: BasePath {
@@ -1298,7 +1297,7 @@ pub(crate) async fn inner_close(
         exec_state.warn(
             crate::CompilationError {
                 source_range: args.source_range,
-                message: "A tag declarator was specified, but no attached segment was created".to_string(),
+                message: "A tag declarator was specified, but no segment was created".to_string(),
                 suggestion: None,
                 severity: crate::errors::Severity::Warning,
                 tag: crate::errors::Tag::Unnecessary,
