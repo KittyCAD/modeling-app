@@ -623,23 +623,6 @@ description: Variables in memory after executing hammer.kcl
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.33,
-              11.26
-            ],
-            "tag": null,
-            "to": [
-              0.33,
-              11.26
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -1178,23 +1161,6 @@ description: Variables in memory after executing hammer.kcl
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.33,
-              11.26
-            ],
-            "tag": null,
-            "to": [
-              0.33,
-              11.26
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -1433,23 +1399,6 @@ description: Variables in memory after executing hammer.kcl
             "from": [
               0.01,
               12.8
-            ],
-            "tag": null,
-            "to": [
-              0.01,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.01,
-              0.0
             ],
             "tag": null,
             "to": [
@@ -1939,23 +1888,6 @@ description: Variables in memory after executing hammer.kcl
           "from": [
             0.01,
             12.8
-          ],
-          "tag": null,
-          "to": [
-            0.01,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.01,
-            0.0
           ],
           "tag": null,
           "to": [
@@ -2479,23 +2411,6 @@ description: Variables in memory after executing hammer.kcl
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.33,
-              11.26
-            ],
-            "tag": null,
-            "to": [
-              0.33,
-              11.26
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -2806,23 +2721,6 @@ description: Variables in memory after executing hammer.kcl
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.0,
-              -1.6
-            ],
-            "tag": null,
-            "to": [
-              -4.0,
-              -1.6
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -3019,23 +2917,6 @@ description: Variables in memory after executing hammer.kcl
             "from": [
               3.39,
               0.56
-            ],
-            "tag": null,
-            "to": [
-              3.39,
-              -0.56
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.39,
-              -0.56
             ],
             "tag": null,
             "to": [
@@ -3295,23 +3176,6 @@ description: Variables in memory after executing hammer.kcl
             },
             "from": [
               3.39,
-              1.6
-            ],
-            "tag": null,
-            "to": [
-              -4.0,
-              1.6
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.0,
               1.6
             ],
             "tag": null,

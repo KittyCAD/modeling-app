@@ -140,23 +140,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
               ],
               "type": "ToPoint",
               "units": "mm"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -525.5,
-                100.0
-              ],
-              "tag": null,
-              "to": [
-                -525.5,
-                100.0
-              ],
-              "type": "ToPoint",
-              "units": "mm"
             }
           ],
           "on": {
@@ -344,23 +327,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -525.5,
-              100.0
-            ],
-            "tag": null,
-            "to": [
-              -525.5,
-              100.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -532,23 +498,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              464.5,
-              23.5
-            ],
-            "tag": null,
-            "to": [
-              464.5,
-              23.5
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -679,23 +628,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "from": [
                     -525.5,
                     -100.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -525.5,
-                    100.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -525.5,
-                    100.0
                   ],
                   "tag": null,
                   "to": [
@@ -902,23 +834,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              464.5,
-              23.5
-            ],
-            "tag": null,
-            "to": [
-              464.5,
-              23.5
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -1049,23 +964,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "from": [
                     -525.5,
                     -100.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -525.5,
-                    100.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -525.5,
-                    100.0
                   ],
                   "tag": null,
                   "to": [
@@ -1814,23 +1712,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -525.5,
-                        100.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -525.5,
-                        100.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -2543,23 +2424,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       "from": [
                         -525.5,
                         -100.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -525.5,
-                        100.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -525.5,
-                        100.0
                       ],
                       "tag": null,
                       "to": [
@@ -3288,23 +3152,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -525.5,
-                        100.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -525.5,
-                        100.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -4025,23 +3872,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -525.5,
-                        100.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -525.5,
-                        100.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -4754,23 +4584,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       "from": [
                         -525.5,
                         -100.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -525.5,
-                        100.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -525.5,
-                        100.0
                       ],
                       "tag": null,
                       "to": [
@@ -5504,23 +5317,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -525.5,
-                        100.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -525.5,
-                        100.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -6233,23 +6029,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       "from": [
                         -525.5,
                         -100.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -525.5,
-                        100.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -525.5,
-                        100.0
                       ],
                       "tag": null,
                       "to": [
@@ -6978,23 +6757,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -525.5,
-                        100.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -525.5,
-                        100.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -7715,23 +7477,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       ],
                       "type": "ToPoint",
                       "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -525.5,
-                        100.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -525.5,
-                        100.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
                     }
                   ],
                   "on": {
@@ -8444,23 +8189,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                       "from": [
                         -525.5,
                         -100.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -525.5,
-                        100.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -525.5,
-                        100.0
                       ],
                       "tag": null,
                       "to": [
@@ -9166,23 +8894,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -525.5,
-                    100.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -525.5,
-                    100.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
@@ -9521,23 +9232,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -525.5,
-                    100.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -525.5,
-                    100.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
@@ -9800,23 +9494,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "from": [
                     -525.5,
                     -100.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -525.5,
-                    100.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -525.5,
-                    100.0
                   ],
                   "tag": null,
                   "to": [
@@ -10095,23 +9772,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -525.5,
-                    100.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -525.5,
-                    100.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
@@ -10374,23 +10034,6 @@ description: Variables in memory after executing battery-module-cooling-plate.kc
                   "from": [
                     -525.5,
                     -100.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -525.5,
-                    100.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -525.5,
-                    100.0
                   ],
                   "tag": null,
                   "to": [

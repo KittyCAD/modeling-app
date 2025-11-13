@@ -291,23 +291,6 @@ description: Variables in memory after executing teapot.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -499,23 +482,6 @@ description: Variables in memory after executing teapot.kcl
               29.5
             ],
             "type": "TangentialArcTo",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -10.0,
-              29.5
-            ],
-            "tag": null,
-            "to": [
-              -10.0,
-              29.5
-            ],
-            "type": "ToPoint",
             "units": "mm"
           }
         ],
@@ -1334,23 +1300,6 @@ description: Variables in memory after executing teapot.kcl
             "from": [
               0.0,
               130.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
             ],
             "tag": null,
             "to": [

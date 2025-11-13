@@ -3405,23 +3405,6 @@ description: Variables in memory after executing engine-valve.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.01,
-              30.0
-            ],
-            "tag": null,
-            "to": [
-              -0.01,
-              30.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -3672,23 +3655,6 @@ description: Variables in memory after executing engine-valve.kcl
           "from": [
             -0.3,
             1.65
-          ],
-          "tag": null,
-          "to": [
-            -0.01,
-            30.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.01,
-            30.0
           ],
           "tag": null,
           "to": [

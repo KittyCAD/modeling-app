@@ -1420,23 +1420,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
             ],
             "type": "TangentialArcTo",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -2345,23 +2328,6 @@ description: Variables in memory after executing surgical-drill-guide.kcl
               0.0
             ],
             "type": "TangentialArcTo",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
             "units": "mm"
           }
         ],
