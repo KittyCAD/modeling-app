@@ -227,7 +227,6 @@ export default class GizmoRenderer {
 
     window.removeEventListener('mousemove', this.onWindowMouseMove)
     window.removeEventListener('mouseup', this.onMouseUp)
-    document.removeEventListener('mouseleave', this.onMouseUp)
 
     if (this.raf > -1) {
       cancelAnimationFrame(this.raf)
@@ -301,7 +300,6 @@ export default class GizmoRenderer {
 
     window.removeEventListener('mousemove', this.onWindowMouseMove)
     window.removeEventListener('mouseup', this.onMouseUp)
-    document.removeEventListener('mouseleave', this.onMouseUp)
   }
 
   private onContextMenu = (event: MouseEvent) => {
