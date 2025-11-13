@@ -1292,6 +1292,17 @@ pub(crate) async fn inner_close(
             new_sketch.add_tag(tag, &current_path, exec_state, None);
         }
         new_sketch.paths.push(current_path);
+    } else if tag.is_some() {
+        exec_state.warn(
+            crate::CompilationError {
+                source_range: args.source_range,
+                message: "A tag declarator was specified, but no segment was created".to_string(),
+                suggestion: None,
+                severity: crate::errors::Severity::Warning,
+                tag: crate::errors::Tag::Unnecessary,
+            },
+            annotations::WARN_UNUSED_TAGS,
+        );
     }
 
     new_sketch.is_closed = true;
