@@ -372,11 +372,20 @@ mod tests {
         // Read the contents of the file.
         let contents = std::fs::read_to_string("tests/misc/cube.kcl").unwrap();
         let program = crate::Program::parse_no_errs(&contents).unwrap();
+        let module_infos = indexmap::IndexMap::from([(
+            ModuleId::default(),
+            crate::modules::ModuleInfo {
+                id: ModuleId::default(),
+                path: crate::modules::ModulePath::Main,
+                repr: crate::modules::ModuleRepr::Kcl(program.ast, None),
+            },
+        )]);
+        let programs = crate::execution::ProgramLookup::new(module_infos);
 
         // fn cube(sideLength, center) {
         //    ^^^^
         assert_eq!(
-            NodePath::from_range(&program.ast, 0, range(38, 42)).unwrap(),
+            NodePath::from_range(&programs, 0, range(38, 42)).unwrap(),
             NodePath {
                 steps: vec![Step::ProgramBodyItem { index: 0 }, Step::VariableDeclarationDeclaration],
             }
@@ -384,7 +393,7 @@ mod tests {
         // fn cube(sideLength, center) {
         //                     ^^^^^^
         assert_eq!(
-            NodePath::from_range(&program.ast, 0, range(55, 61)).unwrap(),
+            NodePath::from_range(&programs, 0, range(55, 61)).unwrap(),
             NodePath {
                 steps: vec![
                     Step::ProgramBodyItem { index: 0 },
@@ -397,7 +406,7 @@ mod tests {
         // |> line(endAbsolute = p1)
         //                       ^^
         assert_eq!(
-            NodePath::from_range(&program.ast, 0, range(293, 295)).unwrap(),
+            NodePath::from_range(&programs, 0, range(293, 295)).unwrap(),
             NodePath {
                 steps: vec![
                     Step::ProgramBodyItem { index: 0 },
@@ -414,7 +423,7 @@ mod tests {
         // myCube = cube(sideLength = 40, center = [0, 0])
         //                                             ^
         assert_eq!(
-            NodePath::from_range(&program.ast, 0, range(485, 486)).unwrap(),
+            NodePath::from_range(&programs, 0, range(485, 486)).unwrap(),
             NodePath {
                 steps: vec![
                     Step::ProgramBodyItem { index: 1 },
@@ -433,9 +442,18 @@ mod tests {
 import "cylinder.kcl" as cylinder
 "#;
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let module_infos = indexmap::IndexMap::from([(
+            ModuleId::default(),
+            crate::modules::ModuleInfo {
+                id: ModuleId::default(),
+                path: crate::modules::ModulePath::Main,
+                repr: crate::modules::ModuleRepr::Kcl(program.ast, None),
+            },
+        )]);
+        let programs = crate::execution::ProgramLookup::new(module_infos);
         // The entire cylinder import statement.
         assert_eq!(
-            NodePath::from_range(&program.ast, 0, range(27, 60)).unwrap(),
+            NodePath::from_range(&programs, 0, range(27, 60)).unwrap(),
             NodePath {
                 steps: vec![Step::ProgramBodyItem { index: 1 }],
             }

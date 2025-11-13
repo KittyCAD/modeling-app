@@ -1037,7 +1037,7 @@ impl ExecutorContext {
     fn add_import_module_ops(
         &self,
         exec_state: &mut ExecState,
-        program: &crate::Program,
+        _program: &crate::Program,
         module_id: ModuleId,
         module_path: &ModulePath,
         source_range: SourceRange,
@@ -1058,7 +1058,8 @@ impl ExecutorContext {
 
                     let node_path = if source_range.is_top_level_module() {
                         let cached_body_items = exec_state.global.artifacts.cached_body_items();
-                        NodePath::from_range(&program.ast, cached_body_items, source_range).unwrap_or_default()
+                        NodePath::from_range(&exec_state.build_program_lookup(), cached_body_items, source_range)
+                            .unwrap_or_default()
                     } else {
                         // The frontend doesn't care about paths in
                         // files other than the top-level module.
@@ -1188,6 +1189,7 @@ impl ExecutorContext {
         #[cfg(feature = "artifact-graph")]
         {
             // Fill in NodePath for operations.
+            let programs = &exec_state.build_program_lookup();
             let cached_body_items = exec_state.global.artifacts.cached_body_items();
             for op in exec_state
                 .global
@@ -1196,12 +1198,12 @@ impl ExecutorContext {
                 .iter_mut()
                 .skip(start_op)
             {
-                op.fill_node_paths(program, cached_body_items);
+                op.fill_node_paths(programs, cached_body_items);
             }
             for module in exec_state.global.module_infos.values_mut() {
                 if let ModuleRepr::Kcl(_, Some(outcome)) = &mut module.repr {
                     for op in &mut outcome.artifacts.operations {
-                        op.fill_node_paths(program, cached_body_items);
+                        op.fill_node_paths(programs, cached_body_items);
                     }
                 }
             }
@@ -1446,7 +1448,9 @@ pub(crate) struct ExecTestResults {
     exec_state: ExecState,
 }
 
-/// Look up the program for a given module ID.
+/// There are several places where we want to traverse a KCL program or find a symbol in it,
+/// but because KCL modules can import each other, we need to traverse multiple programs.
+/// This stores multiple programs, keyed by their module ID for quick access.
 pub struct ProgramLookup {
     programs: IndexMap<ModuleId, crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>>,
 }
@@ -1461,13 +1465,15 @@ impl Default for ProgramLookup {
 }
 
 impl ProgramLookup {
-    pub fn new(module_infos: &state::ModuleInfoMap) -> Self {
+    // TODO: Could this store a reference to KCL programs instead of owning them?
+    // i.e. take &state::ModuleInfoMap instead?
+    pub fn new(module_infos: state::ModuleInfoMap) -> Self {
         let mut programs = IndexMap::with_capacity(module_infos.len());
         for (id, info) in module_infos {
             #[cfg(target_arch = "wasm32")]
             web_sys::console::log_1(&format!("ProjectProgramLookup module {}: {:?}", id.as_usize(), info.path).into());
-            if let ModuleRepr::Kcl(program, _) = &info.repr {
-                programs.insert(*id, program.to_owned());
+            if let ModuleRepr::Kcl(program, _) = info.repr {
+                programs.insert(id, program);
             }
         }
         Self { programs }
