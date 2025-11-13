@@ -918,6 +918,7 @@ impl Node<SketchBlock> {
 
         let range = SourceRange::from(self);
 
+        // Evaluate arguments.
         let mut labeled = IndexMap::new();
         for labeled_arg in &self.arguments {
             let source_range = SourceRange::from(labeled_arg.arg.clone());
@@ -1085,6 +1086,7 @@ impl Node<SketchBlock> {
             let mut segment_object_ids = Vec::with_capacity(scene_objects.len());
             for scene_object in scene_objects {
                 segment_object_ids.push(scene_object.id);
+                // Fill in placeholder scene objects.
                 exec_state.set_scene_object(scene_object);
             }
             // Update the sketch scene object with the segments.

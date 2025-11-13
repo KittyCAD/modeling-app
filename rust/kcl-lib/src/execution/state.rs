@@ -258,6 +258,8 @@ impl ExecState {
         id
     }
 
+    /// Add a placeholder scene object. This is useful when we need to reserve
+    /// an ID before we have all the information to create the full object.
     #[cfg(feature = "artifact-graph")]
     pub fn add_placeholder_scene_object(&mut self, id: ObjectId, source_range: SourceRange) -> ObjectId {
         debug_assert!(id.0 == self.mod_local.artifacts.scene_objects.len());
