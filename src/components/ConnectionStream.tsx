@@ -38,6 +38,8 @@ import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToE
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { EngineDebugger } from '@src/lib/debugger'
 
+const TIME_TO_CONNECT = 30_000
+
 export const ConnectionStream = (props: {
   pool: string | null
   authToken: string | undefined
@@ -145,7 +147,7 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
       })
@@ -190,7 +192,7 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
       }).catch((e) => {
@@ -213,7 +215,7 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
       }).catch((e) => {
@@ -236,7 +238,7 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
       }).catch((e) => {
@@ -256,7 +258,7 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
       }).catch((e) => {
@@ -284,7 +286,7 @@ export const ConnectionStream = (props: {
         setIsSceneReady,
         isConnecting,
         numberOfConnectionAttempts,
-        timeToConnect: 30_000,
+        timeToConnect: TIME_TO_CONNECT,
         settings: settingsEngine,
         setShowManualConnect,
       }).catch((e) => {
@@ -373,7 +375,7 @@ export const ConnectionStream = (props: {
               setIsSceneReady,
               isConnecting,
               numberOfConnectionAttempts,
-              timeToConnect: 30_000,
+              timeToConnect: TIME_TO_CONNECT,
               settings: settingsEngine,
               setShowManualConnect,
             }).catch((e) => {
