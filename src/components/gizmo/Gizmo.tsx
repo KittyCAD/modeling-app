@@ -2,13 +2,17 @@ import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { useViewControlMenuItems } from '@src/components/ViewControlMenu'
 import CubeGizmo from '@src/components/gizmo/CubeGizmo'
+import AxisGizmo from '@src/components/gizmo/AxisGizmo'
+import { useSettings } from '@src/lib/singletons'
 
 export default function Gizmo() {
   const menuItems = useViewControlMenuItems()
+  const settings = useSettings()
+  const gizmoType = settings.modeling.gizmoType.current
 
   return (
     <div className="relative">
-      <CubeGizmo />
+      {gizmoType === 'axis' ? <AxisGizmo /> : <CubeGizmo />}
       <GizmoDropdown items={menuItems} />
     </div>
   )
