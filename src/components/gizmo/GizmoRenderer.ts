@@ -1,4 +1,5 @@
 import { btnName } from '@src/lib/cameraControls'
+import { DprDetector } from '@src/lib/DprDetector'
 import { sceneInfra } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import type {
@@ -32,6 +33,7 @@ export default class GizmoRenderer {
   private readonly canvas: HTMLCanvasElement
   private readonly renderer: WebGLRenderer
   private readonly scene: Scene
+  private readonly dprDetector: DprDetector
   private camera: PerspectiveCamera | OrthographicCamera
   private clickableObjects: StandardMesh[] = []
   private theme: 'light' | 'dark'
@@ -73,7 +75,7 @@ export default class GizmoRenderer {
     this.renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true })
     this.renderer.setSize(120, 120)
     this.renderer.setPixelRatio(window.devicePixelRatio)
-    // TODO listen dpr change
+    this.dprDetector = new DprDetector(this.onDprChange)
 
     this.scene = new Scene()
     const ambient = new AmbientLight(0xffffff, 1.5)
@@ -111,6 +113,11 @@ export default class GizmoRenderer {
     this.theme = this.setTheme(theme)
 
     this.loadModel()
+  }
+
+  private onDprChange = () => {
+    this.renderer.setPixelRatio(window.devicePixelRatio)
+    this.invalidate()
   }
 
   public setPerspective(isPerspective: boolean) {
@@ -225,6 +232,7 @@ export default class GizmoRenderer {
     if (this.raf > -1) {
       cancelAnimationFrame(this.raf)
     }
+    this.dprDetector.dispose()
     this.renderer.dispose()
   }
 
