@@ -181,6 +181,17 @@ impl TryFrom<crate::std::args::TyF64> for Number {
     }
 }
 
+impl Number {
+    pub fn round(&self, digits: u8) -> Self {
+        let factor = 10f64.powi(digits as i32);
+        let rounded_value = (self.value * factor).round() / factor;
+        Number {
+            value: rounded_value,
+            units: self.units,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(tag = "type")]
