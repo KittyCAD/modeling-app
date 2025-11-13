@@ -69,7 +69,7 @@ import {
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
-import { addFlatnessGdt } from '@src/lang/modifyAst/gdt'
+import { addFlatnessGdt, addDatumGdt } from '@src/lang/modifyAst/gdt'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -1887,6 +1887,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add datum geometric dimensioning & tolerancing annotation to a face.',
     icon: 'gdtDatum',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addDatumGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Datum']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     status: 'experimental',
     args: {
       nodeToEdit: {

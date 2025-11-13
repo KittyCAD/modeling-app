@@ -348,7 +348,15 @@ export function addDatumGdt({
   ]
 
   // Create the gdt::datum call
-  const call = createCallExpressionStdLibKw('gdt::datum', null, labeledArgs)
+  const nonCodeMeta = undefined
+  const modulePath = [createIdentifier('gdt')]
+  const call = createCallExpressionStdLibKw(
+    'datum',
+    null,
+    labeledArgs,
+    nonCodeMeta,
+    modulePath
+  )
 
   // Insert the function call into the AST at the appropriate location
   const pathToNode = setCallInAst({

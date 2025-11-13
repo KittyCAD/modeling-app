@@ -3729,7 +3729,6 @@ export const modelingMachine = setup({
           },
           {
             focusPath: [result.pathToNode],
-            skipErrorsOnMockExecution: true, // Skip validation since gdt::datum may not be available in runtime yet
           }
         )
       }
