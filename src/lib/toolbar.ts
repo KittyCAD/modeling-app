@@ -1222,6 +1222,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         description: 'Exit the current sketch',
         links: [],
       },
+      'break',
       {
         id: 'line',
         onClick: ({ modelingSend, isActive }) =>
@@ -1264,6 +1265,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           state.matches('sketchSolveMode') &&
           state.context.sketchSolveToolName === 'pointTool',
       },
+      'break',
       {
         id: 'coincident',
         onClick: ({ modelingSend, isActive }) =>
