@@ -330,6 +330,11 @@ export type ModelingCommandSchema = {
     fontPointSize?: KclCommandValue
     fontScale?: KclCommandValue
   }
+  'GDT Datum': {
+    nodeToEdit?: PathToNode
+    faces: Selections
+    name: string
+  }
   'Boolean Subtract': {
     solids: Selections
     tools: Selections
@@ -1874,6 +1879,30 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_FONT_SCALE,
         required: false,
+      },
+    },
+  },
+  'GDT Datum': {
+    description:
+      'Add datum geometric dimensioning & tolerancing annotation to a face.',
+    icon: 'gdtDatum',
+    needsReview: true,
+    status: 'experimental',
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      faces: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        multiple: false,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      name: {
+        inputType: 'string',
+        defaultValue: 'A',
+        required: true,
       },
     },
   },
