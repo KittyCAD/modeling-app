@@ -1270,24 +1270,41 @@ pub(crate) async fn inner_close(
         )
         .await?;
 
-    let current_path = Path::ToPoint {
-        base: BasePath {
-            from: from.ignore_units(),
-            to,
-            tag: tag.clone(),
-            units: sketch.units,
-            geo_meta: GeoMeta {
-                id,
-                metadata: args.source_range.into(),
-            },
-        },
-    };
-
     let mut new_sketch = sketch;
-    if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path, exec_state, None);
+
+    let distance = ((from.x - to[0]).powi(2) + (from.y - to[1]).powi(2)).sqrt();
+    if distance > super::EQUAL_POINTS_DIST_EPSILON {
+        // These will NOT be the same point in the engine, and an additional segment will be created.
+        let current_path = Path::ToPoint {
+            base: BasePath {
+                from: from.ignore_units(),
+                to,
+                tag: tag.clone(),
+                units: new_sketch.units,
+                geo_meta: GeoMeta {
+                    id,
+                    metadata: args.source_range.into(),
+                },
+            },
+        };
+
+        if let Some(tag) = &tag {
+            new_sketch.add_tag(tag, &current_path, exec_state, None);
+        }
+        new_sketch.paths.push(current_path);
+    } else if tag.is_some() {
+        exec_state.warn(
+            crate::CompilationError {
+                source_range: args.source_range,
+                message: "A tag declarator was specified, but no segment was created".to_string(),
+                suggestion: None,
+                severity: crate::errors::Severity::Warning,
+                tag: crate::errors::Tag::Unnecessary,
+            },
+            annotations::WARN_UNUSED_TAGS,
+        );
     }
-    new_sketch.paths.push(current_path);
+
     new_sketch.is_closed = true;
 
     Ok(new_sketch)

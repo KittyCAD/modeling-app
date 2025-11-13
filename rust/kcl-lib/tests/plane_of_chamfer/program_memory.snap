@@ -133,23 +133,6 @@ description: Variables in memory after executing plane_of_chamfer.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -334,23 +317,6 @@ description: Variables in memory after executing plane_of_chamfer.kcl
             "type": "TagDeclarator",
             "value": "seg01"
           },
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
           "to": [
             0.0,
             0.0
