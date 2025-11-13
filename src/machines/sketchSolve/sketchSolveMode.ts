@@ -429,7 +429,6 @@ export const sketchSolveMachine = setup({
       let lastHoveredMesh: Mesh | null = null
       let lastSuccessfulDragFromPoint = new Vector2()
       let draggingPointElement: HTMLElement | null = null
-      let isAreaSelectActive = false
 
       /**
        * Helper function to find the CSS2DObject element for visual feedback
@@ -579,12 +578,67 @@ export const sketchSolveMachine = setup({
       }
 
       /**
+       * Helper function to check if a point segment (CSS2DObject) is within the selection box
+       * Returns the segment ID if it should be included, null otherwise
+       */
+      function checkPointSegmentInBox(
+        css2dObject: CSS2DObject,
+        segmentId: number,
+        objects: Array<any>,
+        camera: any,
+        renderer: any,
+        boxMinPx: Vector2,
+        boxMaxPx: Vector2
+      ): number | null {
+        // Handle point segment - check if it has an owner (line endpoint)
+        const obj = objects[segmentId]
+        if (
+          obj?.kind?.type === 'Segment' &&
+          obj.kind.segment.type === 'Point'
+        ) {
+          // Skip if point has an owner (it's a line endpoint)
+          // Maybe we can enable these selection with a key modifier in the future
+          if (
+            obj.kind.segment.owner !== null &&
+            obj.kind.segment.owner !== undefined
+          ) {
+            return null
+          }
+
+          // Get the world position of the CSS2DObject
+          css2dObject.updateMatrixWorld()
+          const worldPos = new Vector3()
+          css2dObject.getWorldPosition(worldPos)
+
+          // Project to screen space
+          const viewportSize = new Vector2(
+            renderer.domElement.clientWidth,
+            renderer.domElement.clientHeight
+          )
+          const projected = worldPos.clone().project(camera)
+          const screenPos = new Vector2(
+            ((projected.x + 1) / 2) * viewportSize.x,
+            ((1 - projected.y) / 2) * viewportSize.y
+          )
+
+          // Check if the point is within the selection box
+          if (
+            screenPos.x >= boxMinPx.x &&
+            screenPos.x <= boxMaxPx.x &&
+            screenPos.y >= boxMinPx.y &&
+            screenPos.y <= boxMaxPx.y
+          ) {
+            return segmentId
+          }
+        }
+        return null
+      }
+
+      /**
        * Helper function to find segments (line segments and point segments) contained within the selection box
        * Uses screen-space projection to check if segments are within the box
        */
       function findContainedSegments(
-        startPoint3D: Vector3,
-        currentPoint3D: Vector3,
         boxMinPx: Vector2,
         boxMaxPx: Vector2
       ): Array<number> {
@@ -686,42 +740,17 @@ export const sketchSolveMachine = setup({
           ) as CSS2DObject | undefined
 
           if (css2dObject) {
-            // Handle point segment - check if it has an owner (line endpoint)
-            const obj = objects[segmentId]
-            if (
-              obj?.kind?.type === 'Segment' &&
-              obj.kind.segment.type === 'Point'
-            ) {
-              // Skip if point has an owner (it's a line endpoint)
-              // Maybe we can enable these selection with a key modifier in the future
-              if (
-                obj.kind.segment.owner !== null &&
-                obj.kind.segment.owner !== undefined
-              ) {
-                return
-              }
-
-              // Get the world position of the CSS2DObject
-              css2dObject.updateMatrixWorld()
-              const worldPos = new Vector3()
-              css2dObject.getWorldPosition(worldPos)
-
-              // Project to screen space
-              const projected = worldPos.clone().project(camera)
-              const screenPos = new Vector2(
-                ((projected.x + 1) / 2) * viewportSize.x,
-                ((1 - projected.y) / 2) * viewportSize.y
-              )
-
-              // Check if the point is within the selection box
-              if (
-                screenPos.x >= boxMinPx.x &&
-                screenPos.x <= boxMaxPx.x &&
-                screenPos.y >= boxMinPx.y &&
-                screenPos.y <= boxMaxPx.y
-              ) {
-                containedIds.push(segmentId)
-              }
+            const pointId = checkPointSegmentInBox(
+              css2dObject,
+              segmentId,
+              objects,
+              camera,
+              renderer,
+              boxMinPx,
+              boxMaxPx
+            )
+            if (pointId !== null) {
+              containedIds.push(pointId)
             }
           }
         })
@@ -734,8 +763,6 @@ export const sketchSolveMachine = setup({
        * Uses screen-space projection to check if segments intersect the box
        */
       function findIntersectingSegments(
-        startPoint3D: Vector3,
-        currentPoint3D: Vector3,
         boxMinPx: Vector2,
         boxMaxPx: Vector2
       ): Array<number> {
@@ -848,41 +875,17 @@ export const sketchSolveMachine = setup({
           ) as CSS2DObject | undefined
 
           if (css2dObject) {
-            // Handle point segment - check if it has an owner (line endpoint)
-            const obj = objects[segmentId]
-            if (
-              obj?.kind?.type === 'Segment' &&
-              obj.kind.segment.type === 'Point'
-            ) {
-              // Skip if point has an owner (it's a line endpoint)
-              if (
-                obj.kind.segment.owner !== null &&
-                obj.kind.segment.owner !== undefined
-              ) {
-                return
-              }
-
-              // Get the world position of the CSS2DObject
-              css2dObject.updateMatrixWorld()
-              const worldPos = new Vector3()
-              css2dObject.getWorldPosition(worldPos)
-
-              // Project to screen space
-              const projected = worldPos.clone().project(camera)
-              const screenPos = new Vector2(
-                ((projected.x + 1) / 2) * viewportSize.x,
-                ((1 - projected.y) / 2) * viewportSize.y
-              )
-
-              // Check if the point is within the selection box
-              if (
-                screenPos.x >= boxMinPx.x &&
-                screenPos.x <= boxMaxPx.x &&
-                screenPos.y >= boxMinPx.y &&
-                screenPos.y <= boxMaxPx.y
-              ) {
-                intersectingIds.push(segmentId)
-              }
+            const pointId = checkPointSegmentInBox(
+              css2dObject,
+              segmentId,
+              objects,
+              camera,
+              renderer,
+              boxMinPx,
+              boxMaxPx
+            )
+            if (pointId !== null) {
+              intersectingIds.push(pointId)
             }
           }
         })
@@ -1108,7 +1111,7 @@ export const sketchSolveMachine = setup({
             data: { selectedIds: [], duringAreaSelectIds: [] },
           })
         },
-        onMouseEnter: ({ selected }) => {
+        onMouseEnter: ({ selected, isAreaSelectActive }) => {
           // Disable hover highlighting during area select
           if (isAreaSelectActive) {
             return
@@ -1132,7 +1135,7 @@ export const sketchSolveMachine = setup({
             lastHoveredMesh = mesh
           }
         },
-        onMouseLeave: ({ selected }) => {
+        onMouseLeave: ({ selected, isAreaSelectActive }) => {
           // Disable hover highlighting during area select
           if (isAreaSelectActive) {
             return
@@ -1171,7 +1174,6 @@ export const sketchSolveMachine = setup({
         },
         onAreaSelectStart: ({ startPoint }) => {
           // Area select started - create the selection box visual and clear any previous area select
-          isAreaSelectActive = true
           if (startPoint.threeD) {
             updateSelectionBox(startPoint.threeD, startPoint.threeD)
             // Clear any previous duringAreaSelectIds
@@ -1217,25 +1219,9 @@ export const sketchSolveMachine = setup({
 
             // Determine selection mode based on drag direction
             const isIntersectionBox = startPx.x > currentPx.x
-            if (!isIntersectionBox) {
-              // Contains box: find segments fully contained within the selection box
-              const containedIds = findContainedSegments(
-                startPoint.threeD,
-                currentPoint.threeD,
-                boxMinPx,
-                boxMaxPx
-              )
-
-              // Update duringAreaSelectIds (temporary selection during drag)
-              self.send({
-                type: 'update selected ids',
-                data: { duringAreaSelectIds: containedIds },
-              })
-            } else {
+            if (isIntersectionBox) {
               // Intersection box: find segments that intersect with the selection box
               const intersectingIds = findIntersectingSegments(
-                startPoint.threeD,
-                currentPoint.threeD,
                 boxMinPx,
                 boxMaxPx
               )
@@ -1245,15 +1231,21 @@ export const sketchSolveMachine = setup({
                 type: 'update selected ids',
                 data: { duringAreaSelectIds: intersectingIds },
               })
+            } else {
+              // Contains box: find segments fully contained within the selection box
+              const containedIds = findContainedSegments(boxMinPx, boxMaxPx)
+
+              // Update duringAreaSelectIds (temporary selection during drag)
+              self.send({
+                type: 'update selected ids',
+                data: { duringAreaSelectIds: containedIds },
+              })
             }
           }
         },
         onAreaSelectEnd: ({ startPoint, currentPoint }) => {
           // Remove selection box visual
           removeSelectionBox()
-
-          // Disable area select flag
-          isAreaSelectActive = false
 
           // Merge duringAreaSelectIds into selectedIds and clear duringAreaSelectIds
           const snapshot = self.getSnapshot()

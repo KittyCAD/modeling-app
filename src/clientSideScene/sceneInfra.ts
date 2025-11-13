@@ -53,6 +53,8 @@ export interface OnMouseEnterLeaveArgs {
     twoD?: Vector2
     threeD?: Vector3
   }
+  /** Whether area select is currently active */
+  isAreaSelectActive?: boolean
 }
 
 interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
@@ -322,6 +324,10 @@ export class SceneInfra {
     }
     hasBeenDragged: boolean
   } | null = null
+
+  get isAreaSelectActive(): boolean {
+    return this.areaSelect !== null && this.areaSelect.hasBeenDragged
+  }
   private isRenderingPaused = false
   private lastFrameTime = 0
   private animationFrameId = -1
@@ -650,6 +656,7 @@ export class SceneInfra {
               selected: hoveredObj,
               mouseEvent: mouseEvent,
               intersectionPoint,
+              isAreaSelectActive: this.isAreaSelectActive,
             })
           }
           this.hoveredObject = firstIntersectObject
@@ -657,6 +664,7 @@ export class SceneInfra {
             selected: this.hoveredObject,
             mouseEvent: mouseEvent,
             intersectionPoint,
+            isAreaSelectActive: this.isAreaSelectActive,
           })
           this.updateMouseState({
             type: 'isHovering',
@@ -670,6 +678,7 @@ export class SceneInfra {
           await this.onMouseLeave({
             selected: hoveredObj,
             mouseEvent: mouseEvent,
+            isAreaSelectActive: this.isAreaSelectActive,
           })
           if (!this.selected) this.updateMouseState({ type: 'idle' })
         }
