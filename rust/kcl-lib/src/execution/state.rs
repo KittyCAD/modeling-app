@@ -7,6 +7,8 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[cfg(feature = "artifact-graph")]
+use super::build_program_lookup;
+#[cfg(feature = "artifact-graph")]
 use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 use crate::{
     CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs, SourceRange,
@@ -404,10 +406,12 @@ impl ExecState {
         let initial_graph = self.global.artifacts.graph.clone();
 
         // Build the artifact graph.
+        let program_lookup = build_program_lookup(program, &self.global.module_infos);
         let graph_result = crate::execution::artifact::build_artifact_graph(
             &new_commands,
             &new_responses,
             program,
+            &program_lookup,
             &mut self.global.artifacts.artifacts,
             initial_graph,
         );

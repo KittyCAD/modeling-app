@@ -1,9 +1,8 @@
+use indexmap::IndexMap;
 use serde::Serialize;
 
 use super::{BodyItem, Expr, Node, Program};
-use crate::SourceRange;
-#[cfg(feature = "artifact-graph")]
-use crate::execution::ProjectProgramLookup;
+use crate::{ModuleId, SourceRange};
 
 /// A traversal path through the AST to a node.
 ///
@@ -63,6 +62,43 @@ pub enum Step {
     SketchVar,
 }
 
+/// [`ProgramLookup`] implementation that owns cloned ASTs.
+#[derive(Debug, Default, Clone)]
+pub struct ProgramLookup {
+    programs: IndexMap<ModuleId, Node<Program>>,
+}
+
+impl ProgramLookup {
+    pub fn new() -> Self {
+        Self {
+            programs: IndexMap::new(),
+        }
+    }
+
+    /// Create a lookup backed by a single program.
+    pub fn from_single(program: &Node<Program>) -> Self {
+        let mut lookup = Self::new();
+        lookup.insert(program.module_id, program);
+        lookup
+    }
+
+    /// Insert (or replace) a program for the given module ID.
+    pub fn insert(&mut self, module_id: ModuleId, program: &Node<Program>) {
+        self.programs.insert(module_id, program.clone());
+    }
+
+    /// Extend the lookup by cloning programs from an iterator.
+    pub fn extend_from_iter<'a>(&mut self, iter: impl IntoIterator<Item = (ModuleId, &'a Node<Program>)>) {
+        for (module_id, program) in iter {
+            self.insert(module_id, program);
+        }
+    }
+
+    fn program_for_module(&self, module_id: ModuleId) -> Option<&Node<Program>> {
+        self.programs.get(&module_id)
+    }
+}
+
 impl NodePath {
     /// Placeholder for when the AST isn't available to create a real path.  It
     /// will be filled in later.
@@ -71,20 +107,20 @@ impl NodePath {
     }
 
     #[cfg(feature = "artifact-graph")]
-    pub(crate) fn fill_placeholder(
-        &mut self,
-        programs: &ProjectProgramLookup,
-        cached_body_items: usize,
-        range: SourceRange,
-    ) {
+    pub(crate) fn fill_placeholder(&mut self, programs: &ProgramLookup, cached_body_items: usize, range: SourceRange) {
         if !self.is_empty() {
             return;
         }
 
-        *self = programs
+        if let Some(path) = Self::from_lookup(programs, cached_body_items, range) {
+            *self = path;
+        }
+    }
+
+    pub(crate) fn from_lookup(programs: &ProgramLookup, cached_body_items: usize, range: SourceRange) -> Option<Self> {
+        programs
             .program_for_module(range.module_id())
             .and_then(|program| Self::from_range(program, cached_body_items, range))
-            .unwrap_or_default();
     }
 
     /// Given a program and a [`SourceRange`], return the path to the node that

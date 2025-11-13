@@ -11,7 +11,7 @@ use std::{
 
 use anyhow::Result;
 use parse_display::{Display, FromStr};
-pub use path::{NodePath, Step};
+pub use path::{NodePath, ProgramLookup, Step};
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
     Color, ColorInformation, ColorPresentation, CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange,

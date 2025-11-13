@@ -2,9 +2,10 @@ use indexmap::IndexMap;
 use serde::Serialize;
 
 use super::{ArtifactId, KclValue, types::NumericType};
-#[cfg(feature = "artifact-graph")]
-use crate::execution::ProjectProgramLookup;
-use crate::{ModuleId, NodePath, SourceRange, parsing::ast::types::ItemVisibility};
+use crate::{
+    ModuleId, NodePath, SourceRange,
+    parsing::ast::types::{ItemVisibility, ProgramLookup},
+};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
@@ -64,7 +65,7 @@ impl Operation {
     }
 
     #[cfg(feature = "artifact-graph")]
-    pub(crate) fn fill_node_paths(&mut self, programs: &ProjectProgramLookup, cached_body_items: usize) {
+    pub(crate) fn fill_node_paths(&mut self, programs: &ProgramLookup, cached_body_items: usize) {
         match self {
             Operation::StdLibCall {
                 node_path,

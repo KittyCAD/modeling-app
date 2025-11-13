@@ -151,9 +151,9 @@ pub mod pretty {
 use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
-use crate::exec::WarningLevel;
 #[allow(unused_imports)]
 use crate::log::{log, logln};
+use crate::{exec::WarningLevel, parsing::ast::types::ProgramLookup};
 
 lazy_static::lazy_static! {
 
@@ -258,7 +258,8 @@ impl Program {
     }
 
     pub fn node_path_from_range(&self, cached_body_items: usize, range: SourceRange) -> Option<NodePath> {
-        NodePath::from_range(&self.ast, cached_body_items, range)
+        let lookup = ProgramLookup::from_single(&self.ast);
+        NodePath::from_lookup(&lookup, cached_body_items, range)
     }
 
     pub fn recast(&self) -> String {

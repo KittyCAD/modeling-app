@@ -29,7 +29,7 @@ pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
 use crate::{
-    CompilationError, ExecError, KclErrorWithOutputs, SourceRange,
+    CompilationError, ExecError, KclErrorWithOutputs, NodePath, SourceRange,
     engine::{EngineManager, GridScaleBehavior},
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -43,7 +43,7 @@ use crate::{
 };
 
 #[cfg(feature = "artifact-graph")]
-use crate::parsing::ast::types::{Node, Program};
+use crate::parsing::ast::types::{Node, Program, ProgramLookup};
 
 pub(crate) mod annotations;
 #[cfg(feature = "artifact-graph")]
@@ -102,32 +102,14 @@ pub struct DefaultPlanes {
     pub neg_yz: uuid::Uuid,
 }
 
-/// Provides project-wide access to cloned module ASTs for resolving node paths.
 #[cfg(feature = "artifact-graph")]
-pub struct ProjectProgramLookup {
-    programs: IndexMap<ModuleId, Node<Program>>,
-}
-
-#[cfg(feature = "artifact-graph")]
-impl ProjectProgramLookup {
-    pub fn new(main_program: &Node<Program>, module_infos: &state::ModuleInfoMap) -> Self {
-        let mut programs = IndexMap::with_capacity(module_infos.len());
-        for (id, info) in module_infos {
-            #[cfg(target_arch = "wasm32")]
-            web_sys::console::log_1(&format!("ProjectProgramLookup module {}: {:?}", id.as_usize(), info.path).into());
-            if let ModuleRepr::Kcl(program, _) = &info.repr {
-                programs.insert(*id, program.to_owned());
-            }
-        }
-        Self { programs }
-    }
-
-    pub fn program_for_module(&self, module_id: ModuleId) -> Option<&Node<Program>> {
-        #[cfg(target_arch = "wasm32")]
-        web_sys::console::log_1(&format!("Looking up module ID {}", module_id.as_usize()).into());
-
-        self.programs.get(&module_id)
-    }
+fn build_program_lookup(main_program: &Node<Program>, module_infos: &state::ModuleInfoMap) -> ProgramLookup {
+    let mut lookup = ProgramLookup::from_single(main_program);
+    lookup.extend_from_iter(module_infos.iter().filter_map(|(id, info)| match &info.repr {
+        ModuleRepr::Kcl(program, _) => Some((*id, program)),
+        _ => None,
+    }));
+    lookup
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS)]
@@ -1085,11 +1067,10 @@ impl ExecutorContext {
                 // We only want to display the top-level module imports in
                 // the Feature Tree, not transitive imports.
                 if universe_map.contains_key(value) {
-                    use crate::NodePath;
-
                     let node_path = if source_range.is_top_level_module() {
                         let cached_body_items = exec_state.global.artifacts.cached_body_items();
-                        NodePath::from_range(&program.ast, cached_body_items, source_range).unwrap_or_default()
+                        let lookup = ProgramLookup::from_single(&program.ast);
+                        NodePath::from_lookup(&lookup, cached_body_items, source_range).unwrap_or_default()
                     } else {
                         // The frontend doesn't care about paths in
                         // files other than the top-level module.
@@ -1219,7 +1200,7 @@ impl ExecutorContext {
         #[cfg(feature = "artifact-graph")]
         {
             // Fill in NodePath for operations.
-            let lookup = ProjectProgramLookup::new(program, &exec_state.global.module_infos);
+            let lookup = build_program_lookup(program, &exec_state.global.module_infos);
             let cached_body_items = exec_state.global.artifacts.cached_body_items();
             for op in exec_state
                 .global
