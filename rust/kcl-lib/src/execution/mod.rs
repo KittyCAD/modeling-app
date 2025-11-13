@@ -862,7 +862,14 @@ impl ExecutorContext {
                 // Clone before mutating.
                 let module_exec_state = exec_state.clone();
 
-                self.add_import_module_ops(exec_state, module_id, &module_path, source_range, &universe_map);
+                self.add_import_module_ops(
+                    exec_state,
+                    &program.ast,
+                    module_id,
+                    &module_path,
+                    source_range,
+                    &universe_map,
+                );
 
                 let repr = repr.clone();
                 let exec_ctxt = self.clone();
@@ -1018,6 +1025,7 @@ impl ExecutorContext {
     fn add_import_module_ops(
         &self,
         _exec_state: &mut ExecState,
+        _program: &crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
         _module_id: ModuleId,
         _module_path: &ModulePath,
         _source_range: SourceRange,
@@ -1029,6 +1037,7 @@ impl ExecutorContext {
     fn add_import_module_ops(
         &self,
         exec_state: &mut ExecState,
+        program: &crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
         module_id: ModuleId,
         module_path: &ModulePath,
         source_range: SourceRange,
@@ -1049,8 +1058,12 @@ impl ExecutorContext {
 
                     let node_path = if source_range.is_top_level_module() {
                         let cached_body_items = exec_state.global.artifacts.cached_body_items();
-                        NodePath::from_range(&exec_state.build_program_lookup(), cached_body_items, source_range)
-                            .unwrap_or_default()
+                        NodePath::from_range(
+                            &exec_state.build_program_lookup(program.clone()),
+                            cached_body_items,
+                            source_range,
+                        )
+                        .unwrap_or_default()
                     } else {
                         // The frontend doesn't care about paths in
                         // files other than the top-level module.
@@ -1180,7 +1193,7 @@ impl ExecutorContext {
         #[cfg(feature = "artifact-graph")]
         {
             // Fill in NodePath for operations.
-            let programs = &exec_state.build_program_lookup();
+            let programs = &exec_state.build_program_lookup(program.clone());
             let cached_body_items = exec_state.global.artifacts.cached_body_items();
             for op in exec_state
                 .global

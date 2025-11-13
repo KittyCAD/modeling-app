@@ -412,7 +412,7 @@ impl ExecState {
         let initial_graph = self.global.artifacts.graph.clone();
 
         // Build the artifact graph.
-        let programs = self.build_program_lookup(program);
+        let programs = self.build_program_lookup(program.clone());
         let graph_result = crate::execution::artifact::build_artifact_graph(
             &new_commands,
             &new_responses,

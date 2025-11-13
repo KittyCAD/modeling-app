@@ -384,10 +384,10 @@ mod tests {
             crate::modules::ModuleInfo {
                 id: ModuleId::default(),
                 path: crate::modules::ModulePath::Main,
-                repr: crate::modules::ModuleRepr::Kcl(program.ast, None),
+                repr: crate::modules::ModuleRepr::Kcl(program.ast.clone(), None),
             },
         )]);
-        let programs = crate::execution::ProgramLookup::new(module_infos);
+        let programs = crate::execution::ProgramLookup::new(program.ast, module_infos);
 
         // fn cube(sideLength, center) {
         //    ^^^^
@@ -454,10 +454,10 @@ import "cylinder.kcl" as cylinder
             crate::modules::ModuleInfo {
                 id: ModuleId::default(),
                 path: crate::modules::ModulePath::Main,
-                repr: crate::modules::ModuleRepr::Kcl(program.ast, None),
+                repr: crate::modules::ModuleRepr::Kcl(program.ast.clone(), None),
             },
         )]);
-        let programs = crate::execution::ProgramLookup::new(module_infos);
+        let programs = crate::execution::ProgramLookup::new(program.ast, module_infos);
         // The entire cylinder import statement.
         assert_eq!(
             NodePath::from_range(&programs, 0, range(27, 60)).unwrap(),
