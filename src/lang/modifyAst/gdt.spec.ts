@@ -567,4 +567,86 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       )
     })
   })
+
+  describe('Testing addDatumGdt', () => {
+    it('should add datum annotation to a cap face', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const faces = getCapFromCylinder(artifactGraph)
+      const name = 'A'
+      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
+      const result = addDatumGdt({ ast, artifactGraph, faces, name })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      // Verify the extrude was tagged
+      expect(newCode).toContain('tagEnd = $capEnd001')
+      // Verify the GDT datum annotation was added
+      expect(newCode).toContain('gdt::datum(face = capEnd001, name = "A")')
+    })
+
+    it('should add datum annotation to a wall face', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const faces = getWallsFromBox(artifactGraph, 1)
+      const name = 'C'
+      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
+      const result = addDatumGdt({ ast, artifactGraph, faces, name })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      // Verify the wall was tagged
+      expect(newCode).toContain('tag = $seg01')
+      // Verify the GDT datum annotation was added with correct name
+      expect(newCode).toContain('gdt::datum(face = seg01, name = "C")')
+    })
+
+    it('should add datum annotation to a chamfer face', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        boxWithOneTagAndChamfer,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      // Find the chamfer edgeCut artifact
+      const chamferArtifact = [...artifactGraph.values()].find(
+        (a) => a.type === 'edgeCut' && a.subType === 'chamfer'
+      )
+      expect(chamferArtifact).toBeDefined()
+      if (!chamferArtifact) {
+        throw new Error('Expected chamfer artifact not found')
+      }
+
+      // Create selections for GDT
+      const faces = createSelectionFromArtifacts(
+        [chamferArtifact],
+        artifactGraph
+      )
+
+      const name = 'D'
+      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
+      const result = addDatumGdt({ ast, artifactGraph, faces, name })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      // Verify the original segment tag is preserved
+      expect(newCode).toContain('xLine(length = 10, tag = $seg01)')
+      // Verify the chamfer was tagged properly
+      expect(newCode).toContain('tag = $seg02')
+      // Verify GDT datum annotation was added for chamfer
+      expect(newCode).toContain('gdt::datum(face = seg02, name = "D")')
+    })
+  })
 })
