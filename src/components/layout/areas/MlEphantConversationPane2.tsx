@@ -57,10 +57,33 @@ export const MlEphantConversationPane2 = (props: {
       return
     }
 
+    let project: Project = props.theProject
+
+    if (!window.electron) {
+      // If there is no project, we'll create a fake one. Expectation is for
+      // this to only happen on web.
+      project = {
+        metadata: null,
+        kcl_file_count: 1,
+        directory_count: 0,
+        default_file: '/main.kcl',
+        path: '/' + props.settings.meta.id.current,
+        name: props.settings.meta.id.current,
+        children: [
+          {
+            name: 'main.kcl',
+            path: `/main.kcl`,
+            children: null,
+          },
+        ],
+        readWriteAccess: true,
+      }
+    }
+
     const projectFiles = await collectProjectFiles({
       selectedFileContents: props.codeManager.code,
       fileNames: props.kclManager.execState.filenames,
-      projectContext: props.theProject,
+      projectContext: project,
     })
 
     // Only on initial project creation do we call the create endpoint, which
@@ -69,7 +92,7 @@ export const MlEphantConversationPane2 = (props: {
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions2.MessageSend,
       prompt: request,
-      projectForPromptOutput: props.theProject,
+      projectForPromptOutput: project,
       applicationProjectDirectory: props.settings.app.projectDirectory.current,
       fileSelectedDuringPrompting: {
         entry: props.loaderFile,

@@ -161,23 +161,6 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              2.03995,
-              -52.13777608090537
-            ],
-            "tag": null,
-            "to": [
-              2.03995,
-              -52.13777608090537
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -350,23 +333,6 @@ description: Variables in memory after executing shepherds-hook-bolt.kcl
           "from": [
             0.20399499999999993,
             -81.38777608090537
-          ],
-          "tag": null,
-          "to": [
-            2.03995,
-            -52.13777608090537
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            2.03995,
-            -52.13777608090537
           ],
           "tag": null,
           "to": [

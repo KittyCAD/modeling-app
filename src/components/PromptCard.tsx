@@ -127,7 +127,7 @@ export const PromptCardStatus = (props: {
 
 export const AvatarUser = (props: { src?: string }) => {
   return (
-    <div className="rounded-full border overflow-hidden">
+    <div className="avatar">
       {props.src ? (
         <img
           src={props.src || ''}

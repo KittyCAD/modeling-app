@@ -168,23 +168,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
             ],
             "type": "TangentialArcTo",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              8.84,
-              4.7
-            ],
-            "tag": null,
-            "to": [
-              8.84,
-              4.7
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -418,23 +401,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
             ],
             "type": "TangentialArcTo",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              4.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              4.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -626,23 +592,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -8.0
             ],
             "type": "TangentialArcTo",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -23.0,
-              -8.0
-            ],
-            "tag": null,
-            "to": [
-              -23.0,
-              -8.0
-            ],
-            "type": "ToPoint",
             "units": "mm"
           }
         ],
@@ -891,23 +840,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -0.5
             ],
             "type": "TangentialArcTo",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -3.0,
-              -0.5
-            ],
-            "tag": null,
-            "to": [
-              -3.0,
-              -0.5
-            ],
-            "type": "ToPoint",
             "units": "mm"
           }
         ],
@@ -1264,23 +1196,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
             ],
             "type": "TangentialArcTo",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              8.36,
-              3.0
-            ],
-            "tag": null,
-            "to": [
-              8.36,
-              3.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -1552,23 +1467,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
           ],
           "type": "TangentialArcTo",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -3.0,
-            -0.5
-          ],
-          "tag": null,
-          "to": [
-            -3.0,
-            -0.5
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -1756,23 +1654,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -9.5
           ],
           "type": "TangentialArcTo",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -8.0,
-            -9.5
-          ],
-          "tag": null,
-          "to": [
-            -8.0,
-            -9.5
-          ],
-          "type": "ToPoint",
           "units": "mm"
         }
       ],
@@ -1962,23 +1843,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
           ],
           "type": "TangentialArcTo",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -15.5,
-            -16.0
-          ],
-          "tag": null,
-          "to": [
-            -15.5,
-            -16.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -2166,23 +2030,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -8.0
           ],
           "type": "TangentialArcTo",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -23.0,
-            -8.0
-          ],
-          "tag": null,
-          "to": [
-            -23.0,
-            -8.0
-          ],
-          "type": "ToPoint",
           "units": "mm"
         }
       ],
@@ -2372,23 +2219,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
           ],
           "type": "TangentialArcTo",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -19.5,
-            -0.8
-          ],
-          "tag": null,
-          "to": [
-            -19.5,
-            -0.8
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -2576,23 +2406,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
             -0.5
           ],
           "type": "TangentialArcTo",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -23.4,
-            -0.5
-          ],
-          "tag": null,
-          "to": [
-            -23.4,
-            -0.5
-          ],
-          "type": "ToPoint",
           "units": "mm"
         }
       ],
@@ -2836,23 +2649,6 @@ description: Variables in memory after executing prosthetic-hip.kcl
               -0.5
             ],
             "type": "TangentialArcTo",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -23.4,
-              -0.5
-            ],
-            "tag": null,
-            "to": [
-              -23.4,
-              -0.5
-            ],
-            "type": "ToPoint",
             "units": "mm"
           }
         ],

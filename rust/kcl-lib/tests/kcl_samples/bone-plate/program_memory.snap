@@ -1506,23 +1506,6 @@ description: Variables in memory after executing bone-plate.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              22.9,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              22.9,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -2106,23 +2089,6 @@ description: Variables in memory after executing bone-plate.kcl
             "from": [
               27.80020546323056,
               19.2312717608637
-            ],
-            "tag": null,
-            "to": [
-              22.9,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              22.9,
-              0.0
             ],
             "tag": null,
             "to": [
