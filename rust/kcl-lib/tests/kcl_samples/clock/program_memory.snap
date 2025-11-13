@@ -2175,23 +2175,6 @@ description: Variables in memory after executing clock.kcl
             ],
             "type": "TangentialArcTo",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.5075,
-              200.0
-            ],
-            "tag": null,
-            "to": [
-              -2.5075,
-              200.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -2539,23 +2522,6 @@ description: Variables in memory after executing clock.kcl
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -19.381160303709358,
-            -7.054165456091921
-          ],
-          "tag": null,
-          "to": [
-            -19.381160303709358,
-            -7.054165456091921
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -2842,23 +2808,6 @@ description: Variables in memory after executing clock.kcl
           "from": [
             21.092984672621213,
             -118.70161873088077
-          ],
-          "tag": null,
-          "to": [
-            9.041404902524723,
-            -18.53762720492032
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            9.041404902524723,
-            -18.53762720492032
           ],
           "tag": null,
           "to": [

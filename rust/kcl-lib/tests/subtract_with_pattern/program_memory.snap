@@ -110,23 +110,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              2.65,
-              12.2
-            ],
-            "tag": null,
-            "to": [
-              2.65,
-              12.2
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -1344,23 +1327,6 @@ description: Variables in memory after executing subtract_with_pattern.kcl
           "from": [
             1.9399999999999977,
             -10.48
-          ],
-          "tag": null,
-          "to": [
-            2.65,
-            12.2
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            2.65,
-            12.2
           ],
           "tag": null,
           "to": [

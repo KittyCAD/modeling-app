@@ -552,7 +552,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
   profile001,
   path = profile002,
   sectional = true,
-  relativeTo = 'sketchPlane',
+  relativeTo = "sketchPlane",
 )`)
     })
 
@@ -585,7 +585,7 @@ sweep001 = sweep(
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleAndLineCode)
       expect(newCode).toContain(
-        `sweep001 = sweep(profile001, path = profile002, relativeTo = 'trajectoryCurve')`
+        `sweep001 = sweep(profile001, path = profile002, relativeTo = "trajectoryCurve")`
       )
     })
 
