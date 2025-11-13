@@ -4,6 +4,7 @@ import {
   createCallExpressionStdLibKw,
   createIdentifier,
   createLabeledArg,
+  createLiteral,
   createLocalName,
 } from '@src/lang/create'
 import {
@@ -272,4 +273,92 @@ function exprToKey(expr: Expr): string {
   }
   // Fallback for other expression types (though currently only Name is used)
   return JSON.stringify(expr)
+}
+
+/**
+ * Adds datum GD&T annotation to the AST.
+ * Creates a single gdt::datum call for a selected face.
+ * Always adds annotation at the end of the AST body.
+ *
+ * @param ast - The AST to modify
+ * @param artifactGraph - The artifact graph for face lookups
+ * @param faces - Selected face to annotate (only first face selection will be used)
+ * @param name - The datum identifier (e.g., 'A', 'B', 'C')
+ * @param nodeToEdit - Path to node to edit (for edit mode)
+ * @returns Modified AST and path to the created node, or an Error
+ */
+export function addDatumGdt({
+  ast,
+  artifactGraph,
+  faces,
+  name,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  faces: Selections
+  name: string
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // Clone the AST to avoid mutating the original
+  let modifiedAst = structuredClone(ast)
+
+  // Filter to only include face selections
+  const faceSelections = faces.graphSelections.filter((selection) =>
+    isFaceArtifact(selection.artifact)
+  )
+
+  // Datum requires exactly one face
+  if (faceSelections.length === 0) {
+    return new Error('No face selected for datum annotation')
+  }
+  if (faceSelections.length > 1) {
+    return new Error(
+      'Datum annotation requires exactly one face, but multiple faces were selected'
+    )
+  }
+
+  const faceSelection = faceSelections[0]
+
+  // Get face expression with tag
+  const tagResult = modifyAstWithTagsForSelection(
+    modifiedAst,
+    faceSelection,
+    artifactGraph
+  )
+  if (err(tagResult)) {
+    return tagResult
+  }
+
+  // Update the AST with the tagged version
+  modifiedAst = tagResult.modifiedAst
+
+  // Create expression from the first tag
+  const faceExpr = createLocalName(tagResult.tags[0])
+
+  // Build labeled arguments
+  const labeledArgs = [
+    createLabeledArg('face', faceExpr),
+    createLabeledArg('name', createLiteral(name)),
+  ]
+
+  // Create the gdt::datum call
+  const call = createCallExpressionStdLibKw('gdt::datum', null, labeledArgs)
+
+  // Insert the function call into the AST at the appropriate location
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: undefined, // GDT annotations don't pipe
+    variableIfNewDecl: undefined, // Creates expression statement at the end
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
 }
