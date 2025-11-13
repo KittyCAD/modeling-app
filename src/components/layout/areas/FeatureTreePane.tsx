@@ -374,23 +374,25 @@ const OperationItemWrapper = ({
     >
       <button
         {...props}
-        className={`reset !p-0 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${className}`}
+        className={`reset py-1 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${className}`}
       >
-        <span>
-          <CustomIcon name={icon} className="w-6 h-6 block" aria-hidden />
-          <Tooltip position="bottom-left" contentClassName="text-xs">
-            {name}
-          </Tooltip>
-        </span>
+        <CustomIcon
+          name={icon}
+          className="w-6 h-6 block self-start"
+          aria-hidden
+        />
         <div className="flex-1 flex flex-wrap items-baseline align-baseline">
           <div className="flex-1 inline-flex items-baseline flex-wrap gap-x-2">
-            <span className="text-xs">{variableName || name}</span>
+            <span className="text-sm">{name}</span>
+            {variableName && (
+              <span className="text-xs text-3">{variableName}</span>
+            )}
             {customSuffix && customSuffix}
           </div>
           {valueDetail && (
             <code
               data-testid="value-detail"
-              className="text-right text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+              className="text-chalkboard-70 dark:text-chalkboard-40 text-xs"
             >
               {valueDetail.display}
             </code>
