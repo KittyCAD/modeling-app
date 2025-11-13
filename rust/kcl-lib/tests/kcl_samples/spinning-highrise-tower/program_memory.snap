@@ -119,23 +119,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -15.0,
-              -15.0
-            ],
-            "tag": null,
-            "to": [
-              -15.0,
-              -15.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -305,23 +288,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "from": [
               4.78,
-              -4.0
-            ],
-            "tag": null,
-            "to": [
-              -5.0,
-              -4.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -5.0,
               -4.0
             ],
             "tag": null,
@@ -526,6 +492,120 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
+            },
+            "start": {
+              "from": [
+                -12.0,
+                -12.0
+              ],
+              "to": [
+                -12.0,
+                -12.0
+              ],
+              "units": "m",
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -12.0,
+                  -12.0
+                ],
+                "tag": null,
+                "to": [
+                  -12.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
               },
               {
                 "__geoMeta": {
@@ -534,6 +614,40 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
+                  12.0
+                ],
+                "tag": null,
+                "to": [
+                  12.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  12.0,
+                  12.0
+                ],
+                "tag": null,
+                "to": [
+                  12.0,
+                  -12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  12.0,
                   -12.0
                 ],
                 "tag": null,
@@ -708,6 +822,120 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
+            },
+            "start": {
+              "from": [
+                -12.0,
+                -12.0
+              ],
+              "to": [
+                -12.0,
+                -12.0
+              ],
+              "units": "m",
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -12.0,
+                  -12.0
+                ],
+                "tag": null,
+                "to": [
+                  -12.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
               },
               {
                 "__geoMeta": {
@@ -716,6 +944,40 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
+                  12.0
+                ],
+                "tag": null,
+                "to": [
+                  12.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  12.0,
+                  12.0
+                ],
+                "tag": null,
+                "to": [
+                  12.0,
+                  -12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  12.0,
                   -12.0
                 ],
                 "tag": null,
@@ -890,6 +1152,120 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
+            },
+            "start": {
+              "from": [
+                -12.0,
+                -12.0
+              ],
+              "to": [
+                -12.0,
+                -12.0
+              ],
+              "units": "m",
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -12.0,
+                  -12.0
+                ],
+                "tag": null,
+                "to": [
+                  -12.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
               },
               {
                 "__geoMeta": {
@@ -898,6 +1274,40 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
+                  12.0
+                ],
+                "tag": null,
+                "to": [
+                  12.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  12.0,
+                  12.0
+                ],
+                "tag": null,
+                "to": [
+                  12.0,
+                  -12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  12.0,
                   -12.0
                 ],
                 "tag": null,
@@ -1072,6 +1482,120 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
+            },
+            "start": {
+              "from": [
+                -12.0,
+                -12.0
+              ],
+              "to": [
+                -12.0,
+                -12.0
+              ],
+              "units": "m",
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -12.0,
+                  -12.0
+                ],
+                "tag": null,
+                "to": [
+                  -12.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
               },
               {
                 "__geoMeta": {
@@ -1080,6 +1604,40 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
+                  12.0
+                ],
+                "tag": null,
+                "to": [
+                  12.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  12.0,
+                  12.0
+                ],
+                "tag": null,
+                "to": [
+                  12.0,
+                  -12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  12.0,
                   -12.0
                 ],
                 "tag": null,
@@ -1254,6 +1812,120 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
+            },
+            "start": {
+              "from": [
+                -12.0,
+                -12.0
+              ],
+              "to": [
+                -12.0,
+                -12.0
+              ],
+              "units": "m",
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -12.0,
+                  -12.0
+                ],
+                "tag": null,
+                "to": [
+                  -12.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
               },
               {
                 "__geoMeta": {
@@ -1262,6 +1934,40 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
+                  12.0
+                ],
+                "tag": null,
+                "to": [
+                  12.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  12.0,
+                  12.0
+                ],
+                "tag": null,
+                "to": [
+                  12.0,
+                  -12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  12.0,
                   -12.0
                 ],
                 "tag": null,
@@ -1436,6 +2142,120 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
+            },
+            "start": {
+              "from": [
+                -12.0,
+                -12.0
+              ],
+              "to": [
+                -12.0,
+                -12.0
+              ],
+              "units": "m",
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -12.0,
+                  -12.0
+                ],
+                "tag": null,
+                "to": [
+                  -12.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
               },
               {
                 "__geoMeta": {
@@ -1444,6 +2264,40 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
+                  12.0
+                ],
+                "tag": null,
+                "to": [
+                  12.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  12.0,
+                  12.0
+                ],
+                "tag": null,
+                "to": [
+                  12.0,
+                  -12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  12.0,
                   -12.0
                 ],
                 "tag": null,
@@ -1618,6 +2472,120 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
+            },
+            "start": {
+              "from": [
+                -12.0,
+                -12.0
+              ],
+              "to": [
+                -12.0,
+                -12.0
+              ],
+              "units": "m",
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "m"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "m",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  -12.0,
+                  -12.0
+                ],
+                "tag": null,
+                "to": [
+                  -12.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
               },
               {
                 "__geoMeta": {
@@ -1626,6 +2594,40 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
+                  12.0
+                ],
+                "tag": null,
+                "to": [
+                  12.0,
+                  12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  12.0,
+                  12.0
+                ],
+                "tag": null,
+                "to": [
+                  12.0,
+                  -12.0
+                ],
+                "type": "ToPoint",
+                "units": "m"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  12.0,
                   -12.0
                 ],
                 "tag": null,
@@ -1800,23 +2802,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -1982,23 +2967,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -2155,1297 +3123,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -12.0,
-                -12.0
-              ],
-              "to": [
-                -12.0,
-                -12.0
-              ],
-              "units": "m",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  12.0
-                ],
-                "tag": null,
-                "to": [
-                  12.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  12.0,
-                  12.0
-                ],
-                "tag": null,
-                "to": [
-                  12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -12.0,
-                -12.0
-              ],
-              "to": [
-                -12.0,
-                -12.0
-              ],
-              "units": "m",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  12.0
-                ],
-                "tag": null,
-                "to": [
-                  12.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  12.0,
-                  12.0
-                ],
-                "tag": null,
-                "to": [
-                  12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -12.0,
-                -12.0
-              ],
-              "to": [
-                -12.0,
-                -12.0
-              ],
-              "units": "m",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  12.0
-                ],
-                "tag": null,
-                "to": [
-                  12.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  12.0,
-                  12.0
-                ],
-                "tag": null,
-                "to": [
-                  12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -12.0,
-                -12.0
-              ],
-              "to": [
-                -12.0,
-                -12.0
-              ],
-              "units": "m",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  12.0
-                ],
-                "tag": null,
-                "to": [
-                  12.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  12.0,
-                  12.0
-                ],
-                "tag": null,
-                "to": [
-                  12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -12.0,
-                -12.0
-              ],
-              "to": [
-                -12.0,
-                -12.0
-              ],
-              "units": "m",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  12.0
-                ],
-                "tag": null,
-                "to": [
-                  12.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  12.0,
-                  12.0
-                ],
-                "tag": null,
-                "to": [
-                  12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -12.0,
-                -12.0
-              ],
-              "to": [
-                -12.0,
-                -12.0
-              ],
-              "units": "m",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  12.0
-                ],
-                "tag": null,
-                "to": [
-                  12.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  12.0,
-                  12.0
-                ],
-                "tag": null,
-                "to": [
-                  12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                -12.0,
-                -12.0
-              ],
-              "to": [
-                -12.0,
-                -12.0
-              ],
-              "units": "m",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "m"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "m",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  12.0
-                ],
-                "tag": null,
-                "to": [
-                  12.0,
-                  12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  12.0,
-                  12.0
-                ],
-                "tag": null,
-                "to": [
-                  12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  12.0,
-                  -12.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  -12.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
                   -12.0
                 ],
                 "tag": null,
@@ -3676,23 +3353,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -25.0,
-              -25.0
-            ],
-            "tag": null,
-            "to": [
-              -25.0,
-              -25.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -3894,23 +3554,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -15.0,
-              -15.0
-            ],
-            "tag": null,
-            "to": [
-              -15.0,
-              -15.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -4079,23 +3722,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -4211,23 +3837,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -4429,23 +4038,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -4561,23 +4153,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -4779,23 +4354,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -4911,23 +4469,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -5129,23 +4670,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -5261,23 +4785,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -5479,23 +4986,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -5611,23 +5101,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -5829,23 +5302,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -5961,23 +5417,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -6179,23 +5618,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -6311,23 +5733,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -6529,23 +5934,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -6661,23 +6049,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -6879,23 +6250,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -7011,23 +6365,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -7229,23 +6566,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -7361,23 +6681,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -7579,23 +6882,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -7711,23 +6997,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -7929,23 +7198,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -8061,23 +7313,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -8279,23 +7514,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -8411,23 +7629,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -8629,23 +7830,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -8761,23 +7945,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -8979,23 +8146,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -9111,23 +8261,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -9329,23 +8462,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -9461,23 +8577,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -9679,23 +8778,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -14.7,
-                  -14.7
-                ],
-                "tag": null,
-                "to": [
-                  -14.7,
-                  -14.7
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -9811,23 +8893,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "m"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -10006,23 +9071,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -14.7,
-            -14.7
-          ],
-          "tag": null,
-          "to": [
-            -14.7,
-            -14.7
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
@@ -10138,23 +9186,6 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   15.0,
-                  -15.0
-                ],
-                "tag": null,
-                "to": [
-                  -15.0,
-                  -15.0
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -15.0,
                   -15.0
                 ],
                 "tag": null,

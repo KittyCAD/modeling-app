@@ -28,6 +28,10 @@ export const useOnPageExit = ({
       })
       callback()
       // When the component unmounts teardown the engineCommandManager
+      EngineDebugger.addLog({
+        label: 'useOnPageExit.tsx',
+        message: `Exiting the page, calling tearDown()`,
+      })
       engineCommandManager.tearDown()
       sceneInfra.camControls.oldCameraState = undefined
     }

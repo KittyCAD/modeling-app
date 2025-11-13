@@ -184,23 +184,6 @@ description: Variables in memory after executing truss-structure.kcl
                 ],
                 "type": "ToPoint",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  38.978459489299915
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  38.978459489299915
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
@@ -406,23 +389,6 @@ description: Variables in memory after executing truss-structure.kcl
                 "from": [
                   -1.359461680554975,
                   38.344532096688866
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  38.978459489299915
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  38.978459489299915
                 ],
                 "tag": null,
                 "to": [
@@ -2926,23 +2892,6 @@ description: Variables in memory after executing truss-structure.kcl
           "from": [
             -1.359461680554975,
             38.344532096688866
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            38.978459489299915
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            38.978459489299915
           ],
           "tag": null,
           "to": [

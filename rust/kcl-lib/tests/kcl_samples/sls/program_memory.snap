@@ -103,23 +103,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              81.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              81.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -278,23 +261,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              81.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              81.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -418,23 +384,6 @@ description: Variables in memory after executing sls.kcl
           "from": [
             0.0,
             88.3
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            81.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            81.0
           ],
           "tag": null,
           "to": [
@@ -729,23 +678,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              10.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              10.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -1000,23 +932,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              10.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              10.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -1208,23 +1123,6 @@ description: Variables in memory after executing sls.kcl
           "from": [
             0.0,
             65.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            10.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            10.0
           ],
           "tag": null,
           "to": [
@@ -2698,23 +2596,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              73.5
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              73.5
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -2873,23 +2754,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              73.5
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              73.5
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -3013,23 +2877,6 @@ description: Variables in memory after executing sls.kcl
           "from": [
             -0.0000000000000002220446049250313,
             76.3
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            73.5
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            73.5
           ],
           "tag": null,
           "to": [
@@ -3217,23 +3064,6 @@ description: Variables in memory after executing sls.kcl
           "from": [
             -0.00000000000000005551115123125783,
             81.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            72.98
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            72.98
           ],
           "tag": null,
           "to": [
@@ -3431,23 +3261,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              72.98
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              72.98
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -3618,23 +3431,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -3783,23 +3579,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -3940,23 +3719,6 @@ description: Variables in memory after executing sls.kcl
             "from": [
               0.0,
               2.9
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
             ],
             "tag": null,
             "to": [
@@ -4135,23 +3897,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -4322,23 +4067,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -4474,23 +4202,6 @@ description: Variables in memory after executing sls.kcl
           "from": [
             0.0,
             2.9
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
           ],
           "tag": null,
           "to": [
@@ -4674,23 +4385,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -4831,23 +4525,6 @@ description: Variables in memory after executing sls.kcl
             "from": [
               0.0,
               2.9
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
             ],
             "tag": null,
             "to": [
@@ -5004,23 +4681,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -5161,23 +4821,6 @@ description: Variables in memory after executing sls.kcl
             "from": [
               0.0,
               2.9
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
             ],
             "tag": null,
             "to": [
@@ -5784,23 +5427,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -6218,23 +5844,6 @@ description: Variables in memory after executing sls.kcl
             "from": [
               0.0,
               54.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
             ],
             "tag": null,
             "to": [
@@ -6809,23 +6418,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -7392,23 +6984,6 @@ description: Variables in memory after executing sls.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -7829,23 +7404,6 @@ description: Variables in memory after executing sls.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
@@ -8258,23 +7816,6 @@ description: Variables in memory after executing sls.kcl
             "from": [
               0.0,
               54.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
             ],
             "tag": null,
             "to": [

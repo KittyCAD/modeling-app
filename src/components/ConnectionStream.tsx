@@ -37,6 +37,7 @@ import type { IndexLoaderData } from '@src/lib/types'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { EngineDebugger } from '@src/lib/debugger'
 
 export const ConnectionStream = (props: {
   pool: string | null
@@ -278,6 +279,10 @@ export const ConnectionStream = (props: {
   useOnWindowOnlineOffline({
     close: () => {
       setShowManualConnect(true)
+      EngineDebugger.addLog({
+        label: 'ConnectionStream.tsx',
+        message: 'window offline, calling tearDown()',
+      })
       engineCommandManager.tearDown()
     },
     connect: () => {

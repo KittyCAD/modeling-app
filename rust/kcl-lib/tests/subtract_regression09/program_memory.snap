@@ -241,23 +241,6 @@ description: Variables in memory after executing subtract_regression09.kcl
             ],
             "type": "TangentialArcTo",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              1.188246,
-              27.497102
-            ],
-            "tag": null,
-            "to": [
-              1.188246,
-              27.497102
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -423,23 +406,6 @@ description: Variables in memory after executing subtract_regression09.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              5.0,
-              3.0
-            ],
-            "tag": null,
-            "to": [
-              5.0,
-              3.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -594,23 +560,6 @@ description: Variables in memory after executing subtract_regression09.kcl
           },
           "from": [
             29.972,
-            3.0
-          ],
-          "tag": null,
-          "to": [
-            5.0,
-            3.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            5.0,
             3.0
           ],
           "tag": null,
@@ -880,23 +829,6 @@ description: Variables in memory after executing subtract_regression09.kcl
             27.497102
           ],
           "type": "TangentialArcTo",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            1.188246,
-            27.497102
-          ],
-          "tag": null,
-          "to": [
-            1.188246,
-            27.497102
-          ],
-          "type": "ToPoint",
           "units": "mm"
         }
       ],
