@@ -32,7 +32,7 @@ pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
 #[cfg(feature = "artifact-graph")]
-use crate::front::{Object, ObjectId};
+use crate::front::{Number, Object, ObjectId};
 use crate::{
     CompilationError, ExecError, KclErrorWithOutputs, SourceRange,
     engine::{EngineManager, GridScaleBehavior},
@@ -93,6 +93,9 @@ pub struct ExecOutcome {
     #[cfg(feature = "artifact-graph")]
     #[serde(skip)]
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+    #[cfg(feature = "artifact-graph")]
+    #[serde(skip)]
+    pub var_solutions: Vec<(SourceRange, Number)>,
     /// Non-fatal errors and warnings.
     pub errors: Vec<CompilationError>,
     /// File Names in module Id array index order

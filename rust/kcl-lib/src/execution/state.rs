@@ -26,7 +26,7 @@ use crate::{
 #[cfg(feature = "artifact-graph")]
 use crate::{
     execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ProgramLookup},
-    front::Object,
+    front::{Number, Object},
     id::IncIdGenerator,
 };
 
@@ -93,6 +93,8 @@ pub struct ModuleArtifactState {
     /// Map from source range to object ID for lookup of objects by their source
     /// range.
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
+    /// Solutions for sketch variables.
+    pub var_solutions: Vec<(SourceRange, Number)>,
 }
 
 #[cfg(not(feature = "artifact-graph"))]
@@ -224,6 +226,8 @@ impl ExecState {
             scene_objects: self.global.root_module_artifacts.scene_objects,
             #[cfg(feature = "artifact-graph")]
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
+            #[cfg(feature = "artifact-graph")]
+            var_solutions: self.global.root_module_artifacts.var_solutions,
             errors: self.global.errors,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         }
@@ -586,6 +590,7 @@ impl ModuleArtifactState {
         self.operations.extend(other.operations);
         self.scene_objects.extend(other.scene_objects);
         self.source_range_to_object.extend(other.source_range_to_object);
+        self.var_solutions.extend(other.var_solutions);
     }
 
     // Move unprocessed artifact commands so that we don't try to process them

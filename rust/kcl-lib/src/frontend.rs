@@ -1,6 +1,5 @@
 use std::{cell::Cell, collections::HashSet, ops::ControlFlow};
 
-use anyhow::{anyhow, bail};
 use kcl_error::SourceRange;
 
 use crate::{
@@ -397,13 +396,11 @@ impl FrontendState {
         };
         // Add the point to the AST of the sketch block.
         let mut new_ast = self.program.ast.clone();
-        let (sketch_block_range, _) = self
-            .mutate_ast(
-                &mut new_ast,
-                sketch_id,
-                AstMutateCommand::AddSketchBlockExprStmt { expr: point_ast },
-            )
-            .map_err(|err| Error { msg: err.to_string() })?;
+        let (sketch_block_range, _) = self.mutate_ast(
+            &mut new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: point_ast },
+        )?;
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new KCL source.
@@ -513,13 +510,11 @@ impl FrontendState {
         };
         // Add the line to the AST of the sketch block.
         let mut new_ast = self.program.ast.clone();
-        let (sketch_block_range, _) = self
-            .mutate_ast(
-                &mut new_ast,
-                sketch_id,
-                AstMutateCommand::AddSketchBlockExprStmt { expr: line_ast },
-            )
-            .map_err(|err| Error { msg: err.to_string() })?;
+        let (sketch_block_range, _) = self.mutate_ast(
+            &mut new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: line_ast },
+        )?;
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new KCL source.
@@ -662,8 +657,7 @@ impl FrontendState {
         }
 
         // Modify the point AST.
-        self.mutate_ast(new_ast, point_id, AstMutateCommand::EditPoint { at: new_at_ast })
-            .map_err(|err| Error { msg: err.to_string() })?;
+        self.mutate_ast(new_ast, point_id, AstMutateCommand::EditPoint { at: new_at_ast })?;
         Ok(())
     }
 
@@ -710,8 +704,7 @@ impl FrontendState {
                 start: new_start_ast,
                 end: new_end_ast,
             },
-        )
-        .map_err(|err| Error { msg: err.to_string() })?;
+        )?;
         Ok(())
     }
 
@@ -749,8 +742,7 @@ impl FrontendState {
         };
 
         // Modify the AST to remove the segment.
-        self.mutate_ast(new_ast, segment_id, AstMutateCommand::DeleteNode)
-            .map_err(|err| Error { msg: err.to_string() })?;
+        self.mutate_ast(new_ast, segment_id, AstMutateCommand::DeleteNode)?;
         Ok(())
     }
 
@@ -788,8 +780,7 @@ impl FrontendState {
         };
 
         // Modify the AST to remove the constraint.
-        self.mutate_ast(new_ast, constraint_id, AstMutateCommand::DeleteNode)
-            .map_err(|err| Error { msg: err.to_string() })?;
+        self.mutate_ast(new_ast, constraint_id, AstMutateCommand::DeleteNode)?;
         Ok(())
     }
 
@@ -827,8 +818,28 @@ impl FrontendState {
             }
         })?;
 
-        let src_delta = SourceDelta { text: new_source };
         let outcome = self.update_state_after_exec(outcome);
+
+        #[cfg(feature = "artifact-graph")]
+        let new_source = {
+            // Feed back sketch var solutions into the source.
+            //
+            // TODO: Limit to only the sketch ID parameter. Currently, the
+            // interpreter is returning all var solutions from the last sketch
+            // block.
+            let mut new_ast = self.program.ast.clone();
+            for (var_range, value) in &outcome.var_solutions {
+                let rounded = value.round(3);
+                mutate_ast_node_by_source_range(
+                    &mut new_ast,
+                    *var_range,
+                    AstMutateCommand::EditVarInitialValue { value: rounded },
+                )?;
+            }
+            source_from_ast(&new_ast)
+        };
+
+        let src_delta = SourceDelta { text: new_source };
         let scene_graph_delta = SceneGraphDelta {
             new_graph: self.scene_graph.clone(),
             invalidates_ids: is_delete,
@@ -939,13 +950,11 @@ impl FrontendState {
         })));
 
         // Add the line to the AST of the sketch block.
-        let (sketch_block_range, _) = self
-            .mutate_ast(
-                new_ast,
-                sketch_id,
-                AstMutateCommand::AddSketchBlockExprStmt { expr: coincident_ast },
-            )
-            .map_err(|err| Error { msg: err.to_string() })?;
+        let (sketch_block_range, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: coincident_ast },
+        )?;
         Ok(sketch_block_range)
     }
 
@@ -1065,13 +1074,11 @@ impl FrontendState {
         })));
 
         // Add the line to the AST of the sketch block.
-        let (sketch_block_range, _) = self
-            .mutate_ast(
-                new_ast,
-                sketch_id,
-                AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
-            )
-            .map_err(|err| Error { msg: err.to_string() })?;
+        let (sketch_block_range, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: distance_ast },
+        )?;
         Ok(sketch_block_range)
     }
 
@@ -1110,13 +1117,11 @@ impl FrontendState {
         })));
 
         // Add the line to the AST of the sketch block.
-        let (sketch_block_range, _) = self
-            .mutate_ast(
-                new_ast,
-                sketch_id,
-                AstMutateCommand::AddSketchBlockExprStmt { expr: horizontal_ast },
-            )
-            .map_err(|err| Error { msg: err.to_string() })?;
+        let (sketch_block_range, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: horizontal_ast },
+        )?;
         Ok(sketch_block_range)
     }
 
@@ -1186,13 +1191,11 @@ impl FrontendState {
         })));
 
         // Add the constraint to the AST of the sketch block.
-        let (sketch_block_range, _) = self
-            .mutate_ast(
-                new_ast,
-                sketch_id,
-                AstMutateCommand::AddSketchBlockExprStmt { expr: equal_length_ast },
-            )
-            .map_err(|err| Error { msg: err.to_string() })?;
+        let (sketch_block_range, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: equal_length_ast },
+        )?;
         Ok(sketch_block_range)
     }
 
@@ -1262,13 +1265,11 @@ impl FrontendState {
         })));
 
         // Add the constraint to the AST of the sketch block.
-        let (sketch_block_range, _) = self
-            .mutate_ast(
-                new_ast,
-                sketch_id,
-                AstMutateCommand::AddSketchBlockExprStmt { expr: parallel_ast },
-            )
-            .map_err(|err| Error { msg: err.to_string() })?;
+        let (sketch_block_range, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: parallel_ast },
+        )?;
         Ok(sketch_block_range)
     }
 
@@ -1307,13 +1308,11 @@ impl FrontendState {
         })));
 
         // Add the line to the AST of the sketch block.
-        let (sketch_block_range, _) = self
-            .mutate_ast(
-                new_ast,
-                sketch_id,
-                AstMutateCommand::AddSketchBlockExprStmt { expr: vertical_ast },
-            )
-            .map_err(|err| Error { msg: err.to_string() })?;
+        let (sketch_block_range, _) = self.mutate_ast(
+            new_ast,
+            sketch_id,
+            AstMutateCommand::AddSketchBlockExprStmt { expr: vertical_ast },
+        )?;
         Ok(sketch_block_range)
     }
 
@@ -1401,15 +1400,15 @@ impl FrontendState {
         ast: &mut ast::Node<ast::Program>,
         object_id: ObjectId,
         command: AstMutateCommand,
-    ) -> anyhow::Result<(SourceRange, AstMutateCommandReturn)> {
-        let sketch_object = self
-            .scene_graph
-            .objects
-            .get(object_id.0)
-            .ok_or_else(|| anyhow!("Object not found: {object_id:?}"))?;
+    ) -> api::Result<(SourceRange, AstMutateCommandReturn)> {
+        let sketch_object = self.scene_graph.objects.get(object_id.0).ok_or_else(|| Error {
+            msg: format!("Object not found: {object_id:?}"),
+        })?;
         match &sketch_object.source {
             SourceRef::Simple { range } => mutate_ast_node_by_source_range(ast, *range, command),
-            SourceRef::BackTrace { .. } => bail!("BackTrace source refs not supported yet"),
+            SourceRef::BackTrace { .. } => Err(Error {
+                msg: "BackTrace source refs not supported yet".to_owned(),
+            }),
         }
     }
 }
@@ -1447,8 +1446,7 @@ fn get_or_insert_ast_reference(
     let command = AstMutateCommand::AddVariableDeclaration {
         prefix: prefix.to_owned(),
     };
-    let (_, ret) =
-        mutate_ast_node_by_source_range(ast, range, command).map_err(|err| Error { msg: err.to_string() })?;
+    let (_, ret) = mutate_ast_node_by_source_range(ast, range, command)?;
     let AstMutateCommandReturn::Name(var_name) = ret else {
         return Err(Error {
             msg: "Expected variable name returned from AddVariableDeclaration".to_owned(),
@@ -1474,7 +1472,7 @@ fn mutate_ast_node_by_source_range(
     ast: &mut ast::Node<ast::Program>,
     source_range: SourceRange,
     command: AstMutateCommand,
-) -> anyhow::Result<(SourceRange, AstMutateCommandReturn)> {
+) -> Result<(SourceRange, AstMutateCommandReturn), Error> {
     let mut context = AstMutateContext {
         source_range,
         command,
@@ -1482,8 +1480,10 @@ fn mutate_ast_node_by_source_range(
     };
     let control = dfs_mut(ast, &mut context);
     match control {
-        ControlFlow::Continue(_) => Err(anyhow!("Source range not found: {source_range:?}")),
-        ControlFlow::Break(break_value) => Ok(break_value),
+        ControlFlow::Continue(_) => Err(Error {
+            msg: format!("Source range not found: {source_range:?}"),
+        }),
+        ControlFlow::Break(break_value) => break_value,
     }
 }
 
@@ -1511,6 +1511,10 @@ enum AstMutateCommand {
         start: ast::Expr,
         end: ast::Expr,
     },
+    #[cfg(feature = "artifact-graph")]
+    EditVarInitialValue {
+        value: Number,
+    },
     DeleteNode,
 }
 
@@ -1521,7 +1525,7 @@ enum AstMutateCommandReturn {
 }
 
 impl Visitor for AstMutateContext {
-    type Break = (SourceRange, AstMutateCommandReturn);
+    type Break = Result<(SourceRange, AstMutateCommandReturn), Error>;
     type Continue = ();
 
     fn visit(&mut self, node: NodeMut<'_>) -> TraversalReturn<Self::Break, Self::Continue> {
@@ -1540,7 +1544,7 @@ impl Visitor for AstMutateContext {
 fn filter_and_process(
     ctx: &mut AstMutateContext,
     node: NodeMut,
-) -> TraversalReturn<(SourceRange, AstMutateCommandReturn)> {
+) -> TraversalReturn<Result<(SourceRange, AstMutateCommandReturn), Error>> {
     let Ok(node_range) = SourceRange::try_from(&node) else {
         // Nodes that can't be converted to a range aren't interesting.
         return TraversalReturn::new_continue(());
@@ -1555,17 +1559,17 @@ fn filter_and_process(
             if let AstMutateCommand::AddVariableDeclaration { .. } = &ctx.command {
                 // We found the variable declaration expression. It doesn't need
                 // to be added.
-                return TraversalReturn::new_break((
+                return TraversalReturn::new_break(Ok((
                     node_range,
                     AstMutateCommandReturn::Name(var_decl.name().to_owned()),
-                ));
+                )));
             }
             if let AstMutateCommand::DeleteNode = &ctx.command {
                 // We found the variable declaration. Delete the variable along
                 // with the segment.
                 return TraversalReturn {
                     mutate_body_item: MutateBodyItem::Delete,
-                    control_flow: ControlFlow::Break((ctx.source_range, AstMutateCommandReturn::None)),
+                    control_flow: ControlFlow::Break(Ok((ctx.source_range, AstMutateCommandReturn::None))),
                 };
             }
         }
@@ -1581,10 +1585,10 @@ fn filter_and_process(
     if node_range != ctx.source_range {
         return TraversalReturn::new_continue(());
     }
-    process(ctx, node).map_break(|cmd_return| (ctx.source_range, cmd_return))
+    process(ctx, node).map_break(|result| result.map(|cmd_return| (ctx.source_range, cmd_return)))
 }
 
-fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<AstMutateCommandReturn> {
+fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstMutateCommandReturn, Error>> {
     match &ctx.command {
         AstMutateCommand::AddSketchBlockExprStmt { expr } => {
             if let NodeMut::SketchBlock(sketch_block) = node {
@@ -1603,19 +1607,19 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<AstMutateCo
                         pre_comments: Default::default(),
                         comment_start: Default::default(),
                     }));
-                return TraversalReturn::new_break(AstMutateCommandReturn::None);
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
         AstMutateCommand::AddVariableDeclaration { prefix } => {
             if let NodeMut::VariableDeclaration(inner) = node {
-                return TraversalReturn::new_break(AstMutateCommandReturn::Name(inner.name().to_owned()));
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::Name(inner.name().to_owned())));
             }
             if let NodeMut::ExpressionStatement(expr_stmt) = node {
                 let empty_defined_names = HashSet::new();
                 let defined_names = ctx.defined_names_stack.last().unwrap_or(&empty_defined_names);
                 let Ok(name) = next_free_name(prefix, defined_names) else {
                     // TODO: Return an error instead?
-                    return TraversalReturn::new_break(AstMutateCommandReturn::None);
+                    return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
                 };
                 let mutate_node =
                     ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(ast::VariableDeclaration::new(
@@ -1625,7 +1629,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<AstMutateCo
                     ))));
                 return TraversalReturn {
                     mutate_body_item: MutateBodyItem::Mutate(Box::new(mutate_node)),
-                    control_flow: ControlFlow::Break(AstMutateCommandReturn::Name(name)),
+                    control_flow: ControlFlow::Break(Ok(AstMutateCommandReturn::Name(name))),
                 };
             }
         }
@@ -1640,7 +1644,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<AstMutateCo
                         labeled_arg.arg = at.clone();
                     }
                 }
-                return TraversalReturn::new_break(AstMutateCommandReturn::None);
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
         AstMutateCommand::EditLine { start, end } => {
@@ -1657,13 +1661,26 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<AstMutateCo
                         labeled_arg.arg = end.clone();
                     }
                 }
-                return TraversalReturn::new_break(AstMutateCommandReturn::None);
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
+            }
+        }
+        #[cfg(feature = "artifact-graph")]
+        AstMutateCommand::EditVarInitialValue { value } => {
+            if let NodeMut::NumericLiteral(numeric_literal) = node {
+                // Update the initial value.
+                let Ok(literal) = to_source_number(*value) else {
+                    return TraversalReturn::new_break(Err(Error {
+                        msg: format!("Could not convert number to AST literal: {:?}", *value),
+                    }));
+                };
+                *numeric_literal = ast::Node::no_src(literal);
+                return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
         AstMutateCommand::DeleteNode => {
             return TraversalReturn {
                 mutate_body_item: MutateBodyItem::Delete,
-                control_flow: ControlFlow::Break(AstMutateCommandReturn::None),
+                control_flow: ControlFlow::Break(Ok(AstMutateCommandReturn::None)),
             };
         }
     }
@@ -2190,7 +2207,7 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [var 5in, var 6in], end = [var 3, var 4])
+  sketch2::line(start = [var 127mm, var 152.4mm], end = [var 3mm, var 4mm])
 }
 "
         );
@@ -2247,12 +2264,81 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::line(start = [var 1, var 2], end = [var 5in, var 6in])
+  sketch2::line(start = [var 1mm, var 2mm], end = [var 127mm, var 152.4mm])
 }
 "
         );
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_line_with_coincident_feedback() {
+        let initial_source = "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var 1, var 2], end = [var 1, var 2])
+  line2 = sketch2::line(start = [var 5, var 6], end = [var 7, var 8])
+  line1.start.at[0] == 0
+  line1.start.at[1] == 0
+  sketch2::coincident([line1.end, line2.start])
+  sketch2::equalLength([line1, line2])
+}
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let sketch_id = frontend.scene_graph.objects.first().unwrap().id;
+        let line2_end_id = frontend.scene_graph.objects.get(5).unwrap().id;
+
+        let segments = vec![ExistingSegmentCtor {
+            id: line2_end_id,
+            ctor: SegmentCtor::Point(PointCtor {
+                position: Point2d {
+                    x: Expr::Var(Number {
+                        value: 9.0,
+                        units: NumericSuffix::None,
+                    }),
+                    y: Expr::Var(Number {
+                        value: 10.0,
+                        units: NumericSuffix::None,
+                    }),
+                },
+            }),
+        }];
+        let (src_delta, scene_delta) = frontend
+            .edit_segments(&mock_ctx, version, sketch_id, segments)
+            .await
+            .unwrap();
+        assert_eq!(
+            src_delta.text.as_str(),
+            "\
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  line1 = sketch2::line(start = [var -0mm, var -0mm], end = [var 3.762mm, var 4.878mm])
+  line2 = sketch2::line(start = [var 3.762mm, var 4.878mm], end = [var 8.176mm, var 9.176mm])
+line1.start.at[0] == 0
+line1.start.at[1] == 0
+  sketch2::coincident([line1.end, line2.start])
+  sketch2::equalLength([line1, line2])
+}
+"
+        );
+        assert_eq!(
+            scene_delta.new_graph.objects.len(),
+            9,
+            "{:#?}",
+            scene_delta.new_graph.objects
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2290,8 +2376,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [var 1, var 2])
-  sketch2::point(at = [var 5, var 6])
+  sketch2::point(at = [var 1mm, var 2mm])
+  sketch2::point(at = [var 5mm, var 6mm])
 }
 "
         );
@@ -2334,8 +2420,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [var 1, var 2])
-  sketch2::point(at = [var 5, var 6])
+  sketch2::point(at = [var 1mm, var 2mm])
+  sketch2::point(at = [var 5mm, var 6mm])
 }
 "
         );
@@ -2379,7 +2465,7 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  sketch2::point(at = [var 5, var 6])
+  sketch2::point(at = [var 5mm, var 6mm])
 }
 "
         );
@@ -2423,9 +2509,9 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  point1 = sketch2::point(at = [var 1, var 2])
-  point2 = sketch2::point(at = [var 3, var 4])
-  sketch2::point(at = [var 5, var 6])
+  point1 = sketch2::point(at = [var 1mm, var 2mm])
+  point2 = sketch2::point(at = [var 3mm, var 4mm])
+  sketch2::point(at = [var 5mm, var 6mm])
 }
 "
         );
