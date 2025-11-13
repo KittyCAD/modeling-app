@@ -909,6 +909,15 @@ export class ConnectionManager extends EventTarget {
   }
 
   tearDown(options?: ManagerTearDown) {
+    EngineDebugger.addLog({
+      label: 'connectionManager',
+      message: `invoked tearDown()`,
+      metadata: {
+        options,
+        started: !!this.started,
+        connection: !!this.connection,
+      },
+    })
     if (!this.started) {
       EngineDebugger.addLog({
         label: 'connectionManager',
