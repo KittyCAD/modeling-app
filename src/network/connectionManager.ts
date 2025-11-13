@@ -1031,11 +1031,11 @@ export class ConnectionManager extends EventTarget {
 
   // VITEST ONLY
   offline() {
-    this.tearDown()
     EngineDebugger.addLog({
       label: 'connectionManager',
-      message: 'offline',
+      message: 'offline, calling tearDown()',
     })
+    this.tearDown()
   }
 
   // VITEST ONLY
