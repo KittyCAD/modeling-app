@@ -166,23 +166,6 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -502,23 +485,6 @@ description: Variables in memory after executing enclosure.kcl
               "type": "TagDeclarator",
               "value": "rectangleSegmentD002"
             },
-            "to": [
-              150.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              150.0,
-              0.0
-            ],
-            "tag": null,
             "to": [
               150.0,
               0.0
@@ -944,23 +910,6 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              153.0,
-              3.0
-            ],
-            "tag": null,
-            "to": [
-              153.0,
-              3.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "innerPaths": [
@@ -1257,23 +1206,6 @@ description: Variables in memory after executing enclosure.kcl
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentD002"
                   },
-                  "to": [
-                    150.0,
-                    0.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    150.0,
-                    0.0
-                  ],
-                  "tag": null,
                   "to": [
                     150.0,
                     0.0
@@ -1803,23 +1735,6 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -1986,23 +1901,6 @@ description: Variables in memory after executing enclosure.kcl
             "type": "TagDeclarator",
             "value": "rectangleSegmentD002"
           },
-          "to": [
-            150.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            150.0,
-            0.0
-          ],
-          "tag": null,
           "to": [
             150.0,
             0.0
@@ -2269,23 +2167,6 @@ description: Variables in memory after executing enclosure.kcl
             "type": "TagDeclarator",
             "value": "rectangleSegmentD003"
           },
-          "to": [
-            153.0,
-            3.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            153.0,
-            3.0
-          ],
-          "tag": null,
           "to": [
             153.0,
             3.0
@@ -2588,23 +2469,6 @@ description: Variables in memory after executing enclosure.kcl
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentD002"
                 },
-                "to": [
-                  150.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  150.0,
-                  0.0
-                ],
-                "tag": null,
                 "to": [
                   150.0,
                   0.0

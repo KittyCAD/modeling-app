@@ -325,23 +325,6 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "type": "TangentialArcTo",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -59.59,
-              99.65
-            ],
-            "tag": null,
-            "to": [
-              -59.59,
-              99.65
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -1190,23 +1173,6 @@ description: Variables in memory after executing gingerbread-man.kcl
                 ],
                 "type": "TangentialArcTo",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -224.97,
-                  184.88
-                ],
-                "tag": null,
-                "to": [
-                  -224.97,
-                  184.88
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -1463,23 +1429,6 @@ description: Variables in memory after executing gingerbread-man.kcl
                   184.88
                 ],
                 "type": "TangentialArcTo",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -224.97,
-                  184.88
-                ],
-                "tag": null,
-                "to": [
-                  -224.97,
-                  184.88
-                ],
-                "type": "ToPoint",
                 "units": "mm"
               }
             ],
@@ -2299,23 +2248,6 @@ description: Variables in memory after executing gingerbread-man.kcl
           ],
           "type": "TangentialArcTo",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -41.0,
-            401.0
-          ],
-          "tag": null,
-          "to": [
-            -41.0,
-            401.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -2531,23 +2463,6 @@ description: Variables in memory after executing gingerbread-man.kcl
             ],
             "type": "TangentialArcTo",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -37.56,
-              405.86
-            ],
-            "tag": null,
-            "to": [
-              -37.56,
-              405.86
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "innerPaths": [
@@ -2651,23 +2566,6 @@ description: Variables in memory after executing gingerbread-man.kcl
               401.0
             ],
             "type": "TangentialArcTo",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -41.0,
-              401.0
-            ],
-            "tag": null,
-            "to": [
-              -41.0,
-              401.0
-            ],
-            "type": "ToPoint",
             "units": "mm"
           }
         ],

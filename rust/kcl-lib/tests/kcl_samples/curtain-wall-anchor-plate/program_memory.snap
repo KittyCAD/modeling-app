@@ -259,23 +259,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -549,23 +532,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -681,23 +647,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -947,23 +896,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -12.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -12.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -1079,23 +1011,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
                       },
                       "from": [
                         15.0,
-                        -15.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        -15.0,
-                        -15.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "mm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -15.0,
                         -15.0
                       ],
                       "tag": null,
@@ -1406,23 +1321,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               "type": "TagDeclarator",
               "value": "baseOutside"
             },
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
             "to": [
               0.0,
               0.0
@@ -1746,23 +1644,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -2020,23 +1901,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
           ],
           "type": "TangentialArcTo",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -24.0,
-            6.0
-          ],
-          "tag": null,
-          "to": [
-            -24.0,
-            6.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -2206,23 +2070,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               6.0
             ],
             "type": "TangentialArcTo",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -24.0,
-              6.0
-            ],
-            "tag": null,
-            "to": [
-              -24.0,
-              6.0
-            ],
-            "type": "ToPoint",
             "units": "mm"
           }
         ],
@@ -2398,23 +2245,6 @@ description: Variables in memory after executing curtain-wall-anchor-plate.kcl
               6.0
             ],
             "type": "TangentialArcTo",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -24.0,
-              6.0
-            ],
-            "tag": null,
-            "to": [
-              -24.0,
-              6.0
-            ],
-            "type": "ToPoint",
             "units": "mm"
           }
         ],

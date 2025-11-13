@@ -434,23 +434,6 @@ description: Variables in memory after executing subtract_regression06.kcl
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.48125000000000007,
-              3.1249999999999996
-            ],
-            "tag": null,
-            "to": [
-              -0.48125,
-              3.125
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -1039,23 +1022,6 @@ description: Variables in memory after executing subtract_regression06.kcl
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.48125000000000007,
-              3.1249999999999996
-            ],
-            "tag": null,
-            "to": [
-              -0.48125,
-              3.125
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -1590,23 +1556,6 @@ description: Variables in memory after executing subtract_regression06.kcl
           "to": [
             -0.48125000000000007,
             3.1249999999999996
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.48125000000000007,
-            3.1249999999999996
-          ],
-          "tag": null,
-          "to": [
-            -0.48125,
-            3.125
           ],
           "type": "ToPoint",
           "units": "in"

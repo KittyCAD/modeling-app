@@ -110,23 +110,6 @@ description: Variables in memory after executing sash-window.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -220.0,
-              -242.5
-            ],
-            "tag": null,
-            "to": [
-              -220.0,
-              -242.5
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -283,23 +266,6 @@ description: Variables in memory after executing sash-window.kcl
             },
             "from": [
               250.0,
-              -500.0
-            ],
-            "tag": null,
-            "to": [
-              -250.0,
-              -500.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -250.0,
               -500.0
             ],
             "tag": null,
@@ -504,23 +470,6 @@ description: Variables in memory after executing sash-window.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              40.0,
-              -1.0
-            ],
-            "tag": null,
-            "to": [
-              40.0,
-              -1.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -697,23 +646,6 @@ description: Variables in memory after executing sash-window.kcl
           "from": [
             40.0,
             1.0
-          ],
-          "tag": null,
-          "to": [
-            40.0,
-            -1.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            40.0,
-            -1.0
           ],
           "tag": null,
           "to": [
@@ -914,23 +846,6 @@ description: Variables in memory after executing sash-window.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -15.0,
-              -6.5
-            ],
-            "tag": null,
-            "to": [
-              -15.0,
-              -6.5
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -1053,23 +968,6 @@ description: Variables in memory after executing sash-window.kcl
           },
           "from": [
             15.0,
-            -6.5
-          ],
-          "tag": null,
-          "to": [
-            -15.0,
-            -6.5
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -15.0,
             -6.5
           ],
           "tag": null,
@@ -1230,23 +1128,6 @@ description: Variables in memory after executing sash-window.kcl
             },
             "from": [
               15.0,
-              -6.5
-            ],
-            "tag": null,
-            "to": [
-              -15.0,
-              -6.5
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -15.0,
               -6.5
             ],
             "tag": null,
@@ -1419,23 +1300,6 @@ description: Variables in memory after executing sash-window.kcl
           },
           "from": [
             15.0,
-            -6.5
-          ],
-          "tag": null,
-          "to": [
-            -15.0,
-            -6.5
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -15.0,
             -6.5
           ],
           "tag": null,
@@ -1672,23 +1536,6 @@ description: Variables in memory after executing sash-window.kcl
             },
             "from": [
               220.0,
-              -242.5
-            ],
-            "tag": null,
-            "to": [
-              -220.0,
-              -242.5
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -220.0,
               -242.5
             ],
             "tag": null,
