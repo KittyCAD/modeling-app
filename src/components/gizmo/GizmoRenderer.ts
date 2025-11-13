@@ -464,7 +464,7 @@ function isOrientationTargetName(name: string): boolean {
 // Camera looks from +Z towards origin by default, so we rotate that view accordingly.
 function orientationQuaternionForName(name: string): Quaternion | null {
   const q = new Quaternion()
-  const up = new Vector3(0, 0, 1)
+  const defaultUp = new Vector3(0, 0, 1)
   const target = new Vector3(0, 0, 0)
 
   const dir = new Vector3()
@@ -480,9 +480,13 @@ function orientationQuaternionForName(name: string): Quaternion | null {
   }
   dir.normalize()
 
-  // Build a lookAt quaternion placing the eye along the dir vector
   const distance = 1
   const eye = target.clone().add(dir.clone().multiplyScalar(distance))
+  const up = name === 'face_top'
+    ? new Vector3(0, 1, 0)
+    : name === 'face_bottom'
+      ? new Vector3(0, -1, 0)
+      : defaultUp
   const m = new Matrix4().lookAt(eye, target, up)
   return q.setFromRotationMatrix(m)
 }
