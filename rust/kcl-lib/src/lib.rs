@@ -257,12 +257,6 @@ impl Program {
         self.ast.lint(rule)
     }
 
-    // TODO: Do we need this? I think getting a path from a single program should not be allowed,
-    // you should use all modules and pick the correct one for the given range.
-    // pub fn node_path_from_range(&self, cached_body_items: usize, range: SourceRange) -> Option<NodePath> {
-    //     NodePath::from_range(&self.ast, cached_body_items, range)
-    // }
-
     pub fn recast(&self) -> String {
         // Use the default options until we integrate into the UI the ability to change them.
         self.ast.recast_top(&Default::default(), 0)
