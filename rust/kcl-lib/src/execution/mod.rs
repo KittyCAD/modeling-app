@@ -1451,7 +1451,10 @@ pub struct ProgramLookup {
 impl ProgramLookup {
     // TODO: Could this store a reference to KCL programs instead of owning them?
     // i.e. take &state::ModuleInfoMap instead?
-    pub fn new(module_infos: state::ModuleInfoMap) -> Self {
+    pub fn new(
+        current: crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
+        module_infos: state::ModuleInfoMap,
+    ) -> Self {
         let mut programs = IndexMap::with_capacity(module_infos.len());
         for (id, info) in module_infos {
             #[cfg(target_arch = "wasm32")]
@@ -1460,6 +1463,7 @@ impl ProgramLookup {
                 programs.insert(id, program);
             }
         }
+        programs.insert(ModuleId::default(), current);
         Self { programs }
     }
 
