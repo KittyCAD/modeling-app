@@ -74,7 +74,7 @@ pub struct PerProjectSettings {
 pub struct ProjectMetaSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub id: uuid::Uuid,
-    /// Disable the new Copilot in Text-to-CAD for this project, only available in Zoo Design Studio (Staging).
+    /// Disable the conversational copilot mode in Text-to-CAD for this project.
     #[serde(default, skip_serializing_if = "is_default")]
     pub disable_copilot: bool,
 }
