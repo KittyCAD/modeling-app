@@ -677,7 +677,7 @@ extrude001 = extrude(profile001, length = 1)`
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
     it('should add a standalone call on sweep selection', async () => {
-      const expectedNewLine = `appearance(extrude001, color = '#FF0000')`
+      const expectedNewLine = `appearance(extrude001, color = "#FF0000")`
       const newCode = await runAddAppearanceTest(
         box,
         instanceInThisFile,
@@ -691,7 +691,7 @@ extrude001 = extrude(profile001, length = 1)`
       const code = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)`
-      const expectedNewLine = `  |> appearance(color = '#FF0000')`
+      const expectedNewLine = `  |> appearance(color = "#FF0000")`
       const newCode = await runAddAppearanceTest(
         code,
         instanceInThisFile,
@@ -733,7 +733,7 @@ extrude001 = extrude(profile001, length = 1)`
       expect(newCode).toContain(`${box}
 appearance(
   extrude001,
-  color = '#FF0000',
+  color = "#FF0000",
   metalness = 1,
   roughness = 2,
 )`)
@@ -767,11 +767,11 @@ appearance(
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
-appearance(extrude001, color = '#FF0000')`
+appearance(extrude001, color = "#FF0000")`
       const expectedNewCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)
-appearance(extrude001, color = '#00FF00')`
+appearance(extrude001, color = "#00FF00")`
       const nodeToEdit: PathToNode = [
         ['body', ''],
         [3, 'index'],
@@ -791,11 +791,11 @@ appearance(extrude001, color = '#00FF00')`
       const code = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)
-  |> appearance(color = '#FF0000')`
+  |> appearance(color = "#FF0000")`
       const expectedNewCode = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 1)
-  |> appearance(color = '#00FF00')`
+  |> appearance(color = "#00FF00")`
       const nodeToEdit: PathToNode = [
         ['body', ''],
         [0, 'index'],
