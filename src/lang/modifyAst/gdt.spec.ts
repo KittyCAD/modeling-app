@@ -683,5 +683,40 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       if (!err(result)) throw new Error('Should have failed with no faces')
       expect(result.message).toContain('No face selected for datum annotation')
     })
+
+    it('should reject multi-character datum names', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const faces = getCapFromCylinder(artifactGraph)
+      const name = 'AB'
+      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
+      const result = addDatumGdt({ ast, artifactGraph, faces, name })
+
+      // Should fail with validation error
+      expect(err(result)).toBeTruthy()
+      if (!err(result))
+        throw new Error('Should have failed with multi-character name')
+      expect(result.message).toContain('Datum name must be a single character')
+    })
+
+    it('should reject empty datum names', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const faces = getCapFromCylinder(artifactGraph)
+      const name = ''
+      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
+      const result = addDatumGdt({ ast, artifactGraph, faces, name })
+
+      // Should fail with validation error
+      expect(err(result)).toBeTruthy()
+      if (!err(result)) throw new Error('Should have failed with empty name')
+      expect(result.message).toContain('Datum name must be a single character')
+    })
   })
 })
