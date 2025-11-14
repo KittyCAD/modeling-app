@@ -11,8 +11,8 @@ export default function CubeGizmo() {
 
   const resolvedTheme = useResolvedTheme()
 
-  const isPerspective =
-    settings.modeling.cameraProjection.current === 'perspective'
+  // Hardcoded to orthographic, the model doesn't look good in perspective
+  const isPerspective = false //settings.modeling.cameraProjection.current === 'perspective'
   const initialIsPerspectiveRef = useRef(isPerspective)
   const initialResolvedThemeRef = useRef(resolvedTheme)
 
@@ -39,9 +39,9 @@ export default function CubeGizmo() {
   }, [])
 
   // perspective changed
-  useEffect(() => {
-    renderer.current?.setPerspective(isPerspective)
-  }, [isPerspective])
+  // useEffect(() => {
+  //   renderer.current?.setPerspective(isPerspective)
+  // }, [isPerspective])
 
   // theme changed
   useEffect(() => {
@@ -55,12 +55,6 @@ export default function CubeGizmo() {
 
     setDisabledOrbit(disabled)
     renderer.current?.setDisabled(disabled)
-    // if (wrapperRef.current) {
-    //   // wrapperRef.current.style.filter = disableOrbitRef.current
-    //   //   ? 'grayscale(100%)'
-    //   //   : 'none'
-    //   wrapperRef.current.style.cursor = disabled ? 'not-allowed' : 'auto'
-    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [modelingState, settings.app.allowOrbitInSketchMode.current])
 
