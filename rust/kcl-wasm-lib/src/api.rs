@@ -103,6 +103,37 @@ impl Context {
         Ok(JsValue::undefined())
     }
 
+    /// Execute the sketch in mock mode, without changing anything. This is
+    /// useful after editing segments, and the user releases the mouse button.
+    #[wasm_bindgen]
+    pub async fn sketch_execute_mock(
+        &self,
+        version_json: &str,
+        sketch_json: &str,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        let version: Version =
+            serde_json::from_str(version_json).map_err(|e| format!("Could not deserialize Version: {e}"))?;
+        let sketch: ObjectId =
+            serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
+
+        let ctx = self
+            .create_executor_ctx(settings, None, true)
+            .map_err(|e| format!("Could not create KCL executor context for new sketch. {TRUE_BUG} Details: {e}"))?;
+
+        let frontend = Arc::clone(&self.frontend);
+        let mut guard = frontend.write().await;
+        let result = guard
+            .execute_mock(&ctx, version, sketch)
+            .await
+            .map_err(|e| format!("Failed to execute mock: {:?}", e))?;
+
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize execute mock result. {TRUE_BUG} Details: {e}"))?)
+    }
+
     /// Create new sketch and enter sketch mode.
     #[wasm_bindgen]
     pub async fn new_sketch(

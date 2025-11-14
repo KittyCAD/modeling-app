@@ -3,13 +3,22 @@
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ExecutorContext,
+    ExecOutcome, ExecutorContext,
     frontend::api::{
         Expr, FileId, Number, ObjectId, Plane, ProjectId, Result, SceneGraph, SceneGraphDelta, SourceDelta, Version,
     },
 };
 
 pub trait SketchApi {
+    /// Execute the sketch in mock mode, without changing anything. This is
+    /// useful after editing segments, and the user releases the mouse button.
+    async fn execute_mock(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+    ) -> Result<(SceneGraph, ExecOutcome)>;
+
     async fn new_sketch(
         &mut self,
         ctx: &ExecutorContext,
@@ -301,6 +310,15 @@ pub struct Parallel {
 pub struct SketchApiStub;
 
 impl SketchApi for SketchApiStub {
+    async fn execute_mock(
+        &mut self,
+        _ctx: &ExecutorContext,
+        _version: Version,
+        _sketch: ObjectId,
+    ) -> Result<(SceneGraph, ExecOutcome)> {
+        todo!("execute_mock not implemented")
+    }
+
     async fn new_sketch(
         &mut self,
         _ctx: &ExecutorContext,
