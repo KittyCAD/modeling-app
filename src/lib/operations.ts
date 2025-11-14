@@ -1758,7 +1758,7 @@ export function getOperationIcon(op: Operation): CustomIconName {
 }
 
 /**
- * Return a display-ready version of the caculate operation value
+ * Return a display-ready version of the calculate operation value
  */
 export function getOperationCalculatedDisplay(op: OpKclValue): string {
   switch (op.type) {
