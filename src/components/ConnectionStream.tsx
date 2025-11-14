@@ -226,6 +226,7 @@ export const ConnectionStream = (props: {
     infiniteDetectionLoopCallback: () => {
       setShowManualConnect(true)
     },
+    engineCommandManager,
   })
   useOnVitestEngineOnline({
     callback: () => {
@@ -266,6 +267,7 @@ export const ConnectionStream = (props: {
         setShowManualConnect(true)
       })
     },
+    engineCommandManager,
   })
   useOnWindowOnlineOffline({
     close: () => {
@@ -307,6 +309,7 @@ export const ConnectionStream = (props: {
     callback: () => {
       modelingSend({ type: 'Cancel' })
     },
+    engineCommandManager,
   })
 
   return (

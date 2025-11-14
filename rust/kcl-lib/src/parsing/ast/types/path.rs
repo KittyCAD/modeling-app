@@ -1,7 +1,9 @@
 use serde::Serialize;
 
-use super::{BodyItem, Expr, Node, Program};
-use crate::SourceRange;
+#[cfg(feature = "artifact-graph")]
+use super::{BodyItem, Expr};
+#[cfg(feature = "artifact-graph")]
+use crate::{SourceRange, execution::ProgramLookup};
 
 /// A traversal path through the AST to a node.
 ///
@@ -69,19 +71,26 @@ impl NodePath {
     }
 
     #[cfg(feature = "artifact-graph")]
-    pub(crate) fn fill_placeholder(&mut self, program: &Node<Program>, cached_body_items: usize, range: SourceRange) {
+    pub(crate) fn fill_placeholder(&mut self, programs: &ProgramLookup, cached_body_items: usize, range: SourceRange) {
         if !self.is_empty() {
             return;
         }
-        *self = Self::from_range(program, cached_body_items, range).unwrap_or_default();
+        *self = Self::from_range(programs, cached_body_items, range).unwrap_or_default();
     }
 
     /// Given a program and a [`SourceRange`], return the path to the node that
     /// contains the range.
-    pub(crate) fn from_range(program: &Node<Program>, cached_body_items: usize, range: SourceRange) -> Option<Self> {
+    #[cfg(feature = "artifact-graph")]
+    pub(crate) fn from_range(
+        programs: &crate::execution::ProgramLookup,
+        cached_body_items: usize,
+        range: SourceRange,
+    ) -> Option<Self> {
+        let program = programs.program_for_module(range.module_id())?;
         Self::from_body(&program.body, cached_body_items, range, NodePath::default())
     }
 
+    #[cfg(feature = "artifact-graph")]
     fn from_body(
         body: &[BodyItem],
         cached_body_items: usize,
@@ -100,6 +109,7 @@ impl NodePath {
         None
     }
 
+    #[cfg(feature = "artifact-graph")]
     fn from_body_item(body_item: &BodyItem, range: SourceRange, mut path: NodePath) -> Option<NodePath> {
         match body_item {
             BodyItem::ImportStatement(node) => match &node.selector {
@@ -153,6 +163,7 @@ impl NodePath {
         Some(path)
     }
 
+    #[cfg(feature = "artifact-graph")]
     fn from_expr(expr: &Expr, range: SourceRange, mut path: NodePath) -> Option<NodePath> {
         match expr {
             Expr::Literal(node) => {
@@ -348,12 +359,13 @@ impl NodePath {
         self.steps.is_empty()
     }
 
+    #[cfg(feature = "artifact-graph")]
     fn push(&mut self, step: Step) {
         self.steps.push(step);
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "artifact-graph"))]
 mod tests {
     use super::*;
     use crate::ModuleId;
@@ -367,11 +379,20 @@ mod tests {
         // Read the contents of the file.
         let contents = std::fs::read_to_string("tests/misc/cube.kcl").unwrap();
         let program = crate::Program::parse_no_errs(&contents).unwrap();
+        let module_infos = indexmap::IndexMap::from([(
+            ModuleId::default(),
+            crate::modules::ModuleInfo {
+                id: ModuleId::default(),
+                path: crate::modules::ModulePath::Main,
+                repr: crate::modules::ModuleRepr::Kcl(program.ast.clone(), None),
+            },
+        )]);
+        let programs = crate::execution::ProgramLookup::new(program.ast, module_infos);
 
         // fn cube(sideLength, center) {
         //    ^^^^
         assert_eq!(
-            NodePath::from_range(&program.ast, 0, range(38, 42)).unwrap(),
+            NodePath::from_range(&programs, 0, range(38, 42)).unwrap(),
             NodePath {
                 steps: vec![Step::ProgramBodyItem { index: 0 }, Step::VariableDeclarationDeclaration],
             }
@@ -379,7 +400,7 @@ mod tests {
         // fn cube(sideLength, center) {
         //                     ^^^^^^
         assert_eq!(
-            NodePath::from_range(&program.ast, 0, range(55, 61)).unwrap(),
+            NodePath::from_range(&programs, 0, range(55, 61)).unwrap(),
             NodePath {
                 steps: vec![
                     Step::ProgramBodyItem { index: 0 },
@@ -392,7 +413,7 @@ mod tests {
         // |> line(endAbsolute = p1)
         //                       ^^
         assert_eq!(
-            NodePath::from_range(&program.ast, 0, range(293, 295)).unwrap(),
+            NodePath::from_range(&programs, 0, range(293, 295)).unwrap(),
             NodePath {
                 steps: vec![
                     Step::ProgramBodyItem { index: 0 },
@@ -409,7 +430,7 @@ mod tests {
         // myCube = cube(sideLength = 40, center = [0, 0])
         //                                             ^
         assert_eq!(
-            NodePath::from_range(&program.ast, 0, range(485, 486)).unwrap(),
+            NodePath::from_range(&programs, 0, range(485, 486)).unwrap(),
             NodePath {
                 steps: vec![
                     Step::ProgramBodyItem { index: 1 },
@@ -428,9 +449,18 @@ mod tests {
 import "cylinder.kcl" as cylinder
 "#;
         let program = crate::Program::parse_no_errs(code).unwrap();
+        let module_infos = indexmap::IndexMap::from([(
+            ModuleId::default(),
+            crate::modules::ModuleInfo {
+                id: ModuleId::default(),
+                path: crate::modules::ModulePath::Main,
+                repr: crate::modules::ModuleRepr::Kcl(program.ast.clone(), None),
+            },
+        )]);
+        let programs = crate::execution::ProgramLookup::new(program.ast, module_infos);
         // The entire cylinder import statement.
         assert_eq!(
-            NodePath::from_range(&program.ast, 0, range(27, 60)).unwrap(),
+            NodePath::from_range(&programs, 0, range(27, 60)).unwrap(),
             NodePath {
                 steps: vec![Step::ProgramBodyItem { index: 1 }],
             }

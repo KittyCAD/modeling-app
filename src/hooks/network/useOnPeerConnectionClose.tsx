@@ -1,7 +1,11 @@
-import { engineCommandManager } from '@src/lib/singletons'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { EngineCommandManagerEvents } from '@src/network/utils'
 import { useEffect } from 'react'
 
+export interface IUseOnPeerConnectionClose {
+  callback: () => void
+  engineCommandManager: ConnectionManager
+}
 /**
  * During there process of engineCommandManager.start -> connection.connect() the new RTCPeerConnection
  * class has multiple event listeners attached to the instance of the RTCPeerConnection
@@ -12,7 +16,8 @@ import { useEffect } from 'react'
  */
 export function useOnPeerConnectionClose({
   callback,
-}: { callback: () => void }) {
+  engineCommandManager,
+}: IUseOnPeerConnectionClose) {
   useEffect(() => {
     // same failure handler for all for now
     const onFailure: EventListener = () => {
@@ -60,5 +65,5 @@ export function useOnPeerConnectionClose({
         onFailure
       )
     }
-  }, [callback])
+  }, [callback, engineCommandManager])
 }
