@@ -36,6 +36,8 @@ macro_rules! internal_error {
 pub struct ArtifactCommand {
     /// Identifier of the command that can be matched with its response.
     pub cmd_id: Uuid,
+    /// The source range that's the boundary of calling the standard
+    /// library, not necessarily the true source range of the command.
     pub range: SourceRange,
     /// The engine command.  Each artifact command is backed by an engine
     /// command.  In the future, we may need to send information to the TS side
