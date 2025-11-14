@@ -231,12 +231,12 @@ async function tryConnecting({
           })
           engineCommandManager.tearDown()
           // Fail after NUMBER_OF_ENGINE_RETRIES
+          if (toastId) {
+            toast.dismiss(toastId)
+          }
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
             numberOfConnectionAttempts.current = 0
             return reject(e)
-          }
-          if (toastId) {
-            toast.dismiss(toastId)
           }
           attempt().catch(reportRejection)
           toastId = toast.error(
