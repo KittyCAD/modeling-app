@@ -10,7 +10,7 @@ const createCallback = () => {
   return callback
 }
 
-describe('useOnPageExit tests', () => {
+describe('useOnPageExit.tsx', () => {
   test('on hook unmounted with mocked global singletons', () => {
     const callback = createCallback()
     const engineCommandManager = new ConnectionManager()

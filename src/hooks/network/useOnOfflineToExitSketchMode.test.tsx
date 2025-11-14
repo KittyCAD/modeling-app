@@ -4,7 +4,7 @@ import { vi } from 'vitest'
 import { ConnectionManager } from '@src/network/connectionManager'
 import { EngineConnectionEvents } from '@src/network/utils'
 
-describe('useOnOfflineToExitSketchMode tests', () => {
+describe('useOnOfflineToExitSketchMode.tsx', () => {
   describe('on mounted', () => {
     test('should do nothing', () => {
       const callback = vi.fn(() => 1)

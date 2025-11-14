@@ -4,7 +4,7 @@ import { vi } from 'vitest'
 import { ConnectionManager } from '@src/network/connectionManager'
 import { EngineCommandManagerEvents } from '@src/network/utils'
 
-describe('useOnPageMounted tests', () => {
+describe('useOnPeerConnectionClose.tsx', () => {
   describe('on mounted', () => {
     test('should not run any callbacks', () => {
       const callback = vi.fn(() => 1)
