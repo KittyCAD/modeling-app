@@ -134,12 +134,7 @@ test(
     await u.waitForAuthSkipAppStart()
 
     // Start a sketch
-    await u.doAndWaitForImageDiff(() => toolbar.startSketchBtn.click(), 200)
-
-    // Select a plane
-    await toolbar.openFeatureTreePane()
-    await page.getByRole('button', { name: 'Front plane' }).click()
-    await toolbar.closeFeatureTreePane()
+    await toolbar.startSketchOnDefaultPlane('Front plane')
     await editor.expectEditor.toContain(`sketch001 = startSketchOn(XZ)`)
 
     // Equip the rectangle tool

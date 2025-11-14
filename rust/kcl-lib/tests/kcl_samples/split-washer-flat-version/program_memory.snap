@@ -564,23 +564,6 @@ description: Variables in memory after executing split-washer-flat-version.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              -0.5
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              -0.5
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -753,23 +736,6 @@ description: Variables in memory after executing split-washer-flat-version.kcl
           },
           "from": [
             4.5,
-            -0.5
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            -0.5
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
             -0.5
           ],
           "tag": null,

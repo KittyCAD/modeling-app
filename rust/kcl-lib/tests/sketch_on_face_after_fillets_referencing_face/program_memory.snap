@@ -487,23 +487,6 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              4.28,
-              3.83
-            ],
-            "tag": null,
-            "to": [
-              4.28,
-              3.83
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {

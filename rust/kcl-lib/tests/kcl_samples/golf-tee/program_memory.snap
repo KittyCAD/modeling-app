@@ -163,23 +163,6 @@ description: Variables in memory after executing golf-tee.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -356,23 +339,6 @@ description: Variables in memory after executing golf-tee.kcl
           "from": [
             0.0,
             68.0
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
           ],
           "tag": null,
           "to": [

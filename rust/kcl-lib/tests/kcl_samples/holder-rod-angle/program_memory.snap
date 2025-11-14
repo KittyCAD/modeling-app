@@ -174,23 +174,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
             ],
             "type": "ToPoint",
             "units": "cm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "cm"
           }
         ],
         "on": {
@@ -414,23 +397,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
             "type": "TagDeclarator",
             "value": "seg03"
           },
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "cm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
           "to": [
             0.0,
             0.0
@@ -943,23 +909,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
-                  "to": [
-                    0.0,
-                    0.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "cm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
-                    0.0
-                  ],
-                  "tag": null,
                   "to": [
                     0.0,
                     0.0
@@ -1687,23 +1636,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "cm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
                       "to": [
                         0.0,
                         0.0
@@ -2456,23 +2388,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       ],
                       "type": "ToPoint",
                       "units": "cm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "cm"
                     }
                   ],
                   "on": {
@@ -3219,23 +3134,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                       ],
                       "type": "ToPoint",
                       "units": "cm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "cm"
                     }
                   ],
                   "on": {
@@ -3976,23 +3874,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "cm"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
                       "to": [
                         0.0,
                         0.0
@@ -5031,23 +4912,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         ],
                         "type": "ToPoint",
                         "units": "cm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          0.0,
-                          0.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          0.0,
-                          0.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "cm"
                       }
                     ],
                     "on": {
@@ -5829,23 +5693,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                           "type": "TagDeclarator",
                           "value": "seg03"
                         },
-                        "to": [
-                          0.0,
-                          0.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "cm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          0.0,
-                          0.0
-                        ],
-                        "tag": null,
                         "to": [
                           0.0,
                           0.0
@@ -6639,23 +6486,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         ],
                         "type": "ToPoint",
                         "units": "cm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          0.0,
-                          0.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          0.0,
-                          0.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "cm"
                       }
                     ],
                     "on": {
@@ -7443,23 +7273,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                         ],
                         "type": "ToPoint",
                         "units": "cm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          0.0,
-                          0.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          0.0,
-                          0.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "cm"
                       }
                     ],
                     "on": {
@@ -8094,23 +7907,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 ],
                 "type": "ToPoint",
                 "units": "cm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "cm"
               }
             ],
             "on": {
@@ -8478,23 +8274,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
-              "to": [
-                0.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": "cm"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                0.0,
-                0.0
-              ],
-              "tag": null,
               "to": [
                 0.0,
                 0.0
@@ -8893,23 +8672,6 @@ description: Variables in memory after executing holder-rod-angle.kcl
               "type": "TagDeclarator",
               "value": "seg03"
             },
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "cm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
             "to": [
               0.0,
               0.0

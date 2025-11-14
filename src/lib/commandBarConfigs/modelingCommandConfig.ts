@@ -50,7 +50,7 @@ import {
   addSweep,
 } from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
-import { addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
+import { addHole, addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
 import {
   addIntersect,
   addSubtract,
@@ -69,6 +69,7 @@ import {
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
+import { addFlatnessGdt } from '@src/lang/modifyAst/gdt'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -856,9 +857,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Standard holes that could be drilled or cut into a 3D solid.',
     icon: 'hole',
     needsReview: true,
-    status: 'experimental',
     reviewMessage:
       'The argument cutAt specifies where to place the hole given as absolute coordinates in the global scene. Point selection will be allowed in the future, and more hole bottoms and hole types are coming soon.',
+    reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addHole({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['Hole']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     args: {
       nodeToEdit: {
         ...nodeToEditProps,
@@ -1794,6 +1811,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add flatness geometric dimensioning & tolerancing annotation to faces.',
     icon: 'gdtFlatness',
     needsReview: true,
+    reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addFlatnessGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Flatness']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
     status: 'experimental',
     args: {
       nodeToEdit: {

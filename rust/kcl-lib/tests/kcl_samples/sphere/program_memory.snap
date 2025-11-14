@@ -57,23 +57,6 @@ description: Variables in memory after executing sphere.kcl
           ],
           "type": "Arc",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -5.0,
-            0.0000000000000006123233995736766
-          ],
-          "tag": null,
-          "to": [
-            -5.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -216,23 +199,6 @@ description: Variables in memory after executing sphere.kcl
               0.0000000000000006123233995736766
             ],
             "type": "Arc",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -5.0,
-              0.0000000000000006123233995736766
-            ],
-            "tag": null,
-            "to": [
-              -5.0,
-              0.0
-            ],
-            "type": "ToPoint",
             "units": "mm"
           }
         ],

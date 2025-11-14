@@ -791,8 +791,7 @@ openSketch = startSketchOn(XY)
         highlightedHeaderArg: 'plane',
         commandName: 'Offset plane',
       })
-      const xz = await toolbar.getFeatureTreeOperation('Front plane', 0)
-      await xz.click()
+      await toolbar.selectDefaultPlane('Front plane')
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'offset',
@@ -1154,7 +1153,7 @@ sketch002 = startSketchOn(plane001)
 sketch001 = startSketchOn(XZ)
 profile001 = ${circleCode}`
     const sweepDeclaration = 'sweep001 = sweep(profile001, path = helix001)'
-    const editedSweepDeclaration = `sweep001 = sweep(profile001, path = helix001, relativeTo = 'sketchPlane')`
+    const editedSweepDeclaration = `sweep001 = sweep(profile001, path = helix001, relativeTo = "sketchPlane")`
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -2556,8 +2555,8 @@ box = extrude(profile, length = 30)`
     const initialCode = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
 extrude001 = extrude(profile001, length = 1)`
-    const declaration = `appearance(extrude001, color = '#ff0000')`
-    const editedDeclaration = `appearance(extrude001, color = '#00ff00')`
+    const declaration = `appearance(extrude001, color = "#ff0000")`
+    const editedDeclaration = `appearance(extrude001, color = "#00ff00")`
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
     }, initialCode)

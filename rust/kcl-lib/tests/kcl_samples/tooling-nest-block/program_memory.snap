@@ -166,23 +166,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -354,23 +337,6 @@ description: Variables in memory after executing tooling-nest-block.kcl
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
           },
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
           "to": [
             0.0,
             0.0
