@@ -1,5 +1,5 @@
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import {
@@ -1754,6 +1754,32 @@ export function getOperationIcon(op: Operation): CustomIconName {
     default:
       const _exhaustiveCheck: never = op
       return 'questionMark' // unreachable
+  }
+}
+
+/**
+ * Return a display-ready version of the caculate operation value
+ */
+export function getOperationCalculatedDisplay(op: OpKclValue): string {
+  switch (op.type) {
+    case 'Array':
+      return op.value.map(getOperationCalculatedDisplay).join(', ')
+    case 'Object':
+      return JSON.stringify(op.value)
+    case 'TagIdentifier':
+      return op.value
+    case 'TagDeclarator':
+      return op.name
+    case 'SketchVar':
+      return op.value.toPrecision(5)
+    case 'String':
+      return op.value
+    case 'Bool':
+      return String(op.value)
+    case 'Number':
+      return op.value.toPrecision(5)
+    default:
+      return op.type
   }
 }
 

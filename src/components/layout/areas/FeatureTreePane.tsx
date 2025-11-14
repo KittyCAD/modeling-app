@@ -20,6 +20,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import {
   filterOperations,
+  getOperationCalculatedDisplay,
   getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
@@ -334,6 +335,13 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
   )
 }
 
+type OpValueProps = {
+  name: string
+  type?: Operation['type']
+  variableName?: string
+  valueDetail?: { calculated: OpKclValue; display: string }
+}
+
 /**
  * More generic version of OperationListItem,
  * to be used for default planes after we fix them and
@@ -355,17 +363,13 @@ const OperationItemWrapper = ({
   ...props
 }: React.HTMLAttributes<HTMLButtonElement> & {
   icon: CustomIconName
-  name: string
-  type?: Operation['type']
-  variableName?: string
   visibilityToggle?: VisibilityToggleProps
-  valueDetail?: { calculated: OpKclValue; display: string }
   customSuffix?: JSX.Element
   menuItems?: ComponentProps<typeof ContextMenu>['items']
   errors?: Diagnostic[]
   selectable?: boolean
   greyedOut?: boolean
-}) => {
+} & OpValueProps) => {
   const menuRef = useRef<HTMLDivElement>(null)
 
   return (
@@ -391,7 +395,7 @@ const OperationItemWrapper = ({
                 data-testid="value-detail"
                 className="block min-w-[0px] flex-auto overflow-hidden whitespace-nowrap overflow-ellipsis text-chalkboard-70 dark:text-chalkboard-40 text-xs"
               >
-                {valueDetail.display}
+                {getOperationCalculatedDisplay(valueDetail.calculated)}
               </code>
             </>
           ) : (
@@ -402,29 +406,53 @@ const OperationItemWrapper = ({
         {errors && errors.length > 0 && (
           <em className="text-destroy-80 text-xs">has error</em>
         )}
-        <Tooltip
-          delay={500}
-          position="bottom-left"
-          wrapperClassName="left-0 right-0"
-          contentClassName="text-sm max-w-full"
-        >
-          {variableName && valueDetail ? (
-            <>
-              {name} {variableName ?? ''} ={' '}
-              <span className="font-mono">{valueDetail.display}</span>
-            </>
-          ) : type === 'GroupBegin' ? (
-            `Function call of ${name} named ${variableName}`
-          ) : (
-            `${variableName ? '' : 'Unnamed '}${name}${variableName ? ` named ${variableName}` : ''}`
-          )}
-        </Tooltip>
+        {valueDetail || variableName ? (
+          <Tooltip
+            delay={500}
+            position="bottom-left"
+            wrapperClassName="left-0 right-0"
+            contentClassName="text-sm max-w-full"
+          >
+            <VariableTooltipContents
+              variableName={variableName}
+              valueDetail={valueDetail}
+              name={name}
+              type={type}
+            />
+          </Tooltip>
+        ) : null}
       </button>
       {visibilityToggle && <VisibilityToggle {...visibilityToggle} />}
       {menuItems && (
         <ContextMenu menuTargetElement={menuRef} items={menuItems} />
       )}
     </div>
+  )
+}
+
+function VariableTooltipContents({
+  variableName,
+  valueDetail,
+  name,
+  type,
+}: OpValueProps) {
+  return variableName && valueDetail ? (
+    <div className="flex flex-col gap-2">
+      <p>
+        <span>{name}</span>
+        <span> named </span>
+        <span>{variableName ?? ''}</span>
+      </p>
+      <p className="font-mono text-xs">
+        <span>{getOperationCalculatedDisplay(valueDetail.calculated)}</span>
+        <span> = </span>
+        <span>{valueDetail.display}</span>
+      </p>
+    </div>
+  ) : type === 'GroupBegin' ? (
+    <>{`Function call of ${name} named ${variableName}`}</>
+  ) : (
+    <>{`${variableName ? '' : 'Unnamed '}${name}${variableName ? ` named ${variableName}` : ''}`}</>
   )
 }
 
