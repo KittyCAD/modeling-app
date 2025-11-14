@@ -32,7 +32,7 @@ The interface within Design Studio where the user does the real CAD work. It con
 
 ## Workbench
 
-A configuration of the Workspace arranged for one aspect of the CAD ecosystem. Currently the Workspace only has a "modeling" Workspace, but the foundational technologies for drawing and manufacturing Workspaces are under active development by other teams, and will be integrated into ZDS.
+A configuration of the Workspace arranged for one aspect of the CAD ecosystem. Currently the Workspace only has a "modeling" Workbench, but the foundational technologies for drawing and manufacturing Workbenches are under active development by other teams, and will be integrated into ZDS.
 
 ## Layout
 
