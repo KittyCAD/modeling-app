@@ -120,7 +120,6 @@ export function useViewControlMenuItems() {
       </ContextMenuItem>,
       <ContextMenuDivider />,
       <ContextMenuItem
-        icon={gizmoType === 'axis' ? 'checkmark' : undefined}
         onClick={() => {
           settingsActor.send({
             type: 'set.modeling.gizmoType',
@@ -131,7 +130,7 @@ export function useViewControlMenuItems() {
           })
         }}
       >
-        Use axis gizmo
+        {gizmoType === 'axis' ? 'Use cube gizmo' : 'Use axis gizmo'}
       </ContextMenuItem>,
       <ContextMenuDivider />,
       <ContextMenuItem
