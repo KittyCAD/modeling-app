@@ -294,36 +294,13 @@ export const FeatureTreePaneContents = () => {
               }`
 
               return isArray(opOrList) ? (
-                <Disclosure>
-                  <Disclosure.Button className="reset w-full min-w-[0px] !px-1 flex items-center gap-2 text-left text-base !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
-                    <CustomIcon
-                      name="caretDown"
-                      className="w-6 h-6 block self-start -rotate-90 ui-open:rotate-0 ui-open:transform"
-                      aria-hidden
-                    />
-                    <span className="text-sm flex-1">
-                      {opOrList.length} {getOpTypeLabel(opOrList[0].type)}s
-                    </span>
-                  </Disclosure.Button>
-                  <Disclosure.Panel as="ul" className="border-b">
-                    <div className="border-l ml-4">
-                      {opOrList.map((op) => {
-                        const key = `${op.type}-${
-                          'name' in op ? op.name : 'anonymous'
-                        }-${'sourceRange' in op ? op.sourceRange[0] : 'start'}`
-                        return (
-                          <OperationItem
-                            key={key}
-                            item={op}
-                            code={operationsCode}
-                            send={featureTreeSend}
-                            sketchNoFace={sketchNoFace}
-                          />
-                        )
-                      })}
-                    </div>
-                  </Disclosure.Panel>
-                </Disclosure>
+                <OperationItemGroup
+                  key={key}
+                  items={opOrList}
+                  code={operationsCode}
+                  send={featureTreeSend}
+                  sketchNoFace={sketchNoFace}
+                />
               ) : (
                 <OperationItem
                   key={key}
@@ -369,6 +346,49 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
         className="w-6 h-6"
       />
     </button>
+  )
+}
+
+/**
+ * A grouping of operation items into a disclosure (or dropdown)
+ */
+function OperationItemGroup({
+  items,
+  code,
+  send,
+  sketchNoFace,
+}: Omit<OperationProps, 'item'> & { items: Operation[] }) {
+  return (
+    <Disclosure>
+      <Disclosure.Button className="reset w-full min-w-[0px] !px-1 flex items-center gap-2 text-left text-base !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
+        <CustomIcon
+          name="caretDown"
+          className="w-6 h-6 block self-start -rotate-90 ui-open:rotate-0 ui-open:transform"
+          aria-hidden
+        />
+        <span className="text-sm flex-1">
+          {items.length} {getOpTypeLabel(items[0].type)}s
+        </span>
+      </Disclosure.Button>
+      <Disclosure.Panel as="ul" className="border-b b-4">
+        <div className="border-l b-4 ml-4">
+          {items.map((op) => {
+            const key = `${op.type}-${
+              'name' in op ? op.name : 'anonymous'
+            }-${'sourceRange' in op ? op.sourceRange[0] : 'start'}`
+            return (
+              <OperationItem
+                key={key}
+                item={op}
+                code={code}
+                send={send}
+                sketchNoFace={sketchNoFace}
+              />
+            )
+          })}
+        </div>
+      </Disclosure.Panel>
+    </Disclosure>
   )
 }
 
@@ -493,16 +513,17 @@ function VariableTooltipContents({
   )
 }
 
-/**
- * A button with an icon, name, and context menu
- * for an operation in the feature tree.
- */
-const OperationItem = (props: {
+interface OperationProps {
   item: Operation
   code: string
   send: Prop<Actor<typeof featureTreeMachine>, 'send'>
   sketchNoFace: boolean
-}) => {
+}
+/**
+ * A button with an icon, name, and context menu
+ * for an operation in the feature tree.
+ */
+const OperationItem = (props: OperationProps) => {
   const kclContext = useKclContext()
   const name = getOperationLabel(props.item)
   const valueDetail = useMemo(
