@@ -14,6 +14,7 @@ import { reportRejection } from '@src/lib/trap'
 import { getDimensions } from '@src/network/utils'
 import { useRef } from 'react'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
+import toast from 'react-hot-toast'
 
 /**
  * Helper function, do not call this directly. Use tryConnecting instead.
@@ -187,6 +188,8 @@ async function tryConnecting({
         return resolve('connecting')
       }
 
+      let toastId: string | null = null
+
       isConnecting.current = true
 
       async function attempt() {
@@ -215,6 +218,9 @@ async function tryConnecting({
             label: 'tryConnecting',
             message: 'setAppState({ isStreamAcceptingInput: true })',
           })
+          if (toastId) {
+            toast.dismiss(toastId)
+          }
           resolve('connected')
         } catch (e) {
           isConnecting.current = false
@@ -229,7 +235,16 @@ async function tryConnecting({
             numberOfConnectionAttempts.current = 0
             return reject(e)
           }
+          if (toastId) {
+            toast.dismiss(toastId)
+          }
           attempt().catch(reportRejection)
+          toastId = toast.error(
+            `Engine connection lost, reconnecting... Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES}`,
+            {
+              duration: Number.POSITIVE_INFINITY,
+            }
+          )
         }
       }
       await attempt()
