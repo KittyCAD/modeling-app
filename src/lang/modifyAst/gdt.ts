@@ -16,6 +16,7 @@ import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { valueOrVariable } from '@src/lang/queryAst'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
+import { traverse } from '@src/lang/queryAst'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -273,6 +274,63 @@ function exprToKey(expr: Expr): string {
   }
   // Fallback for other expression types (though currently only Name is used)
   return JSON.stringify(expr)
+}
+
+/**
+ * Scans the AST and returns all datum names currently in use
+ * @param ast - The AST program node to scan for datum names
+ * @returns Array of datum names that are currently in use
+ */
+export function getUsedDatumNames(ast: Node<Program>): string[] {
+  const usedNames: string[] = []
+
+  traverse(ast, {
+    enter: (node) => {
+      // Look for gdt::datum calls
+      if (
+        node.type === 'CallExpressionKw' &&
+        node.callee.type === 'Name' &&
+        node.callee.path.length === 1 &&
+        node.callee.path[0]?.name === 'gdt' &&
+        node.callee.name.name === 'datum'
+      ) {
+        // Extract the name argument
+        const nameArg = node.arguments?.find(
+          (arg) =>
+            arg.label?.name === 'name' &&
+            arg.arg.type === 'Literal' &&
+            typeof arg.arg.value === 'string'
+        )
+
+        if (nameArg && nameArg.arg.type === 'Literal') {
+          usedNames.push(nameArg.arg.value as string)
+        }
+      }
+    },
+  })
+
+  return usedNames
+}
+
+/**
+ * Returns the first available datum character (A, B, C, ..., Z)
+ * @param ast - The AST program node to scan for existing datum names
+ * @returns The next available datum character, or 'A' as fallback if all letters are used
+ */
+export function getNextAvailableDatumName(ast: Node<Program>): string {
+  const usedNames = getUsedDatumNames(ast)
+  const usedNamesSet = new Set(usedNames.map((name) => name.toUpperCase()))
+
+  // Check A-Z
+  for (let charCode = 65; charCode <= 90; charCode++) {
+    const char = String.fromCharCode(charCode)
+    if (!usedNamesSet.has(char)) {
+      return char
+    }
+  }
+
+  // Fallback if all A-Z are used (unlikely but safe)
+  return 'A'
 }
 
 /**

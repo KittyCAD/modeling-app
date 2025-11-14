@@ -69,7 +69,11 @@ import {
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
-import { addFlatnessGdt, addDatumGdt } from '@src/lang/modifyAst/gdt'
+import {
+  addFlatnessGdt,
+  addDatumGdt,
+  getNextAvailableDatumName,
+} from '@src/lang/modifyAst/gdt'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -1918,7 +1922,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       name: {
         inputType: 'string',
-        defaultValue: 'A',
+        defaultValue: (commandBarContext) => {
+          return getNextAvailableDatumName(kclManager.ast)
+        },
         required: true,
       },
     },
