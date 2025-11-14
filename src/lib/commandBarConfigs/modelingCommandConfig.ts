@@ -69,7 +69,11 @@ import {
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
 import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
-import { addFlatnessGdt } from '@src/lang/modifyAst/gdt'
+import {
+  addFlatnessGdt,
+  addDatumGdt,
+  getNextAvailableDatumName,
+} from '@src/lang/modifyAst/gdt'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -329,6 +333,11 @@ export type ModelingCommandSchema = {
     framePlane?: string
     fontPointSize?: KclCommandValue
     fontScale?: KclCommandValue
+  }
+  'GDT Datum': {
+    nodeToEdit?: PathToNode
+    faces: Selections
+    name: string
   }
   'Boolean Subtract': {
     solids: Selections
@@ -1874,6 +1883,49 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_FONT_SCALE,
         required: false,
+      },
+    },
+  },
+  'GDT Datum': {
+    description:
+      'Add datum geometric dimensioning & tolerancing annotation to a face.',
+    icon: 'gdtDatum',
+    needsReview: true,
+    reviewValidation: async (context) => {
+      const hasConnectionRes = hasEngineConnection()
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addDatumGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Datum']),
+        ast: kclManager.ast,
+        artifactGraph: kclManager.artifactGraph,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    status: 'experimental',
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      faces: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall', 'edgeCut'],
+        multiple: false,
+        required: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      name: {
+        inputType: 'string',
+        defaultValue: (commandBarContext) => {
+          return getNextAvailableDatumName(kclManager.ast)
+        },
+        required: true,
       },
     },
   },

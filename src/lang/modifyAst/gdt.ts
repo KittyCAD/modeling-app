@@ -4,6 +4,7 @@ import {
   createCallExpressionStdLibKw,
   createIdentifier,
   createLabeledArg,
+  createLiteral,
   createLocalName,
 } from '@src/lang/create'
 import {
@@ -15,6 +16,7 @@ import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { valueOrVariable } from '@src/lang/queryAst'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
+import { traverse } from '@src/lang/queryAst'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -240,6 +242,112 @@ export function addFlatnessGdt({
 }
 
 /**
+ * Adds datum GD&T annotation to the AST.
+ * Creates a single gdt::datum call for a selected face.
+ * Always adds annotation at the end of the AST body.
+ *
+ * @param ast - The AST to modify
+ * @param artifactGraph - The artifact graph for face lookups
+ * @param faces - Selected face to annotate (only first face selection will be used)
+ * @param name - The datum identifier (e.g., 'A', 'B', 'C')
+ * @param nodeToEdit - Path to node to edit (for edit mode)
+ * @returns Modified AST and path to the created node, or an Error
+ */
+export function addDatumGdt({
+  ast,
+  artifactGraph,
+  faces,
+  name,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  artifactGraph: ArtifactGraph
+  faces: Selections
+  name: string
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  // Clone the AST to avoid mutating the original
+  let modifiedAst = structuredClone(ast)
+
+  // Filter to only include face selections
+  const faceSelections = faces.graphSelections.filter((selection) =>
+    isFaceArtifact(selection.artifact)
+  )
+
+  // Validate datum name is a single character
+  if (name.length !== 1) {
+    return new Error('Datum name must be a single character')
+  }
+
+  // Validate datum name does not contain double quotes
+  if (name.includes('"')) {
+    return new Error('Datum name cannot contain double quotes')
+  }
+
+  // Datum requires exactly one face
+  if (faceSelections.length === 0) {
+    return new Error('No face selected for datum annotation')
+  }
+  if (faceSelections.length > 1) {
+    return new Error(
+      'Datum annotation requires exactly one face, but multiple faces were selected'
+    )
+  }
+
+  const faceSelection = faceSelections[0]
+
+  // Get face expression with tag
+  const tagResult = modifyAstWithTagsForSelection(
+    modifiedAst,
+    faceSelection,
+    artifactGraph
+  )
+  if (err(tagResult)) {
+    return tagResult
+  }
+
+  // Update the AST with the tagged version
+  modifiedAst = tagResult.modifiedAst
+
+  // Create expression from the first tag
+  const faceExpr = createLocalName(tagResult.tags[0])
+
+  // Build labeled arguments
+  const labeledArgs = [
+    createLabeledArg('face', faceExpr),
+    createLabeledArg('name', createLiteral(name)),
+  ]
+
+  // Create the gdt::datum call
+  const nonCodeMeta = undefined
+  const modulePath = [createIdentifier('gdt')]
+  const call = createCallExpressionStdLibKw(
+    'datum',
+    null,
+    labeledArgs,
+    nonCodeMeta,
+    modulePath
+  )
+
+  // Insert the function call into the AST at the appropriate location
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: nodeToEdit,
+    pathIfNewPipe: undefined, // GDT annotations don't pipe
+    variableIfNewDecl: undefined, // Creates expression statement at the end
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+/**
  * Deduplicates face expressions based on their string representation.
  * This prevents creating multiple annotations for the same face.
  */
@@ -272,4 +380,61 @@ function exprToKey(expr: Expr): string {
   }
   // Fallback for other expression types (though currently only Name is used)
   return JSON.stringify(expr)
+}
+
+/**
+ * Scans the AST and returns all datum names currently in use
+ * @param ast - The AST program node to scan for datum names
+ * @returns Array of datum names that are currently in use
+ */
+export function getUsedDatumNames(ast: Node<Program>): string[] {
+  const usedNames: string[] = []
+
+  traverse(ast, {
+    enter: (node) => {
+      // Look for gdt::datum calls
+      if (
+        node.type === 'CallExpressionKw' &&
+        node.callee.type === 'Name' &&
+        node.callee.path.length === 1 &&
+        node.callee.path[0]?.name === 'gdt' &&
+        node.callee.name.name === 'datum'
+      ) {
+        // Extract the name argument
+        const nameArg = node.arguments?.find(
+          (arg) =>
+            arg.label?.name === 'name' &&
+            arg.arg.type === 'Literal' &&
+            typeof arg.arg.value === 'string'
+        )
+
+        if (nameArg && nameArg.arg.type === 'Literal') {
+          usedNames.push(nameArg.arg.value as string)
+        }
+      }
+    },
+  })
+
+  return usedNames
+}
+
+/**
+ * Returns the first available datum character (A, B, C, ..., Z)
+ * @param ast - The AST program node to scan for existing datum names
+ * @returns The next available datum character, or 'A' as fallback if all letters are used
+ */
+export function getNextAvailableDatumName(ast: Node<Program>): string {
+  const usedNames = getUsedDatumNames(ast)
+  const usedNamesSet = new Set(usedNames.map((name) => name.toUpperCase()))
+
+  // Check A-Z
+  for (let charCode = 65; charCode <= 90; charCode++) {
+    const char = String.fromCharCode(charCode)
+    if (!usedNamesSet.has(char)) {
+      return char
+    }
+  }
+
+  // Fallback if all A-Z are used (unlikely but safe)
+  return 'A'
 }
