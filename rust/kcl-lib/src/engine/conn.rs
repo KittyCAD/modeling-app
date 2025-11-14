@@ -3,26 +3,26 @@
 
 use std::{collections::HashMap, sync::Arc};
 
-use anyhow::{Result, anyhow};
+use anyhow::{anyhow, Result};
 use futures::{SinkExt, StreamExt};
 use indexmap::IndexMap;
 use kcmc::{
-    ModelingCmd,
     websocket::{
         BatchResponse, FailureWebSocketResponse, ModelingCmdReq, ModelingSessionData, OkWebSocketResponseData,
         SuccessWebSocketResponse, WebSocketRequest, WebSocketResponse,
     },
+    ModelingCmd,
 };
 use kittycad_modeling_cmds::{self as kcmc};
-use tokio::sync::{RwLock, mpsc, oneshot};
+use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
 
 use crate::{
-    SourceRange,
     engine::{AsyncTasks, EngineManager, EngineStats},
     errors::{KclError, KclErrorDetails},
     execution::{DefaultPlanes, IdGenerator},
+    SourceRange,
 };
 
 #[derive(Debug, PartialEq)]
@@ -93,9 +93,12 @@ impl TcpRead {
             WsMsg::Text(text) => serde_json::from_str(&text)
                 .map_err(anyhow::Error::from)
                 .map_err(WebSocketReadError::from)?,
-            WsMsg::Binary(bin) => bson::from_slice(&bin)
-                .map_err(anyhow::Error::from)
-                .map_err(WebSocketReadError::from)?,
+            WsMsg::Binary(bin) => match rmp_serde::from_slice(&bin) {
+                Ok(resp) => resp,
+                Err(_) => bson::from_slice(&bin)
+                    .map_err(anyhow::Error::from)
+                    .map_err(WebSocketReadError::from)?,
+            },
             other => return Err(anyhow::anyhow!("Unexpected WebSocket message from engine API: {other}").into()),
         };
         Ok(msg)
