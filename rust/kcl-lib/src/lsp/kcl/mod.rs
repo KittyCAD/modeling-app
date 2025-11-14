@@ -1290,32 +1290,36 @@ impl LanguageServer for Backend {
             Hover::Type { .. } => None,
         };
         if let Some(callee_args) = maybe_callee.and_then(|fn_name| self.stdlib_args.get(&fn_name)) {
-            let new_completions = callee_args.iter().map(|(arg_name, arg_data)| CompletionItem {
-                label: arg_name.to_owned(),
-                label_details: None,
-                kind: Some(CompletionItemKind::PROPERTY),
-                detail: arg_data.other.ty.clone(),
-                documentation: arg_data.other.docs.clone().map(|docs| {
-                    Documentation::MarkupContent(MarkupContent {
-                        kind: MarkupKind::Markdown,
-                        value: docs,
-                    })
-                }),
-                deprecated: None,
-                preselect: None,
-                sort_text: None,
-                filter_text: None,
-                insert_text: None,
-                insert_text_format: None,
-                insert_text_mode: None,
-                text_edit: None,
-                additional_text_edits: None,
-                command: None,
-                commit_characters: None,
-                data: None,
-                tags: None,
-            });
-            completions.extend(new_completions);
+            let arg_label_completions = callee_args
+                .iter()
+                // Don't suggest labels for unlabelled args!
+                .filter(|(_arg_name, arg_data)| arg_data.props.is_labelled())
+                .map(|(arg_name, arg_data)| CompletionItem {
+                    label: arg_name.to_owned(),
+                    label_details: None,
+                    kind: Some(CompletionItemKind::PROPERTY),
+                    detail: arg_data.props.ty.clone(),
+                    documentation: arg_data.props.docs.clone().map(|docs| {
+                        Documentation::MarkupContent(MarkupContent {
+                            kind: MarkupKind::Markdown,
+                            value: docs,
+                        })
+                    }),
+                    deprecated: None,
+                    preselect: None,
+                    sort_text: None,
+                    filter_text: None,
+                    insert_text: None,
+                    insert_text_format: None,
+                    insert_text_mode: None,
+                    text_edit: None,
+                    additional_text_edits: None,
+                    command: None,
+                    commit_characters: None,
+                    data: None,
+                    tags: None,
+                });
+            completions.extend(arg_label_completions);
         };
 
         // Get the completion items for the ast.
@@ -1714,7 +1718,7 @@ pub fn get_signatures_from_stdlib(kcl_std: &ModData) -> HashMap<String, Signatur
 #[derive(Clone, Debug)]
 pub struct LspArgData {
     pub tip: String,
-    pub other: ArgData,
+    pub props: ArgData,
 }
 
 /// Get signatures from our stdlib.
@@ -1738,7 +1742,7 @@ pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<St
                 }
                 let arg_data = LspArgData {
                     tip,
-                    other: data.clone(),
+                    props: data.clone(),
                 };
                 (data.name.clone(), arg_data)
             })
