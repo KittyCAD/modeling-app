@@ -192,6 +192,8 @@ export default class GizmoRenderer {
   }
 
   // Create a single line mesh for boundary edges across all edge_*/corner_* meshes
+  // Idea: take each line of a triangle which is only shared by one triangle, those are the boundary edges,
+  // otherwise they are internal edges that we don't want to render.
   private createEdges(root: Object3D) {
     const combinedLinePositions: number[] = []
     const worldPos = new Vector3()
