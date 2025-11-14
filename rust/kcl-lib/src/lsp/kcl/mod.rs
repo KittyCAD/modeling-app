@@ -42,7 +42,7 @@ use tower_lsp::{
 
 use crate::{
     ModuleId, Program, SourceRange,
-    docs::kcl_doc::ModData,
+    docs::kcl_doc::{ArgData, ModData},
     exec::KclValue,
     execution::cache,
     lsp::{
@@ -109,7 +109,7 @@ pub struct Backend {
     /// The stdlib signatures for the language.
     pub stdlib_signatures: HashMap<String, SignatureHelp>,
     /// For all KwArg functions in std, a map from their arg names to arg help snippets (markdown format).
-    pub stdlib_args: HashMap<String, HashMap<String, String>>,
+    pub stdlib_args: HashMap<String, HashMap<String, LspArgData>>,
     /// Token maps.
     pub(super) token_map: DashMap<String, TokenStream>,
     /// AST maps.
@@ -1135,14 +1135,14 @@ impl LanguageServer for Backend {
                     return Ok(None);
                 };
 
-                let Some(tip) = arg_map.get(&name) else {
+                let Some(arg_entry) = arg_map.get(&name) else {
                     return Ok(None);
                 };
 
                 Ok(Some(LspHover {
                     contents: HoverContents::Markup(MarkupContent {
                         kind: MarkupKind::Markdown,
-                        value: tip.clone(),
+                        value: arg_entry.tip.clone(),
                     }),
                     range: Some(range),
                 }))
@@ -1290,12 +1290,17 @@ impl LanguageServer for Backend {
             Hover::Type { .. } => None,
         };
         if let Some(callee_args) = maybe_callee.and_then(|fn_name| self.stdlib_args.get(&fn_name)) {
-            let new_completions = callee_args.iter().map(|(arg_name, _arg_help_snippet)| CompletionItem {
+            let new_completions = callee_args.iter().map(|(arg_name, arg_data)| CompletionItem {
                 label: arg_name.to_owned(),
                 label_details: None,
                 kind: Some(CompletionItemKind::PROPERTY),
-                detail: None, // TODO: We should get the type, if it exists.
-                documentation: None,
+                detail: arg_data.other.ty.clone(),
+                documentation: arg_data.other.docs.clone().map(|docs| {
+                    Documentation::MarkupContent(MarkupContent {
+                        kind: MarkupKind::Markdown,
+                        value: docs,
+                    })
+                }),
                 deprecated: None,
                 preselect: None,
                 sort_text: None,
@@ -1706,15 +1711,21 @@ pub fn get_signatures_from_stdlib(kcl_std: &ModData) -> HashMap<String, Signatur
     signatures
 }
 
+#[derive(Clone, Debug)]
+pub struct LspArgData {
+    pub tip: String,
+    pub other: ArgData,
+}
+
 /// Get signatures from our stdlib.
-pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<String, String>> {
+pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<String, LspArgData>> {
     let mut result = HashMap::new();
 
     for d in kcl_std.all_docs() {
         let crate::docs::kcl_doc::DocData::Fn(f) = d else {
             continue;
         };
-        let arg_map: HashMap<String, String> = f
+        let arg_map: HashMap<String, _> = f
             .args
             .iter()
             .map(|data| {
@@ -1725,7 +1736,11 @@ pub fn get_arg_maps_from_stdlib(kcl_std: &ModData) -> HashMap<String, HashMap<St
                     tip.push_str("\n\n");
                     tip.push_str(docs);
                 }
-                (data.name.clone(), tip)
+                let arg_data = LspArgData {
+                    tip,
+                    other: data.clone(),
+                };
+                (data.name.clone(), arg_data)
             })
             .collect();
         if !arg_map.is_empty() {
