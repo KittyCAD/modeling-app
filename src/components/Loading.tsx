@@ -1,11 +1,8 @@
-import type { MarkedOptions } from '@ts-stack/markdown'
-import { Marked, escape, unescape } from '@ts-stack/markdown'
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
-import { SafeRenderer } from '@src/lib/markdown'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
 import { CONNECTION_ERROR_TEXT, ConnectionError } from '@src/network/utils'
@@ -20,16 +17,8 @@ interface LoadingProps extends React.PropsWithChildren {
   dataTestId?: string
   retryAttemptCountdown?: number
   isRetrying?: boolean
-  showManualConnect: boolean
-  callback: () => void
-}
-
-const markedOptions: MarkedOptions = {
-  gfm: true,
-  breaks: true,
-  sanitize: true,
-  unescape,
-  escape,
+  showManualConnect?: boolean
+  callback?: () => void
 }
 
 const statusUrl = 'https://status.zoo.dev'
@@ -204,7 +193,11 @@ const Loading = ({
             iconStart={{
               icon: 'refresh',
             }}
-            onClick={() => callback()}
+            onClick={() => {
+              if (callback) {
+                callback()
+              }
+            }}
           >
             reconnect
           </ActionButton>
