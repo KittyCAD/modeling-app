@@ -9,7 +9,7 @@ These are principles we try to follow as a team working on this product. Anyone 
 
 4. Make functions and react components take references to singletons to enable unit testing instead of globally importing a singleton.
 
-5. Know the life cycle of the data you are working with 
+5. Know and document the life cycle of the data you are working with 
     - How does data get populated?
     - Does data get stale?
     - Does data need to exist across the entire application?
