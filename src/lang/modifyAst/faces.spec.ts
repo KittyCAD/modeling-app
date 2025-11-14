@@ -484,9 +484,7 @@ ${simpleHole}
       )
     })
 
-    // TODO: enable this test once https://github.com/KittyCAD/modeling-app/issues/8616 is closed
-    // Currently it resolves to hole(extrude001... instead of hole(hole001
-    it.skip('should add a simple hole call on cylinder end cap that has a hole already', async () => {
+    it('should add a simple hole call on cylinder end cap that has a hole already', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         `${cylinder}
 ${simpleHole}`,
@@ -540,7 +538,12 @@ hole002 = hole::hole(
   holeType =   hole::simple(),
 )`
       )
-      // TODO: add mock exec once hole::hole is supported
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should add a counterbore hole call on cylinder end cap', async () => {
