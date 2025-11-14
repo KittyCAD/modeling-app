@@ -3206,4 +3206,13 @@ fn function001() {
         let expected = code;
         assert_eq!(recasted, expected);
     }
+
+    #[test]
+    fn module_prefix() {
+        let code = "x = sweep::SKETCH_PLANE";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
 }
