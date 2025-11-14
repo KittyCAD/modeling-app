@@ -238,6 +238,7 @@ export function addSweep({
   }
 
   // Find the path declaration for the labeled argument
+  // TODO: see if we can replace this with `getVariableExprsFromSelection`
   const pathDeclaration = getNodeFromPath<VariableDeclaration>(
     ast,
     path.graphSelections[0].codeRef.pathToNode,
