@@ -72,7 +72,7 @@
               playwright-driver.browsers
               chromedriver
               wasm-pack
-              python3Full
+              python3
             ])
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin (
               with pkgs; [
@@ -82,6 +82,7 @@
 
           TARGET_CC = "${pkgs.stdenv.cc}/bin/${pkgs.stdenv.cc.targetPrefix}cc";
           LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
+          PYO3_PYTHON = "${pkgs.python3}/bin/python3";
           ELECTRON_OVERRIDE_DIST_PATH =
             if pkgs.stdenv.isDarwin
             then "${pkgs.electron}/Applications/"
