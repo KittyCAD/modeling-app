@@ -1,7 +1,13 @@
 import { EngineDebugger } from '@src/lib/debugger'
-import { engineCommandManager } from '@src/lib/singletons'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { EngineCommandManagerEvents } from '@src/network/utils'
 import { useEffect } from 'react'
+
+export interface IUseOnWebsocketClose {
+  callback: () => void
+  infiniteDetectionLoopCallback: () => void
+  engineCommandManager: ConnectionManager
+}
 
 /**
  * The one location that the websocket close event will be handled within the /file page.
@@ -11,7 +17,8 @@ import { useEffect } from 'react'
 export function useOnWebsocketClose({
   callback,
   infiniteDetectionLoopCallback,
-}: { callback: () => void; infiniteDetectionLoopCallback: () => void }) {
+  engineCommandManager,
+}: IUseOnWebsocketClose) {
   useEffect(() => {
     const onWebsocketClose = (event: CustomEvent) => {
       if (event?.detail?.code === '1006') {
@@ -43,5 +50,5 @@ export function useOnWebsocketClose({
         onWebsocketClose as EventListener
       )
     }
-  }, [callback, infiniteDetectionLoopCallback])
+  }, [callback, infiniteDetectionLoopCallback, engineCommandManager])
 }

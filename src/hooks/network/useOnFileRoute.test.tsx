@@ -17,7 +17,7 @@ const tick = () => {
   })
 }
 
-describe('useOnFileRoute.tsx', () => {
+describe('useOnFileRoute', () => {
   describe('after mount', () => {
     test('should call unmount', () => {
       const file: FileEntry = {
