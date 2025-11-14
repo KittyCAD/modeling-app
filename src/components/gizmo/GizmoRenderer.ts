@@ -82,7 +82,7 @@ export default class GizmoRenderer {
     this.dprDetector = new DprDetector(this.onDprChange)
 
     this.scene = new Scene()
-    const ambient = new AmbientLight(0xffffff, 1.5)
+    const ambient = new AmbientLight(0xffffff, 1.8)
     this.scene.add(ambient)
 
     this.materials = {
