@@ -173,7 +173,8 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])`
 
     // Open feature tree and select the first sketch
     await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-    await page.getByRole('button', { name: 'sketch001' }).dblclick()
+    const sketchNode = await toolbar.getFeatureTreeOperation('Sketch', 0)
+    await sketchNode.dblclick()
     await page.waitForTimeout(600)
 
     // Select the profile by clicking the origin in the canvas, then press Delete
