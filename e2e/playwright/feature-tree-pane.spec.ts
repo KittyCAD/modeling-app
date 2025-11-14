@@ -307,7 +307,7 @@ test.describe('Feature Tree pane', () => {
     })
 
     await test.step('Edit the parameter via the feature tree', async () => {
-      const parameter = await toolbar.getFeatureTreeOperation('Parameter', 0)
+      const parameter = await toolbar.getFeatureTreeOperation('length001', 0)
       await parameter.dblclick()
       await cmdBar.expectState({
         commandName: 'Edit parameter',
@@ -343,10 +343,12 @@ test.describe('Feature Tree pane', () => {
       await page.waitForTimeout(2000)
       // The parameter value should be updated in the feature tree.
       const operationButton = await toolbar.getFeatureTreeOperation(
-        'Parameter',
+        'length001',
         0
       )
-      await expect(operationButton.getByTestId('value-detail')).toHaveText('42')
+      await expect(operationButton.getByTestId('value-detail')).toContainText(
+        '42'
+      )
     })
   })
   test(`User can edit an offset plane operation from the feature tree`, async ({
