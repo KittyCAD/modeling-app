@@ -1470,8 +1470,6 @@ impl ProgramLookup {
     ) -> Self {
         let mut programs = IndexMap::with_capacity(module_infos.len());
         for (id, info) in module_infos {
-            #[cfg(target_arch = "wasm32")]
-            web_sys::console::log_1(&format!("ProjectProgramLookup module {}: {:?}", id.as_usize(), info.path).into());
             if let ModuleRepr::Kcl(program, _) = info.repr {
                 programs.insert(id, program);
             }
@@ -1484,8 +1482,6 @@ impl ProgramLookup {
         &self,
         module_id: ModuleId,
     ) -> Option<&crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>> {
-        #[cfg(target_arch = "wasm32")]
-        web_sys::console::log_1(&format!("Looking up module ID {}", module_id.as_usize()).into());
         self.programs.get(&module_id)
     }
 }
