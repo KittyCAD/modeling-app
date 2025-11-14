@@ -18,7 +18,7 @@ The left side is for "global" items like your network status, and the right side
 
 The interface within Design Studio where users can choose which project to open, and can create new ones. It consists of a Top Bar, Project Browser, and Status Bar.
 
-![Home](/public/glossary/home.png)
+![Home interface in ZDS](/public/glossary/home.png)
 
 ## Project Browser
 
@@ -28,7 +28,7 @@ The element found in the middle of the Home interface. It shows projects availab
 
 The interface within Design Studio where the user does the real CAD work. It consists of a Top Bar, a Layout, and a Status Bar.
 
-![Workbench](/public/glossary/workbench.png)
+![Workspace interface in ZDS](/public/glossary/workspace.png)
 
 ## Workbench
 
