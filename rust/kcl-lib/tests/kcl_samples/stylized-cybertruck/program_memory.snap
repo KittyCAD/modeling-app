@@ -86,23 +86,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.75,
-              1.15
-            ],
-            "tag": null,
-            "to": [
-              -1.75,
-              1.15
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -277,23 +260,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.9,
-              1.15
-            ],
-            "tag": null,
-            "to": [
-              -0.9,
-              1.15
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -448,23 +414,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           "from": [
             0.9000000000000001,
-            1.15
-          ],
-          "tag": null,
-          "to": [
-            -0.9,
-            1.15
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.9,
             1.15
           ],
           "tag": null,
@@ -651,23 +600,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.75,
-              1.15
-            ],
-            "tag": null,
-            "to": [
-              -1.75,
-              1.15
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -773,23 +705,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           "from": [
             1.7499999999999998,
-            1.15
-          ],
-          "tag": null,
-          "to": [
-            -1.75,
-            1.15
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.75,
             1.15
           ],
           "tag": null,
@@ -951,23 +866,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "from": [
               1.75,
               0.7499999999999999
-            ],
-            "tag": null,
-            "to": [
-              -1.75,
-              0.75
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.75,
-              0.75
             ],
             "tag": null,
             "to": [
@@ -1166,23 +1064,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.75,
-            0.75
-          ],
-          "tag": null,
-          "to": [
-            -1.75,
-            0.75
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
@@ -1343,23 +1224,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             },
             "from": [
               1.85,
-              0.4
-            ],
-            "tag": null,
-            "to": [
-              -1.85,
-              0.4
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.85,
               0.4
             ],
             "tag": null,
@@ -1559,23 +1423,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.85,
-            0.4
-          ],
-          "tag": null,
-          "to": [
-            -1.85,
-            0.4
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
@@ -1736,23 +1583,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             },
             "from": [
               1.85,
-              0.4
-            ],
-            "tag": null,
-            "to": [
-              -1.85,
-              0.4
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.85,
               0.4
             ],
             "tag": null,
@@ -2362,23 +2192,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.9,
-              1.15
-            ],
-            "tag": null,
-            "to": [
-              -0.9,
-              1.15
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -2560,23 +2373,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           "from": [
             0.9,
-            1.15
-          ],
-          "tag": null,
-          "to": [
-            -0.9,
-            1.15
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.9,
             1.15
           ],
           "tag": null,
@@ -3253,23 +3049,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.9,
-              1.15
-            ],
-            "tag": null,
-            "to": [
-              -0.9,
-              1.15
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -3460,23 +3239,6 @@ description: Variables in memory after executing stylized-cybertruck.kcl
           },
           "from": [
             0.9,
-            1.15
-          ],
-          "tag": null,
-          "to": [
-            -0.9,
-            1.15
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.9,
             1.15
           ],
           "tag": null,

@@ -5,7 +5,7 @@ test.describe('Test network related behaviors', () => {
   test(
     'simulate network down and network little widget',
     { tag: '@skipLocalEngine' },
-    async ({ page, homePage }) => {
+    async ({ page, homePage, toolbar, scene, cmdBar }) => {
       const networkToggleConnectedText = page.getByText(
         'Network health (Strong)'
       )
@@ -15,13 +15,14 @@ test.describe('Test network related behaviors', () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
 
       const networkToggle = page.getByTestId(/network-toggle/)
 
       // This is how we wait until the stream is online
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).not.toBeDisabled({ timeout: 15000 })
+      await expect(toolbar.startSketchBtn).not.toBeDisabled({
+        timeout: 15000,
+      })
 
       await expect(networkToggle).toBeVisible()
       await networkToggle.hover()
@@ -75,9 +76,9 @@ test.describe('Test network related behaviors', () => {
         uploadThroughput: -1,
       })
 
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).not.toBeDisabled({ timeout: 15000 })
+      await expect(toolbar.startSketchBtn).not.toBeDisabled({
+        timeout: 15000,
+      })
 
       // (Second check) expect the network to be up
       await expect(
@@ -100,18 +101,12 @@ test.describe('Test network related behaviors', () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
       await u.waitForPageLoad()
 
       await u.openDebugPanel()
       // click on "Start Sketch" button
-      await u.clearCommandLogs()
-      await page.getByRole('button', { name: 'Start Sketch' }).click()
-      await page.waitForTimeout(100)
-
-      // select a plane
-      await toolbar.openFeatureTreePane()
-      await page.getByRole('button', { name: 'Front plane' }).click()
-      await toolbar.closeFeatureTreePane()
+      await toolbar.startSketchOnDefaultPlane('Front plane')
 
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`
@@ -144,9 +139,7 @@ test.describe('Test network related behaviors', () => {
       await expect(
         page.getByRole('button', { name: 'Exit Sketch' })
       ).not.toBeVisible()
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).toBeVisible()
+      await expect(toolbar.startSketchBtn).toBeVisible()
 
       // simulate network up
       await u.emulateNetworkConditions({
@@ -158,9 +151,9 @@ test.describe('Test network related behaviors', () => {
       })
 
       // Wait for the app to be ready for use
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).not.toBeDisabled({ timeout: 15000 })
+      await expect(toolbar.startSketchBtn).not.toBeDisabled({
+        timeout: 15000,
+      })
 
       // Expect the network to be up
       await networkToggle.hover()

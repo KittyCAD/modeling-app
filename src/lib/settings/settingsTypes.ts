@@ -43,7 +43,6 @@ export const warningLevels: WarningLevel[] = [
 ]
 
 export type Toggle = 'On' | 'Off'
-export const toggleAsArray = ['On', 'Off'] as const
 
 export type SettingsPaths = Exclude<
   Paths<typeof settings, 1>,

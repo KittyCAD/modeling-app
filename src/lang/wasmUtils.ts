@@ -55,6 +55,9 @@ export function importFileExtensions(wasmInstance?: ModuleType): string[] {
   return the_import_file_extensions()
 }
 
+/**
+ * All of these file extensions will be lowercase
+ */
 export function relevantFileExtensions(wasmInstance?: ModuleType): string[] {
   const the_relevant_file_extensions = wasmInstance
     ? wasmInstance.relevant_file_extensions

@@ -571,23 +571,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -3.25,
-              -2.25
-            ],
-            "tag": null,
-            "to": [
-              -3.25,
-              -2.25
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "innerPaths": [
@@ -842,23 +825,6 @@ description: Variables in memory after executing counterdrilled-weldment.kcl
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
           },
-          "to": [
-            -3.25,
-            -2.25
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -3.25,
-            -2.25
-          ],
-          "tag": null,
           "to": [
             -3.25,
             -2.25

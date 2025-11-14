@@ -56,7 +56,7 @@ import {
   isModelingBatchResponse,
   isModelingResponse,
 } from '@src/lib/kcSdkGuards'
-import toast from 'react-hot-toast'
+import { showErrorToastPlusReportLink } from '@src/components/ToastErrorPlusReportLink'
 
 export class ConnectionManager extends EventTarget {
   started: boolean
@@ -648,8 +648,14 @@ export class ConnectionManager extends EventTarget {
       setTimeout(() => {
         if (!isSettled) {
           console.warn(message.command)
-          toast.error(
-            `command took more than ${PENDING_COMMAND_TIMEOUT} milliseconds to finish, rejecting the command.`
+          let details = message.command.type
+          if (message.command.type === 'modeling_cmd_req') {
+            details += ` - ${message.command.cmd.type}`
+          }
+          showErrorToastPlusReportLink(
+            `A command timed out and was rejected (${details}).`,
+            message.command,
+            'Command Timeout Error'
           )
           reject(
             `sendCommand rejected, you hit the timeout. ${JSON.stringify(message.command)}`
@@ -903,6 +909,15 @@ export class ConnectionManager extends EventTarget {
   }
 
   tearDown(options?: ManagerTearDown) {
+    EngineDebugger.addLog({
+      label: 'connectionManager',
+      message: `invoked tearDown()`,
+      metadata: {
+        options,
+        started: !!this.started,
+        connection: !!this.connection,
+      },
+    })
     if (!this.started) {
       EngineDebugger.addLog({
         label: 'connectionManager',
@@ -1025,11 +1040,11 @@ export class ConnectionManager extends EventTarget {
 
   // VITEST ONLY
   offline() {
-    this.tearDown()
     EngineDebugger.addLog({
       label: 'connectionManager',
-      message: 'offline',
+      message: 'offline, calling tearDown()',
     })
+    this.tearDown()
   }
 
   // VITEST ONLY
@@ -1146,7 +1161,7 @@ export class ConnectionManager extends EventTarget {
     rangeStr: string,
     commandStr: string,
     idToRangeStr: string
-  ): void | Error {
+  ): undefined | Error {
     if (this.connection === undefined) {
       return new Error('this.connection is undefined')
     }
@@ -1190,7 +1205,7 @@ export class ConnectionManager extends EventTarget {
     rangeStr: string,
     commandStr: string,
     idToRangeStr: string
-  ): Promise<Uint8Array | void> {
+  ): Promise<Uint8Array | undefined> {
     if (this.connection === undefined) {
       return Promise.reject(new Error('this.connection is undefined'))
     }

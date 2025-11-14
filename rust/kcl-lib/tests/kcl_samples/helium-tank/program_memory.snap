@@ -2705,23 +2705,6 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.625,
-              30.0
-            ],
-            "tag": null,
-            "to": [
-              0.625,
-              30.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -3168,23 +3151,6 @@ description: Variables in memory after executing helium-tank.kcl
           },
           "from": [
             0.525,
-            30.0
-          ],
-          "tag": null,
-          "to": [
-            0.625,
-            30.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.625,
             30.0
           ],
           "tag": null,

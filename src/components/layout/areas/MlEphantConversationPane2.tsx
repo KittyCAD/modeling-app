@@ -39,6 +39,9 @@ export const MlEphantConversationPane2 = (props: {
   const conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
   })
+  const abruptlyClosed = useSelector(props.mlEphantManagerActor, (actor) => {
+    return actor.context.abruptlyClosed
+  })
 
   const billingContext = useSelector(props.billingActor, (actor) => {
     return actor.context
@@ -54,10 +57,33 @@ export const MlEphantConversationPane2 = (props: {
       return
     }
 
+    let project: Project = props.theProject
+
+    if (!window.electron) {
+      // If there is no project, we'll create a fake one. Expectation is for
+      // this to only happen on web.
+      project = {
+        metadata: null,
+        kcl_file_count: 1,
+        directory_count: 0,
+        default_file: '/main.kcl',
+        path: '/' + props.settings.meta.id.current,
+        name: props.settings.meta.id.current,
+        children: [
+          {
+            name: 'main.kcl',
+            path: `/main.kcl`,
+            children: null,
+          },
+        ],
+        readWriteAccess: true,
+      }
+    }
+
     const projectFiles = await collectProjectFiles({
       selectedFileContents: props.codeManager.code,
       fileNames: props.kclManager.execState.filenames,
-      projectContext: props.theProject,
+      projectContext: project,
     })
 
     // Only on initial project creation do we call the create endpoint, which
@@ -66,7 +92,7 @@ export const MlEphantConversationPane2 = (props: {
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions2.MessageSend,
       prompt: request,
-      projectForPromptOutput: props.theProject,
+      projectForPromptOutput: project,
       applicationProjectDirectory: props.settings.app.projectDirectory.current,
       fileSelectedDuringPrompting: {
         entry: props.loaderFile,
@@ -86,6 +112,15 @@ export const MlEphantConversationPane2 = (props: {
         (x: MlCopilotServerMessage) => 'end_of_stream' in x || 'error' in x
       ) === false
     : false
+
+  const needsReconnect = abruptlyClosed
+
+  const onReconnect = () => {
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions2.CacheSetupAndConnect,
+      refParentSend: props.mlEphantManagerActor.send,
+    })
+  }
 
   const tryToGetExchanges = () => {
     const mlEphantConversations =
@@ -109,7 +144,10 @@ export const MlEphantConversationPane2 = (props: {
 
     // We can now reliably use the mlConversations data.
     // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
-    if (props.theProject !== undefined) {
+    if (
+      props.theProject !== undefined &&
+      props.mlEphantManagerActor.getSnapshot().context.abruptlyClosed === false
+    ) {
       props.mlEphantManagerActor.send({
         type: MlEphantManagerTransitions2.CacheSetupAndConnect,
         refParentSend: props.mlEphantManagerActor.send,
@@ -204,7 +242,9 @@ export const MlEphantConversationPane2 = (props: {
       onProcess={(request: string, mode: MlCopilotMode) => {
         onProcess(request, mode).catch(reportRejection)
       }}
-      disabled={isProcessing}
+      onReconnect={onReconnect}
+      disabled={isProcessing || needsReconnect}
+      needsReconnect={needsReconnect}
       hasPromptCompleted={isProcessing}
       userAvatarSrc={props.user?.image}
       defaultPrompt={defaultPrompt}

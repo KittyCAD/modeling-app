@@ -88,23 +88,6 @@ description: Variables in memory after executing rect.kcl
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -2.0,
-            -1.0
-          ],
-          "tag": null,
-          "to": [
-            -2.0,
-            -1.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {

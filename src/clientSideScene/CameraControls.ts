@@ -2,13 +2,11 @@ import type { CameraDragInteractionType, CameraViewState } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { isArray } from '@src/lib/utils'
 
-import * as TWEEN from '@tweenjs/tween.js'
 import Hammer from 'hammerjs'
 import type { Camera } from 'three'
 import {
   Euler,
   MathUtils,
-  Matrix4,
   OrthographicCamera,
   PerspectiveCamera,
   Quaternion,
@@ -19,7 +17,6 @@ import {
 
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 
-import { isQuaternionVertical } from '@src/clientSideScene/helpers'
 import {
   DEBUG_SHOW_INTERSECTION_PLANE,
   INTERSECTION_PLANE_LAYER,
@@ -38,7 +35,6 @@ import {
   isReducedMotion,
   roundOff,
   throttle,
-  toSync,
   uuidv4,
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
@@ -47,8 +43,6 @@ import { type ConnectionManager } from '@src/network/connectionManager'
 import type { Subscription, UnreliableSubscription } from '@src/network/utils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
-const FRAMES_TO_ANIMATE_IN = 30
-const ORTHOGRAPHIC_MAGIC_FOV = 4
 const EXPECTED_WORLD_COORD_SYSTEM = 'right_handed_up_z'
 
 // Partial declaration; the front/back/left/right are handled differently.
@@ -56,8 +50,6 @@ enum StandardView {
   TOP = 'top',
   BOTTOM = 'bottom',
 }
-
-const tempQuaternion = new Quaternion() // just used for maths
 
 type interactionType = 'pan' | 'rotate' | 'zoom'
 
@@ -84,8 +76,6 @@ export type ReactCameraProperties =
       target: [number, number, number]
       quaternion: [number, number, number, number]
     }
-
-const lastCmdDelay = 50
 
 class CameraRateLimiter {
   lastSend?: Date = undefined
@@ -240,21 +230,6 @@ export class CameraControls {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand(cmd)
   }, 1000 / 15)
-
-  lastPerspectiveCmd: EngineCommand | null = null
-  lastPerspectiveCmdTime: number = Date.now()
-  lastPerspectiveCmdTimeoutId: number | null = null
-
-  sendLastPerspectiveReliableChannel = () => {
-    if (
-      this.lastPerspectiveCmd &&
-      Date.now() - this.lastPerspectiveCmdTime >= lastCmdDelay
-    ) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.engineCommandManager.sendSceneCommand(this.lastPerspectiveCmd, true)
-      this.lastPerspectiveCmdTime = Date.now()
-    }
-  }
 
   doMove = (
     interaction: CameraDragInteractionType,
@@ -914,63 +889,6 @@ export class CameraControls {
     this.camera.updateMatrixWorld()
   }
 
-  safeLookAtTarget(up = new Vector3(0, 0, 1)) {
-    const quaternion = _lookAt(this.camera.position, this.target, up)
-    this.camera.quaternion.copy(quaternion)
-    this.camera.updateMatrixWorld()
-  }
-
-  tweenCamToNegYAxis(
-    // -90 degrees from the x axis puts the camera on the negative y axis
-    targetAngle = -Math.PI / 2,
-    duration = 500
-  ): Promise<void> {
-    return new Promise((resolve) => {
-      // should tween the camera so that it has an xPosition of 0, and forcing it's yPosition to be negative
-      // zPosition should stay the same
-      const xyRadius = Math.sqrt(
-        (this.target.x - this.camera.position.x) ** 2 +
-          (this.target.y - this.camera.position.y) ** 2
-      )
-      const xyAngle = Math.atan2(
-        this.camera.position.y - this.target.y,
-        this.camera.position.x - this.target.x
-      )
-      const camAtTime = (obj: { angle: number }) => {
-        const x = xyRadius * Math.cos(obj.angle)
-        const y = xyRadius * Math.sin(obj.angle)
-        this.camera.position.set(
-          this.target.x + x,
-          this.target.y + y,
-          this.camera.position.z
-        )
-        this.update()
-        this.onCameraChange()
-      }
-      const onComplete = (obj: { angle: number }) => {
-        camAtTime(obj)
-        this._isCamMovingCallback(false, true)
-
-        // resolve after a couple of frames
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => resolve())
-        })
-      }
-      this._isCamMovingCallback(true, true)
-
-      if (isReducedMotion()) {
-        onComplete({ angle: targetAngle })
-        return
-      }
-
-      new TWEEN.Tween({ angle: xyAngle })
-        .to({ angle: targetAngle }, duration)
-        .onUpdate(camAtTime)
-        .onComplete(onComplete)
-        .start()
-    })
-  }
-
   async getCameraView(): Promise<CameraViewState | Error> {
     const response = await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
@@ -1234,182 +1152,6 @@ export class CameraControls {
       })().catch(reject)
     })
   }
-
-  async tweenCameraToQuaternion(
-    targetQuaternion: Quaternion,
-    targetPosition = new Vector3(),
-    duration = 500,
-    toOrthographic = true
-  ): Promise<void> {
-    if (this.syncDirection === 'engineToClient')
-      console.warn(
-        'tweenCameraToQuaternion not design to work with engineToClient syncDirection.'
-      )
-    const isVertical = isQuaternionVertical(targetQuaternion)
-    let remainingDuration = duration
-    if (isVertical) {
-      remainingDuration = duration * 0.5
-      const orbitRotationDuration = duration * 0.65
-      let targetAngle = -Math.PI / 2
-      const v = new Vector3(0, 0, 1).applyQuaternion(targetQuaternion)
-      if (v.z < 0) targetAngle = Math.PI / 2
-      await this.tweenCamToNegYAxis(targetAngle, orbitRotationDuration)
-    }
-    await this._tweenCameraToQuaternion(
-      targetQuaternion,
-      targetPosition,
-      remainingDuration,
-      toOrthographic
-    )
-  }
-  _tweenCameraToQuaternion(
-    targetQuaternion: Quaternion,
-    targetPosition: Vector3,
-    duration = 500,
-    toOrthographic = false
-  ): Promise<void> {
-    return new Promise((resolve) => {
-      const camera = this.camera
-      this._isCamMovingCallback(true, true)
-      const initialQuaternion = camera.quaternion.clone()
-      const initialTarget = this.target.clone()
-      const isVertical = isQuaternionVertical(targetQuaternion)
-      let tweenEnd = isVertical ? 0.99 : 1
-      const tempVec = new Vector3()
-      const initialDistance = initialTarget.distanceTo(camera.position.clone())
-
-      const cameraAtTime = (animationProgress: number /* 0 - 1 */) => {
-        const currentQ = tempQuaternion.slerpQuaternions(
-          initialQuaternion,
-          targetQuaternion,
-          animationProgress
-        )
-        const up = new Vector3(0, 0, 1).applyQuaternion(currentQ)
-        this.camera.up.copy(up)
-        const currentTarget = tempVec.lerpVectors(
-          initialTarget,
-          targetPosition,
-          animationProgress
-        )
-        if (this.camera instanceof PerspectiveCamera)
-          // changing the camera position back when it's orthographic doesn't do anything
-          // and it messes up animating back to perspective later
-          this.camera.position
-            .set(0, 0, 1)
-            .applyQuaternion(currentQ)
-            .multiplyScalar(initialDistance)
-            .add(currentTarget)
-
-        this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
-        this.camera.quaternion.copy(currentQ)
-        this.target.copy(currentTarget)
-        this.camera.updateProjectionMatrix()
-        this.update()
-        this.onCameraChange()
-      }
-
-      const onComplete = async () => {
-        if (isReducedMotion() && toOrthographic) {
-          cameraAtTime(0.9999)
-          this.useOrthographicCamera()
-        } else if (toOrthographic) {
-          await this.animateToOrthographic()
-        }
-        this.enableRotate = false
-        this._isCamMovingCallback(false, true)
-        resolve()
-      }
-
-      if (isReducedMotion()) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        onComplete()
-        return
-      }
-
-      new TWEEN.Tween({ t: 0 })
-        .to({ t: tweenEnd }, duration)
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .onUpdate(({ t }) => cameraAtTime(t))
-        .onComplete(toSync(onComplete, reportRejection))
-        .start()
-    })
-  }
-
-  animateToOrthographic = () =>
-    new Promise((resolve) => {
-      if (this.syncDirection === 'engineToClient')
-        console.warn(
-          'animate To Orthographic not design to work with engineToClient syncDirection.'
-        )
-      this.isFovAnimationInProgress = true
-      let currentFov = this.lastPerspectiveFov
-      this.perspectiveFovBeforeOrtho = currentFov
-
-      const targetFov = ORTHOGRAPHIC_MAGIC_FOV
-      const fovAnimationStep = (currentFov - targetFov) / FRAMES_TO_ANIMATE_IN
-      let frameWaitOnFinish = 10
-
-      const animateFovChange = () => {
-        if (this.camera instanceof PerspectiveCamera) {
-          if (this.camera.fov > targetFov) {
-            // Decrease the FOV
-            currentFov = Math.max(currentFov - fovAnimationStep, targetFov)
-            this.camera.updateProjectionMatrix()
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            this.dollyZoom(currentFov)
-            requestAnimationFrame(animateFovChange) // Continue the animation
-          } else if (frameWaitOnFinish > 0) {
-            frameWaitOnFinish--
-            requestAnimationFrame(animateFovChange) // Continue the animation
-          } else {
-            // Once the target FOV is reached, switch to the orthographic camera
-            // Needs to wait a couple frames after the FOV animation is complete
-            this.useOrthographicCamera()
-            this.isFovAnimationInProgress = false
-            resolve(true)
-          }
-        }
-      }
-
-      animateFovChange() // Start the animation
-    })
-  animateToPerspective = (targetCamUp = new Vector3(0, 0, 1)) =>
-    new Promise((resolve) => {
-      if (this.syncDirection === 'engineToClient') {
-        console.warn(
-          'animate To Perspective not design to work with engineToClient syncDirection.'
-        )
-      }
-      this.isFovAnimationInProgress = true
-      const targetFov = this.perspectiveFovBeforeOrtho // Target FOV for perspective
-      this.lastPerspectiveFov = ORTHOGRAPHIC_MAGIC_FOV
-      let currentFov = ORTHOGRAPHIC_MAGIC_FOV
-      const initialCameraUp = this.camera.up.clone()
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.usePerspectiveCamera()
-      const tempVec = new Vector3()
-
-      const cameraAtTime = (t: number) => {
-        currentFov =
-          this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov) * t
-        const currentUp = tempVec.lerpVectors(initialCameraUp, targetCamUp, t)
-        this.camera.up.copy(currentUp)
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.dollyZoom(currentFov)
-      }
-
-      const onComplete = () => {
-        this.isFovAnimationInProgress = false
-        resolve(true)
-      }
-
-      new TWEEN.Tween({ t: 0 })
-        .to({ t: 1 }, isReducedMotion() ? 50 : FRAMES_TO_ANIMATE_IN * 16) // Assuming 60fps, hence 16ms per frame
-        .easing(TWEEN.Easing.Quadratic.InOut)
-        .onUpdate(({ t }) => cameraAtTime(t))
-        .onComplete(onComplete)
-        .start()
-    })
   snapToPerspectiveBeforeHandingBackControlToEngine = async (
     targetCamUp = new Vector3(0, 0, 1)
   ) => {
@@ -1420,13 +1162,13 @@ export class CameraControls {
     }
     this.isFovAnimationInProgress = true
     const targetFov = this.perspectiveFovBeforeOrtho // Target FOV for perspective
-    let currentFov = ORTHOGRAPHIC_MAGIC_FOV
     const initialCameraUp = this.camera.up.clone()
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.usePerspectiveCamera()
     const tempVec = new Vector3()
 
-    currentFov = this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov)
+    const currentFov =
+      this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov)
     const currentUp = tempVec.lerpVectors(initialCameraUp, targetCamUp, 1)
     this.camera.up.copy(currentUp)
     await this.dollyZoom(currentFov, true)
@@ -1747,25 +1489,6 @@ function convertThreeCamValuesToEngineCam(
     up: upVector,
     vantage,
   }
-}
-
-function _lookAt(position: Vector3, target: Vector3, up: Vector3): Quaternion {
-  // Direction from position to target, normalized.
-  let direction = new Vector3().subVectors(target, position).normalize()
-
-  // Calculate a new "effective" up vector that is orthogonal to the direction.
-  // This step ensures that the up vector does not affect the direction the camera is looking.
-  let right = new Vector3().crossVectors(direction, up).normalize()
-  let orthogonalUp = new Vector3().crossVectors(right, direction).normalize()
-
-  // Create a lookAt matrix using the position, and the recalculated orthogonal up vector.
-  let lookAtMatrix = new Matrix4()
-  lookAtMatrix.lookAt(position, target, orthogonalUp)
-
-  // Create a quaternion from the lookAt matrix.
-  let quaternion = new Quaternion().setFromRotationMatrix(lookAtMatrix)
-
-  return quaternion
 }
 
 function _getInteractionType(

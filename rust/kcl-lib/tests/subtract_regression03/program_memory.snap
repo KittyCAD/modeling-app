@@ -185,23 +185,6 @@ description: Variables in memory after executing subtract_regression03.kcl
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              -0.06
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              -0.06
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -434,23 +417,6 @@ description: Variables in memory after executing subtract_regression03.kcl
             "from": [
               -0.129019,
               0.06
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              -0.06
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              -0.06
             ],
             "tag": null,
             "to": [
@@ -1348,23 +1314,6 @@ description: Variables in memory after executing subtract_regression03.kcl
           ],
           "type": "ToPoint",
           "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            -0.06
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            -0.06
-          ],
-          "type": "ToPoint",
-          "units": "in"
         }
       ],
       "on": {
@@ -1498,23 +1447,6 @@ description: Variables in memory after executing subtract_regression03.kcl
           "from": [
             -0.129019,
             0.06
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            -0.06
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            -0.06
           ],
           "tag": null,
           "to": [
