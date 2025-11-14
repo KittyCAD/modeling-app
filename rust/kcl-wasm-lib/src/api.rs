@@ -95,12 +95,13 @@ impl Context {
 
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
-        guard
+        let result = guard
             .hack_set_program(&ctx, program)
             .await
             .map_err(|e| format!("Failed to execute new program: {:?}", e))?;
 
-        Ok(JsValue::undefined())
+        Ok(JsValue::from_serde(&result)
+            .map_err(|e| format!("Could not serialize hack set program result. {TRUE_BUG} Details: {e}"))?)
     }
 
     /// Execute the sketch in mock mode, without changing anything. This is

@@ -282,19 +282,29 @@ export default class RustContext {
     }
   }
 
-  /** Temporary hack. Set the program AST used by the frontend layer of the API
-   * and execute it so that state is updated and ready for the next API call. */
+  /**
+   * Temporary hack. Set the program AST used by the frontend layer of the API
+   * and execute it with a real engine so that state is updated and ready for
+   * the next API call.
+   */
   async hackSetProgram(
     program_ast: Node<Program>,
     settings: DeepPartial<Configuration>
-  ): Promise<void> {
+  ): Promise<{
+    sceneGraph: SceneGraph
+    execOutcome: ExecOutcome
+  }> {
     const instance = this._checkInstance()
 
     try {
-      await instance.hack_set_program(
+      const result: [SceneGraph, ExecOutcome] = await instance.hack_set_program(
         JSON.stringify(program_ast),
         JSON.stringify(settings)
       )
+      return {
+        sceneGraph: result[0],
+        execOutcome: result[1],
+      }
     } catch (e: any) {
       // TODO: sketch-api: const err = errFromErrWithOutputs(e)
       const err = { message: e }
