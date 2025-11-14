@@ -178,6 +178,8 @@ export default class GizmoRenderer {
           if (isOrientationTargetName(obj.name)) this.clickableObjects.push(obj)
         })
         this.initListeners()
+        // Ensure camera is positioned (without this when switching from axis the camera is incorrect)
+        this.onCameraChange()
         this.updateModel()
       },
       undefined,

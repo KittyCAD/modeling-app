@@ -84,9 +84,6 @@ export default function AxisGizmo() {
       }
     }
 
-    if (wrapperRef.current) {
-    }
-
     const { disposeMouseEvents } = initializeMouseEvents(
       canvas,
       raycasterIntersect,
@@ -112,6 +109,12 @@ export default function AxisGizmo() {
       renderer.render(scene, camera)
     }
     sceneInfra.camControls.cameraChange.add(animate)
+
+    // Initialize camera orientation/position to match main camera for immediate render
+    const q = sceneInfra.camControls.camera.quaternion
+    camera.position.set(0, 0, 1).applyQuaternion(q)
+    camera.quaternion.copy(q)
+    renderer.render(scene, camera)
 
     return () => {
       renderer.dispose()
