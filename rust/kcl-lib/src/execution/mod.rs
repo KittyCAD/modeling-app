@@ -864,7 +864,7 @@ impl ExecutorContext {
 
                 self.add_import_module_ops(
                     exec_state,
-                    program,
+                    &program.ast,
                     module_id,
                     &module_path,
                     source_range,
@@ -1025,7 +1025,7 @@ impl ExecutorContext {
     fn add_import_module_ops(
         &self,
         _exec_state: &mut ExecState,
-        _program: &crate::Program,
+        _program: &crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
         _module_id: ModuleId,
         _module_path: &ModulePath,
         _source_range: SourceRange,
@@ -1037,7 +1037,7 @@ impl ExecutorContext {
     fn add_import_module_ops(
         &self,
         exec_state: &mut ExecState,
-        program: &crate::Program,
+        program: &crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
         module_id: ModuleId,
         module_path: &ModulePath,
         source_range: SourceRange,
@@ -1058,7 +1058,12 @@ impl ExecutorContext {
 
                     let node_path = if source_range.is_top_level_module() {
                         let cached_body_items = exec_state.global.artifacts.cached_body_items();
-                        NodePath::from_range(&program.ast, cached_body_items, source_range).unwrap_or_default()
+                        NodePath::from_range(
+                            &exec_state.build_program_lookup(program.clone()),
+                            cached_body_items,
+                            source_range,
+                        )
+                        .unwrap_or_default()
                     } else {
                         // The frontend doesn't care about paths in
                         // files other than the top-level module.
@@ -1188,6 +1193,7 @@ impl ExecutorContext {
         #[cfg(feature = "artifact-graph")]
         {
             // Fill in NodePath for operations.
+            let programs = &exec_state.build_program_lookup(program.clone());
             let cached_body_items = exec_state.global.artifacts.cached_body_items();
             for op in exec_state
                 .global
@@ -1196,12 +1202,12 @@ impl ExecutorContext {
                 .iter_mut()
                 .skip(start_op)
             {
-                op.fill_node_paths(program, cached_body_items);
+                op.fill_node_paths(programs, cached_body_items);
             }
             for module in exec_state.global.module_infos.values_mut() {
                 if let ModuleRepr::Kcl(_, Some(outcome)) = &mut module.repr {
                     for op in &mut outcome.artifacts.operations {
-                        op.fill_node_paths(program, cached_body_items);
+                        op.fill_node_paths(programs, cached_body_items);
                     }
                 }
             }
@@ -1444,6 +1450,40 @@ pub(crate) struct ExecTestResults {
     mem_env: EnvironmentRef,
     exec_ctxt: ExecutorContext,
     exec_state: ExecState,
+}
+
+/// There are several places where we want to traverse a KCL program or find a symbol in it,
+/// but because KCL modules can import each other, we need to traverse multiple programs.
+/// This stores multiple programs, keyed by their module ID for quick access.
+#[cfg(feature = "artifact-graph")]
+pub struct ProgramLookup {
+    programs: IndexMap<ModuleId, crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>>,
+}
+
+#[cfg(feature = "artifact-graph")]
+impl ProgramLookup {
+    // TODO: Could this store a reference to KCL programs instead of owning them?
+    // i.e. take &state::ModuleInfoMap instead?
+    pub fn new(
+        current: crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
+        module_infos: state::ModuleInfoMap,
+    ) -> Self {
+        let mut programs = IndexMap::with_capacity(module_infos.len());
+        for (id, info) in module_infos {
+            if let ModuleRepr::Kcl(program, _) = info.repr {
+                programs.insert(id, program);
+            }
+        }
+        programs.insert(ModuleId::default(), current);
+        Self { programs }
+    }
+
+    pub fn program_for_module(
+        &self,
+        module_id: ModuleId,
+    ) -> Option<&crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>> {
+        self.programs.get(&module_id)
+    }
 }
 
 #[cfg(test)]
