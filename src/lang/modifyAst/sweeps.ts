@@ -205,6 +205,11 @@ export function addExtrude({
 
 // From rust/kcl-lib/std/sweep.kcl
 export type SweepRelativeTo = 'SKETCH_PLANE' | 'TRAJECTORY'
+export const SWEEP_CONSTANTS: Record<string, SweepRelativeTo> = {
+  SKETCH_PLANE: 'SKETCH_PLANE',
+  TRAJECTORY: 'TRAJECTORY',
+}
+export const SWEEP_MODULE = 'sweep'
 
 export function addSweep({
   ast,
@@ -257,7 +262,7 @@ export function addSweep({
     ? [createLabeledArg('sectional', createLiteral(sectional))]
     : []
   const relativeToExpr = relativeTo
-    ? [createLabeledArg('relativeTo', createName(['sweep'], relativeTo))]
+    ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
     : []
   const tagStartExpr = tagStart
     ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]

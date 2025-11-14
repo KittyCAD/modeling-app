@@ -12,6 +12,8 @@ import {
 import {
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveTagDeclaratorFromOpArg,
+  SWEEP_CONSTANTS,
+  SWEEP_MODULE,
   type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import {
@@ -909,10 +911,10 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
       operation.labeledArgs.relativeTo.sourceRange[0],
       operation.labeledArgs.relativeTo.sourceRange[1]
     )
-    if (result === 'SKETCH_PLANE') {
-      relativeTo = 'SKETCH_PLANE'
-    } else if (result === 'TRAJECTORY') {
-      relativeTo = 'TRAJECTORY'
+    if (result === `${SWEEP_MODULE}::${SWEEP_CONSTANTS.SKETCH_PLANE}`) {
+      relativeTo = SWEEP_CONSTANTS.SKETCH_PLANE
+    } else if (result === `${SWEEP_MODULE}::${SWEEP_CONSTANTS.TRAJECTORY}`) {
+      relativeTo = SWEEP_CONSTANTS.TRAJECTORY
     } else {
       return { reason: "Couldn't retrieve relativeTo argument" }
     }

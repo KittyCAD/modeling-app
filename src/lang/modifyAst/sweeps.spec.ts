@@ -546,7 +546,6 @@ profile002 = startProfile(sketch002, at = [0, 0])
       const result = addSweep({ ast, sketches, path, sectional, relativeTo })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
-      // TODO: not sure why but this recast gets rid of the shell:: prefixing for constants
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleAndLineCode)
       expect(newCode).toContain(`sweep001 = sweep(
@@ -583,7 +582,6 @@ sweep001 = sweep(
       })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
-      // TODO: not sure why but this recast gets rid of the shell:: prefixing for constants
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleAndLineCode)
       expect(newCode).toContain(
