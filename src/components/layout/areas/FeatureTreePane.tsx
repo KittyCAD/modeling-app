@@ -419,19 +419,9 @@ const OperationItem = (props: {
 }) => {
   const kclContext = useKclContext()
   const name = getOperationLabel(props.item)
-  const valueDetail = useMemo(
-    () =>
-      props.item.type === 'VariableDeclaration'
-        ? {
-            display: props.code.slice(
-              props.item.sourceRange[0],
-              props.item.sourceRange[1]
-            ),
-            calculated: props.item.value,
-          }
-        : undefined,
-    [props.item, props.code]
-  )
+  const valueDetail = useMemo(() => {
+    return getFeatureTreeValueDetail(props.item, props.code)
+  }, [props.item, props.code])
 
   const variableName = useMemo(() => {
     return getOperationVariableName(props.item, kclContext.ast)
@@ -875,4 +865,43 @@ const DefaultPlanes = () => {
       <div className="h-px bg-chalkboard-50/20 my-2" />
     </div>
   )
+}
+
+/**
+ * Helper function to get value detail for operations (both datum and variable declarations)
+ * @param operation - The operation to extract value detail from
+ * @param code - The source code string to extract values from
+ * @returns Value detail object with display string and calculated value, or undefined if no value
+ */
+export function getFeatureTreeValueDetail(
+  operation: Operation,
+  code: string
+): { calculated: OpKclValue; display: string } | undefined {
+  if (operation.type === 'VariableDeclaration') {
+    return {
+      display: code.slice(operation.sourceRange[0], operation.sourceRange[1]),
+      calculated: operation.value,
+    }
+  }
+
+  // Show datum name for GDT Datum operations
+  if (operation.type === 'StdLibCall' && operation.name === 'gdt::datum') {
+    const nameArg = operation.labeledArgs?.name
+    if (nameArg?.sourceRange) {
+      const nameRaw = code.slice(nameArg.sourceRange[0], nameArg.sourceRange[1])
+      const datumName = nameRaw?.replace(/^["']|["']$/g, '') || ''
+      if (datumName) {
+        const stringValue: OpKclValue = {
+          type: 'String',
+          value: datumName,
+        }
+        return {
+          display: datumName,
+          calculated: stringValue,
+        }
+      }
+    }
+  }
+
+  return undefined
 }
