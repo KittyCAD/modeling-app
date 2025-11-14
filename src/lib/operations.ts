@@ -1732,6 +1732,73 @@ export function getOperationLabel(op: Operation): string {
   }
 }
 
+type NestedOpList = (Operation | Operation[])[]
+
+/**
+ * Given an operations list, group streaks of provided types
+ * into arrays if they are of a given minimum length
+ */
+export function groupOperationTypeStreaks(
+  opList: Operation[],
+  typesToGroup: Operation['type'][],
+  minLength = 5
+): NestedOpList {
+  const result: NestedOpList = []
+
+  let currentType: Operation['type'] | null = null
+  let currentStreak: Operation[] = []
+
+  const flushStreak = () => {
+    if (currentStreak.length === 0) return
+    const shouldGroup =
+      currentType !== null &&
+      typesToGroup.includes(currentType) &&
+      currentStreak.length >= minLength
+    if (shouldGroup) {
+      result.push([...currentStreak])
+    } else {
+      for (const op of currentStreak) result.push(op)
+    }
+    currentStreak = []
+    currentType = null
+  }
+
+  for (const op of opList) {
+    if (currentType === null) {
+      currentType = op.type
+      currentStreak.push(op)
+      continue
+    }
+    if (op.type === currentType) {
+      currentStreak.push(op)
+    } else {
+      // Type changed; flush the previous streak and start anew
+      flushStreak()
+      currentType = op.type
+      currentStreak.push(op)
+    }
+  }
+
+  // Flush any remaining streak
+  flushStreak()
+
+  return result
+}
+
+/**
+ * Return a more human-readable operation type label
+ */
+export function getOpTypeLabel(opType: Operation['type']): string {
+  switch (opType) {
+    case 'StdLibCall':
+      return 'Operation'
+    case 'VariableDeclaration':
+      return 'Parameter'
+    default:
+      return 'Function'
+  }
+}
+
 /**
  * Returns the icon of the operation
  */
