@@ -11,6 +11,8 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { CONNECTION_ERROR_TEXT, ConnectionError } from '@src/network/utils'
 import type { IErrorType } from '@src/network/utils'
 
+import { ActionButton } from '@src/components/ActionButton'
+
 interface LoadingProps extends React.PropsWithChildren {
   isDummy?: boolean
   isCompact?: boolean
@@ -18,6 +20,8 @@ interface LoadingProps extends React.PropsWithChildren {
   dataTestId?: string
   retryAttemptCountdown?: number
   isRetrying?: boolean
+  showManualConnect: boolean
+  callback: () => void
 }
 
 const markedOptions: MarkedOptions = {
@@ -40,7 +44,7 @@ export const CONNECTION_ERROR_CALL_TO_ACTION_TEXT: Record<
 > = {
   [ConnectionError.Unset]: '',
   [ConnectionError.LongLoadingTime]:
-  'Connecting is taking longer than expected, check your network connection.',
+    'Connecting is taking longer than expected, check your network connection.',
   [ConnectionError.VeryLongLoadingTime]:
     'Check the connection is being blocked by a firewall, or if your internet is disconnected.',
   [ConnectionError.ICENegotiate]:
@@ -80,6 +84,8 @@ const Loading = ({
   dataTestId,
   retryAttemptCountdown,
   isRetrying,
+  showManualConnect,
+  callback,
 }: LoadingProps) => {
   const [error, setError] = useState<IErrorType>({
     error: ConnectionError.Unset,
@@ -158,17 +164,53 @@ const Loading = ({
       className={`body-bg flex flex-col items-center justify-center ${colorClass} ${className}`}
       data-testid={dataTestId ? dataTestId : 'loading'}
     >
-      {isUnrecoverableError ? (
+      {isUnrecoverableError || showManualConnect ? (
         <CustomIcon
-          name="exclamationMark"
+          name="close"
           className="w-8 h-8 !text-chalkboard-10 bg-destroy-60 rounded-full"
         />
       ) : (
         <Spinner />
       )}
+
       <p className={`text-base mt-4`}>
-        {isUnrecoverableError ? '' : children || 'Loading'}
+        {isUnrecoverableError || showManualConnect ? '' : children || 'Loading'}
       </p>
+
+      {showManualConnect && (
+        <>
+          <p className="text-destroy-60">Failed to connect.</p>
+          <div>
+            <div className="inline-block max-w-3xl text-base gap-2 px-32 pt-2 mt-2 pb-6 mb-2 text-chalkboard-80 dark:text-chalkboard-20">
+              Click below to try again. If it persists, please visit the
+              community support thread on{' '}
+              <a
+                className="contents text-chalkboard-80 dark:text-chalkboard-10"
+                href={diagnosingNetworkIssuesUrl}
+                onClick={openExternalBrowserIfDesktop(
+                  diagnosingNetworkIssuesUrl
+                )}
+              >
+                <span className="underline underline-offset-1">
+                  diagnosing network connection issues
+                </span>
+              </a>
+              .
+            </div>
+          </div>
+          <ActionButton
+            className="h-5"
+            Element="button"
+            iconStart={{
+              icon: 'refresh',
+            }}
+            onClick={() => callback()}
+          >
+            reconnect
+          </ActionButton>
+        </>
+      )}
+
       <div
         className={
           `text-base h-[1em] ` +
@@ -181,10 +223,12 @@ const Loading = ({
           <span>Connecting in {countdown}s</span>
         )}
       </div>
-      {CONNECTION_ERROR_TEXT[error.error] && (
+
+      {CONNECTION_ERROR_TEXT[error.error] && !showManualConnect && (
         <div>
           <div className="inline-block max-w-3xl text-base gap-2 px-32 pt-2 mt-2 pb-6 mb-6 text-chalkboard-80 dark:text-chalkboard-20">
-            {CONNECTION_ERROR_CALL_TO_ACTION_TEXT[error.error]} If it persists, please visit the community support thread on{' '}
+            {CONNECTION_ERROR_CALL_TO_ACTION_TEXT[error.error]} If it persists,
+            please visit the community support thread on{' '}
             <a
               className="contents text-chalkboard-80 dark:text-chalkboard-10"
               href={diagnosingNetworkIssuesUrl}
