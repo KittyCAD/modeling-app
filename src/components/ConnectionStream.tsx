@@ -351,6 +351,7 @@ export const ConnectionStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
+      {!isSceneReady || showManualConnect && (
       <Loading
         isRetrying={false}
         retryAttemptCountdown={0}
@@ -377,7 +378,7 @@ export const ConnectionStream = (props: {
         }}
       >
         Connecting and setting up scene...
-      </Loading>
+          </Loading>)}
       )
     </div>
   )
