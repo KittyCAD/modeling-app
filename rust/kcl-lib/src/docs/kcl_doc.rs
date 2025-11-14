@@ -889,6 +889,12 @@ impl ArgData {
             }),
         }
     }
+
+    /// Is this a normal, labelled arg,
+    /// or the special unlabelled first arg?
+    pub fn is_labelled(&self) -> bool {
+        matches!(self.kind, ArgKind::Labelled(_))
+    }
 }
 
 impl ArgKind {
