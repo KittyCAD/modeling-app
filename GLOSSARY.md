@@ -6,11 +6,11 @@ How we refer to the entire application and all its subsystems. You may often see
 
 ## Top Bar
 
-The interface element found at the top (yay descriptive names!) of our layouts. It is used for navigating around the app, managing your user and project information, and sharing.
+The element found at the top (yay descriptive names!) of our interfaces. It is used for navigating around the app, managing your user and project information, and sharing.
 
 ## Status Bar
 
-The interface element found at the bottom of our layouts. It is used to get information about where you are and what you're doing in the application at the moment.
+The element found at the bottom of our interfaces. It is used to get information about where you are and what you're doing in the application at the moment.
 
 The left side is for "global" items like your network status, and the right side is for "local", context-specific information such as your current selection in the Workbench.
 
@@ -22,13 +22,17 @@ The interface within Design Studio where users can choose which project to open,
 
 ## Project Browser
 
-The interface element found in the middle of the Home interface. It shows projects available to be opened in an area on the right, and a sidebar on the left with action buttons to create blank, generated, or sample projects.
+The element found in the middle of the Home interface. It shows projects available to be opened in an area on the right, and a sidebar on the left with action buttons to create blank, generated, or sample projects.
 
-## Workbench
+## Workspace
 
 The interface within Design Studio where the user does the real CAD work. It consists of a Top Bar, a Layout, and a Status Bar.
 
 ![Workbench](/public/glossary/workbench.png)
+
+## Workbench
+
+A configuration of the Workspace arranged for one aspect of the CAD ecosystem. Currently the Workspace only has a "modeling" Workspace, but the foundational technologies for drawing and manufacturing Workspaces are under active development by other teams, and will be integrated into ZDS.
 
 ## Layout
 
@@ -44,11 +48,11 @@ A kind of Layout that consists of two or more Layouts divided, with a draggable 
 
 ## Panes
 
-A kind of Split Layout that lets users toggle which layout elements are active within it. It consists of a pane control bar and a Split layout of all active panes.
+A kind of Split Layout that lets users toggle which Layout elements are active within it. It consists of a pane control bar and a Split Layout of all active panes.
 
 ### Pane control bar
 
-An interface element which contains a row of buttons that allow users to toggle the activity of panes. It can be on the top, bottom, left, or right side of a Pane layout.
+An element which contains a row of buttons that allow users to toggle the activity of Panes. It can be on the top, bottom, left, or right side of a Pane Layout.
 
 ## Scene
 
@@ -56,7 +60,7 @@ An Area showing the 3D modeling scene. It contains controls to manipulate the CA
 
 ### Toolbar
 
-An interface element within the Scene that contains buttons to invoke modeling operations. It changes based on the current modeling state, such as being in sketch mode.
+An element within the Scene that contains buttons to invoke modeling operations. It changes based on the current modeling state, such as being in sketch mode.
 
 ### View Controls
 
