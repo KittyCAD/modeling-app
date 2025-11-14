@@ -163,6 +163,7 @@ export function addHole({
   | Error {
   // 1. Clone the ast so we can edit it
   const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
   const lastChildLookup = true
@@ -170,15 +171,18 @@ export function addHole({
     face,
     artifactGraph,
     modifiedAst,
-    nodeToEdit,
+    mNodeToEdit,
     lastChildLookup,
-    ['sweep', 'compositeSolid']
+    ['compositeSolid', 'sweep']
   )
   if (err(result)) {
     return result
   }
 
   const { solidsExpr, facesExpr, pathIfPipe } = result
+  // TODO: understand why solidsExpr is null on the second time this is called
+  // in p&c, we run it first for reviewValidation, and a second time for real
+  console.log({ solidsExpr, facesExpr, pathIfPipe })
 
   // Extra args for createCallExpressionStdLibKw as we're calling functions from a module
   const nonCodeMeta = undefined
@@ -289,24 +293,28 @@ export function addHole({
     'variableName' in cutAt &&
     cutAt.variableName
   ) {
-    insertVariableAndOffsetPathToNode(cutAt, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(cutAt, modifiedAst, mNodeToEdit)
   }
   if (blindDepth && 'variableName' in blindDepth && blindDepth.variableName) {
-    insertVariableAndOffsetPathToNode(blindDepth, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(blindDepth, modifiedAst, mNodeToEdit)
   }
   if (
     blindDiameter &&
     'variableName' in blindDiameter &&
     blindDiameter.variableName
   ) {
-    insertVariableAndOffsetPathToNode(blindDiameter, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(blindDiameter, modifiedAst, mNodeToEdit)
   }
   if (
     counterboreDepth &&
     'variableName' in counterboreDepth &&
     counterboreDepth.variableName
   ) {
-    insertVariableAndOffsetPathToNode(counterboreDepth, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(
+      counterboreDepth,
+      modifiedAst,
+      mNodeToEdit
+    )
   }
   if (
     counterboreDiameter &&
@@ -316,7 +324,7 @@ export function addHole({
     insertVariableAndOffsetPathToNode(
       counterboreDiameter,
       modifiedAst,
-      nodeToEdit
+      mNodeToEdit
     )
   }
   if (
@@ -324,7 +332,11 @@ export function addHole({
     'variableName' in countersinkAngle &&
     countersinkAngle.variableName
   ) {
-    insertVariableAndOffsetPathToNode(countersinkAngle, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(
+      countersinkAngle,
+      modifiedAst,
+      mNodeToEdit
+    )
   }
   if (
     countersinkDiameter &&
@@ -334,7 +346,7 @@ export function addHole({
     insertVariableAndOffsetPathToNode(
       countersinkDiameter,
       modifiedAst,
-      nodeToEdit
+      mNodeToEdit
     )
   }
   if (
@@ -342,7 +354,7 @@ export function addHole({
     'variableName' in drillPointAngle &&
     drillPointAngle.variableName
   ) {
-    insertVariableAndOffsetPathToNode(drillPointAngle, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(drillPointAngle, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -350,7 +362,7 @@ export function addHole({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: nodeToEdit,
+    pathToEdit: mNodeToEdit,
     pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HOLE,
   })
