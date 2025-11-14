@@ -10603,23 +10603,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              2.8499999999999996,
-              13.0
-            ],
-            "tag": null,
-            "to": [
-              2.8499999999999996,
-              13.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -11279,23 +11262,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "from": [
               2.8499999999999996,
               29.0
-            ],
-            "tag": null,
-            "to": [
-              2.8499999999999996,
-              13.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              2.8499999999999996,
-              13.0
             ],
             "tag": null,
             "to": [
@@ -12049,23 +12015,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "from": [
               2.8499999999999996,
               29.0
-            ],
-            "tag": null,
-            "to": [
-              2.8499999999999996,
-              13.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              2.8499999999999996,
-              13.0
             ],
             "tag": null,
             "to": [
@@ -12867,23 +12816,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               "id": "[uuid]",
               "sourceRange": []
             },
-            "from": [
-              2.8499999999999996,
-              13.0
-            ],
-            "tag": null,
-            "to": [
-              2.8499999999999996,
-              13.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
             "ccw": true,
             "center": [
               8.0,
@@ -13520,23 +13452,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "id": "[uuid]",
             "sourceRange": []
           },
-          "from": [
-            2.8499999999999996,
-            13.0
-          ],
-          "tag": null,
-          "to": [
-            2.8499999999999996,
-            13.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
           "ccw": true,
           "center": [
             8.0,
@@ -14096,23 +14011,6 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "from": [
             2.8499999999999996,
             29.0
-          ],
-          "tag": null,
-          "to": [
-            2.8499999999999996,
-            13.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            2.8499999999999996,
-            13.0
           ],
           "tag": null,
           "to": [

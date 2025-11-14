@@ -273,23 +273,6 @@ description: Variables in memory after executing countersunk-plate.kcl
             ],
             "type": "TangentialArcTo",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.6068125000000003,
-              1.547799999949525
-            ],
-            "tag": null,
-            "to": [
-              0.6068125000000003,
-              1.547799999949525
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "innerPaths": [

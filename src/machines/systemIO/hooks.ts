@@ -186,6 +186,8 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       if (next.context.lastMessageId === lastId) return
       lastId = next.context.lastMessageId
 
+      if (next.context.lastMessageType === 'delta') return
+
       const exchanges = next.context.conversation?.exchanges ?? []
       const lastExchange = exchanges[exchanges.length - 1]
       if (lastExchange === undefined) return

@@ -110,23 +110,6 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.1,
-              1.15
-            ],
-            "tag": null,
-            "to": [
-              -2.1,
-              1.15
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -276,23 +259,6 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           },
           "from": [
             -0.76,
-            1.15
-          ],
-          "tag": null,
-          "to": [
-            -2.1,
-            1.15
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -2.1,
             1.15
           ],
           "tag": null,
@@ -454,23 +420,6 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             "from": [
               2.1,
               0.7499999999999999
-            ],
-            "tag": null,
-            "to": [
-              -2.1,
-              0.75
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.1,
-              0.75
             ],
             "tag": null,
             "to": [
@@ -661,23 +610,6 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           "from": [
             2.1,
             0.7499999999999999
-          ],
-          "tag": null,
-          "to": [
-            -2.1,
-            0.75
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -2.1,
-            0.75
           ],
           "tag": null,
           "to": [
@@ -903,23 +835,6 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.5920000000000001,
-              1.38
-            ],
-            "tag": null,
-            "to": [
-              -0.5920000000000001,
-              1.38
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -1094,23 +1009,6 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.5920000000000001,
-            1.38
-          ],
-          "tag": null,
-          "to": [
-            -0.5920000000000001,
-            1.38
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
@@ -1262,23 +1160,6 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "from": [
               2.2,
-              0.4
-            ],
-            "tag": null,
-            "to": [
-              -2.2,
-              0.4
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.2,
               0.4
             ],
             "tag": null,
@@ -1478,23 +1359,6 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -2.2,
-            0.4
-          ],
-          "tag": null,
-          "to": [
-            -2.2,
-            0.4
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
@@ -1655,23 +1519,6 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             },
             "from": [
               2.2,
-              0.4
-            ],
-            "tag": null,
-            "to": [
-              -2.2,
-              0.4
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.2,
               0.4
             ],
             "tag": null,
@@ -3173,23 +3020,6 @@ description: Variables in memory after executing stylized-dump-truck.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.6,
-              2.15
-            ],
-            "tag": null,
-            "to": [
-              -1.6,
-              2.15
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -3330,23 +3160,6 @@ description: Variables in memory after executing stylized-dump-truck.kcl
           },
           "from": [
             -0.76,
-            2.15
-          ],
-          "tag": null,
-          "to": [
-            -1.6,
-            2.15
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.6,
             2.15
           ],
           "tag": null,
@@ -3519,23 +3332,6 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.8200000000000001,
-                  0.8300000000000001
-                ],
-                "tag": null,
-                "to": [
-                  -0.8200000000000001,
-                  0.8300000000000001
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -3663,23 +3459,6 @@ description: Variables in memory after executing stylized-dump-truck.kcl
                 },
                 "from": [
                   -0.4600000000000001,
-                  0.8300000000000001
-                ],
-                "tag": null,
-                "to": [
-                  -0.8200000000000001,
-                  0.8300000000000001
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.8200000000000001,
                   0.8300000000000001
                 ],
                 "tag": null,
@@ -3893,23 +3672,6 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               ],
               "type": "ToPoint",
               "units": "m"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.8200000000000001,
-                0.8300000000000001
-              ],
-              "tag": null,
-              "to": [
-                -0.8200000000000001,
-                0.8300000000000001
-              ],
-              "type": "ToPoint",
-              "units": "m"
             }
           ],
           "on": {
@@ -4027,23 +3789,6 @@ description: Variables in memory after executing stylized-dump-truck.kcl
               },
               "from": [
                 -0.4600000000000001,
-                0.8300000000000001
-              ],
-              "tag": null,
-              "to": [
-                -0.8200000000000001,
-                0.8300000000000001
-              ],
-              "type": "ToPoint",
-              "units": "m"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.8200000000000001,
                 0.8300000000000001
               ],
               "tag": null,

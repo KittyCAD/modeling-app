@@ -630,23 +630,6 @@ description: Variables in memory after executing zoo-logo.kcl
                 ],
                 "type": "Arc",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  1.6559766813468346,
-                  0.7456745560472379
-                ],
-                "tag": null,
-                "to": [
-                  1.6559766813468346,
-                  0.7456745560472378
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
@@ -861,23 +844,6 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.2543394387746776
                 ],
                 "type": "Arc",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  1.3529100305697563,
-                  0.2543394387746776
-                ],
-                "tag": null,
-                "to": [
-                  1.3529100305697563,
-                  0.2543394387746779
-                ],
-                "type": "ToPoint",
                 "units": "in"
               }
             ],
@@ -1094,23 +1060,6 @@ description: Variables in memory after executing zoo-logo.kcl
                 ],
                 "type": "Arc",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  2.7755624346181245,
-                  0.7456745560472379
-                ],
-                "tag": null,
-                "to": [
-                  2.7755624346181245,
-                  0.7456745560472378
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
@@ -1325,23 +1274,6 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.2543394387746776
                 ],
                 "type": "Arc",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  2.4724957838410466,
-                  0.2543394387746776
-                ],
-                "tag": null,
-                "to": [
-                  2.472495783841046,
-                  0.2543394387746779
-                ],
-                "type": "ToPoint",
                 "units": "in"
               }
             ],

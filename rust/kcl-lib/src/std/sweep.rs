@@ -108,6 +108,7 @@ async fn inner_sweep(
                 exec_state,
                 &args,
                 None,
+                None,
             )
             .await?,
         );
