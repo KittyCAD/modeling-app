@@ -8,46 +8,40 @@ test.describe('Testing Gizmo', () => {
   const cases = [
     {
       testDescription: 'top view',
-      clickPosition: { x: 930, y: 380 },
+      clickPosition: { x: 951, y: 402 },
       expectedCameraPosition: { x: 800, y: -152, z: 4886.02 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
-    // {
-    //   testDescription: 'back view',
-    //   clickPosition: { x: 951, y: 420 },
-    //   expectedCameraPosition: { x: 800, y: 4708.02, z: 26 },
-    //   expectedCameraTarget: { x: 800, y: -152, z: 26 },
-    // },
-    // {
-    //   testDescription: 'bottom view',
-    //   clickPosition: { x: 951, y: 449 },
-    //   expectedCameraPosition: { x: 800, y: -152, z: -4834.02 },
-    //   expectedCameraTarget: { x: 800, y: -152, z: 26 },
-    // },
-    // {
-    //   testDescription: 'right view',
-    //   clickPosition: { x: 929, y: 435 },
-    //   expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
-    //   expectedCameraTarget: { x: 800, y: -152, z: 26 },
-    // },
-    // {
-    //   testDescription: 'left view',
-    //   clickPosition: { x: 974, y: 417 },
-    //   expectedCameraPosition: { x: -4060.02, y: -152, z: 26 },
-    //   expectedCameraTarget: { x: 800, y: -152, z: 26 },
-    // },
-    // {
-    //   testDescription: 'back view',
-    //   clickPosition: { x: 967, y: 441 },
-    //   expectedCameraPosition: { x: 800, y: 4708.02, z: 26 },
-    //   expectedCameraTarget: { x: 800, y: -152, z: 26 },
-    // },
-    // {
-    //   testDescription: 'front view',
-    //   clickPosition: { x: 931, y: 411 },
-    //   expectedCameraPosition: { x: 800, y: -5012.02, z: 26 },
-    //   expectedCameraTarget: { x: 800, y: -152, z: 26 },
-    // },
+    {
+      testDescription: 'bottom view',
+      clickPosition: { x: 951, y: 449 },
+      expectedCameraPosition: { x: 800, y: -152, z: -4834.02 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
+    {
+      testDescription: 'right view',
+      clickPosition: { x: 929, y: 435 },
+      expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
+    {
+      testDescription: 'left view',
+      clickPosition: { x: 974, y: 417 },
+      expectedCameraPosition: { x: -4060.02, y: -152, z: 26 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
+    {
+      testDescription: 'back view',
+      clickPosition: { x: 967, y: 441 },
+      expectedCameraPosition: { x: 800, y: 4708.02, z: 26 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
+    {
+      testDescription: 'front view',
+      clickPosition: { x: 931, y: 411 },
+      expectedCameraPosition: { x: 800, y: -5012.02, z: 26 },
+      expectedCameraTarget: { x: 800, y: -152, z: 26 },
+    },
   ] as const
   for (const {
     clickPosition,
@@ -101,12 +95,12 @@ test.describe('Testing Gizmo', () => {
 
       await u.clearCommandLogs()
       await page.mouse.move(clickPosition.x, clickPosition.y)
-      await page.waitForTimeout(1000)
+      await page.waitForTimeout(100)
       await page.mouse.click(clickPosition.x, clickPosition.y)
       await page.mouse.move(0, 0)
 
       // We use different camera commands for top/bottom cf. all others.
-      if (false && ['top view', 'bottom view'].includes(testDescription)) {
+      if (['top view', 'bottom view'].includes(testDescription)) {
         await u.waitForCmdReceive('default_camera_set_view')
       } else {
         await u.waitForCmdReceive('default_camera_look_at')
