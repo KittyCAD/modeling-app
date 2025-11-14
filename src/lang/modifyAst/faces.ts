@@ -165,16 +165,14 @@ export function addHole({
   const modifiedAst = structuredClone(ast)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Setting this to 'false' as it should be is breaking hole on hole.
-  // This is believed to be due to an empty nodePath and pathToNode on the subtract artifact,
-  // see https://github.com/KittyCAD/modeling-app/issues/8616
-  const lastChildLookup = false
+  const lastChildLookup = true
   const result = buildSolidsAndFacesExprs(
     face,
     artifactGraph,
     modifiedAst,
     nodeToEdit,
-    lastChildLookup
+    lastChildLookup,
+    ['sweep', 'compositeSolid']
   )
   if (err(result)) {
     return result
@@ -912,7 +910,8 @@ export function buildSolidsAndFacesExprs(
   artifactGraph: ArtifactGraph,
   modifiedAst: Node<Program>,
   nodeToEdit?: PathToNode,
-  lastChildLookup = true
+  lastChildLookup = true,
+  artifactTypeFilter: Array<Artifact['type']> = ['sweep']
 ) {
   const solids: Selections = {
     graphSelections: faces.graphSelections.flatMap((f) => {
@@ -936,7 +935,7 @@ export function buildSolidsAndFacesExprs(
     nodeToEdit,
     lastChildLookup,
     artifactGraph,
-    ['sweep']
+    artifactTypeFilter
   )
   if (err(vars)) {
     return vars
