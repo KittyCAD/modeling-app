@@ -1733,28 +1733,56 @@ export function getOperationLabel(op: Operation): string {
 }
 
 type NestedOpList = (Operation | Operation[])[]
+
+/**
+ * Given an operations list, group streaks of provided types
+ * into arrays if they are of a given minimum length
+ */
 export function groupOperationTypeStreaks(
   opList: Operation[],
-  typesToGroup: Operation['type'][]
+  typesToGroup: Operation['type'][],
+  minLength = 5
 ): NestedOpList {
-  const newOpList: NestedOpList = []
+  const result: NestedOpList = []
 
-  opList.forEach((op, i, arr) => {
-    const shouldCheckForRun = typesToGroup.indexOf(op.type) >= 0
-    const matchesPreviousType = i > 0 ? op.type === arr[i - 1].type : false
-    if (shouldCheckForRun && matchesPreviousType) {
-      const lastNewOpListItem = newOpList[newOpList.length - 1]
-      if (lastNewOpListItem instanceof Array) {
-        lastNewOpListItem.push(op)
-      } else {
-        newOpList[newOpList.length - 1] = [lastNewOpListItem, op]
-      }
+  let currentType: Operation['type'] | null = null
+  let currentStreak: Operation[] = []
+
+  const flushStreak = () => {
+    if (currentStreak.length === 0) return
+    const shouldGroup =
+      currentType !== null &&
+      typesToGroup.includes(currentType) &&
+      currentStreak.length >= minLength
+    if (shouldGroup) {
+      result.push([...currentStreak])
     } else {
-      newOpList.push(op)
+      for (const op of currentStreak) result.push(op)
     }
-  })
+    currentStreak = []
+    currentType = null
+  }
 
-  return newOpList
+  for (const op of opList) {
+    if (currentType === null) {
+      currentType = op.type
+      currentStreak.push(op)
+      continue
+    }
+    if (op.type === currentType) {
+      currentStreak.push(op)
+    } else {
+      // Type changed; flush the previous streak and start anew
+      flushStreak()
+      currentType = op.type
+      currentStreak.push(op)
+    }
+  }
+
+  // Flush any remaining streak
+  flushStreak()
+
+  return result
 }
 
 /**
