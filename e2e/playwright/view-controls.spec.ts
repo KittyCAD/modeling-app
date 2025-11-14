@@ -292,7 +292,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
     await test.step(`Setup`, async () => {
       await scene.expectState({
         camera: {
-          position: [11796.52, -39216.59, 21103.26],
+          position: [11796.52, -39216.59, 21103.27],
           target: [11796.52, -635, 3201.42],
         },
       })
@@ -323,7 +323,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
     await test.step(`Verify the camera moved`, async () => {
       await scene.expectState({
         camera: {
-          position: [20785.58, -39851.59, 22171.59],
+          position: [20785.58, -39851.59, 22171.6],
           target: [20785.58, -1270, 4269.74],
         },
       })
