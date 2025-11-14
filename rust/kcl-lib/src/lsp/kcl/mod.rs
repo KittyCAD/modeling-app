@@ -205,20 +205,16 @@ impl Backend {
         self.ast_map.remove(filename);
         self.symbols_map.remove(filename);
     }
+
     fn try_arg_completions(
         &self,
         ast: &Node<crate::parsing::ast::types::Program>,
         position: usize,
         current_code: &str,
     ) -> Option<impl Iterator<Item = CompletionItem>> {
-        let Some(curr_expr) = ast.get_expr_for_position(position) else {
-            return None;
-        };
-        let Some(hover) =
-            curr_expr.get_hover_value_for_position(position, current_code, &HoverOpts::default_for_signature_help())
-        else {
-            return None;
-        };
+        let curr_expr = ast.get_expr_for_position(position)?;
+        let hover =
+            curr_expr.get_hover_value_for_position(position, current_code, &HoverOpts::default_for_signature_help())?;
 
         // Now we can tell if the user's cursor is inside a callable function.
         // If so, get its name (the function name being called.)
@@ -238,11 +234,9 @@ impl Backend {
             } => Some(callee_name),
             Hover::Type { .. } => None,
         };
-        let Some(callee_args) = maybe_callee.and_then(|fn_name| self.stdlib_args.get(&fn_name)) else {
-            return None;
-        };
+        let callee_args = maybe_callee.and_then(|fn_name| self.stdlib_args.get(&fn_name))?;
 
-        let cis = callee_args
+        let arg_label_completions = callee_args
             .iter()
             // Don't suggest labels for unlabelled args!
             .filter(|(_arg_name, arg_data)| arg_data.props.is_labelled())
@@ -271,8 +265,7 @@ impl Backend {
                 data: None,
                 tags: None,
             });
-
-        Some(cis)
+        Some(arg_label_completions)
     }
 }
 
@@ -1333,8 +1326,8 @@ impl LanguageServer for Backend {
         // If we're inside a CallExpression or something where a function parameter label could be completed,
         // then complete it.
         // Let's find the AST node that the user's cursor is in.
-        if let Some(cis) = self.try_arg_completions(&ast.ast, position, current_code) {
-            completions.extend(cis);
+        if let Some(arg_label_completions) = self.try_arg_completions(&ast.ast, position, current_code) {
+            completions.extend(arg_label_completions);
         }
 
         // Get the completion items for the ast.
