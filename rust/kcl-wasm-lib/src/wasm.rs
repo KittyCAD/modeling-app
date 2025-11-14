@@ -24,6 +24,17 @@ pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
+pub async fn node_path_from_range(program_ast_json: &str, range_json: &str) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
+    let range: SourceRange = serde_json::from_str(range_json).map_err(|e| e.to_string())?;
+    let node_path = program.node_path_from_range(0, range);
+
+    JsValue::from_serde(&node_path).map_err(|e| e.to_string())
+}
+
+#[wasm_bindgen]
 pub fn parse_wasm(kcl_program_source: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 

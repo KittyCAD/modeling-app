@@ -257,6 +257,13 @@ impl Program {
         self.ast.lint(rule)
     }
 
+    #[cfg(feature = "artifact-graph")]
+    pub fn node_path_from_range(&self, cached_body_items: usize, range: SourceRange) -> Option<NodePath> {
+        let module_infos = indexmap::IndexMap::new();
+        let programs = crate::execution::ProgramLookup::new(self.ast.clone(), module_infos);
+        NodePath::from_range(&programs, cached_body_items, range)
+    }
+
     pub fn recast(&self) -> String {
         // Use the default options until we integrate into the UI the ability to change them.
         self.ast.recast_top(&Default::default(), 0)
