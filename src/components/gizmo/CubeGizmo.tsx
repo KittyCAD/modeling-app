@@ -64,17 +64,18 @@ export default function CubeGizmo() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [modelingState, settings.app.allowOrbitInSketchMode.current])
 
+  const b = 0.5 // outline thickness
+
   return (
     <div
       ref={wrapperRef}
       style={{
         cursor: disableOrbit ? 'not-allowed' : 'auto',
-        ...(modelingState.matches('Sketch')
+        ...(modelingState.matches('Sketch') || resolvedTheme === 'light'
           ? {}
           : {
               ['--s' as any]: 'var(--chalkboard-60)',
-              filter:
-                'drop-shadow(1px 1px 0px var(--s)) drop-shadow(-1px 1px 0px var(--s)) drop-shadow(-1px -1px 0px var(--s)) drop-shadow(1px -1px 0px var(--s))',
+              filter: `drop-shadow(${b}px ${b}px 0px var(--s)) drop-shadow(-${b}px ${b}px 0px var(--s)) drop-shadow(-${b}px -${b}px 0px var(--s)) drop-shadow(${b}px -${b}px 0px var(--s))`,
             }),
       }}
       aria-label="View orientation gizmo"

@@ -2,13 +2,7 @@ import { btnName } from '@src/lib/cameraControls'
 import { DprDetector } from '@src/lib/DprDetector'
 import { sceneInfra } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import type {
-  Object3D,
-  Mesh,
-  BufferGeometry,
-  ColorRepresentation,
-  Texture,
-} from 'three'
+import type { Object3D, Mesh, ColorRepresentation, Texture } from 'three'
 import {
   PerspectiveCamera,
   OrthographicCamera,
@@ -17,11 +11,15 @@ import {
   MeshStandardMaterial,
   DirectionalLight,
   AmbientLight,
+  BufferGeometry,
   Vector2,
   Matrix4,
   Quaternion,
   Vector3,
   Raycaster,
+  LineSegments,
+  LineBasicMaterial,
+  Float32BufferAttribute,
   TextureLoader,
   SRGBColorSpace,
 } from 'three'
@@ -96,7 +94,7 @@ export default class GizmoRenderer {
       },
       light: {
         edge: this.createMaterial(0xe2e3de),
-        edge_hover: this.createMaterial(0x363837),
+        edge_hover: this.createMaterial(0x999999),
         face: this.createMaterial(0xe2e3de, labelsLightUrl),
         face_hover: this.createMaterial(0x363837, labelsLightHoverUrl),
       },
@@ -180,6 +178,8 @@ export default class GizmoRenderer {
         this.initListeners()
         // Ensure camera is positioned (without this when switching from axis the camera is incorrect)
         this.onCameraChange()
+        // Build edge line visuals for edge_*/corner_* meshes
+        this.createEdges(root)
         this.updateModel()
       },
       undefined,
@@ -189,6 +189,99 @@ export default class GizmoRenderer {
         this.clickableObjects = []
       }
     )
+  }
+
+  // Create a single line mesh for boundary edges across all edge_*/corner_* meshes
+  private createEdges(root: Object3D) {
+    const combinedLinePositions: number[] = []
+    const worldPos = new Vector3()
+    const rootLocalPos = new Vector3()
+    // Ensure root matrix is up to date and get inverse for transforming world -> root space
+    root.updateWorldMatrix(true, false)
+    const rootInverse = new Matrix4().copy(root.matrixWorld).invert()
+
+    root.traverse((obj) => {
+      if (!isStandardMesh(obj)) return
+      const name = obj.name || ''
+      if (!(name.startsWith('edge_') || name.startsWith('corner_'))) return
+      const geometry = obj.geometry
+      const positionAttr = geometry.getAttribute('position')
+      if (!positionAttr) return
+      // Ensure world matrix is up-to-date
+      obj.updateWorldMatrix(true, false)
+
+      // Build triangle index array (per-mesh)
+      let indices: number[] = []
+      if (geometry.index) {
+        const idxArr = geometry.index.array as ArrayLike<number>
+        indices = Array.from(idxArr as number[])
+      } else {
+        const vertCount = positionAttr.count
+        indices = Array.from({ length: vertCount }, (_v, i) => i)
+      }
+
+      // Count occurrences of undirected edges (per-mesh)
+      type EdgeKey = string
+      const edgeCount = new Map<EdgeKey, [number, number, number]>() // key -> [a,b,count]
+      const addEdge = (a: number, b: number) => {
+        const a1 = Math.min(a, b)
+        const b1 = Math.max(a, b)
+        const key = `${a1}-${b1}`
+        const entry = edgeCount.get(key)
+        if (entry) {
+          entry[2] += 1
+        } else {
+          edgeCount.set(key, [a1, b1, 1])
+        }
+      }
+
+      for (let i = 0; i + 2 < indices.length; i += 3) {
+        const i0 = indices[i]
+        const i1 = indices[i + 1]
+        const i2 = indices[i + 2]
+        addEdge(i0, i1)
+        addEdge(i1, i2)
+        addEdge(i2, i0)
+      }
+
+      // Add boundary edges transformed to world space to combined array
+      const posArr = positionAttr.array as ArrayLike<number>
+      const pushWorldVertex = (idx: number) => {
+        const base = idx * 3
+        worldPos.set(
+          Number(posArr[base]),
+          Number(posArr[base + 1]),
+          Number(posArr[base + 2])
+        )
+        // Transform vertex into world space then into root-local space
+        worldPos.applyMatrix4(obj.matrixWorld)
+        rootLocalPos.copy(worldPos).applyMatrix4(rootInverse)
+        combinedLinePositions.push(
+          rootLocalPos.x,
+          rootLocalPos.y,
+          rootLocalPos.z
+        )
+      }
+      edgeCount.forEach(([a, b, count]) => {
+        if (count === 1) {
+          pushWorldVertex(a)
+          pushWorldVertex(b)
+        }
+      })
+    })
+
+    if (combinedLinePositions.length === 0) return
+
+    const combinedGeom = new BufferGeometry()
+    combinedGeom.setAttribute(
+      'position',
+      new Float32BufferAttribute(combinedLinePositions, 3)
+    )
+    const combinedMat = new LineBasicMaterial({ color: 0x999999 }) // chalkboard-60: oklch(68.19% 0 264.48)
+
+    const combinedLines = new LineSegments(combinedGeom, combinedMat)
+    combinedLines.name = 'gizmo_boundary_lines'
+    root.add(combinedLines)
   }
 
   private invalidate() {
@@ -376,6 +469,11 @@ export default class GizmoRenderer {
       roughness: 0.6,
       metalness: 0.0,
     })
+
+    // Push faces slightly back so boundary line segments are clearer on top
+    material.polygonOffset = true
+    material.polygonOffsetFactor = 1
+    material.polygonOffsetUnits = 1
 
     if (baseMapUrl && !this._textures.has(baseMapUrl)) {
       // baseMap is defined but not loaded yet
