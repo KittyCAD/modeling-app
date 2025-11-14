@@ -247,7 +247,8 @@ export const mlEphantManagerMachine2 = setup({
       // On future reenters of this actor it will not have args.input.event
       // You must read from the context for the cached conversationId
       const maybeConversationId =
-        args.input.context?.cachedSetup?.conversationId
+        args.input.context?.cachedSetup?.conversationId ??
+        args.input.context?.conversationId
       const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
 
       const ws = await Socket(

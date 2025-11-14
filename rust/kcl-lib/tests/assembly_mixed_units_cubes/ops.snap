@@ -16,7 +16,18 @@ description: Operations executed assembly_mixed_units_cubes.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -47,7 +58,22 @@ description: Operations executed assembly_mixed_units_cubes.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 6
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -65,7 +91,18 @@ description: Operations executed assembly_mixed_units_cubes.kcl
       },
       "labeledArgs": {},
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -96,7 +133,22 @@ description: Operations executed assembly_mixed_units_cubes.kcl
         }
       },
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          },
+          {
+            "type": "PipeBodyItem",
+            "index": 6
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -156,7 +208,18 @@ description: Operations executed assembly_mixed_units_cubes.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -173,7 +236,18 @@ description: Operations executed assembly_mixed_units_cubes.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -190,7 +264,18 @@ description: Operations executed assembly_mixed_units_cubes.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 3
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }
@@ -205,7 +290,18 @@ description: Operations executed assembly_mixed_units_cubes.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 20
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -218,7 +314,18 @@ description: Operations executed assembly_mixed_units_cubes.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 21
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -231,7 +338,18 @@ description: Operations executed assembly_mixed_units_cubes.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 22
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     },
@@ -244,7 +362,18 @@ description: Operations executed assembly_mixed_units_cubes.kcl
       },
       "visibility": "export",
       "nodePath": {
-        "steps": []
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 23
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
       },
       "sourceRange": []
     }

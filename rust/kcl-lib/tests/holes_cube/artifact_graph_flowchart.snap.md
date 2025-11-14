@@ -160,8 +160,11 @@ flowchart LR
   86["CompositeSolid Subtract<br>[1407, 1621, 0]"]
     %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 3 }]
   87["StartSketchOnPlane<br>[8950, 9053, 15]"]
+    %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   88["StartSketchOnPlane<br>[8950, 9053, 15]"]
+    %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   89["StartSketchOnPlane<br>[8950, 9053, 15]"]
+    %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
   2 --- 4
