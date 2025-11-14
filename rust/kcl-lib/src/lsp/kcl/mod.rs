@@ -53,7 +53,7 @@ use crate::{
     },
     parsing::{
         PIPE_OPERATOR,
-        ast::types::{Expr, VariableKind},
+        ast::types::{Expr, Node, VariableKind},
         token::TokenStream,
     },
 };
@@ -204,6 +204,75 @@ impl Backend {
     fn remove_from_ast_maps(&self, filename: &str) {
         self.ast_map.remove(filename);
         self.symbols_map.remove(filename);
+    }
+    fn try_arg_completions(
+        &self,
+        ast: &Node<crate::parsing::ast::types::Program>,
+        position: usize,
+        current_code: &str,
+    ) -> Option<impl Iterator<Item = CompletionItem>> {
+        let Some(curr_expr) = ast.get_expr_for_position(position) else {
+            return None;
+        };
+        let Some(hover) =
+            curr_expr.get_hover_value_for_position(position, current_code, &HoverOpts::default_for_signature_help())
+        else {
+            return None;
+        };
+
+        // Now we can tell if the user's cursor is inside a callable function.
+        // If so, get its name (the function name being called.)
+        let maybe_callee = match hover {
+            Hover::Function { name, range: _ } => Some(name),
+            Hover::Signature {
+                name,
+                parameter_index: _,
+                range: _,
+            } => Some(name),
+            Hover::Comment { .. } => None,
+            Hover::Variable { .. } => None,
+            Hover::KwArg {
+                callee_name,
+                name: _,
+                range: _,
+            } => Some(callee_name),
+            Hover::Type { .. } => None,
+        };
+        let Some(callee_args) = maybe_callee.and_then(|fn_name| self.stdlib_args.get(&fn_name)) else {
+            return None;
+        };
+
+        let cis = callee_args
+            .iter()
+            // Don't suggest labels for unlabelled args!
+            .filter(|(_arg_name, arg_data)| arg_data.props.is_labelled())
+            .map(|(arg_name, arg_data)| CompletionItem {
+                label: arg_name.to_owned(),
+                label_details: None,
+                kind: Some(CompletionItemKind::PROPERTY),
+                detail: arg_data.props.ty.clone(),
+                documentation: arg_data.props.docs.clone().map(|docs| {
+                    Documentation::MarkupContent(MarkupContent {
+                        kind: MarkupKind::Markdown,
+                        value: docs,
+                    })
+                }),
+                deprecated: None,
+                preselect: None,
+                sort_text: None,
+                filter_text: None,
+                insert_text: None,
+                insert_text_format: None,
+                insert_text_mode: None,
+                text_edit: None,
+                additional_text_edits: None,
+                command: None,
+                commit_characters: None,
+                data: None,
+                tags: None,
+            });
+
+        Some(cis)
     }
 }
 
@@ -1261,66 +1330,12 @@ impl LanguageServer for Backend {
             return Ok(None);
         }
 
+        // If we're inside a CallExpression or something where a function parameter label could be completed,
+        // then complete it.
         // Let's find the AST node that the user's cursor is in.
-        let Some(curr_expr) = ast.ast.get_expr_for_position(position) else {
-            return Ok(Some(CompletionResponse::Array(completions)));
-        };
-        let Some(hover) =
-            curr_expr.get_hover_value_for_position(position, current_code, &HoverOpts::default_for_signature_help())
-        else {
-            return Ok(Some(CompletionResponse::Array(completions)));
-        };
-
-        // Now we can tell if the user's cursor is inside a callable function.
-        // If so, get its name (the function name being called.)
-        let maybe_callee = match hover {
-            Hover::Function { name, range: _ } => Some(name),
-            Hover::Signature {
-                name,
-                parameter_index: _,
-                range: _,
-            } => Some(name),
-            Hover::Comment { .. } => None,
-            Hover::Variable { .. } => None,
-            Hover::KwArg {
-                callee_name,
-                name: _,
-                range: _,
-            } => Some(callee_name),
-            Hover::Type { .. } => None,
-        };
-        if let Some(callee_args) = maybe_callee.and_then(|fn_name| self.stdlib_args.get(&fn_name)) {
-            let arg_label_completions = callee_args
-                .iter()
-                // Don't suggest labels for unlabelled args!
-                .filter(|(_arg_name, arg_data)| arg_data.props.is_labelled())
-                .map(|(arg_name, arg_data)| CompletionItem {
-                    label: arg_name.to_owned(),
-                    label_details: None,
-                    kind: Some(CompletionItemKind::PROPERTY),
-                    detail: arg_data.props.ty.clone(),
-                    documentation: arg_data.props.docs.clone().map(|docs| {
-                        Documentation::MarkupContent(MarkupContent {
-                            kind: MarkupKind::Markdown,
-                            value: docs,
-                        })
-                    }),
-                    deprecated: None,
-                    preselect: None,
-                    sort_text: None,
-                    filter_text: None,
-                    insert_text: None,
-                    insert_text_format: None,
-                    insert_text_mode: None,
-                    text_edit: None,
-                    additional_text_edits: None,
-                    command: None,
-                    commit_characters: None,
-                    data: None,
-                    tags: None,
-                });
-            completions.extend(arg_label_completions);
-        };
+        if let Some(cis) = self.try_arg_completions(&ast.ast, position, current_code) {
+            completions.extend(cis);
+        }
 
         // Get the completion items for the ast.
         let Ok(variables) = ast.ast.completion_items(position) else {
