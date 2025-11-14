@@ -24,9 +24,11 @@ import {
   getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
+  getOpTypeLabel,
+  groupOperationTypeStreaks,
   stdLibMap,
 } from '@src/lib/operations'
-import { uuidv4 } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import {
   selectDefaultSketchPlane,
@@ -67,6 +69,7 @@ import {
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
+import { Disclosure } from '@headlessui/react'
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -222,7 +225,10 @@ export const FeatureTreePaneContents = () => {
   const operationsCode = kclManager.lastSuccessfulCode || codeManager.code
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList = filterOperations(unfilteredOperationList)
+  const operationList = groupOperationTypeStreaks(
+    filterOperations(unfilteredOperationList),
+    ['VariableDeclaration']
+  )
 
   // Watch for changes in the open panes and send an event to the feature tree machine
   useEffect(() => {
@@ -280,17 +286,48 @@ export const FeatureTreePaneContents = () => {
                 </div>
               </div>
             )}
-            {operationList.map((operation) => {
-              const key = `${operation.type}-${
-                'name' in operation ? operation.name : 'anonymous'
+            {operationList.map((opOrList) => {
+              const key = `${isArray(opOrList) ? opOrList[0].type : opOrList.type}-${
+                'name' in opOrList ? opOrList.name : 'anonymous'
               }-${
-                'sourceRange' in operation ? operation.sourceRange[0] : 'start'
+                'sourceRange' in opOrList ? opOrList.sourceRange[0] : 'start'
               }`
 
-              return (
+              return isArray(opOrList) ? (
+                <Disclosure>
+                  <Disclosure.Button className="reset w-full min-w-[0px] !px-1 flex items-center gap-2 text-left text-base !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
+                    <CustomIcon
+                      name="caretDown"
+                      className="w-6 h-6 block self-start -rotate-90 ui-open:rotate-0 ui-open:transform"
+                      aria-hidden
+                    />
+                    <span className="text-sm flex-1">
+                      {opOrList.length} {getOpTypeLabel(opOrList[0].type)}s
+                    </span>
+                  </Disclosure.Button>
+                  <Disclosure.Panel as="ul" className="border-b">
+                    <div className="border-l ml-4">
+                      {opOrList.map((op) => {
+                        const key = `${op.type}-${
+                          'name' in op ? op.name : 'anonymous'
+                        }-${'sourceRange' in op ? op.sourceRange[0] : 'start'}`
+                        return (
+                          <OperationItem
+                            key={key}
+                            item={op}
+                            code={operationsCode}
+                            send={featureTreeSend}
+                            sketchNoFace={sketchNoFace}
+                          />
+                        )
+                      })}
+                    </div>
+                  </Disclosure.Panel>
+                </Disclosure>
+              ) : (
                 <OperationItem
                   key={key}
-                  item={operation}
+                  item={opOrList}
                   code={operationsCode}
                   send={featureTreeSend}
                   sketchNoFace={sketchNoFace}

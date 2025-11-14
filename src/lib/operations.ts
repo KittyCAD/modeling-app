@@ -1732,6 +1732,45 @@ export function getOperationLabel(op: Operation): string {
   }
 }
 
+type NestedOpList = (Operation | Operation[])[]
+export function groupOperationTypeStreaks(
+  opList: Operation[],
+  typesToGroup: Operation['type'][]
+): NestedOpList {
+  const newOpList: NestedOpList = []
+
+  opList.forEach((op, i, arr) => {
+    const shouldCheckForRun = typesToGroup.indexOf(op.type) >= 0
+    const matchesPreviousType = i > 0 ? op.type === arr[i - 1].type : false
+    if (shouldCheckForRun && matchesPreviousType) {
+      const lastNewOpListItem = newOpList[newOpList.length - 1]
+      if (lastNewOpListItem instanceof Array) {
+        lastNewOpListItem.push(op)
+      } else {
+        newOpList[newOpList.length - 1] = [lastNewOpListItem, op]
+      }
+    } else {
+      newOpList.push(op)
+    }
+  })
+
+  return newOpList
+}
+
+/**
+ * Return a more human-readable operation type label
+ */
+export function getOpTypeLabel(opType: Operation['type']): string {
+  switch (opType) {
+    case 'StdLibCall':
+      return 'Operation'
+    case 'VariableDeclaration':
+      return 'Parameter'
+    default:
+      return 'Function'
+  }
+}
+
 /**
  * Returns the icon of the operation
  */
