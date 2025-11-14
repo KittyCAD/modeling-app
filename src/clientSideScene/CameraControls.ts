@@ -1340,7 +1340,6 @@ export class CameraControls {
         .onComplete(onComplete)
         .start()
     })
-  /////////////////////////////////////////
 
   snapToPerspectiveBeforeHandingBackControlToEngine = async (
     targetCamUp = new Vector3(0, 0, 1)
