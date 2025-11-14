@@ -72,6 +72,20 @@ impl FrontendState {
 }
 
 impl SketchApi for FrontendState {
+    async fn execute_mock(
+        &mut self,
+        ctx: &ExecutorContext,
+        _version: Version,
+        _sketch: ObjectId,
+    ) -> api::Result<(SceneGraph, ExecOutcome)> {
+        // Execute.
+        let outcome = ctx.run_mock(&self.program, true).await.map_err(|err| Error {
+            msg: err.error.message().to_owned(),
+        })?;
+        let outcome = self.update_state_after_exec(outcome);
+        Ok((self.scene_graph.clone(), outcome))
+    }
+
     async fn new_sketch(
         &mut self,
         ctx: &ExecutorContext,

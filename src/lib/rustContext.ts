@@ -14,6 +14,7 @@ import type {
   ApiProjectId,
   ApiVersion,
   ExistingSegmentCtor,
+  SceneGraph,
   SceneGraphDelta,
   SegmentCtor,
   SketchArgs,
@@ -39,6 +40,7 @@ import { getModule } from '@src/lib/wasm_lib_wrapper'
 
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { Signal } from '@src/lib/signal'
+import type { ExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true
@@ -293,6 +295,38 @@ export default class RustContext {
         JSON.stringify(program_ast),
         JSON.stringify(settings)
       )
+    } catch (e: any) {
+      // TODO: sketch-api: const err = errFromErrWithOutputs(e)
+      const err = { message: e }
+      return Promise.reject(err)
+    }
+  }
+
+  /**
+   * Execute the sketch in mock mode, without changing anything. This is
+   * useful after editing segments, and the user releases the mouse button.
+   */
+  async sketchExecuteMock(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    settings: DeepPartial<Configuration>
+  ): Promise<{
+    sceneGraph: SceneGraph
+    execOutcome: ExecOutcome
+  }> {
+    const instance = this._checkInstance()
+
+    try {
+      const result: [SceneGraph, ExecOutcome] =
+        await instance.sketch_execute_mock(
+          JSON.stringify(version),
+          JSON.stringify(sketch),
+          JSON.stringify(settings)
+        )
+      return {
+        sceneGraph: result[0],
+        execOutcome: result[1],
+      }
     } catch (e: any) {
       // TODO: sketch-api: const err = errFromErrWithOutputs(e)
       const err = { message: e }
