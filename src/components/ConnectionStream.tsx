@@ -267,6 +267,7 @@ export const ConnectionStream = (props: {
         setShowManualConnect(true)
       })
     },
+    engineCommandManager,
   })
   useOnWindowOnlineOffline({
     close: () => {
