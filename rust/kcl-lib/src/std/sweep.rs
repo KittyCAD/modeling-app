@@ -84,7 +84,7 @@ async fn inner_sweep(
         let id = exec_state.next_uuid();
         exec_state
             .batch_modeling_cmd(
-                ModelingCmdMeta::from_args_id(&args, id),
+                ModelingCmdMeta::from_args_id(exec_state, &args, id),
                 ModelingCmd::from(mcmd::Sweep {
                     target: sketch.id.into(),
                     trajectory,
@@ -117,7 +117,7 @@ async fn inner_sweep(
     // Hide the artifact from the sketch or helix.
     exec_state
         .batch_modeling_cmd(
-            (&args).into(),
+            ModelingCmdMeta::from_args(exec_state, &args),
             ModelingCmd::from(mcmd::ObjectVisible {
                 object_id: trajectory.into(),
                 hidden: true,

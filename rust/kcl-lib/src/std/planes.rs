@@ -82,13 +82,16 @@ pub(crate) async fn inner_plane_of(
 
     // Flush the batch for our fillets/chamfers if there are any.
     exec_state
-        .flush_batch_for_solids(args.into(), std::slice::from_ref(&solid))
+        .flush_batch_for_solids(
+            ModelingCmdMeta::from_args(exec_state, args),
+            std::slice::from_ref(&solid),
+        )
         .await?;
 
     // Query the engine to learn what plane, if any, this face is on.
     let face_id = face.get_face_id(&solid, exec_state, args, true).await?;
     let plane_id = exec_state.id_generator().next_uuid();
-    let meta = ModelingCmdMeta::with_id(&args.ctx, args.source_range, plane_id);
+    let meta = ModelingCmdMeta::from_args_id(exec_state, args, plane_id);
     let cmd = ModelingCmd::FaceIsPlanar(mcmd::FaceIsPlanar { object_id: face_id });
     let plane_resp = exec_state.send_modeling_cmd(meta, cmd).await?;
     let OkWebSocketResponseData::Modeling {
@@ -200,7 +203,7 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
         a: 0.3,
     };
 
-    let meta = ModelingCmdMeta::from_args_id(args, plane.id);
+    let meta = ModelingCmdMeta::from_args_id(exec_state, args, plane.id);
     exec_state
         .batch_modeling_cmd(
             meta,
@@ -218,7 +221,7 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
     // Set the color.
     exec_state
         .batch_modeling_cmd(
-            args.into(),
+            ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(mcmd::PlaneSetColor {
                 color,
                 plane_id: plane.id,

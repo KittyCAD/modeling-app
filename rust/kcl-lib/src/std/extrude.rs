@@ -297,7 +297,7 @@ async fn inner_extrude(
         };
         let cmds = sketch.build_sketch_mode_cmds(exec_state, ModelingCmdReq { cmd_id: id.into(), cmd });
         exec_state
-            .batch_modeling_cmds(ModelingCmdMeta::from_args_id(&args, id), &cmds)
+            .batch_modeling_cmds(ModelingCmdMeta::from_args_id(exec_state, &args, id), &cmds)
             .await?;
 
         solids.push(
@@ -344,7 +344,7 @@ pub(crate) async fn do_post_extrude<'a>(
     // See: https://github.com/KittyCAD/modeling-app/issues/806
     exec_state
         .batch_modeling_cmd(
-            args.into(),
+            ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id }),
         )
         .await?;
@@ -401,7 +401,7 @@ pub(crate) async fn do_post_extrude<'a>(
 
     let solid3d_info = exec_state
         .send_modeling_cmd(
-            args.into(),
+            ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
                 edge_id: extrusion_info_edge_id,
                 object_id: sketch_id,
@@ -426,7 +426,7 @@ pub(crate) async fn do_post_extrude<'a>(
         if !sectional {
             exec_state
                 .batch_modeling_cmd(
-                    args.into(),
+                    ModelingCmdMeta::from_args(exec_state, args),
                     ModelingCmd::from(mcmd::Solid3dGetAdjacencyInfo {
                         object_id: sketch.id,
                         edge_id: any_edge_id,

@@ -8,7 +8,7 @@ use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, KclValue, Solid,
+        ExecState, KclValue, ModelingCmdMeta, Solid,
         types::{ArrayLen, RuntimeType},
     },
     std::{Args, sketch::FaceTag},
@@ -54,7 +54,10 @@ async fn inner_shell(
         // Flush the batch for our fillets/chamfers if there are any.
         // If we do not do these for sketch on face, things will fail with face does not exist.
         exec_state
-            .flush_batch_for_solids((&args).into(), std::slice::from_ref(solid))
+            .flush_batch_for_solids(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                std::slice::from_ref(solid),
+            )
             .await?;
 
         for tag in &faces {
@@ -82,7 +85,7 @@ async fn inner_shell(
 
     exec_state
         .batch_modeling_cmd(
-            (&args).into(),
+            ModelingCmdMeta::from_args(exec_state, &args),
             ModelingCmd::from(mcmd::Solid3dShellFace {
                 hollow: false,
                 face_ids,
@@ -113,12 +116,12 @@ async fn inner_hollow(
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not do these for sketch on face, things will fail with face does not exist.
     exec_state
-        .flush_batch_for_solids((&args).into(), &[(*solid).clone()])
+        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &[(*solid).clone()])
         .await?;
 
     exec_state
         .batch_modeling_cmd(
-            (&args).into(),
+            ModelingCmdMeta::from_args(exec_state, &args),
             ModelingCmd::from(mcmd::Solid3dShellFace {
                 hollow: true,
                 face_ids: Vec::new(), // This is empty because we want to hollow the entire object.
