@@ -351,7 +351,11 @@ impl SketchApi for FrontendState {
 }
 
 impl FrontendState {
-    pub async fn hack_set_program(&mut self, ctx: &ExecutorContext, program: Program) -> api::Result<()> {
+    pub async fn hack_set_program(
+        &mut self,
+        ctx: &ExecutorContext,
+        program: Program,
+    ) -> api::Result<(SceneGraph, ExecOutcome)> {
         self.program = program.clone();
 
         // Execute so that the objects are updated and available for the next
@@ -364,9 +368,9 @@ impl FrontendState {
             }
         })?;
 
-        self.update_state_after_exec(outcome);
+        let outcome = self.update_state_after_exec(outcome);
 
-        Ok(())
+        Ok((self.scene_graph.clone(), outcome))
     }
 
     async fn add_point(
