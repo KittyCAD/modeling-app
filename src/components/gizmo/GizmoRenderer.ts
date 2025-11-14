@@ -79,7 +79,7 @@ export default class GizmoRenderer {
   ) {
     this.canvas = canvas
     this.renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true })
-    this.renderer.setSize(120, 120)
+    this.renderer.setSize(82, 82) // CANVAS_SIZE + border
     this.renderer.setPixelRatio(window.devicePixelRatio)
     this.dprDetector = new DprDetector(this.onDprChange)
 
@@ -169,7 +169,7 @@ export default class GizmoRenderer {
       (gltf) => {
         const root = gltf.scene
         root.position.set(0, 0, 0)
-        root.scale.set(0.675, 0.675, 0.675)
+        root.scale.set(1.05, 1.05, 1.05)
         this.scene.add(root)
 
         root.traverse((obj) => {

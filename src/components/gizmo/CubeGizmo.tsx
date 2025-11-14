@@ -32,6 +32,10 @@ export default function CubeGizmo() {
         initialResolvedThemeRef.current
       )
     }
+    return () => {
+      renderer.current?.dispose()
+      renderer.current = null
+    }
   }, [])
 
   // perspective changed
@@ -63,10 +67,19 @@ export default function CubeGizmo() {
   return (
     <div
       ref={wrapperRef}
-      style={{ cursor: disableOrbit ? 'not-allowed' : 'auto' }}
+      style={{
+        cursor: disableOrbit ? 'not-allowed' : 'auto',
+        ...(modelingState.matches('Sketch')
+          ? {}
+          : {
+              ['--s' as any]: 'var(--chalkboard-60)',
+              filter:
+                'drop-shadow(1px 1px 0px var(--s)) drop-shadow(-1px 1px 0px var(--s)) drop-shadow(-1px -1px 0px var(--s)) drop-shadow(1px -1px 0px var(--s))',
+            }),
+      }}
       aria-label="View orientation gizmo"
       data-testid={`gizmo${disableOrbit ? '-disabled' : ''}`}
-      className="grid place-content-center rounded-full overflow-hidden pointer-events-auto backdrop-blur-sm bg-black/10"
+      className="grid place-content-center rounded-full overflow-hidden pointer-events-auto"
     >
       <canvas
         ref={canvasRef}
