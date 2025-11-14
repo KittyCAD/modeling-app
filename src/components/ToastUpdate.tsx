@@ -81,7 +81,7 @@ export function ToastUpdate({
             ></div>
           </details>
         )}
-        <div className="flex justify-between gap-8">
+        <div className="flex justify-between items-center gap-8">
           <ActionButton
             Element="button"
             iconStart={{
@@ -97,6 +97,11 @@ export function ToastUpdate({
           >
             Not right now
           </ActionButton>
+          <p className="text-center text-2 text-xs">
+            <em>
+              The update will be applied when you restart the application.
+            </em>
+          </p>
           <ActionButton
             Element="button"
             iconStart={{
