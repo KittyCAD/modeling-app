@@ -665,6 +665,9 @@ pub struct Sketch {
     /// If the sketch includes a mirror.
     #[serde(skip)]
     pub mirror: Option<uuid::Uuid>,
+    /// If the sketch is a clone of another sketch.
+    #[serde(skip)]
+    pub clone: Option<uuid::Uuid>,
     pub units: UnitLength,
     /// Metadata.
     #[serde(skip)]
