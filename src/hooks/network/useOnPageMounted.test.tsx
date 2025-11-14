@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { vi } from 'vitest'
 
-describe('useOnPageMounted.tsx', () => {
+describe('useOnPageMounted', () => {
   describe('on mounted', () => {
     test('should run once', () => {
       const callback = vi.fn(() => 1)

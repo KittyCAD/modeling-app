@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import { vi } from 'vitest'
 
-describe('useOnWindowOnlineOffline.tsx', () => {
+describe('useOnWindowOnlineOffline', () => {
   describe('on mounted', () => {
     test('should mount', () => {
       const close = vi.fn(() => 1)
