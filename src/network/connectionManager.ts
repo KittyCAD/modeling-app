@@ -37,6 +37,7 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type CodeManager from '@src/lang/codeManager'
 import { BSON } from 'bson'
+import { decode as msgpackDecode } from '@msgpack/msgpack'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
 import type { CommandLog } from '@src/lang/std/commandLog'
@@ -679,14 +680,24 @@ export class ConnectionManager extends EventTarget {
     let message: WebSocketResponse | null = null
 
     if (event.data instanceof ArrayBuffer) {
-      // BSON deserialize the command
-      message = BSON.deserialize(
-        new Uint8Array(event.data)
-      ) as WebSocketResponse
+      const binaryData = new Uint8Array(event.data)
+
+      try {
+        message = msgpackDecode(binaryData) as WebSocketResponse
+      } catch (msgpackError) {
+        try {
+          message = BSON.deserialize(binaryData) as WebSocketResponse
+        } catch (bsonError) {
+          console.error(
+            'handleMessage: failed to deserialize binary websocket message',
+            { msgpackError, bsonError }
+          )
+        }
+      }
       // The request id comes back as binary and we want to get the uuid
       // string from that.
 
-      if (message.request_id) {
+      if (message?.request_id) {
         message.request_id = binaryToUuid(message.request_id)
       }
     } else {
