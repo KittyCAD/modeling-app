@@ -1255,16 +1255,6 @@ impl LanguageServer for Backend {
             return Ok(Some(CompletionResponse::Array(completions)));
         };
 
-        let Some(current_code) = self
-            .code_map
-            .get(params.text_document_position.text_document.uri.as_ref())
-        else {
-            return Ok(Some(CompletionResponse::Array(completions)));
-        };
-        let Ok(current_code) = std::str::from_utf8(&current_code) else {
-            return Ok(Some(CompletionResponse::Array(completions)));
-        };
-
         let position = position_to_char_index(params.text_document_position.position, current_code);
         if ast.ast.in_comment(position) {
             // If we are in a code comment we don't want to show completions.
