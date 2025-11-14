@@ -242,98 +242,6 @@ export function addFlatnessGdt({
 }
 
 /**
- * Deduplicates face expressions based on their string representation.
- * This prevents creating multiple annotations for the same face.
- */
-function deduplicateFaceExprs(facesExprs: Expr[]): Expr[] {
-  const seen = new Set<string>()
-  const unique: Expr[] = []
-
-  for (const expr of facesExprs) {
-    // Create a stable string representation for comparison
-    const key = exprToKey(expr)
-    if (!seen.has(key)) {
-      seen.add(key)
-      unique.push(expr)
-    }
-  }
-
-  return unique
-}
-
-/**
- * Converts an expression to a stable string key for deduplication.
- */
-function exprToKey(expr: Expr): string {
-  if (expr.type === 'Literal') {
-    return `literal:${JSON.stringify(expr.value)}`
-  }
-  if (expr.type === 'Name') {
-    // Name has a nested Identifier: expr.name.name is the actual string
-    return `name:${expr.name.name}`
-  }
-  // Fallback for other expression types (though currently only Name is used)
-  return JSON.stringify(expr)
-}
-
-/**
- * Scans the AST and returns all datum names currently in use
- * @param ast - The AST program node to scan for datum names
- * @returns Array of datum names that are currently in use
- */
-export function getUsedDatumNames(ast: Node<Program>): string[] {
-  const usedNames: string[] = []
-
-  traverse(ast, {
-    enter: (node) => {
-      // Look for gdt::datum calls
-      if (
-        node.type === 'CallExpressionKw' &&
-        node.callee.type === 'Name' &&
-        node.callee.path.length === 1 &&
-        node.callee.path[0]?.name === 'gdt' &&
-        node.callee.name.name === 'datum'
-      ) {
-        // Extract the name argument
-        const nameArg = node.arguments?.find(
-          (arg) =>
-            arg.label?.name === 'name' &&
-            arg.arg.type === 'Literal' &&
-            typeof arg.arg.value === 'string'
-        )
-
-        if (nameArg && nameArg.arg.type === 'Literal') {
-          usedNames.push(nameArg.arg.value as string)
-        }
-      }
-    },
-  })
-
-  return usedNames
-}
-
-/**
- * Returns the first available datum character (A, B, C, ..., Z)
- * @param ast - The AST program node to scan for existing datum names
- * @returns The next available datum character, or 'A' as fallback if all letters are used
- */
-export function getNextAvailableDatumName(ast: Node<Program>): string {
-  const usedNames = getUsedDatumNames(ast)
-  const usedNamesSet = new Set(usedNames.map((name) => name.toUpperCase()))
-
-  // Check A-Z
-  for (let charCode = 65; charCode <= 90; charCode++) {
-    const char = String.fromCharCode(charCode)
-    if (!usedNamesSet.has(char)) {
-      return char
-    }
-  }
-
-  // Fallback if all A-Z are used (unlikely but safe)
-  return 'A'
-}
-
-/**
  * Adds datum GD&T annotation to the AST.
  * Creates a single gdt::datum call for a selected face.
  * Always adds annotation at the end of the AST body.
@@ -432,4 +340,96 @@ export function addDatumGdt({
     modifiedAst,
     pathToNode,
   }
+}
+
+/**
+ * Deduplicates face expressions based on their string representation.
+ * This prevents creating multiple annotations for the same face.
+ */
+function deduplicateFaceExprs(facesExprs: Expr[]): Expr[] {
+  const seen = new Set<string>()
+  const unique: Expr[] = []
+
+  for (const expr of facesExprs) {
+    // Create a stable string representation for comparison
+    const key = exprToKey(expr)
+    if (!seen.has(key)) {
+      seen.add(key)
+      unique.push(expr)
+    }
+  }
+
+  return unique
+}
+
+/**
+ * Converts an expression to a stable string key for deduplication.
+ */
+function exprToKey(expr: Expr): string {
+  if (expr.type === 'Literal') {
+    return `literal:${JSON.stringify(expr.value)}`
+  }
+  if (expr.type === 'Name') {
+    // Name has a nested Identifier: expr.name.name is the actual string
+    return `name:${expr.name.name}`
+  }
+  // Fallback for other expression types (though currently only Name is used)
+  return JSON.stringify(expr)
+}
+
+/**
+ * Scans the AST and returns all datum names currently in use
+ * @param ast - The AST program node to scan for datum names
+ * @returns Array of datum names that are currently in use
+ */
+export function getUsedDatumNames(ast: Node<Program>): string[] {
+  const usedNames: string[] = []
+
+  traverse(ast, {
+    enter: (node) => {
+      // Look for gdt::datum calls
+      if (
+        node.type === 'CallExpressionKw' &&
+        node.callee.type === 'Name' &&
+        node.callee.path.length === 1 &&
+        node.callee.path[0]?.name === 'gdt' &&
+        node.callee.name.name === 'datum'
+      ) {
+        // Extract the name argument
+        const nameArg = node.arguments?.find(
+          (arg) =>
+            arg.label?.name === 'name' &&
+            arg.arg.type === 'Literal' &&
+            typeof arg.arg.value === 'string'
+        )
+
+        if (nameArg && nameArg.arg.type === 'Literal') {
+          usedNames.push(nameArg.arg.value as string)
+        }
+      }
+    },
+  })
+
+  return usedNames
+}
+
+/**
+ * Returns the first available datum character (A, B, C, ..., Z)
+ * @param ast - The AST program node to scan for existing datum names
+ * @returns The next available datum character, or 'A' as fallback if all letters are used
+ */
+export function getNextAvailableDatumName(ast: Node<Program>): string {
+  const usedNames = getUsedDatumNames(ast)
+  const usedNamesSet = new Set(usedNames.map((name) => name.toUpperCase()))
+
+  // Check A-Z
+  for (let charCode = 65; charCode <= 90; charCode++) {
+    const char = String.fromCharCode(charCode)
+    if (!usedNamesSet.has(char)) {
+      return char
+    }
+  }
+
+  // Fallback if all A-Z are used (unlikely but safe)
+  return 'A'
 }
