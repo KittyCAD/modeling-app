@@ -1235,11 +1235,11 @@ profile001 = ${circleCode}`
         highlightedHeaderArg: 'relativeTo',
         commandName: 'Sweep',
       })
-      await cmdBar.selectOption({ name: 'sketchPlane' }).click()
+      await cmdBar.selectOption({ name: 'Sketch Plane' }).click()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          RelativeTo: 'sketchPlane',
+          RelativeTo: 'SKETCH_PLANE',
         },
         commandName: 'Sweep',
       })
