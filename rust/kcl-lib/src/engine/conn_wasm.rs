@@ -11,10 +11,10 @@ use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 
 use crate::{
+    SourceRange,
     engine::{AsyncTasks, EngineStats},
     errors::{KclError, KclErrorDetails},
     execution::{DefaultPlanes, IdGenerator},
-    SourceRange,
 };
 
 #[wasm_bindgen(module = "/../../src/network/connectionManager.ts")]
@@ -251,7 +251,7 @@ impl EngineConnection {
         // Convert JsValue to a Uint8Array
         let data = js_sys::Uint8Array::from(value);
 
-        let ws_result: WebSocketResponse = match rmp_serde::from_slice(&data) {
+        let ws_result: WebSocketResponse = match rmp_serde::from_slice(&data.to_vec()) {
             Ok(resp) => resp,
             Err(_) => bson::from_slice(&data.to_vec()).map_err(|e| {
                 KclError::new_engine(KclErrorDetails::new(

@@ -3,26 +3,26 @@
 
 use std::{collections::HashMap, sync::Arc};
 
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use futures::{SinkExt, StreamExt};
 use indexmap::IndexMap;
 use kcmc::{
+    ModelingCmd,
     websocket::{
         BatchResponse, FailureWebSocketResponse, ModelingCmdReq, ModelingSessionData, OkWebSocketResponseData,
         SuccessWebSocketResponse, WebSocketRequest, WebSocketResponse,
     },
-    ModelingCmd,
 };
 use kittycad_modeling_cmds::{self as kcmc};
-use tokio::sync::{mpsc, oneshot, RwLock};
+use tokio::sync::{RwLock, mpsc, oneshot};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
 
 use crate::{
+    SourceRange,
     engine::{AsyncTasks, EngineManager, EngineStats},
     errors::{KclError, KclErrorDetails},
     execution::{DefaultPlanes, IdGenerator},
-    SourceRange,
 };
 
 #[derive(Debug, PartialEq)]
