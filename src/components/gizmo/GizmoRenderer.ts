@@ -205,6 +205,7 @@ export default class GizmoRenderer {
 
   private initListeners() {
     this.canvas.addEventListener('mousemove', this.onMouseMove)
+    this.canvas.addEventListener('mouseleave', this.onMouseLeaveCanvas)
     this.canvas.addEventListener('mousedown', this.onMouseDown)
     this.canvas.addEventListener('contextmenu', this.onContextMenu)
     this.canvas.addEventListener('click', this.onClick)
@@ -213,6 +214,7 @@ export default class GizmoRenderer {
 
   public dispose() {
     this.canvas.removeEventListener('mousemove', this.onMouseMove)
+    this.canvas.removeEventListener('mouseleave', this.onMouseLeaveCanvas)
     this.canvas.removeEventListener('mousedown', this.onMouseDown)
     this.canvas.removeEventListener('contextmenu', this.onContextMenu)
     this.canvas.removeEventListener('click', this.onClick)
@@ -249,6 +251,11 @@ export default class GizmoRenderer {
     if (!this.isDragging) {
       this.doRayCast(mousePos)
     }
+  }
+
+  private onMouseLeaveCanvas = () => {
+    this.lastMouse = null
+    this.updateHoveringMesh(null)
   }
 
   private onWindowMouseMove = (event: MouseEvent) => {
