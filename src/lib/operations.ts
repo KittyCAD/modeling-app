@@ -12,6 +12,9 @@ import {
 import {
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveTagDeclaratorFromOpArg,
+  SWEEP_CONSTANTS,
+  SWEEP_MODULE,
+  type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import {
   getNodeFromPath,
@@ -899,15 +902,22 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
       ) === 'true'
   }
 
-  let relativeTo: string | undefined
+  let relativeTo: SweepRelativeTo | undefined
   if (
     'relativeTo' in operation.labeledArgs &&
     operation.labeledArgs.relativeTo
   ) {
-    relativeTo = codeManager.code.slice(
+    const result = codeManager.code.slice(
       operation.labeledArgs.relativeTo.sourceRange[0],
       operation.labeledArgs.relativeTo.sourceRange[1]
     )
+    if (result === `${SWEEP_MODULE}::${SWEEP_CONSTANTS.SKETCH_PLANE}`) {
+      relativeTo = SWEEP_CONSTANTS.SKETCH_PLANE
+    } else if (result === `${SWEEP_MODULE}::${SWEEP_CONSTANTS.TRAJECTORY}`) {
+      relativeTo = SWEEP_CONSTANTS.TRAJECTORY
+    } else {
+      return { reason: "Couldn't retrieve relativeTo argument" }
+    }
   }
 
   // tagStart and tagEng arguments

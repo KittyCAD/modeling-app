@@ -542,7 +542,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
         kclManagerInThisFile
       )
       const sectional = true
-      const relativeTo = 'sketchPlane'
+      const relativeTo = 'SKETCH_PLANE'
       const result = addSweep({ ast, sketches, path, sectional, relativeTo })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -552,7 +552,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
   profile001,
   path = profile002,
   sectional = true,
-  relativeTo = "sketchPlane",
+  relativeTo = sweep::SKETCH_PLANE,
 )`)
     })
 
@@ -562,7 +562,7 @@ sweep001 = sweep(
   profile001,
   path = profile002,
   sectional = true,
-  relativeTo = 'sketchPlane',
+  relativeTo = sweep::SKETCH_PLANE,
 )`
       const { ast, sketches, path } = await getAstAndSketchesForSweep(
         circleAndLineCodeWithSweep,
@@ -570,7 +570,7 @@ sweep001 = sweep(
         kclManagerInThisFile
       )
       const sectional = false
-      const relativeTo = 'trajectoryCurve'
+      const relativeTo = 'TRAJECTORY'
       const nodeToEdit = createPathToNodeForLastVariable(ast)
       const result = addSweep({
         ast,
@@ -585,7 +585,7 @@ sweep001 = sweep(
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleAndLineCode)
       expect(newCode).toContain(
-        `sweep001 = sweep(profile001, path = profile002, relativeTo = "trajectoryCurve")`
+        `sweep001 = sweep(profile001, path = profile002, relativeTo = sweep::TRAJECTORY)`
       )
     })
 
