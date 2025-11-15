@@ -27,6 +27,7 @@ import {
   defaultHighlightStyle,
   foldGutter,
   foldKeymap,
+  HighlightStyle,
   indentOnInput,
   syntaxHighlighting,
 } from '@codemirror/language'
@@ -65,6 +66,7 @@ import {
 } from '@src/machines/kclEditorMachine'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { tags } from '@lezer/highlight'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -190,9 +192,6 @@ export const KclEditorPaneContents = () => {
       closeBrackets(),
       highlightActiveLine(),
       highlightSelectionMatches(),
-      syntaxHighlighting(defaultHighlightStyle, {
-        fallback: true,
-      }),
       rectangularSelection(),
       dropCursor(),
       interact({

@@ -12,6 +12,8 @@ import {
 } from 'react'
 
 import { isArray } from '@src/lib/utils'
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language'
+import { tags } from '@lezer/highlight'
 
 //reference: https://github.com/sachinraja/rodemirror/blob/main/src/use-first-render.ts
 const useFirstRender = () => {
@@ -24,6 +26,100 @@ const useFirstRender = () => {
   return firstRender.current
 }
 
+const green = {
+  light: 'oklch(from var(--primary) calc(l) calc(c + .15) calc(h - 90))',
+  dark: 'oklch(from var(--primary) calc(l + 0.2) c calc(h - 90))',
+}
+const orange = {
+  light: 'oklch(from var(--primary) calc(l + 0.05) calc(c + .1) calc(h - 180))',
+  dark: 'oklch(from var(--primary) calc(l + 0.25) calc(c + .1) calc(h - 180))',
+}
+const text = {
+  light: 'var(--chalkboard-100)',
+  dark: 'var(--chalkboard-20)',
+}
+const colors = {
+  green,
+  orange,
+  text,
+}
+const baseKclHighlights = HighlightStyle.define([
+  {
+    tag: [tags.keyword, tags.annotation],
+    color: colors.orange.light,
+  },
+  {
+    tag: [tags.number, tags.string, tags.tagName],
+    color: colors.green.light,
+    fontWeight: 'normal',
+  },
+  {
+    tag: [tags.attributeName, tags.definition(tags.propertyName)],
+    color: 'oklch(from var(--primary) calc(l + 0.05) c calc(h + 90))',
+    fontWeight: 'normal',
+  },
+  { tag: tags.function(tags.variableName), color: colors.text.light },
+  {
+    tag: tags.definitionKeyword,
+    backgroundColor: 'oklch(from var(--primary) calc(l + 0.05) c h / .1)',
+    color: 'var(--primary)',
+    borderRadius: '2px',
+  },
+  { tag: [tags.variableName], color: 'var(--primary)' },
+  { tag: tags.comment, color: 'var(--chalkboard-70)', fontStyle: 'italic' },
+  {
+    tag: tags.definition(tags.variableName),
+    color: 'var(--chalkboard-70)',
+    fontWeight: 'bold',
+  },
+  { tag: tags.controlOperator, color: 'var(--chalkboard-70)' },
+  {
+    tag: [tags.paren, tags.brace, tags.bracket],
+    color: 'var(--chalkboard-70)',
+    fontWeight: 'bold',
+  },
+])
+
+const darkKclHighlights = HighlightStyle.define(
+  [
+    {
+      tag: [tags.keyword, tags.annotation],
+      color: colors.orange.dark,
+    },
+    {
+      tag: tags.definitionKeyword,
+      backgroundColor: 'oklch(from var(--primary) calc(l + 0.25) c h / .2)',
+      color: 'oklch(from var(--primary) calc(l + 0.15) c h)',
+    },
+    { tag: tags.function(tags.variableName), color: colors.text.dark },
+    {
+      tag: [tags.variableName],
+      color: 'oklch(from var(--primary) calc(l + 0.15) c h)',
+    },
+    {
+      tag: [tags.number, tags.string, tags.tagName],
+      color: colors.green.dark,
+      fontWeight: 'normal',
+    },
+    { tag: tags.comment, color: 'var(--chalkboard-30)', fontStyle: 'italic' },
+    {
+      tag: tags.definition(tags.variableName),
+      color: 'var(--chalkboard-30)',
+      fontWeight: 'bold',
+    },
+    { tag: tags.atom, color: 'var(--chalkboard-40)' },
+    { tag: tags.controlOperator, color: 'var(--chalkboard-30)' },
+    {
+      tag: [tags.paren, tags.brace, tags.bracket],
+      color: 'var(--chalkboard-30)',
+      fontWeight: 'bold',
+    },
+  ],
+  {
+    themeType: 'dark',
+  }
+)
+
 const defaultLightThemeOption = EditorView.theme(
   {
     '&': {
@@ -34,6 +130,25 @@ const defaultLightThemeOption = EditorView.theme(
     dark: false,
   }
 )
+const lightTheme = [
+  defaultLightThemeOption,
+  syntaxHighlighting(baseKclHighlights),
+]
+const defaultDarkThemeOption = EditorView.theme(
+  {
+    '&': {
+      backgroundColor: 'transparent',
+    },
+  },
+  {
+    dark: true,
+  }
+)
+const darkTheme = [
+  defaultDarkThemeOption,
+  syntaxHighlighting(darkKclHighlights),
+  syntaxHighlighting(baseKclHighlights),
+]
 
 interface CodeEditorRef {
   editor?: HTMLDivElement | null
@@ -116,9 +231,9 @@ export function useCodeMirror(props: UseCodeMirror) {
   const targetExtensions = useMemo(() => {
     let exts = isExtensionArray(extensions) ? extensions : []
     if (theme === 'dark') {
-      exts = [...exts, oneDark]
+      exts = [...exts, darkTheme]
     } else if (theme === 'light') {
-      exts = [...exts, defaultLightThemeOption]
+      exts = [...exts, lightTheme]
     }
 
     return exts
