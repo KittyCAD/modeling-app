@@ -8,7 +8,7 @@ import {
 } from '@src/lib/singletons'
 import env from '@src/env'
 import { ConnectionStream } from '@src/components/ConnectionStream'
-import Gizmo from '@src/components/Gizmo'
+import Gizmo from '@src/components/gizmo/Gizmo'
 import { UnitsMenu } from '@src/components/UnitsMenu'
 import { Toolbar } from '@src/Toolbar'
 import type { AreaType, AreaTypeDefinition } from '@src/lib/layout/types'

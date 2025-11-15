@@ -36,6 +36,7 @@ export function useViewControlMenuItems() {
 
   const sketching = modelingState.matches('Sketch')
   const snapToGrid = settings.modeling.snapToGrid.current
+  const gizmoType = settings.modeling.gizmoType.current
 
   // Check if there's a valid selection with source range for "View KCL source code"
   const firstValidSelection = useMemo(() => {
@@ -120,6 +121,20 @@ export function useViewControlMenuItems() {
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
+          settingsActor.send({
+            type: 'set.modeling.gizmoType',
+            data: {
+              level: 'user',
+              value: gizmoType === 'axis' ? 'cube' : 'axis',
+            },
+          })
+        }}
+      >
+        {gizmoType === 'axis' ? 'Use cube gizmo' : 'Use axis gizmo'}
+      </ContextMenuItem>,
+      <ContextMenuDivider />,
+      <ContextMenuItem
+        onClick={() => {
           if (planeOrFaceId) {
             sceneInfra.modelingSend({
               type: 'Enter sketch',
@@ -165,6 +180,7 @@ export function useViewControlMenuItems() {
       modelingState.context.store.useNewSketchMode,
       sketching,
       snapToGrid,
+      gizmoType,
     ]
   )
   return menuItems

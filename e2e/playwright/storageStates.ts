@@ -22,6 +22,7 @@ export const TEST_SETTINGS: DeepPartial<Settings> = {
     // It's true by default because it's a good user experience, but
     // these tests require it to be false.
     fixed_size_grid: false,
+    gizmo_type: 'axis', // view-controls.spec.ts tests use axis gizmo
   },
   project: {
     default_project_name: 'untitled',
