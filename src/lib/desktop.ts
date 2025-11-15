@@ -14,15 +14,19 @@ import {
   parseProjectSettings,
 } from '@src/lang/wasm'
 import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
-import type { EnvironmentConfiguration } from '@src/lib/constants'
+import type {
+  EnvironmentConfiguration,
+  RecentProject,
+} from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   ENVIRONMENT_CONFIGURATION_FOLDER,
   ENVIRONMENT_FILE_NAME,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
-  PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
+  PROJECT_THUMBNAILS_DIR,
+  RECENT_PROJECTS_NAME,
   SETTINGS_FILE_NAME,
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
@@ -588,6 +592,78 @@ export const getEnvironmentConfigurationPath = async (
   return electron.path.join(fullPath, environmentName + '.json')
 }
 
+export const getProjectThumbnailsPath = async (electron: IElectronAPI) => {
+  const isTestEnv = electron.process.env.NODE_ENV === 'test'
+  const testSettingsPath = await electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+  const appConfig = await electron.getPath('appData')
+  const fullPath = isTestEnv
+    ? electron.path.resolve(testSettingsPath, '..')
+    : electron.path.join(
+        appConfig,
+        getAppFolderName(electron),
+        PROJECT_THUMBNAILS_DIR
+      )
+  try {
+    await electron.stat(fullPath)
+  } catch (e) {
+    // File/path doesn't exist
+    if (e === 'ENOENT') {
+      await electron.mkdir(fullPath, { recursive: true })
+    }
+  }
+
+  return fullPath
+}
+
+export const getRecentProjectsPath = async (electron: IElectronAPI) => {
+  const isTestEnv = electron.process.env.NODE_ENV === 'test'
+  const testSettingsPath = await electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+  const appConfig = await electron.getPath('appData')
+  const fullPath = isTestEnv
+    ? electron.path.resolve(testSettingsPath, '..')
+    : electron.path.join(appConfig, getAppFolderName(electron))
+  try {
+    await electron.stat(fullPath)
+  } catch (e) {
+    // File/path doesn't exist
+    if (e === 'ENOENT') {
+      await electron.mkdir(fullPath, { recursive: true })
+    }
+  }
+
+  return electron.path.join(fullPath, RECENT_PROJECTS_NAME)
+}
+
+export const readRecentProjectsFile = async (
+  electron: IElectronAPI
+): Promise<RecentProject[] | null> => {
+  const path = await getRecentProjectsPath(electron)
+  if (electron.exists(path)) {
+    const content: string = await electron.readFile(path, {
+      encoding: 'utf-8',
+    })
+    if (!content) return null
+    return JSON.parse(content)
+  }
+  return null
+}
+
+export const writeRecentProjectsFile = async (
+  electron: IElectronAPI,
+  recentProjects: RecentProject[]
+) => {
+  const recentProjectsPath = await getRecentProjectsPath(electron)
+  const result = electron.writeFile(
+    recentProjectsPath,
+    JSON.stringify(recentProjects)
+  )
+  return result
+}
+
 export const getEnvironmentFilePath = async (electron: IElectronAPI) => {
   const isTestEnv = electron.process.env.NODE_ENV === 'test'
   const testSettingsPath = await electron.getAppTestProperty(
@@ -962,9 +1038,8 @@ export const getUser = async (token: string): Promise<User> => {
 export const writeProjectThumbnailFile = async (
   electron: IElectronAPI,
   dataUrl: string,
-  projectDirectoryPath: string
+  filePath: string
 ) => {
-  const filePath = electron.path.join(projectDirectoryPath, PROJECT_IMAGE_NAME)
   const data = atob(dataUrl.substring('data:image/png;base64,'.length))
   const asArray = new Uint8Array(data.length)
   for (let i = 0, len = data.length; i < len; ++i) {

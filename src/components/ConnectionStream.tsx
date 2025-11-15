@@ -1,5 +1,6 @@
 import type { MouseEventHandler } from 'react'
 import { useRef, useState } from 'react'
+import { NIL as uuidNIL } from 'uuid'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import {
   engineCommandManager,
@@ -152,11 +153,21 @@ export const ConnectionStream = (props: {
         setShowManualConnect,
       })
         .then(() => {
-          // Take a screen shot after the page mounts and zoom to fit runs
-          if (project && project.path) {
+          if (
+            project &&
+            project.path &&
+            settings.meta.id.current &&
+            settings.meta.id.current !== uuidNIL
+          ) {
+            // Take a screen shot after the page mounts and zoom to fit runs, and save to recent projects
             createThumbnailPNGOnDesktop({
+              id: settings.meta.id.current,
               projectDirectoryWithoutEndingSlash: project.path,
-            })
+            }).catch(reportRejection)
+          } else {
+            console.log(
+              'Cannot save to recent projects or create thumbnail: missing project or settings meta id'
+            )
           }
         })
         .catch((e) => {

@@ -38,6 +38,7 @@ import type {
 import { appThemeToTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
+import { saveToRecentProjects } from '@src/lib/recentProjects'
 
 type OmitNull<T> = T extends null ? undefined : T
 const toUndefinedIfNull = (a: any): OmitNull<any> =>
@@ -338,6 +339,7 @@ export interface AppSettings {
 export async function loadAndValidateSettings(
   projectPath?: string
 ): Promise<AppSettings> {
+  console.log('loadAndValidateSettings begin', projectPath)
   // Make sure we have wasm initialized.
   await initPromise
 
@@ -346,6 +348,7 @@ export async function loadAndValidateSettings(
     ? await readAppSettingsFile(window.electron)
     : readLocalStorageAppSettingsFile()
 
+  console.log('loadAndValidateSettings appSettingsPayload', appSettingsPayload)
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 
   let settingsNext = createSettings()
@@ -380,6 +383,10 @@ export async function loadAndValidateSettings(
       }
       // Duplicated from settingsUtils.ts
       const projectTomlString = serializeProjectConfiguration(projectSettings)
+      console.log(
+        'loadAndValidateSettings projectTomlString',
+        projectTomlString
+      )
       if (err(projectTomlString))
         return Promise.reject(new Error('Failed to serialize project settings'))
       if (window.electron) {
@@ -404,6 +411,9 @@ export async function loadAndValidateSettings(
       !projectSettings.settings?.meta?.id ||
       projectSettings.settings.meta.id === uuidNIL
     ) {
+      console.log(
+        'An id was missing. Create one and write it to disk immediately.'
+      )
       const projectSettingsNew = {
         meta: {
           id: v4(),
@@ -482,6 +492,10 @@ export async function loadAndValidateSettings(
       'project',
       projectConfigurationToSettingsPayload(projectSettingsPayload)
     )
+
+    if (isDesktop() && window.electron) {
+      await saveToRecentProjects(projectPath, settingsNext.meta.id.current)
+    }
   }
 
   // Return the settings object

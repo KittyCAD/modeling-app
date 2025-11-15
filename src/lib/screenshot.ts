@@ -1,4 +1,8 @@
-import { writeProjectThumbnailFile } from '@src/lib/desktop'
+import {
+  getProjectThumbnailsPath,
+  writeProjectThumbnailFile,
+} from '@src/lib/desktop'
+import { PROJECT_IMAGE_NAME } from '@src/lib/constants'
 
 export function takeScreenshotOfVideoStreamCanvas() {
   const canvas = document.querySelector('[data-engine]')
@@ -44,31 +48,39 @@ export default async function screenshot(): Promise<string> {
   return takeScreenshotOfVideoStreamCanvas()
 }
 
-export function createThumbnailPNGOnDesktop({
+export async function createThumbnailPNGOnDesktop({
+  id,
   projectDirectoryWithoutEndingSlash,
 }: {
+  id: string
   projectDirectoryWithoutEndingSlash: string
 }) {
-  if (window.electron) {
-    const electron = window.electron
-    setTimeout(() => {
-      if (!projectDirectoryWithoutEndingSlash) {
-        return
-      }
-      const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
-      // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
-      writeProjectThumbnailFile(
-        electron,
-        dataUrl,
-        projectDirectoryWithoutEndingSlash
-      )
-        .then(() => {})
-        .catch((e) => {
-          console.error(
-            `Failed to generate thumbnail for ${projectDirectoryWithoutEndingSlash}`
-          )
-          console.error(e)
-        })
-    }, 500)
+  if (!window.electron || !id || !projectDirectoryWithoutEndingSlash) {
+    console.warn(
+      'Cannot create thumbnail PNG: not desktop or missing parameters'
+    )
+    return
+  }
+
+  const electron = window.electron
+  try {
+    // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
+
+    const thumbnailsDir = await getProjectThumbnailsPath(electron)
+    const filePath = electron.path.join(thumbnailsDir, `${id}.png`)
+    console.log('Writing thumbnail to', filePath)
+    await writeProjectThumbnailFile(electron, dataUrl, filePath)
+
+    // TODO: remove once we're retiring the old thumbnail.png
+    const oldThumbnailPath = electron.path.join(
+      projectDirectoryWithoutEndingSlash,
+      PROJECT_IMAGE_NAME
+    )
+    console.log('Writing thumbnail to', oldThumbnailPath)
+    await writeProjectThumbnailFile(electron, dataUrl, oldThumbnailPath)
+  } catch (e) {
+    console.error(`Failed to generate thumbnail`, e)
   }
 }
