@@ -93,9 +93,12 @@ impl TcpRead {
             WsMsg::Text(text) => serde_json::from_str(&text)
                 .map_err(anyhow::Error::from)
                 .map_err(WebSocketReadError::from)?,
-            WsMsg::Binary(bin) => bson::from_slice(&bin)
-                .map_err(anyhow::Error::from)
-                .map_err(WebSocketReadError::from)?,
+            WsMsg::Binary(bin) => match rmp_serde::from_slice(&bin) {
+                Ok(resp) => resp,
+                Err(_) => bson::from_slice(&bin)
+                    .map_err(anyhow::Error::from)
+                    .map_err(WebSocketReadError::from)?,
+            },
             other => return Err(anyhow::anyhow!("Unexpected WebSocket message from engine API: {other}").into()),
         };
         Ok(msg)
