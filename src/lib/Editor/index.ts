@@ -36,8 +36,14 @@ interface EditorInterface {
  * that includes the KCL interpreter and other Rust-written subsystems
  * in order to run.
  *
- * It is possible to have an editor running without an open project. To open a project, use {@link openProject}
- * It is possible to have an editor running without an engine connection. To manage the connection, use {@Editor.engineCommandManager}
+ * You could provide a WASM bundle yourself, or you could use the {@link Editor.create} method to spin a new one up.
+ * {@example}
+ * ```ts
+ * const myEditor = await Editor.create()
+ * ````
+ *
+ * It is possible to have an editor running without an open project. To open a project, use {@link Editor.openProject}
+ * It is possible to have an editor running without an engine connection. To manage the connection, use {@link Editor.engineCommandManager}
  */
 export const Editor: EditorConstructor = class Editor
   implements EditorInterface
