@@ -451,6 +451,7 @@ export const sketchSolveMachine = setup({
       // Selection box visual element
       let selectionBoxObject: CSS2DObject | null = null
       let selectionBoxGroup: Group | null = null
+      let labelsWrapper: HTMLElement | null = null
 
       /**
        * Helper function to create or update the selection box visual
@@ -499,6 +500,7 @@ export const sketchSolveMachine = setup({
         // - L to R (dashed intersection box)
         // - R to L (solid contains box)
         const isIntersectionBox = startPx.x > currentPx.x
+        const isDraggingUpward = startPx.y > currentPx.y
         const borderStyle = isIntersectionBox ? 'dashed' : 'solid'
 
         // Calculate center in 3D world space
@@ -520,10 +522,69 @@ export const sketchSolveMachine = setup({
           const boxDiv = document.createElement('div')
           boxDiv.style.position = 'absolute'
           boxDiv.style.pointerEvents = 'none'
-          boxDiv.style.border = `1px ${borderStyle} rgba(255, 255, 255, 0.5)`
+          boxDiv.style.border = `2px ${borderStyle} rgba(255, 255, 255, 0.5)`
           boxDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
           boxDiv.style.transform = 'translate(-50%, -50%)'
           boxDiv.style.boxSizing = 'border-box'
+
+          // Create corner lines (vertical and horizontal lines at drag start point)
+          const verticalLine = document.createElement('div')
+          const horizontalLine = document.createElement('div')
+
+          verticalLine.style.position = 'absolute'
+          verticalLine.style.pointerEvents = 'none'
+          verticalLine.style.backgroundColor = 'rgba(255, 255, 255, 0.5)'
+          verticalLine.style.width = '2px'
+
+          horizontalLine.style.position = 'absolute'
+          horizontalLine.style.pointerEvents = 'none'
+          horizontalLine.style.backgroundColor = 'rgba(255, 255, 255, 0.5)'
+          horizontalLine.style.height = '2px'
+
+          boxDiv.appendChild(verticalLine)
+          boxDiv.appendChild(horizontalLine)
+
+          // Create labels wrapper and labels
+          labelsWrapper = document.createElement('div')
+          const intersectsLabel = document.createElement('div')
+          const containsLabel = document.createElement('div')
+
+          labelsWrapper.appendChild(intersectsLabel)
+          labelsWrapper.appendChild(containsLabel)
+
+          // Style labels wrapper
+          labelsWrapper.style.position = 'absolute'
+          labelsWrapper.style.pointerEvents = 'none'
+          labelsWrapper.style.whiteSpace = 'nowrap'
+          labelsWrapper.style.display = 'flex'
+          labelsWrapper.style.gap = '0px'
+          labelsWrapper.style.alignItems = 'center'
+
+          // Style both labels
+          const labelBaseStyle = {
+            fontSize: '11px',
+            // fontFamily: 'system-ui, sans-serif',
+            color: 'rgba(255, 255, 255, 0.7)',
+            userSelect: 'none',
+            width: '100px', // consistent width makes alignment easier
+            padding: '6px',
+            margin: '0px',
+          }
+
+          Object.assign(intersectsLabel.style, labelBaseStyle)
+          Object.assign(containsLabel.style, labelBaseStyle)
+          // intersectsLabel.style.paddingRight = '8px'
+          // intersectsLabel.style.borderRight =
+          //   '1px solid rgba(255, 255, 255, 0.3)'
+          // containsLabel.style.borderLeft =
+          //   '1px solid rgba(255, 255, 255, 0.3)'
+          intersectsLabel.style.textAlign = 'right'
+
+          intersectsLabel.textContent = 'Intersects'
+          containsLabel.textContent = 'Within'
+
+          // Add labels wrapper to box div
+          boxDiv.appendChild(labelsWrapper)
 
           selectionBoxObject = new CSS2DObject(boxDiv)
           selectionBoxObject.userData.type = 'selectionBox'
@@ -559,7 +620,99 @@ export const sketchSolveMachine = setup({
           boxDiv.style.height = `${heightPx}px`
 
           // Update border style based on selection direction
-          boxDiv.style.border = `1px ${borderStyle} rgba(255, 255, 255, 0.5)`
+          boxDiv.style.border = `2px ${borderStyle} rgba(255, 255, 255, 0.5)`
+
+          // Update label opacity based on active selection mode
+          if (labelsWrapper) {
+            const intersectsLabel = labelsWrapper.children[0] as HTMLElement
+            const containsLabel = labelsWrapper.children[1] as HTMLElement
+
+            if (intersectsLabel && containsLabel) {
+              if (isIntersectionBox) {
+                // Intersection mode active - "Intersects" is full opacity, "Within" is lower contrast
+                intersectsLabel.style.opacity = '1'
+                containsLabel.style.opacity = '0.4'
+                intersectsLabel.style.fontWeight = '600'
+                containsLabel.style.fontWeight = '400'
+              } else {
+                // Contains mode active - "Within" is full opacity, "Intersects" is lower contrast
+                intersectsLabel.style.opacity = '0.4'
+                containsLabel.style.opacity = '1'
+                intersectsLabel.style.fontWeight = '400'
+                containsLabel.style.fontWeight = '600'
+              }
+            }
+          }
+
+          // Position labels at the drag start point
+          // The boxDiv is centered with translate(-50%, -50%), so its top-left is at (-width/2, -height/2)
+          // We need to position the labels at the start point relative to the boxDiv's coordinate system
+
+          // Calculate box center in screen pixels
+          const centerPx = new Vector2(
+            (boxMinPx.x + boxMaxPx.x) / 2,
+            (boxMinPx.y + boxMaxPx.y) / 2
+          )
+
+          // Calculate offset from box center to start point (in screen pixels)
+          const offsetX = startPx.x - centerPx.x
+          const offsetY = startPx.y - centerPx.y
+
+          // Adjust vertical position based on drag direction
+          // If dragging downward, labels should be above (negative offset)
+          // If dragging upward, labels should be below (positive offset)
+          const verticalOffset = isDraggingUpward ? 12 : -12 // spacing from box edge
+          const finalOffsetY = offsetY + verticalOffset
+
+          // Position corner lines and labels at the start point
+          // Since boxDiv has transform: translate(-50%, -50%), its coordinate system
+          // has the center at (0, 0), with top-left at (-width/2, -height/2)
+          // So we position at (offsetX, finalOffsetY) and center the labels wrapper there
+
+          // Calculate start point position relative to box center
+          const startX = offsetX
+          const startY = offsetY
+
+          const lineExtensionSize = '12px'
+
+          // Position vertical line (extends from start point to nearest vertical edge)
+          const verticalLine = boxDiv.children[0]
+          if (verticalLine && verticalLine instanceof HTMLElement) {
+            verticalLine.style.left = `calc(50% + ${startX}px)`
+            verticalLine.style.top = `calc(50% + ${startY}px)`
+            verticalLine.style.height = lineExtensionSize
+            if (startY > 0) {
+              // Start point is above center, line extends upward to top edge
+              verticalLine.style.transform = 'translateX(-50%)'
+            } else {
+              // Start point is below center, line extends downward to bottom edge
+              verticalLine.style.transform = 'translate(-50%, -100%)'
+            }
+          }
+
+          // Position horizontal line (extends from start point to nearest horizontal edge)
+          const horizontalLine = boxDiv.children[1]
+          if (horizontalLine && horizontalLine instanceof HTMLElement) {
+            horizontalLine.style.top = `calc(50% + ${startY}px)`
+            horizontalLine.style.width = lineExtensionSize
+            horizontalLine.style.left = `calc(50% + ${startX}px)`
+            if (startX < 0) {
+              // Start point is left of center, line extends leftward to left edge
+              horizontalLine.style.transform = 'translate(-100%, -50%)'
+            } else {
+              // Start point is right of center, line extends rightward to right edge
+              horizontalLine.style.transform = 'translateY(-50%)'
+            }
+          }
+
+          if (labelsWrapper) {
+            // Position relative to boxDiv center (which is at 50%, 50% in boxDiv's coordinate system)
+            // Then add the offset to move to the start point
+            labelsWrapper.style.left = `calc(50% + ${startX}px)`
+            labelsWrapper.style.top = `calc(50% + ${finalOffsetY}px)`
+            // Center the labels wrapper at this point so the middle of the two labels aligns with the corner
+            labelsWrapper.style.transform = 'translate(-50%, -50%)'
+          }
         }
       }
 
@@ -574,6 +727,7 @@ export const sketchSolveMachine = setup({
           }
           selectionBoxGroup = null
           selectionBoxObject = null
+          labelsWrapper = null
         }
       }
 
@@ -680,9 +834,9 @@ export const sketchSolveMachine = setup({
           const lineMesh = child.children.find(
             (c) =>
               c instanceof Mesh && c.userData?.type === STRAIGHT_SEGMENT_BODY
-          ) as Mesh | undefined
+          )
 
-          if (lineMesh) {
+          if (lineMesh && lineMesh instanceof Mesh) {
             // Handle line segment
             const geometry = lineMesh.geometry
             if (!(geometry instanceof ExtrudeGeometry)) {
@@ -737,9 +891,9 @@ export const sketchSolveMachine = setup({
           // Check if this group has a CSS2DObject (point segment)
           const css2dObject = child.children.find(
             (c) => c instanceof CSS2DObject && c.userData?.type === 'handle'
-          ) as CSS2DObject | undefined
+          )
 
-          if (css2dObject) {
+          if (css2dObject && css2dObject instanceof CSS2DObject) {
             const pointId = checkPointSegmentInBox(
               css2dObject,
               segmentId,
@@ -804,9 +958,9 @@ export const sketchSolveMachine = setup({
           const lineMesh = child.children.find(
             (c) =>
               c instanceof Mesh && c.userData?.type === STRAIGHT_SEGMENT_BODY
-          ) as Mesh | undefined
+          )
 
-          if (lineMesh) {
+          if (lineMesh && lineMesh instanceof Mesh) {
             // Handle line segment
             const geometry = lineMesh.geometry
             if (!(geometry instanceof ExtrudeGeometry)) {
@@ -872,9 +1026,9 @@ export const sketchSolveMachine = setup({
           // Check if this group has a CSS2DObject (point segment)
           const css2dObject = child.children.find(
             (c) => c instanceof CSS2DObject && c.userData?.type === 'handle'
-          ) as CSS2DObject | undefined
+          )
 
-          if (css2dObject) {
+          if (css2dObject && css2dObject instanceof CSS2DObject) {
             const pointId = checkPointSegmentInBox(
               css2dObject,
               segmentId,
