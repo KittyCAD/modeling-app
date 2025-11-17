@@ -21,4 +21,5 @@ URL	STATUS
 302	https://stackoverflow.com/a/58436959/22753272
 303	https://text-to-cad.zoo.dev/dashboard
 308	https://zoo.dev/docs/kcl
+301 https://github.com/SoftFever/OrcaSlicer/blob/431978baf17961df90f0d01871b0ad1d839d7f5d/src/slic3r/GUI/DeviceManager.cpp#L78
 
