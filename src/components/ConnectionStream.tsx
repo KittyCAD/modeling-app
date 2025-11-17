@@ -353,36 +353,35 @@ export const ConnectionStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
-      { (!isSceneReady || showManualConnect) &&
-        (
-          <Loading
-            isRetrying={false}
-            retryAttemptCountdown={0}
-            dataTestId="loading-engine"
-            className="absolute inset-0 h-screen"
-            showManualConnect={showManualConnect}
-            callback={() => {
-              setShowManualConnect(false)
-              tryConnecting({
-                authToken: props.authToken || '',
-                videoWrapperRef,
-                setAppState,
-                videoRef,
-                setIsSceneReady,
-                isConnecting,
-                numberOfConnectionAttempts,
-                timeToConnect: TIME_TO_CONNECT,
-                settings: settingsEngine,
-                setShowManualConnect,
-              }).catch((e) => {
-                console.warn(e)
-                setShowManualConnect(true)
-              })
-            }}
-          >
-            Connecting and setting up scene...
-          </Loading>
-        )}
+      {(!isSceneReady || showManualConnect) && (
+        <Loading
+          isRetrying={false}
+          retryAttemptCountdown={0}
+          dataTestId="loading-engine"
+          className="absolute inset-0 h-screen"
+          showManualConnect={showManualConnect}
+          callback={() => {
+            setShowManualConnect(false)
+            tryConnecting({
+              authToken: props.authToken || '',
+              videoWrapperRef,
+              setAppState,
+              videoRef,
+              setIsSceneReady,
+              isConnecting,
+              numberOfConnectionAttempts,
+              timeToConnect: TIME_TO_CONNECT,
+              settings: settingsEngine,
+              setShowManualConnect,
+            }).catch((e) => {
+              console.warn(e)
+              setShowManualConnect(true)
+            })
+          }}
+        >
+          Connecting and setting up scene...
+        </Loading>
+      )}
       )
     </div>
   )
