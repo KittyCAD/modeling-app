@@ -4,7 +4,9 @@ use kcl_error::SourceRange;
 
 use crate::{
     ExecOutcome, ExecutorContext, Program,
+    collections::AhashIndexSet,
     exec::WarningLevel,
+    execution::MockConfig,
     fmt::format_number_literal,
     front::{Distance, Line, LinesEqualLength, Parallel, PointCtor},
     frontend::{
@@ -27,8 +29,6 @@ pub(crate) mod api;
 mod modify;
 pub(crate) mod sketch;
 mod traverse;
-
-type FnvIndexSet<T> = indexmap::IndexSet<T, fnv::FnvBuildHasher>;
 
 const POINT_FN: &str = "point";
 const POINT_AT_PARAM: &str = "at";
@@ -81,9 +81,12 @@ impl SketchApi for FrontendState {
         _sketch: ObjectId,
     ) -> api::Result<(SceneGraph, ExecOutcome)> {
         // Execute.
-        let outcome = ctx.run_mock(&self.program, true).await.map_err(|err| Error {
-            msg: err.error.message().to_owned(),
-        })?;
+        let outcome = ctx
+            .run_mock(&self.program, &MockConfig::default())
+            .await
+            .map_err(|err| Error {
+                msg: err.error.message().to_owned(),
+            })?;
         let outcome = self.update_state_after_exec(outcome);
         Ok((self.scene_graph.clone(), outcome))
     }
@@ -168,13 +171,16 @@ impl SketchApi for FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
-            // TODO: sketch-api: Yeah, this needs to change. We need to
-            // return the full error.
-            Error {
-                msg: err.error.message().to_owned(),
-            }
-        })?;
+        let outcome = ctx
+            .run_mock(&new_program, &MockConfig::default())
+            .await
+            .map_err(|err| {
+                // TODO: sketch-api: Yeah, this needs to change. We need to
+                // return the full error.
+                Error {
+                    msg: err.error.message().to_owned(),
+                }
+            })?;
 
         #[cfg(not(feature = "artifact-graph"))]
         let sketch_id = ObjectId(0);
@@ -223,13 +229,16 @@ impl SketchApi for FrontendState {
         self.scene_graph.sketch_mode = Some(sketch);
 
         // Execute in mock mode to ensure state is up to date.
-        let outcome = ctx.run_mock(&self.program, true).await.map_err(|err| {
-            // TODO: sketch-api: Yeah, this needs to change. We need to
-            // return the full error.
-            Error {
-                msg: err.error.message().to_owned(),
-            }
-        })?;
+        let outcome = ctx
+            .run_mock(&self.program, &MockConfig::default())
+            .await
+            .map_err(|err| {
+                // TODO: sketch-api: Yeah, this needs to change. We need to
+                // return the full error.
+                Error {
+                    msg: err.error.message().to_owned(),
+                }
+            })?;
 
         let outcome = self.update_state_after_exec(outcome);
         let scene_graph_delta = SceneGraphDelta {
@@ -303,7 +312,9 @@ impl SketchApi for FrontendState {
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         // TODO: Check version.
         let mut new_ast = self.program.ast.clone();
+        let mut segment_ids_edited = AhashIndexSet::with_capacity_and_hasher(segments.len(), Default::default());
         for segment in segments {
+            segment_ids_edited.insert(segment.id);
             match segment.ctor {
                 SegmentCtor::Point(ctor) => self.edit_point(&mut new_ast, sketch, segment.id, ctor)?,
                 SegmentCtor::Line(ctor) => self.edit_line(&mut new_ast, sketch, segment.id, ctor)?,
@@ -314,7 +325,8 @@ impl SketchApi for FrontendState {
                 }
             }
         }
-        self.execute_after_edit(ctx, sketch, false, &mut new_ast).await
+        self.execute_after_edit(ctx, sketch, segment_ids_edited, false, &mut new_ast)
+            .await
     }
 
     async fn delete_objects(
@@ -328,8 +340,8 @@ impl SketchApi for FrontendState {
         // TODO: Check version.
 
         // Deduplicate IDs.
-        let mut constraint_ids_set = constraint_ids.into_iter().collect::<FnvIndexSet<_>>();
-        let segment_ids_set = segment_ids.into_iter().collect::<FnvIndexSet<_>>();
+        let mut constraint_ids_set = constraint_ids.into_iter().collect::<AhashIndexSet<_>>();
+        let segment_ids_set = segment_ids.into_iter().collect::<AhashIndexSet<_>>();
         // Find constraints that reference the segments to be deleted, and add
         // those to the set to be deleted.
         self.add_dependent_constraints_to_delete(sketch, &segment_ids_set, &mut constraint_ids_set)?;
@@ -341,7 +353,8 @@ impl SketchApi for FrontendState {
         for segment_id in segment_ids_set {
             self.delete_segment(&mut new_ast, sketch, segment_id)?;
         }
-        self.execute_after_edit(ctx, sketch, true, &mut new_ast).await
+        self.execute_after_edit(ctx, sketch, Default::default(), true, &mut new_ast)
+            .await
     }
 
     async fn add_constraint(
@@ -476,13 +489,16 @@ impl FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
-            // TODO: sketch-api: Yeah, this needs to change. We need to
-            // return the full error.
-            Error {
-                msg: err.error.message().to_owned(),
-            }
-        })?;
+        let outcome = ctx
+            .run_mock(&new_program, &MockConfig::default())
+            .await
+            .map_err(|err| {
+                // TODO: sketch-api: Yeah, this needs to change. We need to
+                // return the full error.
+                Error {
+                    msg: err.error.message().to_owned(),
+                }
+            })?;
 
         #[cfg(not(feature = "artifact-graph"))]
         let new_object_ids = Vec::new();
@@ -589,13 +605,16 @@ impl FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
-            // TODO: sketch-api: Yeah, this needs to change. We need to
-            // return the full error.
-            Error {
-                msg: err.error.message().to_owned(),
-            }
-        })?;
+        let outcome = ctx
+            .run_mock(&new_program, &MockConfig::default())
+            .await
+            .map_err(|err| {
+                // TODO: sketch-api: Yeah, this needs to change. We need to
+                // return the full error.
+                Error {
+                    msg: err.error.message().to_owned(),
+                }
+            })?;
 
         #[cfg(not(feature = "artifact-graph"))]
         let new_object_ids = Vec::new();
@@ -837,6 +856,7 @@ impl FrontendState {
         &mut self,
         ctx: &ExecutorContext,
         _sketch_id: ObjectId,
+        segment_ids_edited: AhashIndexSet<ObjectId>,
         is_delete: bool,
         new_ast: &mut ast::Node<ast::Program>,
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
@@ -858,8 +878,16 @@ impl FrontendState {
         // TODO: sketch-api: make sure to only set this if there are no errors.
         self.program = new_program.clone();
 
+        #[cfg(not(feature = "artifact-graph"))]
+        drop(segment_ids_edited);
+
         // Execute.
-        let outcome = ctx.run_mock(&new_program, !is_delete).await.map_err(|err| {
+        let mock_config = MockConfig {
+            use_prev_memory: !is_delete,
+            #[cfg(feature = "artifact-graph")]
+            segment_ids_edited,
+        };
+        let outcome = ctx.run_mock(&new_program, &mock_config).await.map_err(|err| {
             // TODO: sketch-api: Yeah, this needs to change. We need to
             // return the full error.
             Error {
@@ -1397,13 +1425,16 @@ impl FrontendState {
         self.program = new_program.clone();
 
         // Execute.
-        let outcome = ctx.run_mock(&new_program, true).await.map_err(|err| {
-            // TODO: sketch-api: Yeah, this needs to change. We need to
-            // return the full error.
-            Error {
-                msg: err.error.message().to_owned(),
-            }
-        })?;
+        let outcome = ctx
+            .run_mock(&new_program, &MockConfig::default())
+            .await
+            .map_err(|err| {
+                // TODO: sketch-api: Yeah, this needs to change. We need to
+                // return the full error.
+                Error {
+                    msg: err.error.message().to_owned(),
+                }
+            })?;
 
         let src_delta = SourceDelta { text: new_source };
         let outcome = self.update_state_after_exec(outcome);
@@ -1421,8 +1452,8 @@ impl FrontendState {
     fn add_dependent_constraints_to_delete(
         &self,
         sketch_id: ObjectId,
-        segment_ids_set: &FnvIndexSet<ObjectId>,
-        constraint_ids_set: &mut FnvIndexSet<ObjectId>,
+        segment_ids_set: &AhashIndexSet<ObjectId>,
+        constraint_ids_set: &mut AhashIndexSet<ObjectId>,
     ) -> api::Result<()> {
         // Look up the sketch.
         let sketch_object = self.scene_graph.objects.get(sketch_id.0).ok_or_else(|| Error {
