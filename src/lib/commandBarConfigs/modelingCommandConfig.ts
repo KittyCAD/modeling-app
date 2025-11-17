@@ -338,6 +338,10 @@ export type ModelingCommandSchema = {
     nodeToEdit?: PathToNode
     faces: Selections
     name: string
+    framePosition?: KclCommandValue
+    framePlane?: string
+    fontPointSize?: KclCommandValue
+    fontScale?: KclCommandValue
   }
   'Boolean Subtract': {
     solids: Selections
@@ -1926,6 +1930,31 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           return getNextAvailableDatumName(kclManager.ast)
         },
         required: true,
+      },
+      framePosition: {
+        inputType: 'vector2d',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        required: false,
+      },
+      framePlane: {
+        inputType: 'options',
+        defaultValue: KCL_PLANE_XY,
+        options: [
+          { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
+          { name: 'XZ Plane', value: KCL_PLANE_XZ },
+          { name: 'YZ Plane', value: KCL_PLANE_YZ },
+        ],
+        required: false,
+      },
+      fontPointSize: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_POINT_SIZE,
+        required: false,
+      },
+      fontScale: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SCALE,
+        required: false,
       },
     },
   },

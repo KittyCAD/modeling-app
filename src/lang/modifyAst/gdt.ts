@@ -250,6 +250,10 @@ export function addFlatnessGdt({
  * @param artifactGraph - The artifact graph for face lookups
  * @param faces - Selected face to annotate (only first face selection will be used)
  * @param name - The datum identifier (e.g., 'A', 'B', 'C')
+ * @param framePosition - Position of the feature control frame [x, y] (optional)
+ * @param framePlane - Plane for displaying the frame (XY, XZ, YZ) (optional)
+ * @param fontPointSize - Font point size for annotation text (optional)
+ * @param fontScale - Scale factor for annotation text (optional)
  * @param nodeToEdit - Path to node to edit (for edit mode)
  * @returns Modified AST and path to the created node, or an Error
  */
@@ -258,12 +262,20 @@ export function addDatumGdt({
   artifactGraph,
   faces,
   name,
+  framePosition,
+  framePlane,
+  fontPointSize,
+  fontScale,
   nodeToEdit,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   faces: Selections
   name: string
+  framePosition?: KclCommandValue
+  framePlane?: KclCommandValue | string
+  fontPointSize?: KclCommandValue
+  fontScale?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // Clone the AST to avoid mutating the original
@@ -312,11 +324,77 @@ export function addDatumGdt({
   // Create expression from the first tag
   const faceExpr = createLocalName(tagResult.tags[0])
 
+  // Insert variables for labeled arguments only once (before creating the call)
+  // Only insert framePosition variable if we used valueOrVariable (not for arrays)
+  if (
+    framePosition &&
+    !('value' in framePosition && isArray(framePosition.value)) &&
+    'variableName' in framePosition &&
+    framePosition.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(framePosition, modifiedAst, nodeToEdit)
+  }
+  // Only insert framePlane variable if we used valueOrVariable (not for strings)
+  if (
+    framePlane &&
+    typeof framePlane !== 'string' &&
+    'variableName' in framePlane &&
+    framePlane.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(framePlane, modifiedAst, nodeToEdit)
+  }
+  if (
+    fontPointSize &&
+    'variableName' in fontPointSize &&
+    fontPointSize.variableName
+  ) {
+    insertVariableAndOffsetPathToNode(fontPointSize, modifiedAst, nodeToEdit)
+  }
+  if (fontScale && 'variableName' in fontScale && fontScale.variableName) {
+    insertVariableAndOffsetPathToNode(fontScale, modifiedAst, nodeToEdit)
+  }
+
+  // Handle framePlane parameter - can be a named plane (XY, XZ, YZ) or variable
+  let framePlaneExpr
+  if (framePlane) {
+    if (typeof framePlane === 'string') {
+      // Named plane like 'XY', 'XZ', 'YZ'
+      framePlaneExpr = createLocalName(framePlane)
+    } else {
+      // Variable reference
+      framePlaneExpr = valueOrVariable(framePlane)
+    }
+  }
+
+  // Handle framePosition parameter - should be Point2d [x, y]
+  let framePositionExpr: Node<Expr> | undefined
+  if (framePosition) {
+    const res = createPoint2dExpression(framePosition)
+    if (err(res)) return res
+    framePositionExpr = res
+  }
+
   // Build labeled arguments
   const labeledArgs = [
     createLabeledArg('face', faceExpr),
     createLabeledArg('name', createLiteral(name)),
   ]
+
+  // Add optional labeled arguments if provided
+  if (framePositionExpr !== undefined) {
+    labeledArgs.push(createLabeledArg('framePosition', framePositionExpr))
+  }
+  if (framePlaneExpr !== undefined) {
+    labeledArgs.push(createLabeledArg('framePlane', framePlaneExpr))
+  }
+  if (fontPointSize !== undefined) {
+    labeledArgs.push(
+      createLabeledArg('fontPointSize', valueOrVariable(fontPointSize))
+    )
+  }
+  if (fontScale !== undefined) {
+    labeledArgs.push(createLabeledArg('fontScale', valueOrVariable(fontScale)))
+  }
 
   // Create the gdt::datum call
   const nonCodeMeta = undefined

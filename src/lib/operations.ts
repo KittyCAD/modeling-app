@@ -1531,9 +1531,26 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({ operation }) => {
   const nameRaw = extractStringArgument(operation, 'name')
   const name = nameRaw?.replace(/^["']|["']$/g, '') || ''
 
+  // Extract optional parameters
+  const optionalArgs = await Promise.all([
+    extractKclArgument(operation, 'framePosition', true),
+    extractKclArgument(operation, 'fontPointSize'),
+    extractKclArgument(operation, 'fontScale'),
+  ])
+
+  const [framePosition, fontPointSize, fontScale] = optionalArgs.map((arg) =>
+    'error' in arg ? undefined : arg
+  )
+
+  const framePlane = extractStringArgument(operation, 'framePlane')
+
   const argDefaultValues: ModelingCommandSchema['GDT Datum'] = {
     faces,
     name,
+    framePosition,
+    framePlane,
+    fontPointSize,
+    fontScale,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 

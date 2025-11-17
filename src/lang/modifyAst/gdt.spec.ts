@@ -762,6 +762,59 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         'Datum name cannot contain double quotes'
       )
     })
+
+    it('should add datum annotation with all optional parameters', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        cylinder,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const faces = getCapFromCylinder(artifactGraph)
+      const name = 'A'
+      const framePosition = await getKclCommandValue(
+        '[5, 0]',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const framePlane = 'XZ'
+      const fontPointSize = await getKclCommandValue(
+        '48',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const fontScale = await getKclCommandValue(
+        '2.0',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const { addDatumGdt } = await import('@src/lang/modifyAst/gdt')
+      const result = addDatumGdt({
+        ast,
+        artifactGraph,
+        faces,
+        name,
+        framePosition,
+        framePlane,
+        fontPointSize,
+        fontScale,
+      })
+      if (err(result)) throw result
+
+      const { modifiedAst } = result
+
+      // Should generate KCL with all style parameters
+      const newCode = recast(modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('gdt::datum(')
+      expect(newCode).toContain('face = capEnd001')
+      expect(newCode).toContain('name = "A"')
+      expect(newCode).toContain('framePosition = [5, 0]')
+      expect(newCode).toContain('framePlane = XZ')
+      expect(newCode).toContain('fontPointSize = 48')
+      expect(newCode).toContain('fontScale = 2')
+    })
   })
 
   describe('Testing getUsedDatumNames', () => {
