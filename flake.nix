@@ -82,7 +82,6 @@
 
           TARGET_CC = "${pkgs.stdenv.cc}/bin/${pkgs.stdenv.cc.targetPrefix}cc";
           LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
-          PYO3_PYTHON = "${pkgs.python3}/bin/python3";
           ELECTRON_OVERRIDE_DIST_PATH =
             if pkgs.stdenv.isDarwin
             then "${pkgs.electron}/Applications/"
@@ -93,7 +92,7 @@
           NODE_ENV = "development";
           RUSTFMT = "${pkgs.nightlyRustfmt}/bin/rustfmt";
           CHROMEDRIVER = "${pkgs.chromedriver}/bin/chromedriver";
-          PYO3_PYTHON = "${pkgs.python3Full}/bin/python3";
+          PYO3_PYTHON = "${pkgs.python3}/bin/python3";
         };
       }
     );
