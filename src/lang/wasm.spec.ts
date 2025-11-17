@@ -26,6 +26,7 @@ import {
   isExtensionAnImportExtension,
   isExtensionARelevantExtension,
 } from '@src/lib/paths'
+import { afterAll, expect } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!

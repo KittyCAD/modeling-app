@@ -30,6 +30,7 @@ import {
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
+import { afterAll, expect } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

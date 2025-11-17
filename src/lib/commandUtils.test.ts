@@ -1,5 +1,6 @@
 import type { CommandWithDisabledState } from '@src/lib/commandUtils'
 import { sortCommands } from '@src/lib/commandUtils'
+import { expect } from 'vitest'
 
 function commandWithDisabled(
   name: string,
@@ -11,7 +12,7 @@ function commandWithDisabled(
       name,
       groupId,
       needsReview: false,
-      onSubmit: () => {},
+      onSubmit: () => { },
     },
     disabled,
   }

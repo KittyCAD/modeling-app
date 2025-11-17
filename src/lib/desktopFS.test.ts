@@ -1,5 +1,6 @@
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import type { FileEntry } from '@src/lib/project'
+import { expect } from 'vitest'
 
 /** Create a dummy project */
 function project(name: string, children?: FileEntry[]): FileEntry {

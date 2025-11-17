@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { expect } from 'vitest'
 
 describe('getCurrentProjectFile', () => {
   test('with explicit open file with space (URL encoded)', async () => {

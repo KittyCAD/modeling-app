@@ -9,6 +9,7 @@ import { ActionType, AreaType, LayoutType } from '@src/lib/layout/types'
 import { parseLayoutInner, parseAction } from '@src/lib/layout/parse'
 import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import { testLayoutConfig } from '@src/lib/layout/configs/test'
+import { expect } from 'vitest'
 
 const validSimpleLayout = {
   type: LayoutType.Simple,

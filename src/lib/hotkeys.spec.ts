@@ -1,4 +1,5 @@
 import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { expect } from 'vitest'
 
 describe('hotkeyDisplay', () => {
   it('displays mod', async () => {
