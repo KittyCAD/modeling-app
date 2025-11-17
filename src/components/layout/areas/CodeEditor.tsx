@@ -34,14 +34,28 @@ const orange = {
   light: 'oklch(from var(--primary) calc(l + 0.05) calc(c + .1) calc(h - 180))',
   dark: 'oklch(from var(--primary) calc(l + 0.25) calc(c + .1) calc(h - 180))',
 }
-const text = {
+const textDefault = {
   light: 'var(--chalkboard-100)',
   dark: 'var(--chalkboard-20)',
 }
+const textFaded = {
+  light: 'var(--chalkboard-70)',
+  dark: 'var(--chalkboard-30)',
+}
+const magenta = {
+  light: 'oklch(from var(--primary) calc(l + 0.05) c calc(h + 90))',
+}
+const primary = {
+  light: 'var(--primary)',
+  dark: 'oklch(from var(--primary) calc(l + 0.15) c h)',
+}
 const colors = {
   green,
+  magenta,
   orange,
-  text,
+  primary,
+  textDefault,
+  textFaded,
 }
 const baseKclHighlights = HighlightStyle.define([
   {
@@ -55,27 +69,27 @@ const baseKclHighlights = HighlightStyle.define([
   },
   {
     tag: [tags.attributeName, tags.definition(tags.propertyName)],
-    color: 'oklch(from var(--primary) calc(l + 0.05) c calc(h + 90))',
+    color: colors.magenta.light,
     fontWeight: 'normal',
   },
-  { tag: tags.function(tags.variableName), color: colors.text.light },
+  { tag: tags.function(tags.variableName), color: colors.textDefault.light },
   {
     tag: tags.definitionKeyword,
     backgroundColor: 'oklch(from var(--primary) calc(l + 0.05) c h / .1)',
-    color: 'var(--primary)',
+    color: colors.primary,
     borderRadius: '2px',
   },
-  { tag: [tags.variableName], color: 'var(--primary)' },
-  { tag: tags.comment, color: 'var(--chalkboard-70)', fontStyle: 'italic' },
+  { tag: [tags.variableName], color: colors.primary },
+  { tag: tags.comment, color: colors.textFaded.light, fontStyle: 'italic' },
   {
     tag: tags.definition(tags.variableName),
-    color: 'var(--chalkboard-70)',
+    color: colors.textFaded.light,
     fontWeight: 'bold',
   },
-  { tag: tags.controlOperator, color: 'var(--chalkboard-70)' },
+  { tag: tags.controlOperator, color: colors.textFaded.light },
   {
     tag: [tags.paren, tags.brace, tags.bracket],
-    color: 'var(--chalkboard-70)',
+    color: colors.textFaded.light,
     fontWeight: 'bold',
   },
 ])
@@ -89,12 +103,12 @@ const darkKclHighlights = HighlightStyle.define(
     {
       tag: tags.definitionKeyword,
       backgroundColor: 'oklch(from var(--primary) calc(l + 0.25) c h / .2)',
-      color: 'oklch(from var(--primary) calc(l + 0.15) c h)',
+      color: colors.primary.dark,
     },
-    { tag: tags.function(tags.variableName), color: colors.text.dark },
+    { tag: tags.function(tags.variableName), color: colors.textDefault.dark },
     {
       tag: [tags.variableName],
-      color: 'oklch(from var(--primary) calc(l + 0.15) c h)',
+      color: colors.primary.dark,
     },
     {
       tag: [tags.number, tags.string, tags.tagName],
