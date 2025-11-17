@@ -197,7 +197,7 @@ export default class EditorManager {
 
     return selection.filter(isTopLevelModule).map((s): [number, number] => {
       const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])
-      return [s[0], safeEnd]
+      return [Math.min(s[0], safeEnd), safeEnd]
     })
   }
 
