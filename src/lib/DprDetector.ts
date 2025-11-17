@@ -8,6 +8,7 @@ export class DprDetector {
   }
 
   private initMedia() {
+    this.media?.removeEventListener('change', this.onDprChange)
     this.media = window.matchMedia(
       `(resolution: ${window.devicePixelRatio}dppx)`
     )
