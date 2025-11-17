@@ -230,21 +230,30 @@ async function tryConnecting({
             message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed, calling tearDown()`,
           })
           engineCommandManager.tearDown()
-          // Fail after NUMBER_OF_ENGINE_RETRIES
-          if (toastId) {
-            toast.dismiss(toastId)
-          }
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
             numberOfConnectionAttempts.current = 0
+            if (toastId) {
+              toast.dismiss(toastId)
+            }
             return reject(e)
           }
           attempt().catch(reportRejection)
-          toastId = toast.error(
-            `Engine connection lost, reconnecting... Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES}`,
-            {
-              duration: Number.POSITIVE_INFINITY,
-            }
-          )
+          if (toastId) {
+            toast.error(
+              `Engine connection lost, reconnecting... Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES}`,
+              {
+                duration: Number.POSITIVE_INFINITY,
+                id: toastId,
+              }
+            )
+          } else {
+            toastId = toast.error(
+              `Engine connection lost, reconnecting... Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES}`,
+              {
+                duration: Number.POSITIVE_INFINITY,
+              }
+            )
+          }
         }
       }
       await attempt()
