@@ -150,7 +150,9 @@ export const createOnWebSocketMessage = ({
       }
 
       if (firstError.error_code === 'internal_api') {
-        console.warn('internal_api from server consider calling the request again')
+        console.warn(
+          'internal_api from server consider calling the request again'
+        )
       }
 
       return
