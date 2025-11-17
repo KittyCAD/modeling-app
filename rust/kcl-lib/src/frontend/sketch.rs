@@ -82,14 +82,6 @@ pub trait SketchApi {
         constraint_id: ObjectId,
         constraint: Constraint,
     ) -> Result<(SourceDelta, SceneGraphDelta)>;
-
-    async fn delete_constraint(
-        &mut self,
-        ctx: &ExecutorContext,
-        version: Version,
-        sketch: ObjectId,
-        constraint_id: ObjectId,
-    ) -> Result<(SourceDelta, SceneGraphDelta)>;
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -425,15 +417,5 @@ impl SketchApi for SketchApiStub {
         _constraint: Constraint,
     ) -> Result<(SourceDelta, SceneGraphDelta)> {
         todo!("edit_constraint not implemented")
-    }
-
-    async fn delete_constraint(
-        &mut self,
-        _ctx: &ExecutorContext,
-        _version: Version,
-        _sketch: ObjectId,
-        _constraint_id: ObjectId,
-    ) -> Result<(SourceDelta, SceneGraphDelta)> {
-        todo!("delete_constraint not implemented")
     }
 }

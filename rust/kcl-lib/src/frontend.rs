@@ -348,16 +348,6 @@ impl SketchApi for FrontendState {
     ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
         todo!()
     }
-
-    async fn delete_constraint(
-        &mut self,
-        _ctx: &ExecutorContext,
-        _version: Version,
-        _sketch: ObjectId,
-        _constraint_id: ObjectId,
-    ) -> api::Result<(SourceDelta, SceneGraphDelta)> {
-        todo!()
-    }
 }
 
 impl FrontendState {
