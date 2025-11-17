@@ -167,23 +167,6 @@ description: Variables in memory after executing utility-sink.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -349,23 +332,6 @@ description: Variables in memory after executing utility-sink.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -502,23 +468,6 @@ description: Variables in memory after executing utility-sink.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -646,23 +595,6 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "from": [
                   591.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  15.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  15.0,
                   0.0
                 ],
                 "tag": null,
@@ -1525,6 +1457,91 @@ description: Variables in memory after executing utility-sink.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
+              }
+            ],
+            "on": {
+              "artifactId": "[uuid]",
+              "id": "[uuid]",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": "mm"
+              },
+              "type": "plane",
+              "value": "XY",
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0,
+                "units": null
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "units": null
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0,
+                "units": null
+              }
+            },
+            "start": {
+              "from": [
+                0.0,
+                0.0
+              ],
+              "to": [
+                0.0,
+                0.0
+              ],
+              "units": "mm",
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": "mm"
+          },
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "units": "mm",
+          "sectional": false
+        }
+      },
+      {
+        "type": "Solid",
+        "value": {
+          "type": "Solid",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": [],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": "mm"
               },
               {
                 "__geoMeta": {
@@ -1533,6 +1550,40 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "from": [
                   0.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  13.0
+                ],
+                "type": "ToPoint",
+                "units": "mm"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
+                  13.0
+                ],
+                "tag": null,
+                "to": [
+                  13.0,
+                  0.0
+                ],
+                "type": "ToPoint",
+                "units": "mm"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                },
+                "from": [
+                  13.0,
                   0.0
                 ],
                 "tag": null,
@@ -1678,23 +1729,6 @@ description: Variables in memory after executing utility-sink.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -1822,176 +1856,6 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "from": [
                   13.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              }
-            ],
-            "on": {
-              "artifactId": "[uuid]",
-              "id": "[uuid]",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": "mm"
-              },
-              "type": "plane",
-              "value": "XY",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": null
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": null
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": null
-              }
-            },
-            "start": {
-              "from": [
-                0.0,
-                0.0
-              ],
-              "to": [
-                0.0,
-                0.0
-              ],
-              "units": "mm",
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": "mm"
-          },
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "units": "mm",
-          "sectional": false
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
                   0.0
                 ],
                 "tag": null,
@@ -2189,23 +2053,6 @@ description: Variables in memory after executing utility-sink.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -2333,23 +2180,6 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "from": [
                   1187.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  13.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  13.0,
                   0.0
                 ],
                 "tag": null,
@@ -2529,23 +2359,6 @@ description: Variables in memory after executing utility-sink.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -2673,23 +2486,6 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "from": [
                   13.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
                   13.0
                 ],
                 "tag": null,
@@ -2937,23 +2733,6 @@ description: Variables in memory after executing utility-sink.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  15.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  15.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -3081,23 +2860,6 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "from": [
                   13.0,
-                  15.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  15.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
                   15.0
                 ],
                 "tag": null,
@@ -3304,23 +3066,6 @@ description: Variables in memory after executing utility-sink.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  593.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  593.5,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -3448,23 +3193,6 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "from": [
                   606.5,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  593.5,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  593.5,
                   0.0
                 ],
                 "tag": null,
@@ -3700,23 +3428,6 @@ description: Variables in memory after executing utility-sink.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              298.75,
-              42.0
-            ],
-            "tag": null,
-            "to": [
-              298.75,
-              42.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -3832,23 +3543,6 @@ description: Variables in memory after executing utility-sink.kcl
                   },
                   "from": [
                     1200.0,
-                    0.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.0,
-                    0.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
                     0.0
                   ],
                   "tag": null,
@@ -4050,23 +3744,6 @@ description: Variables in memory after executing utility-sink.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -296.75,
-              40.0
-            ],
-            "tag": null,
-            "to": [
-              -296.75,
-              40.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -4182,23 +3859,6 @@ description: Variables in memory after executing utility-sink.kcl
                   },
                   "from": [
                     1200.0,
-                    0.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.0,
-                    0.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
                     0.0
                   ],
                   "tag": null,
@@ -4461,23 +4121,6 @@ description: Variables in memory after executing utility-sink.kcl
               ],
               "type": "ToPoint",
               "units": "mm"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                0.0,
-                0.0
-              ],
-              "tag": null,
-              "to": [
-                0.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": "mm"
             }
           ],
           "on": {
@@ -4652,23 +4295,6 @@ description: Variables in memory after executing utility-sink.kcl
               },
               "from": [
                 1200.0,
-                0.0
-              ],
-              "tag": null,
-              "to": [
-                0.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": "mm"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                0.0,
                 0.0
               ],
               "tag": null,
@@ -4872,23 +4498,6 @@ description: Variables in memory after executing utility-sink.kcl
             },
             "from": [
               1200.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
               0.0
             ],
             "tag": null,
@@ -5503,23 +5112,6 @@ description: Variables in memory after executing utility-sink.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -5647,23 +5239,6 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "from": [
                   1200.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
                   0.0
                 ],
                 "tag": null,
@@ -5843,23 +5418,6 @@ description: Variables in memory after executing utility-sink.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -5987,23 +5545,6 @@ description: Variables in memory after executing utility-sink.kcl
                 },
                 "from": [
                   13.0,
-                  13.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  13.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
                   13.0
                 ],
                 "tag": null,

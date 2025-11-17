@@ -20,6 +20,7 @@ import {
 } from '@src/lang/std/artifactGraph'
 import {
   filterOperations,
+  getOperationCalculatedDisplay,
   getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
@@ -65,6 +66,7 @@ import {
 } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
+import Tooltip from '@src/components/Tooltip'
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -322,15 +324,22 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
   return (
     <button
       onClick={handleToggleVisible}
-      className="p-0 m-0"
+      className="p-0 m-0 border-transparent dark:border-transparent"
       data-testid="feature-tree-visibility-toggle"
     >
       <CustomIcon
         name={visible ? 'eyeOpen' : 'eyeCrossedOut'}
-        className="w-5 h-5"
+        className="w-6 h-6"
       />
     </button>
   )
+}
+
+type OpValueProps = {
+  name: string
+  type?: Operation['type']
+  variableName?: string
+  valueDetail?: { calculated: OpKclValue; display: string }
 }
 
 /**
@@ -341,6 +350,7 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
 const OperationItemWrapper = ({
   icon,
   name,
+  type,
   variableName,
   visibilityToggle,
   valueDetail,
@@ -353,57 +363,96 @@ const OperationItemWrapper = ({
   ...props
 }: React.HTMLAttributes<HTMLButtonElement> & {
   icon: CustomIconName
-  name: string
-  variableName?: string
   visibilityToggle?: VisibilityToggleProps
-  valueDetail?: { calculated: OpKclValue; display: string }
   customSuffix?: JSX.Element
   menuItems?: ComponentProps<typeof ContextMenu>['items']
   errors?: Diagnostic[]
   selectable?: boolean
   greyedOut?: boolean
-}) => {
+} & OpValueProps) => {
   const menuRef = useRef<HTMLDivElement>(null)
 
   return (
     <div
       ref={menuRef}
-      className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/10 hover:bg-primary/5' : ''} ${greyedOut ? 'opacity-50 cursor-not-allowed' : ''}`}
+      className={`flex select-none items-center group/item my-0 py-0.5 px-1 ${selectable ? 'focus-within:bg-primary/25 hover:bg-2 hover:focus-within:bg-primary/25' : ''} ${greyedOut ? 'opacity-50 cursor-not-allowed' : ''}`}
       data-testid="feature-tree-operation-item"
     >
       <button
         {...props}
-        className={`reset !py-0.5 !px-1 flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : '!border-transparent cursor-default'} ${className}`}
+        className={`reset min-w-[0px] py-1 flex-1 flex items-center gap-2 text-left text-base !border-transparent ${className}`}
       >
-        <CustomIcon name={icon} className="w-5 h-5 block" />
-        <div className="flex flex-1 items-baseline align-baseline">
-          <div className="flex-1 inline-flex items-baseline flex-wrap gap-x-2">
-            {name}
-            {variableName && (
-              <span className="text-chalkboard-70 dark:text-chalkboard-40 text-xs">
-                {variableName}
-              </span>
-            )}
-            {customSuffix && customSuffix}
-          </div>
-          {valueDetail && (
-            <code
-              data-testid="value-detail"
-              className="px-1 text-right text-chalkboard-70 dark:text-chalkboard-40 text-xs"
-            >
-              {valueDetail.display}
-            </code>
+        <CustomIcon
+          name={icon}
+          className="w-6 h-6 block self-start"
+          aria-hidden
+        />
+        <div className="text-sm flex-1 flex gap-x-2 overflow-x-hidden items-baseline align-baseline">
+          {variableName && valueDetail ? (
+            <>
+              <span className="text-sm">{variableName}</span>
+              <code
+                data-testid="value-detail"
+                className="block min-w-[0px] flex-auto overflow-hidden whitespace-nowrap overflow-ellipsis text-chalkboard-70 dark:text-chalkboard-40 text-xs"
+              >
+                {getOperationCalculatedDisplay(valueDetail.calculated)}
+              </code>
+            </>
+          ) : (
+            <span className="text-sm">{name}</span>
           )}
+          {customSuffix && customSuffix}
         </div>
         {errors && errors.length > 0 && (
           <em className="text-destroy-80 text-xs">has error</em>
         )}
+        {valueDetail || variableName ? (
+          <Tooltip
+            delay={500}
+            position="bottom-left"
+            wrapperClassName="left-0 right-0"
+            contentClassName="text-sm max-w-full"
+          >
+            <VariableTooltipContents
+              variableName={variableName}
+              valueDetail={valueDetail}
+              name={name}
+              type={type}
+            />
+          </Tooltip>
+        ) : null}
       </button>
       {visibilityToggle && <VisibilityToggle {...visibilityToggle} />}
       {menuItems && (
         <ContextMenu menuTargetElement={menuRef} items={menuItems} />
       )}
     </div>
+  )
+}
+
+function VariableTooltipContents({
+  variableName,
+  valueDetail,
+  name,
+  type,
+}: OpValueProps) {
+  return variableName && valueDetail ? (
+    <div className="flex flex-col gap-2">
+      <p>
+        <span>{name}</span>
+        <span> named </span>
+        <span>{variableName ?? ''}</span>
+      </p>
+      <p className="font-mono text-xs">
+        <span>{getOperationCalculatedDisplay(valueDetail.calculated)}</span>
+        <span> = </span>
+        <span>{valueDetail.display}</span>
+      </p>
+    </div>
+  ) : type === 'GroupBegin' ? (
+    <>{`Function call of ${name} named ${variableName}`}</>
+  ) : (
+    <>{`${variableName ? '' : 'Unnamed '}${name}${variableName ? ` named ${variableName}` : ''}`}</>
   )
 }
 
@@ -751,6 +800,7 @@ const OperationItem = (props: {
       selectable={enabled}
       icon={getOperationIcon(props.item)}
       name={name}
+      type={props.item.type}
       variableName={variableName}
       valueDetail={valueDetail}
       menuItems={menuItems}

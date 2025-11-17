@@ -110,23 +110,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.85,
-              1.15
-            ],
-            "tag": null,
-            "to": [
-              -1.85,
-              1.15
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -276,23 +259,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           "from": [
             1.8500000000000003,
-            1.15
-          ],
-          "tag": null,
-          "to": [
-            -1.85,
-            1.15
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.85,
             1.15
           ],
           "tag": null,
@@ -454,23 +420,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             "from": [
               1.85,
               0.7499999999999999
-            ],
-            "tag": null,
-            "to": [
-              -1.85,
-              0.75
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.85,
-              0.75
             ],
             "tag": null,
             "to": [
@@ -669,23 +618,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.85,
-            0.75
-          ],
-          "tag": null,
-          "to": [
-            -1.85,
-            0.75
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
@@ -846,23 +778,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             "from": [
               1.9500000000000002,
-              0.4
-            ],
-            "tag": null,
-            "to": [
-              -1.9500000000000002,
-              0.4
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.9500000000000002,
               0.4
             ],
             "tag": null,
@@ -1062,23 +977,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           ],
           "type": "ToPoint",
           "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.9500000000000002,
-            0.4
-          ],
-          "tag": null,
-          "to": [
-            -1.9500000000000002,
-            0.4
-          ],
-          "type": "ToPoint",
-          "units": "m"
         }
       ],
       "on": {
@@ -1239,23 +1137,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             },
             "from": [
               1.9500000000000002,
-              0.4
-            ],
-            "tag": null,
-            "to": [
-              -1.9500000000000002,
-              0.4
-            ],
-            "type": "ToPoint",
-            "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.9500000000000002,
               0.4
             ],
             "tag": null,
@@ -2775,23 +2656,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
             ],
             "type": "ToPoint",
             "units": "m"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -1.35,
-              2.15
-            ],
-            "tag": null,
-            "to": [
-              -1.35,
-              2.15
-            ],
-            "type": "ToPoint",
-            "units": "m"
           }
         ],
         "on": {
@@ -2932,23 +2796,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
           },
           "from": [
             1.5500000000000003,
-            2.15
-          ],
-          "tag": null,
-          "to": [
-            -1.35,
-            2.15
-          ],
-          "type": "ToPoint",
-          "units": "m"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -1.35,
             2.15
           ],
           "tag": null,
@@ -3121,23 +2968,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 ],
                 "type": "ToPoint",
                 "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.8200000000000001,
-                  0.8300000000000001
-                ],
-                "tag": null,
-                "to": [
-                  -0.8200000000000001,
-                  0.8300000000000001
-                ],
-                "type": "ToPoint",
-                "units": "m"
               }
             ],
             "on": {
@@ -3265,23 +3095,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
                 },
                 "from": [
                   -0.4600000000000001,
-                  0.8300000000000001
-                ],
-                "tag": null,
-                "to": [
-                  -0.8200000000000001,
-                  0.8300000000000001
-                ],
-                "type": "ToPoint",
-                "units": "m"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -0.8200000000000001,
                   0.8300000000000001
                 ],
                 "tag": null,
@@ -3495,23 +3308,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               ],
               "type": "ToPoint",
               "units": "m"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.8200000000000001,
-                0.8300000000000001
-              ],
-              "tag": null,
-              "to": [
-                -0.8200000000000001,
-                0.8300000000000001
-              ],
-              "type": "ToPoint",
-              "units": "m"
             }
           ],
           "on": {
@@ -3629,23 +3425,6 @@ description: Variables in memory after executing stylized-mini-bus.kcl
               },
               "from": [
                 -0.4600000000000001,
-                0.8300000000000001
-              ],
-              "tag": null,
-              "to": [
-                -0.8200000000000001,
-                0.8300000000000001
-              ],
-              "type": "ToPoint",
-              "units": "m"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -0.8200000000000001,
                 0.8300000000000001
               ],
               "tag": null,
