@@ -36,6 +36,8 @@ macro_rules! internal_error {
 pub struct ArtifactCommand {
     /// Identifier of the command that can be matched with its response.
     pub cmd_id: Uuid,
+    /// The source range that's the boundary of calling the standard
+    /// library, not necessarily the true source range of the command.
     pub range: SourceRange,
     /// The engine command.  Each artifact command is backed by an engine
     /// command.  In the future, we may need to send information to the TS side
@@ -591,6 +593,7 @@ pub(super) fn build_artifact_graph(
     ast: &Node<Program>,
     exec_artifacts: &mut IndexMap<ArtifactId, Artifact>,
     initial_graph: ArtifactGraph,
+    programs: &crate::execution::ProgramLookup,
 ) -> Result<ArtifactGraph, KclError> {
     let item_count = initial_graph.item_count;
     let mut map = initial_graph.into_map();
@@ -603,7 +606,7 @@ pub(super) fn build_artifact_graph(
     for exec_artifact in exec_artifacts.values_mut() {
         // Note: We only have access to the new AST. So if these artifacts
         // somehow came from cached AST, this won't fill in anything.
-        fill_in_node_paths(exec_artifact, ast, item_count);
+        fill_in_node_paths(exec_artifact, programs, item_count);
     }
 
     for artifact_command in artifact_commands {
@@ -629,7 +632,7 @@ pub(super) fn build_artifact_graph(
             artifact_command,
             &flattened_responses,
             &path_to_plane_id_map,
-            ast,
+            programs,
             item_count,
             exec_artifacts,
         )?;
@@ -651,18 +654,18 @@ pub(super) fn build_artifact_graph(
 
 /// These may have been created with placeholder `CodeRef`s because we didn't
 /// have the entire AST available. Now we fill them in.
-fn fill_in_node_paths(artifact: &mut Artifact, program: &Node<Program>, cached_body_items: usize) {
+fn fill_in_node_paths(artifact: &mut Artifact, programs: &crate::execution::ProgramLookup, cached_body_items: usize) {
     match artifact {
         Artifact::StartSketchOnFace(face) => {
             if face.code_ref.node_path.is_empty() {
                 face.code_ref.node_path =
-                    NodePath::from_range(program, cached_body_items, face.code_ref.range).unwrap_or_default();
+                    NodePath::from_range(programs, cached_body_items, face.code_ref.range).unwrap_or_default();
             }
         }
         Artifact::StartSketchOnPlane(plane) => {
             if plane.code_ref.node_path.is_empty() {
                 plane.code_ref.node_path =
-                    NodePath::from_range(program, cached_body_items, plane.code_ref.range).unwrap_or_default();
+                    NodePath::from_range(programs, cached_body_items, plane.code_ref.range).unwrap_or_default();
             }
         }
         _ => {}
@@ -750,7 +753,7 @@ fn artifacts_to_update(
     artifact_command: &ArtifactCommand,
     responses: &FnvHashMap<Uuid, OkModelingCmdResponse>,
     path_to_plane_id_map: &FnvHashMap<Uuid, Uuid>,
-    ast: &Node<Program>,
+    programs: &crate::execution::ProgramLookup,
     cached_body_items: usize,
     exec_artifacts: &IndexMap<ArtifactId, Artifact>,
 ) -> Result<Vec<Artifact>, KclError> {
@@ -762,7 +765,7 @@ fn artifacts_to_update(
     // correct value based on NodePath.
     let path_to_node = Vec::new();
     let range = artifact_command.range;
-    let node_path = NodePath::from_range(ast, cached_body_items, range).unwrap_or_default();
+    let node_path = NodePath::from_range(programs, cached_body_items, range).unwrap_or_default();
     let code_ref = CodeRef {
         range,
         node_path,

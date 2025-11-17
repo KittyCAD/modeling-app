@@ -200,23 +200,6 @@ description: Variables in memory after executing subtract_regression02.kcl
             ],
             "type": "Arc",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.7499999999999999,
-              0.75
-            ],
-            "tag": null,
-            "to": [
-              -0.75,
-              0.75
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -570,23 +553,6 @@ description: Variables in memory after executing subtract_regression02.kcl
               0.75
             ],
             "type": "Arc",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.7499999999999999,
-              0.75
-            ],
-            "tag": null,
-            "to": [
-              -0.75,
-              0.75
-            ],
-            "type": "ToPoint",
             "units": "in"
           }
         ],
@@ -942,23 +908,6 @@ description: Variables in memory after executing subtract_regression02.kcl
             ],
             "type": "Arc",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.7499999999999999,
-              0.75
-            ],
-            "tag": null,
-            "to": [
-              -0.75,
-              0.75
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -1190,23 +1139,6 @@ description: Variables in memory after executing subtract_regression02.kcl
             0.75
           ],
           "type": "Arc",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.7499999999999999,
-            0.75
-          ],
-          "tag": null,
-          "to": [
-            -0.75,
-            0.75
-          ],
-          "type": "ToPoint",
           "units": "in"
         }
       ],

@@ -180,23 +180,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              75.8,
-              317.2
-            ],
-            "tag": null,
-            "to": [
-              75.8,
-              317.2
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -484,23 +467,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              159.25,
-              278.35
-            ],
-            "tag": null,
-            "to": [
-              159.25,
-              278.35
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -689,23 +655,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
-                  "to": [
-                    75.8,
-                    317.2
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    75.8,
-                    317.2
-                  ],
-                  "tag": null,
                   "to": [
                     75.8,
                     317.2
@@ -1040,23 +989,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            75.8,
-            317.2
-          ],
-          "tag": null,
-          "to": [
-            75.8,
-            317.2
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -1218,23 +1150,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "from": [
             159.25,
             146.08
-          ],
-          "tag": null,
-          "to": [
-            159.25,
-            278.35
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            159.25,
-            278.35
           ],
           "tag": null,
           "to": [
@@ -1431,23 +1346,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
-                "to": [
-                  75.8,
-                  317.2
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  75.8,
-                  317.2
-                ],
-                "tag": null,
                 "to": [
                   75.8,
                   317.2
@@ -1722,23 +1620,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -69.1,
-            277.34
-          ],
-          "tag": null,
-          "to": [
-            -69.1,
-            277.34
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -1927,23 +1808,6 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
-                "to": [
-                  75.8,
-                  317.2
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  75.8,
-                  317.2
-                ],
-                "tag": null,
                 "to": [
                   75.8,
                   317.2

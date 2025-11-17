@@ -32,6 +32,8 @@ export enum MlEphantSetupErrors {
   NoRefParentSend = 'no ref parent send',
 }
 
+type TypeVariant<T, U = T> = U extends T ? keyof U : never
+
 type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends {
   type: 'user'
 }
@@ -130,6 +132,7 @@ export interface MlEphantManagerContext2 {
   conversation?: Conversation
   conversationId?: string
   lastMessageId?: number
+  lastMessageType?: TypeVariant<MlCopilotServerMessage>
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
   cachedSetup?: {
@@ -148,6 +151,7 @@ export const mlEphantDefaultContext2 = (args: {
   abruptlyClosed: false,
   conversation: undefined,
   lastMessageId: undefined,
+  lastMessageType: undefined,
   fileFocusedOnInEditor: undefined,
   projectNameCurrentlyOpened: undefined,
 })
@@ -243,7 +247,8 @@ export const mlEphantManagerMachine2 = setup({
       // On future reenters of this actor it will not have args.input.event
       // You must read from the context for the cached conversationId
       const maybeConversationId =
-        args.input.context?.cachedSetup?.conversationId
+        args.input.context?.cachedSetup?.conversationId ??
+        args.input.context?.conversationId
       const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
 
       const ws = await Socket(
@@ -618,9 +623,28 @@ export const mlEphantManagerMachine2 = setup({
                       lastExchange.responses.push(event.response)
                     }
 
+                    // This sucks but must be done because we can't
+                    // enumerate the message types.
+                    const r = event.response
+                    const ts: TypeVariant<MlCopilotServerMessage>[] = [
+                      'info',
+                      'error',
+                      'end_of_stream',
+                      'session_data',
+                      'conversation_id',
+                      'delta',
+                      'tool_output',
+                      'reasoning',
+                      'replay',
+                    ]
+                    const lastMessageType:
+                      | TypeVariant<MlCopilotServerMessage>
+                      | undefined = ts.find((t) => t in r)
+
                     return {
                       conversation,
                       lastMessageId,
+                      lastMessageType,
                     }
                   }),
                 ],

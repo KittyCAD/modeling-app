@@ -69,6 +69,9 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
  * By default it will return the node of the deepest "stopAt" type encountered, or the node at the end of the path if no "stopAt" type is provided.
  * If the "returnEarly" flag is set to true, the function will return as soon as a node of the specified type is found.
  */
+// The generic type T is used to assert the return type is T instead of `any` or
+// `unknown`. This is unsafe!
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 export function getNodeFromPath<T>(
   node: Program,
   path: PathToNode,
@@ -179,6 +182,9 @@ export function getNodeFromPathCurry(
   node: Program,
   path: PathToNode,
   wasmInstance?: ModuleType
+  // The generic type T is used to assert the return type is T instead of `any`
+  // or `unknown`. This is unsafe!
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
 ): <T>(
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly?: boolean
@@ -188,6 +194,9 @@ export function getNodeFromPathCurry(
       path: PathToNode
     }
   | Error {
+  // The generic type T is used to assert the return type is T instead of `any`
+  // or `unknown`. This is unsafe!
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   return <T>(stopAt?: SyntaxType | SyntaxType[], returnEarly = false) => {
     const _node1 = getNodeFromPath<T>(
       node,

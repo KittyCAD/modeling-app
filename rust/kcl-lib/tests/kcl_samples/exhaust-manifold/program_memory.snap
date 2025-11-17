@@ -606,23 +606,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
             ],
             "type": "TangentialArcTo",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              4.3,
-              -1.25
-            ],
-            "tag": null,
-            "to": [
-              4.3,
-              -1.25
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "innerPaths": [
