@@ -1173,20 +1173,10 @@ export class CameraControls {
       console.warn(
         'tweenCameraToQuaternion not design to work with engineToClient syncDirection.'
       )
-    //const isVertical = isQuaternionVertical(targetQuaternion)
-    // if (isVertical) {
-    //   remainingDuration = duration * 0.5
-    //   const orbitRotationDuration = duration * 0.65
-    //   let targetAngle = -Math.PI / 2
-    //   const v = new Vector3(0, 0, 1).applyQuaternion(targetQuaternion)
-    //   if (v.z < 0) targetAngle = Math.PI / 2
-    //   await this.tweenCamToNegYAxis(targetAngle, orbitRotationDuration)
-    // }
-    const remainingDuration = duration
     await this._tweenCameraToQuaternion(
       targetQuaternion,
       targetPosition,
-      remainingDuration,
+      duration,
       toOrthographic
     )
   }
@@ -1201,8 +1191,7 @@ export class CameraControls {
       this._isCamMovingCallback(true, true)
       const initialQuaternion = camera.quaternion.clone()
       const initialTarget = this.target.clone()
-      //const isVertical = isQuaternionVertical(targetQuaternion)
-      let tweenEnd = 1 // isVertical ? 0.99 : 1
+      let tweenEnd = 1
       const tempVec = new Vector3()
       const initialDistance = initialTarget.distanceTo(camera.position.clone())
       const tempQuaternion = new Quaternion()
