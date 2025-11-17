@@ -1,3 +1,7 @@
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language'
+import { tags } from '@lezer/highlight'
+import { EditorView } from 'codemirror'
+
 export const normalizeLineEndings = (str: string, normalized = '\n') => {
   return str.replace(/\r?\n/g, normalized)
 }
@@ -14,4 +18,154 @@ export function isCodeTheSame(left: string, right: string) {
   const rightBasis = normalizeLineEndings(right)
   // any other future logic that we failed to implement that causes a bug
   return leftBasis === rightBasis
+}
+
+const green = {
+  light: 'oklch(from var(--primary) calc(l) calc(c + .15) calc(h - 90))',
+  dark: 'oklch(from var(--primary) calc(l + 0.2) c calc(h - 90))',
+}
+const orange = {
+  light: 'oklch(from var(--primary) calc(l + 0.05) calc(c + .1) calc(h - 180))',
+  dark: 'oklch(from var(--primary) calc(l + 0.25) calc(c + .1) calc(h - 180))',
+}
+const textDefault = {
+  light: 'var(--chalkboard-100)',
+  dark: 'var(--chalkboard-20)',
+}
+const textFaded = {
+  light: 'var(--chalkboard-70)',
+  dark: 'var(--chalkboard-30)',
+}
+const magenta = {
+  light: 'oklch(from var(--primary) calc(l + 0.05) c calc(h + 90))',
+}
+const primary = {
+  light: 'var(--primary)',
+  dark: 'oklch(from var(--primary) calc(l + 0.15) c h)',
+}
+const colors = {
+  green,
+  magenta,
+  orange,
+  primary,
+  textDefault,
+  textFaded,
+}
+const baseKclHighlights = HighlightStyle.define([
+  {
+    tag: [tags.keyword, tags.annotation],
+    color: colors.orange.light,
+  },
+  {
+    tag: [tags.number, tags.string, tags.tagName],
+    color: colors.green.light,
+    fontWeight: 'normal',
+  },
+  {
+    tag: [tags.attributeName, tags.definition(tags.propertyName)],
+    color: colors.magenta.light,
+    fontWeight: 'normal',
+  },
+  { tag: tags.function(tags.variableName), color: colors.textDefault.light },
+  {
+    tag: tags.definitionKeyword,
+    backgroundColor: 'oklch(from var(--primary) calc(l + 0.05) c h / .1)',
+    color: colors.primary.light,
+    borderRadius: '2px',
+  },
+  { tag: [tags.variableName], color: colors.primary.light },
+  { tag: tags.comment, color: colors.textFaded.light, fontStyle: 'italic' },
+  {
+    tag: tags.definition(tags.variableName),
+    color: colors.textFaded.light,
+    fontWeight: 'bold',
+  },
+  { tag: tags.controlOperator, color: colors.textFaded.light },
+  {
+    tag: [tags.paren, tags.brace, tags.bracket],
+    color: colors.textFaded.light,
+    fontWeight: 'bold',
+  },
+])
+
+const darkKclHighlights = HighlightStyle.define(
+  [
+    {
+      tag: [tags.keyword, tags.annotation],
+      color: colors.orange.dark,
+    },
+    {
+      tag: tags.definitionKeyword,
+      backgroundColor: 'oklch(from var(--primary) calc(l + 0.25) c h / .2)',
+      color: colors.primary.dark,
+    },
+    { tag: tags.function(tags.variableName), color: colors.textDefault.dark },
+    {
+      tag: [tags.variableName],
+      color: colors.primary.dark,
+    },
+    {
+      tag: [tags.number, tags.string, tags.tagName],
+      color: colors.green.dark,
+      fontWeight: 'normal',
+    },
+    { tag: tags.comment, color: 'var(--chalkboard-30)', fontStyle: 'italic' },
+    {
+      tag: tags.definition(tags.variableName),
+      color: 'var(--chalkboard-30)',
+      fontWeight: 'bold',
+    },
+    { tag: tags.atom, color: 'var(--chalkboard-40)' },
+    { tag: tags.controlOperator, color: 'var(--chalkboard-30)' },
+    {
+      tag: [tags.paren, tags.brace, tags.bracket],
+      color: 'var(--chalkboard-30)',
+      fontWeight: 'bold',
+    },
+  ],
+  {
+    themeType: 'dark',
+  }
+)
+
+const defaultLightThemeOption = EditorView.theme(
+  {
+    '&': {
+      backgroundColor: '#fff',
+    },
+  },
+  {
+    dark: false,
+  }
+)
+const lightTheme = [
+  defaultLightThemeOption,
+  syntaxHighlighting(baseKclHighlights),
+]
+const defaultDarkThemeOption = EditorView.theme(
+  {
+    '&': {
+      backgroundColor: 'transparent',
+    },
+  },
+  {
+    dark: true,
+  }
+)
+const darkTheme = [
+  defaultDarkThemeOption,
+  // Overrides are provided by `darkKclHighlights`
+  syntaxHighlighting(darkKclHighlights),
+  syntaxHighlighting(baseKclHighlights),
+]
+
+/**
+ * CodeMirror theme extensions for KCL syntax highlighting.
+ *
+ * Not included in package because it uses CSS variables local to ZDS.
+ * TODO: Make application-agnostic maybe, if other clients want this theme.
+ */
+export const editorTheme = {
+  light: lightTheme,
+  dark: darkTheme,
 }
