@@ -14,8 +14,9 @@ use uuid::Uuid;
 use crate::{
     engine::{DEFAULT_PLANE_INFO, PlaneName},
     errors::{KclError, KclErrorDetails},
+    exec::KclValue,
     execution::{
-        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier,
+        ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier, normalize_to_solver_unit,
         types::{NumericType, adjust_length},
     },
     front::{Freedom, LineCtor, ObjectId, PointCtor},
@@ -1687,6 +1688,30 @@ pub struct SketchVar {
     pub ty: NumericType,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+}
+
+impl SketchVar {
+    pub fn initial_value_to_solver_units(
+        &self,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+        description: &str,
+    ) -> Result<TyF64, KclError> {
+        let x_initial_value = KclValue::Number {
+            value: self.initial_value,
+            ty: self.ty,
+            meta: vec![source_range.into()],
+        };
+        let normalized_value = normalize_to_solver_unit(&x_initial_value, source_range, exec_state, description)?;
+        normalized_value.as_ty_f64().ok_or_else(|| {
+            let message = format!(
+                "Expected number after coercion, but found {}",
+                normalized_value.human_friendly_type()
+            );
+            debug_assert!(false, "{}", &message);
+            KclError::new_internal(KclErrorDetails::new(message, vec![source_range]))
+        })
+    }
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
