@@ -13,6 +13,7 @@ import {
   enginelessExecutor,
   getCapFromCylinder,
 } from '@src/lib/testHelpers'
+import { afterAll, expect } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

@@ -1,5 +1,6 @@
 import { FileExplorer } from '@src/components/Explorer/FileExplorer'
 import { render, screen } from '@testing-library/react'
+import { expect } from 'vitest'
 
 describe('FileExplorer', () => {
   describe('FileExplorer', () => {

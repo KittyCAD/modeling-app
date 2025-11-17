@@ -1,6 +1,7 @@
 import type { Diagnostic } from '@codemirror/lint'
 
 import { editorManager } from '@src/lib/singletons'
+import { expect } from 'vitest'
 
 describe('EditorManager Class', () => {
   describe('makeUniqueDiagnostics', () => {

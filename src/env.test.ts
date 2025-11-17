@@ -5,7 +5,7 @@ import {
   viteEnv,
   windowElectronProcessEnv,
 } from '@src/env'
-import { vi } from 'vitest'
+import { expect, vi } from 'vitest'
 
 describe('@src/env', () => {
   describe('default export', () => {

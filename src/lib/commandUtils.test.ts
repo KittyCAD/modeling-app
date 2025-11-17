@@ -12,7 +12,7 @@ function commandWithDisabled(
       name,
       groupId,
       needsReview: false,
-      onSubmit: () => { },
+      onSubmit: () => {},
     },
     disabled,
   }

@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import { OpenInDesktopAppHandler } from '@src/components/OpenInDesktopAppHandler'
+import { expect } from 'vitest'
 
 /**
  * The behavior under test requires a router,

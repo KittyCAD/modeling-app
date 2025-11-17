@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
-import { vi } from 'vitest'
+import { expect, vi } from 'vitest'
 import { ConnectionManager } from '@src/network/connectionManager'
 import { EngineCommandManagerEvents } from '@src/network/utils'
 
