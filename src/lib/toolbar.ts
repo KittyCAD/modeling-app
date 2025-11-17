@@ -1336,6 +1336,20 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [],
         isActive: (state) => false,
       },
+      {
+        id: 'Distance',
+        onClick: ({ modelingSend, isActive }) =>
+          modelingSend({
+            type: 'Distance',
+          }),
+        icon: 'dimension',
+        status: 'available',
+        title: 'Distance',
+        hotkey: 'L',
+        description: 'make things Distance',
+        links: [],
+        isActive: (state) => false,
+      },
     ],
   },
 }

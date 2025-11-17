@@ -366,6 +366,7 @@ export type SketchSolveMachineEvent =
         | 'Vertical'
         | 'Horizontal'
         | 'Parallel'
+        | 'Distance'
     }
   | {
       type: 'update selected ids'
@@ -1761,6 +1762,72 @@ export const sketchSolveMachine = setup({
           {
             type: 'Coincident',
             points: context.selectedIds,
+          },
+          await jsAppSettings()
+        )
+        if (result) {
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
+    },
+    Distance: {
+      actions: async ({ self, context }) => {
+        // TODO this is not how coincident should operate long term, as it should be an equipable tool
+        let segmentsToConstrain = context.selectedIds
+        if (segmentsToConstrain.length === 1) {
+          const first =
+            context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
+              segmentsToConstrain[0]
+            ]
+          if (
+            first?.kind?.type === 'Segment' &&
+            first?.kind?.segment?.type === 'Line'
+          ) {
+            segmentsToConstrain = [
+              first.kind.segment.start,
+              first.kind.segment.end,
+            ]
+          }
+        }
+        const currentSelections = segmentsToConstrain
+          .map(
+            (id) =>
+              context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[id]
+          )
+          .filter(Boolean)
+        let distance = 5
+        // TODO this is kinda hacky, not checking the units at all
+        // it might be better to have the distance constraint have distance as optional?
+        // We also need to implement a proper flow for the user to specify the distance
+        if (currentSelections.length === 2) {
+          const first = currentSelections[0]
+          const second = currentSelections[1]
+          if (
+            first?.kind?.type === 'Segment' &&
+            first?.kind.segment?.type === 'Point' &&
+            second?.kind?.type === 'Segment' &&
+            second?.kind.segment?.type === 'Point'
+          ) {
+            distance = roundOff(
+              Math.hypot(
+                first.kind.segment.position.x.value -
+                  second.kind.segment.position.x.value,
+                first.kind.segment.position.y.value -
+                  second.kind.segment.position.y.value
+              )
+            )
+          }
+        }
+        const result = await context.rustContext.addConstraint(
+          0,
+          0,
+          {
+            type: 'Distance',
+            distance: { value: distance, units: 'Mm' },
+            points: segmentsToConstrain,
           },
           await jsAppSettings()
         )
