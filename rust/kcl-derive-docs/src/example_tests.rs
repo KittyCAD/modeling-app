@@ -268,6 +268,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-transform-scale-0",
     "std-transform-scale-1",
     "std-transform-scale-2",
+    "std-transform-scale-3",
     "std-units-toDegrees-0",
     "std-units-toRadians-0",
     "std-vector-add-0",
