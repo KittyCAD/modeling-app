@@ -113,7 +113,7 @@
     "package": "vsce package -o kcl-language-server.vsix"
   },
   "devDependencies": {
-    "@tsconfig/strictest": "^2.0.6",
+    "@tsconfig/strictest": "^2.0.8",
     "@types/glob": "^9.0.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.14.1",

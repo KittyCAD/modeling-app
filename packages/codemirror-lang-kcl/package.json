@@ -21,7 +21,7 @@
   "dependencies": {
     "@codemirror/language": "^6.11.3",
     "@codemirror/state": "^6.5.2",
-    "@lezer/highlight": "^1.2.1",
+    "@lezer/highlight": "^1.2.3",
     "typescript": "^5.7.2"
   },
   "devDependencies": {
