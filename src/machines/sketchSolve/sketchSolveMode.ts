@@ -379,6 +379,7 @@ export type SketchSolveMachineEvent =
         sceneGraphDelta: SceneGraphDelta
       }
     }
+  | { type: 'delete selected' }
 
 type SketchSolveContext = {
   sketchSolveToolName: EquipTool | null
@@ -1586,23 +1587,29 @@ export const sketchSolveMachine = setup({
         ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
       )
 
-      // This invalidation logic is kinda based on some heuristics and is not exchaustive.
-      // so there are bugs, it's here to let some direct editing of the code from
-      // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
-      // The proper way to do this is to get an invalidation signal from the rust side.
-      const invalidateScene = sketchSegments?.children.some((child) => {
-        const childId = Number(child.name)
-        // check if number
-        if (Number.isNaN(childId)) {
-          return
-        }
-        // check id is not greater than new_graph.objects length
-        return childId >= sceneGraphDelta.new_graph.objects.length
-      })
-      if (invalidateScene) {
-        sketchSegments?.children.forEach((child) => {
-          context.sceneInfra.scene.remove(child)
+      // If invalidates_ids is true, we need to delete everything and start fresh
+      // because the old IDs can't be trusted
+      if (sceneGraphDelta.invalidates_ids && sketchSegments instanceof Group) {
+        disposeGroupChildren(sketchSegments)
+      } else {
+        // This invalidation logic is kinda based on some heuristics and is not exchaustive.
+        // so there are bugs, it's here to let some direct editing of the code from
+        // hackSetProgram in `src/editor/plugins/lsp/kcl/index.ts`.
+        // The proper way to do this is to get an invalidation signal from the rust side.
+        const invalidateScene = sketchSegments?.children.some((child) => {
+          const childId = Number(child.name)
+          // check if number
+          if (Number.isNaN(childId)) {
+            return
+          }
+          // check id is not greater than new_graph.objects length
+          return childId >= sceneGraphDelta.new_graph.objects.length
         })
+        if (invalidateScene) {
+          sketchSegments?.children.forEach((child) => {
+            context.sceneInfra.scene.remove(child)
+          })
+        }
       }
       sceneGraphDelta.new_graph.objects.forEach((obj) => {
         if (obj.kind.type === 'Sketch' || obj.kind.type === 'Constraint') {
@@ -1853,6 +1860,38 @@ export const sketchSolveMachine = setup({
     },
     'update selected ids': {
       actions: ['update selected ids', 'refresh selection styling'],
+    },
+    'delete selected': {
+      actions: async ({ self, context }) => {
+        const selectedIds = context.selectedIds
+
+        // Only proceed if there are selected IDs
+        if (selectedIds.length === 0) {
+          return
+        }
+
+        // Call deleteObjects with the selected segment IDs
+        const result = await context.rustContext
+          .deleteObjects(0, 0, [], selectedIds, await jsAppSettings())
+          .catch((err) => {
+            console.error('failed to delete objects', err)
+            return null
+          })
+
+        if (result) {
+          // Clear selection after deletion
+          self.send({
+            type: 'update selected ids',
+            data: { selectedIds: [], duringAreaSelectIds: [] },
+          })
+
+          // Send the update sketch outcome event
+          self.send({
+            type: 'update sketch outcome',
+            data: result,
+          })
+        }
+      },
     },
   },
   states: {

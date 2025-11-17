@@ -364,6 +364,7 @@ export type ModelingMachineEvent =
       type: 'sketch solve tool changed'
       data: { tool: EquipTool | null }
     }
+  | { type: 'delete selected' }
 
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
 
@@ -5669,6 +5670,9 @@ export const modelingMachine = setup({
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
         Horizontal: {
+          actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
+        },
+        'delete selected': {
           actions: [sendTo('sketchSolveMachine', ({ event }) => event)],
         },
       },
