@@ -24,9 +24,11 @@ import {
   getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
+  getOpTypeLabel,
+  groupOperationTypeStreaks,
   stdLibMap,
 } from '@src/lib/operations'
-import { uuidv4 } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import {
   selectDefaultSketchPlane,
@@ -67,6 +69,7 @@ import {
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import Tooltip from '@src/components/Tooltip'
+import { Disclosure } from '@headlessui/react'
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -222,7 +225,10 @@ export const FeatureTreePaneContents = () => {
   const operationsCode = kclManager.lastSuccessfulCode || codeManager.code
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList = filterOperations(unfilteredOperationList)
+  const operationList = groupOperationTypeStreaks(
+    filterOperations(unfilteredOperationList),
+    ['VariableDeclaration']
+  )
 
   // Watch for changes in the open panes and send an event to the feature tree machine
   useEffect(() => {
@@ -280,17 +286,25 @@ export const FeatureTreePaneContents = () => {
                 </div>
               </div>
             )}
-            {operationList.map((operation) => {
-              const key = `${operation.type}-${
-                'name' in operation ? operation.name : 'anonymous'
+            {operationList.map((opOrList) => {
+              const key = `${isArray(opOrList) ? opOrList[0].type : opOrList.type}-${
+                'name' in opOrList ? opOrList.name : 'anonymous'
               }-${
-                'sourceRange' in operation ? operation.sourceRange[0] : 'start'
+                'sourceRange' in opOrList ? opOrList.sourceRange[0] : 'start'
               }`
 
-              return (
+              return isArray(opOrList) ? (
+                <OperationItemGroup
+                  key={key}
+                  items={opOrList}
+                  code={operationsCode}
+                  send={featureTreeSend}
+                  sketchNoFace={sketchNoFace}
+                />
+              ) : (
                 <OperationItem
                   key={key}
-                  item={operation}
+                  item={opOrList}
                   code={operationsCode}
                   send={featureTreeSend}
                   sketchNoFace={sketchNoFace}
@@ -332,6 +346,49 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
         className="w-6 h-6"
       />
     </button>
+  )
+}
+
+/**
+ * A grouping of operation items into a disclosure (or dropdown)
+ */
+function OperationItemGroup({
+  items,
+  code,
+  send,
+  sketchNoFace,
+}: Omit<OperationProps, 'item'> & { items: Operation[] }) {
+  return (
+    <Disclosure>
+      <Disclosure.Button className="reset w-full min-w-[0px] !px-1 flex items-center gap-2 text-left text-base !border-transparent focus-within:bg-primary/25 hover:!bg-2 hover:focus-within:bg-primary/25">
+        <CustomIcon
+          name="caretDown"
+          className="w-6 h-6 block self-start -rotate-90 ui-open:rotate-0 ui-open:transform"
+          aria-hidden
+        />
+        <span className="text-sm flex-1">
+          {items.length} {getOpTypeLabel(items[0].type)}s
+        </span>
+      </Disclosure.Button>
+      <Disclosure.Panel as="ul" className="border-b b-4">
+        <div className="border-l b-4 ml-4">
+          {items.map((op) => {
+            const key = `${op.type}-${
+              'name' in op ? op.name : 'anonymous'
+            }-${'sourceRange' in op ? op.sourceRange[0] : 'start'}`
+            return (
+              <OperationItem
+                key={key}
+                item={op}
+                code={code}
+                send={send}
+                sketchNoFace={sketchNoFace}
+              />
+            )
+          })}
+        </div>
+      </Disclosure.Panel>
+    </Disclosure>
   )
 }
 
@@ -456,16 +513,17 @@ function VariableTooltipContents({
   )
 }
 
-/**
- * A button with an icon, name, and context menu
- * for an operation in the feature tree.
- */
-const OperationItem = (props: {
+interface OperationProps {
   item: Operation
   code: string
   send: Prop<Actor<typeof featureTreeMachine>, 'send'>
   sketchNoFace: boolean
-}) => {
+}
+/**
+ * A button with an icon, name, and context menu
+ * for an operation in the feature tree.
+ */
+const OperationItem = (props: OperationProps) => {
   const kclContext = useKclContext()
   const name = getOperationLabel(props.item)
   const valueDetail = useMemo(() => {
