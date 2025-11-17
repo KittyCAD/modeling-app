@@ -218,7 +218,13 @@ export default class EditorManager {
   }
 
   setHighlightRange(range: Array<Selection['codeRef']['range']>): void {
-    const selectionsWithSafeEnds = this.selectionsWithSafeEnds(range)
+    const selectionsWithSafeEnds = this.selectionsWithSafeEnds(range).filter(
+      (selection) => {
+        // Only keep valid selections.
+        // Note: the selection might still be outdated for the new AST which is not calculated yet after a code mod /undo
+        return selection[0] < selection[1]
+      }
+    )
 
     this._highlightRange = selectionsWithSafeEnds
 
