@@ -185,6 +185,7 @@
     "@types/uuid": "^9.0.8",
     "@types/wicg-file-system-access": "^2023.10.7",
     "@types/ws": "^8.18.1",
+    "@types/yargs": "^17.0.35",
     "@vitejs/plugin-react": "^4.4.1",
     "@vitest/web-worker": "^3.1.2",
     "@xstate/cli": "^0.5.17",

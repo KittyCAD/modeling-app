@@ -50,9 +50,8 @@ test.describe(
       homePage,
       tronApp,
     }) => {
-      if (!tronApp) {
-        fail()
-      }
+      if (!tronApp) throw new Error('tronApp is missing.')
+
       // Override beforeEach test setup
       // with corrupted settings
       await tronApp.cleanProjectDir(
@@ -261,7 +260,7 @@ test.describe(
       { tag: '@desktop' },
       async ({ context, page, toolbar }) => {
         const { dir: projectDirName } = await context.folderSetupFn(
-          async () => {}
+          async () => { }
         )
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
