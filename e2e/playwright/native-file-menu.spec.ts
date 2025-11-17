@@ -16,7 +16,7 @@ test.describe(
   { tag: ['@desktop', '@macos', '@windows'] },
   () => {
     test('Home page', async ({ tronApp, cmdBar, page, homePage }) => {
-      if (!tronApp) fail()
+      if (!tronApp) throw new Error('tronApp is missing.')
 
       await test.step('Home.File.Create project', async () => {
         await page.reload()

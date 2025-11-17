@@ -1241,9 +1241,7 @@ test(
     tag: '@desktop',
   },
   async ({ context, page, tronApp, homePage }, testInfo) => {
-    if (!tronApp) {
-      fail()
-    }
+    if (!tronApp) throw new Error('tronApp is missing.')
 
     await context.folderSetupFn(async (dir) => {
       await Promise.all([

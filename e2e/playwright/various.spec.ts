@@ -82,9 +82,7 @@ part001 = startSketchOn(-XZ)
     await page.waitForTimeout(1000)
     await u.clearAndCloseDebugPanel()
 
-    if (!tronApp?.projectDirName) {
-      fail()
-    }
+    if (!tronApp) throw new Error('tronApp is missing.')
 
     await doExport(
       {
