@@ -11,6 +11,7 @@ import {
   roundOffWithUnits,
   simulateOnMouseDragMatch,
 } from '@src/lib/utils'
+import { expect } from 'vitest'
 
 describe('testing isOverlapping', () => {
   testBothOrders(topLevelRange(0, 3), topLevelRange(3, 10))

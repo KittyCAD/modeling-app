@@ -203,6 +203,7 @@
     "eslint-plugin-react-perf": "^3.3.3",
     "eslint-plugin-suggest-no-throw": "^1.0.0",
     "eslint-plugin-testing-library": "^7.1.1",
+    "eslint-plugin-vitest": "^0.5.4",
     "happy-dom": "^20.0.7",
     "http-server": "^14.1.1",
     "husky": "^9.1.7",
