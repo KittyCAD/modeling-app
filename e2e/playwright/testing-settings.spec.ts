@@ -260,7 +260,7 @@ test.describe(
       { tag: '@desktop' },
       async ({ context, page, toolbar }) => {
         const { dir: projectDirName } = await context.folderSetupFn(
-          async () => { }
+          async () => {}
         )
 
         await page.setBodyDimensions({ width: 1200, height: 500 })

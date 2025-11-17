@@ -673,9 +673,8 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
     ) => `part001 = startSketchOn(-XZ)
   |> startProfile(at = [54.78, -95.91])
   |> line(end = [306.21, 198.82], tag = $b)
-${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65deg, length = ${
-      !replace1 ? 'segLen(a)' : replace1
-    })
+${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65deg, length = ${!replace1 ? 'segLen(a)' : replace1
+      })
   |> line(end = [306.21, 198.87])
   |> angledLine(angle = ${!replace2 ? 'segAng(a)' : replace2}, length = 300)
   |> line(end = [-963.39, -154.67])
