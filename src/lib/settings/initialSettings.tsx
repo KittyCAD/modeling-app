@@ -691,12 +691,11 @@ export function createSettings() {
           )
         },
       }),
-      disableCopilot: new Setting<boolean>({
+      enableZookeeper: new Setting<boolean>({
         hideOnLevel: 'user',
-        hideOnPlatform: IS_STAGING_OR_DEBUG ? undefined : 'both',
-        defaultValue: IS_STAGING_OR_DEBUG ? false : true,
+        defaultValue: IS_STAGING_OR_DEBUG ? true : false,
         description:
-          'Disable the new Copilot in Text-to-CAD for this project, only available in Zoo Design Studio (Staging).',
+          'Enable the conversational agent in Text-to-CAD for this project.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',
