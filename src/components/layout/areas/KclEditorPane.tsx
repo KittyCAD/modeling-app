@@ -24,12 +24,9 @@ import {
 import {
   bracketMatching,
   codeFolding,
-  defaultHighlightStyle,
   foldGutter,
   foldKeymap,
-  HighlightStyle,
   indentOnInput,
-  syntaxHighlighting,
 } from '@codemirror/language'
 import { diagnosticCount, lintGutter, lintKeymap } from '@codemirror/lint'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
@@ -66,7 +63,6 @@ import {
 } from '@src/machines/kclEditorMachine'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { tags } from '@lezer/highlight'
 
 export const editorShortcutMeta = {
   formatCode: {
