@@ -694,7 +694,7 @@ sweepSketch = startSketchOn(XY)
         assert!(result.is_err());
         assert_eq!(
             result.unwrap_err().message(),
-            r#"Expected `x`, `y`, or `z` to be provided."#.to_string()
+            r#"Expected `x`, `y`, `z` or `factor` to be provided."#.to_string()
         );
     }
 }
