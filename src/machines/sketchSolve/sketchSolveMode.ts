@@ -30,6 +30,7 @@ import {
   type SegmentUtils,
   segmentUtilsMap,
   updateLineSegmentHover,
+  htmlHelper,
 } from '@src/machines/sketchSolve/segments'
 import type { Object3D } from 'three'
 import {
@@ -454,6 +455,9 @@ export const sketchSolveMachine = setup({
       let selectionBoxObject: CSS2DObject | null = null
       let selectionBoxGroup: Group | null = null
       let labelsWrapper: HTMLElement | null = null
+      let boxDiv: HTMLElement | null = null
+      let verticalLine: HTMLElement | null = null
+      let horizontalLine: HTMLElement | null = null
 
       /**
        * Helper function to create or update the selection box visual
@@ -521,72 +525,75 @@ export const sketchSolveMachine = setup({
           selectionBoxGroup.userData.type = 'selectionBox'
 
           // TODO configure to work with light mode too
-          const boxDiv = document.createElement('div')
-          boxDiv.style.position = 'absolute'
-          boxDiv.style.pointerEvents = 'none'
-          boxDiv.style.border = `2px ${borderStyle} rgba(255, 255, 255, 0.5)`
-          boxDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'
-          boxDiv.style.transform = 'translate(-50%, -50%)'
-          boxDiv.style.boxSizing = 'border-box'
+          ;[boxDiv, verticalLine, horizontalLine, labelsWrapper] = htmlHelper`
+            <div
+              ${{ key: 'id', value: 'selection-box' }}
+              style="
+                position: absolute;
+                pointer-events: none;
+                border: 2px ${borderStyle} rgba(255, 255, 255, 0.5);
+                background-color: rgba(255, 255, 255, 0.1);
+                transform: translate(-50%, -50%);
+                box-sizing: border-box;
+              "
+            >
+              <div
+                ${{ key: 'id', value: 'vertical-line' }}
+                style="
+                  position: absolute;
+                  pointer-events: none;
+                  background-color: rgba(255, 255, 255, 0.5);
+                  width: 2px;
+                "
+              ></div>
+              <div
+                ${{ key: 'id', value: 'horizontal-line' }}
+                style="
+                  position: absolute;
+                  pointer-events: none;
+                  background-color: rgba(255, 255, 255, 0.5);
+                  height: 2px;
+                "
+              ></div>
+              <div
+                ${{ key: 'id', value: 'labels-wrapper' }}
+                style="
+                  position: absolute;
+                  pointer-events: none;
+                  white-space: nowrap;
+                  display: flex;
+                  gap: 0px;
+                  align-items: center;
+                "
+              >
+                <div
+                  ${{ key: 'id', value: 'intersects-label' }}
+                  style="
+                    font-size: 11px;
+                    color: rgba(255, 255, 255, 0.7);
+                    user-select: none;
+                    width: 100px;
+                    padding: 6px;
+                    margin: 0px;
+                    text-align: right;
+                  "
+                >Intersects</div>
+                <div
+                  ${{ key: 'id', value: 'contains-label' }}
+                  style="
+                    font-size: 11px;
+                    color: rgba(255, 255, 255, 0.7);
+                    user-select: none;
+                    width: 100px;
+                    padding: 6px;
+                    margin: 0px;
+                  "
+                >Within</div>
+              </div>
+            </div>
+          `
 
-          // Create corner lines (vertical and horizontal lines at drag start point)
-          const verticalLine = document.createElement('div')
-          const horizontalLine = document.createElement('div')
-
-          verticalLine.style.position = 'absolute'
-          verticalLine.style.pointerEvents = 'none'
-          verticalLine.style.backgroundColor = 'rgba(255, 255, 255, 0.5)'
-          verticalLine.style.width = '2px'
-
-          horizontalLine.style.position = 'absolute'
-          horizontalLine.style.pointerEvents = 'none'
-          horizontalLine.style.backgroundColor = 'rgba(255, 255, 255, 0.5)'
-          horizontalLine.style.height = '2px'
-
-          boxDiv.appendChild(verticalLine)
-          boxDiv.appendChild(horizontalLine)
-
-          // Create labels wrapper and labels
-          labelsWrapper = document.createElement('div')
-          const intersectsLabel = document.createElement('div')
-          const containsLabel = document.createElement('div')
-
-          labelsWrapper.appendChild(intersectsLabel)
-          labelsWrapper.appendChild(containsLabel)
-
-          // Style labels wrapper
-          labelsWrapper.style.position = 'absolute'
-          labelsWrapper.style.pointerEvents = 'none'
-          labelsWrapper.style.whiteSpace = 'nowrap'
-          labelsWrapper.style.display = 'flex'
-          labelsWrapper.style.gap = '0px'
-          labelsWrapper.style.alignItems = 'center'
-
-          // Style both labels
-          const labelBaseStyle = {
-            fontSize: '11px',
-            // fontFamily: 'system-ui, sans-serif',
-            color: 'rgba(255, 255, 255, 0.7)',
-            userSelect: 'none',
-            width: '100px', // consistent width makes alignment easier
-            padding: '6px',
-            margin: '0px',
-          }
-
-          Object.assign(intersectsLabel.style, labelBaseStyle)
-          Object.assign(containsLabel.style, labelBaseStyle)
-          // intersectsLabel.style.paddingRight = '8px'
-          // intersectsLabel.style.borderRight =
-          //   '1px solid rgba(255, 255, 255, 0.3)'
-          // containsLabel.style.borderLeft =
-          //   '1px solid rgba(255, 255, 255, 0.3)'
-          intersectsLabel.style.textAlign = 'right'
-
-          intersectsLabel.textContent = 'Intersects'
-          containsLabel.textContent = 'Within'
-
-          // Add labels wrapper to box div
-          boxDiv.appendChild(labelsWrapper)
+          labelsWrapper
 
           selectionBoxObject = new CSS2DObject(boxDiv)
           selectionBoxObject.userData.type = 'selectionBox'
@@ -678,7 +685,6 @@ export const sketchSolveMachine = setup({
           const lineExtensionSize = '12px'
 
           // Position vertical line (extends from start point to nearest vertical edge)
-          const verticalLine = boxDiv.children[0]
           if (verticalLine && verticalLine instanceof HTMLElement) {
             verticalLine.style.left = `calc(50% + ${startX}px)`
             verticalLine.style.top = `calc(50% + ${startY}px)`
@@ -693,7 +699,6 @@ export const sketchSolveMachine = setup({
           }
 
           // Position horizontal line (extends from start point to nearest horizontal edge)
-          const horizontalLine = boxDiv.children[1]
           if (horizontalLine && horizontalLine instanceof HTMLElement) {
             horizontalLine.style.top = `calc(50% + ${startY}px)`
             horizontalLine.style.width = lineExtensionSize
@@ -1475,6 +1480,14 @@ export const sketchSolveMachine = setup({
         console.log('yo no sketch segments to clean up')
         return
       }
+      // We have to manually remove the CSS2DObjects
+      // as they don't get removed when the group is removed
+      sketchSegments.traverse((object) => {
+        if (object instanceof CSS2DObject) {
+          object.element.remove()
+          object.remove()
+        }
+      })
       disposeGroupChildren(sketchSegments)
     },
     'send unequip to tool': sendTo(CHILD_TOOL_ID, { type: 'unequip' }),

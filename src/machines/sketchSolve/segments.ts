@@ -90,26 +90,33 @@ class PointSegment implements SegmentUtils {
 
     // Create a 2D box using CSS2DObject
     // Outer div is larger for hitbox, inner div is smaller visually
-    const handleDiv = document.createElement('div')
-    handleDiv.dataset.segment_id = String(args.id)
-    handleDiv.dataset.handle = SKETCH_POINT_HANDLE
-    handleDiv.style.width = '30px'
-    handleDiv.style.height = '30px'
-    handleDiv.style.position = 'absolute'
-    handleDiv.style.pointerEvents = 'auto'
-    handleDiv.style.transform = 'translate(-50%, -50%)'
-
-    // Inner div for the visual circle - absolutely positioned to center it
-    const innerCircle = document.createElement('div')
-    innerCircle.style.position = 'absolute'
-    innerCircle.style.top = '50%'
-    innerCircle.style.left = '50%'
-    innerCircle.style.transform = 'translate(-50%, -50%)'
-    innerCircle.style.width = '6px'
-    innerCircle.style.height = '6px'
-    innerCircle.style.borderRadius = '50%'
-    innerCircle.style.transition =
-      'width 0.15s ease, height 0.15s ease, background-color 0.15s ease, border-color 0.15s ease'
+    const [handleDiv, innerCircle] = htmlHelper`
+    <div
+        data-segment_id="${String(args.id)}"
+        ${{ key: 'handle', value: SKETCH_POINT_HANDLE }}
+        style="
+        width: 30px;
+        height: 30px;
+        position: absolute;
+        pointer-events: auto;
+        transform: translate(-50%, -50%);
+        "
+        >
+        <div
+          ${{ key: 'id', value: 'inner-circle' }}
+          style="
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            transition: width 0.15s ease, height 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+          "
+        ></div>
+      </div>
+    `
 
     // Calculate darker version of SKETCH_SELECTION_COLOR (70% brightness)
     const darkerSelectionRgb = SKETCH_SELECTION_RGB.map((val) =>
@@ -132,8 +139,6 @@ class PointSegment implements SegmentUtils {
       const isSelected = handleDiv.dataset.isSelected === 'true'
       this.updatePointColors(innerCircle, isSelected)
     })
-
-    handleDiv.appendChild(innerCircle)
 
     const cssObject = new CSS2DObject(handleDiv)
     cssObject.userData.type = 'handle'
@@ -349,4 +354,79 @@ export function updateLineSegmentHover(
 
   const isSelected = selectedIds.includes(segmentId)
   segmentUtilsMap.LineSegment.updateLineColors(mesh, isSelected, isHovered)
+}
+
+/**
+ * Tagged template literal helper for creating HTML elements from template strings.
+ *
+ * Creates DOM elements from HTML template strings and returns elements that have
+ * data attributes defined using the `{key, value}` object syntax. Elements are
+ * returned in the order their data attributes appear in the template.
+ *
+ * Use to help with CSS2DObjects
+ *
+ * @param strings - Template string parts (from template literal)
+ * @param values - Interpolated values. Can be:
+ *   - `string`: Regular string interpolation (not included in return array)
+ *   - `{key: string, value: string}`: Creates a `data-${key}="${value}"` attribute
+ *     and includes the element in the returned array
+ *
+ * @returns Array of HTMLElements that have data attributes defined via `{key, value}` objects,
+ *          in the order they appear in the template
+ *
+ * @example
+ * ```ts
+ * const [outerDiv, innerDiv] = htmlHelper`
+ *   <div ${{key: 'segment_id', value: '123'}} style="width: 30px;">
+ *     <div ${{key: 'id', value: 'inner-circle'}} style="width: 6px;"></div>
+ *   </div>
+ * `
+ * // outerDiv has data-segment_id="123"
+ * // innerDiv has data-id="inner-circle"
+ * ```
+ *
+ * @example
+ * ```ts
+ * const [element] = htmlHelper`
+ *   <div ${{key: 'handle', value: 'point-handle'}}>
+ *     ${someStringVariable}
+ *   </div>
+ * `
+ * // element has data-handle="point-handle"
+ * // String interpolations (like someStringVariable) are included in HTML but
+ * // their elements are not returned unless they have data attributes
+ * ```
+ */
+export function htmlHelper(
+  strings: TemplateStringsArray,
+  ...values: Array<{ key: string; value: string } | string>
+): Array<HTMLElement> {
+  const template = document.createElement('template')
+  let result = ''
+  const queryStrings: Array<string> = []
+  strings.forEach((str, i) => {
+    result += str
+    if (i < values.length) {
+      // v
+      const currentValue = values[i]
+      if (typeof currentValue === 'string') {
+        result += currentValue
+      } else {
+        const { key, value } = currentValue
+        const dataDashValue = `data-${key}="${value}"`
+        result += dataDashValue
+        queryStrings.push(`[${dataDashValue}]`)
+      }
+    }
+  })
+  template.innerHTML = result
+  const elements: Array<HTMLElement> = []
+  queryStrings.forEach((qs) => {
+    const el = template.content.querySelector(qs)
+    if (el instanceof HTMLElement) {
+      elements.push(el)
+    }
+  })
+
+  return elements
 }
