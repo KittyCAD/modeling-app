@@ -31,7 +31,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
       id={`${props.layout.id}-pane`}
       className="border-none"
     >
-      {settings.meta.disableCopilot.current === false ? (
+      {settings.meta.enableZookeeper.current === true ? (
         <>
           <LayoutPanelHeader
             id={props.layout.id}

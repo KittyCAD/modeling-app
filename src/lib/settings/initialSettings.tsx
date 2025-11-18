@@ -691,11 +691,11 @@ export function createSettings() {
           )
         },
       }),
-      disableCopilot: new Setting<boolean>({
+      enableZookeeper: new Setting<boolean>({
         hideOnLevel: 'user',
-        defaultValue: IS_STAGING_OR_DEBUG ? false : true,
+        defaultValue: IS_STAGING_OR_DEBUG ? true : false,
         description:
-          'Disable the conversational copilot mode in Text-to-CAD for this project.',
+          'Enable the conversational agent in Text-to-CAD for this project.',
         validate: (v) => typeof v === 'boolean',
         commandConfig: {
           inputType: 'boolean',

@@ -47,9 +47,9 @@ This setting has the following nested options:
 
 **Default:** None
 
-##### disable_copilot
+##### enable_zookeeper
 
-Disable the conversational copilot mode in Text-to-CAD for this project.
+Enable the conversational agent in Text-to-CAD for this project.
 
 
 **Default:** None
