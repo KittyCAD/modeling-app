@@ -12,6 +12,9 @@ import {
 import {
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveTagDeclaratorFromOpArg,
+  SWEEP_CONSTANTS,
+  SWEEP_MODULE,
+  type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import {
   getNodeFromPath,
@@ -899,15 +902,22 @@ const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
       ) === 'true'
   }
 
-  let relativeTo: string | undefined
+  let relativeTo: SweepRelativeTo | undefined
   if (
     'relativeTo' in operation.labeledArgs &&
     operation.labeledArgs.relativeTo
   ) {
-    relativeTo = codeManager.code.slice(
+    const result = codeManager.code.slice(
       operation.labeledArgs.relativeTo.sourceRange[0],
       operation.labeledArgs.relativeTo.sourceRange[1]
     )
+    if (result === `${SWEEP_MODULE}::${SWEEP_CONSTANTS.SKETCH_PLANE}`) {
+      relativeTo = SWEEP_CONSTANTS.SKETCH_PLANE
+    } else if (result === `${SWEEP_MODULE}::${SWEEP_CONSTANTS.TRAJECTORY}`) {
+      relativeTo = SWEEP_CONSTANTS.TRAJECTORY
+    } else {
+      return { reason: "Couldn't retrieve relativeTo argument" }
+    }
   }
 
   // tagStart and tagEng arguments
@@ -1729,6 +1739,73 @@ export function getOperationLabel(op: Operation): string {
     default:
       const _exhaustiveCheck: never = op
       return '' // unreachable
+  }
+}
+
+type NestedOpList = (Operation | Operation[])[]
+
+/**
+ * Given an operations list, group streaks of provided types
+ * into arrays if they are of a given minimum length
+ */
+export function groupOperationTypeStreaks(
+  opList: Operation[],
+  typesToGroup: Operation['type'][],
+  minLength = 5
+): NestedOpList {
+  const result: NestedOpList = []
+
+  let currentType: Operation['type'] | null = null
+  let currentStreak: Operation[] = []
+
+  const flushStreak = () => {
+    if (currentStreak.length === 0) return
+    const shouldGroup =
+      currentType !== null &&
+      typesToGroup.includes(currentType) &&
+      currentStreak.length >= minLength
+    if (shouldGroup) {
+      result.push([...currentStreak])
+    } else {
+      for (const op of currentStreak) result.push(op)
+    }
+    currentStreak = []
+    currentType = null
+  }
+
+  for (const op of opList) {
+    if (currentType === null) {
+      currentType = op.type
+      currentStreak.push(op)
+      continue
+    }
+    if (op.type === currentType) {
+      currentStreak.push(op)
+    } else {
+      // Type changed; flush the previous streak and start anew
+      flushStreak()
+      currentType = op.type
+      currentStreak.push(op)
+    }
+  }
+
+  // Flush any remaining streak
+  flushStreak()
+
+  return result
+}
+
+/**
+ * Return a more human-readable operation type label
+ */
+export function getOpTypeLabel(opType: Operation['type']): string {
+  switch (opType) {
+    case 'StdLibCall':
+      return 'Operation'
+    case 'VariableDeclaration':
+      return 'Parameter'
+    default:
+      return 'Function'
   }
 }
 

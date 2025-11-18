@@ -213,6 +213,9 @@ pub struct ModelingSettings {
     /// The controls for how to navigate the 3D view.
     #[serde(default, skip_serializing_if = "is_default")]
     pub mouse_controls: MouseControlType,
+    /// Which type of orientation gizmo to use.
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub gizmo_type: GizmoType,
     /// Toggle touch controls for 3D view navigation
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_touch_controls: DefaultTrue,
@@ -258,6 +261,7 @@ impl Default for ModelingSettings {
             camera_projection: Default::default(),
             camera_orbit: Default::default(),
             mouse_controls: Default::default(),
+            gizmo_type: Default::default(),
             enable_touch_controls: Default::default(),
             use_new_sketch_mode: Default::default(),
             highlight_edges: Default::default(),
@@ -343,6 +347,19 @@ pub enum CameraOrbitType {
     /// Orbit using a trackball camera movement.
     #[display("trackball")]
     Trackball,
+}
+
+/// Which type of orientation gizmo to use.
+#[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+#[display(style = "snake_case")]
+pub enum GizmoType {
+    /// 3D cube gizmo
+    #[default]
+    Cube,
+    /// 3-axis gizmo
+    Axis,
 }
 
 /// Settings that affect the behavior of the KCL text editor.
