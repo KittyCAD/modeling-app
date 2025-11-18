@@ -41,6 +41,7 @@ jobs:
         with:
           cache: false # Configured below.
       - name: Start Vector
+        if: false # Disabled during Cloudflare outage
         run: .github/ci-cd-scripts/start-vector-ubuntu.sh
         env:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
@@ -165,6 +166,7 @@ jobs:
         with:
           cache: false # Configured below.
       - name: Start Vector
+        if: false # Disabled during Cloudflare outage
         run: .github/ci-cd-scripts/start-vector-ubuntu.sh
         env:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
@@ -217,6 +219,7 @@ jobs:
         with:
           cache: false # Configured below.
       - name: Start Vector
+        if: false # Disabled during Cloudflare outage
         run: .github/ci-cd-scripts/start-vector-ubuntu.sh
         env:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
