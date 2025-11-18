@@ -36,9 +36,15 @@ export const MlEphantConversationPane2 = (props: {
 }) => {
   const [defaultPrompt, setDefaultPrompt] = useState('')
   const [searchParams, setSearchParams] = useSearchParams()
-  const conversation = useSelector(props.mlEphantManagerActor, (actor) => {
+
+  let conversation = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.conversation
   })
+
+  if (props.mlEphantManagerActor.getSnapshot().matches(S.Await)) {
+    conversation = undefined
+  }
+
   const abruptlyClosed = useSelector(props.mlEphantManagerActor, (actor) => {
     return actor.context.abruptlyClosed
   })

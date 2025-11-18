@@ -150,6 +150,7 @@ export const mlEphantDefaultContext2 = (args: {
   ws: undefined,
   abruptlyClosed: false,
   conversation: undefined,
+  cachedSetup: undefined,
   lastMessageId: undefined,
   lastMessageType: undefined,
   fileFocusedOnInEditor: undefined,
@@ -392,6 +393,10 @@ export const mlEphantManagerMachine2 = setup({
             // to us. That means data is being stored and the system is ready.
             if ('conversation_id' in response) {
               onFulfilled({
+                abruptlyClosed: false,
+                lastMessageId: undefined,
+                lastMessageType: undefined,
+                cachedSetup: undefined,
                 conversation: {
                   exchanges: maybeReplayedExchanges,
                 },
@@ -486,7 +491,16 @@ export const mlEphantManagerMachine2 = setup({
       on: {
         [MlEphantManagerTransitions2.CacheSetupAndConnect]: {
           target: MlEphantManagerStates2.Setup,
-          actions: [assign({ abruptlyClosed: false }), 'cacheSetup'],
+          actions: [
+            assign({
+              abruptlyClosed: false,
+              lastMessageId: undefined,
+              lastMessageType: undefined,
+              conversation: undefined,
+              conversationId: undefined,
+            }),
+            'cacheSetup',
+          ],
         },
         ...transitions([MlEphantManagerStates2.Setup]),
       },
@@ -522,6 +536,11 @@ export const mlEphantManagerMachine2 = setup({
               if (event.error === MlEphantSetupErrors.ConversationNotFound) {
                 // set the conversation Id to undefined to have the reenter make a new conversation id
                 return {
+                  abruptlyClosed: false,
+                  conversation: undefined,
+                  conversationId: undefined,
+                  lastMessageId: undefined,
+                  lastMessageType: undefined,
                   cachedSetup: {
                     refParentSend: context.cachedSetup?.refParentSend,
                     conversationId: undefined,
@@ -709,8 +728,12 @@ export const mlEphantManagerMachine2 = setup({
               return
             }
             return assign({
+              abruptlyClosed: false,
               conversation: undefined,
               conversationId: undefined,
+              cachedSetup: undefined,
+              lastMessageId: undefined,
+              lastMessageType: undefined,
             })
           },
           (args) => {
