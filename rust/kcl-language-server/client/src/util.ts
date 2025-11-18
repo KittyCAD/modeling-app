@@ -172,7 +172,8 @@ export function execute(
         return
       }
 
-      const stdoutAsString = typeof stdout !== 'string' ? stdout.toString() : stdout
+      const stdoutAsString =
+        typeof stdout !== 'string' ? stdout.toString() : stdout
       resolve(stdoutAsString.trimEnd())
     })
   })
@@ -191,7 +192,8 @@ export function executeDiscoverProject(
         reject(err)
         return
       }
-      const stdoutAsString = typeof stdout !== 'string' ? stdout.toString() : stdout
+      const stdoutAsString =
+        typeof stdout !== 'string' ? stdout.toString() : stdout
       resolve(stdoutAsString.trimEnd())
     })
   })
