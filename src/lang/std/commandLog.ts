@@ -6,8 +6,6 @@ export enum CommandLogType {
   SendScene = 'send-scene',
   ReceiveReliable = 'receive-reliable',
   ExecutionDone = 'execution-done',
-  ExportDone = 'export-done',
-  SetDefaultSystemProperties = 'set_default_system_properties',
 }
 
 export type CommandLog =

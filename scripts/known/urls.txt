@@ -16,6 +16,7 @@ URL	STATUS
 302	https://github.com/KittyCAD/modeling-app/issues/new?template=bug_report.yml
 302	https://github.com/KittyCAD/modeling-app/issues/new?title=${title}&body=${body}
 404	https://github.com/KittyCAD/modeling-app/releases/tag/v${version}
+301	https://github.com/SoftFever/OrcaSlicer/blob/431978baf17961df90f0d01871b0ad1d839d7f5d/src/slic3r/GUI/DeviceManager.cpp#L78
 521	https://placekitten.com/200/200
 302	https://stackoverflow.com/a/57390160/22753272
 302	https://stackoverflow.com/a/58436959/22753272

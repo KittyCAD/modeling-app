@@ -8,16 +8,18 @@ export async function textToCadPromptFeedback(
     id: TextToCad['id']
     feedback: TextToCad['feedback']
   }
-): Promise<void | Error> {
+): Promise<undefined | Error> {
   if (!args.feedback) return
   const client = createKCClient(token)
   const fb = args.feedback
   const data = await kcCall(() =>
-    ml.create_text_to_cad_part_feedback({
-      client,
-      id: args.id,
-      feedback: fb,
-    })
+    ml
+      .create_text_to_cad_part_feedback({
+        client,
+        id: args.id,
+        feedback: fb,
+      })
+      .then(() => undefined)
   )
 
   return data

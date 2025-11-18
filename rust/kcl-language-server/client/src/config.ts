@@ -104,6 +104,7 @@ export class Config {
    * ```
    * So this getter handles this quirk by not requiring the caller to use postfix `!`
    */
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
   private get<T>(path: string): T | undefined {
     return prepareVSCodeConfig(this.cfg.get<T>(path))
   }

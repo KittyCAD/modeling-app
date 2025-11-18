@@ -24,7 +24,7 @@ patternCircular2d(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) | The sketch(es) to duplicate. | Yes |
+| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | The sketch(es) to duplicate. | Yes |
 | `instances` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center about which to make the pattern. This is a 2D vector. | Yes |
 | `arcDegrees` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | The arc angle (in degrees) to place the repetitions. Must be greater than 0. | No |
@@ -33,7 +33,7 @@ patternCircular2d(
 
 ### Returns
 
-[`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch)
+[[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+]
 
 
 ### Examples

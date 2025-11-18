@@ -1,0 +1,37 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing t-slot-rectangle.kcl
+---
+{
+  "frameLength": {
+    "type": "Number",
+    "value": 2.0,
+    "ty": {
+      "ft": null,
+      "type": "Known",
+      "type": "Length"
+    }
+  },
+  "frameWidth": {
+    "type": "Number",
+    "value": 1.5,
+    "ty": {
+      "ft": null,
+      "type": "Known",
+      "type": "Length"
+    }
+  },
+  "railHeight": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": "in",
+      "angle": "degrees"
+    }
+  },
+  "railTslot": {
+    "type": "Function",
+    "value": null
+  }
+}

@@ -1,5 +1,4 @@
 import { type Locator, type Page, test } from '@playwright/test'
-import type { SidebarId } from '@src/components/layout/areas'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 
@@ -11,6 +10,7 @@ import {
 } from '@e2e/playwright/test-utils'
 import { expect } from '@e2e/playwright/zoo-test'
 import { type baseUnitLabels } from '@src/lib/settings/settingsTypes'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 type LengthUnitLabel = (typeof baseUnitLabels)[keyof typeof baseUnitLabels]
 
@@ -48,7 +48,7 @@ export class ToolbarFixture {
   filePane!: Locator
   treeInputField!: Locator
   /** The sidebar button for the Feature Tree pane */
-  featureTreeId = 'feature-tree' as const
+  featureTreeId = DefaultLayoutPaneID.FeatureTree
   /** The pane element for the Feature Tree */
   featureTreePane!: Locator
   gizmo!: Locator
@@ -125,6 +125,27 @@ export class ToolbarFixture {
   startSketchPlaneSelection = async () =>
     doAndWaitForImageDiff(this.page, () => this.startSketchBtn.click(), 500)
 
+  selectDefaultPlane = async (
+    plane: 'Front plane' | 'Top plane' | 'Right plane'
+  ) => {
+    const isFtOpen = await this.checkIfFeatureTreePaneIsOpen()
+    if (!isFtOpen) {
+      await this.openFeatureTreePane()
+    }
+    await this.page.getByRole('button', { name: plane }).click()
+    if (!isFtOpen) {
+      await this.closeFeatureTreePane()
+    }
+    await this.page.waitForTimeout(1000)
+  }
+
+  startSketchOnDefaultPlane = async (
+    plane: 'Front plane' | 'Top plane' | 'Right plane'
+  ) => {
+    await this.startSketchPlaneSelection()
+    await this.selectDefaultPlane(plane)
+  }
+
   waitUntilSketchingReady = async () => {
     await expect(this.gizmoDisabled).toBeVisible()
   }
@@ -139,12 +160,8 @@ export class ToolbarFixture {
 
   exitSketch = async () => {
     await this.exitSketchBtn.click()
-    await expect(
-      this.page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeVisible()
-    await expect(
-      this.page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await expect(this.startSketchBtn).toBeVisible()
+    await expect(this.startSketchBtn).not.toBeDisabled()
   }
 
   editSketch = async (operationIndex = 0) => {
@@ -252,13 +269,13 @@ export class ToolbarFixture {
       .click()
   }
 
-  async closePane(paneId: SidebarId) {
+  async closePane(paneId: DefaultLayoutPaneID) {
     return closePane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
-  async openPane(paneId: SidebarId) {
+  async openPane(paneId: DefaultLayoutPaneID) {
     return openPane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
-  async checkIfPaneIsOpen(paneId: SidebarId) {
+  async checkIfPaneIsOpen(paneId: DefaultLayoutPaneID) {
     return checkIfPaneIsOpen(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
   }
 
@@ -345,7 +362,7 @@ export class ToolbarFixture {
   }
 
   async fireTtcPrompt(prompt: string) {
-    await this.openPane('text-to-cad')
+    await this.openPane(DefaultLayoutPaneID.TTC)
     await expect(
       this.page.getByTestId('ml-ephant-conversation-input')
     ).toBeVisible()

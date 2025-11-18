@@ -3,9 +3,7 @@ import type {
   Layout,
   LayoutWithMetadata,
   Orientation,
-  PaneLayout,
   Side,
-  SplitLayout,
 } from '@src/lib/layout/types'
 import { LayoutType } from '@src/lib/layout/types'
 import type React from 'react'
@@ -28,22 +26,6 @@ const defaultLayoutLoadResult = loadLayout('default')
 export const defaultLayout = isErr(defaultLayoutLoadResult)
   ? defaultLayoutConfig
   : defaultLayoutLoadResult
-
-/**
- * A split area must have the same number of sizes as children.
- * Each point must be an integer between 0 and 100.
- * The sum of the areas must be 100.
- */
-export function hasValidSizes(area: SplitLayout | PaneLayout) {
-  return (
-    area.sizes.length === area.children.length &&
-    area.sizes.every((p) => Number.isInteger(p) && p > 0 && p < 100)
-  )
-}
-
-export function getOppositeOrientation(o: Orientation): Orientation {
-  return o === 'inline' ? 'block' : 'inline'
-}
 
 export function getOppositeSide(side: Side): Side {
   switch (side) {

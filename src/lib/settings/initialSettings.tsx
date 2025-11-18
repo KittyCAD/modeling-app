@@ -460,6 +460,30 @@ export function createSettings() {
         },
       }),
       /**
+       * Which type of orientation gizmo to use
+       */
+      gizmoType: new Setting<'cube' | 'axis'>({
+        defaultValue: 'cube',
+        hideOnLevel: 'project',
+        description: 'Which type of orientation gizmo to use',
+        validate: (v) => v === 'cube' || v === 'axis',
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.modeling.gizmoType.current,
+          options: (cmdContext, settingsContext) =>
+            (['cube', 'axis'] as const).map((v) => ({
+              name: capitaliseFC(v),
+              value: v,
+              isCurrent:
+                settingsContext.modeling.gizmoType.shouldShowCurrentLabel(
+                  cmdContext.argumentsToSubmit.level as SettingsLevel,
+                  v
+                ),
+            })),
+        },
+      }),
+      /**
        * Whether to highlight edges of 3D objects
        */
       highlightEdges: new Setting<boolean>({

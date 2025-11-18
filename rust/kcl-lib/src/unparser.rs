@@ -320,7 +320,14 @@ impl Expr {
                 let result = &name.inner.name.inner.name;
                 match deprecation(result, DeprecationKind::Const) {
                     Some(suggestion) => buf.push_str(suggestion),
-                    None => buf.push_str(result),
+                    None => {
+                        for prefix in &name.path {
+                            buf.push_str(&prefix.name);
+                            buf.push(':');
+                            buf.push(':');
+                        }
+                        buf.push_str(result);
+                    }
                 }
             }
             Expr::TagDeclarator(tag) => tag.recast(buf),
@@ -1097,7 +1104,7 @@ pub async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::PathBuf
             files.extend(walk_dir(&path).await?);
         } else if path
             .extension()
-            .is_some_and(|ext| crate::RELEVANT_FILE_EXTENSIONS.contains(&ext.to_string_lossy().to_string()))
+            .is_some_and(|ext| crate::RELEVANT_FILE_EXTENSIONS.contains(&ext.to_string_lossy().to_lowercase()))
         {
             files.push(path);
         }
@@ -3201,6 +3208,15 @@ fn function001() {
   extrude002 = extrude()
 }\n";
 
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn module_prefix() {
+        let code = "x = std::sweep::SKETCH_PLANE\n";
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
         let expected = code;

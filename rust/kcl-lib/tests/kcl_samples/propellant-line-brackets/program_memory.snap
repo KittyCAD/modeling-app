@@ -374,23 +374,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   ],
                   "type": "ToPoint",
                   "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
-                    0.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.0,
-                    0.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
                 }
               ],
               "on": {
@@ -882,23 +865,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
                       "to": [
                         0.0,
                         0.0
@@ -1435,23 +1401,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       ],
                       "type": "ToPoint",
                       "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
                     }
                   ],
                   "on": {
@@ -1982,23 +1931,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       ],
                       "type": "ToPoint",
                       "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
                     }
                   ],
                   "on": {
@@ -2467,23 +2399,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               "type": "TagDeclarator",
               "value": "seg04"
             },
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
             "to": [
               0.0,
               0.0
@@ -3084,23 +2999,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                       ],
                       "type": "ToPoint",
                       "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
                     }
                   ],
                   "on": {
@@ -3625,23 +3523,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": "in"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
                       "to": [
                         0.0,
                         0.0
@@ -4242,23 +4123,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             ],
             "type": "ToPoint",
             "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              0.0
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              0.0
-            ],
-            "type": "ToPoint",
-            "units": "in"
           }
         ],
         "on": {
@@ -4576,23 +4440,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "type": "TagDeclarator",
             "value": "seg04"
           },
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
           "to": [
             0.0,
             0.0
@@ -4992,23 +4839,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
                 "to": [
                   0.0,
                   0.0
@@ -5527,23 +5357,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 ],
                 "type": "ToPoint",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
@@ -6050,23 +5863,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
                 "to": [
                   0.0,
                   0.0
@@ -6585,23 +6381,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 ],
                 "type": "ToPoint",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
@@ -7114,23 +6893,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 ],
                 "type": "ToPoint",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
@@ -7511,23 +7273,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
             "type": "TagDeclarator",
             "value": "seg006"
           },
-          "to": [
-            0.0,
-            0.0
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            0.0
-          ],
-          "tag": null,
           "to": [
             0.0,
             0.0
@@ -7956,23 +7701,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                   "type": "TagDeclarator",
                   "value": "seg006"
                 },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
                 "to": [
                   0.0,
                   0.0
@@ -8492,23 +8220,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 ],
                 "type": "ToPoint",
                 "units": "in"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "in"
               }
             ],
             "on": {
@@ -9006,23 +8717,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               ],
               "type": "ToPoint",
               "units": "in"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                0.0,
-                0.0
-              ],
-              "tag": null,
-              "to": [
-                0.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": "in"
             }
           ],
           "on": {
@@ -9480,23 +9174,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
-              "to": [
-                0.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": "in"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                0.0,
-                0.0
-              ],
-              "tag": null,
               "to": [
                 0.0,
                 0.0
@@ -10003,23 +9680,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
               ],
               "type": "ToPoint",
               "units": "in"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                0.0,
-                0.0
-              ],
-              "tag": null,
-              "to": [
-                0.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": "in"
             }
           ],
           "on": {
@@ -10478,23 +10138,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                 "type": "TagDeclarator",
                 "value": "seg006"
               },
-              "to": [
-                0.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": "in"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                0.0,
-                0.0
-              ],
-              "tag": null,
               "to": [
                 0.0,
                 0.0
@@ -11010,23 +10653,6 @@ description: Variables in memory after executing propellant-line-brackets.kcl
                     "type": "TagDeclarator",
                     "value": "seg006"
                   },
-                  "to": [
-                    0.0,
-                    0.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
-                    0.0
-                  ],
-                  "tag": null,
                   "to": [
                     0.0,
                     0.0

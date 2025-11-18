@@ -60,7 +60,9 @@ const toolOutput = (): Extract<
 const error = (): MlCopilotServerMessage & { error: any } => {
   return {
     error: {
-      detail: stringRand(ALPHA, Math.trunc(Math.random() * 80) + 10),
+      detail:
+        'aosteuhsaotu [Some markdown link](https://discord.com) and a bunch of text' +
+        stringRand(ALPHA, Math.trunc(Math.random() * 80) + 10),
     },
   }
 }
@@ -143,6 +145,9 @@ const endOfStream = (): MlCopilotServerMessage & { end_of_stream: any } => {
 
 const generators = {
   reasoning: [
+    error,
+    error,
+    error,
     error,
     info,
     toolOutput,
@@ -281,6 +286,11 @@ export class MockSocket extends WebSocket {
             })
           )
         })
+
+        // Force a close after 3 seconds
+        // setTimeout(() => {
+        //   this.cbs.close.forEach((cb) => cb())
+        // }, 10000)
       }
     } else if (isWebSocketEventType('close', type, listener)) {
       this.cbs.close.push(listener)

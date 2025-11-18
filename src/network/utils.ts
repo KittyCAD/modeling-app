@@ -33,7 +33,8 @@ export function isHighlightSetEntity_type(
 
 export type Value<T, U> = U extends undefined
   ? { type: T; value: U }
-  : U extends void
+  : // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+    U extends void
     ? { type: T }
     : { type: T; value: U }
 
@@ -100,13 +101,6 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
   [ConnectionError.PeerConnectionRemoteDisconnected]:
     'Peer connection disconnected',
   [ConnectionError.Unknown]: 'Unknown',
-}
-
-export const WEBSOCKET_READYSTATE_TEXT: Record<number, string> = {
-  [WebSocket.CONNECTING]: 'WebSocket.CONNECTING',
-  [WebSocket.OPEN]: 'WebSocket.OPEN',
-  [WebSocket.CLOSING]: 'WebSocket.CLOSING',
-  [WebSocket.CLOSED]: 'WebSocket.CLOSED',
 }
 
 export interface IErrorType {

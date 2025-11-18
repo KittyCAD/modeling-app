@@ -140,6 +140,7 @@ impl<T> Node<T> {
         self.start <= pos && pos <= self.end
     }
 
+    #[cfg(feature = "artifact-graph")]
     pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
         self.as_source_range().contains_range(range)
     }
@@ -344,6 +345,7 @@ impl Node<Program> {
             crate::lint::checks::lint_object_properties,
             crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
+            crate::lint::checks::lint_profiles_should_not_be_chained,
         ];
 
         let mut findings = vec![];
@@ -873,6 +875,7 @@ impl BodyItem {
         }
     }
 
+    #[cfg(feature = "artifact-graph")]
     pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
         let item_range = SourceRange::from(self);
         item_range.contains_range(range)
@@ -1159,6 +1162,7 @@ impl Expr {
         }
     }
 
+    #[cfg(feature = "artifact-graph")]
     fn contains_range(&self, range: &SourceRange) -> bool {
         let expr_range = SourceRange::from(self);
         expr_range.contains_range(range)
@@ -3617,6 +3621,7 @@ impl Parameter {
         self.default_value.is_some()
     }
 
+    #[cfg(feature = "artifact-graph")]
     pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
         let sr = SourceRange::from(self);
         sr.contains_range(range)

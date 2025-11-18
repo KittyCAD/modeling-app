@@ -3,6 +3,7 @@ import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 import {
   createCallExpressionStdLibKw,
+  createName,
   createLabeledArg,
   createLiteral,
   createLocalName,
@@ -13,8 +14,10 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { getEdgeTagCall } from '@src/lang/modifyAst/addEdgeTreatment'
-import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
+import {
+  modifyAstWithTagsForSelection,
+  mutateAstWithTagForSketchSegment,
+} from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
   getVariableExprsFromSelection,
@@ -36,7 +39,7 @@ import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { buildSolidsAndFacesExprs } from '@src/lang/modifyAst/faces'
+import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 
 export function addExtrude({
   ast,
@@ -75,7 +78,7 @@ export function addExtrude({
     }
   | Error {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  const modifiedAst = structuredClone(ast)
+  let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
@@ -92,25 +95,17 @@ export function addExtrude({
   // Special handling for 'to' arg
   let toExpr: LabeledArg[] = []
   if (to) {
-    const result = buildSolidsAndFacesExprs(
-      to,
-      artifactGraph,
-      modifiedAst,
-      mNodeToEdit
-    )
-    if (err(result)) {
-      return result
+    if (to.graphSelections.length !== 1) {
+      return new Error('Extrude "to" argument must have exactly one selection.')
     }
-
-    const { solidsExpr, facesExpr } = result
-    toExpr = [
-      createLabeledArg(
-        'to',
-        createCallExpressionStdLibKw('planeOf', solidsExpr, [
-          createLabeledArg('face', facesExpr),
-        ])
-      ),
-    ]
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      to.graphSelections[0],
+      artifactGraph
+    )
+    if (err(tagResult)) return tagResult
+    modifiedAst = tagResult.modifiedAst
+    toExpr = [createLabeledArg('to', createLocalName(tagResult.tags[0]))]
   }
   const symmetricExpr = symmetric
     ? [createLabeledArg('symmetric', createLiteral(symmetric))]
@@ -208,6 +203,14 @@ export function addExtrude({
   }
 }
 
+// From rust/kcl-lib/std/sweep.kcl
+export type SweepRelativeTo = 'SKETCH_PLANE' | 'TRAJECTORY'
+export const SWEEP_CONSTANTS: Record<string, SweepRelativeTo> = {
+  SKETCH_PLANE: 'SKETCH_PLANE',
+  TRAJECTORY: 'TRAJECTORY',
+}
+export const SWEEP_MODULE = 'sweep'
+
 export function addSweep({
   ast,
   sketches,
@@ -222,7 +225,7 @@ export function addSweep({
   sketches: Selections
   path: Selections
   sectional?: boolean
-  relativeTo?: string
+  relativeTo?: SweepRelativeTo
   tagStart?: string
   tagEnd?: string
   nodeToEdit?: PathToNode
@@ -244,6 +247,7 @@ export function addSweep({
   }
 
   // Find the path declaration for the labeled argument
+  // TODO: see if we can replace this with `getVariableExprsFromSelection`
   const pathDeclaration = getNodeFromPath<VariableDeclaration>(
     ast,
     path.graphSelections[0].codeRef.pathToNode,
@@ -259,7 +263,7 @@ export function addSweep({
     ? [createLabeledArg('sectional', createLiteral(sectional))]
     : []
   const relativeToExpr = relativeTo
-    ? [createLabeledArg('relativeTo', createLiteral(relativeTo))]
+    ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
     : []
   const tagStartExpr = tagStart
     ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]

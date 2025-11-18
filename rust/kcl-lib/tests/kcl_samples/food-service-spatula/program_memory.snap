@@ -330,23 +330,6 @@ description: Variables in memory after executing food-service-spatula.kcl
               "sourceRange": []
             },
             "from": [
-              -25.0,
-              5.0
-            ],
-            "tag": null,
-            "to": [
-              -25.0,
-              5.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
               -24.833425848836807,
               22.99722453489577
             ],
@@ -425,23 +408,6 @@ description: Variables in memory after executing food-service-spatula.kcl
               "sourceRange": []
             },
             "from": [
-              -24.833425848836807,
-              22.99722453489577
-            ],
-            "tag": null,
-            "to": [
-              -24.833425848836807,
-              22.99722453489577
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
               -25.16657415116319,
               -13.002775465104229
             ],
@@ -512,23 +478,6 @@ description: Variables in memory after executing food-service-spatula.kcl
               -13.002775465104229
             ],
             "type": "TangentialArcTo",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -25.16657415116319,
-              -13.002775465104229
-            ],
-            "tag": null,
-            "to": [
-              -25.16657415116319,
-              -13.002775465104229
-            ],
-            "type": "ToPoint",
             "units": "mm"
           }
         ],
@@ -1065,23 +1014,6 @@ description: Variables in memory after executing food-service-spatula.kcl
             ],
             "type": "Arc",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -26.806746,
-              -10.0
-            ],
-            "tag": null,
-            "to": [
-              -26.806746,
-              -10.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -1251,23 +1183,6 @@ description: Variables in memory after executing food-service-spatula.kcl
             200.0
           ],
           "type": "TangentialArcTo",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            4.0,
-            200.0
-          ],
-          "tag": null,
-          "to": [
-            4.0,
-            200.0
-          ],
-          "type": "ToPoint",
           "units": "mm"
         }
       ],
@@ -1526,23 +1441,6 @@ description: Variables in memory after executing food-service-spatula.kcl
                   -10.0
                 ],
                 "type": "Arc",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -26.806746,
-                  -10.0
-                ],
-                "tag": null,
-                "to": [
-                  -26.806746,
-                  -10.0
-                ],
-                "type": "ToPoint",
                 "units": "mm"
               }
             ],
@@ -1810,23 +1708,6 @@ description: Variables in memory after executing food-service-spatula.kcl
             -10.0
           ],
           "type": "Arc",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -26.806746,
-            -10.0
-          ],
-          "tag": null,
-          "to": [
-            -26.806746,
-            -10.0
-          ],
-          "type": "ToPoint",
           "units": "mm"
         }
       ],
@@ -2855,23 +2736,6 @@ description: Variables in memory after executing food-service-spatula.kcl
               ],
               "type": "Arc",
               "units": "mm"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -26.806746,
-                -10.0
-              ],
-              "tag": null,
-              "to": [
-                -26.806746,
-                -10.0
-              ],
-              "type": "ToPoint",
-              "units": "mm"
             }
           ],
           "on": {
@@ -3025,23 +2889,6 @@ description: Variables in memory after executing food-service-spatula.kcl
           ],
           "type": "TangentialArcTo",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -25.0,
-            5.0
-          ],
-          "tag": null,
-          "to": [
-            -25.0,
-            5.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -3178,23 +3025,6 @@ description: Variables in memory after executing food-service-spatula.kcl
           ],
           "type": "TangentialArcTo",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -24.833425848836807,
-            22.99722453489577
-          ],
-          "tag": null,
-          "to": [
-            -24.833425848836807,
-            22.99722453489577
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -3330,23 +3160,6 @@ description: Variables in memory after executing food-service-spatula.kcl
             -13.002775465104229
           ],
           "type": "TangentialArcTo",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -25.16657415116319,
-            -13.002775465104229
-          ],
-          "tag": null,
-          "to": [
-            -25.16657415116319,
-            -13.002775465104229
-          ],
-          "type": "ToPoint",
           "units": "mm"
         }
       ],
@@ -3591,23 +3404,6 @@ description: Variables in memory after executing food-service-spatula.kcl
             "sourceRange": []
           },
           "from": [
-            -25.0,
-            5.0
-          ],
-          "tag": null,
-          "to": [
-            -25.0,
-            5.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
             -24.833425848836807,
             22.99722453489577
           ],
@@ -3686,23 +3482,6 @@ description: Variables in memory after executing food-service-spatula.kcl
             "sourceRange": []
           },
           "from": [
-            -24.833425848836807,
-            22.99722453489577
-          ],
-          "tag": null,
-          "to": [
-            -24.833425848836807,
-            22.99722453489577
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
             -25.16657415116319,
             -13.002775465104229
           ],
@@ -3773,23 +3552,6 @@ description: Variables in memory after executing food-service-spatula.kcl
             -13.002775465104229
           ],
           "type": "TangentialArcTo",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -25.16657415116319,
-            -13.002775465104229
-          ],
-          "tag": null,
-          "to": [
-            -25.16657415116319,
-            -13.002775465104229
-          ],
-          "type": "ToPoint",
           "units": "mm"
         }
       ],

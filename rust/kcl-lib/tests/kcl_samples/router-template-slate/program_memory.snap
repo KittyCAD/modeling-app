@@ -379,23 +379,6 @@ description: Variables in memory after executing router-template-slate.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              0.0,
-              28.118750000000002
-            ],
-            "tag": null,
-            "to": [
-              0.0,
-              28.118750000000002
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -617,23 +600,6 @@ description: Variables in memory after executing router-template-slate.kcl
             "from": [
               -20.750000000000014,
               -92.49375
-            ],
-            "tag": null,
-            "to": [
-              -20.75,
-              -12.49375
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -20.75,
-              -12.49375
             ],
             "tag": null,
             "to": [
@@ -1018,23 +984,6 @@ description: Variables in memory after executing router-template-slate.kcl
                   "from": [
                     -10.749999999999998,
                     28.11874999999999
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.0,
-                    28.118750000000002
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
-                    28.118750000000002
                   ],
                   "tag": null,
                   "to": [
@@ -1285,23 +1234,6 @@ description: Variables in memory after executing router-template-slate.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              20.75,
-              -12.49375
-            ],
-            "tag": null,
-            "to": [
-              20.75,
-              -12.49375
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -1678,23 +1610,6 @@ description: Variables in memory after executing router-template-slate.kcl
                   "from": [
                     -10.749999999999998,
                     28.11874999999999
-                  ],
-                  "tag": null,
-                  "to": [
-                    0.0,
-                    28.118750000000002
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    0.0,
-                    28.118750000000002
                   ],
                   "tag": null,
                   "to": [
@@ -2162,23 +2077,6 @@ description: Variables in memory after executing router-template-slate.kcl
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            0.0,
-            28.118750000000002
-          ],
-          "tag": null,
-          "to": [
-            0.0,
-            28.118750000000002
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -2340,23 +2238,6 @@ description: Variables in memory after executing router-template-slate.kcl
           "from": [
             -20.750000000000014,
             -92.49375
-          ],
-          "tag": null,
-          "to": [
-            -20.75,
-            -12.49375
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -20.75,
-            -12.49375
           ],
           "tag": null,
           "to": [
@@ -2741,23 +2622,6 @@ description: Variables in memory after executing router-template-slate.kcl
                 "from": [
                   -10.749999999999998,
                   28.11874999999999
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  28.118750000000002
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  28.118750000000002
                 ],
                 "tag": null,
                 "to": [
@@ -2962,23 +2826,6 @@ description: Variables in memory after executing router-template-slate.kcl
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            20.75,
-            -12.49375
-          ],
-          "tag": null,
-          "to": [
-            20.75,
-            -12.49375
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -3355,23 +3202,6 @@ description: Variables in memory after executing router-template-slate.kcl
                 "from": [
                   -10.749999999999998,
                   28.11874999999999
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  28.118750000000002
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  0.0,
-                  28.118750000000002
                 ],
                 "tag": null,
                 "to": [

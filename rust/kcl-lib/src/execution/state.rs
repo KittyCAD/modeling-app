@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[cfg(feature = "artifact-graph")]
-use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
+use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ProgramLookup};
 use crate::{
     CompilationError, EngineManager, ExecutorContext, KclErrorWithOutputs, SourceRange,
     errors::{KclError, KclErrorDetails, Severity},
@@ -369,6 +369,14 @@ impl ExecState {
     }
 
     #[cfg(feature = "artifact-graph")]
+    pub(crate) fn build_program_lookup(
+        &self,
+        current: crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
+    ) -> ProgramLookup {
+        ProgramLookup::new(current, self.global.module_infos.clone())
+    }
+
+    #[cfg(feature = "artifact-graph")]
     pub(crate) async fn build_artifact_graph(
         &mut self,
         engine: &Arc<Box<dyn EngineManager>>,
@@ -378,8 +386,11 @@ impl ExecState {
         let mut new_exec_artifacts = IndexMap::new();
         for module in self.global.module_infos.values_mut() {
             match &mut module.repr {
-                ModuleRepr::Kcl(_, Some((_, _, _, module_artifacts)))
-                | ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
+                ModuleRepr::Kcl(_, Some(outcome)) => {
+                    new_commands.extend(outcome.artifacts.process_commands());
+                    new_exec_artifacts.extend(outcome.artifacts.artifacts.clone());
+                }
+                ModuleRepr::Foreign(_, Some((_, module_artifacts))) => {
                     new_commands.extend(module_artifacts.process_commands());
                     new_exec_artifacts.extend(module_artifacts.artifacts.clone());
                 }
@@ -401,12 +412,14 @@ impl ExecState {
         let initial_graph = self.global.artifacts.graph.clone();
 
         // Build the artifact graph.
+        let programs = self.build_program_lookup(program.clone());
         let graph_result = crate::execution::artifact::build_artifact_graph(
             &new_commands,
             &new_responses,
             program,
             &mut self.global.artifacts.artifacts,
             initial_graph,
+            &programs,
         );
 
         let artifact_graph = graph_result?;

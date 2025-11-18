@@ -34,7 +34,7 @@ look like the model moves and gets bigger at the same time. Say you have a squar
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `objects` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to scale. | Yes |
+| `objects` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to scale. | Yes |
 | `x` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the x axis. | No |
 | `y` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the y axis. | No |
 | `z` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the z axis. | No |
@@ -42,7 +42,7 @@ look like the model moves and gets bigger at the same time. Say you have a squar
 
 ### Returns
 
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
 
 
 ### Examples

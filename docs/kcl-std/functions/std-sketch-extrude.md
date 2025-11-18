@@ -49,7 +49,7 @@ can change this behavior by using the `method` parameter. See
 
 ### Returns
 
-[`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid)
+[[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+]
 
 
 ### Examples
