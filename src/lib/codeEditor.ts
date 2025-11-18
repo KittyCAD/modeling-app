@@ -21,8 +21,8 @@ export function isCodeTheSame(left: string, right: string) {
 }
 
 const green = {
-  light: 'oklch(from var(--primary) calc(l) calc(c + .15) calc(h - 90))',
-  dark: 'oklch(from var(--primary) calc(l + 0.2) c calc(h - 90))',
+  light: 'oklch(from var(--primary) calc(l - 0.1) calc(c) calc(h - 90))',
+  dark: 'oklch(from var(--primary) calc(l + 0.1) c calc(h - 90))',
 }
 const orange = {
   light: 'oklch(from var(--primary) calc(l + 0.05) calc(c + .1) calc(h - 180))',
