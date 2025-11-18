@@ -37,7 +37,10 @@ import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type CodeManager from '@src/lang/codeManager'
 import { BSON } from 'bson'
-import { decode as msgpackDecode } from '@msgpack/msgpack'
+import {
+  decode as msgpackDecode,
+  encode as msgpackEncode,
+} from '@msgpack/msgpack'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
 import type { CommandLog } from '@src/lang/std/commandLog'
@@ -682,6 +685,7 @@ export class ConnectionManager extends EventTarget {
     if (event.data instanceof ArrayBuffer) {
       const binaryData = new Uint8Array(event.data)
 
+      debugger
       try {
         message = msgpackDecode(binaryData) as WebSocketResponse
       } catch (msgpackError) {
@@ -1248,7 +1252,7 @@ export class ConnectionManager extends EventTarget {
         range,
         idToRangeMap,
       })
-      return BSON.serialize(resp[0])
+      return msgpackEncode(resp[0])
     } catch (e) {
       console.warn(e)
       if (isArray(e) && e.length > 0) {

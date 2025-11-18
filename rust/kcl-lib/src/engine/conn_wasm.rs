@@ -83,7 +83,7 @@ impl ResponseContext {
         let ws_result: WebSocketResponse = match rmp_serde::from_slice(&data.to_vec()) {
             Ok(res) => res,
             Err(_) => {
-                match bson::from_slice(&data.to_vec()) {
+                match rmp_serde::from_slice(&data.to_vec()) {
                     Ok(res) => res,
                     Err(_) => {
                         // We don't care about the error if we can't parse it.
