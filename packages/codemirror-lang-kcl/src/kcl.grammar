@@ -71,9 +71,8 @@ AnnotationProperty {
 }
 
 LabeledArgument { ArgumentLabel Equals expression }
-UnlabeledArgument { expression }
 
-ArgumentList { "(" commaSep<LabeledArgument | UnlabeledArgument> ")" }
+ArgumentList { "(" commaSep<LabeledArgument | expression> ")" }
 
 type[@isGroup=Type] {
   PrimitiveType { identifier } |
