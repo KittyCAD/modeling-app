@@ -62,6 +62,11 @@ import {
 } from '@src/lib/kcSdkGuards'
 import { showErrorToastPlusReportLink } from '@src/components/ToastErrorPlusReportLink'
 
+type RawFileWithBinary = {
+  name: string
+  contents: Uint8Array | number[]
+}
+
 export class ConnectionManager extends EventTarget {
   started: boolean
   inSequence = 1
@@ -685,7 +690,6 @@ export class ConnectionManager extends EventTarget {
     if (event.data instanceof ArrayBuffer) {
       const binaryData = new Uint8Array(event.data)
 
-      debugger
       try {
         message = msgpackDecode(binaryData) as WebSocketResponse
       } catch (msgpackError) {
@@ -703,6 +707,24 @@ export class ConnectionManager extends EventTarget {
 
       if (message?.request_id) {
         message.request_id = binaryToUuid(message.request_id)
+      }
+      // TODO: remove this hack once we only use MsgPack as it will be unnecessary after BSON is removed
+      if (message && 'resp' in message && message.resp?.type === 'export') {
+        const files = message.resp.data?.files
+        if (isArray(files)) {
+          for (const file of files) {
+            const contents = file.contents as unknown
+            if (
+              contents &&
+              typeof contents === 'object' &&
+              (contents as { _bsontype?: string })._bsontype === 'Binary' &&
+              (contents as { buffer?: unknown }).buffer instanceof Uint8Array
+            ) {
+              const typedFile = file as RawFileWithBinary
+              typedFile.contents = (contents as { buffer: Uint8Array }).buffer
+            }
+          }
+        }
       }
     } else {
       message = JSON.parse(event.data)

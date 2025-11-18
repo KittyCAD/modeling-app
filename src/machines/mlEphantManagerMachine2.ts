@@ -291,10 +291,10 @@ export const mlEphantManagerMachine2 = setup({
             if (!isString(event.data)) {
               const binaryData = new Uint8Array(event.data)
               try {
-                response = msgpackDecode(binaryData) as WebSocketResponse
+                response = msgpackDecode(binaryData)
               } catch (msgpackError) {
                 try {
-                  response = BSON.deserialize(binaryData) as WebSocketResponse
+                  response = BSON.deserialize(binaryData)
                 } catch (bsonError) {
                   return console.error(
                     'failed to deserialize binary websocket message',
