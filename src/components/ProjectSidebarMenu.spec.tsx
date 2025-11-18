@@ -3,7 +3,7 @@ import { BrowserRouter } from 'react-router-dom'
 
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import type { Project } from '@src/lib/project'
-import { expect } from 'vitest'
+import { expect, describe, test } from 'vitest'
 
 const now = new Date()
 const projectWellFormed = {

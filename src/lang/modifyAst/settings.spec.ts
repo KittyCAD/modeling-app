@@ -3,7 +3,7 @@ import { err } from '@src/lib/trap'
 import { join } from 'path'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
-import { expect } from 'vitest'
+import { expect, describe, it } from 'vitest'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 describe('settings.spec.ts', () => {

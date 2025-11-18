@@ -3,7 +3,7 @@ import { isPointsCCW } from '@src/lang/wasm'
 import { closestPointOnRay } from '@src/lib/utils2d'
 import { join } from 'path'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { expect } from 'vitest'
+import { expect, describe, test } from 'vitest'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 describe('test isPointsCW', () => {

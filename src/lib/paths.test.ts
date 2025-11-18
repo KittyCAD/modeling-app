@@ -1,7 +1,7 @@
 import * as path from 'path'
 
 import { parseProjectRoute } from '@src/lib/paths'
-import { expect } from 'vitest'
+import { expect, describe, it } from 'vitest'
 
 describe('testing parseProjectRoute', () => {
   it('should parse a project as a subpath of project dir', async () => {

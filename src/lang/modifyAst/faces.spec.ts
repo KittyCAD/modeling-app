@@ -24,7 +24,7 @@ import {
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { StdLibCallOp } from '@src/lang/queryAst'
 import { getEdgeCutMeta } from '@src/lang/queryAst'
-import { afterAll, expect } from 'vitest'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclSingleton'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'

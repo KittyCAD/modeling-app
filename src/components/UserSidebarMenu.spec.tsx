@@ -8,7 +8,7 @@ import {
 } from 'react-router-dom'
 
 import UserSidebarMenu from '@src/components/UserSidebarMenu'
-import { expect } from 'vitest'
+import { expect, describe, test } from 'vitest'
 
 describe('UserSidebarMenu tests', () => {
   test("Renders user's name and email if available", async () => {

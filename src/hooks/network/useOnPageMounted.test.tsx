@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
-import { expect, vi } from 'vitest'
+import { expect, vi, describe, test } from 'vitest'
 
 describe('useOnPageMounted', () => {
   describe('on mounted', () => {

@@ -5,7 +5,7 @@ import {
   printHeader,
   printRow,
 } from '@src/lib/telemetry'
-import { expect } from 'vitest'
+import { expect, describe, it } from 'vitest'
 
 describe('Telemetry', () => {
   describe('columnWidth', () => {

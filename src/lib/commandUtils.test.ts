@@ -1,6 +1,6 @@
 import type { CommandWithDisabledState } from '@src/lib/commandUtils'
 import { sortCommands } from '@src/lib/commandUtils'
-import { expect } from 'vitest'
+import { expect, describe, it } from 'vitest'
 
 function commandWithDisabled(
   name: string,

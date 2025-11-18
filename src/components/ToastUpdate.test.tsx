@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { expect, vi } from 'vitest'
+import { expect, vi, describe, test } from 'vitest'
 
 import { ToastUpdate } from '@src/components/ToastUpdate'
 

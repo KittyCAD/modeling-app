@@ -23,7 +23,7 @@ import {
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import { afterAll, expect } from 'vitest'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

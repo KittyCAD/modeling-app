@@ -5,7 +5,7 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type RustContext from '@src/lib/rustContext'
-import { beforeAll, afterAll, expect } from 'vitest'
+import { beforeAll, afterAll, expect, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!

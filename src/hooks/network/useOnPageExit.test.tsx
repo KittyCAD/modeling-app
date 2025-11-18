@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
-import { expect, vi, describe } from 'vitest'
+import { expect, vi, describe, test } from 'vitest'
 import { ConnectionManager } from '@src/network/connectionManager'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 

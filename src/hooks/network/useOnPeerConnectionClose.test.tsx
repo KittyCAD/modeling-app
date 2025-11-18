@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react'
 import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
-import { expect, vi } from 'vitest'
+import { expect, vi, describe, test } from 'vitest'
 import { ConnectionManager } from '@src/network/connectionManager'
 import { EngineCommandManagerEvents } from '@src/network/utils'
 
