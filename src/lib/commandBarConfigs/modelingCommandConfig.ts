@@ -48,6 +48,7 @@ import {
   addLoft,
   addRevolve,
   addSweep,
+  type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { addHole, addOffsetPlane, addShell } from '@src/lang/modifyAst/faces'
@@ -148,7 +149,7 @@ export type ModelingCommandSchema = {
     path: Selections
     sectional?: boolean
     // TODO: figure out if we should expose `tolerance` or not
-    relativeTo?: string
+    relativeTo?: SweepRelativeTo
     tagStart?: string
     tagEnd?: string
   }
@@ -645,7 +646,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       path: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'helix'],
+        selectionTypes: ['path', 'helix'],
+        selectionFilter: ['object'],
         required: true,
         multiple: false,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
@@ -658,8 +660,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'options',
         required: false,
         options: [
-          { name: 'sketchPlane', value: 'sketchPlane' },
-          { name: 'trajectoryCurve', value: 'trajectoryCurve' },
+          { name: 'Sketch Plane', value: 'SKETCH_PLANE' },
+          { name: 'Trajectory Curve', value: 'TRAJECTORY' },
         ],
       },
       tagStart: {

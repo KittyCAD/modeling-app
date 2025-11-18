@@ -197,6 +197,16 @@ mod tests {
     }
 
     #[test]
+    fn get_autocomplete_snippet_subtract2d() {
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(data) = data.find_by_name("subtract2d").unwrap() else {
+            panic!();
+        };
+        let snippet = data.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"subtract2d(tool = ${0:profileToSubtract})"#);
+    }
+
+    #[test]
     fn get_autocomplete_snippet_intersect() {
         let data = kcl_doc::walk_prelude();
         let DocData::Fn(data) = data.find_by_name("intersect").unwrap() else {
