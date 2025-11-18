@@ -647,6 +647,8 @@ impl FnData {
             return "union([${0:extrude001}, ${1:extrude002}])".to_owned();
         } else if self.name == "subtract" {
             return "subtract([${0:extrude001}], tools = [${1:extrude002}])".to_owned();
+        } else if self.name == "subtract2d" {
+            return "subtract2d(tool = ${0:profileToSubtract})".to_owned();
         } else if self.name == "intersect" {
             return "intersect([${0:extrude001}, ${1:extrude002}])".to_owned();
         } else if self.name == "clone" {
@@ -888,6 +890,12 @@ impl ArgData {
                 })
             }),
         }
+    }
+
+    /// Is this a normal, labelled arg,
+    /// or the special unlabelled first arg?
+    pub fn is_labelled(&self) -> bool {
+        matches!(self.kind, ArgKind::Labelled(_))
     }
 }
 

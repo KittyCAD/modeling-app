@@ -1153,7 +1153,7 @@ sketch002 = startSketchOn(plane001)
 sketch001 = startSketchOn(XZ)
 profile001 = ${circleCode}`
     const sweepDeclaration = 'sweep001 = sweep(profile001, path = helix001)'
-    const editedSweepDeclaration = `sweep001 = sweep(profile001, path = helix001, relativeTo = "sketchPlane")`
+    const editedSweepDeclaration = `sweep001 = sweep(profile001, path = helix001, relativeTo = sweep::SKETCH_PLANE)`
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -1235,11 +1235,11 @@ profile001 = ${circleCode}`
         highlightedHeaderArg: 'relativeTo',
         commandName: 'Sweep',
       })
-      await cmdBar.selectOption({ name: 'sketchPlane' }).click()
+      await cmdBar.selectOption({ name: 'Sketch Plane' }).click()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
-          RelativeTo: 'sketchPlane',
+          RelativeTo: 'SKETCH_PLANE',
         },
         commandName: 'Sweep',
       })
