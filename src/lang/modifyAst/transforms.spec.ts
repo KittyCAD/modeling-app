@@ -411,11 +411,11 @@ scale(extrude001, factor = 2)`
         nodeToEdit,
       })
       if (err(result)) throw result
-      // await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
-      // const newCode = recast(result.modifiedAst, instanceInThisFile)
-      // expect(newCode).toContain(
-      //   scaledCylinderCode.replace('factor = 2', 'factor = 3')
-      // )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        scaledCylinderCode.replace('factor = 2', 'factor = 3')
+      )
     })
 
     async function runEditScaleTest(
