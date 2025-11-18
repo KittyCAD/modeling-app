@@ -1083,11 +1083,13 @@ export function getVariableExprsFromSelection(
         s.artifact,
         artifactGraph
       )
+      console.log('children', children)
       const lastChildVariable = getLastVariable(
         children,
         ast,
         artifactTypeFilter
       )
+      console.log('lastChildVariable', lastChildVariable)
       if (!lastChildVariable) {
         continue
       }
