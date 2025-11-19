@@ -21,6 +21,7 @@ import { useSelector } from '@xstate/react'
 import type { User, MlCopilotServerMessage, MlCopilotMode } from '@kittycad/lib'
 import { useSearchParams } from 'react-router-dom'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
+import { type useModelingContext } from '@src/hooks/useModelingContext'
 
 export const MlEphantConversationPane2 = (props: {
   mlEphantManagerActor: MlEphantManagerActor2
@@ -30,6 +31,7 @@ export const MlEphantConversationPane2 = (props: {
   codeManager: CodeManager
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
+  sendModeling: ReturnType<typeof useModelingContext>['send']
   loaderFile: FileEntry | undefined
   settings: typeof settings
   user?: User
@@ -108,6 +110,12 @@ export const MlEphantConversationPane2 = (props: {
       selections: props.contextModeling.selectionRanges,
       artifactGraph: props.kclManager.artifactGraph,
       mode,
+    })
+
+    // Clear selections since new model
+    props.sendModeling({
+      type: 'Set selection',
+      data: { selection: undefined, selectionType: 'singleCodeCursor' },
     })
   }
 
