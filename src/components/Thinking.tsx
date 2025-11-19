@@ -646,7 +646,7 @@ export const Thinking = (props: {
   )
 
   const ViewImmediate = (
-    <div data-testid="thinking-immediate" className="animate-shimmer p-2">
+    <div data-testid="thinking-immediate" className="animate-shimmer p-2 pb-4">
       {componentLastGenericThought}
     </div>
   )

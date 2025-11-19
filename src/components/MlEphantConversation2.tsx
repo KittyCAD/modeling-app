@@ -167,6 +167,7 @@ interface MlEphantConversationInputProps {
   disabled?: boolean
   needsReconnect: boolean
   defaultPrompt?: string
+  hasAlreadySentPrompts: boolean
 }
 
 function BillingStatusBarItem(props: { billingContext: BillingContext }) {
@@ -267,7 +268,7 @@ export const MlEphantConversationInput = (
   return (
     <div className="flex flex-col p-4 gap-2">
       <div className="flex flex-row justify-between">
-        <div className="text-sm text-3">Enter a prompt</div>
+        <div></div>
         <BillingStatusBarItem billingContext={props.billingContext} />
       </div>
       <div className="p-2 border b-4 focus-within:b-default flex flex-col gap-2">
@@ -279,6 +280,11 @@ export const MlEphantConversationInput = (
           onChange={(e) => setValue(e.target.value)}
           value={value}
           ref={refDiv}
+          placeholder={
+            props.hasAlreadySentPrompts
+              ? ''
+              : 'Create a gear with 10 teeth and use sensible defaults for everything else...'
+          }
           onKeyDown={(e) => {
             const isOnlyEnter =
               e.key === 'Enter' && !(e.shiftKey || e.metaKey || e.ctrlKey)
@@ -328,6 +334,44 @@ export const MlEphantConversationInput = (
         Zookeeper can make mistakes. Always verify information.
       </div>
     </div>
+  )
+}
+
+export const StarterCard = () => {
+  const fakeStartedAt = useRef<Date>(new Date())
+  const [, setTrigger] = useState<number>(0)
+
+  useEffect(() => {
+    const i = setInterval(() => {
+      setTrigger((t) => t + 1)
+    }, 500)
+    return () => {
+      clearInterval(i)
+    }
+  }, [])
+
+  return (
+    <ExchangeCard
+      onClickClearChat={() => {}}
+      isLastResponse={false}
+      responses={[
+        {
+          reasoning: {
+            type: 'text',
+            content: 'I need to help this user achieve their goals and dreams!',
+          },
+        },
+        { delta: { delta: '' } },
+        {
+          end_of_stream: {
+            whole_response: '',
+            started_at: fakeStartedAt.current.toString(),
+            completed_at: fakeStartedAt.current.toString(),
+          },
+        },
+      ]}
+      deltasAggregated="Try requesting a model, ask engineering questions, or let's explore ideas."
+    />
   )
 }
 
@@ -400,13 +444,16 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
           <div className="h-full flex flex-col justify-end overflow-auto">
             <div className="overflow-auto" ref={refScroll}>
               {props.isLoading === false ? (
-                <></>
+                exchangeCards !== undefined && exchangeCards.length > 0 ? (
+                  exchangeCards
+                ) : (
+                  <StarterCard />
+                )
               ) : (
                 <div className="text-center p-4 text-3 text-md animate-pulse">
                   <Loading></Loading>
                 </div>
               )}
-              {exchangeCards}
             </div>
           </div>
           <div className="border-t b-4">
@@ -418,6 +465,9 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
               onReconnect={props.onReconnect}
               billingContext={props.billingContext}
               defaultPrompt={props.defaultPrompt}
+              hasAlreadySentPrompts={
+                exchangeCards !== undefined && exchangeCards.length > 0
+              }
             />
           </div>
         </div>
