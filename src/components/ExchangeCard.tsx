@@ -119,6 +119,7 @@ export const ExchangeCardStatus = (props: {
   updatedAt?: Date
   maybeError?: MlCopilotServerMessageError
 }) => {
+  const [triggerRender, setTriggerRender] = useState<number>(0)
   const thinker = (
     <Thinking
       thoughts={props.responses}
@@ -132,6 +133,20 @@ export const ExchangeCardStatus = (props: {
   const isEndOfStream =
     'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
     props.responses?.some((x) => 'error' in x || 'info' in x)
+
+  useEffect(() => {
+    const i = setInterval(() => {
+      setTriggerRender(triggerRender + 1)
+    }, 500)
+
+    if (isEndOfStream) {
+      clearInterval(i)
+    }
+
+    return () => {
+      clearInterval(i)
+    }
+  }, [triggerRender, isEndOfStream])
 
   let timeReasonedFor = 0
   if (isEndOfStream) {
