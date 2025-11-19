@@ -482,9 +482,15 @@ fn expression(i: &mut TokenSlice) -> ModalResult<Expr> {
     let mut values = vec![head];
 
     let value_surrounded_by_comments = (
-        repeat(0.., preceded(opt(whitespace), non_code_node)), // Before the expression.
-        preceded(opt(whitespace), labelled_fn_call),           // The expression.
-        repeat(0.., noncode_just_after_code),                  // After the expression.
+        // Before the expression.
+        repeat(0.., preceded(opt(whitespace), non_code_node)),
+        // The expression
+        preceded(
+            opt(whitespace),
+            alt((labelled_fn_call, if_expr.map(Expr::IfExpression))),
+        ),
+        // After the expression.
+        repeat(0.., noncode_just_after_code),
     );
     let tail: Vec<(Vec<_>, _, Vec<_>)> = repeat(
         1..,
