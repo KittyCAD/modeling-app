@@ -5631,6 +5631,21 @@ bar = 1
         assert_eq!(actual.operator, UnaryOperator::Not);
         crate::parsing::top_level_parse(some_program_string).unwrap(); // Updated import path
     }
+
+    #[test]
+    fn test_comments_in_args() {
+        // This currently fails because there's no trailing comma between the
+        // z = 1 and the comment which follows.
+        // We should tolerate that though, if it's the last argument.
+        let code = r#"x = rectangle(
+  recessSketch,
+  x = [cx, cy],
+  y = 1, // y component
+  z = 1 // axial thickness
+)"#;
+        let _result = crate::parsing::top_level_parse(code).unwrap();
+    }
+
     #[test]
     fn test_sensible_error_when_missing_comma_between_fn_args() {
         let program_source = "startSketchOn(XY)
