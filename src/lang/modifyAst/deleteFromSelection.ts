@@ -161,6 +161,7 @@ export async function deleteFromSelection(
     selection.artifact?.type === 'plane' ||
     selection.artifact?.type === 'compositeSolid' ||
     selection.artifact?.type === 'helix' ||
+    selection.artifact?.type === 'planeOfFace' ||
     !selection.artifact // aka expected to be a shell at this point
   ) {
     let extrudeNameToDelete = ''
@@ -170,7 +171,8 @@ export async function deleteFromSelection(
       selection.artifact.type !== 'sweep' &&
       selection.artifact.type !== 'plane' &&
       selection.artifact.type !== 'compositeSolid' &&
-      selection.artifact.type !== 'helix'
+      selection.artifact.type !== 'helix' &&
+      selection.artifact.type !== 'planeOfFace'
     ) {
       const varDecName = varDec.node.id.name
       traverse(astClone, {
