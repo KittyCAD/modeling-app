@@ -502,7 +502,7 @@ export const settingsMachine = setup({
           actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
         },
 
-        'set.meta.disableCopilot': {
+        'set.meta.enableZookeeper': {
           target: 'persisting settings',
 
           actions: ['setSettingAtLevel', 'toastSuccess'],

@@ -224,6 +224,7 @@ const Home = () => {
       <AppHeader nativeFileMenuCreated={nativeFileMenuCreated} />
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
+          data-testid="home-header"
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
@@ -231,7 +232,10 @@ const Home = () => {
           readWriteProjectDir={readWriteProjectDir}
           className="col-start-2 -col-end-1"
         />
-        <aside className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 md:mb-12 lg:flex flex-col justify-between">
+        <aside
+          data-testid="home-sidebar"
+          className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 md:mb-12 lg:flex flex-col justify-between"
+        >
           <ul className="flex flex-col">
             {needsToOnboard(location, onboardingStatus) && (
               <li className="flex group">
