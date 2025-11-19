@@ -97,6 +97,7 @@ export const ResponseCardToolBar = (props: {
       contentForClipboard = lastResponse.end_of_stream.whole_response
     }
   }
+
   return (
     <div className="pl-9 flex flex-row justify-between">
       {isEndOfStream ? (
@@ -312,6 +313,18 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
 
   const itemsFilteredNulls = items.filter((x: ReactNode | null) => x !== null)
 
+  const deltasAggregatedMarkdown =
+    props.deltasAggregated !== '' ? (
+      <span
+        dangerouslySetInnerHTML={{
+          __html: Marked.parse(props.deltasAggregated, {
+            renderer: new SafeRenderer(MarkedOptions),
+            ...MarkedOptions,
+          }),
+        }}
+      ></span>
+    ) : null
+
   return (
     <ChatBubble
       side={'left'}
@@ -323,7 +336,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
     >
       {[
         itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null,
-        props.deltasAggregated !== '' ? props.deltasAggregated : null,
+        deltasAggregatedMarkdown,
       ].filter((x: ReactNode) => x !== null)}
     </ChatBubble>
   )
