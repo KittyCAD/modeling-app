@@ -2214,8 +2214,6 @@ dependencies = [
 [[package]]
 name = "kcl-ezpz"
 version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ae79e38dd74d57483135a0c29e9be71cd445e6381a2fb99ea683b637cc0934d8"
 dependencies = [
  "faer",
  "getrandom 0.2.16",
@@ -2923,8 +2921,6 @@ dependencies = [
 [[package]]
 name = "newtonls_faer"
 version = "0.1.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8245825be07ab6cd8121fc12aa8bbfe7d8fe94512298382a222f0104105e3cfe"
 dependencies = [
  "dyn-stack",
  "error-stack",
