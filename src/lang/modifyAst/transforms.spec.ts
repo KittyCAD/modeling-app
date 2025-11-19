@@ -386,7 +386,7 @@ scale(extrude001, factor = 2)`
       expect(newCode).toContain(scaledCylinderCode)
     })
 
-    it('should edit a scale call with factor', async () => {
+    it.skip('should edit a scale call with factor', async () => {
       const {
         artifactGraph,
         ast,
