@@ -1162,7 +1162,14 @@ fn labeled_arg_separator(i: &mut TokenSlice) -> ModalResult<Option<SourceRange>>
         // Normally you need a comma.
         comma_sep.map(|_| None),
         // But, if the argument list is ending, no need for a comma.
-        peek(preceded(opt(whitespace), close_paren)).void().map(|_| None),
+        peek((
+            opt(whitespace),
+            repeat(0.., terminated(non_code_node, opt(whitespace))).map(|_: Vec<_>| ()),
+            opt(whitespace),
+            close_paren,
+        ))
+        .void()
+        .map(|_| None),
         whitespace.map(|mut tokens| {
             // Safe to unwrap here because `whitespace` is guaranteed to return at least 1 whitespace.
             let first_token = tokens.pop().unwrap();
