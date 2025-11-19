@@ -4362,7 +4362,7 @@ extrude001 = extrude(profile001, length = 10)`
   cutAt = [2, 2],
   holeBottom =   hole::flat(),
   holeBody =   hole::blind(depth = 5, diameter = 1),
-  holeType =   hole::countersink(diameter = 3, angle = 80deg),
+  holeType =   hole::countersink(angle = 80deg, diameter = 3),
 )`,
         { shouldNormalise: true }
       )

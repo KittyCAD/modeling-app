@@ -1086,7 +1086,8 @@ export function getVariableExprsFromSelection(
       const lastChildVariable = getLastVariable(
         children,
         ast,
-        artifactTypeFilter
+        artifactTypeFilter,
+        nodeToEdit
       )
       if (!lastChildVariable) {
         continue
@@ -1553,7 +1554,8 @@ export function findAllChildrenAndOrderByPlaceInCode(
 export function getLastVariable(
   orderedDescArtifacts: Artifact[],
   ast: Node<Program>,
-  typeFilter?: Array<Artifact['type']>
+  typeFilter?: Array<Artifact['type']>,
+  nodeToEdit?: PathToNode
 ) {
   for (const artifact of orderedDescArtifacts) {
     if (typeFilter && !typeFilter.includes(artifact.type)) {
@@ -1563,7 +1565,10 @@ export function getLastVariable(
     if (codeRef) {
       const pathToNode =
         codeRef.pathToNode ?? getNodePathFromSourceRange(ast, codeRef.range)
-      if (pathToNode && pathToNode.length > 1) {
+      const isSameAsNodeToEdit =
+        nodeToEdit &&
+        stringifyPathToNode(pathToNode) === stringifyPathToNode(nodeToEdit)
+      if (pathToNode && pathToNode.length > 1 && !isSameAsNodeToEdit) {
         const varDec = getNodeFromPath<VariableDeclaration>(
           ast,
           pathToNode,
