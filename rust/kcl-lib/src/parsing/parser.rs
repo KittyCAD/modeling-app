@@ -5814,6 +5814,17 @@ bar = 1
         assert_eq!(cause.err.message, ELSE_MUST_END_IN_EXPR);
         assert_eq!(cause.err.source_range.start(), expected_src_start);
     }
+
+    #[test]
+    fn test_if_expr_in_pipeline() {
+        let code = r#"0
+|> if true {
+  f(%)
+} else {
+  f(%)
+}"#;
+        let _result = crate::parsing::top_level_parse(code).unwrap();
+    }
 }
 
 #[cfg(test)]
