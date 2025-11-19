@@ -31,6 +31,7 @@ function GizmoDropdown({ items }: { items: React.ReactNode[] }) {
             <span className="sr-only">View settings</span>
           </Popover.Button>
           <Popover.Panel
+            data-testid="gizmo-view-menu"
             className={`absolute bottom-full right-0 mb-2 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
       border border-solid border-chalkboard-10 dark:border-chalkboard-90 rounded
       shadow-lg`}

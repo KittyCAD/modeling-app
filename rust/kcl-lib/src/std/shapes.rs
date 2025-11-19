@@ -155,7 +155,7 @@ async fn inner_rectangle(
 pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_or_surface =
         args.get_unlabeled_kw_arg("sketchOrSurface", &RuntimeType::sketch_or_surface(), exec_state)?;
-    let center = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let center = args.get_kw_arg_opt("center", &RuntimeType::point2d(), exec_state)?;
     let radius: Option<TyF64> = args.get_kw_arg_opt("radius", &RuntimeType::length(), exec_state)?;
     let diameter: Option<TyF64> = args.get_kw_arg_opt("diameter", &RuntimeType::length(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
@@ -166,9 +166,14 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     })
 }
 
+const POINT_ZERO_ZERO: [TyF64; 2] = [
+    TyF64::new(0.0, crate::exec::NumericType::mm()),
+    TyF64::new(0.0, crate::exec::NumericType::mm()),
+];
+
 async fn inner_circle(
     sketch_or_surface: SketchOrSurface,
-    center: [TyF64; 2],
+    center: Option<[TyF64; 2]>,
     radius: Option<TyF64>,
     diameter: Option<TyF64>,
     tag: Option<TagNode>,
@@ -179,6 +184,7 @@ async fn inner_circle(
         SketchOrSurface::SketchSurface(surface) => surface,
         SketchOrSurface::Sketch(s) => s.on,
     };
+    let center = center.unwrap_or(POINT_ZERO_ZERO);
     let (center_u, ty) = untype_point(center.clone());
     let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
 
