@@ -1028,7 +1028,20 @@ impl Node<SketchBlock> {
         };
 
         // Translate sketch variables and constraints to solver input.
-        let constraints = &sketch_block_state.solver_constraints;
+        let constraints = sketch_block_state
+            .solver_constraints
+            .iter()
+            .cloned()
+            .map(kcl_ezpz::ConstraintRequest::highest_priority)
+            .chain(
+                // Optional constraints have a lower priority.
+                sketch_block_state
+                    .solver_optional_constraints
+                    .iter()
+                    .cloned()
+                    .map(|c| kcl_ezpz::ConstraintRequest::new(c, 1)),
+            )
+            .collect::<Vec<_>>();
         let initial_guesses = sketch_block_state
             .sketch_vars
             .iter()
@@ -1066,12 +1079,13 @@ impl Node<SketchBlock> {
             .collect::<Result<Vec<_>, KclError>>()?;
         // Solve constraints.
         let config = kcl_ezpz::Config::default();
-        let solve_outcome = kcl_ezpz::solve(constraints, initial_guesses, config).map_err(|e| {
-            KclError::new_internal(KclErrorDetails::new(
-                format!("Error from constraint solver: {}", e.error),
-                vec![SourceRange::from(self)],
-            ))
-        })?;
+        let solve_outcome =
+            kcl_ezpz::solve_with_priority(&constraints, initial_guesses.clone(), config).map_err(|e| {
+                KclError::new_internal(KclErrorDetails::new(
+                    format!("Error from constraint solver: {}", e.error),
+                    vec![SourceRange::from(self)],
+                ))
+            })?;
         // Propagate warnings.
         for warning in &solve_outcome.warnings {
             let message = if let Some(index) = warning.about_constraint.as_ref() {
@@ -1085,9 +1099,9 @@ impl Node<SketchBlock> {
         let solution_ty = solver_numeric_type(exec_state);
         let variables = substitute_sketch_vars(variables, &solve_outcome, solution_ty)?;
         let mut solved_segments = Vec::with_capacity(sketch_block_state.needed_by_engine.len());
-        for unsolved_segment in sketch_block_state.needed_by_engine.clone() {
+        for unsolved_segment in &sketch_block_state.needed_by_engine {
             solved_segments.push(substitute_sketch_var_in_segment(
-                unsolved_segment,
+                unsolved_segment.clone(),
                 &solve_outcome,
                 solver_numeric_type(exec_state),
             )?);
