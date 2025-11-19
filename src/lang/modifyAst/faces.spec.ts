@@ -612,17 +612,22 @@ hole002 = hole::hole(
   holeType =   hole::counterbore(depth = 1, diameter = 2),
 )`
       )
-      // TODO: add mock exec once hole::hole is supported
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
 
     it('should edit a simple hole call into a countersink hole call on cylinder end cap with drill end', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
-        `${cylinder}
+        `${cylinderWithFlag}
 ${simpleHole}`,
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const nodeToEdit = createPathToNodeForLastVariable(ast)
+      const nodeToEdit = createPathToNodeForLastVariable(ast, false)
       const face = getCapFromCylinder(artifactGraph)
       const cutAt = (await stringToKclExpression(
         '[1, 1]',
@@ -680,9 +685,8 @@ ${simpleHole}`,
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(cylinder)
       expect(newCode).toContain(
-        `${cylinder}
+        `${cylinderWithFlag}
 hole001 = hole::hole(
   extrude001,
   face = END,
@@ -692,7 +696,12 @@ hole001 = hole::hole(
   holeType =   hole::countersink(angle = 120, diameter = 2),
 )`
       )
-      // TODO: add mock exec once hole::hole is supported
+      await enginelessExecutor(
+        result.modifiedAst,
+        undefined,
+        undefined,
+        rustContextInThisFile
+      )
     })
   })
 
