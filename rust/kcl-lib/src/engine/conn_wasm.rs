@@ -80,11 +80,16 @@ impl ResponseContext {
 
     // Add a response to the context.
     pub async fn send_response(&self, data: js_sys::Uint8Array) {
-        let ws_result: WebSocketResponse = match bson::from_slice(&data.to_vec()) {
+        let ws_result: WebSocketResponse = match rmp_serde::from_slice(&data.to_vec()) {
             Ok(res) => res,
-            Err(_) => {
-                // We don't care about the error if we can't parse it.
-                return;
+            Err(msgpack_err) => {
+                match bson::from_slice(&data.to_vec()) {
+                    Ok(res) => res,
+                    Err(bson_err) => {
+                        // We don't care about the error if we can't parse it.
+                        return;
+                    }
+                }
             }
         };
 
@@ -246,12 +251,15 @@ impl EngineConnection {
         // Convert JsValue to a Uint8Array
         let data = js_sys::Uint8Array::from(value);
 
-        let ws_result: WebSocketResponse = bson::from_slice(&data.to_vec()).map_err(|e| {
-            KclError::new_engine(KclErrorDetails::new(
-                format!("Failed to deserialize bson response from engine: {:?}", e),
-                vec![source_range],
-            ))
-        })?;
+        let ws_result: WebSocketResponse = match rmp_serde::from_slice(&data.to_vec()) {
+            Ok(resp) => resp,
+            Err(msgpack_err) => bson::from_slice(&data.to_vec()).map_err(|e| {
+                KclError::new_engine(KclErrorDetails::new(
+                    format!("Failed to deserialize bson response from engine: {:?}", e),
+                    vec![source_range],
+                ))
+            })?,
+        };
 
         Ok(ws_result)
     }

@@ -1,4 +1,4 @@
-import { BSON } from 'bson'
+import { encode as msgpackEncode } from '@msgpack/msgpack'
 import type {
   MlCopilotServerMessage,
   ReasoningMessage,
@@ -216,7 +216,7 @@ function generateUserResponse(
 
 function generateReplayResponse(): Uint8Array {
   const te = new TextEncoder()
-  return BSON.serialize({
+  return msgpackEncode({
     replay: {
       messages: generateMlServerMessages().map((m: MlCopilotServerMessage) => {
         return Array.from(te.encode(JSON.stringify(m)))
@@ -286,6 +286,11 @@ export class MockSocket extends WebSocket {
             })
           )
         })
+
+        // Force a close after 3 seconds
+        // setTimeout(() => {
+        //   this.cbs.close.forEach((cb) => cb())
+        // }, 10000)
       }
     } else if (isWebSocketEventType('close', type, listener)) {
       this.cbs.close.push(listener)

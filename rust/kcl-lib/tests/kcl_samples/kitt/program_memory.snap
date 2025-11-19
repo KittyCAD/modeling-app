@@ -155,23 +155,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              27.0,
-              13.0
-            ],
-            "tag": null,
-            "to": [
-              27.0,
-              13.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -315,23 +298,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
                     6.0
                   ],
                   "tag": null,
@@ -543,23 +509,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              27.0,
-              11.0
-            ],
-            "tag": null,
-            "to": [
-              27.0,
-              11.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -703,23 +652,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
                     6.0
                   ],
                   "tag": null,
@@ -931,23 +863,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              25.0,
-              14.0
-            ],
-            "tag": null,
-            "to": [
-              25.0,
-              14.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -1091,23 +1006,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
                     6.0
                   ],
                   "tag": null,
@@ -1319,23 +1217,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              25.0,
-              12.0
-            ],
-            "tag": null,
-            "to": [
-              25.0,
-              12.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -1479,23 +1360,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
                     6.0
                   ],
                   "tag": null,
@@ -1707,23 +1571,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              25.0,
-              10.0
-            ],
-            "tag": null,
-            "to": [
-              25.0,
-              10.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -1867,23 +1714,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
                     6.0
                   ],
                   "tag": null,
@@ -2095,23 +1925,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              23.0,
-              13.0
-            ],
-            "tag": null,
-            "to": [
-              23.0,
-              13.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -2255,23 +2068,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
                     6.0
                   ],
                   "tag": null,
@@ -2483,23 +2279,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              23.0,
-              11.0
-            ],
-            "tag": null,
-            "to": [
-              23.0,
-              11.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -2643,23 +2422,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
                     6.0
                   ],
                   "tag": null,
@@ -2925,23 +2687,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -12.0,
-              7.0
-            ],
-            "tag": null,
-            "to": [
-              -12.0,
-              7.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -3085,23 +2830,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
                     6.0
                   ],
                   "tag": null,
@@ -3313,23 +3041,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -9.0,
-              13.0
-            ],
-            "tag": null,
-            "to": [
-              -9.0,
-              13.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -3473,23 +3184,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
                     6.0
                   ],
                   "tag": null,
@@ -3810,23 +3504,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -13.0,
-              6.0
-            ],
-            "tag": null,
-            "to": [
-              -13.0,
-              6.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -4038,23 +3715,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              11.0,
-              10.0
-            ],
-            "tag": null,
-            "to": [
-              11.0,
-              10.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -4170,23 +3830,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     12.0,
-                    7.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    7.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
                     7.0
                   ],
                   "tag": null,
@@ -4339,23 +3982,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
                           6.0
                         ],
                         "tag": null,
@@ -4594,23 +4220,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              9.0,
-              10.0
-            ],
-            "tag": null,
-            "to": [
-              9.0,
-              10.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -4726,23 +4335,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     12.0,
-                    7.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    7.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
                     7.0
                   ],
                   "tag": null,
@@ -4895,23 +4487,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
                           6.0
                         ],
                         "tag": null,
@@ -5150,23 +4725,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              7.0,
-              10.0
-            ],
-            "tag": null,
-            "to": [
-              7.0,
-              10.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -5282,23 +4840,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     12.0,
-                    7.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    7.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
                     7.0
                   ],
                   "tag": null,
@@ -5451,23 +4992,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
                           6.0
                         ],
                         "tag": null,
@@ -6010,23 +5534,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -10.0,
-              16.0
-            ],
-            "tag": null,
-            "to": [
-              -10.0,
-              16.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -6142,23 +5649,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     12.0,
-                    14.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    14.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
                     14.0
                   ],
                   "tag": null,
@@ -6311,23 +5801,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
                           6.0
                         ],
                         "tag": null,
@@ -6602,23 +6075,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -11.0,
-              8.0
-            ],
-            "tag": null,
-            "to": [
-              -11.0,
-              8.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -6734,23 +6190,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     12.0,
-                    7.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    7.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
                     7.0
                   ],
                   "tag": null,
@@ -6903,23 +6342,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
                           6.0
                         ],
                         "tag": null,
@@ -7158,23 +6580,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -11.0,
-              10.0
-            ],
-            "tag": null,
-            "to": [
-              -11.0,
-              10.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -7290,23 +6695,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     12.0,
-                    7.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    7.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
                     7.0
                   ],
                   "tag": null,
@@ -7459,23 +6847,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
                           6.0
                         ],
                         "tag": null,
@@ -7714,23 +7085,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              11.0,
-              8.0
-            ],
-            "tag": null,
-            "to": [
-              11.0,
-              8.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -7846,23 +7200,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     12.0,
-                    7.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    7.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
                     7.0
                   ],
                   "tag": null,
@@ -8015,23 +7352,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
                           6.0
                         ],
                         "tag": null,
@@ -8315,23 +7635,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -12.0,
-              14.0
-            ],
-            "tag": null,
-            "to": [
-              -12.0,
-              14.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -8475,23 +7778,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
                     6.0
                   ],
                   "tag": null,
@@ -8748,23 +8034,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              4.0,
-              14.0
-            ],
-            "tag": null,
-            "to": [
-              4.0,
-              14.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -8908,23 +8177,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
                     6.0
                   ],
                   "tag": null,
@@ -9127,23 +8379,6 @@ description: Variables in memory after executing kitt.kcl
             },
             "from": [
               -6.0,
-              23.0
-            ],
-            "tag": null,
-            "to": [
-              -7.0,
-              23.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -7.0,
               23.0
             ],
             "tag": null,
@@ -9469,23 +8704,6 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
@@ -9601,23 +8819,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
                           14.0
                         ],
                         "tag": null,
@@ -9770,23 +8971,6 @@ description: Variables in memory after executing kitt.kcl
                               },
                               "from": [
                                 13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
                                 6.0
                               ],
                               "tag": null,
@@ -10052,23 +9236,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -6.0,
-              24.0
-            ],
-            "tag": null,
-            "to": [
-              -6.0,
-              24.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -10385,23 +9552,6 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
@@ -10517,23 +9667,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
                           14.0
                         ],
                         "tag": null,
@@ -10686,23 +9819,6 @@ description: Variables in memory after executing kitt.kcl
                               },
                               "from": [
                                 13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
                                 6.0
                               ],
                               "tag": null,
@@ -10968,23 +10084,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -3.0,
-              23.0
-            ],
-            "tag": null,
-            "to": [
-              -3.0,
-              23.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -11301,23 +10400,6 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
@@ -11433,23 +10515,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
                           14.0
                         ],
                         "tag": null,
@@ -11602,23 +10667,6 @@ description: Variables in memory after executing kitt.kcl
                               },
                               "from": [
                                 13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
                                 6.0
                               ],
                               "tag": null,
@@ -11884,23 +10932,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -10.0,
-              -4.0
-            ],
-            "tag": null,
-            "to": [
-              -10.0,
-              -4.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -12070,23 +11101,6 @@ description: Variables in memory after executing kitt.kcl
             },
             "from": [
               -2.0,
-              19.0
-            ],
-            "tag": null,
-            "to": [
-              -3.0,
-              19.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -3.0,
               19.0
             ],
             "tag": null,
@@ -12412,23 +11426,6 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
@@ -12544,23 +11541,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
                           14.0
                         ],
                         "tag": null,
@@ -12713,23 +11693,6 @@ description: Variables in memory after executing kitt.kcl
                               },
                               "from": [
                                 13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
                                 6.0
                               ],
                               "tag": null,
@@ -12995,23 +11958,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.0,
-              19.0
-            ],
-            "tag": null,
-            "to": [
-              3.0,
-              19.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -13328,23 +12274,6 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
@@ -13460,23 +12389,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
                           14.0
                         ],
                         "tag": null,
@@ -13629,23 +12541,6 @@ description: Variables in memory after executing kitt.kcl
                               },
                               "from": [
                                 13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
                                 6.0
                               ],
                               "tag": null,
@@ -13929,23 +12824,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.0,
-              20.0
-            ],
-            "tag": null,
-            "to": [
-              -4.0,
-              20.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -14262,23 +13140,6 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
@@ -14394,23 +13255,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
                           14.0
                         ],
                         "tag": null,
@@ -14563,23 +13407,6 @@ description: Variables in memory after executing kitt.kcl
                               },
                               "from": [
                                 13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
                                 6.0
                               ],
                               "tag": null,
@@ -14845,23 +13672,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              4.0,
-              20.0
-            ],
-            "tag": null,
-            "to": [
-              4.0,
-              20.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -15178,23 +13988,6 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
@@ -15310,23 +14103,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
                           14.0
                         ],
                         "tag": null,
@@ -15479,23 +14255,6 @@ description: Variables in memory after executing kitt.kcl
                               },
                               "from": [
                                 13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
                                 6.0
                               ],
                               "tag": null,
@@ -15953,23 +14712,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.0,
-              18.0
-            ],
-            "tag": null,
-            "to": [
-              -2.0,
-              18.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -16286,23 +15028,6 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
@@ -16418,23 +15143,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
                           14.0
                         ],
                         "tag": null,
@@ -16587,23 +15295,6 @@ description: Variables in memory after executing kitt.kcl
                               },
                               "from": [
                                 13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
                                 6.0
                               ],
                               "tag": null,
@@ -16878,23 +15569,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -12.0,
-              14.0
-            ],
-            "tag": null,
-            "to": [
-              -12.0,
-              14.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -17038,23 +15712,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
                     6.0
                   ],
                   "tag": null,
@@ -17257,23 +15914,6 @@ description: Variables in memory after executing kitt.kcl
             },
             "from": [
               6.0,
-              22.0
-            ],
-            "tag": null,
-            "to": [
-              4.0,
-              22.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              4.0,
               22.0
             ],
             "tag": null,
@@ -17599,23 +16239,6 @@ description: Variables in memory after executing kitt.kcl
                   ],
                   "type": "ToPoint",
                   "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -10.0,
-                    16.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -10.0,
-                    16.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
                 }
               ],
               "on": {
@@ -17731,23 +16354,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           12.0,
-                          14.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -12.0,
-                          14.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -12.0,
                           14.0
                         ],
                         "tag": null,
@@ -17900,23 +16506,6 @@ description: Variables in memory after executing kitt.kcl
                               },
                               "from": [
                                 13.0,
-                                6.0
-                              ],
-                              "tag": null,
-                              "to": [
-                                -13.0,
-                                6.0
-                              ],
-                              "type": "ToPoint",
-                              "units": "mm"
-                            },
-                            {
-                              "__geoMeta": {
-                                "id": "[uuid]",
-                                "sourceRange": []
-                              },
-                              "from": [
-                                -13.0,
                                 6.0
                               ],
                               "tag": null,
@@ -18182,23 +16771,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              3.0,
-              -4.0
-            ],
-            "tag": null,
-            "to": [
-              3.0,
-              -4.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -18391,23 +16963,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -4.0,
-              8.0
-            ],
-            "tag": null,
-            "to": [
-              -4.0,
-              8.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -18523,23 +17078,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     12.0,
-                    7.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -12.0,
-                    7.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -12.0,
                     7.0
                   ],
                   "tag": null,
@@ -18692,23 +17230,6 @@ description: Variables in memory after executing kitt.kcl
                         },
                         "from": [
                           13.0,
-                          6.0
-                        ],
-                        "tag": null,
-                        "to": [
-                          -13.0,
-                          6.0
-                        ],
-                        "type": "ToPoint",
-                        "units": "mm"
-                      },
-                      {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": []
-                        },
-                        "from": [
-                          -13.0,
                           6.0
                         ],
                         "tag": null,
@@ -18983,23 +17504,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              7.0,
-              1.0
-            ],
-            "tag": null,
-            "to": [
-              7.0,
-              1.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -19143,23 +17647,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
                     6.0
                   ],
                   "tag": null,
@@ -19371,23 +17858,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              7.0,
-              3.0
-            ],
-            "tag": null,
-            "to": [
-              7.0,
-              3.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -19531,23 +18001,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
                     6.0
                   ],
                   "tag": null,
@@ -19759,23 +18212,6 @@ description: Variables in memory after executing kitt.kcl
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              7.0,
-              5.0
-            ],
-            "tag": null,
-            "to": [
-              7.0,
-              5.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -19919,23 +18355,6 @@ description: Variables in memory after executing kitt.kcl
                   },
                   "from": [
                     13.0,
-                    6.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -13.0,
-                    6.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -13.0,
                     6.0
                   ],
                   "tag": null,

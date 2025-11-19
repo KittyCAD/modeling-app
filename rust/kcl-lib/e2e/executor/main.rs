@@ -750,8 +750,8 @@ async fn kcl_test_stdlib_kcl_error_right_code_path() {
   |> line(end = [10, 0])
   |> line(end = [0, -10])
   |> close()
-  |> subtract2d(tool = circle())
-  |> subtract2d(tool = circle(center = [2, 8], radius= .5))
+  |> subtract2d(tool = polygon(numSides = 3, radius = .5))
+  |> subtract2d(tool = polygon(numSides = 3, center = [2, 8], radius= .5))
   |> extrude(length = 2)
 "#;
 

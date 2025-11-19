@@ -111,7 +111,6 @@ export const KclDocs = (props: {
     breaks: true,
     sanitize: true,
     escape,
-    unescape,
   }
   return (
     <ThoughtContainer
@@ -149,7 +148,6 @@ export const FeatureTreeOutline = (props: {
     gfm: true,
     breaks: true,
     sanitize: true,
-    unescape,
     escape,
   }
   return (

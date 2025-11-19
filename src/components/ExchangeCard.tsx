@@ -11,7 +11,7 @@ import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
 import { SafeRenderer } from '@src/lib/markdown'
-import { Marked, escape, unescape } from '@ts-stack/markdown'
+import { Marked, escape } from '@ts-stack/markdown'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -127,7 +127,7 @@ export const ExchangeCardStatus = (props: {
 
 export const AvatarUser = (props: { src?: string }) => {
   return (
-    <div className="rounded-sm overflow-hidden h-7 w-7">
+    <div className="avatar h-7 w-7">
       {props.src ? (
         <img
           src={props.src || ''}
@@ -228,7 +228,6 @@ const MarkedOptions = {
   breaks: true,
   sanitize: true,
   escape,
-  unescape,
 }
 
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
@@ -276,7 +275,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
     <ChatBubble
       side={'left'}
       wfull={true}
-      userAvatar={<div className="h-7 w-7 rounded-sm bg-img-mel" />}
+      userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
       dataTestId="ml-response-chat-bubble"
       placeholderTestId="ml-response-chat-bubble-thinking"
     >

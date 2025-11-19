@@ -138,23 +138,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
               ],
               "type": "ToPoint",
               "units": "mm"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -200.0,
-                0.0
-              ],
-              "tag": null,
-              "to": [
-                -200.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": "mm"
             }
           ],
           "on": {
@@ -272,23 +255,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
               },
               "from": [
                 -170.0,
-                0.0
-              ],
-              "tag": null,
-              "to": [
-                -200.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": "mm"
-            },
-            {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              },
-              "from": [
-                -200.0,
                 0.0
               ],
               "tag": null,
@@ -1670,23 +1636,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
                 ],
                 "type": "ToPoint",
                 "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -200.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -200.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
               }
             ],
             "on": {
@@ -1814,23 +1763,6 @@ description: Variables in memory after executing straight-rung-ladder.kcl
                 },
                 "from": [
                   -170.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  -200.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -200.0,
                   0.0
                 ],
                 "tag": null,

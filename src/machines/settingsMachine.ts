@@ -83,7 +83,7 @@ export const settingsMachine = setup({
   },
   actors: {
     persistSettings: fromPromise<
-      void,
+      undefined,
       {
         doNotPersist: boolean
         context: SettingsMachineContext
@@ -98,17 +98,18 @@ export const settingsMachine = setup({
       input.rootContext.codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       const { currentProject, ...settings } = input.context
 
-      const val = await saveSettings(settings, currentProject?.path)
+      await saveSettings(settings, currentProject?.path)
 
       if (input.toastCallback) {
         input.toastCallback()
       }
-      return val
     }),
-    loadUserSettings: fromPromise<SettingsMachineContext, void>(async () => {
-      const { settings } = await loadAndValidateSettings()
-      return settings
-    }),
+    loadUserSettings: fromPromise<SettingsMachineContext, undefined>(
+      async () => {
+        const { settings } = await loadAndValidateSettings()
+        return settings
+      }
+    ),
     loadProjectSettings: fromPromise<
       SettingsMachineContext,
       { project?: Project }
@@ -501,7 +502,7 @@ export const settingsMachine = setup({
           actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
         },
 
-        'set.meta.disableCopilot': {
+        'set.meta.enableZookeeper': {
           target: 'persisting settings',
 
           actions: ['setSettingAtLevel', 'toastSuccess'],

@@ -333,7 +333,7 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `extrude002 = extrude(profile002, to = planeOf(extrude001, face = rectangleSegmentA001))`
+        `extrude002 = extrude(profile002, to = rectangleSegmentA001)`
       )
       const error = await mockExecAstAndReportErrors(
         result.modifiedAst,
@@ -378,7 +378,7 @@ extrude001 = extrude(profile001, length = 1)
 plane001 = offsetPlane(XZ, offset = 1)
 sketch002 = startSketchOn(plane001)
 profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
-extrude002 = extrude(profile002, to = planeOf(extrude001, face = seg01))`)
+extrude002 = extrude(profile002, to = seg01)`)
       const error = await mockExecAstAndReportErrors(
         result.modifiedAst,
         rustContextInThisFile
@@ -408,8 +408,13 @@ profile002 = circle(sketch002, center = [0, 0], radius = 0.1)`
       })
       if (err(result)) throw result
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(`${code}
-extrude002 = extrude(profile002, to = planeOf(extrude001, face = END))`)
+      expect(newCode).toContain(`sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
+plane001 = offsetPlane(XY, offset = 2)
+sketch002 = startSketchOn(plane001)
+profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
+extrude002 = extrude(profile002, to = capEnd001)`)
       const error = await mockExecAstAndReportErrors(
         result.modifiedAst,
         rustContextInThisFile
@@ -419,6 +424,7 @@ extrude002 = extrude(profile002, to = planeOf(extrude001, face = END))`)
 
     // TODO: this isn't producing the right results yet
     // https://github.com/KittyCAD/engine/issues/3855
+    // and https://github.com/KittyCAD/modeling-app/issues/8831
     it('should add an extrude call to a chamfer face', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
@@ -471,7 +477,7 @@ extrude001 = extrude(profile001, length = 1, tagEnd = $capEnd001)
 plane001 = offsetPlane(XY, offset = 2)
 sketch002 = startSketchOn(plane001)
 profile002 = circle(sketch002, center = [0, 0], radius = 0.1)
-extrude002 = extrude(profile002, to = planeOf(extrude001, face = seg02))`)
+extrude002 = extrude(profile002, to = seg02)`)
       const error = await mockExecAstAndReportErrors(
         result.modifiedAst,
         rustContextInThisFile
@@ -536,7 +542,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
         kclManagerInThisFile
       )
       const sectional = true
-      const relativeTo = 'sketchPlane'
+      const relativeTo = 'SKETCH_PLANE'
       const result = addSweep({ ast, sketches, path, sectional, relativeTo })
       if (err(result)) throw result
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
@@ -546,7 +552,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
   profile001,
   path = profile002,
   sectional = true,
-  relativeTo = 'sketchPlane',
+  relativeTo = sweep::SKETCH_PLANE,
 )`)
     })
 
@@ -556,7 +562,7 @@ sweep001 = sweep(
   profile001,
   path = profile002,
   sectional = true,
-  relativeTo = 'sketchPlane',
+  relativeTo = sweep::SKETCH_PLANE,
 )`
       const { ast, sketches, path } = await getAstAndSketchesForSweep(
         circleAndLineCodeWithSweep,
@@ -564,7 +570,7 @@ sweep001 = sweep(
         kclManagerInThisFile
       )
       const sectional = false
-      const relativeTo = 'trajectoryCurve'
+      const relativeTo = 'TRAJECTORY'
       const nodeToEdit = createPathToNodeForLastVariable(ast)
       const result = addSweep({
         ast,
@@ -579,7 +585,7 @@ sweep001 = sweep(
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(circleAndLineCode)
       expect(newCode).toContain(
-        `sweep001 = sweep(profile001, path = profile002, relativeTo = 'trajectoryCurve')`
+        `sweep001 = sweep(profile001, path = profile002, relativeTo = sweep::TRAJECTORY)`
       )
     })
 

@@ -138,23 +138,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -5.0,
-              -5.0
-            ],
-            "tag": null,
-            "to": [
-              -5.0,
-              -5.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -322,23 +305,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             ],
             "type": "ToPoint",
             "units": "mm"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -2.0,
-              -6.0
-            ],
-            "tag": null,
-            "to": [
-              -2.0,
-              -6.0
-            ],
-            "type": "ToPoint",
-            "units": "mm"
           }
         ],
         "on": {
@@ -482,23 +448,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   },
                   "from": [
                     5.550000000000001,
-                    -5.0
-                  ],
-                  "tag": null,
-                  "to": [
-                    -5.0,
-                    -5.0
-                  ],
-                  "type": "ToPoint",
-                  "units": "mm"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    -5.0,
                     -5.0
                   ],
                   "tag": null,
@@ -716,23 +665,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           ],
           "type": "ToPoint",
           "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -5.0,
-            -5.0
-          ],
-          "tag": null,
-          "to": [
-            -5.0,
-            -5.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
         }
       ],
       "on": {
@@ -843,23 +775,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           },
           "from": [
             2.0,
-            -6.0
-          ],
-          "tag": null,
-          "to": [
-            -2.0,
-            -6.0
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -2.0,
             -6.0
           ],
           "tag": null,
@@ -1012,23 +927,6 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 },
                 "from": [
                   5.550000000000001,
-                  -5.0
-                ],
-                "tag": null,
-                "to": [
-                  -5.0,
-                  -5.0
-                ],
-                "type": "ToPoint",
-                "units": "mm"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "from": [
-                  -5.0,
                   -5.0
                 ],
                 "tag": null,

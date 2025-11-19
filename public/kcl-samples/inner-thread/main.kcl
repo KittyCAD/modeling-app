@@ -1,0 +1,33 @@
+// Inner Thread
+// An example of an inner thread on a cylinder.
+
+
+outerCylinderRadius = 5
+outerCylinder = circle(startSketchOn(XY), center = [0, 0], diameter = outerCylinderRadius * 2)
+  |> extrude(length = 10)
+
+inner = circle(startSketchOn(XY), center = [0, 0], diameter = 8)
+  |> extrude(length = 10)
+
+rectHeight = 0.5mm
+rectWidth = 0.5mm
+
+threadProfile = rectangle(
+  startSketchOn(XZ),
+  width = rectWidth,
+  height = rectHeight,
+  center = [
+    outerCylinderRadius - (rectWidth * 2),
+    0
+  ],
+)
+threadHelix = helix(
+  revolutions = 10,
+  angleStart = 0deg,
+  cylinder = inner,
+  length = outerCylinderRadius * 2 + rectHeight * 2,
+)
+
+thread = sweep(threadProfile, path = threadHelix)
+
+subtract([outerCylinder], tools = [inner, thread])

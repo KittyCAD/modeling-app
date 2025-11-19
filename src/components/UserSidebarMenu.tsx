@@ -237,16 +237,16 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   return (
     <Popover className="relative grid">
       <Popover.Button
-        className="m-0 relative group border-0 w-fit min-w-max p-0 rounded-l-full rounded-r focus-visible:outline-appForeground"
+        className="m-0 relative group/avatar border-0 w-fit min-w-max p-0 rounded-sm focus-visible:outline-2 hover:bg-transparent"
         data-testid="user-sidebar-toggle"
       >
         <div className="flex items-center">
-          <div className="rounded-full border overflow-hidden">
+          <div className="avatar">
             {user?.image && !imageLoadFailed ? (
               <img
                 src={user?.image || ''}
                 alt={user?.name || ''}
-                className="h-6 w-6 rounded-full"
+                className="h-6 w-6"
                 referrerPolicy="no-referrer"
                 onError={() => setImageLoadFailed(true)}
               />
@@ -273,6 +273,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         as={Fragment}
       >
         <Popover.Panel
+          data-testid="user-dropdown"
           className={`z-10 absolute top-full right-0 mt-1 pb-1 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}

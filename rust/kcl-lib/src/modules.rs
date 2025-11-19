@@ -49,11 +49,30 @@ impl ModuleLoader {
         }
     }
 
-    pub(crate) fn leave_module(&mut self, path: &ModulePath) {
+    pub(crate) fn leave_module(&mut self, path: &ModulePath, source_range: SourceRange) -> Result<(), KclError> {
         if let ModulePath::Local { value: path, .. } = path {
-            let popped = self.import_stack.pop().unwrap();
-            assert_eq!(path, &popped);
+            if let Some(popped) = self.import_stack.pop() {
+                debug_assert_eq!(path, &popped);
+                if path != &popped {
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        format!(
+                            "Import stack mismatch when leaving module: expected to leave {}, but leaving {}",
+                            path.to_string_lossy(),
+                            popped.to_string_lossy(),
+                        ),
+                        vec![source_range],
+                    )));
+                }
+            } else {
+                let message = format!("Import stack underflow when leaving module: {path}");
+                debug_assert!(false, "{}", &message);
+                return Err(KclError::new_internal(KclErrorDetails::new(
+                    message,
+                    vec![source_range],
+                )));
+            }
         }
+        Ok(())
     }
 }
 
@@ -108,10 +127,19 @@ pub enum ModuleRepr {
     // AST, memory, exported names
     Kcl(
         Node<Program>,
-        Option<(Option<KclValue>, EnvironmentRef, Vec<String>, ModuleArtifactState)>,
+        /// Cached execution outcome.
+        Option<ModuleExecutionOutcome>,
     ),
     Foreign(PreImportedGeometry, Option<(Option<KclValue>, ModuleArtifactState)>),
     Dummy,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct ModuleExecutionOutcome {
+    pub last_expr: Option<KclValue>,
+    pub environment: EnvironmentRef,
+    pub exports: Vec<String>,
+    pub artifacts: ModuleArtifactState,
 }
 
 #[allow(clippy::large_enum_variant)]
