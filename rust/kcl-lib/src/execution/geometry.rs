@@ -713,8 +713,6 @@ pub enum Extrudable {
     Sketch(Box<Sketch>),
     /// Face.
     Face(FaceTag),
-    /// Tagged face.
-    TaggedFace(Box<TagIdentifier>),
 }
 
 impl Extrudable {
@@ -728,16 +726,6 @@ impl Extrudable {
         match self {
             Extrudable::Sketch(sketch) => Ok(sketch.id),
             Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
-            Extrudable::TaggedFace(tag_id) => {
-                if let Some(cur_info) = tag_id.get_cur_info() {
-                    Ok(cur_info.id)
-                } else {
-                    Err(KclError::new_semantic(KclErrorDetails::new(
-                        "Tagged face not found".to_owned(),
-                        vec![args.source_range],
-                    )))
-                }
-            }
         }
     }
 
@@ -749,16 +737,6 @@ impl Extrudable {
                 Some(Geometry::Solid(solid)) => Some(solid.sketch),
                 _ => None,
             },
-            Extrudable::TaggedFace(tag_id) => {
-                if let Some(cur_info) = tag_id.geometry() {
-                    match cur_info {
-                        Geometry::Sketch(sketch) => Some(sketch),
-                        Geometry::Solid(solid) => Some(solid.sketch),
-                    }
-                } else {
-                    None
-                }
-            }
         }
     }
 }
