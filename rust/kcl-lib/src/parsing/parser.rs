@@ -1168,7 +1168,14 @@ fn labeled_arg_separator(i: &mut TokenSlice) -> ModalResult<Option<SourceRange>>
         // Normally you need a comma.
         comma_sep.map(|_| None),
         // But, if the argument list is ending, no need for a comma.
-        peek(preceded(opt(whitespace), close_paren)).void().map(|_| None),
+        peek((
+            opt(whitespace),
+            repeat(0.., terminated(non_code_node, opt(whitespace))).map(|_: Vec<_>| ()),
+            opt(whitespace),
+            close_paren,
+        ))
+        .void()
+        .map(|_| None),
         whitespace.map(|mut tokens| {
             // Safe to unwrap here because `whitespace` is guaranteed to return at least 1 whitespace.
             let first_token = tokens.pop().unwrap();
@@ -5639,6 +5646,21 @@ bar = 1
         assert_eq!(actual.operator, UnaryOperator::Not);
         crate::parsing::top_level_parse(some_program_string).unwrap(); // Updated import path
     }
+
+    #[test]
+    fn test_comments_in_args() {
+        // This currently fails because there's no trailing comma between the
+        // z = 1 and the comment which follows.
+        // We should tolerate that though, if it's the last argument.
+        let code = r#"x = rectangle(
+  recessSketch,
+  x = [cx, cy],
+  y = 1, // y component
+  z = 1 // axial thickness
+)"#;
+        let _result = crate::parsing::top_level_parse(code).unwrap();
+    }
+
     #[test]
     fn test_sensible_error_when_missing_comma_between_fn_args() {
         let program_source = "startSketchOn(XY)
