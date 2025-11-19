@@ -61,6 +61,7 @@ import {
   parse_app_settings,
   parse_project_settings,
   parse_wasm,
+  point_to_unit,
   recast_wasm,
   serialize_configuration,
   serialize_project_configuration,
@@ -515,6 +516,29 @@ export function humanDisplayNumber(
 export function isPointsCCW(points: Coords2d[], instance?: ModuleType): number {
   const is_points_ccw_fn = instance ? instance.is_points_ccw : is_points_ccw
   return is_points_ccw_fn(new Float64Array(points.flat()))
+}
+
+/**
+ * Convert a 2D point from one length unit to another.
+ */
+export function pointToUnit(
+  point: [number, number],
+  fromLenUnit: UnitLength,
+  toLenUnit: UnitLength
+): Coords2d | Error {
+  try {
+    const result = point_to_unit(
+      JSON.stringify(point),
+      JSON.stringify(fromLenUnit),
+      JSON.stringify(toLenUnit)
+    )
+    return [result[0], result[1]]
+  } catch (e: any) {
+    return new Error(
+      `Error converting point to length unit: ${point} with len unit ${fromLenUnit} to len unit ${toLenUnit}`,
+      { cause: e }
+    )
+  }
 }
 
 export function getTangentialArcToInfo({

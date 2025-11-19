@@ -140,7 +140,9 @@ pub mod native_engine {
 }
 
 pub mod std_utils {
-    pub use crate::std::utils::{TangentialArcInfoInput, get_tangential_arc_to_info, is_points_ccw_wasm};
+    pub use crate::std::utils::{
+        TangentialArcInfoInput, get_tangential_arc_to_info, is_points_ccw_wasm, untyped_point_to_unit,
+    };
 }
 
 pub mod pretty {
