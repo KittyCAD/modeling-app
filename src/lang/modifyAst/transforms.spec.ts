@@ -397,7 +397,6 @@ scale(extrude001, factor = 2)`
         kclManagerInThisFile
       )
       const nodeToEdit = createPathToNodeForLastVariable(ast, false)
-      console.log('nodeToEdit', nodeToEdit)
       const factor = await getKclCommandValue(
         '3',
         instanceInThisFile,
