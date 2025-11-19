@@ -128,7 +128,7 @@ const darkKclHighlights = HighlightStyle.define(
   }
 )
 
-const defaultLightThemeOption = EditorView.theme(
+const lightTheme = EditorView.theme(
   {
     '&': {
       backgroundColor: '#fff',
@@ -138,11 +138,7 @@ const defaultLightThemeOption = EditorView.theme(
     dark: false,
   }
 )
-const lightTheme = [
-  defaultLightThemeOption,
-  syntaxHighlighting(baseKclHighlights),
-]
-const defaultDarkThemeOption = EditorView.theme(
+const darkTheme = EditorView.theme(
   {
     '&': {
       backgroundColor: 'transparent',
@@ -152,18 +148,22 @@ const defaultDarkThemeOption = EditorView.theme(
     dark: true,
   }
 )
-const darkTheme = [
-  defaultDarkThemeOption,
-  // Overrides are provided by `darkKclHighlights`
-  syntaxHighlighting(darkKclHighlights),
-  syntaxHighlighting(baseKclHighlights),
-]
 
 /**
  * CodeMirror theme extensions for KCL syntax highlighting.
  *
  * Not included in package because it uses CSS variables local to ZDS.
  * TODO: Make application-agnostic maybe, if other clients want this theme.
+ */
+export const kclSyntaxHighlightingExtension = [
+  // Overrides are provided by `darkKclHighlights` and must be first
+  syntaxHighlighting(darkKclHighlights),
+  syntaxHighlighting(baseKclHighlights),
+]
+
+/**
+ * Nearly-empty themes that just mark themselves as light or dark
+ * so our {@link syntaxHighlightingExtension} can apply its styling.
  */
 export const editorTheme = {
   light: lightTheme,

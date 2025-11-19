@@ -63,6 +63,7 @@ import {
 } from '@src/machines/kclEditorMachine'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { kclSyntaxHighlightingExtension } from '@src/lib/codeEditor'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -188,6 +189,7 @@ export const KclEditorPaneContents = () => {
       closeBrackets(),
       highlightActiveLine(),
       highlightSelectionMatches(),
+      kclSyntaxHighlightingExtension,
       rectangularSelection(),
       dropCursor(),
       interact({
