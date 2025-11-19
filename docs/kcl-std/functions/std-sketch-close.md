@@ -9,9 +9,9 @@ Construct a line segment from the current origin back to the profile's origin, e
 
 ```kcl
 close(
-  @sketch: Sketch,
+  @sketches: [Sketch; 1+],
   tag?: TagDecl,
-): Sketch
+): [Sketch; 1+]
 ```
 
 If you want to perform some 3-dimensional operation on a sketch, like
@@ -23,12 +23,12 @@ starting point.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) | The sketch you want to close. | Yes |
+| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+] | The sketch you want to close. | Yes |
 | `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this line. | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
+[[`Sketch`](/docs/kcl-std/types/std-types-Sketch); 1+]
 
 
 ### Examples
