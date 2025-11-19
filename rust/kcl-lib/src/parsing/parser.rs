@@ -3047,8 +3047,10 @@ fn record_ty_field(i: &mut TokenSlice) -> ModalResult<(Node<Identifier>, Node<Ty
 fn type_(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
     separated(1.., type_not_union, pipe_sep)
         .map(|mut tys: Vec<_>| {
-            if tys.len() == 1 {
-                tys.pop().unwrap()
+            if tys.len() == 1
+                && let Some(ty) = tys.pop()
+            {
+                ty
             } else {
                 let start = tys[0].start;
                 let module_id = tys[0].module_id;
