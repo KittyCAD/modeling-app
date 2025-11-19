@@ -180,9 +180,6 @@ export function addHole({
   }
 
   const { solidsExpr, facesExpr, pathIfPipe } = result
-  // TODO: understand why solidsExpr is null on the second time this is called
-  // in p&c, we run it first for reviewValidation, and a second time for real
-  console.log({ solidsExpr, facesExpr, pathIfPipe })
 
   // Extra args for createCallExpressionStdLibKw as we're calling functions from a module
   const nonCodeMeta = undefined

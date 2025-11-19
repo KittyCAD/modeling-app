@@ -1083,13 +1083,11 @@ export function getVariableExprsFromSelection(
         s.artifact,
         artifactGraph
       )
-      console.log('children', children)
       const lastChildVariable = getLastVariable(
         children,
         ast,
         artifactTypeFilter
       )
-      console.log('lastChildVariable', lastChildVariable)
       if (!lastChildVariable) {
         continue
       }
@@ -1563,17 +1561,20 @@ export function getLastVariable(
     }
     const codeRef = getFaceCodeRef(artifact)
     if (codeRef) {
-      const pathToNode = getNodePathFromSourceRange(ast, codeRef.range)
-      const varDec = getNodeFromPath<VariableDeclaration>(
-        ast,
-        pathToNode,
-        'VariableDeclaration'
-      )
-      if (!err(varDec)) {
-        return {
-          variableDeclaration: varDec,
-          pathToNode: pathToNode,
-          artifact,
+      const pathToNode =
+        codeRef.pathToNode ?? getNodePathFromSourceRange(ast, codeRef.range)
+      if (pathToNode && pathToNode.length > 1) {
+        const varDec = getNodeFromPath<VariableDeclaration>(
+          ast,
+          pathToNode,
+          'VariableDeclaration'
+        )
+        if (!err(varDec)) {
+          return {
+            variableDeclaration: varDec,
+            pathToNode: pathToNode,
+            artifact,
+          }
         }
       }
     }

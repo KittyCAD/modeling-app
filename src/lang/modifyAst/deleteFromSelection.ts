@@ -151,7 +151,6 @@ export async function deleteFromSelection(
     selection?.codeRef?.pathToNode,
     'VariableDeclarator'
   )
-  console.log('varDec', varDec, selection)
   if (err(varDec)) return varDec
   if (
     ((selection?.artifact?.type === 'wall' ||
@@ -201,7 +200,6 @@ export async function deleteFromSelection(
               pathToNode = path
               extrudeNameToDelete = dec.id.name
             }
-            console.log('pathToNode after extrude search', pathToNode)
           }
         },
       })
