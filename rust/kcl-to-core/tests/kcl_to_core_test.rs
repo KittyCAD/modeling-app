@@ -1,3 +1,6 @@
+// Allow unwrap in test code.
+#![allow(clippy::unwrap_used)]
+
 use kcl_to_core::*;
 
 #[tokio::test]

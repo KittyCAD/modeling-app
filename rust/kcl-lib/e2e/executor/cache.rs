@@ -1,5 +1,8 @@
 //! Cache testing framework.
 
+// Allow unwrap in integration tests https://github.com/rust-lang/rust-clippy/issues/13981
+#![allow(clippy::unwrap_used)]
+
 use kcl_lib::{ExecError, ExecOutcome, bust_cache};
 #[cfg(feature = "artifact-graph")]
 use kcl_lib::{NodePathStep, exec::Operation};

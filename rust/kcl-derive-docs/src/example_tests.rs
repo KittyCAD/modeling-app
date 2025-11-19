@@ -1,3 +1,6 @@
+// Allow unwrap in docs code and tests.
+#![allow(clippy::unwrap_used)]
+
 use proc_macro2::Span;
 use quote::{quote, ToTokens};
 

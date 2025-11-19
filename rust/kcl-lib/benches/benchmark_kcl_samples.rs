@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used)] // Allow unwrap in benchmark code.
+
 use std::{
     fs,
     hint::black_box,
