@@ -564,6 +564,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "inner-thread/main.kcl",
+    "multipleFiles": false,
+    "title": "Inner Thread",
+    "description": "An example of an inner thread on a cylinder.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "keyboard/main.kcl",
     "multipleFiles": false,
     "title": "Zoo Keyboard",

@@ -248,10 +248,10 @@ impl From<Vec<GdtAnnotation>> for KclValue {
 
 impl From<Vec<Sketch>> for KclValue {
     fn from(mut eg: Vec<Sketch>) -> Self {
-        if eg.len() == 1 {
-            KclValue::Sketch {
-                value: Box::new(eg.pop().unwrap()),
-            }
+        if eg.len() == 1
+            && let Some(s) = eg.pop()
+        {
+            KclValue::Sketch { value: Box::new(s) }
         } else {
             KclValue::HomArray {
                 value: eg
@@ -266,10 +266,10 @@ impl From<Vec<Sketch>> for KclValue {
 
 impl From<Vec<Solid>> for KclValue {
     fn from(mut eg: Vec<Solid>) -> Self {
-        if eg.len() == 1 {
-            KclValue::Solid {
-                value: Box::new(eg.pop().unwrap()),
-            }
+        if eg.len() == 1
+            && let Some(s) = eg.pop()
+        {
+            KclValue::Solid { value: Box::new(s) }
         } else {
             KclValue::HomArray {
                 value: eg.into_iter().map(|s| KclValue::Solid { value: Box::new(s) }).collect(),
