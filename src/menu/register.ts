@@ -266,7 +266,7 @@ export function modelingMenuCallbackMostActions(
       commandBarActor.send({
         type: 'Find and select command',
         data: {
-          name: 'Text-to-CAD',
+          name: 'Zookeeper',
           groupId: 'application',
           argDefaultValues: {
             method: 'existingProject',

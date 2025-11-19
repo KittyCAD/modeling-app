@@ -189,7 +189,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
             hoverOnly
             wrapperClassName="ui-open:!hidden"
           >
-            Text-to-CAD credits
+            Zookeeper credits
           </Tooltip>
         )}
       </Popover.Button>
@@ -325,7 +325,7 @@ export const MlEphantConversationInput = (
         </div>
       </div>
       <div className="text-3 text-xs">
-        Text-to-CAD can make mistakes. Always verify information.
+        Zookeeper can make mistakes. Always verify information.
       </div>
     </div>
   )
@@ -446,15 +446,14 @@ export const MLEphantConversationPaneMenu2 = () => (
           />
           <p className="text-base font-bold">
             <span className="dark:text-ml-green light:underline decoration-ml-green underline-offset-4">
-              Text-to-CAD
+              Zookeeper
             </span>{' '}
             is experimental
           </p>
         </div>
         <p className="text-sm">
-          Text-to-CAD is now conversational, so you can refer to previous
-          prompts and iterate. Conversations are not currently shared between
-          computers.
+          Zookeeper is now conversational, so you can refer to previous prompts
+          and iterate. Conversations are not currently shared between computers.
         </p>
       </Popover.Panel>
     </Transition>

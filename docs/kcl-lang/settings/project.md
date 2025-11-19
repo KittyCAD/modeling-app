@@ -49,7 +49,7 @@ This setting has the following nested options:
 
 ##### enable_zookeeper
 
-Enable the conversational agent in Text-to-CAD for this project.
+Enable the conversational agent in Zookeeper for this project.
 
 
 **Default:** None

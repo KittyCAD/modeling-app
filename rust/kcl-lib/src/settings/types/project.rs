@@ -74,7 +74,7 @@ pub struct PerProjectSettings {
 pub struct ProjectMetaSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub id: uuid::Uuid,
-    /// Enable the conversational agent in Text-to-CAD for this project.
+    /// Enable the conversational agent in Zookeeper for this project.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_zookeeper: bool,
 }

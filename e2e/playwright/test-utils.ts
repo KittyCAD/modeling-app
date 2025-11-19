@@ -829,7 +829,7 @@ export const doExport = async (
       name: 'floppy disk arrow Export',
     })
     await expect(textToCadCommand.first()).toBeVisible()
-    // Click the Text-to-CAD command
+    // Click the Zookeeper command
     await textToCadCommand.first().click()
   }
   await expect(page.getByTestId('command-bar')).toBeVisible()

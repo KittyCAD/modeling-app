@@ -12,7 +12,7 @@ import {
  *   - code
  *   - variables
  *   - debug
- *   - Text-to-CAD
+ *   - Zookeeper
  * - the modeling view
  */
 export const playwrightLayoutConfig: Layout = {
@@ -76,7 +76,7 @@ export const playwrightLayoutConfig: Layout = {
         },
         {
           id: DefaultLayoutPaneID.TTC,
-          label: 'Text-to-CAD',
+          label: 'Zookeeper',
           type: LayoutType.Simple,
           areaType: AreaType.TTC,
           icon: 'sparkles',

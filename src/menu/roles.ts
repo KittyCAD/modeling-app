@@ -50,7 +50,7 @@ type HelpRoleLabel =
   | 'Show Release Notes'
   | 'Check for Updates'
   | 'Manage Account'
-  | 'Get Started with Text-to-CAD'
+  | 'Get Started with Zookeeper'
   | 'Show All Commands'
 
 type ViewRoleLabel =

@@ -11,7 +11,7 @@ import {
 
 /**
  * This predefined layout is meant for users to
- * focus on the Text-to-CAD experience
+ * focus on the Zookeeper experience
  * with a 50/50 split between the modeling scene
  * and the TTC pane.
  */
@@ -111,7 +111,7 @@ export const textToCADFocusConfig: Layout = {
       children: [
         {
           id: DefaultLayoutPaneID.TTC,
-          label: 'Text-to-CAD',
+          label: 'Zookeeper',
           type: LayoutType.Simple,
           areaType: AreaType.TTC,
           icon: 'sparkles',

@@ -34,7 +34,7 @@ export async function submitTextToCadCreateRequest(
   }
 
   if (!data.id) {
-    return new Error('No id returned from Text-to-CAD API')
+    return new Error('No id returned from Zookeeper API')
   }
 
   return data
