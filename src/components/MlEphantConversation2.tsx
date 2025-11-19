@@ -22,12 +22,15 @@ import type { ReactNode } from 'react'
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { DEFAULT_ML_COPILOT_MODE } from '@src/lib/constants'
 
+const noop = () => {}
+
 export interface MlEphantConversationProps {
   isLoading: boolean
   conversation?: Conversation
   contexts: MlEphantManagerPromptContext[]
   billingContext: BillingContext
   onProcess: (request: string, mode: MlCopilotMode) => void
+  onClickClearChat: () => void
   onReconnect: () => void
   disabled?: boolean
   needsReconnect: boolean
@@ -372,13 +375,18 @@ export const MlEphantConversation2 = (props: MlEphantConversationProps) => {
   }, [props.hasPromptCompleted, autoScroll])
 
   const exchangeCards = props.conversation?.exchanges.flatMap(
-    (exchange: Exchange, exchangeIndex: number) => (
-      <ExchangeCard
-        key={`exchange-${exchangeIndex}`}
-        {...exchange}
-        userAvatar={props.userAvatarSrc}
-      />
-    )
+    (exchange: Exchange, exchangeIndex: number, list) => {
+      const isLastResponse = exchangeIndex === list.length - 1
+      return (
+        <ExchangeCard
+          key={`exchange-${exchangeIndex}`}
+          {...exchange}
+          userAvatar={props.userAvatarSrc}
+          isLastResponse={isLastResponse}
+          onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
+        />
+      )
+    }
   )
 
   return (

@@ -128,6 +128,24 @@ export const MlEphantConversationPane2 = (props: {
     })
   }
 
+  const onClickClearChat = () => {
+    props.mlEphantManagerActor.send({
+      type: MlEphantManagerTransitions2.ConversationClose,
+    })
+    const sub = props.mlEphantManagerActor.subscribe((next) => {
+      if (!next.matches(S.Await)) {
+        return
+      }
+
+      props.mlEphantManagerActor.send({
+        type: MlEphantManagerTransitions2.CacheSetupAndConnect,
+        refParentSend: props.mlEphantManagerActor.send,
+        conversationId: undefined,
+      })
+      sub.unsubscribe()
+    })
+  }
+
   const tryToGetExchanges = () => {
     const mlEphantConversations =
       props.systemIOActor.getSnapshot().context.mlEphantConversations
@@ -248,6 +266,7 @@ export const MlEphantConversationPane2 = (props: {
       onProcess={(request: string, mode: MlCopilotMode) => {
         onProcess(request, mode).catch(reportRejection)
       }}
+      onClickClearChat={onClickClearChat}
       onReconnect={onReconnect}
       disabled={isProcessing || needsReconnect}
       needsReconnect={needsReconnect}
