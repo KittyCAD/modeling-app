@@ -72,7 +72,7 @@
               playwright-driver.browsers
               chromedriver
               wasm-pack
-              python3Full
+              python3
             ])
             ++ pkgs.lib.optionals pkgs.stdenv.isDarwin (
               with pkgs; [
@@ -92,7 +92,7 @@
           NODE_ENV = "development";
           RUSTFMT = "${pkgs.nightlyRustfmt}/bin/rustfmt";
           CHROMEDRIVER = "${pkgs.chromedriver}/bin/chromedriver";
-          PYO3_PYTHON = "${pkgs.python3Full}/bin/python3";
+          PYO3_PYTHON = "${pkgs.python3}/bin/python3";
         };
       }
     );

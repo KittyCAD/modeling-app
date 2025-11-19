@@ -482,9 +482,15 @@ fn expression(i: &mut TokenSlice) -> ModalResult<Expr> {
     let mut values = vec![head];
 
     let value_surrounded_by_comments = (
-        repeat(0.., preceded(opt(whitespace), non_code_node)), // Before the expression.
-        preceded(opt(whitespace), labelled_fn_call),           // The expression.
-        repeat(0.., noncode_just_after_code),                  // After the expression.
+        // Before the expression.
+        repeat(0.., preceded(opt(whitespace), non_code_node)),
+        // The expression
+        preceded(
+            opt(whitespace),
+            alt((labelled_fn_call, if_expr.map(Expr::IfExpression))),
+        ),
+        // After the expression.
+        repeat(0.., noncode_just_after_code),
     );
     let tail: Vec<(Vec<_>, _, Vec<_>)> = repeat(
         1..,
@@ -1162,7 +1168,14 @@ fn labeled_arg_separator(i: &mut TokenSlice) -> ModalResult<Option<SourceRange>>
         // Normally you need a comma.
         comma_sep.map(|_| None),
         // But, if the argument list is ending, no need for a comma.
-        peek(preceded(opt(whitespace), close_paren)).void().map(|_| None),
+        peek((
+            opt(whitespace),
+            repeat(0.., terminated(non_code_node, opt(whitespace))).map(|_: Vec<_>| ()),
+            opt(whitespace),
+            close_paren,
+        ))
+        .void()
+        .map(|_| None),
         whitespace.map(|mut tokens| {
             // Safe to unwrap here because `whitespace` is guaranteed to return at least 1 whitespace.
             let first_token = tokens.pop().unwrap();
@@ -3047,8 +3060,10 @@ fn record_ty_field(i: &mut TokenSlice) -> ModalResult<(Node<Identifier>, Node<Ty
 fn type_(i: &mut TokenSlice) -> ModalResult<Node<Type>> {
     separated(1.., type_not_union, pipe_sep)
         .map(|mut tys: Vec<_>| {
-            if tys.len() == 1 {
-                tys.pop().unwrap()
+            if tys.len() == 1
+                && let Some(ty) = tys.pop()
+            {
+                ty
             } else {
                 let start = tys[0].start;
                 let module_id = tys[0].module_id;
@@ -5631,6 +5646,21 @@ bar = 1
         assert_eq!(actual.operator, UnaryOperator::Not);
         crate::parsing::top_level_parse(some_program_string).unwrap(); // Updated import path
     }
+
+    #[test]
+    fn test_comments_in_args() {
+        // This currently fails because there's no trailing comma between the
+        // z = 1 and the comment which follows.
+        // We should tolerate that though, if it's the last argument.
+        let code = r#"x = rectangle(
+  recessSketch,
+  x = [cx, cy],
+  y = 1, // y component
+  z = 1 // axial thickness
+)"#;
+        let _result = crate::parsing::top_level_parse(code).unwrap();
+    }
+
     #[test]
     fn test_sensible_error_when_missing_comma_between_fn_args() {
         let program_source = "startSketchOn(XY)
@@ -5813,6 +5843,17 @@ bar = 1
         assert!(!cause.was_fatal);
         assert_eq!(cause.err.message, ELSE_MUST_END_IN_EXPR);
         assert_eq!(cause.err.source_range.start(), expected_src_start);
+    }
+
+    #[test]
+    fn test_if_expr_in_pipeline() {
+        let code = r#"0
+|> if true {
+  f(%)
+} else {
+  f(%)
+}"#;
+        let _result = crate::parsing::top_level_parse(code).unwrap();
     }
 }
 
