@@ -1,3 +1,5 @@
+// Allow unwrap in integration tests https://github.com/rust-lang/rust-clippy/issues/13981
+#![allow(clippy::unwrap_used)]
 mod cache;
 
 use kcl_lib::{

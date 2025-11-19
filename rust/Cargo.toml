@@ -66,6 +66,7 @@ iter_over_hash_type = "warn"
 lossy_float_literal = "warn"
 redundant_clone = "warn"
 result_large_err = "allow"
+unwrap_used = "warn"
 
 [profile.release]
 panic = "abort"

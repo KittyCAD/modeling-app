@@ -1,4 +1,8 @@
 //! Bumps versions in Cargo.toml.
+
+// Allow unwrap in dev tool code.
+#![allow(clippy::unwrap_used)]
+
 use anyhow::{Context, Result};
 use clap::Parser;
 use toml_edit::{value, DocumentMut};

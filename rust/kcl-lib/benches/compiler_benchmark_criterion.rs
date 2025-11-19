@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used)] // Allow unwrap in benchmark code.
+
 use std::hint::black_box;
 
 use criterion::{Criterion, criterion_group, criterion_main};

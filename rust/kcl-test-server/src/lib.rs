@@ -1,5 +1,9 @@
 //! Executes KCL programs.
 //! The server reuses the same engine session for each KCL program it receives.
+
+// Allow unwrap in test code.
+#![allow(clippy::unwrap_used)]
+
 use std::{
     net::SocketAddr,
     sync::{

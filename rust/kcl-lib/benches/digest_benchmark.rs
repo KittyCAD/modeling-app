@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used)] // Allow unwrap in benchmark code.
+
 use criterion::{Criterion, criterion_group, criterion_main};
 
 pub fn bench_digest(c: &mut Criterion) {

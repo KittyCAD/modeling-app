@@ -1,6 +1,8 @@
 //! A release building tool and packager.
 
 #![deny(missing_docs)]
+// Allow unwrap in dev tool code.
+#![allow(clippy::unwrap_used)]
 
 /// A subcommand for building and packaging a release.
 pub mod build;

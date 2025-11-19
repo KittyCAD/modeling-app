@@ -1,3 +1,6 @@
+// Allow unwrap in dev tool code.
+#![allow(clippy::unwrap_used)]
+
 use std::{env, fs::File, io::Read};
 
 use kcl_lib::{ExecState, ExecutorContext, ExecutorSettings, Program};

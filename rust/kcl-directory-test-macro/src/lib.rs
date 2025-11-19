@@ -1,3 +1,6 @@
+// Allow unwrap in proc macro code.
+#![allow(clippy::unwrap_used)]
+
 use std::fs;
 
 use convert_case::Casing;

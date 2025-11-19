@@ -43,9 +43,9 @@ use crate::{
 };
 
 lazy_static::lazy_static! {
-    pub static ref GRID_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("cfa78409-653d-4c26-96f1-7c45fb784840").unwrap();
+    pub static ref GRID_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("cfa78409-653d-4c26-96f1-7c45fb784840").expect("UUID parses at startup time");
 
-    pub static ref GRID_SCALE_TEXT_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("10782f33-f588-4668-8bcd-040502d26590").unwrap();
+    pub static ref GRID_SCALE_TEXT_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("10782f33-f588-4668-8bcd-040502d26590").expect("UUID parses at startup time");
 
     pub static ref DEFAULT_PLANE_INFO: IndexMap<PlaneName, PlaneInfo> = IndexMap::from([
             (
