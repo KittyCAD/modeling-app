@@ -334,7 +334,7 @@ export const MLEphantConversationPaneMenu = () => (
           </p>
         </div>
         <p className="text-sm">
-          Text-to-CAD treats every prompt as separate. Full copilot mode with
+          Text-to-CAD treats every prompt as separate. Full Zookeeper agent with
           conversational memory is coming soon. Conversations are not currently
           shared between computers.
         </p>

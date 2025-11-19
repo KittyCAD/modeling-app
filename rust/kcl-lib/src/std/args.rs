@@ -36,7 +36,7 @@ pub struct TyF64 {
 }
 
 impl TyF64 {
-    pub fn new(n: f64, ty: NumericType) -> Self {
+    pub const fn new(n: f64, ty: NumericType) -> Self {
         Self { n, ty }
     }
 

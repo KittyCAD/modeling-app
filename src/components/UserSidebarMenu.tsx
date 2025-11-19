@@ -273,6 +273,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
         as={Fragment}
       >
         <Popover.Panel
+          data-testid="user-dropdown"
           className={`z-10 absolute top-full right-0 mt-1 pb-1 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}

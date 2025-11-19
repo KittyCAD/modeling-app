@@ -173,10 +173,10 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
         match value {
             SolidOrSketchOrImportedGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
             SolidOrSketchOrImportedGeometry::SolidSet(mut s) => {
-                if s.len() == 1 {
-                    crate::execution::KclValue::Solid {
-                        value: Box::new(s.pop().unwrap()),
-                    }
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Solid { value: Box::new(s) }
                 } else {
                     crate::execution::KclValue::HomArray {
                         value: s
@@ -188,10 +188,10 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
                 }
             }
             SolidOrSketchOrImportedGeometry::SketchSet(mut s) => {
-                if s.len() == 1 {
-                    crate::execution::KclValue::Sketch {
-                        value: Box::new(s.pop().unwrap()),
-                    }
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Sketch { value: Box::new(s) }
                 } else {
                     crate::execution::KclValue::HomArray {
                         value: s
@@ -235,10 +235,10 @@ impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
         match value {
             SolidOrImportedGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
             SolidOrImportedGeometry::SolidSet(mut s) => {
-                if s.len() == 1 {
-                    crate::execution::KclValue::Solid {
-                        value: Box::new(s.pop().unwrap()),
-                    }
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Solid { value: Box::new(s) }
                 } else {
                     crate::execution::KclValue::HomArray {
                         value: s

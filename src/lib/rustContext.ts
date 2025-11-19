@@ -21,7 +21,7 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
-import { BSON } from 'bson'
+import { encode as msgpackEncode } from '@msgpack/msgpack'
 
 import type { WebSocketResponse } from '@kittycad/lib'
 
@@ -274,7 +274,7 @@ export default class RustContext {
     const instance = this._checkInstance()
 
     try {
-      const serialized = BSON.serialize(response)
+      const serialized = msgpackEncode(response)
       await instance.sendResponse(serialized)
     } catch (e: any) {
       const err = errFromErrWithOutputs(e)

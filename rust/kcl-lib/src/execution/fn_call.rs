@@ -527,7 +527,14 @@ fn type_check_params_kw(
         && fn_def.named_args.iter().any(|p| p.0 == label)
         && !args.labeled.contains_key(label)
     {
-        let (label, arg) = args.unlabeled.pop().unwrap();
+        let Some((label, arg)) = args.unlabeled.pop() else {
+            let message = "Expected unlabeled arg to be present".to_owned();
+            debug_assert!(false, "{}", &message);
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message,
+                vec![args.source_range],
+            )));
+        };
         args.labeled.insert(label.unwrap(), arg);
     }
 
@@ -576,8 +583,10 @@ fn type_check_params_kw(
                     fn_def.ast.as_source_ranges(),
                 )));
             }
-        } else if args.unlabeled.len() == 1 {
-            let mut arg = args.unlabeled.pop().unwrap().1;
+        } else if args.unlabeled.len() == 1
+            && let Some(unlabeled_arg) = args.unlabeled.pop()
+        {
+            let mut arg = unlabeled_arg.1;
             if let Some(ty) = ty {
                 let rty = RuntimeType::from_parsed(ty.clone(), exec_state, arg.source_range, false)
                     .map_err(|e| KclError::new_semantic(e.into()))?;
