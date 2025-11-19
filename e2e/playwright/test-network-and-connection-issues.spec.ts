@@ -212,9 +212,7 @@ test.describe('Test network related behaviors', () => {
       )
       const networkToggleWeakText = page.getByText('Network health (Ok)')
 
-      if (!tronApp) {
-        fail()
-      }
+      if (!tronApp) throw new Error('tronApp is missing.')
 
       await tronApp.cleanProjectDir({
         app: {

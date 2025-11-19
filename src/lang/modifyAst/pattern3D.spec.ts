@@ -16,6 +16,7 @@ import {
 } from '@src/lang/modifyAst/pattern3D'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { afterAll, expect, beforeEach, describe, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
