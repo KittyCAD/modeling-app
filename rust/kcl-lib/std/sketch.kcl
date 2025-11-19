@@ -1899,10 +1899,10 @@ export fn angledLineThatIntersects(
 @(impl = std_rust, feature_tree = false)
 export fn close(
   /// The sketch you want to close.
-  @sketch: Sketch,
+  @sketches: [Sketch; 1+],
   /// Create a new tag which refers to this line.
   tag?: TagDecl,
-): Sketch {}
+): [Sketch; 1+] {}
 
 /// Draw a curved line segment along an imaginary circle.
 ///

@@ -1232,19 +1232,31 @@ pub(crate) fn inner_profile_start(profile: Sketch) -> Result<[f64; 2], KclError>
 
 /// Close the current sketch.
 pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch = args.get_unlabeled_kw_arg("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+    let sketches: Vec<Sketch> = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
-    let new_sketch = inner_close(sketch, tag, exec_state, args).await?;
-    Ok(KclValue::Sketch {
-        value: Box::new(new_sketch),
-    })
+    let new_sketches = inner_close(sketches, tag, exec_state, args).await?;
+    Ok(new_sketches.into())
 }
 
 pub(crate) async fn inner_close(
-    sketch: Sketch,
+    sketches: Vec<Sketch>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
+) -> Result<Vec<Sketch>, KclError> {
+    let mut new_sketches = Vec::with_capacity(sketches.len());
+    for sketch in sketches {
+        let new_sketch = close_sketch(sketch, tag.clone(), exec_state, &args).await?;
+        new_sketches.push(new_sketch);
+    }
+    Ok(new_sketches)
+}
+
+async fn close_sketch(
+    sketch: Sketch,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: &Args,
 ) -> Result<Sketch, KclError> {
     if sketch.is_closed {
         exec_state.warn(
@@ -1266,7 +1278,7 @@ pub(crate) async fn inner_close(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(args, id),
             ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
         )
         .await?;
