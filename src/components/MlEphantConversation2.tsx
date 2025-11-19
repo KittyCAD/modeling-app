@@ -66,23 +66,6 @@ export interface MlCopilotModesProps {
 }
 
 const MlCopilotModes = (props: MlCopilotModesProps) => {
-  const modes = []
-  for (const mode of ML_COPILOT_MODE) {
-    modes.push(
-      <div
-        tabIndex={0}
-        role="button"
-        key={mode}
-        onClick={() => props.onClick(mode)}
-        className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode ? 'border-primary' : ''}`}
-        data-testid={`ml-copilot-effort-button-${mode}`}
-      >
-        {ML_COPILOT_MODE_META[mode].icon({ className: 'w-5 h-5' })}
-        {ML_COPILOT_MODE_META[mode].pretty}
-      </div>
-    )
-  }
-
   return (
     <div className="flex-none">
       <Popover className="relative">
@@ -93,8 +76,29 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
           {props.children}
           <CustomIcon name="caretUp" className="w-5 h-5 ui-open:rotate-180" />
         </Popover.Button>
+
         <Popover.Panel className="absolute bottom-full left-0 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md">
-          {modes}
+          {({ close }) => (
+            <>
+              {' '}
+              {ML_COPILOT_MODE.map((mode) => (
+                <div
+                  tabIndex={0}
+                  role="button"
+                  key={mode}
+                  onClick={() => {
+                    close()
+                    props.onClick(mode)
+                  }}
+                  className={`flex flex-row items-center text-nowrap gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode ? 'border-primary' : ''}`}
+                  data-testid={`ml-copilot-effort-button-${mode}`}
+                >
+                  {ML_COPILOT_MODE_META[mode].icon({ className: 'w-5 h-5' })}
+                  {ML_COPILOT_MODE_META[mode].pretty}
+                </div>
+              ))}
+            </>
+          )}
         </Popover.Panel>
       </Popover>
     </div>
