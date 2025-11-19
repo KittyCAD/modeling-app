@@ -223,6 +223,7 @@ export function App() {
             nativeFileMenuCreated={nativeFileMenuCreated}
             projectMenuChildren={
               <UndoRedoButtons
+                data-testid="app-header-undo-redo"
                 editorManager={editorManager}
                 className="flex items-center px-2 border-x border-chalkboard-30 dark:border-chalkboard-80"
               />
