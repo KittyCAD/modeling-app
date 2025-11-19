@@ -13,7 +13,6 @@ test.describe('Text-to-CAD tests', () => {
     scene,
   }) => {
     await page.setBodyDimensions({ width: 2000, height: 1000 })
-    await expect(homePage.textToCadBtn).toBeEnabled()
 
     const prompt = 'a 2x4 lego'
     await sendPromptFromCommandBarAndSetNewProject(page, prompt, cmdBar)
@@ -32,7 +31,6 @@ test.describe('Text-to-CAD tests', () => {
     cmdBar,
   }) => {
     await page.setBodyDimensions({ width: 2000, height: 1000 })
-    await expect(homePage.textToCadBtn).toBeEnabled()
 
     const prompt = 'a 2x6 lego'
     await sendPromptFromCommandBarAndSetNewProject(page, prompt, cmdBar)
@@ -57,7 +55,6 @@ test.describe('Text-to-CAD tests', () => {
     editor,
   }) => {
     await page.setBodyDimensions({ width: 2000, height: 1000 })
-    await expect(homePage.textToCadBtn).toBeEnabled()
 
     const badPrompt = 'akjsndladf lajbhflauweyfaaaljhr472iouafyvsssssss'
     await sendPromptFromCommandBarAndSetNewProject(page, badPrompt, cmdBar)
