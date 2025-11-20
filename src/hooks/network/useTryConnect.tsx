@@ -29,9 +29,9 @@ const attemptToConnectToEngine = async ({
   timeToConnect,
 }: {
   authToken: string
-  videoWrapperRef: React.RefObject<HTMLDivElement>
+  videoWrapperRef: React.RefObject<HTMLDivElement | null>
   setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
-  videoRef: React.RefObject<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   settingsEngine: SettingsViaQueryString
   timeToConnect: number
@@ -171,12 +171,12 @@ async function tryConnecting({
   settings,
   setShowManualConnect,
 }: {
-  isConnecting: React.MutableRefObject<boolean>
-  numberOfConnectionAttempts: React.MutableRefObject<number>
+  isConnecting: React.RefObject<boolean>
+  numberOfConnectionAttempts: React.RefObject<number>
   authToken: string
-  videoWrapperRef: React.RefObject<HTMLDivElement>
+  videoWrapperRef: React.RefObject<HTMLDivElement | null>
   setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
-  videoRef: React.RefObject<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
   settings: SettingsViaQueryString
