@@ -82,10 +82,10 @@ impl ResponseContext {
     pub async fn send_response(&self, data: js_sys::Uint8Array) {
         let ws_result: WebSocketResponse = match rmp_serde::from_slice(&data.to_vec()) {
             Ok(res) => res,
-            Err(msgpack_err) => {
+            Err(_) => {
                 match bson::from_slice(&data.to_vec()) {
                     Ok(res) => res,
-                    Err(bson_err) => {
+                    Err(_) => {
                         // We don't care about the error if we can't parse it.
                         return;
                     }
@@ -253,7 +253,7 @@ impl EngineConnection {
 
         let ws_result: WebSocketResponse = match rmp_serde::from_slice(&data.to_vec()) {
             Ok(resp) => resp,
-            Err(msgpack_err) => bson::from_slice(&data.to_vec()).map_err(|e| {
+            Err(_) => bson::from_slice(&data.to_vec()).map_err(|e| {
                 KclError::new_engine(KclErrorDetails::new(
                     format!("Failed to deserialize bson response from engine: {:?}", e),
                     vec![source_range],
