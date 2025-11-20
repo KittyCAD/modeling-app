@@ -2486,8 +2486,8 @@ sketch(on = XY) {
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
-  line1 = sketch2::line(start = [var -0mm, var -0mm], end = [var 3.762mm, var 4.878mm])
-  line2 = sketch2::line(start = [var 3.762mm, var 4.878mm], end = [var 8.176mm, var 9.176mm])
+  line1 = sketch2::line(start = [var 0mm, var -0mm], end = [var 4.145mm, var 5.32mm])
+  line2 = sketch2::line(start = [var 4.145mm, var 5.32mm], end = [var 9mm, var 10mm])
 line1.start.at[0] == 0
 line1.start.at[1] == 0
   sketch2::coincident([line1.end, line2.start])
