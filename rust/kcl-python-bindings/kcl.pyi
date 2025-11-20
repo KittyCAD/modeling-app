@@ -82,6 +82,8 @@ class Finding:
     def description(self) -> builtins.str: ...
     @property
     def experimental(self) -> builtins.bool: ...
+    @property
+    def family(self) -> builtins.str: ...
 
 class FixedLints:
     r"""
@@ -702,9 +704,16 @@ def lint(code:builtins.str) -> builtins.list[Discovered]:
     Lint the kcl code.
     """
 
-def lint_and_fix(code:builtins.str) -> FixedLints:
+def lint_and_fix_all(code:builtins.str) -> FixedLints:
     r"""
     Lint the kcl code. Fix any lints that can be fixed with automatic suggestions.
+    Returns any unfixed lints.
+    """
+
+def lint_and_fix_families(code:builtins.str, families_to_fix:typing.Sequence[FindingFamily]) -> FixedLints:
+    r"""
+    Lint the kcl code. Fix any lints that can be fixed with automatic suggestions,
+    and are in the list of families to fix.
     Returns any unfixed lints.
     """
 
