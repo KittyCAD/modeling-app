@@ -424,6 +424,23 @@ class FileExportFormat(Enum):
     The STL file format. <https://en.wikipedia.org/wiki/STL_(file_format)>
     """
 
+class FindingFamily(Enum):
+    r"""
+    Lint families such as style or correctness.
+    """
+    Style = ...
+    r"""
+    KCL style guidelines, e.g. identifier casing.
+    """
+    Correctness = ...
+    r"""
+    The user is probably doing something incorrect or unintended.
+    """
+    Simplify = ...
+    r"""
+    The user has expressed something in a complex way that could be simplified.
+    """
+
 class GltfStorage(Enum):
     r"""
     Describes the storage format of a glTF 2.0 scene.
