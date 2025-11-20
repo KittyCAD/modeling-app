@@ -68,13 +68,6 @@ export const ButtonClearChat = (props: ComponentProps<'button'>) => (
   <button {...props} className="pt-1 pb-1">
     <span className="flex flex-row gap-1">
       <CustomIcon name="trash" className="w-4 h-4" />
-      <Tooltip
-        position="left"
-        hoverOnly={true}
-        contentClassName="text-sm max-w-none flex items-center gap-5"
-      >
-        <span>Clear chat</span>
-      </Tooltip>
       <span>Clear chat</span>
     </span>
   </button>

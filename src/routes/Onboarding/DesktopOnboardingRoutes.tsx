@@ -396,7 +396,7 @@ function PromptToEdit() {
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-center">
       <OnboardingCard className="col-start-3 col-span-2">
-        <h1 className="text-xl font-bold">Modify with Zoo Zookeeper</h1>
+        <h1 className="text-xl font-bold">Modify with Zookeeper</h1>
         <p className="my-4">
           Zookeeper not only can <strong>create</strong> a part, but also{' '}
           <strong>modify</strong> an existing part. In the right toolbar, you’ll

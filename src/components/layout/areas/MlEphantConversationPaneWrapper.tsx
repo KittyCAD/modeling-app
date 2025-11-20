@@ -65,7 +65,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
           <LayoutPanelHeader
             id={props.layout.id}
             icon="sparkles"
-            title="Zookeeper"
+            title="Text-to-CAD"
             Menu={MLEphantConversationPaneMenu}
             onClose={props.onClose}
           />

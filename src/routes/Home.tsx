@@ -182,7 +182,7 @@ const Home = () => {
       commandBarActor.send({
         type: 'Find and select command',
         data: {
-          name: 'Zookeeper',
+          name: 'Text-to-CAD',
           groupId: 'application',
           argDefaultValues: {
             method: 'newProject',
