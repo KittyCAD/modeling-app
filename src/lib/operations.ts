@@ -2286,46 +2286,28 @@ async function prepareToEditScale({ operation }: EnterEditFlowProps) {
   let x: KclCommandValue | undefined = undefined
   let y: KclCommandValue | undefined = undefined
   let z: KclCommandValue | undefined = undefined
+  let factor: KclCommandValue | undefined = undefined
   let global: boolean | undefined
   if (operation.labeledArgs.x) {
-    const result = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.x.sourceRange[0],
-        operation.labeledArgs.x.sourceRange[1]
-      )
-    )
-    if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve x argument" }
-    }
-    x = result
+    const res = await extractKclArgument(operation, 'x')
+    if ('error' in res) return { reason: res.error }
+    x = res
   }
-
   if (operation.labeledArgs.y) {
-    const result = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.y.sourceRange[0],
-        operation.labeledArgs.y.sourceRange[1]
-      )
-    )
-    if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve y argument" }
-    }
-    y = result
+    const res = await extractKclArgument(operation, 'y')
+    if ('error' in res) return { reason: res.error }
+    y = res
   }
-
   if (operation.labeledArgs.z) {
-    const result = await stringToKclExpression(
-      codeManager.code.slice(
-        operation.labeledArgs.z.sourceRange[0],
-        operation.labeledArgs.z.sourceRange[1]
-      )
-    )
-    if (err(result) || 'errors' in result) {
-      return { reason: "Couldn't retrieve z argument" }
-    }
-    z = result
+    const res = await extractKclArgument(operation, 'z')
+    if ('error' in res) return { reason: res.error }
+    z = res
   }
-
+  if (operation.labeledArgs.factor) {
+    const res = await extractKclArgument(operation, 'factor')
+    if ('error' in res) return { reason: res.error }
+    factor = res
+  }
   if (operation.labeledArgs.global) {
     global =
       codeManager.code.slice(
@@ -2342,6 +2324,7 @@ async function prepareToEditScale({ operation }: EnterEditFlowProps) {
     x,
     y,
     z,
+    factor,
     global,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }

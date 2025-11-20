@@ -14,6 +14,7 @@ import { reportRejection } from '@src/lib/trap'
 import { getDimensions } from '@src/network/utils'
 import { useRef } from 'react'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
+import toast from 'react-hot-toast'
 
 /**
  * Helper function, do not call this directly. Use tryConnecting instead.
@@ -28,9 +29,9 @@ const attemptToConnectToEngine = async ({
   timeToConnect,
 }: {
   authToken: string
-  videoWrapperRef: React.RefObject<HTMLDivElement>
+  videoWrapperRef: React.RefObject<HTMLDivElement | null>
   setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
-  videoRef: React.RefObject<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   settingsEngine: SettingsViaQueryString
   timeToConnect: number
@@ -170,12 +171,12 @@ async function tryConnecting({
   settings,
   setShowManualConnect,
 }: {
-  isConnecting: React.MutableRefObject<boolean>
-  numberOfConnectionAttempts: React.MutableRefObject<number>
+  isConnecting: React.RefObject<boolean>
+  numberOfConnectionAttempts: React.RefObject<number>
   authToken: string
-  videoWrapperRef: React.RefObject<HTMLDivElement>
+  videoWrapperRef: React.RefObject<HTMLDivElement | null>
   setAppState: (newAppState: Partial<ReturnType<typeof useAppState>>) => void
-  videoRef: React.RefObject<HTMLVideoElement>
+  videoRef: React.RefObject<HTMLVideoElement | null>
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
   settings: SettingsViaQueryString
@@ -186,6 +187,8 @@ async function tryConnecting({
       if (isConnecting.current) {
         return resolve('connecting')
       }
+
+      let toastId: string | null = null
 
       isConnecting.current = true
 
@@ -215,6 +218,9 @@ async function tryConnecting({
             label: 'tryConnecting',
             message: 'setAppState({ isStreamAcceptingInput: true })',
           })
+          if (toastId) {
+            toast.dismiss(toastId)
+          }
           resolve('connected')
         } catch (e) {
           isConnecting.current = false
@@ -224,12 +230,30 @@ async function tryConnecting({
             message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed, calling tearDown()`,
           })
           engineCommandManager.tearDown()
-          // Fail after NUMBER_OF_ENGINE_RETRIES
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
             numberOfConnectionAttempts.current = 0
+            if (toastId) {
+              toast.dismiss(toastId)
+            }
             return reject(e)
           }
           attempt().catch(reportRejection)
+          if (toastId) {
+            toast.error(
+              `Engine connection lost, reconnecting... Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES}`,
+              {
+                duration: Number.POSITIVE_INFINITY,
+                id: toastId,
+              }
+            )
+          } else {
+            toastId = toast.error(
+              `Engine connection lost, reconnecting... Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES}`,
+              {
+                duration: Number.POSITIVE_INFINITY,
+              }
+            )
+          }
         }
       }
       await attempt()

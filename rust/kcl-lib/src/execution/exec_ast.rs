@@ -705,7 +705,7 @@ impl ExecutorContext {
         let result = self
             .exec_module_body(program, exec_state, preserve_mem, module_id, path)
             .await;
-        exec_state.global.mod_loader.leave_module(path);
+        exec_state.global.mod_loader.leave_module(path, source_range)?;
 
         // TODO: ModuleArtifactState is getting dropped here when there's an
         // error.  Should we propagate it for non-root modules?

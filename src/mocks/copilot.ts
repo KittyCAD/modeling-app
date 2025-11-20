@@ -1,4 +1,4 @@
-import { BSON } from 'bson'
+import { encode as msgpackEncode } from '@msgpack/msgpack'
 import type {
   MlCopilotServerMessage,
   ReasoningMessage,
@@ -216,7 +216,7 @@ function generateUserResponse(
 
 function generateReplayResponse(): Uint8Array {
   const te = new TextEncoder()
-  return BSON.serialize({
+  return msgpackEncode({
     replay: {
       messages: generateMlServerMessages().map((m: MlCopilotServerMessage) => {
         return Array.from(te.encode(JSON.stringify(m)))

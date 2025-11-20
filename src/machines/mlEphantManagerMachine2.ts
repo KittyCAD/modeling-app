@@ -1,5 +1,6 @@
 import env from '@src/env'
 import { BSON } from 'bson'
+import { decode as msgpackDecode } from '@msgpack/msgpack'
 import type {
   MlCopilotClientMessage,
   MlCopilotServerMessage,
@@ -288,10 +289,18 @@ export const mlEphantManagerMachine2 = setup({
           ws.addEventListener('message', function (event: MessageEvent<any>) {
             let response: unknown
             if (!isString(event.data)) {
+              const binaryData = new Uint8Array(event.data)
               try {
-                response = BSON.deserialize(new Uint8Array(event.data))
-              } catch (e: unknown) {
-                return console.error(e)
+                response = msgpackDecode(binaryData)
+              } catch (msgpackError) {
+                try {
+                  response = BSON.deserialize(binaryData)
+                } catch (bsonError) {
+                  return console.error(
+                    'failed to deserialize binary websocket message',
+                    { msgpackError, bsonError }
+                  )
+                }
               }
             } else {
               try {

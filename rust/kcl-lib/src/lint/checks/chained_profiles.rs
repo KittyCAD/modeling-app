@@ -74,8 +74,9 @@ fn check_body(block: &AstNode<Program>, whole_program: &AstNode<Program>) -> Res
             // Copy the unlabeled arg from the previous call to the problematic
             // call since it's no longer in the pipeline. Create a new pipeline
             // if there's more than one expression left.
-            let (next_expr, result) = if rest.len() == 1 {
-                let mut call = rest.pop().unwrap();
+            let (next_expr, result) = if rest.len() == 1
+                && let Some(mut call) = rest.pop()
+            {
                 let result = add_unlabeled_arg_to_call(&mut call, unlabeled_arg);
                 (call, result)
             } else {

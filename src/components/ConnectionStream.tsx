@@ -23,7 +23,6 @@ import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
 import { useTryConnect } from '@src/hooks/network/useTryConnect'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
-import { ManualReconnection } from '@src/components/ManualReconnection'
 import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
 import { useOnFileRoute } from '@src/hooks/network/useOnFileRoute'
@@ -354,19 +353,13 @@ export const ConnectionStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
-      {!isSceneReady && !showManualConnect && (
+      {(!isSceneReady || showManualConnect) && (
         <Loading
           isRetrying={false}
           retryAttemptCountdown={0}
           dataTestId="loading-engine"
           className="absolute inset-0 h-screen"
-        >
-          Connecting and setting up scene...
-        </Loading>
-      )}
-      {showManualConnect && (
-        <ManualReconnection
-          className="absolute inset-0 h-screen"
+          showManualConnect={showManualConnect}
           callback={() => {
             setShowManualConnect(false)
             tryConnecting({
@@ -385,7 +378,9 @@ export const ConnectionStream = (props: {
               setShowManualConnect(true)
             })
           }}
-        ></ManualReconnection>
+        >
+          Connecting and setting up scene...
+        </Loading>
       )}
       )
     </div>

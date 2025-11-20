@@ -197,7 +197,7 @@ export default class EditorManager {
 
     return selection.filter(isTopLevelModule).map((s): [number, number] => {
       const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])
-      return [s[0], safeEnd]
+      return [Math.min(s[0], safeEnd), safeEnd]
     })
   }
 
@@ -218,7 +218,13 @@ export default class EditorManager {
   }
 
   setHighlightRange(range: Array<Selection['codeRef']['range']>): void {
-    const selectionsWithSafeEnds = this.selectionsWithSafeEnds(range)
+    const selectionsWithSafeEnds = this.selectionsWithSafeEnds(range).filter(
+      (selection) => {
+        // Only keep valid selections.
+        // Note: the selection might still be outdated for the new AST which is not calculated yet after a code mod /undo
+        return selection[0] < selection[1]
+      }
+    )
 
     this._highlightRange = selectionsWithSafeEnds
 

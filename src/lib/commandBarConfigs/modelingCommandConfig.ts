@@ -300,6 +300,7 @@ export type ModelingCommandSchema = {
     x?: KclCommandValue
     y?: KclCommandValue
     z?: KclCommandValue
+    factor?: KclCommandValue
     global?: boolean
   }
   Clone: {
@@ -1630,6 +1631,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       z: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: false,
+      },
+      factor: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SCALE,
         required: false,
       },
       global: {

@@ -134,7 +134,7 @@ async fn inner_revolve(
             Axis2dOrEdgeReference::Axis { direction, origin } => {
                 exec_state
                     .batch_modeling_cmd(
-                        ModelingCmdMeta::from_args_id(&args, new_solid_id),
+                        ModelingCmdMeta::from_args_id(exec_state, &args, new_solid_id),
                         ModelingCmd::from(mcmd::Revolve {
                             angle,
                             target: sketch.id.into(),
@@ -160,7 +160,7 @@ async fn inner_revolve(
                 let edge_id = edge.get_engine_id(exec_state, &args)?;
                 exec_state
                     .batch_modeling_cmd(
-                        ModelingCmdMeta::from_args_id(&args, new_solid_id),
+                        ModelingCmdMeta::from_args_id(exec_state, &args, new_solid_id),
                         ModelingCmd::from(mcmd::RevolveAboutEdge {
                             angle,
                             target: sketch.id.into(),

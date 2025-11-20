@@ -131,6 +131,8 @@ When you submit a PR to add or modify KCL samples, images will be generated and 
 [![holder-rod-angle](screenshots/holder-rod-angle.png)](holder-rod-angle/main.kcl)
 #### [i-beam](i-beam/main.kcl) ([screenshot](screenshots/i-beam.png))
 [![i-beam](screenshots/i-beam.png)](i-beam/main.kcl)
+#### [inner-thread](inner-thread/main.kcl) ([screenshot](screenshots/inner-thread.png))
+[![inner-thread](screenshots/inner-thread.png)](inner-thread/main.kcl)
 #### [keyboard](keyboard/main.kcl) ([screenshot](screenshots/keyboard.png))
 [![keyboard](screenshots/keyboard.png)](keyboard/main.kcl)
 #### [kitt](kitt/main.kcl) ([screenshot](screenshots/kitt.png))
