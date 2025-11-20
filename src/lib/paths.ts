@@ -312,9 +312,9 @@ export function getFilePathRelativeToProject(
   // Let's put separators on either side of it and offset by one, so we know
   // it matches a whole directory name.
   const projectNameWithSeparators = sep + projectName + sep
-  return (
-    absoluteFilePath.slice(
-      absoluteFilePath.indexOf(projectNameWithSeparators) ?? 0
-    ) ?? ''
-  )
+  const projectIndexInPath = absoluteFilePath.indexOf(projectNameWithSeparators)
+  // Let's leave the leading separator
+  const sliceOffset = projectNameWithSeparators.length - 1
+
+  return absoluteFilePath.slice(projectIndexInPath + sliceOffset) ?? ''
 }

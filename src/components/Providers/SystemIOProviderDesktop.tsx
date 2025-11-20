@@ -288,27 +288,21 @@ export function SystemIOMachineLogicListenerDesktop() {
           }
         })
 
-        const targetFilePathWithoutFileAndRelativeToProjectDir =
-          getFilePathRelativeToProject(
-            promptMeta.targetFile?.path || '',
-            promptMeta.project.name
-          )
-
-        const requestedProjectNameNext =
-          targetFilePathWithoutFileAndRelativeToProjectDir.slice(
-            0,
-            targetFilePathWithoutFileAndRelativeToProjectDir.lastIndexOf(
-              window.electron?.sep ?? ''
-            )
-          )
+        const targetFilePathRelativeToProject = getFilePathRelativeToProject(
+          promptMeta.targetFile?.path || '',
+          promptMeta.project.name
+        )
 
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
           data: {
             files: requestedFiles,
             override: true,
-            requestedProjectName: requestedProjectNameNext,
-            requestedFileNameWithExtension: promptMeta.targetFile?.name ?? '',
+            // Gotcha: Both are called "project name" and "file name", but one of them
+            // has to include the project-relative file path between the two.
+            requestedProjectName: promptMeta.project.name,
+            requestedFileNameWithExtension:
+              targetFilePathRelativeToProject ?? '',
           },
         })
       }
@@ -347,20 +341,16 @@ export function SystemIOMachineLogicListenerDesktop() {
         projectNameCurrentlyOpened
       )
 
-      const requestedProjectNameNext = targetFilePathRelativeToProjectDir.slice(
-        0,
-        targetFilePathRelativeToProjectDir.lastIndexOf(
-          window.electron?.sep ?? ''
-        )
-      )
-
       systemIOActor.send({
         type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
         data: {
           files: requestedFiles,
           override: true,
-          requestedProjectName: requestedProjectNameNext,
-          requestedFileNameWithExtension: fileFocusedOnInEditor?.name ?? '',
+          // Gotcha: Both are called "project name" and "file name", but one of them
+          // has to include the project-relative file path between the two.
+          requestedProjectName: projectNameCurrentlyOpened,
+          requestedFileNameWithExtension:
+            targetFilePathRelativeToProjectDir ?? '',
         },
       })
     }

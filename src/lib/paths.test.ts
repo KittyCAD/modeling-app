@@ -85,7 +85,7 @@ describe('testing getFilePathRelativeToProject', () => {
       '/oops/early-e-characters/hi/im/franknoirot/e/some/nested/file.kcl'
     const projectName = 'e'
     const expectedProjectRelativeFilePath = '/some/nested/file.kcl'
-    expect(getFilePathRelativeToProject(filePath, projectName)).toEqual(
+    expect(getFilePathRelativeToProject(filePath, projectName, '/')).toEqual(
       expectedProjectRelativeFilePath
     )
   })
