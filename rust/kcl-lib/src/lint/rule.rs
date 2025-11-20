@@ -1,5 +1,8 @@
 use anyhow::Result;
 use serde::Serialize;
+
+#[cfg(feature = "pyo3")]
+use pyo3_stub_gen::{inventory, type_info::PyEnumInfo};
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::{
@@ -229,6 +232,26 @@ impl pyo3_stub_gen::PyStubType for FindingFamily {
     fn type_output() -> pyo3_stub_gen::TypeInfo {
         // Expose the enum name in stubs; functions using FindingFamily will be annotated accordingly.
         pyo3_stub_gen::TypeInfo::unqualified("FindingFamily")
+    }
+}
+
+#[cfg(feature = "pyo3")]
+fn finding_family_type_id() -> std::any::TypeId {
+    std::any::TypeId::of::<FindingFamily>()
+}
+
+#[cfg(feature = "pyo3")]
+inventory::submit! {
+    PyEnumInfo {
+        enum_id: finding_family_type_id,
+        pyclass_name: "FindingFamily",
+        module: None,
+        doc: "Lint families such as style or correctness.",
+        variants: &[
+            ("Style", "KCL style guidelines, e.g. identifier casing."),
+            ("Correctness", "The user is probably doing something incorrect or unintended."),
+            ("Simplify", "The user has expressed something in a complex way that could be simplified."),
+        ],
     }
 }
 
