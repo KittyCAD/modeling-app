@@ -44,7 +44,7 @@ import {
   Vector3,
 } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { orthoScale } from '@src/clientSideScene/helpers'
+import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
 import {
   getParentGroup,
   STRAIGHT_SEGMENT_BODY,
@@ -1580,9 +1580,13 @@ export const sketchSolveMachine = setup({
       const objects = sceneGraphDelta.new_graph.objects
       const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
       const factor =
-        context.sceneInfra.camControls.camera instanceof OrthographicCamera
+        (context.sceneInfra.camControls.camera instanceof OrthographicCamera ||
+        !context.sceneEntitiesManager.axisGroup
           ? orthoFactor
-          : orthoFactor
+          : perspScale(
+              context.sceneInfra.camControls.camera,
+              context.sceneEntitiesManager.axisGroup
+            )) / context.sceneInfra.baseUnitMultiplier
 
       // Combine selectedIds and duringAreaSelectIds for highlighting
       const allSelectedIds = Array.from(
@@ -1617,10 +1621,13 @@ export const sketchSolveMachine = setup({
       const objects = sceneGraphDelta.new_graph.objects
       const orthoFactor = orthoScale(context.sceneInfra.camControls.camera)
       const factor =
-        context.sceneInfra.camControls.camera instanceof OrthographicCamera
+        (context.sceneInfra.camControls.camera instanceof OrthographicCamera ||
+        !context.sceneEntitiesManager.axisGroup
           ? orthoFactor
-          : orthoFactor
-      context.sceneInfra.baseUnitMultiplier
+          : perspScale(
+              context.sceneInfra.camControls.camera,
+              context.sceneEntitiesManager.axisGroup
+            )) / context.sceneInfra.baseUnitMultiplier
       const sketchSegments = context.sceneInfra.scene.children.find(
         ({ userData }) => userData?.type === SKETCH_SOLVE_GROUP
       )
