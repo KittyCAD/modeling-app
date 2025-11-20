@@ -9,13 +9,13 @@ mac:
   category: public.app-category.developer-tools
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
   target:
-    - target: dmg
-      arch:
-        - x64
-        - arm64
+    # - target: dmg
+      # arch:
+        # - x64
+        # - arm64
     - target: zip
       arch:
-        - x64
+        # - x64
         - arm64
   notarize: true
   fileAssociations:

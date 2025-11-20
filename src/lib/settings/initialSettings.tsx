@@ -693,7 +693,7 @@ export function createSettings() {
       }),
       enableZookeeper: new Setting<boolean>({
         hideOnLevel: 'user',
-        defaultValue: IS_STAGING_OR_DEBUG ? true : false,
+        defaultValue: false,
         description:
           'Enable the conversational agent in Text-to-CAD for this project.',
         validate: (v) => typeof v === 'boolean',
