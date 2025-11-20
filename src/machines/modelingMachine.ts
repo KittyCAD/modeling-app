@@ -1590,7 +1590,7 @@ export const modelingMachine = setup({
     'Set mouse state': () => {},
     'Set Segment Overlays': () => {},
     'Center camera on selection': () => {},
-    'Submit to Zookeeper API': () => {},
+    'Submit to Text-to-CAD API': () => {},
     'Set sketchDetails': () => {},
     'debug-action': (data) => {
       console.log('re-eval debug-action', data)
@@ -4210,10 +4210,10 @@ export const modelingMachine = setup({
           reenter: true,
         },
 
-        Zookeeper: {
+        'Text-to-CAD': {
           target: 'idle',
           reenter: false,
-          actions: ['Submit to Zookeeper API'],
+          actions: ['Submit to Text-to-CAD API'],
         },
 
         'Prompt-to-edit': 'Applying Prompt-to-edit',

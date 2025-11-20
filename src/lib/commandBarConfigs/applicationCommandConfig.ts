@@ -143,9 +143,9 @@ export function createApplicationCommands({
   mlEphantManagerActor: MlEphantManagerActor
 }) {
   const textToCADCommand: Command = {
-    name: 'Zookeeper',
+    name: 'Text-to-CAD',
     description: 'Generate parts from text prompts.',
-    displayName: 'Create Project using Zookeeper',
+    displayName: 'Create Project using Text-to-CAD',
     groupId: 'application',
     needsReview: false,
     status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
@@ -628,7 +628,7 @@ export function createApplicationCommands({
             value: 'default',
           },
           {
-            name: 'Zookeeper focus',
+            name: 'Text-to-CAD focus',
             value: 'ttc',
           },
         ] satisfies { name: string; value: keyof typeof userLoadableLayouts }[],

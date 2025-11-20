@@ -40,7 +40,7 @@ export const helpRole = (
         },
       },
       {
-        label: 'Get Started with Zookeeper',
+        label: 'Get Started with Text-to-CAD',
         click: () => {
           shell
             .openExternal('https://text-to-cad.zoo.dev/dashboard')
