@@ -4,6 +4,8 @@ import Tooltip from '@src/components/Tooltip'
 import type EditorManager from '@src/editor/manager'
 import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { reportRejection } from '@src/lib/trap'
+import { refreshPage } from '@src/lib/utils'
 import type { HTMLProps, MouseEventHandler } from 'react'
 
 export function UndoRedoButtons({
@@ -25,8 +27,18 @@ export function UndoRedoButtons({
         keyboardShortcut="mod+shift+z"
         iconName="arrowShortRight"
         onClick={() => editorManager.redo()}
-        className="rounded-l-none"
+        className="rounded-none"
         disabled={redoDepth(editorManager.editorState) === 0}
+      />
+      {/** TODO: Remove the refresh button when users don't need it so much. */}
+      <UndoOrRedoButton
+        label="Refresh"
+        iconName="arrowRotateRight"
+        onClick={() => {
+          refreshPage('Top app bar').catch(reportRejection)
+        }}
+        className="rounded-l-none"
+        disabled={false}
       />
     </div>
   )
@@ -35,8 +47,8 @@ export function UndoRedoButtons({
 interface UndoOrRedoButtonProps extends HTMLProps<HTMLButtonElement> {
   label: string
   onClick: MouseEventHandler
-  iconName: 'arrowRotateRight' | 'arrowRotateLeft'
-  keyboardShortcut: string
+  iconName: 'arrowShortRight' | 'arrowShortLeft' | 'arrowRotateRight'
+  keyboardShortcut?: string
   disabled: boolean
 }
 
@@ -65,9 +77,11 @@ function UndoOrRedoButton({
         contentClassName="text-sm max-w-none flex items-center gap-4"
       >
         <span>{label}</span>
-        <kbd className="hotkey capitalize">
-          {hotkeyDisplay(keyboardShortcut, platform)}
-        </kbd>
+        {keyboardShortcut && (
+          <kbd className="hotkey capitalize">
+            {hotkeyDisplay(keyboardShortcut, platform)}
+          </kbd>
+        )}
       </Tooltip>
     </button>
   )
