@@ -1,8 +1,7 @@
 use anyhow::Result;
-use serde::Serialize;
-
 #[cfg(feature = "pyo3")]
 use pyo3_stub_gen::{inventory, type_info::PyEnumInfo};
+use serde::Serialize;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::{
