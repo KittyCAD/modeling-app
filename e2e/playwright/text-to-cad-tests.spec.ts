@@ -61,7 +61,7 @@ test.describe('Zookeeper tests', () => {
 
     // Look out for the message
     const submittedMessage = page.getByText(badPrompt)
-    await expect(submittedMessage.first()).toBeVisible()
+    await expect(submittedMessage).toBeVisible()
 
     const failureToastMessage = page.getByText(
       `The prompt must clearly describe a CAD model`
@@ -136,7 +136,7 @@ async function sendPromptFromCommandBarAndSetNewProject(
 
 /**
  * Below there are twelve (12) tests for testing the navigation and file creation
- * logic around text to cad. The Text to CAD command is now globally available
+ * logic around text to cad. The Zookeeper command is now globally available
  * within the application and is the same command for all parts of the application.
  * There are many new user scenarios to test because we can navigate to any project
  * you can accept and reject the creation and everything needs to be updated properly.
@@ -200,7 +200,7 @@ test.describe('Mocked Zookeeper API tests', { tag: ['@skipWin'] }, () => {
   }
 
   test(
-    'Home Page -> Text To CAD -> New Project -> Stay in home page -> should navigate to file',
+    'Home Page -> Zookeeper -> New Project -> Stay in home page -> should navigate to file',
     { tag: '@desktop' },
     async ({ context, page }, testInfo) => {
       await page.setBodyDimensions({ width: 2000, height: 1000 })
@@ -213,7 +213,7 @@ test.describe('Mocked Zookeeper API tests', { tag: ['@skipWin'] }, () => {
       await page.getByTestId('command-bar-open-button').click()
 
       // search Text To CAD
-      await page.keyboard.type('Text To CAD')
+      await page.keyboard.type('Zookeeper')
       await page.keyboard.press('Enter')
 
       // new project
