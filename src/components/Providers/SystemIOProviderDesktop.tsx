@@ -248,18 +248,7 @@ export function SystemIOMachineLogicListenerDesktop() {
     (prompt: Prompt, promptMeta: PromptMeta) => {
       if (promptMeta.type === PromptType.Create) {
         if (prompt.code === undefined) return
-        // Strip the leading /
-        const indexFirstSlash = promptMeta.project.path.indexOf(
-          window.electron?.sep ?? ''
-        )
-        let requestedProjectName = promptMeta.project.path
-        if (indexFirstSlash === 0) {
-          requestedProjectName = requestedProjectName.slice(1)
-        }
-        requestedProjectName = requestedProjectName.slice(
-          0,
-          requestedProjectName.indexOf(window.electron?.sep ?? '')
-        )
+        let requestedProjectName = promptMeta.project.name
 
         systemIOActor.send({
           type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
