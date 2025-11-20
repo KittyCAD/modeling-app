@@ -4,7 +4,7 @@ import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Zookeeper tests', () => {
+test.describe('Text-to-CAD tests', () => {
   test('basic lego happy case', async ({
     page,
     homePage,

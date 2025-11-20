@@ -8,7 +8,7 @@ import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 
-test.describe('Zookeeper tests', () => {
+test.describe('Text-to-CAD tests', () => {
   async function runCopilotHappyPathTest({
     page,
     editor,
