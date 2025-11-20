@@ -47,12 +47,14 @@ new-sim-test test_name render_to_png="true":
 
 # Run a KCL deterministic simulation test case and accept output.
 overwrite-sim-test-sample test_name:
+    [ -z "${ZOO_API_TOKEN:-}" ] && { echo "ZOO_API_TOKEN is not set"; exit 1; }
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::parse_{{test_name}}
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::unparse_{{test_name}}
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::kcl_test_execute_{{test_name}}
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::test_after_engine
 
 overwrite-sim-test test_name:
+    [ -z "${ZOO_API_TOKEN:-}" ] && { echo "ZOO_API_TOKEN is not set"; exit 1; }
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::parse
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::unparse
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::kcl_test_execute
@@ -60,6 +62,7 @@ overwrite-sim-test test_name:
 
 # Regenerate all the simulation test output.
 redo-sim-tests:
+    [ -z "${ZOO_API_TOKEN:-}" ] && { echo "ZOO_API_TOKEN is not set"; exit 1; }
     ZOO_SIM_UPDATE=always EXPECTORATE=overwrite TWENTY_TWENTY=update {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests
     # This copies PNG files generated during tests to the public folder. It
     # needs to happen *after* they're all generated.
