@@ -17,6 +17,7 @@ import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type RustContext from '@src/lib/rustContext'
 import { addScale } from '@src/lang/modifyAst/transforms'
 import type { ConnectionManager } from '@src/network/connectionManager'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -351,6 +352,69 @@ extrude001 = extrude(profile001, length = 1)`
         rustContextInThisFile
       )
       expect(newCode).toContain(code + '\n' + expectedNewLine)
+    })
+
+    const cylinderCode = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)`
+    const scaledCylinderCode = `${cylinderCode}
+scale(extrude001, factor = 2)`
+
+    it('should add a scale call with factor', async () => {
+      const {
+        artifactGraph,
+        ast,
+        sketches: objects,
+      } = await getAstAndSketchSelections(
+        cylinderCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addScale({
+        ast,
+        artifactGraph,
+        objects,
+        factor: await getKclCommandValue(
+          '2',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(scaledCylinderCode)
+    })
+
+    it.skip('should edit a scale call with factor', async () => {
+      const {
+        artifactGraph,
+        ast,
+        sketches: objects,
+      } = await getAstAndSketchSelections(
+        scaledCylinderCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const nodeToEdit = createPathToNodeForLastVariable(ast, false)
+      const factor = await getKclCommandValue(
+        '3',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addScale({
+        ast,
+        artifactGraph,
+        objects,
+        factor,
+        nodeToEdit,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        scaledCylinderCode.replace('factor = 2', 'factor = 3')
+      )
     })
 
     async function runEditScaleTest(
