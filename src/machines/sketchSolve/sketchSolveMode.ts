@@ -1358,9 +1358,12 @@ export const sketchSolveMachine = setup({
           }
         },
         onAreaSelectStart: ({ startPoint }) => {
+          const scaledStartPoint = startPoint.threeD
+            .clone()
+            .multiplyScalar(context.sceneInfra.baseUnitMultiplier)
           // Area select started - create the selection box visual and clear any previous area select
           if (startPoint.threeD) {
-            updateSelectionBox(startPoint.threeD, startPoint.threeD)
+            updateSelectionBox(scaledStartPoint, scaledStartPoint)
             // Clear any previous duringAreaSelectIds
             self.send({
               type: 'update selected ids',
@@ -1369,9 +1372,15 @@ export const sketchSolveMachine = setup({
           }
         },
         onAreaSelect: ({ startPoint, currentPoint }) => {
+          const scaledStartPoint = startPoint.threeD
+            .clone()
+            .multiplyScalar(context.sceneInfra.baseUnitMultiplier)
+          const scaledCurrentPoint = currentPoint.threeD
+            .clone()
+            .multiplyScalar(context.sceneInfra.baseUnitMultiplier)
           // Update selection box visual during drag
-          if (startPoint.threeD && currentPoint.threeD) {
-            updateSelectionBox(startPoint.threeD, currentPoint.threeD)
+          if (scaledStartPoint && scaledCurrentPoint) {
+            updateSelectionBox(scaledStartPoint, scaledCurrentPoint)
 
             // Calculate selection box bounds in screen space for contains check
             const camera = context.sceneInfra.camControls.camera
@@ -1381,8 +1390,8 @@ export const sketchSolveMachine = setup({
               renderer.domElement.clientHeight
             )
 
-            const startScreen = startPoint.threeD.clone().project(camera)
-            const currentScreen = currentPoint.threeD.clone().project(camera)
+            const startScreen = scaledStartPoint.clone().project(camera)
+            const currentScreen = scaledCurrentPoint.clone().project(camera)
 
             const startPx = new Vector2(
               ((startScreen.x + 1) / 2) * viewportSize.x,
@@ -1428,7 +1437,7 @@ export const sketchSolveMachine = setup({
             }
           }
         },
-        onAreaSelectEnd: ({ startPoint, currentPoint }) => {
+        onAreaSelectEnd: () => {
           // Remove selection box visual
           removeSelectionBox()
 
