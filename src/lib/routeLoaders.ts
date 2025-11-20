@@ -106,7 +106,6 @@ export const fileLoader: LoaderFunction = async (
         encoding: 'utf-8',
       })
       code = normalizeLineEndings(code)
-      console.log('we got code in fileLoader:', code)
 
       // If persistCode in localStorage is present, it'll persist that code
       // through *anything*. INTENDED FOR TESTS.

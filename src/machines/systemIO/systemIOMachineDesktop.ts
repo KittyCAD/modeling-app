@@ -115,7 +115,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
       async ({ input: context }: { input: SystemIOContext }) => {
-        console.log('readFoldersFromProjectDirectory called', context)
         if (!window.electron) {
           return Promise.reject(new Error('No file system present'))
         }
