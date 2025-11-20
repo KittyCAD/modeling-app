@@ -314,7 +314,7 @@ async fn inner_extrude(
         if let Some(post_extr_sketch) = sketch.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(exec_state, ModelingCmdReq { cmd_id: id.into(), cmd });
             exec_state
-                .batch_modeling_cmds(ModelingCmdMeta::from_args_id(&args, id), &cmds)
+                .batch_modeling_cmds(ModelingCmdMeta::from_args_id(exec_state, &args, id), &cmds)
                 .await?;
             solids.push(
                 do_post_extrude(
