@@ -45,56 +45,43 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
+interface intersectionData {
+  twoD: Vector2
+  threeD: Vector3
+}
+
 export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
   mouseEvent: MouseEvent
   /** The intersection of the mouse with the THREEjs raycast plane */
-  intersectionPoint?: {
-    twoD?: Vector2
-    threeD?: Vector3
-  }
+  intersectionPoint?: Partial<intersectionData>
   /** Whether area select is currently active */
   isAreaSelectActive?: boolean
 }
 
 interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
-  intersectionPoint: {
-    twoD: Vector2
-    threeD: Vector3
-  }
+  intersectionPoint: intersectionData
   intersects: Intersection<Object3D<Object3DEventMap>>[]
 }
 
 export interface OnClickCallbackArgs {
   mouseEvent: MouseEvent
-  intersectionPoint?: {
-    twoD: Vector2
-    threeD: Vector3
-  }
+  intersectionPoint?: intersectionData
   intersects: Intersection<Object3D<Object3DEventMap>>[]
   selected?: Object3D<Object3DEventMap>
 }
 
 export interface OnMoveCallbackArgs {
   mouseEvent: MouseEvent
-  intersectionPoint: {
-    twoD: Vector2
-    threeD: Vector3
-  }
+  intersectionPoint: intersectionData
   intersects: Intersection<Object3D<Object3DEventMap>>[]
   selected?: Object3D<Object3DEventMap>
 }
 
 export interface OnAreaSelectCallbackArgs {
   mouseEvent: MouseEvent
-  startPoint: {
-    twoD: Vector2
-    threeD: Vector3
-  }
-  currentPoint: {
-    twoD: Vector2
-    threeD: Vector3
-  }
+  startPoint: intersectionData
+  currentPoint: intersectionData
   intersects: Intersection<Object3D<Object3DEventMap>>[]
 }
 

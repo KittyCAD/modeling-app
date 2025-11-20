@@ -9,6 +9,8 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
+import { baseUnitToNumericSuffix } from '@src/lang/wasm'
+import type { KclManager } from '@src/lang/KclSingleton'
 
 const TOOL_ID = 'Line tool'
 const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
@@ -31,6 +33,7 @@ type ToolContext = {
   sceneGraphDelta: SceneGraphDelta
   sceneInfra: SceneInfra
   rustContext: RustContext
+  kclManager: KclManager
 }
 
 export const machine = setup({
@@ -40,23 +43,26 @@ export const machine = setup({
     input: {} as {
       sceneInfra: SceneInfra
       rustContext: RustContext
+      kclManager: KclManager
     },
   },
   actions: {
     'animate draft segment listener': ({ self, context }) => {
-      // let isDragging = false
       let isEditInProgress = false
-      // let latestTwoD: Vector2 | null = null
-      // let lastAppliedTwoD: Vector2 | null = null
       context.sceneInfra.setCallbacks({
         onMove: async (args) => {
           if (!args || !context.draftPointId) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD && !isEditInProgress) {
             // Send the add point event with the clicked coordinates
+
+            const units = baseUnitToNumericSuffix(
+              context.kclManager.fileSettings.defaultLengthUnit
+            )
             try {
               isEditInProgress = true
               const settings = await jsAppSettings()
+              // Note: twoD comes from intersectionPoint.unscaledTwoD which is in world coordinates, and always mm
               const result = await context.rustContext.editSegments(
                 0,
                 0,
@@ -69,12 +75,12 @@ export const machine = setup({
                         x: {
                           type: 'Var',
                           value: roundOff(twoD.x),
-                          units: 'Mm',
+                          units,
                         },
                         y: {
                           type: 'Var',
                           value: roundOff(twoD.y),
-                          units: 'Mm',
+                          units,
                         },
                       },
                     },
@@ -175,22 +181,30 @@ export const machine = setup({
       async ({
         input,
       }: {
-        input: { pointData: [number, number]; rustContext: RustContext }
+        input: {
+          pointData: [number, number]
+          rustContext: RustContext
+          kclManager: KclManager
+        }
       }) => {
-        const { pointData, rustContext } = input
+        const { pointData, rustContext, kclManager } = input
         const [x, y] = pointData
 
+        const units = baseUnitToNumericSuffix(
+          kclManager.fileSettings.defaultLengthUnit
+        )
+
         try {
-          // TODO not sure if we should be sending through units with this
+          // Note: x and y come from intersectionPoint.twoD which is in world coordinates, and scaled to units
           const segmentCtor: SegmentCtor = {
             type: 'Line',
             start: {
-              x: { type: 'Var', value: roundOff(x), units: 'Mm' },
-              y: { type: 'Var', value: roundOff(y), units: 'Mm' },
+              x: { type: 'Var', value: roundOff(x), units },
+              y: { type: 'Var', value: roundOff(y), units },
             },
             end: {
-              x: { type: 'Var', value: roundOff(x), units: 'Mm' },
-              y: { type: 'Var', value: roundOff(y), units: 'Mm' },
+              x: { type: 'Var', value: roundOff(x), units },
+              y: { type: 'Var', value: roundOff(y), units },
             },
           }
 
@@ -224,19 +238,23 @@ export const machine = setup({
           pointData: [number, number]
           id: number
           rustContext: RustContext
+          kclManager: KclManager
         }
       }) => {
-        const { pointData, id, rustContext } = input
+        const { pointData, id, rustContext, kclManager } = input
         console.log('input', input)
         const [x, y] = pointData
+        const units = baseUnitToNumericSuffix(
+          kclManager.fileSettings.defaultLengthUnit
+        )
 
         try {
-          // TODO not sure if we should be sending through units with this
+          // Note: x and y come from intersectionPoint.unscaledTwoD which is in world coordinates, and always mm
           const segmentCtor: SegmentCtor = {
             type: 'Point',
             position: {
-              x: { type: 'Var', value: roundOff(x), units: 'Mm' },
-              y: { type: 'Var', value: roundOff(y), units: 'Mm' },
+              x: { type: 'Var', value: roundOff(x), units },
+              y: { type: 'Var', value: roundOff(y), units },
             },
           }
 
@@ -272,6 +290,7 @@ export const machine = setup({
     sceneGraphDelta: {} as SceneGraphDelta,
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
+    kclManager: input.kclManager,
   }),
   id: TOOL_ID,
   initial: 'ready for user click',
@@ -304,6 +323,7 @@ export const machine = setup({
             pointData: event.data,
             id: event.id || 0,
             rustContext: context.rustContext,
+            kclManager: context.kclManager,
           }
         },
 
@@ -336,6 +356,7 @@ export const machine = setup({
           return {
             pointData: event.data,
             rustContext: context.rustContext,
+            kclManager: context.kclManager,
           }
         },
         onDone: {

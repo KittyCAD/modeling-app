@@ -5641,6 +5641,7 @@ export const modelingMachine = setup({
           sceneEntitiesManager:
             context.sceneEntitiesManager ?? sceneEntitiesManager,
           rustContext: context.rustContext ?? rustContext,
+          kclManager: context.kclManager ?? kclManager,
         }),
         onDone: {
           target: 'idle',

@@ -24,6 +24,7 @@ import type CodeManager from '@src/lang/codeManager'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type RustContext from '@src/lib/rustContext'
+import type { KclManager } from '@src/lang/KclSingleton'
 import {
   SEGMENT_TYPE_LINE,
   SEGMENT_TYPE_POINT,
@@ -62,6 +63,11 @@ import {
 import type { Themes } from '@src/lib/theme'
 import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
 import { forceSuffix } from '@src/lang/util'
+import {
+  baseUnitToNumericSuffix,
+  distanceBetweenPoint2DExpr,
+  type NumericSuffix,
+} from '@src/lang/wasm'
 
 const equipTools = Object.freeze({
   centerRectTool,
@@ -88,12 +94,12 @@ function buildSegmentCtorFromObject(
         x: {
           type: 'Number',
           value: obj.kind.segment.position.x.value,
-          units: 'Mm',
+          units: obj.kind.segment.position.x.units,
         },
         y: {
           type: 'Number',
           value: obj.kind.segment.position.y.value,
-          units: 'Mm',
+          units: obj.kind.segment.position.y.units,
         },
       },
     }
@@ -220,8 +226,16 @@ function getLinkedPoint({
     return null
   }
   return {
-    x: { type: 'Var', value: point.kind.segment.position.x.value, units: 'Mm' },
-    y: { type: 'Var', value: point.kind.segment.position.y.value, units: 'Mm' },
+    x: {
+      type: 'Var',
+      value: point.kind.segment.position.x.value,
+      units: point.kind.segment.position.x.units,
+    },
+    y: {
+      type: 'Var',
+      value: point.kind.segment.position.y.value,
+      units: point.kind.segment.position.y.units,
+    },
   }
 }
 
@@ -282,12 +296,14 @@ function buildSegmentCtorWithDrag({
   isEntityUnderCursor,
   currentCursorPosition,
   dragVec,
+  units,
 }: {
   objUnderCursor: ApiObject
   selectedObjects: Array<ApiObject>
   isEntityUnderCursor: boolean
   currentCursorPosition: Vector2
   dragVec: Vector2
+  units: NumericSuffix
 }): SegmentCtor | null {
   const baseCtor = buildSegmentCtorFromObject(obj, objects)
   if (!baseCtor) {
@@ -297,18 +313,19 @@ function buildSegmentCtorWithDrag({
   if (baseCtor.type === 'Point') {
     if (isEntityUnderCursor) {
       // Use twoD directly for entity under cursor
+      // Note: currentCursorPosition comes from intersectionPoint.twoD which is in world coordinates and scaled to match current units
       return {
         type: 'Point',
         position: {
           x: {
             type: 'Var',
             value: roundOff(currentCursorPosition.x),
-            units: 'Mm',
+            units,
           },
           y: {
             type: 'Var',
             value: roundOff(currentCursorPosition.y),
-            units: 'Mm',
+            units,
           },
         },
       }
@@ -351,6 +368,7 @@ type SpawnToolActor = <K extends EquipTool>(
     input?: {
       sceneInfra: SceneInfra
       rustContext: RustContext
+      kclManager: KclManager
     }
   }
 ) => ActorRefFrom<(typeof equipTools)[K]>
@@ -399,6 +417,7 @@ type SketchSolveContext = {
   sceneInfra: SceneInfra
   sceneEntitiesManager: SceneEntities
   rustContext: RustContext
+  kclManager: KclManager
 }
 
 export const sketchSolveMachine = setup({
@@ -415,6 +434,7 @@ export const sketchSolveMachine = setup({
       sceneInfra: SceneInfra
       sceneEntitiesManager: SceneEntities
       rustContext: RustContext
+      kclManager: KclManager
     },
   },
   actions: {
@@ -1183,6 +1203,9 @@ export const sketchSolveMachine = setup({
             if (obj.kind.type !== 'Segment') {
               continue
             }
+            const units = baseUnitToNumericSuffix(
+              context.kclManager.fileSettings.defaultLengthUnit
+            )
 
             const isEntityUnderCursor = id === entityUnderCursorId
             const ctor = buildSegmentCtorWithDrag({
@@ -1191,6 +1214,7 @@ export const sketchSolveMachine = setup({
               isEntityUnderCursor,
               currentCursorPosition: twoD,
               dragVec: dragVec,
+              units,
             })
 
             if (ctor) {
@@ -1710,6 +1734,7 @@ export const sketchSolveMachine = setup({
         input: {
           sceneInfra: context.sceneInfra,
           rustContext: context.rustContext,
+          kclManager: context.kclManager,
         },
       })
 
@@ -1736,6 +1761,7 @@ export const sketchSolveMachine = setup({
     sceneInfra: input.sceneInfra,
     sceneEntitiesManager: input.sceneEntitiesManager,
     rustContext: input.rustContext,
+    kclManager: input.kclManager,
   }),
   id: 'Sketch Solve Mode',
   initial: 'move and select',
@@ -1812,9 +1838,10 @@ export const sketchSolveMachine = setup({
           )
           .filter(Boolean)
         let distance = 5
-        // TODO this is kinda hacky, not checking the units at all
-        // it might be better to have the distance constraint have distance as optional?
-        // We also need to implement a proper flow for the user to specify the distance
+        const units = baseUnitToNumericSuffix(
+          context.kclManager.fileSettings.defaultLengthUnit
+        )
+        // Calculate distance between two points if both are point segments
         if (currentSelections.length === 2) {
           const first = currentSelections[0]
           const second = currentSelections[1]
@@ -1824,14 +1851,18 @@ export const sketchSolveMachine = setup({
             second?.kind?.type === 'Segment' &&
             second?.kind.segment?.type === 'Point'
           ) {
-            distance = roundOff(
-              Math.hypot(
-                first.kind.segment.position.x.value -
-                  second.kind.segment.position.x.value,
-                first.kind.segment.position.y.value -
-                  second.kind.segment.position.y.value
-              )
-            )
+            const point1 = {
+              x: first.kind.segment.position.x,
+              y: first.kind.segment.position.y,
+            }
+            const point2 = {
+              x: second.kind.segment.position.x,
+              y: second.kind.segment.position.y,
+            }
+            const distanceResult = distanceBetweenPoint2DExpr(point1, point2)
+            if (!(distanceResult instanceof Error)) {
+              distance = roundOff(distanceResult.distance)
+            }
           }
         }
         const result = await context.rustContext.addConstraint(
@@ -1839,7 +1870,7 @@ export const sketchSolveMachine = setup({
           0,
           {
             type: 'Distance',
-            distance: { value: distance, units: 'Mm' },
+            distance: { value: distance, units },
             points: segmentsToConstrain,
           },
           await jsAppSettings()

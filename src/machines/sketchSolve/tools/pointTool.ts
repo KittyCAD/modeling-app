@@ -8,6 +8,8 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { roundOff } from '@src/lib/utils'
+import { baseUnitToNumericSuffix } from '@src/lang/wasm'
+import type { KclManager } from '@src/lang/KclSingleton'
 
 const TOOL_ID = 'Point tool'
 const CONFIRMING_DIMENSIONS = 'Confirming dimensions'
@@ -29,11 +31,13 @@ export const machine = setup({
     context: {} as {
       sceneInfra: SceneInfra
       rustContext: RustContext
+      kclManager: KclManager
     },
     events: {} as ToolEvents,
     input: {} as {
       sceneInfra: SceneInfra
       rustContext: RustContext
+      kclManager: KclManager
     },
   },
   actions: {
@@ -48,7 +52,7 @@ export const machine = setup({
             // Send the add point event with the clicked coordinates
             self.send({
               type: 'add point',
-              data: [twoD.x, twoD.y] as [number, number],
+              data: [twoD.x, twoD.y],
             })
           }
         },
@@ -83,22 +87,26 @@ export const machine = setup({
         input: {
           pointData: [number, number]
           rustContext: RustContext
+          kclManager: KclManager
         }
       }) => {
-        const { pointData, rustContext } = input
+        const { pointData, rustContext, kclManager } = input
         const [x, y] = pointData
 
         try {
-          // TODO not sure if we should be sending through units with this
+          // Get the current unit from file settings, defaulting to mm if not set
+          const units = baseUnitToNumericSuffix(
+            kclManager.fileSettings.defaultLengthUnit
+          )
+
+          // Note: x and y come from intersectionPoint.twoD which is in world coordinates and scaled to match current units
           const segmentCtor: SegmentCtor = {
             type: 'Point',
             position: {
-              x: { type: 'Var', value: roundOff(x), units: 'Mm' },
-              y: { type: 'Var', value: roundOff(y), units: 'Mm' },
+              x: { type: 'Var', value: roundOff(x), units },
+              y: { type: 'Var', value: roundOff(y), units },
             },
           }
-
-          console.log('Adding point segment:', segmentCtor)
 
           // Call the addSegment method using the rustContext from context
           const result = await rustContext.addSegment(
@@ -126,6 +134,7 @@ export const machine = setup({
   context: ({ input }) => ({
     sceneInfra: input.sceneInfra,
     rustContext: input.rustContext,
+    kclManager: input.kclManager,
   }),
   id: TOOL_ID,
   initial: 'ready for user click',
@@ -157,6 +166,7 @@ export const machine = setup({
           return {
             pointData: event.data,
             rustContext: context.rustContext,
+            kclManager: context.kclManager,
           }
         },
         onDone: {
