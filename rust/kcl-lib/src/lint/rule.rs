@@ -64,7 +64,7 @@ impl Discovered {
 /// system currently replaces the whole program, not just a certain part of it.
 /// If/when we discover that this autofix loop is too slow, we'll change our lint system so that
 /// lints can be applied to a small part of the program.
-pub fn lint_and_fix(mut source: String) -> anyhow::Result<(String, Vec<Discovered>)> {
+pub fn lint_and_fix_all(mut source: String) -> anyhow::Result<(String, Vec<Discovered>)> {
     loop {
         let (program, errors) = crate::Program::parse(&source)?;
         if !errors.is_empty() {
@@ -75,6 +75,41 @@ pub fn lint_and_fix(mut source: String) -> anyhow::Result<(String, Vec<Discovere
         };
         let lints = program.lint_all()?;
         if let Some(to_fix) = lints.iter().find_map(|lint| lint.suggestion.clone()) {
+            source = to_fix.apply(&source);
+        } else {
+            return Ok((source, lints));
+        }
+    }
+}
+
+/// Lint, and try to apply all suggestions.
+/// Returns the new source code, and any lints without suggestions.
+/// # Implementation
+/// Currently, this runs a loop: parse the code, lint it, apply a lint with suggestions,
+/// and loop again, until there's no more lints with suggestions. This is because our auto-fix
+/// system currently replaces the whole program, not just a certain part of it.
+/// If/when we discover that this autofix loop is too slow, we'll change our lint system so that
+/// lints can be applied to a small part of the program.
+pub fn lint_and_fix_families(
+    mut source: String,
+    families_to_fix: &[FindingFamily],
+) -> anyhow::Result<(String, Vec<Discovered>)> {
+    loop {
+        let (program, errors) = crate::Program::parse(&source)?;
+        if !errors.is_empty() {
+            anyhow::bail!("Found errors while parsing, please run the parser and fix them before linting.");
+        }
+        let Some(program) = program else {
+            anyhow::bail!("Could not parse, please run parser and ensure the program is valid before linting");
+        };
+        let lints = program.lint_all()?;
+        if let Some(to_fix) = lints.iter().find_map(|lint| {
+            if families_to_fix.contains(&lint.finding.family) {
+                lint.suggestion.clone()
+            } else {
+                None
+            }
+        }) {
             source = to_fix.apply(&source);
         } else {
             return Ok((source, lints));
@@ -159,6 +194,42 @@ pub struct Finding {
 
     /// Is this discovered issue experimental?
     pub experimental: bool,
+
+    /// Findings are sorted into families, e.g. "style" or "correctness".
+    pub family: FindingFamily,
+}
+
+/// Abstract lint problem type.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, ts_rs::TS, Serialize, Hash)]
+#[ts(export)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[serde(rename_all = "camelCase")]
+pub enum FindingFamily {
+    /// KCL style guidelines, e.g. identifier casing.
+    Style,
+    /// The user is probably doing something incorrect or unintended.
+    Correctness,
+    /// The user has expressed something in a complex way that
+    /// could be simplified.
+    Simplify,
+}
+
+impl std::fmt::Display for FindingFamily {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            FindingFamily::Style => write!(f, "style"),
+            FindingFamily::Correctness => write!(f, "correctness"),
+            FindingFamily::Simplify => write!(f, "simplify"),
+        }
+    }
+}
+
+#[cfg(feature = "pyo3")]
+impl pyo3_stub_gen::PyStubType for FindingFamily {
+    fn type_output() -> pyo3_stub_gen::TypeInfo {
+        // Expose the enum name in stubs; functions using FindingFamily will be annotated accordingly.
+        pyo3_stub_gen::TypeInfo::unqualified("FindingFamily")
+    }
 }
 
 impl Finding {
@@ -197,23 +268,29 @@ impl Finding {
     pub fn experimental(&self) -> bool {
         self.experimental
     }
+
+    #[getter]
+    pub fn family(&self) -> String {
+        self.family.to_string()
+    }
 }
 
 macro_rules! def_finding {
-    ( $code:ident, $title:expr_2021, $description:expr_2021 ) => {
+    ( $code:ident, $title:expr_2021, $description:expr_2021, $family:path) => {
         /// Generated Finding
-        pub const $code: Finding = $crate::lint::rule::finding!($code, $title, $description);
+        pub const $code: Finding = $crate::lint::rule::finding!($code, $title, $description, $family);
     };
 }
 pub(crate) use def_finding;
 
 macro_rules! finding {
-    ( $code:ident, $title:expr_2021, $description:expr_2021 ) => {
+    ( $code:ident, $title:expr_2021, $description:expr_2021, $family:path ) => {
         $crate::lint::rule::Finding {
             code: stringify!($code),
             title: $title,
             description: $description,
             experimental: false,
+            family: $family,
         }
     };
 }
@@ -225,7 +302,7 @@ pub(crate) use test::{assert_finding, assert_no_finding, test_finding, test_no_f
 mod test {
 
     #[test]
-    fn test_lint_and_fix() {
+    fn test_lint_and_fix_all() {
         // This file has some snake_case identifiers.
         let path = "../kcl-python-bindings/files/box_with_linter_errors.kcl";
         let f = std::fs::read_to_string(path).unwrap();
@@ -236,12 +313,33 @@ mod test {
         assert!(lints.len() >= 4);
 
         // But the linter errors can be fixed.
-        let (new_code, unfixed) = lint_and_fix(f).unwrap();
+        let (new_code, unfixed) = lint_and_fix_all(f).unwrap();
         assert!(unfixed.len() < 4);
 
         // After the fix, no more snake_case identifiers.
-        eprintln!("{new_code}");
         assert!(!new_code.contains('_'));
+    }
+
+    #[test]
+    fn test_lint_and_fix_families() {
+        // This file has some snake_case identifiers.
+        let path = "../kcl-python-bindings/files/box_with_linter_errors.kcl";
+        let original_code = std::fs::read_to_string(path).unwrap();
+        let prog = crate::Program::parse_no_errs(&original_code).unwrap();
+
+        // That should cause linter errors.
+        let lints = prog.lint_all().unwrap();
+        assert!(lints.len() >= 4);
+
+        // But the linter errors can be fixed.
+        let (new_code, unfixed) =
+            lint_and_fix_families(original_code, &[FindingFamily::Correctness, FindingFamily::Simplify]).unwrap();
+        assert!(unfixed.len() >= 3);
+
+        // After the fix, no more snake_case identifiers.
+        assert!(new_code.contains("box_width"));
+        assert!(new_code.contains("box_depth"));
+        assert!(new_code.contains("box_height"));
     }
 
     macro_rules! assert_no_finding {
