@@ -274,6 +274,7 @@ impl FunctionSource {
                     labeled_args: op_labeled_args,
                     node_path: NodePath::placeholder(),
                     source_range: callsite,
+                    stdlib_entry_source_range: exec_state.mod_local.stdlib_entry_source_range,
                     is_error: false,
                 })
             } else {
@@ -301,8 +302,29 @@ impl FunctionSource {
             FunctionBody::Rust(_) => true,
             FunctionBody::Kcl(_) => self.is_std,
         };
+        let is_crossing_into_stdlib = is_calling_into_stdlib && !exec_state.mod_local.inside_stdlib;
+        let is_crossing_out_of_stdlib = !is_calling_into_stdlib && exec_state.mod_local.inside_stdlib;
+        let stdlib_entry_source_range = if is_crossing_into_stdlib {
+            // When we're calling into the stdlib, for example calling hole(),
+            // track the location so that any further stdlib calls like
+            // subtract() can point to the hole() call. The frontend needs this.
+            Some(callsite)
+        } else if is_crossing_out_of_stdlib {
+            // When map() calls a user-defined function, and it calls extrude()
+            // for example, we want it to point the the extrude() call, not
+            // the map() call.
+            None
+        } else {
+            // When we're not crossing the stdlib boundary, keep the previous
+            // value.
+            exec_state.mod_local.stdlib_entry_source_range
+        };
 
         let prev_inside_stdlib = std::mem::replace(&mut exec_state.mod_local.inside_stdlib, is_calling_into_stdlib);
+        let prev_stdlib_entry_source_range = std::mem::replace(
+            &mut exec_state.mod_local.stdlib_entry_source_range,
+            stdlib_entry_source_range,
+        );
         // Do not early return via ? or something until we've
         // - put this `prev_inside_stdlib` value back.
         // - called the pop_env.
@@ -327,6 +349,7 @@ impl FunctionSource {
             }
         };
         exec_state.mod_local.inside_stdlib = prev_inside_stdlib;
+        exec_state.mod_local.stdlib_entry_source_range = prev_stdlib_entry_source_range;
         exec_state.mut_stack().pop_env();
 
         if should_track_operation {

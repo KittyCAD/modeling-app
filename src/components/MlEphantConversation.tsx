@@ -95,8 +95,9 @@ export const MlEphantConversationInput = (
     if (props.disabled) return
 
     const value = refDiv.current?.value
-    if (!value) return
-    setHeightConvo(refDiv.current.getBoundingClientRect().height)
+    const boundingRect = refDiv.current?.getBoundingClientRect()
+    if (!(value && boundingRect)) return
+    setHeightConvo(boundingRect.height)
 
     props.onProcess(value)
     setLettersForAnimation(

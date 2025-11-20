@@ -944,7 +944,13 @@ fn array_separator(i: &mut TokenSlice) -> ModalResult<()> {
         // Normally you need a comma.
         comma_sep,
         // But, if the array is ending, no need for a comma.
-        peek(preceded((opt(non_code_node), opt(whitespace)), close_bracket)).void(),
+        peek((
+            opt(whitespace),
+            repeat(0.., terminated(non_code_node, opt(whitespace))).map(|_: Vec<_>| ()),
+            opt(whitespace),
+            close_bracket,
+        ))
+        .void(),
     ))
     .parse_next(i)
 }
@@ -1156,7 +1162,13 @@ fn property_separator(i: &mut TokenSlice) -> ModalResult<()> {
         // Normally you need a comma.
         comma_sep,
         // But, if the object is ending, no need for a comma.
-        peek(preceded((opt(non_code_node), opt(whitespace)), close_brace)).void(),
+        peek((
+            opt(whitespace),
+            repeat(0.., terminated(non_code_node, opt(whitespace))).map(|_: Vec<_>| ()),
+            opt(whitespace),
+            close_brace,
+        ))
+        .void(),
     ))
     .parse_next(i)
 }
@@ -5659,6 +5671,43 @@ bar = 1
   z = 1 // axial thickness
 )"#;
         let _result = crate::parsing::top_level_parse(code).unwrap();
+    }
+
+    #[test]
+    fn test_comments_and_block_in_args() {
+        let code = r#"shape = rectangle(
+  recessSketch,
+  x = [cx, cy],
+  y = 1,
+  z = 1 /* axial thickness */
+  // finishing comment
+  /* block metadata */
+)"#;
+        crate::parsing::top_level_parse(code).unwrap();
+    }
+
+    #[test]
+    fn test_array_multiple_trailing_comments() {
+        let code = r#"points = [
+  0,
+  1,
+  2 // radial segment
+  // keep origin
+  /* padding */
+]"#;
+        crate::parsing::top_level_parse(code).unwrap();
+    }
+
+    #[test]
+    fn test_object_multiple_trailing_comments() {
+        let code = r#"config = {
+  width = 10,
+  height = 5,
+  depth = 3 // final face depth
+  // allow taper
+  /* tolerance */
+}"#;
+        crate::parsing::top_level_parse(code).unwrap();
     }
 
     #[test]

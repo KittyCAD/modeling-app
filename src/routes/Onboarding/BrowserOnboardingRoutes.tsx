@@ -39,19 +39,21 @@ type BrowserOnboaringRoute = RouteObject & {
  *
  * Browser onboarding content is completely separate from desktop onboarding content.
  */
-const browserOnboardingComponents: Record<BrowserOnboardingPath, JSX.Element> =
-  {
-    '/browser': <Welcome />,
-    '/browser/scene': <Scene />,
-    '/browser/toolbar': <Toolbar />,
-    '/browser/text-to-cad': <TextToCad />,
-    '/browser/text-to-cad-prompt': <TextToCadPrompt />,
-    '/browser/feature-tree-pane': <FeatureTreePane />,
-    '/browser/prompt-to-edit': <PromptToEdit />,
-    '/browser/prompt-to-edit-prompt': <PromptToEditPrompt />,
-    '/browser/prompt-to-edit-result': <PromptToEditResult />,
-    '/browser/conclusion': <OnboardingConclusion />,
-  }
+const browserOnboardingComponents: Record<
+  BrowserOnboardingPath,
+  React.JSX.Element
+> = {
+  '/browser': <Welcome />,
+  '/browser/scene': <Scene />,
+  '/browser/toolbar': <Toolbar />,
+  '/browser/text-to-cad': <TextToCad />,
+  '/browser/text-to-cad-prompt': <TextToCadPrompt />,
+  '/browser/feature-tree-pane': <FeatureTreePane />,
+  '/browser/prompt-to-edit': <PromptToEdit />,
+  '/browser/prompt-to-edit-prompt': <PromptToEditPrompt />,
+  '/browser/prompt-to-edit-result': <PromptToEditResult />,
+  '/browser/conclusion': <OnboardingConclusion />,
+}
 
 function Welcome() {
   const thisOnboardingStatus: BrowserOnboardingPath = '/browser'
