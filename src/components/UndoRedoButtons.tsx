@@ -15,7 +15,7 @@ export function UndoRedoButtons({
       <UndoOrRedoButton
         label="Undo"
         keyboardShortcut="mod+z"
-        iconName="arrowRotateLeft"
+        iconName="arrowShortLeft"
         onClick={() => editorManager.undo()}
         className="rounded-r-none"
         disabled={undoDepth(editorManager.editorState) === 0}
@@ -23,7 +23,7 @@ export function UndoRedoButtons({
       <UndoOrRedoButton
         label="Redo"
         keyboardShortcut="mod+shift+z"
-        iconName="arrowRotateRight"
+        iconName="arrowShortRight"
         onClick={() => editorManager.redo()}
         className="rounded-l-none"
         disabled={redoDepth(editorManager.editorState) === 0}
