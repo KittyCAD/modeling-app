@@ -12,7 +12,7 @@ use kittycad_modeling_cmds as kcmc;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, KclValue, SolidOrSketchOrImportedGeometry,
+        ExecState, KclValue, ModelingCmdMeta, SolidOrSketchOrImportedGeometry,
         types::{PrimitiveType, RuntimeType},
     },
     std::{Args, args::TyF64, axis_or_reference::Axis3dOrPoint3d},
@@ -87,7 +87,9 @@ async fn inner_scale(
     // If we have a solid, flush the fillets and chamfers.
     // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
     if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
-        exec_state.flush_batch_for_solids((&args).into(), solids).await?;
+        exec_state
+            .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), solids)
+            .await?;
     }
 
     let is_global = global.unwrap_or(false);
@@ -101,7 +103,7 @@ async fn inner_scale(
     for object_id in objects.ids(&args.ctx).await? {
         exec_state
             .batch_modeling_cmd(
-                (&args).into(),
+                ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(mcmd::SetObjectTransform {
                     object_id,
                     transforms: vec![shared::ComponentTransform {
@@ -192,7 +194,9 @@ async fn inner_translate(
     // If we have a solid, flush the fillets and chamfers.
     // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
     if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
-        exec_state.flush_batch_for_solids((&args).into(), solids).await?;
+        exec_state
+            .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), solids)
+            .await?;
     }
 
     let is_global = global.unwrap_or(false);
@@ -206,7 +210,7 @@ async fn inner_translate(
     for object_id in objects.ids(&args.ctx).await? {
         exec_state
             .batch_modeling_cmd(
-                (&args).into(),
+                ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(mcmd::SetObjectTransform {
                     object_id,
                     transforms: vec![shared::ComponentTransform {
@@ -374,7 +378,9 @@ async fn inner_rotate(
     // If we have a solid, flush the fillets and chamfers.
     // Only transforms needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
     if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
-        exec_state.flush_batch_for_solids((&args).into(), solids).await?;
+        exec_state
+            .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), solids)
+            .await?;
     }
 
     let origin = if let Some(origin) = origin {
@@ -396,7 +402,7 @@ async fn inner_rotate(
         if let (Some(axis), Some(angle)) = (&axis, angle) {
             exec_state
                 .batch_modeling_cmd(
-                    (&args).into(),
+                    ModelingCmdMeta::from_args(exec_state, &args),
                     ModelingCmd::from(mcmd::SetObjectTransform {
                         object_id,
                         transforms: vec![shared::ComponentTransform {
@@ -422,7 +428,7 @@ async fn inner_rotate(
             // Do roll, pitch, and yaw.
             exec_state
                 .batch_modeling_cmd(
-                    (&args).into(),
+                    ModelingCmdMeta::from_args(exec_state, &args),
                     ModelingCmd::from(mcmd::SetObjectTransform {
                         object_id,
                         transforms: vec![shared::ComponentTransform {

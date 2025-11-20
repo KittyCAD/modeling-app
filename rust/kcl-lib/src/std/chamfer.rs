@@ -87,7 +87,7 @@ async fn inner_chamfer(
         // Hide the custom profile since it's no longer its own profile
         exec_state
             .batch_modeling_cmd(
-                ModelingCmdMeta::from(&args),
+                ModelingCmdMeta::from_args(exec_state, &args),
                 ModelingCmd::from(mcmd::ObjectVisible {
                     object_id: custom_profile.id,
                     hidden: true,
@@ -116,7 +116,7 @@ async fn inner_chamfer(
         let id = exec_state.next_uuid();
         exec_state
             .batch_end_cmd(
-                ModelingCmdMeta::from_args_id(&args, id),
+                ModelingCmdMeta::from_args_id(exec_state, &args, id),
                 ModelingCmd::from(mcmd::Solid3dCutEdges {
                     edge_ids: vec![edge_id],
                     extra_face_ids: vec![],
