@@ -118,6 +118,8 @@ pub(super) struct ModuleState {
     /// Tracks if KCL being executed is currently inside a stdlib function or not.
     /// This matters because e.g. we shouldn't emit artifacts from declarations declared inside a stdlib function.
     pub inside_stdlib: bool,
+    /// The source range where we entered the standard library.
+    pub stdlib_entry_source_range: Option<SourceRange>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
     /// Settings specified from annotations.
@@ -620,6 +622,7 @@ impl ModuleState {
             pipe_value: Default::default(),
             being_declared: Default::default(),
             sketch_block: Default::default(),
+            stdlib_entry_source_range: Default::default(),
             module_exports: Default::default(),
             explicit_length_units: false,
             path,

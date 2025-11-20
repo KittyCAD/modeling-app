@@ -102,7 +102,7 @@ async fn inner_rectangle(
     for (id, delta) in ids.iter().copied().zip(deltas) {
         exec_state
             .batch_modeling_cmd(
-                ModelingCmdMeta::from_args_id(&args, id),
+                ModelingCmdMeta::from_args_id(exec_state, &args, id),
                 ModelingCmd::from(mcmd::ExtendPath {
                     label: Default::default(),
                     path: sketch.id.into(),
@@ -118,7 +118,7 @@ async fn inner_rectangle(
     }
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, sketch_id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, sketch_id),
             ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
         )
         .await?;
@@ -202,7 +202,7 @@ async fn inner_circle(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -243,7 +243,7 @@ async fn inner_circle(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
         )
         .await?;
@@ -304,7 +304,7 @@ async fn inner_circle_three_point(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -346,7 +346,7 @@ async fn inner_circle_three_point(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
         )
         .await?;
@@ -457,7 +457,7 @@ async fn inner_polygon(
 
         exec_state
             .batch_modeling_cmd(
-                ModelingCmdMeta::from_args_id(&args, id),
+                ModelingCmdMeta::from_args_id(exec_state, &args, id),
                 ModelingCmd::from(mcmd::ExtendPath {
                     label: Default::default(),
                     path: sketch.id.into(),
@@ -493,7 +493,7 @@ async fn inner_polygon(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, close_id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, close_id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -524,7 +524,7 @@ async fn inner_polygon(
 
     exec_state
         .batch_modeling_cmd(
-            (&args).into(),
+            ModelingCmdMeta::from_args(exec_state, &args),
             ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
         )
         .await?;
@@ -610,7 +610,7 @@ async fn inner_ellipse(
     let axis = KPoint2d::from(untyped_point_to_mm([major_axis[0].n, major_axis[1].n], units)).map(LengthUnit);
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ExtendPath {
                 label: Default::default(),
                 path: sketch.id.into(),
@@ -652,7 +652,7 @@ async fn inner_ellipse(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }),
         )
         .await?;
