@@ -16,9 +16,9 @@ export const useOnPageResize = ({
   videoRef,
   canvasRef,
 }: {
-  videoWrapperRef: React.RefObject<HTMLDivElement>
-  videoRef: React.RefObject<HTMLVideoElement>
-  canvasRef: React.RefObject<HTMLCanvasElement>
+  videoWrapperRef: React.RefObject<HTMLDivElement | null>
+  videoRef: React.RefObject<HTMLVideoElement | null>
+  canvasRef: React.RefObject<HTMLCanvasElement | null>
 }) => {
   const setSizeOneMoreTime = useRef<NodeJS.Timeout | null>(null)
   const last = useRef<number>(Date.now())

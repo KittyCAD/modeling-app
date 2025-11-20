@@ -421,7 +421,7 @@ const OperationItemWrapper = ({
 }: React.HTMLAttributes<HTMLButtonElement> & {
   icon: CustomIconName
   visibilityToggle?: VisibilityToggleProps
-  customSuffix?: JSX.Element
+  customSuffix?: React.JSX.Element
   menuItems?: ComponentProps<typeof ContextMenu>['items']
   errors?: Diagnostic[]
   selectable?: boolean

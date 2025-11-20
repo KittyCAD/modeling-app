@@ -35,7 +35,7 @@ export const AvailableVars = ({
 
 export const addToInputHelper =
   (
-    inputRef: React.RefObject<HTMLInputElement>,
+    inputRef: React.RefObject<HTMLInputElement | null>,
     setValue: (a: string) => void
   ) =>
   (varName: string) => {

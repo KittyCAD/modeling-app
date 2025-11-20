@@ -101,7 +101,7 @@ function CommandBarTextareaInput({
  * Modified from https://www.reddit.com/r/reactjs/comments/twmild/comment/i3jf330/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
  * Thank you to @sidkh for the original code
  */
-const useTextareaAutoGrow = (ref: RefObject<HTMLTextAreaElement>) => {
+const useTextareaAutoGrow = (ref: RefObject<HTMLTextAreaElement | null>) => {
   useEffect(() => {
     const listener = () => {
       if (ref.current === null) return
