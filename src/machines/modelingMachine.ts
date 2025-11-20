@@ -3188,15 +3188,24 @@ export const modelingMachine = setup({
       async ({
         input,
       }: {
-        input: ModelingCommandSchema['Hole'] | undefined
+        input:
+          | {
+              data: ModelingCommandSchema['Hole'] | undefined
+              codeManager?: CodeManager
+              kclManager?: KclManager
+              editorManager?: EditorManager
+              rustContext?: RustContext
+            }
+          | undefined
       }) => {
-        if (!input) {
+        if (!input || !input.data) {
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
+        const theKclManager = input.kclManager ? input.kclManager : kclManager
 
         // Remove once this command isn't experimental anymore
         let astWithNewSetting: Node<Program> | undefined
-        if (kclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
+        if (theKclManager.fileSettings.experimentalFeatures?.type !== 'Allow') {
           const ast = setExperimentalFeatures(codeManager.code, {
             type: 'Allow',
           })
@@ -3208,23 +3217,32 @@ export const modelingMachine = setup({
         }
 
         const astResult = addHole({
-          ...input,
-          ast: astWithNewSetting ?? kclManager.ast,
-          artifactGraph: kclManager.artifactGraph,
+          ...input.data,
+          ast: astWithNewSetting ?? theKclManager.ast,
+          artifactGraph: theKclManager.artifactGraph,
         })
         if (err(astResult)) {
           return Promise.reject(astResult)
         }
 
         const { modifiedAst, pathToNode } = astResult
+        const theCodeManager = input.codeManager
+          ? input.codeManager
+          : codeManager
+        const theEditorManager = input.editorManager
+          ? input.editorManager
+          : editorManager
+        const theRustContext = input.rustContext
+          ? input.rustContext
+          : rustContext
         await updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           {
-            kclManager,
-            editorManager,
-            codeManager,
-            rustContext,
+            kclManager: theKclManager,
+            editorManager: theEditorManager,
+            codeManager: theCodeManager,
+            rustContext: theRustContext,
           },
           {
             focusPath: [pathToNode],
@@ -5794,9 +5812,14 @@ export const modelingMachine = setup({
       invoke: {
         src: 'holeAstMod',
         id: 'holeAstMod',
-        input: ({ event }) => {
+        input: ({ event, context }) => {
           if (event.type !== 'Hole') return undefined
-          return event.data
+          return {
+            data: event.data,
+            codeManager: context.codeManager,
+            kclManager: context.kclManager,
+            editorManager: context.editorManager,
+          }
         },
         onDone: ['idle'],
         onError: {

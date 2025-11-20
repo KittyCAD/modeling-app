@@ -64,7 +64,10 @@ async fn inner_clone(
         GeometryWithImportedGeometry::Solid(solid) => {
             // We flush before the clone so all the shit exists.
             exec_state
-                .flush_batch_for_solids((&args).into(), std::slice::from_ref(solid))
+                .flush_batch_for_solids(
+                    ModelingCmdMeta::from_args(exec_state, &args),
+                    std::slice::from_ref(solid),
+                )
                 .await?;
 
             let mut new_solid = solid.clone();
@@ -81,7 +84,7 @@ async fn inner_clone(
 
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(&args, new_id),
+            ModelingCmdMeta::from_args_id(exec_state, &args, new_id),
             ModelingCmd::from(mcmd::EntityClone { entity_id: old_id }),
         )
         .await?;
@@ -177,7 +180,7 @@ async fn get_old_new_child_map(
     // Get the old geometries entity ids.
     let response = exec_state
         .send_modeling_cmd(
-            args.into(),
+            ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(mcmd::EntityGetAllChildUuids {
                 entity_id: old_geometry_id,
             }),
@@ -196,7 +199,7 @@ async fn get_old_new_child_map(
     // Get the new geometries entity ids.
     let response = exec_state
         .send_modeling_cmd(
-            args.into(),
+            ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(mcmd::EntityGetAllChildUuids {
                 entity_id: new_geometry_id,
             }),

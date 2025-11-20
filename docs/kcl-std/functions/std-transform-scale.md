@@ -14,6 +14,7 @@ scale(
   y?: number(_),
   z?: number(_),
   global?: bool,
+  factor?: number(_),
 ): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry
 ```
 
@@ -39,6 +40,7 @@ look like the model moves and gets bigger at the same time. Say you have a squar
 | `y` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the y axis. | No |
 | `z` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The scale factor for the z axis. | No |
 | `global` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
+| `factor` | [`number(_)`](/docs/kcl-std/types/std-types-number) | If given, scale the solid by this much. Equivalent to setting `x`, `y` and `z` all to this number. Incompatible with `x`, `y` or `z`. | No |
 
 ### Returns
 
@@ -145,6 +147,37 @@ scale(parts, z = 0.5)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale2.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Make one button (i.e. just a cylinder)
+button1 = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1.53)
+  |> extrude(length = 1)
+
+// Duplicate it, but use `scale` to make it smaller.
+button2 = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 1.53)
+  |> extrude(length = 1)
+  |> translate(x = 4)
+  // Make it 50% smaller and gold
+  |> scale(factor = 0.5)
+  |> appearance(color = "#ff9922")
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the scale function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-scale3_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-transform-scale3.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

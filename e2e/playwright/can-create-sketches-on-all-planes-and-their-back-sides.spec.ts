@@ -27,8 +27,8 @@ test.describe('Can create sketches on all planes and their back sides', () => {
 
     await homePage.goToModelingScene()
     // await scene.settled(cmdBar)
-    const XYPlanRed: [number, number, number] = [98, 50, 51]
-    await scene.expectPixelColor(XYPlanRed, { x: 700, y: 300 }, 15)
+    const XYPlaneRed: [number, number, number] = [46, 36, 34]
+    await scene.expectPixelColor(XYPlaneRed, { x: 700, y: 300 }, 15)
 
     await u.openDebugPanel()
 
