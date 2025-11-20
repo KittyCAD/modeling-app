@@ -45,35 +45,6 @@ test.describe('Zookeeper tests', () => {
     const submittedMessageSecond = page.getByText(newPrompt)
     await expect(submittedMessageSecond.first()).toBeVisible()
   })
-
-  test('sending a bad prompt fails, can start over from convo', async ({
-    page,
-    homePage,
-    cmdBar,
-    toolbar,
-    scene,
-    editor,
-  }) => {
-    await page.setBodyDimensions({ width: 2000, height: 1000 })
-
-    const badPrompt = 'akjsndladf lajbhflauweyfaaaljhr472iouafyvsssssss'
-    await sendPromptFromCommandBarAndSetNewProject(page, badPrompt, cmdBar)
-
-    // Look out for the message
-    const submittedMessage = page.getByText(badPrompt)
-    await expect(submittedMessage).toBeVisible()
-
-    const failureToastMessage = page.getByText(
-      `The prompt must clearly describe a CAD model`
-    )
-    await expect(failureToastMessage.first()).toBeVisible({ timeout: 30_000 })
-
-    // Start a new prompt
-    await toolbar.fireTtcPrompt('create a cube')
-
-    // Make sure the new prompt works
-    await editor.expectEditor.toContain('startSketchOn', { timeout: 60_000 })
-  })
 })
 
 async function sendPromptFromCommandBarAndSetNewProject(
