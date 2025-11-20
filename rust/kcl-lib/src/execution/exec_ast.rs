@@ -1063,13 +1063,31 @@ impl Node<SketchBlock> {
             .collect::<Result<Vec<_>, KclError>>()?;
         // Solve constraints.
         let config = kcl_ezpz::Config::default();
-        let solve_outcome =
-            kcl_ezpz::solve_with_priority(&constraints, initial_guesses.clone(), config).map_err(|e| {
-                KclError::new_internal(KclErrorDetails::new(
-                    format!("Error from constraint solver: {}", e.error),
-                    vec![SourceRange::from(self)],
-                ))
-            })?;
+        let solve_outcome = match kcl_ezpz::solve_with_priority(&constraints, initial_guesses.clone(), config) {
+            Ok(o) => o,
+            Err(failure) => {
+                if let kcl_ezpz::Error::Solver(_) = &failure.error {
+                    // Constraint solver failed to find a solution. Build a
+                    // solution that is the initial guesses.
+                    exec_state.warn(
+                        CompilationError::err(range, "Constraint solver failed to find a solution".to_owned()),
+                        annotations::WARN_SOLVER,
+                    );
+                    let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
+                    kcl_ezpz::SolveOutcome {
+                        final_values,
+                        iterations: 0,
+                        warnings: failure.warnings,
+                        unsatisfied: Default::default(),
+                    }
+                } else {
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        format!("Error from constraint solver: {}", &failure.error),
+                        vec![SourceRange::from(self)],
+                    )));
+                }
+            }
+        };
         // Propagate warnings.
         for warning in &solve_outcome.warnings {
             let message = if let Some(index) = warning.about_constraint.as_ref() {
