@@ -327,7 +327,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
   const deltasAggregatedMarkdown =
     props.deltasAggregated !== '' ? (
       <span
-        className="parsed-markdown"
+        className="parsed-markdown whitespace-normal"
         dangerouslySetInnerHTML={{
           __html: Marked.parse(props.deltasAggregated, {
             renderer: new SafeRenderer(MarkedOptions),
