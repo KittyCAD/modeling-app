@@ -477,7 +477,7 @@ code,
   */
   .parsed-markdown ul,
   .parsed-markdown ol {
-    @apply list-outside pl-2 my-1;
+    @apply list-outside pl-4 lg:pl-8 my-2;
   }
 
   .parsed-markdown ul li {
