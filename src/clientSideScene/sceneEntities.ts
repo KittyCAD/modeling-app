@@ -99,7 +99,6 @@ import {
 } from '@src/clientSideScene/segments'
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
-import type CodeManager from '@src/lang/codeManager'
 import { ARG_AT, ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -199,7 +198,6 @@ export class SceneEntities {
   readonly engineCommandManager: ConnectionManager
   readonly sceneInfra: SceneInfra
   readonly editorManager: EditorManager
-  readonly codeManager: CodeManager
   readonly kclManager: KclManager
   readonly rustContext: RustContext
   readonly wasmInstance?: ModuleType
@@ -216,7 +214,6 @@ export class SceneEntities {
     engineCommandManager: ConnectionManager,
     sceneInfra: SceneInfra,
     editorManager: EditorManager,
-    codeManager: CodeManager,
     kclManager: KclManager,
     rustContext: RustContext,
     wasmInstance?: ModuleType
@@ -224,7 +221,6 @@ export class SceneEntities {
     this.engineCommandManager = engineCommandManager
     this.sceneInfra = sceneInfra
     this.editorManager = editorManager
-    this.codeManager = codeManager
     this.kclManager = kclManager
     this.rustContext = rustContext
     this.intersectionPlane = SceneEntities.createIntersectionPlane(
@@ -1331,7 +1327,6 @@ export class SceneEntities {
           {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
-            codeManager: this.codeManager,
             rustContext: this.rustContext,
           },
           {
@@ -1570,7 +1565,6 @@ export class SceneEntities {
         await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
           kclManager: this.kclManager,
           editorManager: this.editorManager,
-          codeManager: this.codeManager,
           rustContext: this.rustContext,
         })
         this.sceneInfra.modelingSend({ type: 'Finish rectangle' })
@@ -1785,7 +1779,6 @@ export class SceneEntities {
           await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
-            codeManager: this.codeManager,
             rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish center rectangle' })
@@ -1973,7 +1966,6 @@ export class SceneEntities {
           await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
-            codeManager: this.codeManager,
             rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish circle three point' })
@@ -2196,7 +2188,6 @@ export class SceneEntities {
           await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
-            codeManager: this.codeManager,
             rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish arc' })
@@ -2440,7 +2431,6 @@ export class SceneEntities {
           await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
-            codeManager: this.codeManager,
             rustContext: this.rustContext,
           })
           if (intersectsProfileStart) {
@@ -2641,7 +2631,6 @@ export class SceneEntities {
           await updateModelingState(_ast, EXECUTION_TYPE_MOCK, {
             kclManager: this.kclManager,
             editorManager: this.editorManager,
-            codeManager: this.codeManager,
             rustContext: this.rustContext,
           })
           this.sceneInfra.modelingSend({ type: 'Finish circle' })
@@ -2698,7 +2687,7 @@ export class SceneEntities {
             updateExtraSegments,
           })
         }
-        await this.codeManager.writeToFile()
+        await this.editorManager.writeToFile()
       },
       onDrag: async ({
         selected,
@@ -3274,7 +3263,7 @@ export class SceneEntities {
       if (!draftInfo)
         // don't want to mod the user's code yet as they have't committed to the change yet
         // plus this would be the truncated ast being recast, it would be wrong
-        this.codeManager.updateCodeEditor(code)
+        this.editorManager.updateCodeEditor(code)
 
       const { execState } = await executeAstMock({
         ast: truncatedAst,

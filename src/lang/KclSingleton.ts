@@ -2,7 +2,6 @@ import type { Diagnostic } from '@codemirror/lint'
 import type { EntityType } from '@kittycad/lib'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type EditorManager from '@src/editor/manager'
-import type CodeManager from '@src/lang/codeManager'
 import type RustContext from '@src/lib/rustContext'
 
 import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
@@ -70,7 +69,6 @@ interface ExecuteArgs {
 // can easily become cyclic. Each will have its own Singletons type.
 interface Singletons {
   rustContext: RustContext
-  codeManager: CodeManager
   editorManager: EditorManager
   sceneInfra: SceneInfra
 }
@@ -298,7 +296,7 @@ export class KclManager extends EventTarget {
         }
       }
 
-      await this.safeParse(this.singletons.codeManager.code).then((ast) => {
+      await this.safeParse(this.singletons.editorManager.code).then((ast) => {
         if (ast) {
           this.ast = ast
           // on setup, set _lastAst so it's populated.
@@ -365,7 +363,7 @@ export class KclManager extends EventTarget {
     if (this._astParseFailed && this._switchedFiles) {
       await this.singletons.rustContext.clearSceneAndBustCache(
         await jsAppSettings(),
-        this.singletons.codeManager.currentFilePath || undefined
+        this.singletons.editorManager.currentFilePath || undefined
       )
     } else if (this._switchedFiles) {
       // Reset the switched files boolean.
@@ -488,10 +486,10 @@ export class KclManager extends EventTarget {
     this.isExecuting = true
     await this.ensureWasmInit()
 
-    const codeThatExecuted = this.singletons.codeManager.code
+    const codeThatExecuted = this.singletons.editorManager.code
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
-      path: this.singletons.codeManager.currentFilePath || undefined,
+      path: this.singletons.editorManager.currentFilePath || undefined,
       rustContext: this.singletons.rustContext,
     })
 
@@ -510,7 +508,7 @@ export class KclManager extends EventTarget {
       this.addDiagnostics(
         await lintAst({
           ast,
-          sourceCode: this.singletons.codeManager.code,
+          sourceCode: this.singletons.editorManager.code,
           instance: this.singletons.rustContext.getRustInstance(),
         })
       )
@@ -536,7 +534,7 @@ export class KclManager extends EventTarget {
 
     this.logs = logs
     this.errors = errors
-    const code = this.singletons.codeManager.code
+    const code = this.singletons.editorManager.code
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addDiagnostics(
       isInterrupted ? [] : kclErrorsToDiagnostics(errors, code)
@@ -612,7 +610,7 @@ export class KclManager extends EventTarget {
     }
     this._ast = { ...newAst }
 
-    const codeThatExecuted = this.singletons.codeManager.code
+    const codeThatExecuted = this.singletons.editorManager.code
     const { logs, errors, execState } = await executeAstMock({
       ast: newAst,
       rustContext: this.singletons.rustContext,
@@ -635,7 +633,7 @@ export class KclManager extends EventTarget {
     })
   }
   async executeCode(): Promise<void> {
-    const ast = await this.safeParse(this.singletons.codeManager.code)
+    const ast = await this.safeParse(this.singletons.editorManager.code)
 
     if (!ast) {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
@@ -659,7 +657,7 @@ export class KclManager extends EventTarget {
   }
 
   async format() {
-    const originalCode = this.singletons.codeManager.code
+    const originalCode = this.singletons.editorManager.code
     const ast = await this.safeParse(originalCode)
     if (!ast) {
       this.clearAst()
@@ -673,10 +671,10 @@ export class KclManager extends EventTarget {
     if (originalCode === code) return
 
     // Update the code state and the editor.
-    this.singletons.codeManager.updateCodeStateEditor(code)
+    this.singletons.editorManager.updateCodeStateEditor(code)
 
     // Write back to the file system.
-    void this.singletons.codeManager
+    void this.singletons.editorManager
       .writeToFile()
       .then(() => this.executeCode())
       .catch(reportRejection)
