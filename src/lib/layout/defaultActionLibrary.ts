@@ -1,5 +1,3 @@
-import { refreshPage } from '@src/lib/utils'
-import { reportRejection } from '@src/lib/trap'
 import { commandBarActor, settingsActor } from '@src/lib/singletons'
 import { useContext } from 'react'
 import { MachineManagerContext } from '@src/components/MachineManagerProvider'
