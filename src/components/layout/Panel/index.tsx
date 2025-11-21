@@ -1,7 +1,4 @@
-import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import type { ReactNode } from 'react'
-
-import { ActionButton } from '@src/components/ActionButton'
 import { ActionIcon } from '@src/components/ActionIcon'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
@@ -12,7 +9,7 @@ export interface LayoutPanelProps {
   id: string
   children: ReactNode | ReactNode[]
   className?: string
-  icon?: CustomIconName | IconDefinition
+  icon?: CustomIconName
   title: ReactNode
   Menu?: React.ReactNode | React.FC
   detailsTestId?: string
