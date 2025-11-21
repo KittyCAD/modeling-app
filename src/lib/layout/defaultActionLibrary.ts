@@ -45,14 +45,6 @@ export const defaultActionLibrary = Object.freeze({
       })
     },
   },
-  refreshApp: {
-    execute: () => {
-      refreshPage('Sidebar button').catch(reportRejection)
-    },
-    shortcut: undefined,
-    useDisabled: () => undefined,
-    useHidden: () => false,
-  },
   make: {
     useDisabled: () => {
       const machineManager = useContext(MachineManagerContext)
