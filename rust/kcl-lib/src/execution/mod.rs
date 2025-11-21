@@ -31,8 +31,6 @@ pub(crate) use state::ModuleArtifactState;
 pub use state::{ExecState, MetaSettings};
 use uuid::Uuid;
 
-#[cfg(feature = "artifact-graph")]
-use crate::front::{Number, Object, ObjectId};
 use crate::{
     CompilationError, ExecError, KclErrorWithOutputs, SourceRange,
     engine::{EngineManager, GridScaleBehavior},
@@ -45,6 +43,11 @@ use crate::{
     fs::FileManager,
     modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{Expr, ImportPath, NodeRef},
+};
+#[cfg(feature = "artifact-graph")]
+use crate::{
+    collections::AhashIndexSet,
+    front::{Number, Object, ObjectId},
 };
 
 pub(crate) mod annotations;
@@ -102,6 +105,26 @@ pub struct ExecOutcome {
     pub filenames: IndexMap<ModuleId, ModulePath>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
+}
+
+/// Configuration for mock execution.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MockConfig {
+    pub use_prev_memory: bool,
+    /// The segments that were edited that triggered this execution.
+    #[cfg(feature = "artifact-graph")]
+    pub segment_ids_edited: AhashIndexSet<ObjectId>,
+}
+
+impl Default for MockConfig {
+    fn default() -> Self {
+        Self {
+            // By default, use previous memory. This is usually what you want.
+            use_prev_memory: true,
+            #[cfg(feature = "artifact-graph")]
+            segment_ids_edited: AhashIndexSet::default(),
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -585,15 +608,18 @@ impl ExecutorContext {
     pub async fn run_mock(
         &self,
         program: &crate::Program,
-        use_prev_memory: bool,
+        mock_config: &MockConfig,
     ) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(
             self.is_mock(),
             "To use mock execution, instantiate via ExecutorContext::new_mock, not ::new"
         );
 
+        #[cfg(not(feature = "artifact-graph"))]
         let mut exec_state = ExecState::new(self);
-        if use_prev_memory {
+        #[cfg(feature = "artifact-graph")]
+        let mut exec_state = ExecState::new_sketch_mode(self, mock_config.segment_ids_edited.clone());
+        if mock_config.use_prev_memory {
             match cache::read_old_memory().await {
                 Some(mem) => {
                     *exec_state.mut_stack() = mem.0;
@@ -2489,7 +2515,7 @@ w = f() + f()
 
         let ctx2 = ExecutorContext::new_mock(None).await;
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
-        let result = ctx2.run_mock(&program2, true).await.unwrap();
+        let result = ctx2.run_mock(&program2, &MockConfig::default()).await.unwrap();
         assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
 
         ctx.close().await;
@@ -2500,16 +2526,20 @@ w = f() + f()
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_has_stable_ids() {
         let ctx = ExecutorContext::new_mock(None).await;
+        let mock_config = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
         let code = "sk = startSketchOn(XY)
         |> startProfile(at = [0, 0])";
         let program = crate::Program::parse_no_errs(code).unwrap();
-        let result = ctx.run_mock(&program, false).await.unwrap();
+        let result = ctx.run_mock(&program, &mock_config).await.unwrap();
         let ids = result.artifact_graph.iter().map(|(k, _)| *k).collect::<Vec<_>>();
         assert!(!ids.is_empty(), "IDs should not be empty");
 
         let ctx2 = ExecutorContext::new_mock(None).await;
         let program2 = crate::Program::parse_no_errs(code).unwrap();
-        let result = ctx2.run_mock(&program2, false).await.unwrap();
+        let result = ctx2.run_mock(&program2, &mock_config).await.unwrap();
         let ids2 = result.artifact_graph.iter().map(|(k, _)| *k).collect::<Vec<_>>();
 
         assert_eq!(ids, ids2, "Generated IDs should match");
@@ -2533,7 +2563,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let mock_program = crate::Program::parse_no_errs(code).unwrap();
-        let mock_result = mock_ctx.run_mock(&mock_program, true).await.unwrap();
+        let mock_result = mock_ctx.run_mock(&mock_program, &MockConfig::default()).await.unwrap();
         assert_eq!(mock_result.operations.len(), 1);
 
         let code2 = code.to_owned()
