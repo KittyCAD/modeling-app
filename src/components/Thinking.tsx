@@ -127,6 +127,7 @@ export const KclDocs = (props: {
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
         <div
+          className="parsed-markdown"
           dangerouslySetInnerHTML={{
             __html: Marked.parse(props.content, {
               renderer: new SafeRenderer(options),
@@ -165,6 +166,7 @@ export const FeatureTreeOutline = (props: {
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
         <div
+          className="parsed-markdown"
           dangerouslySetInnerHTML={{
             __html: Marked.parse(props.content, {
               renderer: new SafeRenderer(options),
@@ -371,6 +373,7 @@ export const NothingInParticular = (props: {
         setAnyRowCollapse={props.setAnyRowCollapse}
       >
         <div
+          className="parsed-markdown"
           dangerouslySetInnerHTML={{
             __html: Marked.parse(props.content, {
               renderer: new SafeRenderer(options),
