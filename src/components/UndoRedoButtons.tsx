@@ -17,7 +17,7 @@ export function UndoRedoButtons({
       <UndoOrRedoButton
         label="Undo"
         keyboardShortcut="mod+z"
-        iconName="arrowShortLeft"
+        iconName="arrowTurnLeft"
         onClick={() => editorManager.undo()}
         className="rounded-r-none"
         disabled={undoDepth(editorManager.editorState) === 0}
@@ -25,15 +25,15 @@ export function UndoRedoButtons({
       <UndoOrRedoButton
         label="Redo"
         keyboardShortcut="mod+shift+z"
-        iconName="arrowShortRight"
+        iconName="arrowTurnRight"
         onClick={() => editorManager.redo()}
         className="rounded-none"
         disabled={redoDepth(editorManager.editorState) === 0}
       />
       {/** TODO: Remove the refresh button when users don't need it so much. */}
       <UndoOrRedoButton
-        label="Refresh"
-        iconName="arrowRotateRight"
+        label="Reload"
+        iconName="arrowRotateFullRight"
         onClick={() => {
           refreshPage('Top app bar').catch(reportRejection)
         }}
@@ -47,7 +47,7 @@ export function UndoRedoButtons({
 interface UndoOrRedoButtonProps extends HTMLProps<HTMLButtonElement> {
   label: string
   onClick: MouseEventHandler
-  iconName: 'arrowShortRight' | 'arrowShortLeft' | 'arrowRotateRight'
+  iconName: 'arrowTurnRight' | 'arrowTurnLeft' | 'arrowRotateFullRight'
   keyboardShortcut?: string
   disabled: boolean
 }
