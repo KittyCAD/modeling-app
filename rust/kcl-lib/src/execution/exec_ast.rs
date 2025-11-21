@@ -1079,9 +1079,10 @@ impl Node<SketchBlock> {
                     let final_values = initial_guesses.iter().map(|(_, v)| *v).collect::<Vec<_>>();
                     kcl_ezpz::SolveOutcome {
                         final_values,
-                        iterations: 0,
+                        iterations: Default::default(),
                         warnings: failure.warnings,
                         unsatisfied: Default::default(),
+                        priority_solved: Default::default(),
                     }
                 } else {
                     return Err(KclError::new_internal(KclErrorDetails::new(
