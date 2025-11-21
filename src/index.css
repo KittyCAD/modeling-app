@@ -559,3 +559,76 @@ code,
   background-image: url("/mleyphun.jpg");
   background-size: cover;
 }
+
+/* Artifact range highlights (semi-transparent, hue by type) */
+#code-mirror-override .cm-content .cm-artifact-range {
+  background-color: hsla(210, 20%, 50%, 0.1);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Planes and profiles */
+#code-mirror-override
+  .cm-content
+  .cm-artifact-range[data-artifact-type="plane"] {
+  background-color: hsla(210, 80%, 60%, 0.12);
+}
+#code-mirror-override
+  .cm-content
+  .cm-artifact-range[data-artifact-type="path"] {
+  background-color: hsla(200, 85%, 55%, 0.12);
+}
+#code-mirror-override
+  .cm-content
+  .cm-artifact-range[data-artifact-type="segment"] {
+  background-color: hsla(35, 90%, 55%, 0.14);
+}
+#code-mirror-override
+  .cm-content
+  .cm-artifact-range[data-artifact-type="solid2d"] {
+  background-color: hsla(160, 70%, 45%, 0.12);
+}
+
+/* Bodies and features */
+#code-mirror-override
+  .cm-content
+  .cm-artifact-range[data-artifact-type="sweep"] {
+  background-color: hsla(275, 70%, 60%, 0.12);
+}
+#code-mirror-override
+  .cm-content
+  .cm-artifact-range[data-artifact-type="wall"] {
+  background-color: hsla(355, 75%, 55%, 0.12);
+}
+#code-mirror-override .cm-content .cm-artifact-range[data-artifact-type="cap"] {
+  background-color: hsla(130, 70%, 45%, 0.12);
+}
+#code-mirror-override
+  .cm-content
+  .cm-artifact-range[data-artifact-type="edgeCut"] {
+  background-color: hsla(20, 85%, 50%, 0.14);
+}
+#code-mirror-override
+  .cm-content
+  .cm-artifact-range[data-artifact-type="sweepEdge"] {
+  background-color: hsla(300, 70%, 55%, 0.12);
+}
+
+/* Aggregates */
+#code-mirror-override
+  .cm-content
+  .cm-artifact-range[data-artifact-type="compositeSolid"] {
+  background-color: hsla(340, 70%, 60%, 0.12);
+}
+
+/* Sketch start helpers */
+#code-mirror-override
+  .cm-content
+  .cm-artifact-range[data-artifact-type="startSketchOnFace"] {
+  background-color: hsla(180, 70%, 45%, 0.12);
+}
+#code-mirror-override
+  .cm-content
+  .cm-artifact-range[data-artifact-type="startSketchOnPlane"] {
+  background-color: hsla(185, 70%, 50%, 0.12);
+}
