@@ -45,10 +45,10 @@ description: Variables in memory after executing panic_repro_cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 679,
-            "end": 685,
+            "commentStart": 681,
+            "end": 687,
             "moduleId": 0,
-            "start": 679,
+            "start": 681,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -66,10 +66,10 @@ description: Variables in memory after executing panic_repro_cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 755,
-            "end": 761,
+            "commentStart": 757,
+            "end": 763,
             "moduleId": 0,
-            "start": 755,
+            "start": 757,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -80,10 +80,10 @@ description: Variables in memory after executing panic_repro_cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 902,
-            "end": 914,
+            "commentStart": 904,
+            "end": 916,
             "moduleId": 0,
-            "start": 902,
+            "start": 904,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -94,10 +94,10 @@ description: Variables in memory after executing panic_repro_cube.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 874,
-            "end": 882,
+            "commentStart": 876,
+            "end": 884,
             "moduleId": 0,
-            "start": 874,
+            "start": 876,
             "type": "TagDeclarator",
             "value": "topFace"
           },
@@ -135,10 +135,10 @@ description: Variables in memory after executing panic_repro_cube.kcl
               -10.0
             ],
             "tag": {
-              "commentStart": 679,
-              "end": 685,
+              "commentStart": 681,
+              "end": 687,
               "moduleId": 0,
-              "start": 679,
+              "start": 681,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -176,10 +176,10 @@ description: Variables in memory after executing panic_repro_cube.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 755,
-              "end": 761,
+              "commentStart": 757,
+              "end": 763,
               "moduleId": 0,
-              "start": 755,
+              "start": 757,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -307,10 +307,10 @@ description: Variables in memory after executing panic_repro_cube.kcl
             -10.0
           ],
           "tag": {
-            "commentStart": 679,
-            "end": 685,
+            "commentStart": 681,
+            "end": 687,
             "moduleId": 0,
-            "start": 679,
+            "start": 681,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -348,10 +348,10 @@ description: Variables in memory after executing panic_repro_cube.kcl
             10.0
           ],
           "tag": {
-            "commentStart": 755,
-            "end": 761,
+            "commentStart": 757,
+            "end": 763,
             "moduleId": 0,
-            "start": 755,
+            "start": 757,
             "type": "TagDeclarator",
             "value": "seg02"
           },
