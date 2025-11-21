@@ -1,13 +1,10 @@
-import {
-  faBug,
-  faHome,
-  faRefresh,
-  faTrash,
-} from '@fortawesome/free-solid-svg-icons'
+import { faBug, faHome, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { isDesktop } from '@src/lib/isDesktop'
+import { refreshPage } from '@src/lib/utils'
+import { reportRejection } from '@src/lib/trap'
 
 /** Type narrowing function of unknown error to a string */
 function errorMessage(error: unknown): string {
@@ -64,7 +61,7 @@ export const ErrorPage = () => {
             <ActionButton
               Element="link"
               to={'/'}
-              iconStart={{ icon: faHome }}
+              iconStart={{ icon: 'arrowLeft' }}
               data-testid="unexpected-error-home"
             >
               Go Home
@@ -72,14 +69,14 @@ export const ErrorPage = () => {
           )}
           <ActionButton
             Element="button"
-            iconStart={{ icon: faRefresh }}
-            onClick={() => window.location.reload()}
+            iconStart={{ icon: 'arrowRotateFullRight' }}
+            onClick={() => refreshPage('Crash page').catch(reportRejection)}
           >
             Reload
           </ActionButton>
           <ActionButton
             Element="button"
-            iconStart={{ icon: faTrash }}
+            iconStart={{ icon: 'trash' }}
             onClick={() => {
               window.localStorage.clear()
             }}
@@ -88,7 +85,7 @@ export const ErrorPage = () => {
           </ActionButton>
           <ActionButton
             Element="externalLink"
-            iconStart={{ icon: faBug }}
+            iconStart={{ icon: 'bug' }}
             to={generateToUrl(error)}
           >
             Report Bug
