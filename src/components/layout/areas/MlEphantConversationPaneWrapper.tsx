@@ -21,7 +21,11 @@ import { MlEphantManagerReactContext } from '@src/machines/mlEphantManagerMachin
 export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
   const settings = useSettings()
   const user = useUser()
-  const { context: contextModeling, theProject } = useModelingContext()
+  const {
+    context: contextModeling,
+    send: sendModeling,
+    theProject,
+  } = useModelingContext()
   const { file: loaderFile } = useLoaderData() as IndexLoaderData
   const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
 
@@ -48,6 +52,7 @@ export function MlEphantConversationPaneWrapper(props: AreaTypeComponentProps) {
               kclManager,
               codeManager,
               contextModeling,
+              sendModeling,
               theProject: theProject.current,
               loaderFile,
               settings,
