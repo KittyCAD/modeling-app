@@ -1078,7 +1078,10 @@ impl Node<SketchBlock> {
             })
             .collect::<Result<Vec<_>, KclError>>()?;
         // Solve constraints.
-        let config = kcl_ezpz::Config::default();
+        let config = kcl_ezpz::Config {
+            max_iterations: 1000,
+            ..Default::default()
+        };
         let solve_outcome = match kcl_ezpz::solve_with_priority(&constraints, initial_guesses.clone(), config) {
             Ok(o) => o,
             Err(failure) => {
