@@ -2,7 +2,11 @@ import { join } from 'path'
 import fsp from 'fs/promises'
 
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from '@e2e/playwright/storageStates'
-import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
+import {
+  executorInputPath,
+  getUtils,
+  checkIfPaneIsOpen,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
@@ -208,6 +212,67 @@ middle()`)
     // There should be one hint inside middle() and one at the top level.
     await expect(page.getByText('Part of the error backtrace')).toHaveCount(2)
   })
+
+  test(
+    'Opening a project with KCL syntax error shows error when code pane is opened',
+    { tag: '@desktop' },
+    async ({ context, page, homePage, scene, cmdBar, toolbar }) => {
+      // Create a project with a file containing a syntax error
+      await context.folderSetupFn(async (dir) => {
+        const errorProjectDir = join(dir, 'syntax-error-project')
+        await fsp.mkdir(errorProjectDir, { recursive: true })
+        // Create a file with a syntax error (missing equals sign)
+        await fsp.writeFile(
+          join(errorProjectDir, 'main.kcl'),
+          `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-2.7, -2.76])
+  |> line(entttt = [7.54, 5.4])
+`
+        )
+      })
+
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+
+      await test.step('Create a new project and close the code pane', async () => {
+        await homePage.goToModelingScene()
+        await scene.settled(cmdBar)
+        await u.closeKclCodePanel()
+      })
+
+      await test.step('Exit the project and go back to home', async () => {
+        await toolbar.logoLink.click()
+        await expect(page.getByText('Create project')).toBeVisible()
+      })
+
+      await test.step('Open the project with syntax error', async () => {
+        await expect(page.getByText('syntax-error-project')).toBeVisible()
+        await page.getByText('syntax-error-project').click()
+        await u.waitForPageLoad()
+        await scene.settled(cmdBar, { expectError: true })
+      })
+
+      await test.step('Verify code pane is not open', async () => {
+        const isCodePaneOpen = await checkIfPaneIsOpen(page, 'code-pane-button')
+        await expect(isCodePaneOpen).toBe(false)
+        await expect(page.locator('#code-pane')).not.toBeVisible()
+      })
+
+       ///await page.waitForTimeout(99999)
+
+      await test.step('Open the code pane', async () => {
+        await u.openKclCodePanel()
+        await expect(page.locator('#code-pane')).toBeVisible()
+      })
+
+      await test.step('Verify syntax error is shown', async () => {
+        // Wait for the error to appear in the gutter
+        await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+          timeout: 10_000,
+        })
+      })
+    }
+  )
 })
 
 test(

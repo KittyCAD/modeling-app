@@ -233,6 +233,11 @@ export const KclEditorPaneContents = () => {
 
             if (!_editorView) return
 
+            // This doesn't really work instead of safeParse because it messes up the initial setup
+            // when opening a project.
+            // kclManager.executeCode().then(() => {
+            // }).catch(reportRejection)
+            
             // Update diagnostics as they are cleared when the editor is unmounted.
             // Without this, errors would not be shown when closing and reopening the editor.
             kclManager
